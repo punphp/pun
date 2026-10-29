@@ -169,7 +169,7 @@ fn says_readonly(c: &Checker, at: Option<Span>) -> bool {
 }
 
 /// A class template `T` of `scope` as the holder's argument.
-pub(super) fn with_args(t: &Type, scope: &str, names: &[String], args: &[Type]) -> Type {
+pub(in super::super) fn with_args(t: &Type, scope: &str, names: &[String], args: &[Type]) -> Type {
     match t {
         Type::Template(tpl) if tpl.scope == scope => {
             names.iter().position(|n| *n == tpl.name).and_then(|i| args.get(i)).cloned().unwrap_or_else(|| t.clone())

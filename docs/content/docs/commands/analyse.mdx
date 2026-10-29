@@ -234,6 +234,11 @@ Shared analysis retains exact instantiated-class alternatives without marking th
 Conversion to Pun's PHPStan object types preserves per-value reflection overrides through containment and unions.
 Ordinary type traversal preserves these overrides; template inference removes them recursively, matching PHPStan.
 Named-argument checks apply finality to the method's actual declaring class, including inherited methods.
+Compound method argument binding composes original signatures before selecting a call variant.
+Union and intersection reflections retain their distinct visibility and named-argument policies.
+Binding uses the selected declaring class's built-in status, including through recursive `@mixin` declarations and supplied template arguments.
+Compound argument-type and by-reference checking remain incomplete.
+Nullsafe chains discard only short-circuit null. A genuinely nullable method result remains nullable for an ordinary chained call.
 Trait-alias override checks use the reflected alias name, adapted visibility and method policy.
 Override prototypes exclude interfaces already supplied by a parent class or another interface.
 Remaining interfaces retain declaration order.

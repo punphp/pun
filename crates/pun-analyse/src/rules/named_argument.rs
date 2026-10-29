@@ -85,82 +85,6 @@ fn method_doc(
     own
 }
 
-struct Method {
-    class: String,
-    name: String,
-    acceptor: params::Acceptor,
-    accepts: bool,
-    private: bool,
-    final_class: bool,
-}
-
-/// UnionTypeMethodReflection / IntersectionTypeMethodReflection, retaining their distinct declaring-class,
-/// parameter combination, private and acceptsNamedArguments contracts. No receiver types are inferred here.
-fn method(c: &Checker, ty: &Type, name: &[u8], counts: &params::Counts) -> Option<Method> {
-    match ty {
-        Type::Union(ts) | Type::Benevolent(ts) => {
-            let methods: Vec<_> = ts
-                .iter()
-                .map(|t| method(c, t, name, counts))
-                .collect::<Option<_>>()?;
-            let first = methods.first()?;
-            Some(Method {
-                class: first.class.clone(),
-                name: String::from_utf8_lossy(name).into_owned(),
-                acceptor: params::combine(&methods.iter().map(|m| &m.acceptor).collect::<Vec<_>>()),
-                accepts: methods.iter().all(|m| m.accepts),
-                private: methods.iter().any(|m| m.private),
-                final_class: first.final_class,
-            })
-        }
-        Type::Intersection(ts) => {
-            let methods: Vec<_> = ts
-                .iter()
-                .filter_map(|t| method(c, t, name, counts))
-                .collect();
-            let mut selected = methods.first()?;
-            for candidate in &methods[1..] {
-                if (candidate.acceptor.variadic, candidate.acceptor.names.len())
-                    > (selected.acceptor.variadic, selected.acceptor.names.len())
-                {
-                    selected = candidate;
-                }
-            }
-            Some(Method {
-                class: selected.class.clone(),
-                name: String::from_utf8_lossy(name).into_owned(),
-                acceptor: selected.acceptor.clone(),
-                accepts: methods.iter().any(|m| m.accepts),
-                private: methods.iter().all(|m| m.private),
-                final_class: selected.final_class,
-            })
-        }
-        Type::Template(t) => method(c, &t.bound, name, counts),
-        Type::Object(n, _, _) | Type::Static(n, _) | Type::This(n) | Type::EnumCase(n, _) => {
-            let m = c.method_of(n, name).ok().flatten()?;
-            let (accepts, final_class) = match &m {
-                members::Method::User { declaring, name, .. } => (
-                    declared::reflected_accepts_named(c, declaring, &name.to_string()),
-                    declaring.flags.is_final(),
-                ),
-                members::Method::Builtin { declaring, .. } => (true, declaring.is_final),
-            };
-            // ObjectType resolves the declaring ancestor: an exact Child does not finalize Parent's method.
-            let final_class = final_class || (matches!(ty, Type::Object(_, _, true))
-                && n.eq_ignore_ascii_case(&m.declaring_name()));
-            Some(Method {
-                class: m.declaring_name(),
-                name: m.name(),
-                acceptor: params::select(c, m.variants(), counts),
-                accepts,
-                private: m.visibility().is_private(),
-                final_class,
-            })
-        }
-        _ => None,
-    }
-}
-
 /// The part of a ConstantArrayType that FunctionCallParametersCheck reads when binding names.
 struct ArrayArguments {
     keys: Vec<Type>,
@@ -298,23 +222,26 @@ pub(super) fn call(
             continue;
         }
         let name = scope.name;
+        let short_circuit = scope.types.get(&object.span()).is_some_and(|t| t.has_nullsafe_null());
         let ty = c.phpstan_type_in(object, &scope.types).map(|t| {
-            if nullsafe || super::assign::contains_nullsafe(object) {
+            // An earlier nullsafe operator does not erase null returned by the method itself.
+            if nullsafe || (short_circuit && super::assign::contains_nullsafe(object)) {
                 t.remove_null()
             } else {
                 t
             }
         });
-        let ty = c.find_type_to_check_of(ty, &|t| method(c, t, name.as_bytes(), &counts).is_some());
+        let ty = c.find_type_to_check_of(ty, &|t| matches!(c.reflected_method(t, name.as_bytes()), Ok(Some(_))));
         let Some(m) = ty
             .as_ref()
-            .and_then(|t| method(c, t, name.as_bytes(), &counts))
+            .and_then(|t| c.reflected_method(t, name.as_bytes()).ok().flatten())
         else {
             continue;
         };
         if m.private || m.final_class || !m.accepts {
             continue;
         }
+        let acceptor = m.select(c, &counts, Some(scope));
         // processArguments(): names bind the actual parameter (including a user variadic's unknown names).
         // Positional arguments beyond the signature stop processing, even if a named argument follows.
         let mut position = 0;
@@ -333,8 +260,8 @@ pub(super) fn call(
             };
             for name in names {
                 let Some(name) = name else {
-                    if position >= m.acceptor.names.len()
-                        && !m.acceptor.variadics.last().copied().unwrap_or(false)
+                    if position >= acceptor.names.len()
+                        && !acceptor.variadics.last().copied().unwrap_or(false)
                     {
                         stopped = true;
                         break;
@@ -343,21 +270,20 @@ pub(super) fn call(
                     continue;
                 };
                 position += 1;
-                let parameter = m
-                    .acceptor
+                let parameter = acceptor
                     .names
                     .iter()
                     .position(|p| *p == name)
                     .or_else(|| {
-                        (!m.acceptor.builtin && m.acceptor.variadics.last() == Some(&true))
-                            .then(|| m.acceptor.names.len() - 1)
+                        (!m.builtin() && acceptor.variadics.last() == Some(&true))
+                            .then(|| acceptor.names.len() - 1)
                     });
                 if let Some(parameter) = parameter {
                     records.push((
                         arg.span,
                         format!(
                             "{ENTRY}call\u{1f}{}\u{1f}{}\u{1f}{}",
-                            m.class, m.name, m.acceptor.names[parameter]
+                            m.declaring.declaring_name(), m.name, acceptor.names[parameter]
                         ),
                     ));
                 }

@@ -1,0 +1,456 @@
+{
+    "5": [
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to ExtendedMixins\\Base::run() uses named argument for parameter $old, but ExtendedMixins\\Child renames it to $new.",
+            "line": 33,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to ExtendedMixins\\Base::run() uses named argument for parameter $old, but ExtendedMixins\\Child renames it to $new.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to ExtendedMixins\\Base::run() uses named argument for parameter $old, but ExtendedMixins\\Child renames it to $new.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to ExtendedMixins\\Base::run() uses named argument for parameter $old, but ExtendedMixins\\Child renames it to $new.",
+            "line": 40,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to an undefined method ExtendedMixins\\Proxy::absent().",
+            "line": 48,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to an undefined method ExtendedMixins\\NestedProxy::absent().",
+            "line": 49,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to an undefined method ExtendedMixins\\PartialUnionProxy::run().",
+            "line": 50,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to an undefined method ExtendedMixins\\CycleA::absent().",
+            "line": 61,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to ExtendedMixins\\Base::run() uses named argument for parameter $old, but ExtendedMixins\\Child renames it to $new.",
+            "line": 72,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Missing parameter $tag (int) in call to method ExtendedMixins\\TaggedProxy::run().",
+            "line": 88,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Unknown parameter $old in call to method ExtendedMixins\\TaggedProxy::run().",
+            "line": 88,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Missing parameter $tag (int) in call to method ExtendedMixins\\TaggedProxy::run().",
+            "line": 89,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Unknown parameter $old in call to method ExtendedMixins\\TaggedProxy::run().",
+            "line": 89,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to ExtendedMixins\\Base::run() uses named argument for parameter $old, but ExtendedMixins\\Child renames it to $new.",
+            "line": 105,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to ExtendedMixins\\NativeProxy::run() uses named argument for parameter $native, but ExtendedMixins\\NativeChild renames it to $changed.",
+            "line": 107,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Parameter #1 $old of method ExtendedMixins\\Base::run() expects int, string given.",
+            "line": 123,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Parameter #1 $new of method ExtendedMixins\\Child::run() expects int, string given.",
+            "line": 124,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to an undefined method ExtendedMixins\\FlexibleProxy<Countable>::run().",
+            "line": 125,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Parameter #1 $old of method ExtendedMixins\\Base::run() expects int, string given.",
+            "line": 133,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to ExtendedMixins\\Base::run() uses named argument for parameter $old, but ExtendedMixins\\Child renames it to $new.",
+            "line": 146,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to ExtendedMixins\\Base::run() uses named argument for parameter $old, but ExtendedMixins\\Child renames it to $new.",
+            "line": 183,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to ExtendedMixins\\NativeProxy::run() uses named argument for parameter $native, but ExtendedMixins\\NativeChild renames it to $changed.",
+            "line": 184,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to an undefined method ExtendedMixins\\GenericTraitProxy::run().",
+            "line": 189,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Parameter #1 $old of method ExtendedMixins\\Base::run() expects int, string given.",
+            "line": 190,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Parameter #1 $old of method ExtendedMixins\\Base::run() expects int, string given.",
+            "line": 191,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to an undefined method ExtendedMixins\\MissingIntersectionProxy::run().",
+            "line": 203,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to ExtendedMixins\\Base::run() uses named argument for parameter $old, but ExtendedMixins\\Child renames it to $new.",
+            "line": 223,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Parameter #1 $old of method ExtendedMixins\\Base::run() expects int, string given.",
+            "line": 232,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Parameter #1 $old of method ExtendedMixins\\Base::run() expects int, string given.",
+            "line": 241,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to an undefined method Closure::absent().",
+            "line": 248,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "PHPDoc tag @mixin contains unknown class ExtendedMixins\\Ghost.",
+            "line": 263,
+            "ignorable": true,
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "identifier": "class.notFound"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to an undefined method ExtendedMixins\\UnknownClassProxy::absent().",
+            "line": 268,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        }
+    ],
+    "8": [
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to ExtendedMixins\\Base::run() uses named argument for parameter $old, but ExtendedMixins\\Child renames it to $new.",
+            "line": 33,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to ExtendedMixins\\Base::run() uses named argument for parameter $old, but ExtendedMixins\\Child renames it to $new.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to ExtendedMixins\\Base::run() uses named argument for parameter $old, but ExtendedMixins\\Child renames it to $new.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to ExtendedMixins\\Base::run() uses named argument for parameter $old, but ExtendedMixins\\Child renames it to $new.",
+            "line": 40,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to an undefined method ExtendedMixins\\Proxy::absent().",
+            "line": 48,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to an undefined method ExtendedMixins\\NestedProxy::absent().",
+            "line": 49,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to an undefined method ExtendedMixins\\PartialUnionProxy::run().",
+            "line": 50,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to an undefined method ExtendedMixins\\CycleA::absent().",
+            "line": 61,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to ExtendedMixins\\Base::run() uses named argument for parameter $old, but ExtendedMixins\\Child renames it to $new.",
+            "line": 72,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Missing parameter $tag (int) in call to method ExtendedMixins\\TaggedProxy::run().",
+            "line": 88,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Unknown parameter $old in call to method ExtendedMixins\\TaggedProxy::run().",
+            "line": 88,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Missing parameter $tag (int) in call to method ExtendedMixins\\TaggedProxy::run().",
+            "line": 89,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Unknown parameter $old in call to method ExtendedMixins\\TaggedProxy::run().",
+            "line": 89,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to ExtendedMixins\\Base::run() uses named argument for parameter $old, but ExtendedMixins\\Child renames it to $new.",
+            "line": 105,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to ExtendedMixins\\NativeProxy::run() uses named argument for parameter $native, but ExtendedMixins\\NativeChild renames it to $changed.",
+            "line": 107,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Parameter #1 $old of method ExtendedMixins\\Base::run() expects int, string given.",
+            "line": 123,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Parameter #1 $new of method ExtendedMixins\\Child::run() expects int, string given.",
+            "line": 124,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to an undefined method ExtendedMixins\\FlexibleProxy<Countable>::run().",
+            "line": 125,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Parameter #1 $old of method ExtendedMixins\\Base::run() expects int, string given.",
+            "line": 133,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to ExtendedMixins\\Base::run() uses named argument for parameter $old, but ExtendedMixins\\Child renames it to $new.",
+            "line": 146,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to ExtendedMixins\\Base::run() uses named argument for parameter $old, but ExtendedMixins\\Child renames it to $new.",
+            "line": 183,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to ExtendedMixins\\NativeProxy::run() uses named argument for parameter $native, but ExtendedMixins\\NativeChild renames it to $changed.",
+            "line": 184,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to an undefined method ExtendedMixins\\GenericTraitProxy::run().",
+            "line": 189,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Parameter #1 $old of method ExtendedMixins\\Base::run() expects int, string given.",
+            "line": 190,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Parameter #1 $old of method ExtendedMixins\\Base::run() expects int, string given.",
+            "line": 191,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to an undefined method ExtendedMixins\\MissingIntersectionProxy::run().",
+            "line": 203,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to ExtendedMixins\\Base::run() uses named argument for parameter $old, but ExtendedMixins\\Child renames it to $new.",
+            "line": 223,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Parameter #1 $old of method ExtendedMixins\\Base::run() expects int, string given.",
+            "line": 232,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Parameter #1 $old of method ExtendedMixins\\Base::run() expects int, string given.",
+            "line": 241,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to an undefined method Closure::absent().",
+            "line": 248,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "PHPDoc tag @mixin contains unknown class ExtendedMixins\\Ghost.",
+            "line": 263,
+            "ignorable": true,
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "identifier": "class.notFound"
+        },
+        {
+            "file": "$ROOT/methods.php",
+            "message": "Call to an undefined method ExtendedMixins\\UnknownClassProxy::absent().",
+            "line": 268,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        }
+    ]
+}

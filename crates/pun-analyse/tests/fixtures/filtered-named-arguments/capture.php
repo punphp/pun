@@ -16,8 +16,9 @@ foreach (['AMP_CURRENT_THREAD_ID', 'AUGMENT_AGENT', 'AI_AGENT', 'CURSOR_TRACE_ID
 }
 putenv('XDEBUG_MODE=off');
 $expected = [];
-foreach ($argumentNames ? ['no-named'] : ['calls', 'boundaries'] as $file) {
-    foreach ($argumentNames ? [0, 1, 4, 5] : [4, 5] as $level) {
+foreach ($argumentNames ? ['no-named'] : ['calls', 'boundaries', 'nullable-chain'] as $file) {
+    $levels = $argumentNames ? [0, 1, 4, 5] : ($file === 'nullable-chain' ? [4, 5, 8] : [4, 5]);
+    foreach ($levels as $level) {
         $mode = "$file-$level";
         $reserved = tempnam(sys_get_temp_dir(), 'pun-filtered-named-');
         $config = "$reserved.neon";

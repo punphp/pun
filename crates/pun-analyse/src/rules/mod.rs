@@ -33,6 +33,7 @@ mod invalid_throws;
 mod larastan;
 mod members;
 mod method_callable;
+mod method_reflection;
 mod missing_types;
 mod named_argument;
 mod names;

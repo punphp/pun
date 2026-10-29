@@ -27,6 +27,13 @@ fn derived_dependencies_and_argument_positions_at_level_four() {
     check("boundaries", 4);
 }
 
+#[test]
+fn nullsafe_chains_preserve_genuine_nullable_results() {
+    for level in [4, 5, 8] {
+        check("nullable-chain", level);
+    }
+}
+
 fn check(file: &str, level: u8) {
     let root =
         Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/filtered-named-arguments");

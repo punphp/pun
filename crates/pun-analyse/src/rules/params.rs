@@ -776,6 +776,22 @@ pub(super) fn check_in(
     first_level: bool,
     scope: Option<&super::infer::NamedCallScope>,
 ) {
+    check_bound_in(c, acceptor, counts, at, call, first_level, scope, true);
+}
+
+/// The structural binding boundary for reflections whose semantic signature is not yet representable. Counts,
+/// ordering, unknown/missing/duplicate names and method-level named policy use the ordinary shared consumer.
+/// Do not run type/reference/template or return checks against an arbitrary combined User parameter.
+pub(super) fn check_bound_in(
+    c: &mut Checker,
+    acceptor: &Acceptor,
+    counts: &Counts,
+    at: impl HasSpan + Copy,
+    call: Call,
+    first_level: bool,
+    scope: Option<&super::infer::NamedCallScope>,
+    semantic: bool,
+) {
     // the arguments after unpacking constant arrays
     let unpacked: Vec<_> = counts.args.iter().map(|arg| {
         (arg.unpack.is_some() && (scope.is_some_and(|scope| scope.filtered)
@@ -873,7 +889,7 @@ pub(super) fn check_in(
             c.report(at, "arguments.count", message, None);
         }
     }
-    if let Some(void) = call.void_message.clone()
+    if semantic && let Some(void) = call.void_message.clone()
         && !first_level
         && call.scope.and_then(|span| c.keep_void_type_at(span)).map_or(acceptor.void, |ty| {
             // NullsafeMethodCallHandler checks the ensured plain twin, before adding short-circuit null.
@@ -891,7 +907,15 @@ pub(super) fn check_in(
     }
     let parameters = process_arguments(c, acceptor, &arguments, has_named, at, &call);
     if c.check_argument_types || c.check_arguments_passed_by_reference {
-        super::types::arguments(c, acceptor, &arguments, &parameters, at.span(), &call);
+        if semantic {
+            super::types::arguments(c, acceptor, &arguments, &parameters, at.span(), &call);
+        } else {
+            for (argument, parameter) in arguments.iter().zip(parameters) {
+                if parameter.is_some() {
+                    check_named(c, acceptor, argument, &call);
+                }
+            }
+        }
     }
 }
 

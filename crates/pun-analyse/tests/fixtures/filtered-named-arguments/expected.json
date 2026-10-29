@@ -243,5 +243,52 @@
             "ignorable": true,
             "identifier": "method.nonObject"
         }
+    ],
+    "nullable-chain-4": [],
+    "nullable-chain-5": [
+        {
+            "file": "$ROOT/nullable-chain.php",
+            "message": "Call to NullableNamedChain\\Base::run() uses named argument for parameter $old, but NullableNamedChain\\Child renames it to $new.",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/nullable-chain.php",
+            "message": "Call to NullableNamedChain\\Base::run() uses named argument for parameter $old, but NullableNamedChain\\Child renames it to $new.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/nullable-chain.php",
+            "message": "Call to NullableNamedChain\\Base::run() uses named argument for parameter $old, but NullableNamedChain\\Child renames it to $new.",
+            "line": 19,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "nullable-chain-8": [
+        {
+            "file": "$ROOT/nullable-chain.php",
+            "message": "Call to NullableNamedChain\\Base::run() uses named argument for parameter $old, but NullableNamedChain\\Child renames it to $new.",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/nullable-chain.php",
+            "message": "Cannot call method run() on NullableNamedChain\\Base|null.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "method.nonObject"
+        },
+        {
+            "file": "$ROOT/nullable-chain.php",
+            "message": "Call to NullableNamedChain\\Base::run() uses named argument for parameter $old, but NullableNamedChain\\Child renames it to $new.",
+            "line": 19,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
     ]
 }

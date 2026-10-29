@@ -240,7 +240,6 @@
 5 Methods/CallMethodsRuleTest::testIterables#0
 5 Methods/CallMethodsRuleTest::testIterables#1
 5 Methods/CallMethodsRuleTest::testLiteralString
-5 Methods/CallMethodsRuleTest::testMixin
 5 Methods/CallMethodsRuleTest::testNegatedInstanceof
 5 Methods/CallMethodsRuleTest::testNewInstanceArgsIssue8679
 5 Methods/CallMethodsRuleTest::testObjectShapes
@@ -316,7 +315,6 @@
 9 Methods/CallMethodsRuleTest::testIterables#0
 9 Methods/CallMethodsRuleTest::testIterables#1
 9 Methods/CallMethodsRuleTest::testLiteralString
-9 Methods/CallMethodsRuleTest::testMixin
 9 Methods/CallMethodsRuleTest::testNegatedInstanceof
 9 Methods/CallMethodsRuleTest::testNewInstanceArgsIssue8679
 9 Methods/CallMethodsRuleTest::testObjectShapes

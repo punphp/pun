@@ -2,6 +2,8 @@
 //! RuleLevelHelper's `findTypeToCheck()` (unions from level 7, nullables from level 8, explicit `mixed` from 9).
 //! Calls on `$this` stay with calls.rs.
 
+use std::collections::HashSet;
+
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::{TObject, named::TNamedObject};
 use mago_codex::ttype::atomic::scalar::{TScalar, class_like_string::TClassLikeString};
@@ -11,7 +13,7 @@ use mago_syntax::cst::*;
 use pun_phpstan::types::{Accessory, Level, Tri, Type, intersect, is_super_type_of};
 
 use super::super::reflection::Lookup;
-use super::super::{Checker, calls, declared, members, params};
+use super::super::{Checker, calls, declared, members, method_reflection, params};
 
 pub const IDENTIFIERS: &[&str] = &["method.nonObject", "staticMethod.nonObject"];
 
@@ -109,17 +111,68 @@ impl<'a> Checker<'a, '_> {
         }
     }
 
-    /// The method `name` of class `n`, with `@method` tags; `Err` when PHPStan may find one Pun does not see
-    /// (`@mixin`, `@phpstan-require-extends`, a built-in Mago lacks).
+    /// The method of an unparameterized class. Callers with a receiver type must keep its arguments.
     pub(in super::super) fn method_of(&self, n: &str, name: &[u8]) -> Result<Option<members::Method<'a>>, ()> {
-        let Lookup::Found(k) = self.class_like(n) else { return Err(()) };
+        self.method_of_type(&Type::Object(n.to_string(), vec![], false), name)
+    }
+
+    /// Extended method reflection, retaining the real declaration (including nested mixins and `@method`).
+    /// `Err` means that Pun cannot reflect the method, not that the receiver lacks it.
+    pub(in super::super) fn method_of_type(&self, t: &Type, name: &[u8]) -> Result<Option<members::Method<'a>>, ()> {
+        self.reflected_method(t, name).map(|m| m.map(|m| m.declaring))
+    }
+
+    /// The complete reflection for ordinary argument binding and collection, including compound mixin types.
+    pub(in super::super) fn reflected_method(&self, t: &Type, name: &[u8]) -> Result<Option<method_reflection::Method<'a>>, ()> {
+        self.extended_method(t, name, &mut HashSet::new())
+    }
+
+    fn extended_method(&self, t: &Type, name: &[u8], active: &mut HashSet<String>) -> Result<Option<method_reflection::Method<'a>>, ()> {
+        match t {
+            Type::Union(ts) | Type::Benevolent(ts) => {
+                let mut methods = Vec::new();
+                for t in ts {
+                    let Some(method) = self.extended_method(t, name, active)? else { return Ok(None) };
+                    methods.push(method);
+                }
+                return Ok(method_reflection::Method::union(self, methods, name));
+            }
+            Type::Intersection(ts) => {
+                let methods = ts.iter().filter_map(|t| self.extended_method(t, name, active).ok().flatten()).collect();
+                return Ok(method_reflection::Method::intersection(methods, name));
+            }
+            Type::Template(t) => return self.extended_method(&t.bound, name, active),
+            _ => {}
+        }
+        let Some(n) = Self::class_of(t) else { return Ok(None) };
+        let Lookup::Found(k) = self.class_like(n) else {
+            // An unknown mixin hasMethod() is no; an unknown receiver still belongs to findTypeToCheck().
+            return if active.is_empty() { Err(()) } else { Ok(None) };
+        };
         // Mago's populated interfaces can include ancestors of requirements, which are not native ancestors.
         let nominal = |class: &str| declared::with_classes(self, || {
             is_super_type_of(&Type::Object(class.to_string(), vec![], false), &Type::Object(n.to_string(), vec![], false)).yes()
         });
         let native = members::method(self, k, name).or_else(|| members::annotation_method(self, k, name));
         if let Some(m) = native.filter(|m| nominal(&m.declaring_name())) {
-            return Ok(Some(m));
+            return Ok(Some(method_reflection::Method::leaf(self, t, m)));
+        }
+        // MixinMethodsClassReflectionExtension guards each resolved mixin description and method name while
+        // asking the type for its extended method, not just a native method on a plain ObjectType.
+        for mixin in self.method_mixins(k, t) {
+            // MixedType answers with DummyMethodReflection, which has no real declaration to preserve.
+            if matches!(mixin.resolve_to_bounds(), Type::Mixed { .. } | Type::Error) {
+                return Err(());
+            }
+            let key = declared::with_classes(self, || mixin.describe(Level::TypeOnly));
+            if !active.insert(key.clone()) {
+                continue;
+            }
+            let method = self.extended_method(&mixin, name, active);
+            active.remove(&key);
+            if let Some(method) = method? {
+                return Ok(Some(method));
+            }
         }
         // RequireExtendsMethodsClassReflectionExtension applies only to interfaces, not trait require-implements.
         if k.kind.is_interface() {
@@ -130,22 +183,53 @@ impl<'a> Checker<'a, '_> {
                 .filter_map(|n| self.codebase.get_class_like(n.as_bytes()))
                 .find_map(|r| members::method(self, r, name))
             {
-                return Ok(Some(m));
+                return Ok(Some(method_reflection::Method::leaf(self, t, m)));
             }
         }
-        // MixinMethodsClassReflectionExtension; ponytail: a mixin other than a class (`@mixin T`) is not resolved
-        let mut found = Ok(None);
-        for t in self.mixins(k) {
-            match t {
-                Type::Object(n, _, _) => {
-                    if let Some(m) = self.class_like(&n).found().and_then(|m| members::method(self, m, name)) {
-                        return Ok(Some(m));
-                    }
-                }
-                _ => found = Err(()),
+        Ok(None)
+    }
+
+    /// ClassReflection::getResolvedMixinTypes(), then traits and the parent in extension order. Read each
+    /// declaration's own tags: Mago's populated mixins have already flattened parents before traits and lost
+    /// the active ancestor template map. Keep property reflection on its existing, separate path.
+    fn method_mixins(&self, class: &'a mago_codex::metadata::class_like::ClassLikeMetadata, receiver: &Type) -> Vec<Type> {
+        let args = match receiver {
+            Type::Object(_, args, _) | Type::Static(_, args) => args.clone(),
+            _ => Vec::new(),
+        };
+        let mut pending = vec![(class, args)];
+        let mut seen = HashSet::new();
+        let mut out = Vec::new();
+        while let Some((class, actual)) = pending.pop() {
+            if !seen.insert(class.name) {
+                continue;
             }
+            let templates = declared::class_templates(self, class);
+            let names: Vec<_> = templates.iter().map(|t| t.name.clone()).collect();
+            let args: Vec<_> = templates.iter().enumerate().map(|(i, t)| {
+                actual.get(i).cloned().unwrap_or_else(|| t.default.as_ref().unwrap_or(&t.bound).clone())
+            }).collect();
+            let scope = format!("class {}", declared::original_name(class));
+            let replace = |t: &Type| super::properties::with_args(t, &scope, &names, &args);
+            if let Some((doc, _)) = declared::doc_at(self, class.span) {
+                let scope = declared::scope_at(self, class.span, Some(class));
+                out.extend(super::super::doc::Doc::parse(&doc).mixins.iter()
+                    .map(|node| replace(&pun_phpstan::resolve::resolve_in(node, &scope))));
+            }
+            if let Some(parent) = class.direct_parent_class.and_then(|n| self.codebase.get_class_like(n.as_bytes())) {
+                let args = declared::with_classes(self, || {
+                    pun_phpstan::symbols::lookup(&declared::original_name(class))
+                        .and_then(|k| pun_phpstan::types::ancestor_args(&k, &declared::original_name(parent), &args))
+                        .unwrap_or_default()
+                });
+                pending.push((parent, args));
+            }
+            // getTraits() returns the trait's class reflection, not its @use specialization.
+            let traits: Vec<_> = class.direct_trait_names().collect();
+            pending.extend(traits.into_iter().rev().filter_map(|n| self.codebase.get_class_like(n.as_bytes()))
+                .map(|t| (t, Vec::new())));
         }
-        found
+        out
     }
 
     /// `Type::hasMethod()`.
@@ -154,25 +238,22 @@ impl<'a> Checker<'a, '_> {
             Type::Accessory(Accessory::HasMethod(_)) => t.has_method(&String::from_utf8_lossy(name)),
             Type::ObjectWithoutClass | Type::Iterable(..) | Type::Callable(_) => Tri::Maybe,
             // (what Pun does not see is taken as there: the call is not checked further)
-            t => Self::class_of(t).map_or(Tri::No, |n| if matches!(self.method_of(n, name), Ok(None)) { Tri::No } else { Tri::Yes }),
+            t => if matches!(self.method_of_type(t, name), Ok(None)) { Tri::No } else { Tri::Yes },
         })
     }
 
     /// How many of the type's classes have method `name`.
     fn classes_with(&self, t: &Type, name: &[u8]) -> usize {
-        t.object_class_names().iter().filter(|n| matches!(self.method_of(n, name), Ok(Some(_)))).count()
+        match t {
+            Type::Union(ts) | Type::Benevolent(ts) | Type::Intersection(ts) => ts.iter().map(|t| self.classes_with(t, name)).sum(),
+            Type::Template(t) => self.classes_with(&t.bound, name),
+            t => usize::from(matches!(self.method_of_type(t, name), Ok(Some(_)))),
+        }
     }
 
-    /// `Type::getMethod()` of a type that has it.
-    // ponytail: a union's UnionTypeMethodReflection is its first member's method
+    /// The declaring leaf for consumers that do not yet read compound variants.
     fn get_method(&self, t: &Type, name: &[u8]) -> Option<members::Method<'a>> {
-        match t {
-            Type::Union(ts) | Type::Benevolent(ts) | Type::Intersection(ts) => {
-                ts.iter().find_map(|t| self.get_method(t, name))
-            }
-            Type::Template(tt) => self.get_method(&tt.bound, name),
-            t => self.method_of(Self::class_of(t)?, name).ok().flatten(),
-        }
+        self.method_of_type(t, name).ok().flatten()
     }
 }
 
@@ -220,20 +301,6 @@ fn without_atomic_requirements(c: &Checker, atomic: &TAtomic) -> Option<TAtomic>
             })))
         }
         _ => None,
-    }
-}
-
-/// `ClassReflection::getDisplayName()` of the method's declaring class as the receiver's type resolves it: a generic
-/// object of that class shows its type arguments (`Foo<int,string>`).
-// ponytail: an ancestor's resolved template map (a method inherited from a generic parent) is not shown
-fn generic_display(c: &Checker, t: &Type, method: &members::Method) -> String {
-    let display = method.declaring_display(c);
-    match t {
-        Type::Object(n, args, _) if !args.is_empty() && n.eq_ignore_ascii_case(&method.declaring_name()) => {
-            let args: Vec<String> = declared::with_classes(c, || args.iter().map(|a| a.describe(Level::TypeOnly)).collect());
-            format!("{display}<{}>", args.join(","))
-        }
-        _ => display,
     }
 }
 
@@ -369,43 +436,42 @@ fn check_single_method<'arena>(
         c.report(name, "method.notFound", message, None);
         return;
     }
-    let Some(method) = c.get_method(&t, name.value) else {
+    let Some(mut method) = c.reflected_method(&t, name.value).ok().flatten() else {
         return;
     };
-    let declaring = generic_display(c, &t, &method);
+    let declaring = &method.display;
     let visibility = method.visibility();
-    if !calls::can_call(c, c.class_scope(), &method.declaring_name(), visibility) {
+    if !calls::can_call(c, c.class_scope(), &method.declaring.declaring_name(), visibility) {
         let v = super::super::restricted(visibility);
         let identifier = if visibility.is_private() { "method.private" } else { "method.protected" };
-        let message = format!("Call to {v} method {}() of class {declaring}.", method.name());
+        let message = format!("Call to {v} method {}() of class {declaring}.", method.name);
         c.report(name, identifier, message, None);
     }
     let Some((span, args)) = arguments else {
-        calls::method_name_case(c, name, &method, &declaring, false);
+        if !method.compound {
+            calls::method_name_case(c, name, &method.declaring, declaring, false);
+        }
         return;
     };
-    if scope.is_some() {
-        calls::method_name_case(c, name, &method, &declaring, false);
+    // A compound reflection's getName() is the requested name, not the selected declaring leaf's spelling.
+    if scope.is_some() && !method.compound {
+        calls::method_name_case(c, name, &method.declaring, declaring, false);
     }
-    // ponytail: a union's or intersection's method merges its members' variants in PHPStan; checked only when one
-    // member has it
-    if c.classes_with(&t, name.value) != 1 {
-        return;
-    }
-    let subject = format!("{declaring}::{}()", method.name());
+    let subject = format!("{declaring}::{}()", method.name);
     let first_level = c.is_top_level(span);
     let counts = params::count(args);
-    let mut variants = method.variants();
+    let selected_scope = scope.cloned().or_else(|| c.named_call_scopes.get(&span)
+        .and_then(|scopes| scopes.iter().find(|scope| !scope.filtered)).cloned());
     // ClosureBindToVarVisitor: `$var->bindTo(...)` on a Closure
-    if method.name().eq_ignore_ascii_case("bindTo")
+    if method.name.eq_ignore_ascii_case("bindTo")
         && !args.arguments.is_empty()
         && let Expression::Variable(Variable::Direct(v)) = object
         && declared::with_classes(c, || is_super_type_of(&Type::Object("Closure".into(), vec![], false), &t).yes())
     {
         let var = String::from_utf8_lossy(&v.name[1..]);
-        variants = super::super::selector::closure_bind(c, &var, span.start.offset, 0, variants);
+        method.variants = super::super::selector::closure_bind(c, &var, span.start.offset, 0, method.variants);
     }
-    let acceptor = params::select_in(c, variants, &counts, scope);
+    let acceptor = method.select(c, &counts, selected_scope.as_ref());
     let void_message = Some(format!("Result of method {subject} (void) is used."));
     let subject = format!("Method {subject}");
     let call = params::Call {
@@ -414,10 +480,7 @@ fn check_single_method<'arena>(
         scope: Some(span),
         void_message,
     };
-    match scope {
-        Some(scope) => params::check_in(c, &acceptor, &counts, name, call, first_level, Some(scope)),
-        None => params::check(c, &acceptor, &counts, name, call, first_level),
-    }
+    params::check_bound_in(c, &acceptor, &counts, name, call, first_level, selected_scope.as_ref(), !method.compound);
 }
 
 /// The class expressions of static calls the check reads (`$x::foo()`; names and keywords are calls.rs's).
