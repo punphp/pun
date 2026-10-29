@@ -174,9 +174,7 @@ fn stub_preg_match(codebase: &mut CodebaseMetadata, version: PHPVersion) {
     let names = NameResolver::new(&arena).resolve(program);
     let scanned = scan_program(&arena, &file, program, &names, version);
     for (key, stub) in scanned.function_likes {
-        let Some(builtin) = codebase.function_likes.get_mut(&key) else {
-            continue;
-        };
+        let builtin = codebase.function_likes.get_mut(&key).expect("a built-in function");
         builtin.template_types = stub.template_types.clone();
         for parameter in &mut builtin.parameters {
             let name = parameter.name.0.as_bytes();
