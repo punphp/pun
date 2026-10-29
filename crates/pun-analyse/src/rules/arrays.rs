@@ -676,8 +676,8 @@ fn class_constant(c: &Checker, class: &str, name: &[u8], late: bool, types: &Exp
     builtin
 }
 
-/// The inference union owns values; the exact source literal alone owns PHP's insertion order.
-/// Restore that order without replaying a conditional or evaluating a value expression at runtime.
+/// The inference union owns values; source initializers own PHPStan's observable array order.
+/// Restore only ordering, never a runtime-selected conditional branch or newly evaluated values.
 pub(super) fn initializer_order(
     c: &Checker,
     at: Span,
@@ -694,14 +694,152 @@ fn initializer_order_with(
     value: Type,
     types: &ExpressionTypes<impl BuildHasher>,
 ) -> Type {
+    // Scaffolds are canonical initializer values, not ordinary expression-flow observations. In
+    // particular source_initializer accepts an expression span and retains both ternary branches.
+    fn source(
+        c: &Checker,
+        file: &mago_database::file::File,
+        expression: &Expression,
+        names: &ResolvedNames,
+        class: &ClassLikeMetadata,
+        types: &ExpressionTypes<impl BuildHasher>,
+    ) -> Type {
+        let value = crate::codebase::source_initializer(
+            c.codebase,
+            file,
+            expression.span(),
+            class.name,
+            c.php_version,
+            c.include_settings.path_constants,
+            c.files.get(&class.span.file_id).cloned(),
+        )
+        .expect("initializer expression exists in its source");
+        let value = c.to_phpstan(&value);
+        ordered(c, file, expression, names, class, &value, types).unwrap_or(value)
+    }
+
+    // Match within this initializer's own alternatives, then permute the inferred slots. Neither
+    // scaffolds' values nor their optionality may replace the inference-owned result.
+    fn restore(value: &Type, source: &Type) -> Type {
+        if let Type::Union(parts) = value {
+            return Type::Union(parts.iter().map(|part| restore(part, source)).collect());
+        }
+        if let Type::Union(parts) = source {
+            return parts
+                .iter()
+                .find(|part| is_super_type_of(part, value).yes())
+                .map_or_else(|| value.clone(), |part| restore(value, part));
+        }
+        let (actual, source) = match (value, source) {
+            (Type::ConstArray(actual), Type::ConstArray(source))
+                if actual.keys.len() == source.keys.len()
+                    && source.keys.iter().all(|key| actual.keys.contains(key)) =>
+            {
+                (actual, source)
+            }
+            _ => return value.clone(),
+        };
+        let order: Vec<_> = source
+            .keys
+            .iter()
+            .map(|key| {
+                actual
+                    .keys
+                    .iter()
+                    .position(|old| old == key)
+                    .expect("matching initializer key")
+            })
+            .collect();
+        let mut result = actual.as_ref().clone();
+        result.keys = order.iter().map(|old| actual.keys[*old].clone()).collect();
+        result.values = order
+            .iter()
+            .enumerate()
+            .map(|(i, old)| restore(&actual.values[*old], &source.values[i]))
+            .collect();
+        result.optional = order
+            .iter()
+            .enumerate()
+            .filter_map(|(i, old)| actual.optional.contains(old).then_some(i))
+            .collect();
+        if !result
+            .keys
+            .iter()
+            .enumerate()
+            .all(|(i, key)| key == &Type::ConstInt(i as i64))
+        {
+            result.is_list = pun_phpstan::types::Tri::No;
+        }
+        Type::ConstArray(Box::new(result))
+    }
+
     fn ordered(
         c: &Checker,
+        file: &mago_database::file::File,
         expression: &Expression,
         names: &ResolvedNames,
         class: &ClassLikeMetadata,
         value: &Type,
         types: &ExpressionTypes<impl BuildHasher>,
     ) -> Option<Type> {
+        match expression.unparenthesized() {
+            Expression::Conditional(conditional) => {
+                let then = source(
+                    c,
+                    file,
+                    conditional.then.unwrap_or(conditional.condition),
+                    names,
+                    class,
+                    types,
+                );
+                let otherwise = source(c, file, conditional.r#else, names, class, types);
+                // InitializerExprTypeResolver::getType(Ternary) unions both arms, independently
+                // of the condition. Falsey removal already belongs to the inferred value: this
+                // broader scaffold only supplies surviving arrays' source-owned order.
+                return Some(restore(value, &union(vec![then, otherwise])));
+            }
+            Expression::Binary(Binary {
+                operator: BinaryOperator::Addition(_),
+                lhs,
+                rhs,
+            }) => {
+                let left = source(c, file, lhs, names, class, types);
+                let right = source(c, file, rhs, names, class, types);
+                let (left, right) = match (&left, &right) {
+                    (Type::ConstArray(left), Type::ConstArray(right))
+                        if left.unsealed.is_none() && right.unsealed.is_none() =>
+                    {
+                        (left, right)
+                    }
+                    _ => return None,
+                };
+                // InitializerExprTypeResolver::getPlusType starts from the right array, then
+                // overwrites duplicate values with the left without moving their existing slots.
+                let mut builder = pun_phpstan::types::ShapeBuilder::new();
+                for array in [right, left] {
+                    for (i, key) in array.keys.iter().enumerate() {
+                        builder.set(
+                            Some(key.clone()),
+                            array.values[i].clone(),
+                            array.optional.contains(&i),
+                        );
+                    }
+                }
+                return Some(restore(value, &builder.get()));
+            }
+            _ => {}
+        }
+        if let Type::Union(parts) = value {
+            return Some(Type::Union(
+                parts
+                    .iter()
+                    .map(|part| {
+                        ordered(c, file, expression, names, class, part, types)
+                            .unwrap_or_else(|| part.clone())
+                    })
+                    .collect(),
+            ));
+        }
         let Type::ConstArray(actual) = value else {
             return Some(value.clone());
         };
@@ -709,7 +847,8 @@ fn initializer_order_with(
             Expression::Array(a) => &a.elements,
             Expression::LegacyArray(a) => &a.elements,
             Expression::Access(Access::ClassConstant(_)) => {
-                return key_type_with(c, expression, names, Some(class), types);
+                return key_type_with(c, expression, names, Some(class), types)
+                    .map(|source| restore(value, &source));
             }
             Expression::ConstantAccess(access) => {
                 let constant = c.codebase.get_constant(names.get(access)).or_else(|| {
@@ -749,7 +888,7 @@ fn initializer_order_with(
             .iter()
             .zip(expressions)
             .map(|(old, expression)| {
-                ordered(c, expression, names, class, &actual.values[*old], types)
+                ordered(c, file, expression, names, class, &actual.values[*old], types)
                     .unwrap_or_else(|| actual.values[*old].clone())
             })
             .collect();
@@ -768,8 +907,10 @@ fn initializer_order_with(
         }
         Some(Type::ConstArray(Box::new(result)))
     }
-    if !matches!(value, Type::ConstArray(_)) {
-        return value;
+    match &value {
+        Type::ConstArray(_) => {}
+        Type::Union(parts) if parts.iter().any(|part| matches!(part, Type::ConstArray(_))) => {}
+        _ => return value,
     }
     struct Find<'ast, 'arena> {
         at: Span,
@@ -803,6 +944,7 @@ fn initializer_order_with(
                 contents.into_owned().into(),
             );
             file.id = at.file_id;
+            file.path = c.files.get(&at.file_id).cloned();
             let arena = LocalArena::new();
             let (program, names) = crate::codebase::parse(&arena, &file);
             let mut find = Find {
@@ -811,7 +953,7 @@ fn initializer_order_with(
             };
             find.walk_program(program, &mut ());
             find.expression
-                .and_then(|e| ordered(c, e, &names, class, &value, types))
+                .and_then(|e| ordered(c, &file, e, &names, class, &value, types))
         })
         .unwrap_or(value)
 }
