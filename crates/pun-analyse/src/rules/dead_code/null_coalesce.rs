@@ -46,6 +46,7 @@ impl Chains {
             }
             Expression::Access(Access::Property(p)) => {
                 self.watched.push(e.span());
+                self.typed.extend(dynamic_name(&p.property));
                 self.chain(p.object);
             }
             Expression::Access(Access::NullSafeProperty(p)) => self.chain(p.object),
@@ -292,6 +293,16 @@ struct IssetCheck<'c, 'a, 'arena> {
 struct Property<'a> {
     declaring: &'a ClassLikeMetadata,
     metadata: &'a PropertyMetadata,
+    holder: Type,
+}
+
+/// The expression whose constant strings PropertyReflectionFinder reads for an instance property name.
+fn dynamic_name(name: &ClassLikeMemberSelector) -> Option<Span> {
+    match name {
+        ClassLikeMemberSelector::Variable(v) => Some(v.span()),
+        ClassLikeMemberSelector::Expression(e) => Some(e.expression.span()),
+        _ => None,
+    }
 }
 
 /// NullCoalesceRule's message for the type on the left side.
@@ -474,12 +485,21 @@ impl<'a> IssetCheck<'_, 'a, '_> {
     /// The property a fetch finds: a declared one of the holder's single class.
     // ponytail: a union holder's properties (UnionTypePropertyReflection) are not looked up
     fn property(&self, e: &Expression) -> Option<Property<'a>> {
-        let (class, name): (Option<&'a ClassLikeMetadata>, &[u8]) = match e {
+        let (class, name, holder) = match e {
             Expression::Access(Access::Property(p)) => {
-                let ClassLikeMemberSelector::Identifier(name) = &p.property else { return None };
-                let names = self.ty(p.object)?.object_class_names();
+                let name = match &p.property {
+                    ClassLikeMemberSelector::Identifier(name) => name.value.to_vec(),
+                    selector => {
+                        let names = self.c.phpstan_type_at(dynamic_name(selector)?)?.constant_strings();
+                        let [name] = names.as_slice() else { return None };
+                        name.clone()
+                    }
+                };
+                let holder = self.ty(p.object)?;
+                if matches!(holder.resolve_to_bounds(), Type::Union(_) | Type::Benevolent(_)) { return None }
+                let names = holder.object_class_names();
                 let [class] = names.as_slice() else { return None };
-                (self.c.codebase.get_class_like(class.as_bytes()), name.value)
+                (self.c.codebase.get_class_like(class.as_bytes()), name, holder)
             }
             // (a static fetch: the callers pass property fetches only)
             _ => {
@@ -498,28 +518,88 @@ impl<'a> IssetCheck<'_, 'a, '_> {
                         let [class] = names.as_slice() else { return None };
                         self.c.codebase.get_class_like(class.as_bytes())
                     }
-                };
-                (class, &v.name[1..])
+                }?;
+                let holder = Self::holder(e).and_then(|h| self.ty(h))
+                    .unwrap_or_else(|| Type::Object(self.c.display(class), vec![], false));
+                (Some(class), v.name[1..].to_vec(), holder)
             }
         };
         let mut variable = b"$".to_vec();
-        variable.extend_from_slice(name);
+        variable.extend_from_slice(&name);
         let declaring = self.c.codebase.get_declaring_property_class(class?.name.as_bytes(), &variable)?;
         let declaring = self.c.codebase.get_class_like(declaring.as_bytes())?;
         let metadata = declaring.properties.get(&mago_word::word(&variable))?;
         let is_static = matches!(e, Expression::Access(Access::StaticProperty(_)));
-        (metadata.flags.is_static() == is_static).then_some(Property { declaring, metadata })
+        (metadata.flags.is_static() == is_static).then_some(Property { declaring, metadata, holder })
+    }
+
+    /// PhpPropertyReflection::getWritableType(): a set hook's parameter takes precedence over the property's
+    /// readable type, including when the hook is inherited.
+    fn writable_type(&self, p: &Property) -> Type {
+        let name = &p.metadata.name.0.as_bytes()[1..];
+        let mut property = Some((p.declaring, p.metadata));
+        for _ in 0..super::super::overriding::ANCESTRY {
+            let Some((declaring, metadata)) = property else { break };
+            if let Some(parameter) = metadata.hooks.get(&mago_word::word("set")).and_then(|h| h.parameter.as_ref()) {
+                let native = parameter.type_declaration_metadata.as_ref().filter(|t| !t.from_docblock)
+                    .or(metadata.type_declaration_metadata.as_ref());
+                let native = native.map_or_else(pun_phpstan::types::mixed, |t| declared::from_tunion(self.c, &t.type_union, declaring));
+                let phpdoc = declared::property_span(self.c, metadata)
+                    .map(|at| declared::property(self.c, None, at, name, declaring))
+                    .filter(|t| !t.is_implicit_mixed());
+                return pun_phpstan::types::decide_type(native, phpdoc);
+            }
+            property = declaring.direct_parent_class.and_then(|n| self.c.codebase.get_class_like(n.as_bytes()))
+                .and_then(|k| self.c.declared_property(k, p.metadata.name.0.as_bytes()))
+                .map(|(_, origin, metadata)| (origin, metadata));
+        }
+        declared::property_of(self.c, p.declaring, p.metadata, name)
+    }
+
+    /// A reflected declaring class's active template map, not the unparameterized storage declaration.
+    fn property_args(&self, p: &Property) -> Vec<Type> {
+        let holder = p.holder.resolve_to_bounds();
+        let actual = match &holder {
+            Type::Object(_, args, _) | Type::Static(_, args) => args.clone(),
+            Type::This(name) => self.c.codebase.get_class_like(name.as_bytes()).into_iter()
+                .flat_map(|k| declared::class_templates(self.c, k)).map(|t| Type::Template(Box::new(t))).collect(),
+            _ => vec![],
+        };
+        let class = declared::original_name(p.declaring);
+        let names = p.holder.object_class_names();
+        let args = declared::with_classes(self.c, || {
+            let name = &names[0]; // property() requires exactly one class name.
+            if name.eq_ignore_ascii_case(&class) { actual }
+            else { pun_phpstan::symbols::lookup(name)
+                .and_then(|k| pun_phpstan::types::ancestor_args(&k, &class, &actual)).unwrap_or_default() }
+        });
+        declared::class_templates(self.c, p.declaring).into_iter().enumerate().map(|(i, t)| {
+            args.get(i).cloned().unwrap_or_else(|| t.default.as_ref().unwrap_or(&t.bound).clone())
+        }).collect()
     }
 
     /// PropertyDescriptor::describeProperty().
     fn describe(&self, p: &Property, e: &Expression) -> String {
-        let declaring = self.c.display(p.declaring);
+        let mut declaring = self.c.display(p.declaring);
+        let args = self.property_args(p);
+        if !args.is_empty() {
+            declaring = format!("{declaring}<{}>", args.iter().map(|t| t.describe(Level::TypeOnly)).collect::<Vec<_>>().join(","));
+        }
         match e {
             Expression::Access(Access::Property(fetch)) => {
-                let ClassLikeMemberSelector::Identifier(name) = &fetch.property else { unreachable!("a found property") };
+                let name = match &fetch.property {
+                    ClassLikeMemberSelector::Identifier(name) => String::from_utf8_lossy(name.value).into_owned(),
+                    ClassLikeMemberSelector::Variable(v) => self.c.written(v.span())[1..].to_string(),
+                    selector => {
+                        if let ClassLikeMemberSelector::Expression(e) = selector
+                            && let Expression::Variable(Variable::Direct(v)) = unparen(e.expression)
+                        { String::from_utf8_lossy(&v.name[1..]).into_owned() } else { String::new() }
+                    },
+                };
                 let on = self.ty(fetch.object).expect("a found property's holder is typed");
-                let class = if is_super_type_of(&Type::Object(declaring.clone(), vec![], false), &on).yes() { declaring } else { on.describe(Level::TypeOnly) };
-                format!("Property {class}::${}", String::from_utf8_lossy(name.value))
+                let nominal = declared::with_classes(self.c, || is_super_type_of(&Type::Object(self.c.display(p.declaring), vec![], false), &on).yes());
+                let class = if nominal { declaring } else { on.describe(Level::TypeOnly) };
+                format!("Property {class}::${name}")
             }
             _ => format!("Static property {declaring}::{}", String::from_utf8_lossy(p.metadata.name.0.as_bytes())),
         }
@@ -625,8 +705,8 @@ impl<'a> IssetCheck<'_, 'a, '_> {
                 if !self.advanced {
                     return undefined();
                 }
-                let name = String::from_utf8_lossy(&m.name.0.as_bytes()[1..]).into_owned();
-                let t = declared::property_of(self.c, p.declaring, m, name.as_bytes());
+                let names = declared::class_templates(self.c, p.declaring).into_iter().map(|t| t.name).collect::<Vec<_>>();
+                let t = super::super::types::with_args(&self.writable_type(&p), &format!("class {}", declared::original_name(p.declaring)), &names, &self.property_args(&p));
                 let message = format!("{} ({}) {}", self.describe(&p, e), t.describe(Level::TypeOnly), self.operator);
                 let error = self.error(&t, message, "property");
                 if error.is_some() { on(error) } else { None }

@@ -1,0 +1,63 @@
+{
+    "1": [],
+    "4": [
+        {
+            "file": "$ROOT/property-selectors.php",
+            "message": "Property IssetPropertySelectors\\Base::$name (int) in isset() is not nullable.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/property-selectors.php",
+            "message": "Property IssetPropertySelectors\\Base::$ (int) in isset() is not nullable.",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/property-selectors.php",
+            "message": "Property IssetPropertySelectors\\Base::$value (int) in isset() is not nullable.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/property-selectors.php",
+            "message": "Property IssetPropertySelectors\\Base::$value (int) in isset() is not nullable.",
+            "line": 30,
+            "ignorable": true,
+            "identifier": "isset.property"
+        }
+    ],
+    "5": [
+        {
+            "file": "$ROOT/property-selectors.php",
+            "message": "Property IssetPropertySelectors\\Base::$name (int) in isset() is not nullable.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/property-selectors.php",
+            "message": "Property IssetPropertySelectors\\Base::$ (int) in isset() is not nullable.",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/property-selectors.php",
+            "message": "Property IssetPropertySelectors\\Base::$value (int) in isset() is not nullable.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/property-selectors.php",
+            "message": "Property IssetPropertySelectors\\Base::$value (int) in isset() is not nullable.",
+            "line": 30,
+            "ignorable": true,
+            "identifier": "isset.property"
+        }
+    ]
+}

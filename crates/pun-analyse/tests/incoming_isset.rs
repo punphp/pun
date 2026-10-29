@@ -6,6 +6,74 @@ use pun_analyse::{Project, run};
 use serde_json::Value;
 
 #[test]
+fn native_isset_property_reflection_matches_phpstan() {
+    check_property_reflection(
+        "properties.php",
+        include_str!("fixtures/incoming-isset/properties-phpstan.json"),
+    );
+}
+
+#[test]
+fn property_selector_expressions_and_excluded_subtypes_match_phpstan() {
+    check_property_reflection(
+        "property-selectors.php",
+        include_str!("fixtures/incoming-isset/property-selectors-phpstan.json"),
+    );
+}
+
+fn check_property_reflection(file: &str, capture: &str) {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/incoming-isset");
+    let oracle: Value = serde_json::from_str(capture).unwrap();
+    let mut failures = Vec::new();
+    for level in [1, 4, 5] {
+        let mut project = Project::new(vec![root.join(file)], Vec::new());
+        project.level = level;
+        project.php_version = 80500;
+        let mut got: Vec<_> = run(&project)
+            .unwrap()
+            .into_iter()
+            .map(|e| {
+                serde_json::json!([
+                    e.file.replace(root.to_str().unwrap(), "$ROOT"),
+                    e.line,
+                    e.identifier,
+                    e.message,
+                    e.tip,
+                    e.can_be_ignored
+                ])
+            })
+            .collect();
+        let mut want: Vec<_> = oracle[level.to_string()]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|e| {
+                serde_json::json!([
+                    e["file"],
+                    e["line"],
+                    e["identifier"],
+                    e["message"],
+                    e.get("tip").unwrap_or(&Value::Null),
+                    e["ignorable"]
+                ])
+            })
+            .collect();
+        got.sort_by_cached_key(Value::to_string);
+        want.sort_by_cached_key(Value::to_string);
+        if got != want {
+            failures.push(format!(
+                "level {level}: {} actual / {} expected complete records\nextra: {:?}\nmissing: {:?}",
+                got.len(),
+                want.len(),
+                got.iter().filter(|e| !want.contains(e)).collect::<Vec<_>>(),
+                want.iter().filter(|e| !got.contains(e)).collect::<Vec<_>>()
+            ));
+        }
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+}
+
+#[test]
 fn exported_terminating_isset_edge_makes_the_foreach_value_absent() {
     let fixtures = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures");
     let mut project = Project::new(
