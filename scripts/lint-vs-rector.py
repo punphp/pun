@@ -72,8 +72,14 @@ def compare(name: str, pun: str, env: dict) -> bool:
     # `--fix --test` writes nothing and lists the rules of every fix round: Rector reports a rule that applies to
     # another rule's output (ThrowIfRector, then ThrowIfAndThrowUnlessExceptionsToUseClassStringRector), which a
     # check-only run sees only in a later round. Only the rules with a Rector class: the Mago-ported ones have
-    # nothing to compare with.
-    ids = sorted(set(pun_id[c] for c in classes))
+    # nothing to compare with. And only the classes pun-bench-rector.php registers: it leaves out the configurable ones,
+    # and Pun would run their rules alone.
+    registered = subprocess.run(
+        ["php", "-r", "require $argv[1]; foreach (array_slice($argv, 2) as $c) { if (class_exists($c) && "
+         "! is_subclass_of($c, Rector\\Contract\\Rector\\ConfigurableRectorInterface::class)) { echo $c, PHP_EOL; } }",
+         str(bench.RECTOR.parent.parent / "autoload.php"), *classes],
+        env=env, capture_output=True, text=True, check=True).stdout.split()
+    ids = sorted(set(pun_id[c] for c in registered))
     # The PHP version of pun-bench-rector.php's `withPhpVersion(80400)`, not composer.json's (laravel-framework's ^8.3).
     (work / "pun-rector-lint.toml").write_text(
         '[php]\nversion = "8.4"\n\n[lint.rules]\n' + "".join(f'"{i.removeprefix("lint/")}" = "error"\n' for i in ids))
