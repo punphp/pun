@@ -1,0 +1,83 @@
+{
+    "phar_sha256": "85157dba3d95d77ca603d2b7303aa78a538f9e3b56ccad07dd794c53aa96d1ae",
+    "source_sha256": "917219ac2e8ed2005ce379d4d6e0e7c104ffea438be009f1df7f4617263f4e89",
+    "errors": [
+        [
+            8,
+            "if.alwaysFalse",
+            "If condition is always false.",
+            "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.",
+            true
+        ],
+        [
+            13,
+            "function.alreadyNarrowedType",
+            "Call to function is_int() with int will always evaluate to true.",
+            null,
+            true
+        ],
+        [
+            14,
+            "if.alwaysFalse",
+            "If condition is always false.",
+            "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.",
+            true
+        ],
+        [
+            19,
+            "phpstan.dumpType",
+            "Dumped type: false",
+            null,
+            false
+        ],
+        [
+            20,
+            "if.alwaysFalse",
+            "If condition is always false.",
+            "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.",
+            true
+        ],
+        [
+            24,
+            "function.alreadyNarrowedType",
+            "Call to function is_int() with int will always evaluate to true.",
+            null,
+            true
+        ],
+        [
+            25,
+            "if.alwaysFalse",
+            "If condition is always false.",
+            null,
+            true
+        ],
+        [
+            31,
+            "function.impossibleType",
+            "Call to function is_string() with int will always evaluate to false.",
+            null,
+            true
+        ],
+        [
+            31,
+            "function.resultUnused",
+            "Call to function is_string() on a separate line has no effect.",
+            null,
+            true
+        ],
+        [
+            32,
+            "function.alreadyNarrowedType",
+            "Call to function is_int() with int will always evaluate to true.",
+            null,
+            true
+        ],
+        [
+            32,
+            "function.resultUnused",
+            "Call to function is_int() on a separate line has no effect.",
+            null,
+            true
+        ]
+    ]
+}

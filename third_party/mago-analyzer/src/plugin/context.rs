@@ -313,6 +313,12 @@ impl<'ctx, 'block> HookContext<'ctx, 'block> {
         self.block_context.native_locals.as_ref()?.get(&word(name)).map(Rc::as_ref)
     }
 
+    /// Mark argument targets whose reference reads must not create undefined variables.
+    /// This records definedness policy, not a value write. Actual reference/out effects still invalidate native state.
+    pub fn mark_non_creating_references(&mut self, targets: impl IntoIterator<Item = Span>) {
+        self.block_context.variable_state.non_creating_references.extend(targets);
+    }
+
     /// Get the current scope context.
     #[inline]
     pub fn scope(&self) -> &ScopeContext<'ctx> {

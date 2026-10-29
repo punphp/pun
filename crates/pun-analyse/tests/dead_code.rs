@@ -175,3 +175,29 @@ fn callback_purity_requires_a_flagged_parameter() {
     want.sort();
     assert_eq!(got, want);
 }
+
+/// Native continuation survives inference's reference bookkeeping, not semantic reference writes.
+#[test]
+fn native_continuation_through_project_inference_matches_phpstan() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/dead_code");
+    let expected: Value =
+        serde_json::from_str(include_str!("fixtures/dead_code/native-inference.json")).unwrap();
+    let mut project = Project::new(vec![root.join("native-inference.php")], vec![]);
+    project.level = 4;
+    project.php_version = 80500;
+    let mut actual: Vec<_> = run(&project)
+        .unwrap()
+        .into_iter()
+        .map(|error| {
+            (
+                error.line,
+                error.identifier,
+                error.message,
+                error.tip,
+                error.can_be_ignored,
+            )
+        })
+        .collect();
+    actual.sort();
+    assert_eq!(serde_json::to_value(actual).unwrap(), expected["errors"]);
+}

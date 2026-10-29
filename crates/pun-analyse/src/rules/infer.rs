@@ -363,7 +363,9 @@ impl ExpressionHook for Definedness {
         let mut found = self.found.lock().expect("no hook panics while holding the lock");
         let mut non_creating = HashSet::new();
         variables::allow_arguments(invocation, self.builtins, &mut found.allowed, &mut non_creating);
-        context.block_context_mut().variable_state.non_creating_references.extend(non_creating);
+        if !non_creating.is_empty() {
+            context.mark_non_creating_references(non_creating);
+        }
         Ok(())
     }
 
