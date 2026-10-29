@@ -64,3 +64,34 @@ class ImpureGates extends SignatureGates
     /** @impure */
     private function hidden(): int { return 1; }
 }
+
+trait PureRequirement
+{
+    /** @pure */
+    abstract protected function read(): int;
+}
+
+class ImpureTraitRequirement
+{
+    use PureRequirement;
+
+    /** @impure */
+    protected function read(): int { echo 'effect'; return 1; }
+
+    /** @impure */
+    public function unrelated(): int { echo 'unrelated'; return 2; }
+}
+
+trait ConcretePureRequirement
+{
+    /** @pure */
+    protected function read(): int { return 1; }
+}
+
+class ImpureConcreteRequirement
+{
+    use ConcretePureRequirement;
+
+    /** @impure */
+    protected function read(): int { echo 'effect'; return 1; }
+}

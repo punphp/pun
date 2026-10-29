@@ -47,6 +47,14 @@
             "message": "Impure method BuiltinPurityOverride\\ImpureImmutableDate::format() overrides pure method DateTimeInterface::format().",
             "tip": null,
             "ignorable": true
+        },
+        {
+            "file": "contracts.php",
+            "line": 79,
+            "identifier": "method.impure",
+            "message": "Impure method BuiltinPurityOverride\\ImpureTraitRequirement::read() overrides pure method BuiltinPurityOverride\\PureRequirement::read().",
+            "tip": null,
+            "ignorable": true
         }
     ],
     "disabled": [],
