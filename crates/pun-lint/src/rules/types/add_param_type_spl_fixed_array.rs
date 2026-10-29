@@ -13,7 +13,10 @@ use crate::{Context, Report, Rule};
 
 /// `SPL_FIXED_ARRAY_TO_SINGLE`: each `SplFixedArray` class with the class of its items.
 const SPL_FIXED_ARRAY_TO_SINGLE: [(&str, &str); 2] = [
-    ("PhpCsFixer\\Tokenizer\\Tokens", "PhpCsFixer\\Tokenizer\\Token"),
+    (
+        "PhpCsFixer\\Tokenizer\\Tokens",
+        "PhpCsFixer\\Tokenizer\\Token",
+    ),
     (
         "PhpCsFixer\\Doctrine\\Annotation\\Tokens",
         "PhpCsFixer\\Doctrine\\Annotation\\Token",
@@ -45,7 +48,9 @@ impl Rule for AddParamTypeSplFixedArray {
                 &m.parameter_list
             }
         };
-        let Some(annotated) = Annotated::of(ctx.source, node, ancestors) else { return };
+        let Some(annotated) = Annotated::of(ctx.source, node, ancestors) else {
+            return;
+        };
         let mut appended: Vec<String> = Vec::new();
         let mut replaced: Vec<(usize, String)> = Vec::new();
         for param in params.parameters.iter() {
@@ -60,13 +65,19 @@ impl Rule for AddParamTypeSplFixedArray {
             };
             let generic = format!("\\{fixed}<\\{single}>");
             let name = String::from_utf8_lossy(param.variable.name);
-            match annotated.doc.as_ref().map(|d| typed_tag(d, "@param", Some(&name))) {
+            match annotated
+                .doc
+                .as_ref()
+                .map(|d| typed_tag(d, "@param", Some(&name)))
+            {
                 // `hasInvalidTag('@param')`: better skip
                 Some(Err(())) => return,
                 Some(Ok(Some(tag))) => {
                     // the tag's type is replaced unless it is the generic type already
                     match &tag.ty {
-                        TagType::Name(n) if super::names::resolve_written(ancestors, n) == *fixed => {
+                        TagType::Name(n)
+                            if super::names::resolve_written_class_name(ancestors, n) == *fixed =>
+                        {
                             replaced.push((tag.index, tag.print_with(&generic)));
                         }
                         _ => continue,
@@ -99,7 +110,9 @@ impl Rule for AddParamTypeSplFixedArray {
                 }
             }
         };
-        let Some(edits) = annotated.edits(ctx.source, Some(&new_doc), &[]) else { return };
+        let Some(edits) = annotated.edits(ctx.source, Some(&new_doc), &[]) else {
+            return;
+        };
         out.push(report(
             node_span(&node),
             "Add the generic `Tokens<Token>` type to the parameter's @param tag.",

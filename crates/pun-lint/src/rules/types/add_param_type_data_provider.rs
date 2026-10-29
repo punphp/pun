@@ -18,9 +18,11 @@ use mago_syntax::cst::{
 use super::add_param_type_array_dim_fetch::is_variable;
 use super::class_scope;
 use super::facts::{Facts, facts};
-use super::names::resolve_written;
+use super::names::resolve_written_class_name;
 use super::never::is_test_class;
-use super::param::{Flow, add_hint, own_static, param_declaration_unsorted, phpstan_union, report, traverse};
+use super::param::{
+    Flow, add_hint, own_static, param_declaration_unsorted, phpstan_union, report, traverse,
+};
 use crate::rules::class_method::{class_info, method_data_providers, type_of};
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -46,14 +48,18 @@ impl Rule for AddParamTypeDataProvider {
         let facts = facts(ctx);
         let mut scoped = ancestors.to_vec();
         scoped.push(node);
-        let Some(scope) = class_scope(&scoped).filter(|scope| is_test_class(&facts, scope)) else { return };
+        let Some(scope) = class_scope(&scoped).filter(|scope| is_test_class(&facts, scope)) else {
+            return;
+        };
         let own = scope.name;
-        let Some(class) = class_info(node, ancestors, &facts) else { return };
+        let Some(class) = class_info(node, ancestors, &facts) else {
+            return;
+        };
         // A `@dataProvider` tag whose name an import makes a class (`use ...\Attributes\DataProvider;`) is a Doctrine
         // annotation to Rector's docblock parser, which `DataProviderNodes` does not read.
         let doc_tags = facts
             .codebase
-            .get_class_like(resolve_written(ancestors, "dataProvider").as_bytes())
+            .get_class_like(resolve_written_class_name(ancestors, "dataProvider").as_bytes())
             .is_none();
         let mut edits = Vec::new();
         for (index, member) in class.members.iter().enumerate() {
@@ -68,15 +74,18 @@ impl Rule for AddParamTypeDataProvider {
             {
                 continue;
             }
-            let providers: Vec<&Method<'_>> = method_data_providers(ctx.source, ancestors, &class, index, doc_tags)
-                .iter()
-                .filter_map(|name| {
-                    class.members.iter().find_map(|m| match m {
-                        ClassLikeMember::Method(m) if m.name.value == name.as_slice() => Some(m),
-                        _ => None,
+            let providers: Vec<&Method<'_>> =
+                method_data_providers(ctx.source, ancestors, &class, index, doc_tags)
+                    .iter()
+                    .filter_map(|name| {
+                        class.members.iter().find_map(|m| match m {
+                            ClassLikeMember::Method(m) if m.name.value == name.as_slice() => {
+                                Some(m)
+                            }
+                            _ => None,
+                        })
                     })
-                })
-                .collect();
+                    .collect();
             if providers.is_empty() {
                 continue;
             }
@@ -91,8 +100,10 @@ impl Rule for AddParamTypeDataProvider {
                 else {
                     continue;
                 };
-                let types: Vec<TAtomic> =
-                    phpstan_union(&facts.codebase, types).iter().map(|t| own_static(t, own.as_deref())).collect();
+                let types: Vec<TAtomic> = phpstan_union(&facts.codebase, types)
+                    .iter()
+                    .map(|t| own_static(t, own.as_deref()))
+                    .collect();
                 if let Some(declaration) =
                     param_declaration_unsorted(&types, &facts.codebase, ctx.php_version)
                 {
@@ -114,7 +125,9 @@ impl Rule for AddParamTypeDataProvider {
 /// `resolveParameterTypeFromDataProvider()` with `createMixedPassedOrUnionType()`: the types (literal values made
 /// general) the provider gives at `position`, in the order met; `None` for `mixed`.
 fn provider_type(facts: &Facts, provider: &Method<'_>, position: usize) -> Option<Vec<TAtomic>> {
-    let MethodBody::Concrete(body) = &provider.body else { return None };
+    let MethodBody::Concrete(body) = &provider.body else {
+        return None;
+    };
     let body = Node::Block(body);
     let mut first_return: Option<Option<&Expression<'_>>> = None;
     let mut yields: Vec<Option<&Expression<'_>>> = Vec::new();
@@ -143,31 +156,52 @@ fn provider_type(facts: &Facts, provider: &Method<'_>, position: usize) -> Optio
                 Some(Expression::LegacyArray(a)) => &a.elements,
                 _ => return None,
             };
-            let Some(item) = items.iter().nth(position).and_then(ArrayElement::get_value) else { continue };
+            let Some(item) = items.iter().nth(position).and_then(ArrayElement::get_value) else {
+                continue;
+            };
             // `new static()` is PHPStan's `StaticType`, which no parameter type declares
-            if matches!(unparenthesize(item), Expression::Instantiation(i) if matches!(i.class, Expression::Static(_))) {
+            if matches!(unparenthesize(item), Expression::Instantiation(i) if matches!(i.class, Expression::Static(_)))
+            {
                 return None;
             }
             // PHPStan's `toObject()` of an array is `stdClass` (Mago's cast gives an object shape)
             if let Expression::UnaryPrefix(cast) = unparenthesize(item)
                 && matches!(cast.operator, UnaryPrefixOperator::ObjectCast(..))
-                && matches!(unparenthesize(cast.operand), Expression::Array(_) | Expression::LegacyArray(_))
+                && matches!(
+                    unparenthesize(cast.operand),
+                    Expression::Array(_) | Expression::LegacyArray(_)
+                )
             {
                 let class = facts.codebase.get_class_like(b"stdClass")?;
-                types.push(TUnion::from_vec(vec![TAtomic::Object(TObject::Named(TNamedObject::new(class.name)))]));
+                types.push(TUnion::from_vec(vec![TAtomic::Object(TObject::Named(
+                    TNamedObject::new(class.name),
+                ))]));
                 continue;
             }
             // Rector's `getType()` of an enum case read in the array literal is the enum's `ObjectType`, not the case
             // (a yielded array's values keep the case), so `TypeCombinator::union` leaves it in place; the object of
             // an enum with one case is that case, which goes after the other types
             let t = type_of(facts, item)?;
-            let one_case = |e: &TEnum| facts.codebase.get_class_like(e.name.as_bytes()).is_some_and(|c| c.enum_cases.len() == 1);
-            types.push(TUnion::from_vec(t.types.iter().map(|a| match a {
-                TAtomic::Object(TObject::Enum(e)) if !one_case(e) => {
-                    TAtomic::Object(TObject::Enum(TEnum { case: None, ..e.clone() }))
-                }
-                other => other.clone(),
-            }).collect()));
+            let one_case = |e: &TEnum| {
+                facts
+                    .codebase
+                    .get_class_like(e.name.as_bytes())
+                    .is_some_and(|c| c.enum_cases.len() == 1)
+            };
+            types.push(TUnion::from_vec(
+                t.types
+                    .iter()
+                    .map(|a| match a {
+                        TAtomic::Object(TObject::Enum(e)) if !one_case(e) => {
+                            TAtomic::Object(TObject::Enum(TEnum {
+                                case: None,
+                                ..e.clone()
+                            }))
+                        }
+                        other => other.clone(),
+                    })
+                    .collect(),
+            ));
         }
     } else {
         // "yield from" data sets are not resolved here
@@ -221,12 +255,16 @@ fn reads_assigned_item(elements: Vec<&ArrayElement<'_>>, position: usize) -> boo
 /// `ConstantArrayType::getValueTypes()` of a constant array (an array shape), in order; `None` for other types.
 fn constant_array_values(atomic: &TAtomic) -> Option<Vec<TUnion>> {
     match atomic {
-        TAtomic::Array(TArray::List(l)) if l.element_type.is_never() => {
-            Some(l.known_elements.as_ref().map_or_else(Vec::new, |k| k.values().map(|(_, v)| v.clone()).collect()))
-        }
-        TAtomic::Array(TArray::Keyed(k)) if k.parameters.is_none() => {
-            Some(k.known_items.as_ref().map_or_else(Vec::new, |k| k.values().map(|(_, v)| v.clone()).collect()))
-        }
+        TAtomic::Array(TArray::List(l)) if l.element_type.is_never() => Some(
+            l.known_elements
+                .as_ref()
+                .map_or_else(Vec::new, |k| k.values().map(|(_, v)| v.clone()).collect()),
+        ),
+        TAtomic::Array(TArray::Keyed(k)) if k.parameters.is_none() => Some(
+            k.known_items
+                .as_ref()
+                .map_or_else(Vec::new, |k| k.values().map(|(_, v)| v.clone()).collect()),
+        ),
         _ => None,
     }
 }
@@ -251,7 +289,8 @@ fn push_unique(types: &mut Vec<TAtomic>, atomic: TAtomic) {
         _ => None,
     };
     let seen = types.iter().any(|t| {
-        t == &atomic || matches!(t, TAtomic::Array(_)) && matches!(atomic, TAtomic::Array(_))
+        t == &atomic
+            || matches!(t, TAtomic::Array(_)) && matches!(atomic, TAtomic::Array(_))
             || class(t).is_some() && class(t) == class(&atomic)
     });
     if !seen {

@@ -4,12 +4,12 @@
 //! from the parent's source (as Rector's `AstResolver` reads it), class names fully qualified.
 
 use mago_syntax::cst::{
-    Argument, ClassLikeMember, ClassLikeMemberSelector, Expression, Hint, Method, MethodBody,
-    Node, NodeKind, StaticMethodCall, Variable,
+    Argument, ClassLikeMember, ClassLikeMemberSelector, Expression, Hint, Method, MethodBody, Node,
+    NodeKind, StaticMethodCall, Variable,
 };
 
 use super::facts::{Facts, facts};
-use super::names::resolve_written;
+use super::names::resolve_written_class_name;
 use super::param::{add_hint, report};
 use crate::rules::class_method::{qualified, walk};
 use crate::syntax::{node_span, unparenthesize};
@@ -36,7 +36,9 @@ impl Rule for AddParamTypeParentCall {
         let (members, has_parent) = match node {
             Node::Class(c) => (&c.members, c.extends.is_some()),
             _ => {
-                let Node::AnonymousClass(c) = node else { return };
+                let Node::AnonymousClass(c) = node else {
+                    return;
+                };
                 (&c.members, c.extends.is_some())
             }
         };
@@ -153,20 +155,32 @@ fn parent_param_hint(facts: &Facts, class: &str, method: &[u8], position: usize)
         else {
             continue;
         };
-        let Some(declaring) = codebase.get_class_like(declaring.as_bytes()) else { continue };
+        let Some(declaring) = codebase.get_class_like(declaring.as_bytes()) else {
+            continue;
+        };
         let Some(source) = facts.source_of(declaring.span.file_id) else {
             continue;
         };
         // the declaring class's source has the method (a class-like the codebase says declares it)
-        return param_hint_in(&source, &String::from_utf8_lossy(declaring.original_name.as_bytes()), method, position)
-            .flatten();
+        return param_hint_in(
+            &source,
+            &String::from_utf8_lossy(declaring.original_name.as_bytes()),
+            method,
+            position,
+        )
+        .flatten();
     }
     None
 }
 
 /// In `source`, the class-like named `class`'s method `method`: `Some(hint)` of its parameter at `position`
 /// (`Some(None)` for none or an untyped one), `None` when the method is not there.
-fn param_hint_in(source: &str, class: &str, method: &[u8], position: usize) -> Option<Option<String>> {
+fn param_hint_in(
+    source: &str,
+    class: &str,
+    method: &[u8],
+    position: usize,
+) -> Option<Option<String>> {
     let arena = mago_allocator::LocalArena::new();
     let file = mago_database::file::File::ephemeral(
         std::borrow::Cow::Borrowed(b"parent.php"),
@@ -200,7 +214,12 @@ fn param_hint_in(source: &str, class: &str, method: &[u8], position: usize) -> O
 }
 
 /// The parameter at `position` of `method`, its type printed as php-parser prints a copied type node.
-fn hint_of(source: &str, path: &[Node<'_, '_>], method: &Method<'_>, position: usize) -> Option<String> {
+fn hint_of(
+    source: &str,
+    path: &[Node<'_, '_>],
+    method: &Method<'_>,
+    position: usize,
+) -> Option<String> {
     let param = method.parameter_list.parameters.get(position)?;
     print_hint(source, path, param.hint.as_ref()?)
 }
@@ -208,7 +227,10 @@ fn hint_of(source: &str, path: &[Node<'_, '_>], method: &Method<'_>, position: u
 /// A type as php-parser prints it: names fully qualified, `?`, `|`, `&` and parentheses without spaces.
 fn print_hint(source: &str, path: &[Node<'_, '_>], hint: &Hint<'_>) -> Option<String> {
     Some(match hint {
-        Hint::Identifier(id) => format!("\\{}", resolve_written(path, &String::from_utf8_lossy(id.value()))),
+        Hint::Identifier(id) => format!(
+            "\\{}",
+            resolve_written_class_name(path, &String::from_utf8_lossy(id.value()))
+        ),
         Hint::Nullable(n) => format!("?{}", print_hint(source, path, n.hint)?),
         Hint::Parenthesized(p) => format!("({})", print_hint(source, path, p.hint)?),
         Hint::Union(u) => format!(
