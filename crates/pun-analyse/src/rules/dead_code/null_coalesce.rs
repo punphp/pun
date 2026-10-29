@@ -9,7 +9,7 @@ use mago_codex::metadata::property::PropertyMetadata;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use mago_syntax::walker::MutWalker;
-use pun_phpstan::types::{Level, Tri, Type, is_super_type_of, union};
+use pun_phpstan::types::{ConstArray, Level, Tri, Type, is_super_type_of, union};
 
 use super::super::{Checker, declared, types::offset_accessible};
 use super::no_discard::unparen;
@@ -317,25 +317,7 @@ fn has_offset(t: &Type, offset: &Type) -> Tri {
             }
             ts.iter().map(|t| has_offset(t, offset)).fold(Tri::Maybe, |a, b| if a.yes() || b.yes() { Tri::Yes } else if b.no() { Tri::No } else { a })
         }
-        Type::ConstArray(a) => {
-            let offset = &array_key(offset);
-            let mut result = Tri::No;
-            for (i, key) in a.keys.iter().enumerate() {
-                // (a decimal-integer string offset is an int key)
-                if matches!(key, Type::ConstInt(_)) && !offset.is_string().no() && !is_constant(offset)
-                    && !offset.is_decimal_int_string().no()
-                {
-                    return Tri::Maybe;
-                }
-                let has = is_super_type_of(key, offset);
-                if has.yes() {
-                    return if a.optional.contains(&i) { Tri::Maybe } else { Tri::Yes };
-                }
-                result = if has.maybe() { Tri::Maybe } else { result };
-            }
-            let unsealed = a.unsealed.as_ref().is_some_and(|(k, _)| !is_super_type_of(k, offset).no());
-            if result.no() && unsealed { Tri::Maybe } else { result }
-        }
+        Type::ConstArray(a) => has_array_offset(a, &array_key(offset)),
         Type::Array(key, _) => {
             let offset = &array_key(offset);
             if is_super_type_of(key, offset).no() && (offset.is_string().no() || is_constant(offset)) {
@@ -355,6 +337,37 @@ fn has_offset(t: &Type, offset: &Type) -> Tri {
     }
 }
 
+/// ConstantArrayType::recursiveHasOffsetValueType(), after the one outer toArrayKey() conversion.
+fn has_array_offset(a: &ConstArray, offset: &Type) -> Tri {
+    // IntegerRangeType::getFiniteTypes() uses CALCULATE_SCALARS_LIMIT (128) on max - min.
+    let alternatives = match offset {
+        Type::Union(ts) | Type::Benevolent(ts) => Some(ts.clone()),
+        Type::IntRange(Some(min), Some(max)) if i128::from(*max) - i128::from(*min) <= 128 => {
+            Some((*min..=*max).map(Type::ConstInt).collect())
+        }
+        _ => None,
+    };
+    if let Some(alternatives) = alternatives {
+        let all: Vec<Tri> = alternatives.iter().map(|offset| has_array_offset(a, offset)).collect();
+        return if all.iter().all(|r| *r == all[0]) { all[0] } else { Tri::Maybe };
+    }
+    let mut result = Tri::No;
+    for (i, key) in a.keys.iter().enumerate() {
+        if matches!(key, Type::ConstInt(_)) && !offset.is_string().no() && !is_constant(offset)
+            && !offset.is_decimal_int_string().no()
+        {
+            return Tri::Maybe;
+        }
+        let has = is_super_type_of(key, offset);
+        if has.yes() {
+            return if a.optional.contains(&i) { Tri::Maybe } else { Tri::Yes };
+        }
+        result = if has.maybe() { Tri::Maybe } else { result };
+    }
+    let unsealed = a.unsealed.as_ref().is_some_and(|(k, _)| !is_super_type_of(k, offset).no());
+    if result.no() && unsealed { Tri::Maybe } else { result }
+}
+
 /// `getOffsetValueType()` of an offset `t` has.
 fn offset_value(t: &Type, offset: &Type) -> Type {
     match t {
@@ -363,7 +376,18 @@ fn offset_value(t: &Type, offset: &Type) -> Type {
         }
         Type::ConstArray(a) => {
             let offset = array_key(offset);
-            a.keys.iter().position(|k| *k == offset).map_or_else(|| t.iterable_value_type(), |i| a.values[i].clone())
+            // getOffsetValueType() includes only matching slots, not unrelated nullable fields.
+            let mut values: Vec<Type> = a.keys.iter().zip(&a.values)
+                .filter(|(key, _)| !is_super_type_of(key, &offset).no())
+                .map(|(_, value)| value.clone()).collect();
+            if let Some((key, value)) = &a.unsealed
+                && !is_super_type_of(&union(a.keys.clone()), &offset).yes()
+                && !is_super_type_of(key, &offset).no()
+            {
+                values.push(value.clone());
+            }
+            // A nonconstant string can hit integer keys without a definite type match.
+            if values.is_empty() { t.iterable_value_type() } else { union(values) }
         }
         t if t.is_string().yes() => Type::String,
         t => t.iterable_value_type(),
@@ -381,6 +405,8 @@ fn array_key(t: &Type) -> Type {
         Type::Accessory(_) | Type::Intersection(_) if t.is_decimal_int_string().yes() => Type::Int,
         Type::Accessory(_) | Type::Intersection(_) if t.is_numeric_string().yes() => union(vec![Type::Int, t.clone()]),
         Type::ConstString(s) if std::str::from_utf8(s).ok().and_then(|s| s.parse::<i64>().ok()).is_some_and(|i| i.to_string().as_bytes() == s) => Type::ConstInt(std::str::from_utf8(s).unwrap().parse().unwrap_or(0)),
+        Type::Bool => union(vec![Type::ConstInt(0), Type::ConstInt(1)]),
+        Type::Float => Type::Int,
         Type::ConstBool(b) => Type::ConstInt(i64::from(*b)),
         Type::ConstFloat(f) => Type::ConstInt(*f as i64),
         Type::Null => Type::ConstString(Vec::new()),

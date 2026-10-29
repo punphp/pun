@@ -457,3 +457,51 @@ fn written_offset_holders_do_not_require_array_receivers() {
         serde_json::to_string_pretty(&failures).unwrap()
     );
 }
+
+#[test]
+fn finite_array_keys_select_only_their_own_values() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/refined-isset-keys");
+    let expected: Value =
+        serde_json::from_slice(&std::fs::read(root.join("finite.json")).unwrap()).unwrap();
+    let mut failures = Vec::new();
+    for level in [0, 1, 4, 5, 9] {
+        let mut project = Project::new(vec![root.join("finite.php")], vec![]);
+        project.level = level;
+        project.php_version = 80500;
+        project.check_maybe_undefined_variables = level > 0;
+        let mut actual: Vec<_> = run(&project)
+            .unwrap()
+            .into_iter()
+            .map(|error| {
+                (
+                    Path::new(&error.file)
+                        .file_name()
+                        .unwrap()
+                        .to_string_lossy()
+                        .into_owned(),
+                    error.line,
+                    error.identifier,
+                    error.message,
+                    error.tip,
+                    error.can_be_ignored,
+                )
+            })
+            .collect();
+        actual.sort();
+        let actual = serde_json::to_value(actual).unwrap();
+        let want = expected[level.to_string()].as_array().unwrap();
+        let got = actual.as_array().unwrap();
+        if got != want {
+            failures.push(json!({
+                "level": level,
+                "missing": want.iter().filter(|record| !got.contains(record)).collect::<Vec<_>>(),
+                "extra": got.iter().filter(|record| !want.contains(record)).collect::<Vec<_>>(),
+            }));
+        }
+    }
+    assert!(
+        failures.is_empty(),
+        "{}",
+        serde_json::to_string_pretty(&failures).unwrap()
+    );
+}

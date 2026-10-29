@@ -1,0 +1,778 @@
+{
+    "0": [],
+    "1": [],
+    "4": [
+        [
+            "finite.php",
+            8,
+            "offsetAccess.invalidOffset",
+            "Invalid array key type float.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            9,
+            "offsetAccess.invalidOffset",
+            "Invalid array key type float.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            14,
+            "isset.offset",
+            "Offset bool on array<string, string> in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            15,
+            "nullCoalesce.offset",
+            "Offset bool on array<string, string> on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            16,
+            "isset.offset",
+            "Offset float on array<string, string> in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            16,
+            "offsetAccess.invalidOffset",
+            "Invalid array key type float.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            17,
+            "nullCoalesce.offset",
+            "Offset float on array<string, string> on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            17,
+            "offsetAccess.invalidOffset",
+            "Invalid array key type float.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            21,
+            "isset.offset",
+            "Offset bool on string in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            22,
+            "nullCoalesce.offset",
+            "Offset bool on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            23,
+            "isset.offset",
+            "Offset float on string in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            24,
+            "nullCoalesce.offset",
+            "Offset float on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            32,
+            "isset.offset",
+            "Offset 'left'|'right' on array{left: string, right: string, unrelated: null} in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            33,
+            "nullCoalesce.offset",
+            "Offset 'left'|'right' on array{left: string, right: string, unrelated: null} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            68,
+            "isset.offset",
+            "Offset 'left'|'missing' on array{unrelated: null} in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            69,
+            "nullCoalesce.offset",
+            "Offset 'left'|'missing' on array{unrelated: null} on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            74,
+            "isset.offset",
+            "Offset bool on array{0: string, 1: string, unrelated: null} in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            75,
+            "nullCoalesce.offset",
+            "Offset bool on array{0: string, 1: string, unrelated: null} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            95,
+            "isset.offset",
+            "Offset int<0, 1> on array{0: string, 1: string, unrelated: null} in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            96,
+            "nullCoalesce.offset",
+            "Offset int<0, 1> on array{0: string, 1: string, unrelated: null} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            131,
+            "isset.offset",
+            "Offset int<0, 1> on array{2: string, unrelated: null} in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            132,
+            "nullCoalesce.offset",
+            "Offset int<0, 1> on array{2: string, unrelated: null} on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            154,
+            "isset.offset",
+            "Offset int<0, 128> on array{0: string, 1: string, 2: string, 3: string, 4: string, 5: string, 6: string, 7: string, ...} in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            155,
+            "nullCoalesce.offset",
+            "Offset int<0, 128> on array{0: string, 1: string, 2: string, 3: string, 4: string, 5: string, 6: string, 7: string, ...} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            167,
+            "isset.offset",
+            "Offset 'left'|'right' on array{left: null, right: null, unrelated: string} in isset() always exists and is always null.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            168,
+            "nullCoalesce.offset",
+            "Offset 'left'|'right' on array{left: null, right: null, unrelated: string} on left side of ?? always exists and is always null.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            176,
+            "isset.offset",
+            "Offset 'left'|'right' on array{left: string, right: string, ...<string, null>} in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            177,
+            "nullCoalesce.offset",
+            "Offset 'left'|'right' on array{left: string, right: string, ...<string, null>} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            194,
+            "isset.offset",
+            "Offset int<9223372036854775806, 9223372036854775807> on array{9223372036854775806: string, 9223372036854775807: string, unrelated: null} in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            195,
+            "nullCoalesce.offset",
+            "Offset int<9223372036854775806, 9223372036854775807> on array{9223372036854775806: string, 9223372036854775807: string, unrelated: null} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            204,
+            "isset.offset",
+            "Offset 'extra'|'left' on array{left: string, ...<string, string>} in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            205,
+            "nullCoalesce.offset",
+            "Offset 'extra'|'left' on array{left: string, ...<string, string>} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ]
+    ],
+    "5": [
+        [
+            "finite.php",
+            8,
+            "offsetAccess.invalidOffset",
+            "Invalid array key type float.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            9,
+            "offsetAccess.invalidOffset",
+            "Invalid array key type float.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            14,
+            "isset.offset",
+            "Offset bool on array<string, string> in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            15,
+            "nullCoalesce.offset",
+            "Offset bool on array<string, string> on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            16,
+            "isset.offset",
+            "Offset float on array<string, string> in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            16,
+            "offsetAccess.invalidOffset",
+            "Invalid array key type float.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            17,
+            "nullCoalesce.offset",
+            "Offset float on array<string, string> on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            17,
+            "offsetAccess.invalidOffset",
+            "Invalid array key type float.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            21,
+            "isset.offset",
+            "Offset bool on string in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            22,
+            "nullCoalesce.offset",
+            "Offset bool on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            23,
+            "isset.offset",
+            "Offset float on string in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            24,
+            "nullCoalesce.offset",
+            "Offset float on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            32,
+            "isset.offset",
+            "Offset 'left'|'right' on array{left: string, right: string, unrelated: null} in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            33,
+            "nullCoalesce.offset",
+            "Offset 'left'|'right' on array{left: string, right: string, unrelated: null} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            68,
+            "isset.offset",
+            "Offset 'left'|'missing' on array{unrelated: null} in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            69,
+            "nullCoalesce.offset",
+            "Offset 'left'|'missing' on array{unrelated: null} on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            74,
+            "isset.offset",
+            "Offset bool on array{0: string, 1: string, unrelated: null} in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            75,
+            "nullCoalesce.offset",
+            "Offset bool on array{0: string, 1: string, unrelated: null} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            95,
+            "isset.offset",
+            "Offset int<0, 1> on array{0: string, 1: string, unrelated: null} in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            96,
+            "nullCoalesce.offset",
+            "Offset int<0, 1> on array{0: string, 1: string, unrelated: null} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            131,
+            "isset.offset",
+            "Offset int<0, 1> on array{2: string, unrelated: null} in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            132,
+            "nullCoalesce.offset",
+            "Offset int<0, 1> on array{2: string, unrelated: null} on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            154,
+            "isset.offset",
+            "Offset int<0, 128> on array{0: string, 1: string, 2: string, 3: string, 4: string, 5: string, 6: string, 7: string, ...} in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            155,
+            "nullCoalesce.offset",
+            "Offset int<0, 128> on array{0: string, 1: string, 2: string, 3: string, 4: string, 5: string, 6: string, 7: string, ...} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            167,
+            "isset.offset",
+            "Offset 'left'|'right' on array{left: null, right: null, unrelated: string} in isset() always exists and is always null.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            168,
+            "nullCoalesce.offset",
+            "Offset 'left'|'right' on array{left: null, right: null, unrelated: string} on left side of ?? always exists and is always null.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            176,
+            "isset.offset",
+            "Offset 'left'|'right' on array{left: string, right: string, ...<string, null>} in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            177,
+            "nullCoalesce.offset",
+            "Offset 'left'|'right' on array{left: string, right: string, ...<string, null>} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            194,
+            "isset.offset",
+            "Offset int<9223372036854775806, 9223372036854775807> on array{9223372036854775806: string, 9223372036854775807: string, unrelated: null} in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            195,
+            "nullCoalesce.offset",
+            "Offset int<9223372036854775806, 9223372036854775807> on array{9223372036854775806: string, 9223372036854775807: string, unrelated: null} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            204,
+            "isset.offset",
+            "Offset 'extra'|'left' on array{left: string, ...<string, string>} in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            205,
+            "nullCoalesce.offset",
+            "Offset 'extra'|'left' on array{left: string, ...<string, string>} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ]
+    ],
+    "9": [
+        [
+            "finite.php",
+            8,
+            "offsetAccess.invalidOffset",
+            "Invalid array key type float.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            9,
+            "offsetAccess.invalidOffset",
+            "Invalid array key type float.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            14,
+            "isset.offset",
+            "Offset bool on array<string, string> in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            15,
+            "nullCoalesce.offset",
+            "Offset bool on array<string, string> on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            16,
+            "isset.offset",
+            "Offset float on array<string, string> in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            16,
+            "offsetAccess.invalidOffset",
+            "Invalid array key type float.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            17,
+            "nullCoalesce.offset",
+            "Offset float on array<string, string> on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            17,
+            "offsetAccess.invalidOffset",
+            "Invalid array key type float.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            21,
+            "isset.offset",
+            "Offset bool on string in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            22,
+            "nullCoalesce.offset",
+            "Offset bool on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            23,
+            "isset.offset",
+            "Offset float on string in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            24,
+            "nullCoalesce.offset",
+            "Offset float on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            32,
+            "isset.offset",
+            "Offset 'left'|'right' on array{left: string, right: string, unrelated: null} in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            33,
+            "nullCoalesce.offset",
+            "Offset 'left'|'right' on array{left: string, right: string, unrelated: null} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            68,
+            "isset.offset",
+            "Offset 'left'|'missing' on array{unrelated: null} in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            69,
+            "nullCoalesce.offset",
+            "Offset 'left'|'missing' on array{unrelated: null} on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            74,
+            "isset.offset",
+            "Offset bool on array{0: string, 1: string, unrelated: null} in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            75,
+            "nullCoalesce.offset",
+            "Offset bool on array{0: string, 1: string, unrelated: null} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            95,
+            "isset.offset",
+            "Offset int<0, 1> on array{0: string, 1: string, unrelated: null} in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            96,
+            "nullCoalesce.offset",
+            "Offset int<0, 1> on array{0: string, 1: string, unrelated: null} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            131,
+            "isset.offset",
+            "Offset int<0, 1> on array{2: string, unrelated: null} in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            132,
+            "nullCoalesce.offset",
+            "Offset int<0, 1> on array{2: string, unrelated: null} on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            154,
+            "isset.offset",
+            "Offset int<0, 128> on array{0: string, 1: string, 2: string, 3: string, 4: string, 5: string, 6: string, 7: string, ...} in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            155,
+            "nullCoalesce.offset",
+            "Offset int<0, 128> on array{0: string, 1: string, 2: string, 3: string, 4: string, 5: string, 6: string, 7: string, ...} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            167,
+            "isset.offset",
+            "Offset 'left'|'right' on array{left: null, right: null, unrelated: string} in isset() always exists and is always null.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            168,
+            "nullCoalesce.offset",
+            "Offset 'left'|'right' on array{left: null, right: null, unrelated: string} on left side of ?? always exists and is always null.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            176,
+            "isset.offset",
+            "Offset 'left'|'right' on array{left: string, right: string, ...<string, null>} in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            177,
+            "nullCoalesce.offset",
+            "Offset 'left'|'right' on array{left: string, right: string, ...<string, null>} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            194,
+            "isset.offset",
+            "Offset int<9223372036854775806, 9223372036854775807> on array{9223372036854775806: string, 9223372036854775807: string, unrelated: null} in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            195,
+            "nullCoalesce.offset",
+            "Offset int<9223372036854775806, 9223372036854775807> on array{9223372036854775806: string, 9223372036854775807: string, unrelated: null} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            204,
+            "isset.offset",
+            "Offset 'extra'|'left' on array{left: string, ...<string, string>} in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "finite.php",
+            205,
+            "nullCoalesce.offset",
+            "Offset 'extra'|'left' on array{left: string, ...<string, string>} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ]
+    ]
+}
