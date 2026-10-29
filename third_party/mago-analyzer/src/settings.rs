@@ -38,6 +38,9 @@ pub struct Settings {
     /// Opt-in rule-facing observations; only these calls and expression subtrees retain scopes.
     pub call_scope_observations: Vec<crate::observations::CallScopeRequest>,
 
+    /// Live PropertyInitializationExpr observations. Empty preserves ordinary method scheduling.
+    pub property_initialization_observations: Vec<crate::property_initialization::PropertyInitializationRequest>,
+
     /// Produce PHPStan's immutable local value-flow results during the semantic walk.
     pub track_variable_flow: bool,
 
@@ -433,6 +436,7 @@ impl Settings {
             version,
             track_native_types: false,
             call_scope_observations: Vec::new(),
+            property_initialization_observations: Vec::new(),
             pollute_scope_with_loop_initial_assignments: true,
             pollute_scope_with_always_iterable_foreach: true,
             track_variable_flow: false,

@@ -63,6 +63,8 @@ pub struct VariableState {
     pub impossible: bool,
     /// Resolved input-reference contracts; unlike output references these cannot declare a variable.
     pub non_creating_references: HashSet<Span>,
+    /// Virtual expression holders: never invalidate these with runtime property values.
+    pub(crate) property_initializations: crate::property_initialization::Markers,
     conditional: Vec<ConditionalVariable>,
 }
 
@@ -71,11 +73,18 @@ pub struct VariableState {
 pub struct VariableScope {
     locals: WordMap<Rc<TUnion>>,
     possible: WordSet,
-    state: VariableState,
+    pub(crate) state: VariableState,
+    /// Source-owned abrupt edge, used only to apply a finally delta to virtual markers.
+    pub(crate) property_exit: Option<Span>,
     otherwise: VariableCertainty,
 }
 
 impl VariableScope {
+    pub(crate) fn at_property_exit(mut self, span: Span) -> Self {
+        self.property_exit = Some(span);
+        self
+    }
+
     fn certainty(&self, name: Word) -> VariableCertainty {
         certainty(&self.locals, &self.possible, &self.state, self.otherwise, name)
     }
@@ -202,6 +211,7 @@ impl BlockContext<'_> {
             locals: self.locals.clone(),
             possible: self.variables_possibly_in_scope.clone(),
             state: self.variable_state.clone(),
+            property_exit: None,
             otherwise: if self.can_any_variable_exist() {
                 VariableCertainty::Possible
             } else {
@@ -433,6 +443,8 @@ impl BlockContext<'_> {
             return;
         };
         self.variable_state.impossible = false;
+        self.variable_state.property_initializations =
+            crate::property_initialization::join(branches.clone().map(|branch| &branch.state.property_initializations));
         self.variable_state.after_extract_call = branches.clone().all(|branch| branch.state.after_extract_call);
         self.variable_state.conditional = first
             .state

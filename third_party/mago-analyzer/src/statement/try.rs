@@ -442,6 +442,14 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Try<'arena> {
             if finally_entries_complete {
                 finally_block_context.merge_variable_scope_types(&finally_entry_scopes, context.codebase);
             }
+            // TryCatchHandler joins the observed branch end, abrupt exits and throw
+            // points for finally entry. These marker snapshots do not replay a body.
+            let inside_try = |span: &Span| span.start.offset >= self.span().start.offset
+                && span.end.offset <= self.span().end.offset;
+            let marker_entries = finally_entry_scopes.iter().map(|scope| &scope.state.property_initializations)
+                .chain(artifacts.property_abrupt_scopes.iter().filter(|(span, _)| inside_try(span)).map(|(_, markers)| markers));
+            let original_finally_markers = crate::property_initialization::join(marker_entries);
+            finally_block_context.variable_state.property_initializations = original_finally_markers.clone();
             for var_id in finally_block_context.locals.keys() {
                 if !old_block_context_locals.contains_key(var_id) {
                     finally_block_context.possibly_undefined_variable_ids.insert(*var_id);
@@ -457,6 +465,27 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Try<'arena> {
             )?;
 
             finally_has_returned = finally_block_context.flags.has_returned();
+            let after = &finally_block_context.variable_state.property_initializations;
+            if !finally_has_returned {
+                crate::property_initialization::apply_finally(&mut block_context.variable_state.property_initializations, after, &original_finally_markers);
+                for (_, markers) in artifacts.property_abrupt_scopes.iter_mut().filter(|(span, _)| inside_try(span)) {
+                    crate::property_initialization::apply_finally(markers, after, &original_finally_markers);
+                }
+                let mut active_loop = artifacts.loop_scope.as_mut();
+                while let Some(loop_scope) = active_loop {
+                    for edge in loop_scope.break_scopes.iter_mut().chain(&mut loop_scope.property_continues).chain(&mut loop_scope.foreach_continue_scopes) {
+                        if edge.property_exit.as_ref().is_some_and(inside_try) {
+                            crate::property_initialization::apply_finally(&mut edge.state.property_initializations, after, &original_finally_markers);
+                        }
+                    }
+                    active_loop = loop_scope.parent_loop.as_deref_mut();
+                }
+                for case in &mut artifacts.case_scopes {
+                    for (_, markers) in case.property_breaks.iter_mut().filter(|(span, _)| inside_try(span)) {
+                        crate::property_initialization::apply_finally(markers, after, &original_finally_markers);
+                    }
+                }
+            }
             block_context.possibly_undefined_variable_ids.extend(finally_block_context.possibly_undefined_variable_ids);
 
             for (variable_id, _) in finally_block_context.assigned_variable_ids {

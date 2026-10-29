@@ -124,7 +124,9 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Break<'arena> {
             } else {
                 loop_scope.final_actions.insert(ControlAction::Break);
                 if let Some(entry) = loop_scope.entry_scope.as_ref().or(loop_scope.foreach_entry_scope.as_ref()) {
-                    loop_scope.break_scopes.push(block_context.variable_scope().loop_exit_scope(entry));
+                    loop_scope.break_scopes.push(block_context.variable_scope().loop_exit_scope(entry).at_property_exit(self.span()));
+                } else if !context.settings.property_initialization_observations.is_empty() {
+                    loop_scope.break_scopes.push(block_context.variable_scope().at_property_exit(self.span()));
                 }
                 crate::context::scope::loop_scope::merge_exit_locals(
                     &mut loop_scope.break_locals,
@@ -215,6 +217,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Break<'arena> {
                 && let Some(case_scope) = artifacts.case_scopes.get_mut(case_scope_index)
             {
                 case_scope.record_break(&block_context.locals, context.codebase);
+                crate::property_initialization::remember(&mut case_scope.property_breaks, self.span(), &block_context.variable_state.property_initializations);
             }
         } else if !has_loop_scope {
             context.collector.report_with_code(
@@ -225,6 +228,9 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Break<'arena> {
             );
         }
 
+        if !context.settings.property_initialization_observations.is_empty() {
+            crate::property_initialization::remember(&mut artifacts.property_abrupt_scopes, self.span(), &block_context.variable_state.property_initializations);
+        }
         block_context.flags.set_has_returned(true);
 
         Ok(())

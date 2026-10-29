@@ -114,6 +114,23 @@ impl<'ast, 'arena> ExpressionAnalysis<'ast, 'arena> for Expression<'arena> {
         artifacts.begin_expression_result(self, holder, native_holder);
         crate::native::before_expression(self, block_context);
         let span = self.span();
+        for request in &context.settings.property_initialization_observations {
+            if request.expression == span && !context.observations.pricing && context.raw_callback_gather_depth == 0 {
+                let certainty = block_context
+                    .variable_state
+                    .property_initializations
+                    .get(&request.property)
+                    .copied()
+                    .unwrap_or(crate::property_initialization::PropertyInitializationCertainty::No);
+                artifacts
+                    .property_initialization_observations
+                    .entry(span)
+                    .or_default()
+                    .entry(request.property)
+                    .and_modify(|previous| *previous = previous.join(certainty))
+                    .or_insert(certainty);
+            }
+        }
         artifacts.remove_native_expression_type(&(span.start.offset, span.end.offset));
         artifacts.record_variable_definedness(Node::Expression(self), block_context);
         if matches!(self, Expression::Call(_) | Expression::Pipe(_)) {

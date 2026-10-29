@@ -41,6 +41,7 @@ pub mod error;
 pub mod external;
 pub mod observations;
 pub mod plugin;
+pub mod property_initialization;
 pub mod settings;
 pub mod variable_flow;
 #[cfg(not(target_arch = "wasm32"))]

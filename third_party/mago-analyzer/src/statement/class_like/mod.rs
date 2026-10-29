@@ -1055,7 +1055,17 @@ where
 
     let mut block_context = BlockContext::new(scope, context.settings.register_super_globals);
 
-    for member in members {
+    let mut ordered_members: Vec<_> = members.iter().collect();
+    if !context.settings.property_initialization_observations.is_empty() {
+        // ClassLikeHandler: static methods, constructor, then instance methods/hooks.
+        // This opt-in ordering never invokes a method body a second time.
+        ordered_members.sort_by_key(|member| match member {
+            ClassLikeMember::Method(method) if method.is_static() => 0,
+            ClassLikeMember::Method(method) if method.name.value.eq_ignore_ascii_case(b"__construct") => 1,
+            _ => 2,
+        });
+    }
+    for member in ordered_members {
         match member {
             ClassLikeMember::Constant(class_like_constant) => {
                 if context.settings.diff

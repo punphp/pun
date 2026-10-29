@@ -317,6 +317,16 @@ fn inherit_loop_block_context<'ctx, A>(
 
     inherit_branch_context_properties(context, block_context, &inner_loop_block_context);
 
+    let mut marker_exits: Vec<_> =
+        loop_scope.break_scopes.iter().map(|scope| &scope.state.property_initializations).collect();
+    if !known_infinite_loop && !loop_scope.back_edge_dead {
+        marker_exits.push(&inner_loop_block_context.variable_state.property_initializations);
+    }
+    if !always_enters_loop {
+        marker_exits.push(&block_context.variable_state.property_initializations);
+    }
+    let markers = crate::property_initialization::join(marker_exits);
+
     if can_leave_loop {
         if !always_enters_loop {
             if loop_scope.condition_always_false {
@@ -376,6 +386,7 @@ fn inherit_loop_block_context<'ctx, A>(
     } else {
         block_context.variables_possibly_in_scope = loop_scope.variables_possibly_in_scope;
     }
+    block_context.variable_state.property_initializations = markers;
 }
 
 #[allow(clippy::similar_names)]
@@ -474,6 +485,7 @@ where
 
     let mut continue_context;
     let mut inner_do_context = None;
+    let mut first_do_breaks = Vec::new();
 
     let mut pre_conditions_applied = false;
 
@@ -578,6 +590,7 @@ where
             if is_do {
                 inner_do_context = Some(continue_context.clone());
 
+                artifacts.set_loop_scope(loop_scope);
                 for (condition_offset, pre_condition) in pre_conditions.iter().enumerate() {
                     always_assigned_before_loop_body_variables.extend(apply_pre_condition_to_loop_context(
                         context,
@@ -595,6 +608,7 @@ where
                         condition_offset + 1 == pre_conditions.len(),
                     )?);
                 }
+                loop_scope = unsafe { artifacts.take_loop_scope_unchecked() };
 
                 pre_conditions_applied = true;
             }
@@ -609,6 +623,9 @@ where
 
         (loop_scope, continue_context) = result?;
 
+        if is_do && !context.settings.property_initialization_observations.is_empty() {
+            first_do_breaks = loop_scope.break_scopes.clone();
+        }
         let first_iteration_issues = if is_do { recorded_issues.clone() } else { IssueCollection::new() };
 
         if !pre_conditions.is_empty() && loop_scope.truthy_pre_conditions {
@@ -929,6 +946,7 @@ where
                     loop_scope.break_locals = None;
                     loop_scope.break_scopes.clear();
                     loop_scope.continue_locals = None;
+                    loop_scope.property_continues.clear();
                     loop_scope.foreach_continue_scopes.clear();
                     artifacts.set_loop_scope(loop_scope);
                     analyze_statements(statements, context, &mut continue_context, artifacts)?;
@@ -950,6 +968,7 @@ where
                 if is_do {
                     inner_do_context = Some(continue_context.clone());
 
+                    artifacts.set_loop_scope(loop_scope);
                     for (condition_offset, pre_condition) in pre_conditions.iter().enumerate() {
                         apply_pre_condition_to_loop_context(
                             context,
@@ -967,6 +986,7 @@ where
                             condition_offset + 1 == pre_conditions.len(),
                         )?;
                     }
+                    loop_scope = unsafe { artifacts.take_loop_scope_unchecked() };
 
                     pre_conditions_applied = true;
                 }
@@ -1221,6 +1241,9 @@ where
     if let Some(inner_do_context) = inner_do_context {
         continue_context = inner_do_context;
     }
+    // The do body's first execution can leave before the back-edge narrowing.
+    // Keep its observed marker exits; ordinary local/type projection is unchanged.
+    loop_scope.break_scopes.extend(first_do_breaks);
 
     // Track references set in the loop to make sure they aren't reused later
     loop_parent_context.update_references_possibly_from_confusing_scope(&continue_context);
@@ -1553,6 +1576,11 @@ fn update_loop_scope_contexts<'ctx, A>(
     }
     loop_scope.back_edge_dead = continue_context.flags.has_returned() && loop_scope.continue_locals.is_none();
     if loop_scope.final_actions.contains(ControlAction::Continue) {
+        let mut marker_edges: Vec<_> = loop_scope.property_continues.iter().map(|scope| &scope.state.property_initializations).collect();
+        if !continue_context.flags.has_returned() {
+            marker_edges.push(&continue_context.variable_state.property_initializations);
+        }
+        continue_context.variable_state.property_initializations = crate::property_initialization::join(marker_edges);
         let mut back_edge = loop_scope.continue_locals.clone();
         if !continue_context.flags.has_returned() {
             merge_exit_locals(&mut back_edge, &continue_context.locals, context.codebase);

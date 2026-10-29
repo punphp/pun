@@ -258,6 +258,10 @@ where
     }
 
     let mut hook_block_context = BlockContext::new(scope, context.settings.register_super_globals);
+    hook_block_context
+        .variable_state
+        .property_initializations
+        .clone_from(&parent_block_context.variable_state.property_initializations);
 
     if let Some(class_like_metadata) = parent_block_context.scope.get_class_like() {
         hook_block_context.locals.insert(

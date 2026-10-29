@@ -1,0 +1,282 @@
+[
+    {
+        "start": 201,
+        "end": 213,
+        "line": 9,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MarkerFlows",
+        "method": "branch",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 343,
+        "end": 355,
+        "line": 13,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MarkerFlows",
+        "method": "whileLoop",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 474,
+        "end": 486,
+        "line": 17,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MarkerFlows",
+        "method": "doLoop",
+        "certainty": "Yes"
+    },
+    {
+        "start": 614,
+        "end": 626,
+        "line": 21,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MarkerFlows",
+        "method": "forLoop",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 766,
+        "end": 778,
+        "line": 25,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MarkerFlows",
+        "method": "foreachLoop",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 967,
+        "end": 979,
+        "line": 30,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MarkerFlows",
+        "method": "caught",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 1119,
+        "end": 1131,
+        "line": 34,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MarkerFlows",
+        "method": "finallyAssigned",
+        "certainty": "Yes"
+    },
+    {
+        "start": 1277,
+        "end": 1289,
+        "line": 40,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MarkerFlows",
+        "method": "alias",
+        "certainty": "Yes"
+    },
+    {
+        "start": 1404,
+        "end": 1416,
+        "line": 44,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MarkerFlows",
+        "method": "foreign",
+        "certainty": "No"
+    },
+    {
+        "start": 1532,
+        "end": 1544,
+        "line": 47,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MarkerFlows",
+        "method": "nested",
+        "certainty": "Yes"
+    },
+    {
+        "start": 1571,
+        "end": 1583,
+        "line": 48,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MarkerFlows",
+        "method": "nested",
+        "certainty": "No"
+    },
+    {
+        "start": 1716,
+        "end": 1728,
+        "line": 52,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MarkerFlows",
+        "method": "nestedInherited",
+        "certainty": "No"
+    },
+    {
+        "start": 1771,
+        "end": 1783,
+        "line": 53,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MarkerFlows",
+        "method": "nestedInherited",
+        "certainty": "Yes"
+    },
+    {
+        "start": 1807,
+        "end": 1819,
+        "line": 54,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MarkerFlows",
+        "method": "nestedInherited",
+        "certainty": "Yes"
+    },
+    {
+        "start": 1964,
+        "end": 1976,
+        "line": 59,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MarkerFlows",
+        "method": "twoProperties",
+        "certainty": "Yes"
+    },
+    {
+        "start": 1978,
+        "end": 1990,
+        "line": 59,
+        "property": "other",
+        "expression": "$this->other",
+        "class": "MarkerFlows",
+        "method": "twoProperties",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 2191,
+        "end": 2203,
+        "line": 66,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MarkerFlows",
+        "method": "switchCases",
+        "certainty": "Yes"
+    },
+    {
+        "start": 2538,
+        "end": 2550,
+        "line": 78,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "NestedConstructor",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 2775,
+        "end": 2787,
+        "line": 86,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "RawFinallyConstructor",
+        "method": "check",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 2982,
+        "end": 2994,
+        "line": 92,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "OnlyThrowConstructor",
+        "method": "check",
+        "certainty": "No"
+    },
+    {
+        "start": 3249,
+        "end": 3261,
+        "line": 101,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "ChildSleep",
+        "method": "check",
+        "certainty": "No"
+    },
+    {
+        "start": 3530,
+        "end": 3542,
+        "line": 110,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "TraitSerialization",
+        "method": "check",
+        "certainty": "No"
+    },
+    {
+        "start": 3836,
+        "end": 3848,
+        "line": 117,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "OldSerialization",
+        "method": "check",
+        "certainty": "No"
+    },
+    {
+        "start": 3950,
+        "end": 3962,
+        "line": 121,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "OrderedMethods",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 4051,
+        "end": 4065,
+        "line": 122,
+        "property": "value",
+        "expression": "$object->value",
+        "class": "OrderedMethods",
+        "method": "checkStatic",
+        "certainty": "No"
+    },
+    {
+        "start": 4270,
+        "end": 4282,
+        "line": 126,
+        "property": "other",
+        "expression": "$this->other",
+        "class": "OrderedMethods",
+        "method": "otherCheck",
+        "certainty": "No"
+    },
+    {
+        "start": 4497,
+        "end": 4509,
+        "line": 133,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "BareUnserialize",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 4725,
+        "end": 4737,
+        "line": 139,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MagicUnserialize",
+        "method": "check",
+        "certainty": "No"
+    }
+]

@@ -539,6 +539,10 @@ where
         });
     }
 
+    // Assign/AssignRef (including array-root writes) create PHPStan's marker;
+    // compound and increment writes do not. This is separate from readonly's write kind.
+    let initializes_marker = matches!(property_write_kind, PropertyWriteKind::Direct | PropertyWriteKind::Coalesce)
+        || source_expression.is_some_and(Expression::is_reference);
     match target_expression {
         Expression::Variable(target_variable) if target_expression_id.is_some() => analyze_assignment_to_variable(
             context,
@@ -559,6 +563,7 @@ where
             &source_type,
             source_expression.map(mago_span::HasSpan::span),
             property_write_kind,
+            initializes_marker,
         )?,
         Expression::Access(Access::StaticProperty(property_access)) => static_property_assignment::analyze(
             context,
@@ -569,10 +574,10 @@ where
             target_expression_id,
         )?,
         Expression::ArrayAccess(array_access) => {
-            array_assignment::analyze(context, block_context, artifacts, array_access.into(), &source_type)?;
+            array_assignment::analyze(context, block_context, artifacts, array_access.into(), &source_type, initializes_marker)?;
         }
         Expression::ArrayAppend(array_append) => {
-            array_assignment::analyze(context, block_context, artifacts, array_append.into(), &source_type)?;
+            array_assignment::analyze(context, block_context, artifacts, array_append.into(), &source_type, initializes_marker)?;
         }
         Expression::Array(array) => {
             analyze_destructuring(

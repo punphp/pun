@@ -1,0 +1,134 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 20
+  },
+  "files": {
+    "/tmp/pun-isset-constructor-prereq/probes.php": {
+      "errors": 20,
+      "messages": [
+        {
+          "message": "Property ThrowExit::$value in isset() is not nullable nor uninitialized.",
+          "line": 19,
+          "ignorable": true,
+          "identifier": "isset.initializedProperty"
+        },
+        {
+          "message": "Property AssignedReturn::$value in isset() is not nullable nor uninitialized.",
+          "line": 28,
+          "ignorable": true,
+          "identifier": "isset.initializedProperty"
+        },
+        {
+          "message": "Property AllReturn::$value in isset() is not nullable nor uninitialized.",
+          "line": 38,
+          "ignorable": true,
+          "identifier": "isset.initializedProperty"
+        },
+        {
+          "message": "Property InsideBranches::$value in isset() is not nullable nor uninitialized.",
+          "line": 54,
+          "ignorable": true,
+          "identifier": "isset.initializedProperty"
+        },
+        {
+          "message": "Property Promoted::$value in isset() is not nullable nor uninitialized.",
+          "line": 62,
+          "ignorable": true,
+          "identifier": "isset.initializedProperty"
+        },
+        {
+          "message": "Property Promoted::$value in isset() is not nullable nor uninitialized.",
+          "line": 64,
+          "ignorable": true,
+          "identifier": "isset.initializedProperty"
+        },
+        {
+          "message": "Property Serialized::$value in isset() is not nullable nor uninitialized.",
+          "line": 72,
+          "ignorable": true,
+          "identifier": "isset.initializedProperty"
+        },
+        {
+          "message": "Property WakeupOnly::$value in isset() is not nullable nor uninitialized.",
+          "line": 79,
+          "ignorable": true,
+          "identifier": "isset.initializedProperty"
+        },
+        {
+          "message": "Property ParentInitialized::$value in isset() is not nullable nor uninitialized.",
+          "line": 85,
+          "ignorable": true,
+          "identifier": "isset.initializedProperty"
+        },
+        {
+          "message": "Property ParentInitialized::$value (int) in isset() is not nullable.",
+          "line": 100,
+          "ignorable": true,
+          "identifier": "isset.property"
+        },
+        {
+          "message": "Property DirectHelper::$value in isset() is not nullable nor uninitialized.",
+          "line": 107,
+          "ignorable": true,
+          "identifier": "isset.initializedProperty"
+        },
+        {
+          "message": "Property Reordered::$value in isset() is not nullable nor uninitialized.",
+          "line": 129,
+          "ignorable": true,
+          "identifier": "isset.initializedProperty"
+        },
+        {
+          "message": "Cannot unset property UnsetAfterAssignment::$value because it might have hooks in a subclass.",
+          "line": 135,
+          "ignorable": true,
+          "identifier": "unset.possiblyHookedProperty"
+        },
+        {
+          "message": "Property UnsetAfterAssignment::$value in isset() is not nullable nor uninitialized.",
+          "line": 136,
+          "ignorable": true,
+          "identifier": "isset.initializedProperty"
+        },
+        {
+          "message": "Cannot unset property UnsetAfterAssignment::$value because it might have hooks in a subclass.",
+          "line": 137,
+          "ignorable": true,
+          "identifier": "unset.possiblyHookedProperty"
+        },
+        {
+          "message": "Property UnsetAfterAssignment::$value in isset() is not nullable nor uninitialized.",
+          "line": 137,
+          "ignorable": true,
+          "identifier": "isset.initializedProperty"
+        },
+        {
+          "message": "Property AliasThis::$value in isset() is not nullable nor uninitialized.",
+          "line": 143,
+          "ignorable": true,
+          "identifier": "isset.initializedProperty"
+        },
+        {
+          "message": "Property CoalesceAssignment::$value in isset() is not nullable nor uninitialized.",
+          "line": 149,
+          "ignorable": true,
+          "identifier": "isset.initializedProperty"
+        },
+        {
+          "message": "Property BothBranches::$value in isset() is not nullable nor uninitialized.",
+          "line": 168,
+          "ignorable": true,
+          "identifier": "isset.initializedProperty"
+        },
+        {
+          "message": "Property PromotedReadonlySerialized::$value (int) in isset() is not nullable.",
+          "line": 174,
+          "ignorable": true,
+          "identifier": "isset.property"
+        }
+      ]
+    }
+  },
+  "errors": []
+}

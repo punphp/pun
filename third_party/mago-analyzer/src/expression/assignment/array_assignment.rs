@@ -55,6 +55,7 @@ pub(crate) fn analyze<'ctx, 'arena, A>(
     artifacts: &mut AnalysisArtifacts,
     array_target: ArrayTarget<'_, 'arena>,
     assign_value_type: &TUnion,
+    initializes_marker: bool,
 ) -> Result<(), AnalysisError>
 where
     A: Arena,
@@ -141,6 +142,7 @@ where
             } else {
                 PropertyWriteKind::Mutation
             },
+            initializes_marker,
         )?;
     }
 

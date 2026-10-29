@@ -93,6 +93,7 @@ where
     case_actions: HashMap<usize, ControlActionSet>,
     seen_case_condition_types: Vec<(Rc<TUnion>, Span)>,
     has_default_case: bool,
+    property_exits: Vec<crate::property_initialization::Markers>,
 }
 
 impl<'anlyz, 'ctx, 'arena, A> SwitchAnalyzer<'anlyz, 'ctx, 'arena, A>
@@ -124,6 +125,7 @@ where
             case_actions: HashMap::default(),
             seen_case_condition_types: vec![],
             has_default_case: false,
+            property_exits: Vec::new(),
         }
     }
 
@@ -232,6 +234,12 @@ where
                     .as_ref()
                     .is_some_and(|id| final_else_context.locals.get(id).is_some_and(|t| t.is_never()))
         };
+
+        if !is_exhaustive {
+            self.property_exits.push(original_context.variable_state.property_initializations.clone());
+        }
+        self.block_context.variable_state.property_initializations =
+            crate::property_initialization::join(&self.property_exits);
 
         let mut possibly_redefined_vars = self.possibly_redefined_variables.unwrap_or_default();
         if let Some(new_locals) = self.new_locals {
@@ -650,6 +658,14 @@ where
 
             for (leftover_statements, has_direct_entry) in std::mem::take(&mut self.leftover_statement_groups) {
                 if has_direct_entry {
+                    case_block_context.variable_state.property_initializations = if case_block_context.flags.has_returned() {
+                        original_block_context.variable_state.property_initializations.clone()
+                    } else {
+                        crate::property_initialization::join([
+                            &case_block_context.variable_state.property_initializations,
+                            &original_block_context.variable_state.property_initializations,
+                        ])
+                    };
                     case_block_context.flags.set_has_returned(false);
                 }
 
@@ -657,6 +673,14 @@ where
             }
 
             if case_has_direct_entry {
+                case_block_context.variable_state.property_initializations = if case_block_context.flags.has_returned() {
+                    original_block_context.variable_state.property_initializations.clone()
+                } else {
+                    crate::property_initialization::join([
+                        &case_block_context.variable_state.property_initializations,
+                        &original_block_context.variable_state.property_initializations,
+                    ])
+                };
                 case_block_context.flags.set_has_returned(false);
             }
             for (var_id, original_type) in &original_block_context.locals {
@@ -684,6 +708,11 @@ where
         let Some(case_scope) = self.artifacts.case_scopes.pop() else {
             return Ok((result, CheckpointAction::Keep));
         };
+
+        self.property_exits.extend(case_scope.property_breaks.into_values());
+        if !case_block_context.flags.has_returned() && !self.has_fallthrough {
+            self.property_exits.push(case_block_context.variable_state.property_initializations.clone());
+        }
 
         let case_exit_type = if case_block_context.control_actions.contains(ControlAction::End) {
             self.case_exit_types.insert(case_index, ControlAction::Return);

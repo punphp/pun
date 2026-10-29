@@ -398,6 +398,12 @@ where
     parent_artifacts.nullsafe_method_receiver_types.extend(std::mem::take(&mut artifacts.nullsafe_method_receiver_types));
     parent_artifacts.variable_definedness.extend(std::mem::take(&mut artifacts.variable_definedness));
     parent_artifacts.resolved_method_calls.append(&mut artifacts.resolved_method_calls);
+    for (span, observations) in std::mem::take(&mut artifacts.property_initialization_observations) {
+        let retained = parent_artifacts.property_initialization_observations.entry(span).or_default();
+        for (property, certainty) in observations {
+            retained.entry(property).and_modify(|previous| *previous = previous.join(certainty)).or_insert(certainty);
+        }
+    }
     if let Some(editor) = &mut parent_artifacts.editor
         && let Some(child) = artifacts.editor.take()
     {
@@ -653,6 +659,16 @@ where
         // Arrow parameters shadow captured guards and consequences, just like assignVariable.
         block_context.invalidate_variable_certainty(parameter_variable_str);
         block_context.locals.insert(parameter_variable_str, Rc::new(final_parameter_type));
+
+        if !context.settings.property_initialization_observations.is_empty()
+            && parameter_node.is_promoted_property()
+            && function_like_metadata.method_metadata.as_ref().is_some_and(|method| method.is_constructor)
+        {
+            block_context.variable_state.property_initializations.insert(
+                word(&parameter_node.variable.name[1..]),
+                crate::property_initialization::PropertyInitializationCertainty::Yes,
+            );
+        }
 
         if parameter_node.is_promoted_property()
             && let Some(hook_list) = &parameter_node.hooks

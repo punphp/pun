@@ -59,6 +59,10 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for ArrowFunction<'arena> {
 
         let mut inner_block_context = BlockContext::new(scope, context.settings.register_super_globals);
         inner_block_context.native_locals = block_context.native_locals.as_ref().map(|_| Default::default());
+        inner_block_context
+            .variable_state
+            .property_initializations
+            .clone_from(&block_context.variable_state.property_initializations);
 
         if !scope.is_static() {
             let binding = artifacts.closure_bind_scope.as_ref();

@@ -39,6 +39,7 @@ pub fn analyze<'ctx, 'arena, A>(
     assigned_value_type: &TUnion,
     assigned_value_span: Option<Span>,
     write_kind: PropertyWriteKind,
+    initializes_marker: bool,
 ) -> Result<(), AnalysisError>
 where
     A: Arena,
@@ -79,6 +80,31 @@ where
         if !resolved_property.is_magic
             && let Some(declaring_class_id) = resolved_property.declaring_class_id
         {
+            // MutatingScope::assignInitializedProperty requires ThisType (including
+            // aliases), a native property, and exactly the current declaring class.
+            if !context.settings.property_initialization_observations.is_empty()
+                && initializes_marker
+                && matches!(property_access.property, ClassLikeMemberSelector::Identifier(_))
+                && block_context.scope.get_class_like().is_some_and(|class| {
+                    class.name == declaring_class_id
+                        // PHP reflection declares imported trait properties on the using
+                        // class. Codex copies them into properties, unlike inherited ones.
+                        || (class.properties.contains_key(&resolved_property.property_name)
+                            && context.codebase.get_class_like(declaring_class_id.as_bytes())
+                                .is_some_and(|declaring| declaring.kind.is_trait()))
+                })
+                && context.codebase.property_exists(declaring_class_id.as_bytes(), resolved_property.property_name.as_bytes())
+                && artifacts.get_expression_type(property_access.object).is_some_and(|ty| {
+                    ty.types.iter().any(|atomic| matches!(atomic,
+                        mago_codex::ttype::atomic::TAtomic::Object(mago_codex::ttype::atomic::object::TObject::Named(object)) if object.is_this
+                    ))
+                })
+            {
+                block_context.variable_state.property_initializations.insert(
+                    mago_word::word(&resolved_property.property_name.as_bytes()[1..]),
+                    crate::property_initialization::PropertyInitializationCertainty::Yes,
+                );
+            }
             crate::readonly::check_property_write(
                 context,
                 block_context,

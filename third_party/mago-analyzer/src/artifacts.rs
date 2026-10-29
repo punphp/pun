@@ -89,6 +89,7 @@ pub(crate) struct BranchFlow {
     loop_scope: Option<LoopScope>,
     case_scopes: Vec<CaseScope>,
     throw_scopes: HashMap<(Span, VariableThrowKind), WordMap<VariableScope>>,
+    property_abrupt_scopes: HashMap<Span, crate::property_initialization::Markers>,
 }
 
 /// PHPStan ExpressionResult's evaluated-operand scopes, distinct from branch specifications.
@@ -147,6 +148,12 @@ pub struct AnalysisArtifacts {
     pub resolved_method_calls: Vec<ResolvedMethodCall>,
     /// Requested, owned rule-facing answers; distinct from the actual walk's expression types.
     pub call_scope_observations: HashMap<Span, Vec<crate::observations::NamedCallScope>>,
+    /// Owned live-before-operand virtual initialization certainties, only for requested spans/names.
+    pub property_initialization_observations: HashMap<Span, crate::property_initialization::Markers>,
+    /// Function-local raw return snapshots; not propagated out of nested functions.
+    pub(crate) constructor_property_returns: HashMap<Span, crate::property_initialization::Markers>,
+    /// Runtime abrupt scopes for finally entry/propagation; raw constructor returns stay separate.
+    pub(crate) property_abrupt_scopes: HashMap<Span, crate::property_initialization::Markers>,
     /// NullsafeMethodCallExpressionNode's processed receiver, before shallow non-null specification.
     pub nullsafe_method_receiver_types: HashMap<Span, TUnion>,
     /// Body-boundary value-read/write answers, separate from type and definedness observations.
@@ -197,6 +204,9 @@ impl AnalysisArtifacts {
             closure_bind_scope: None,
             resolved_method_calls: Vec::new(),
             call_scope_observations: HashMap::default(),
+            property_initialization_observations: HashMap::default(),
+            constructor_property_returns: HashMap::default(),
+            property_abrupt_scopes: HashMap::default(),
             nullsafe_method_receiver_types: HashMap::default(),
             variable_writes: HashMap::default(),
             editor: None,
@@ -217,6 +227,7 @@ impl AnalysisArtifacts {
             loop_scope: self.loop_scope.clone(),
             case_scopes: self.case_scopes.clone(),
             throw_scopes: self.variable_throw_scopes.clone(),
+            property_abrupt_scopes: self.property_abrupt_scopes.clone(),
         }
     }
 
@@ -224,6 +235,7 @@ impl AnalysisArtifacts {
         self.loop_scope = flow.loop_scope;
         self.case_scopes = flow.case_scopes;
         self.variable_throw_scopes = flow.throw_scopes;
+        self.property_abrupt_scopes = flow.property_abrupt_scopes;
     }
 
     pub(crate) fn with_retained_expression_types(mut self, retain: bool) -> Self {
