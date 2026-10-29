@@ -44,9 +44,7 @@ impl Rule for AddPropertyTypeCreateMock {
         out: &mut Vec<Report>,
     ) {
         let facts = facts(ctx);
-        let Some(view) = ClassView::of(&facts, node, ancestors) else {
-            return;
-        };
+        let view = ClassView::of(&facts, node, ancestors).expect("the rule targets classes");
         if !is_test_case(&facts, &view) {
             return;
         }
@@ -121,7 +119,7 @@ impl Rule for AddPropertyTypeCreateMock {
 }
 
 /// `isObjectType($type, new ObjectType(MockObject))`: without `null`, the type is `MockObject` or a class-like that
-/// extends it, or an intersection with one.
+/// extends it (Rector's `isObjectType()` of an intersection declaration is false).
 fn is_mock_object(facts: &Facts, t: &Ty) -> bool {
     let is_mock = |name: &str| {
         name.eq_ignore_ascii_case(MOCK_OBJECT)
@@ -143,7 +141,6 @@ fn is_mock_object(facts: &Facts, t: &Ty) -> bool {
     !members.is_empty()
         && members.iter().all(|m| match m {
             Ty::Object(name) => is_mock(name),
-            Ty::Intersection(names) => names.iter().any(|n| is_mock(n)),
             _ => false,
         })
 }

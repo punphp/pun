@@ -61,6 +61,36 @@ final class NotATest
         $this->mock = $this->createMock(\DateTime::class);
     }
 }
+
+final class Mock84Test extends TestCase
+{
+    private $intersection;
+    private $defaultNull = null;
+    private $resetLater = null;
+    private $hooked { get => $this->hooked; }
+
+    protected function setUp(): void
+    {
+        $this->intersection = $this->make();
+        $this->hooked = $this->createMock(\DateTime::class);
+    }
+
+    public function testIt(): void
+    {
+        $this->defaultNull = $this->createMock(\DateTime::class);
+        $this->resetLater = $this->createMock(\DateTime::class);
+    }
+
+    protected function tearDown(): void
+    {
+        $this->resetLater = null;
+    }
+
+    private function make(): MockObject&\DateTime
+    {
+        return $this->createMock(\DateTime::class);
+    }
+}
 -----
 <?php
 
@@ -123,5 +153,35 @@ final class NotATest
     protected function setUp(): void
     {
         $this->mock = $this->createMock(\DateTime::class);
+    }
+}
+
+final class Mock84Test extends TestCase
+{
+    private $intersection;
+    private $defaultNull = null;
+    private ?\PHPUnit\Framework\MockObject\MockObject $resetLater = null;
+    private \PHPUnit\Framework\MockObject\MockObject $hooked { get => $this->hooked; }
+
+    protected function setUp(): void
+    {
+        $this->intersection = $this->make();
+        $this->hooked = $this->createMock(\DateTime::class);
+    }
+
+    public function testIt(): void
+    {
+        $this->defaultNull = $this->createMock(\DateTime::class);
+        $this->resetLater = $this->createMock(\DateTime::class);
+    }
+
+    protected function tearDown(): void
+    {
+        $this->resetLater = null;
+    }
+
+    private function make(): MockObject&\DateTime
+    {
+        return $this->createMock(\DateTime::class);
     }
 }

@@ -40,6 +40,12 @@ final class ContainerTest extends TestCase
     private $notCall;
     /** @var \App\Service */
     private $fqcn;
+    /** @var Service<int> */
+    private $generic;
+    /** @var Service[] */
+    private $list;
+    /** @var array<Service> */
+    private $array;
 
     protected function setUp(): void
     {
@@ -61,6 +67,9 @@ final class ContainerTest extends TestCase
         $this->staticOther = static::boot()->get('a');
         $this->notCall = $this->container;
         $this->fqcn = $this->get('a');
+        $this->generic = $this->get('a');
+        $this->list = $this->get('a');
+        $this->array = $this->get('a');
     }
 }
 
@@ -111,6 +120,11 @@ final class ContainerTest extends TestCase
     /** @var Service */
     private $notCall;
     private \App\Service $fqcn;
+    private \App\Service $generic;
+    /** @var Service[] */
+    private $list;
+    /** @var array<Service> */
+    private $array;
 
     protected function setUp(): void
     {
@@ -132,6 +146,9 @@ final class ContainerTest extends TestCase
         $this->staticOther = static::boot()->get('a');
         $this->notCall = $this->container;
         $this->fqcn = $this->get('a');
+        $this->generic = $this->get('a');
+        $this->list = $this->get('a');
+        $this->array = $this->get('a');
     }
 }
 

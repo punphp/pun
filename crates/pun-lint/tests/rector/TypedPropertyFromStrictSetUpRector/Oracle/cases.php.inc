@@ -74,6 +74,18 @@ final class NoSetUp extends TestCase
         $this->value = 1000;
     }
 }
+
+final class Setup84Test extends TestCase
+{
+    private $hooked { get => $this->hooked; }
+    private $union;
+
+    protected function setUp(): void
+    {
+        $this->hooked = 1;
+        $this->union = rand() ? 1 : 'a';
+    }
+}
 -----
 <?php
 
@@ -149,5 +161,17 @@ final class NoSetUp extends TestCase
     public function prepare()
     {
         $this->value = 1000;
+    }
+}
+
+final class Setup84Test extends TestCase
+{
+    private int $hooked { get => $this->hooked; }
+    private $union;
+
+    protected function setUp(): void
+    {
+        $this->hooked = 1;
+        $this->union = rand() ? 1 : 'a';
     }
 }

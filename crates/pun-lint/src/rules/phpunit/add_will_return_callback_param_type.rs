@@ -62,16 +62,12 @@ impl Rule for AddWillReturnCallbackParamType {
         if !is_named(&parent.method, "method") {
             return;
         }
-        let Some(Expression::Literal(Literal::String(_))) =
-            parent.argument_list.arguments.first().map(argument_value)
-        else {
-            return;
-        };
         let Some(method) = parent
             .argument_list
             .arguments
             .first()
             .map(argument_value)
+            .filter(|v| matches!(v, Expression::Literal(Literal::String(_))))
             .and_then(string_value)
         else {
             return;
@@ -186,9 +182,7 @@ fn decorate(
         return Vec::new();
     };
     let facts = facts(ctx);
-    let Some(current) = super::own_class_reflection(ctx, class) else {
-        return Vec::new();
-    };
+    let current = super::own_class_reflection(ctx, class).expect("a test class");
     let Some(resolved) = resolve_from_reflection(&facts, &classes, method, &current) else {
         return Vec::new();
     };
@@ -198,14 +192,13 @@ fn decorate(
         if param.ellipsis.is_some() || param.hint.is_some() {
             continue;
         }
+        // we need specific non-mixed type
         let Some(Some(t)) = resolved.params.get(key) else {
             continue;
         };
-        // we need specific non-mixed type
-        if t.type_union.is_mixed() {
-            continue;
-        }
-        let Some(text) = declaration(&facts, t, ctx.php_version) else {
+        let Some(text) =
+            declaration(&facts, t, ctx.php_version).filter(|_| !t.type_union.is_mixed())
+        else {
             continue;
         };
         let at = param
@@ -244,9 +237,6 @@ fn resolve_from_reflection<'c>(
 ) -> Option<Resolved<'c>> {
     let mut found: Option<(&FunctionLikeMetadata, Resolved<'c>)> = None;
     for class in classes {
-        if facts.codebase.get_class_like(class.as_bytes()).is_none() {
-            continue;
-        }
         let Some(metadata) = facts
             .codebase
             .get_declaring_method(class.as_bytes(), method)

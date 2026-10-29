@@ -9,7 +9,7 @@
 //! Unlike Rector, Pun leaves a property alone whose default is `null` when the type does not allow `null`: Rector
 //! writes `private int $a = null;`, which PHP rejects.
 
-use mago_syntax::cst::{Node, NodeKind, Property, PropertyItem};
+use mago_syntax::cst::{ClassLikeMember, Node, NodeKind, Property};
 use pun_problem::{Edit, Fix, Safety, Span};
 
 use super::add_property_type_constructor::{infer, is_test_case};
@@ -47,24 +47,22 @@ impl Rule for AddPropertyTypeSetup {
         out: &mut Vec<Report>,
     ) {
         let facts = facts(ctx);
-        let Some(view) = ClassView::of(&facts, node, ancestors) else {
-            return;
-        };
+        let view = ClassView::of(&facts, node, ancestors).expect("the rule targets classes");
         let Some(set_up) = view.method(b"setUp") else {
             return;
         };
         let test_case = is_test_case(&facts, &view);
         let mut edits: Vec<Edit> = Vec::new();
-        for prop in view.properties() {
+        for prop in untyped_properties(&view) {
             if !prop.is_private() {
                 continue;
             }
             // `getName($property)` is the name of the first item
-            let prop = match prop.item {
-                Some(_) => prop,
-                None => Prop {
-                    property: prop.property,
-                    item: first_item(&prop),
+            let prop = Prop {
+                property: prop.property,
+                item: match prop.property {
+                    Property::Plain(p) => p.items.iter().next(),
+                    Property::Hooked(h) => Some(&h.item),
                 },
             };
             let t = infer(&facts, &view, &prop, set_up, ctx, ancestors, test_case);
@@ -104,10 +102,21 @@ impl Rule for AddPropertyTypeSetup {
     }
 }
 
-/// The first item of a plain property with several.
-fn first_item<'ast, 'arena>(prop: &Prop<'ast, 'arena>) -> Option<&'ast PropertyItem<'arena>> {
-    let Property::Plain(p) = prop.property else {
-        return None;
-    };
-    p.items.iter().next()
+/// The class's untyped properties in order (`getProperties()` with no `$type`): [`ClassView::properties`] and the
+/// hooked ones, which Rector types too.
+pub(crate) fn untyped_properties<'ast, 'arena>(
+    view: &ClassView<'ast, 'arena>,
+) -> Vec<Prop<'ast, 'arena>> {
+    let mut plain = view.properties().into_iter();
+    view.members
+        .iter()
+        .filter_map(|m| match m {
+            ClassLikeMember::Property(p @ Property::Hooked(h)) if h.hint.is_none() => Some(Prop {
+                property: p,
+                item: Some(&h.item),
+            }),
+            ClassLikeMember::Property(Property::Plain(p)) if p.hint.is_none() => plain.next(),
+            _ => None,
+        })
+        .collect()
 }

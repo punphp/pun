@@ -334,6 +334,10 @@ pub(super) fn setup_assigned_mock_types(
             Expression::Variable(Variable::Direct(v)) => {
                 String::from_utf8_lossy(&v.name[1..]).into()
             }
+            // `getName()` of a property fetch is the property's name
+            Expression::Access(Access::Property(_)) => {
+                String::from_utf8_lossy(&target_name(fetch.class)?).into()
+            }
             // Assert::string() fails
             _ => return None,
         };

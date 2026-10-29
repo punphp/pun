@@ -19,13 +19,53 @@ class Mocked
     public function nullRet(): ?int { return 1; }
 }
 
+enum Suit
+{
+    case Hearts;
+}
+
+interface Runs
+{
+    public function run(int $a): int;
+}
+
+interface RunsA extends Runs {}
+
+interface RunsB extends Runs {}
+
+class WithEnum
+{
+    public function suit(Suit $s): Suit { return $s; }
+}
+
 final class MockTest extends TestCase
 {
+    private \PHPUnit\Framework\MockObject\MockObject $missingMock;
+
     private $fromSetUp;
 
     protected function setUp(): void
     {
         $this->fromSetUp = $this->createMock(Mocked::class);
+        $this->missingMock = $this->createMock(Missing::class);
+        $this->byName = $this->createMock($this->cls::class);
+    }
+
+    public function testMore(): void
+    {
+        $this->missingMock->method('a')->willReturnCallback(fn ($a) => 1);
+        $m = $this->createMock(Mocked::class);
+        $m->willReturnCallback(fn ($a) => 1);
+        $m->method('na' . 'me')->willReturnCallback(fn ($a) => 1);
+        $m->method('union')->willReturnCallback(callback: fn ($a) => 1);
+        $m->method('mixedRet')->willReturnCallback(function () { return 1; });
+        $this->both()->method('run')->willReturnCallback(fn ($a) => 1);
+        $this->createMock(WithEnum::class)->method('suit')->willReturnCallback(fn ($s) => $s);
+    }
+
+    private function both(): \PHPUnit\Framework\MockObject\MockObject&RunsA&RunsB
+    {
+        return $this->createMock(RunsA::class);
     }
 
     public function testSetUp(): void
@@ -88,13 +128,53 @@ class Mocked
     public function nullRet(): ?int { return 1; }
 }
 
+enum Suit
+{
+    case Hearts;
+}
+
+interface Runs
+{
+    public function run(int $a): int;
+}
+
+interface RunsA extends Runs {}
+
+interface RunsB extends Runs {}
+
+class WithEnum
+{
+    public function suit(Suit $s): Suit { return $s; }
+}
+
 final class MockTest extends TestCase
 {
+    private \PHPUnit\Framework\MockObject\MockObject $missingMock;
+
     private $fromSetUp;
 
     protected function setUp(): void
     {
         $this->fromSetUp = $this->createMock(Mocked::class);
+        $this->missingMock = $this->createMock(Missing::class);
+        $this->byName = $this->createMock($this->cls::class);
+    }
+
+    public function testMore(): void
+    {
+        $this->missingMock->method('a')->willReturnCallback(fn ($a) => 1);
+        $m = $this->createMock(Mocked::class);
+        $m->willReturnCallback(fn ($a) => 1);
+        $m->method('na' . 'me')->willReturnCallback(fn ($a) => 1);
+        $m->method('union')->willReturnCallback(callback: fn (int|string $a): int|false => 1);
+        $m->method('mixedRet')->willReturnCallback(function () { return 1; });
+        $this->both()->method('run')->willReturnCallback(fn (int $a): int => 1);
+        $this->createMock(WithEnum::class)->method('suit')->willReturnCallback(fn ($s) => $s);
+    }
+
+    private function both(): \PHPUnit\Framework\MockObject\MockObject&RunsA&RunsB
+    {
+        return $this->createMock(RunsA::class);
     }
 
     public function testSetUp(): void

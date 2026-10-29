@@ -107,9 +107,7 @@ fn type_from_var<'ast, 'arena>(
     message: &str,
 ) {
     let facts = facts(ctx);
-    let Some(view) = ClassView::of(&facts, node, ancestors) else {
-        return;
-    };
+    let view = ClassView::of(&facts, node, ancestors).expect("the rules target classes");
     if !is_test_case(&facts, &view) {
         return;
     }
@@ -128,21 +126,22 @@ fn type_from_var<'ast, 'arena>(
         {
             continue;
         }
-        let Some(var) = VarTag::of(ctx.source, Node::Property(prop.property), &view.path) else {
+        let Some(var) = VarTag::of(ctx.source, Node::Property(prop.property), &view.path)
+            .filter(|v| v.annotated.doc.is_some())
+        else {
             continue;
         };
-        if var.annotated.doc.is_none() {
-            continue;
-        }
         let Ok(Some(tag)) = &var.tag else { continue };
         let Some(written) = object_name(&tag.ty) else {
             continue;
         };
         let class = doc_class(&view.path, written);
-        if facts.codebase.get_class_like(class.as_bytes()).is_none() {
-            continue;
-        }
-        let Some(removed) = var.remove(ctx.source) else {
+        // must be an existing object type
+        let Some(removed) = facts
+            .codebase
+            .get_class_like(class.as_bytes())
+            .and(var.remove(ctx.source))
+        else {
             continue;
         };
         let at = variable_span(prop).start;

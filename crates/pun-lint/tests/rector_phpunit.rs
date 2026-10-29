@@ -37,6 +37,11 @@
 //! (`ConstructClassMethodToSetUpTestCaseRector`, classes that extend each other) make Rector fail on the file; Pun
 //! leaves it alone.
 //!
+//! TypeWillReturnCallableArrowFunctionRector/Pun/intersection_order: the mocked method is declared, with other types, by
+//! two classes of the receiver's intersection type; Rector reads the first as written, and Mago keeps an intersection's
+//! members in an order of its own, so Pun leaves the callback alone. Pun/setup_fails: `setUp()` mocks a class
+//! expression without a name (`('A' . 'B')::class`), which makes Rector fail on the file; Pun leaves it alone.
+//!
 //! Pun/missing11 (`NamedArgumentForDataProviderRector`): a data provider whose arrays have empty items, which
 //! php-parser does not parse; Pun leaves it alone.
 

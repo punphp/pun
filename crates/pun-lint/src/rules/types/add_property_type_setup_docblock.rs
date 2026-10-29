@@ -8,9 +8,10 @@ use mago_syntax::cst::{Modifier, Node, NodeKind};
 use pun_problem::{Edit, Fix, Safety, Span};
 
 use super::add_property_type_constructor::is_test_case;
+use super::add_property_type_setup::untyped_properties;
 use super::compare::classes::with_classes;
 use super::compare::mapper::TypeScope;
-use super::compare::tags::first_named;
+use super::compare::tags::{TypeTag, first_named};
 use super::facts::facts;
 use super::property_type::{
     ClassView, TYPED_PROPERTIES, Ty, VarTag, doc_type, property_declaration, ty, variable_span,
@@ -45,14 +46,12 @@ impl Rule for AddPropertyTypeSetupDocblock {
         out: &mut Vec<Report>,
     ) {
         let facts = facts(ctx);
-        let Some(view) = ClassView::of(&facts, node, ancestors) else {
-            return;
-        };
+        let view = ClassView::of(&facts, node, ancestors).expect("the rule targets classes");
         if !is_test_case(&facts, &view) || view.method(b"setUp").is_none() {
             return;
         }
         let mut edits: Vec<Edit> = Vec::new();
-        for prop in &view.properties() {
+        for prop in &untyped_properties(&view) {
             if prop.item.is_none()
                 || !prop.is_private()
                 || prop
@@ -63,22 +62,17 @@ impl Rule for AddPropertyTypeSetupDocblock {
             {
                 continue;
             }
-            let Some(var) = VarTag::of(ctx.source, Node::Property(prop.property), &view.path)
-            else {
-                continue;
-            };
-            // getVarType(): phpdoc-parser's reading of the first `@var` (which takes `$this`, unlike `var.tag`)
-            let Some(written) =
+            // getVarType(): phpdoc-parser's reading of the first `@var` (which takes `$this`, unlike `VarTag`), and
+            // the type PHPStan reads there
+            let Some(((_, tag), doc)) =
                 Doc::last_of(ctx.source, &view.path, node_span(prop.property).start)
-                    .and_then(|doc| first_named(&doc, "@var").map(|(_, tag)| tag.ty))
+                    .and_then(|doc| first_named(&doc, "@var"))
+                    .zip(doc_type(&facts, &view, prop.name()))
             else {
-                continue;
-            };
-            let Some(doc) = doc_type(&facts, &view, prop.name()) else {
                 continue;
             };
             // `self` in the tag is `SelfObjectType`, which declares as `self` (Mago reads the class)
-            let says_self = names_self(&written);
+            let says_self = names_self(&tag.ty);
             let own = |m: Ty| match m {
                 Ty::Object(n) if says_self && n.eq_ignore_ascii_case(&view.name) => Ty::Static(n),
                 other => other,
@@ -96,8 +90,9 @@ impl Rule for AddPropertyTypeSetupDocblock {
             };
             let at = variable_span(prop).start;
             edits.push(Edit::new(Span::new(at, at), format!("{declaration} ")));
-            if is_dead_after(ctx, &facts, &view, prop.property, &declaration)
-                && let Some(e) = var.remove(ctx.source)
+            if is_dead_after(&facts, &view, &tag, &declaration)
+                && let Some(e) = VarTag::of(ctx.source, Node::Property(prop.property), &view.path)
+                    .and_then(|var| var.remove(ctx.source))
             {
                 edits.extend(e);
             }
@@ -117,30 +112,23 @@ impl Rule for AddPropertyTypeSetupDocblock {
 
 /// `DeadVarTagValueNodeAnalyzer::isDead()` of the property's `@var` once it is declared `declaration`.
 fn is_dead_after(
-    ctx: &Context<'_>,
     facts: &super::facts::Facts,
     view: &ClassView<'_, '_>,
-    property: &mago_syntax::cst::Property<'_>,
+    tag: &TypeTag,
     declaration: &str,
 ) -> bool {
-    // Rector keeps the `@var` of a property it declares `self` or `?self` (from `self`, `static` or `$this`)
+    // Rector keeps the `@var` (`self`, `static`, `$this`, `?self`, `self|null`) of a property it declares `self` or
+    // `?self`: its `SelfObjectType` never equals the doc's type
     if declaration.trim_start_matches('?') == "self" {
         return false;
     }
-    let Some(doc) = Doc::last_of(ctx.source, &view.path, node_span(property).start) else {
-        return false;
-    };
-    let Some((_, tag)) = first_named(&doc, "@var") else {
-        return false;
-    };
     // the declaration Pun writes reads the same as a PHPDoc type
-    let Ok((node, _)) = pun_phpstan::phpdoc::parse_prefix(declaration) else {
-        return false;
-    };
+    let (node, _) = pun_phpstan::phpdoc::parse_prefix(declaration)
+        .expect("a type declaration parses as a PHPDoc type");
     let scope = TypeScope::new(&view.path, facts.documented());
     with_classes(facts.documented(), || {
         let native = scope.map_doc(&node);
-        is_dead(&tag, &Target::Mapped(native), &scope, facts)
+        is_dead(tag, &Target::Mapped(native), &scope, facts)
     })
 }
 

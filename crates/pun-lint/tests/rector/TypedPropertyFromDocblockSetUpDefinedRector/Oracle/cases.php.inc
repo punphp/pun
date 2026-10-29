@@ -95,6 +95,20 @@ final class NoSetUp extends TestCase
         $this->int = 1;
     }
 }
+
+final class Doc84Test extends TestCase
+{
+    /** @var ?self */
+    private $nullableSelf;
+    /** @var int */
+    private $hooked { get => $this->hooked; }
+
+    protected function setUp(): void
+    {
+        $this->nullableSelf = $this;
+        $this->hooked = 1;
+    }
+}
 -----
 <?php
 
@@ -186,5 +200,18 @@ final class NoSetUp extends TestCase
     public function __construct()
     {
         $this->int = 1;
+    }
+}
+
+final class Doc84Test extends TestCase
+{
+    /** @var ?self */
+    private ?self $nullableSelf;
+    private int $hooked { get => $this->hooked; }
+
+    protected function setUp(): void
+    {
+        $this->nullableSelf = $this;
+        $this->hooked = 1;
     }
 }
