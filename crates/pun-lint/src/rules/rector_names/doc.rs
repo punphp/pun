@@ -10,7 +10,7 @@
 
 use pun_phpstan::phpdoc::{self, Node, ShapeKey};
 
-use crate::rules::phpdoc_writer::doc_info::{Kind, child_ranges, lex, tag_name};
+use super::phpdoc_parser::{self as parser, ArrayItem, Key, Val, t};
 use crate::rules::phpdoc_writer::type_node::TypeNode;
 
 /// How a typed tag's value is laid out around its type.
@@ -44,34 +44,17 @@ pub(crate) struct Typed {
     replaced: Vec<usize>,
 }
 
-/// One argument of a Doctrine annotation, as Rector's `ArrayParser` makes its `ArrayItemNode`.
-#[derive(Clone, Debug, PartialEq)]
-pub(crate) struct Item {
-    pub key: Option<String>,
-    pub value: ItemValue,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub(crate) enum ItemValue {
-    /// `StringNode`: a `"..."` value, its quotes off (`""` read as `"`).
-    String(String),
-    /// Any other value as written: a name, a constant, a number, `true`, `false`, `null`.
-    Plain(String),
-    /// `CurlyListNode`: a `{...}` list of values without keys.
-    Curly(Vec<ItemValue>),
-}
-
 /// A Doctrine annotation: Rector's `SpacelessPhpDocTagNode` with a `DoctrineAnnotationTagValueNode`.
 #[derive(Clone, Debug)]
 pub(crate) struct Annotation {
-    /// The class `ClassAnnotationMatcher` resolves the tag name to (`RESOLVED_CLASS`).
+    /// The class the annotation's name resolves to (`RESOLVED_CLASS`).
     pub class: String,
-    /// The arguments (none for a generic tag whose name is a class), `None` where Pun does not read them (a nested
-    /// annotation, a multi-line value, a description after the `)`).
-    pub items: Option<Vec<Item>>,
-    /// The names inside the arguments `UnusedImportRemovingPostRector` reads: nested annotations' names, and the
-    /// classes of `Class::NAME` values.
-    pub inner_names: Vec<String>,
+    /// The name of its `IdentifierTypeNode`: the tag's name as written, until a rule replaces it.
+    pub identifier: String,
+    /// `originalContent`: the arguments as the decorator read them.
+    original: String,
+    /// The arguments, as `StaticDoctrineAnnotationParser` makes them.
+    pub values: Vec<ArrayItem>,
 }
 
 /// What a child of the doc is.
@@ -115,7 +98,7 @@ pub(crate) struct Ident {
 #[derive(Clone, Debug)]
 pub(crate) struct Doc {
     pub text: String,
-    tokens: Vec<(Kind, usize, usize)>,
+    tokens: Vec<parser::Tok>,
     pub children: Vec<Child>,
     single_line: bool,
     /// `LAST_PHP_DOC_TOKEN_POSITION`.
@@ -187,37 +170,6 @@ const TEMPLATE: &[&str] = &[
     "@phpstan-template-contravariant",
     "@psalm-template-contravariant",
 ];
-/// The other tags `PhpDocParser::parseTagValue()` gives a value node other than a generic one.
-const OTHER: &[&str] = &[
-    "@param-immediately-invoked-callable",
-    "@phpstan-param-immediately-invoked-callable",
-    "@param-later-invoked-callable",
-    "@phpstan-param-later-invoked-callable",
-    "@pure-unless-callable-is-impure",
-    "@phpstan-pure-unless-callable-is-impure",
-    "@pure-unless-parameter-passed",
-    "@phpstan-pure-unless-parameter-passed",
-    "@deprecated",
-    "@method",
-    "@phpstan-method",
-    "@psalm-method",
-    "@phan-method",
-    "@phpstan-type",
-    "@psalm-type",
-    "@phan-type",
-    "@phpstan-import-type",
-    "@psalm-import-type",
-    "@phpstan-assert",
-    "@phpstan-assert-if-true",
-    "@phpstan-assert-if-false",
-    "@psalm-assert",
-    "@psalm-assert-if-true",
-    "@psalm-assert-if-false",
-    "@phan-assert",
-    "@phan-assert-if-true",
-    "@phan-assert-if-false",
-];
-
 /// `NodeTypes::TYPE_AWARE_NODES`: the value nodes whose presence lets `ClassRenamer` rename the doc's types.
 pub(crate) fn is_type_aware(child: &Child) -> bool {
     let Value::Typed(typed) = &child.value else {
@@ -233,19 +185,34 @@ pub(crate) fn is_type_aware(child: &Child) -> bool {
 }
 
 impl Doc {
-    /// Read the doc comment `text`; `resolve_tag` is `ClassAnnotationMatcher::resolveTagFullyQualifiedName()` at the
-    /// node the doc belongs to. `None` where Pun does not follow how phpdoc-parser and Rector's decorators draw the
-    /// children: a `@\Class` annotation, a token over a line break, a generic tag whose brackets stay open.
-    pub fn parse(text: &str, resolve_tag: &dyn Fn(&str) -> String) -> Option<Doc> {
-        if text.contains("@\\") {
-            return None;
-        }
-        let tokens = lex(text);
+    /// Read the doc comment `text`; `resolve_tag` is `ClassAnnotationMatcher::resolveTagFullyQualifiedName()` and
+    /// `narrow` the class `ObjectTypeSpecifier::narrowToFullyQualifiedOrAliasedObjectType()` gives (`None` for a
+    /// template), at the node the doc belongs to. `None` where Pun does not follow how Rector's
+    /// `DoctrineAnnotationDecorator` draws the children: a `@\Class` inside a text, nested annotations split over
+    /// tags (`mergeNestedDoctrineAnnotations()`), arguments Rector's parsers never finish reading.
+    pub fn parse(
+        text: &str,
+        resolve_tag: &dyn Fn(&str) -> String,
+        narrow: &dyn Fn(&str) -> Option<String>,
+    ) -> Option<Doc> {
+        let tokens = parser::tokenize(text);
+        let type_end = |start: usize| phpdoc::parse_prefix(&text[start..]).ok().map(|(_, offset)| start + offset);
+        let raw = parser::DocParser::new(text, &tokens, &type_end).parse_with_node();
         let mut children = Vec::new();
-        for (start, end) in child_ranges(text, &tokens) {
-            let (tag, value) = child_value(text, &tokens, start, end, resolve_tag)?;
+        for child in raw {
+            let (tag, value) = match child.kind {
+                // `processTextSpacelessInTextNode()` splits a text with a `@\Class` into annotations
+                parser::Kind::Text(text) if text.contains("@\\") || text.contains("})") => return None,
+                parser::Kind::Text(_) => (None, Value::Text),
+                parser::Kind::Tag { name, value, .. } => {
+                    let from = tokens[child.start].start + name.len();
+                    let to = tokens[child.end].start;
+                    let value = tag_value(text, &tokens, &name, value, from, to, resolve_tag, narrow)?;
+                    (Some(name), value)
+                }
+            };
             children.push(Child {
-                start_end: (start, end),
+                start_end: (child.start, child.end),
                 tag,
                 value,
                 changed: false,
@@ -254,7 +221,7 @@ impl Doc {
         }
         Some(Doc {
             text: text.to_string(),
-            single_line: !tokens.iter().any(|t| t.0 == Kind::Eol),
+            single_line: !tokens.iter().any(|t| t.ty == t::PHPDOC_EOL),
             last_token_position: children.last().map(|c| c.start_end.1),
             tokens,
             children,
@@ -288,9 +255,9 @@ impl Doc {
                     }
                 }
                 Value::Annotation(annotation) => {
-                    // the `IdentifierTypeNode` of the annotation's name
-                    push(c.tag.as_deref().unwrap_or_default(), false);
-                    let _ = annotation;
+                    // the annotation's own `IdentifierTypeNode`, then those of the annotations nested in its values
+                    push(&annotation.identifier, false);
+                    nested_identifiers(&annotation.values, &mut |name| push(name, false));
                 }
                 Value::Other(names) => names.iter().for_each(|n| push(n, false)),
                 Value::Text | Value::Generic(_) => {}
@@ -317,20 +284,24 @@ impl Doc {
                 }
                 typed.replaced.push(ident.index);
             }
-            // the annotation's name is printed from the tag, never from its identifier
+            // the annotation's own identifier, never printed (the tag's name is), or a nested one
+            Value::Annotation(annotation) if ident.index == 0 => annotation.identifier = name.to_string(),
+            Value::Annotation(annotation) => {
+                let mut index = 0;
+                nested_identifiers_mut(&mut annotation.values, &mut |current| {
+                    index += 1;
+                    if index == ident.index {
+                        *current = name.to_string();
+                    }
+                });
+            }
             _ => child.unprintable = true,
         }
     }
 
     /// Mark the child `child` changed (a value inside a Doctrine annotation was set).
     pub fn set_changed(&mut self, child: usize) {
-        let child = &mut self.children[child];
-        child.changed = true;
-        if let Value::Annotation(annotation) = &child.value
-            && annotation.items.is_none()
-        {
-            child.unprintable = true;
-        }
+        self.children[child].changed = true;
     }
 
     /// `NameImportingPhpDocNodeVisitor::enterSpacelessPhpDocTagNode()`: the annotation `child` named `name` (its
@@ -345,23 +316,36 @@ impl Doc {
         self.children.iter().any(is_type_aware)
     }
 
-    /// The first child that is an annotation of one of `classes` (`DoctrineAnnotationTagValueNode::hasClassName()`:
-    /// its name without `@`, or the class it resolves to).
-    pub fn annotation(&self, classes: &[&str]) -> Option<usize> {
-        self.children.iter().position(|c| match &c.value {
-            Value::Annotation(a) => {
-                let name = c.tag.as_deref().unwrap_or_default().trim_matches('@');
-                classes.iter().any(|class| *class == name || *class == a.class)
+    /// `PhpDocInfo::getByAnnotationClasses()`: the first annotation of the first of `classes` that has one
+    /// (`DoctrineAnnotationTagValueNode::hasClassName()`: its identifier without `@`, or the class it resolves to),
+    /// nested ones included, as its child and the path to it ([`Self::values_mut`]).
+    pub fn find_annotation(&self, classes: &[&str]) -> Option<(usize, Vec<(usize, bool)>)> {
+        for class in classes {
+            let is = |identifier: &str, resolved: &str| identifier.trim_matches('@') == *class || resolved == *class;
+            for (i, child) in self.children.iter().enumerate() {
+                let Value::Annotation(a) = &child.value else {
+                    continue;
+                };
+                if is(&a.identifier, &a.class) {
+                    return Some((i, Vec::new()));
+                }
+                let mut path = Vec::new();
+                if locate(&a.values, &is, &mut path) {
+                    return Some((i, path));
+                }
             }
-            _ => false,
-        })
+        }
+        None
     }
 
-    /// The arguments of the annotation child `child`, `None` where Pun does not read them.
-    pub fn items_mut(&mut self, child: usize) -> Option<&mut Vec<Item>> {
-        match &mut self.children[child].value {
-            Value::Annotation(a) => a.items.as_mut(),
-            _ => None,
+    /// The class the annotation at `child` and `path` resolves to, and its values.
+    pub fn values_mut(&mut self, child: usize, path: &[(usize, bool)]) -> (&str, &mut Vec<ArrayItem>) {
+        let Value::Annotation(a) = &mut self.children[child].value else {
+            unreachable!("not an annotation")
+        };
+        match path.is_empty() {
+            true => (&a.class, &mut a.values),
+            false => navigate(&mut a.values, path),
         }
     }
 
@@ -378,14 +362,14 @@ impl Doc {
                         const_fetches(t, &mut |class| names.push(resolve(class)));
                     }
                 }
-                Value::Annotation(a) => {
-                    for inner in &a.inner_names {
-                        match inner.strip_prefix('@') {
-                            Some(nested) => names.push(nested.to_string()),
-                            None => names.push(resolve(inner)),
-                        }
+                // `getArrayItemNodeClassNames()`: a string value `Class::NAME` (`ArrayItemClassNameDecorator`)
+                Value::Annotation(a) => array_items(&a.values, &mut |item| {
+                    if let Val::Str(value) = &item.value
+                        && let [class, _] = value.split("::").collect::<Vec<_>>()[..]
+                    {
+                        names.push(resolve(class));
                     }
-                }
+                }),
                 Value::Generic(value) if !value.is_empty() => {
                     names.push(value.clone());
                     match value.contains("::") {
@@ -461,9 +445,6 @@ impl Doc {
                 }
             }
             names.extend(idents.iter().filter(|id| id.child == i).map(|id| id.name.clone()));
-            if let Value::Annotation(a) = &child.value {
-                names.extend(a.inner_names.iter().filter(|n| n.starts_with('@')).cloned());
-            }
         }
         names
     }
@@ -522,10 +503,10 @@ impl Doc {
 
     /// `addTokensFromTo()` (no child is removed).
     fn add_tokens_from_to(&self, mut output: String, from: usize, to: usize, skip_empty_lines_above: bool) -> String {
-        let text = |i: usize| self.tokens.get(i).map_or("", |t| &self.text[t.1..t.2]);
+        let text = |i: usize| self.tokens.get(i).map_or("", |t| &self.text[t.start..t.end]);
         let mut from = from;
         // include also space before, in case of inlined docs
-        if from > 0 && self.tokens[from - 1].0 == Kind::Ws {
+        if from > 0 && self.tokens[from - 1].ty == t::HORIZONTAL_WS {
             from -= 1;
         }
         // skip extra empty lines above if this is the last one
@@ -679,313 +660,223 @@ fn other_idents(tag: &phpdoc::Tag) -> Vec<String> {
     names
 }
 
-/// The tag name and value of the child `[start, end)`; `None` where Pun does not follow the decorator.
-fn child_value(
+/// The value of the tag `name` from `from` to `to` (bytes of the doc), as `DoctrineAnnotationDecorator` leaves it;
+/// `None` where Pun does not follow the decorator.
+#[allow(clippy::too_many_arguments)]
+fn tag_value(
     text: &str,
-    tokens: &[(Kind, usize, usize)],
-    start: usize,
-    end: usize,
+    tokens: &[parser::Tok],
+    name: &str,
+    value: parser::Value,
+    from: usize,
+    to: usize,
     resolve_tag: &dyn Fn(&str) -> String,
-) -> Option<(Option<String>, Value)> {
-    let from = tokens[start].1;
-    let to = tokens[end].1;
-    let first = &text[tokens[start].1..tokens[start].2];
-    let Some(name) = (tokens[start].0 == Kind::Other).then(|| tag_name(first)).flatten() else {
-        // a text node; one with `})` is merged into the generic tag before it (`mergeNestedDoctrineAnnotations()`)
-        if joined(text, tokens, start, end).contains("})") {
-            return None;
+    narrow: &dyn Fn(&str) -> Option<String>,
+) -> Option<Value> {
+    let bare = name.trim_start_matches('@');
+    match value {
+        parser::Value::Known => {
+            // `processDescriptionAsSpacelessPhpDoctagNode()` splits a description over lines with a `@\Class`
+            if text[from..to].contains("@\\") && text[from..to].contains('\n') {
+                return None;
+            }
+            if let Some(value) = typed(text, tokens, name, from, to) {
+                return Some(value);
+            }
+            // a value its parser rejects is an `InvalidTagValueNode`, which the decorator makes an annotation of the
+            // tag's name; a parsed `@method` and its kin keep their own value node
+            let doc = format!("/** {} */", &text[from - name.len()..to]);
+            let tag = phpdoc::tags(&doc).and_then(|tags| tags.into_iter().next());
+            match tag.as_ref().map(|t| &t.value) {
+                Some(phpdoc::TagValue::Invalid(..)) => {
+                    let description = generic_value(text, tokens, from, to);
+                    process_doctrine(bare, description, None, resolve_tag, narrow)
+                }
+                _ => Some(Value::Other(tag.map(|t| other_idents(&t)).unwrap_or_default())),
+            }
         }
-        return Some((None, Value::Text));
-    };
-    let value_from = from + name.len();
-    let rest = &text[value_from..to];
-    let tag = Some(name.to_string());
-    if let Some(value) = typed(text, tokens, name, value_from, to) {
-        return Some((tag, value));
-    }
-    if OTHER.contains(&name) || PARAM.contains(&name) || VAR.contains(&name) || PLAIN.contains(&name)
-        || NAMED.contains(&name) || TEMPLATE.contains(&name)
-    {
-        // a value its parser rejects is an `InvalidTagValueNode`, which the decorator makes a Doctrine annotation of
-        // the tag's name; a parsed `@method` and its kin keep their own value node
-        let doc = format!("/** {} */", &text[from..to]);
-        let names = phpdoc::tags(&doc)
-            .and_then(|tags| tags.into_iter().next())
-            .map(|tag| match &tag.value {
-                phpdoc::TagValue::Invalid(..) => vec![name.to_string()],
-                _ => other_idents(&tag),
-            })
-            .unwrap_or_default();
-        return Some((tag, Value::Other(names)));
-    }
-    let trimmed = rest.trim_start_matches([' ', '\t']);
-    if trimmed.starts_with('(') {
-        // phpdoc-parser's `DoctrineTagValueNode`, which the decorator always takes for an annotation
-        let class = resolve_tag(name);
-        return Some((tag, Value::Annotation(annotation(text, tokens, end, value_from, class, true))));
-    }
-    let value = generic_value(text, tokens, value_from, to);
-    // `transformGenericTagValueNodesToDoctrineAnnotationTagValueNodes()`
-    let class = resolve_tag(name);
-    if class.contains('\\') || class == "Target" {
-        if !closed_content(&value) {
-            return None;
+        parser::Value::Invalid(description) => process_doctrine(bare, description, None, resolve_tag, narrow),
+        parser::Value::Doctrine { args, description } => {
+            process_doctrine(bare, args.join(", "), Some(description), resolve_tag, narrow)
         }
-        return Some((tag, Value::Annotation(annotation(text, tokens, end, value_from, class, false))));
+        parser::Value::Generic(value) => {
+            // `mergeNestedDoctrineAnnotations()` joins an open value with the tags after it
+            if !closed_content(&value) {
+                return None;
+            }
+            let class = resolve_tag(name);
+            if !class.contains('\\') && class != "Target" {
+                return Some(Value::Generic(value));
+            }
+            // `resolveFqnAnnotationSpacelessPhpDocTagNode()` splits a value with a `@\Class` into annotations
+            if value.contains("@\\") {
+                return None;
+            }
+            annotation(name, value, class, resolve_tag)
+        }
     }
-    if !closed_content(&value) {
-        return None;
-    }
-    Some((tag, Value::Generic(value)))
 }
 
-/// The text of tokens `[start, end)`, each line break as `\n`.
-fn joined(text: &str, tokens: &[(Kind, usize, usize)], start: usize, end: usize) -> String {
-    tokens[start..end]
-        .iter()
-        .map(|t| match t.0 {
-            Kind::Eol => "\n",
-            _ => &text[t.1..t.2],
+/// `DoctrineAnnotationDecorator::processDoctrine()`: `values` are the printed arguments of a `DoctrineTagValueNode`
+/// (with its `description`) or an `InvalidTagValueNode`'s value.
+fn process_doctrine(
+    name: &str,
+    values: String,
+    description: Option<String>,
+    resolve_tag: &dyn Fn(&str) -> String,
+    narrow: &dyn Fn(&str) -> Option<String>,
+) -> Option<Value> {
+    // a template is no object type: Rector leaves the tag a `DoctrineTagValueNode`
+    let class = narrow(name)?;
+    let mut values = values;
+    if !values.is_empty() {
+        values = star_comment(&values);
+        if let Some(description) = description {
+            values = format!("({values}){description}");
+        }
+    }
+    annotation(&format!("@{name}"), values, class, resolve_tag)
+}
+
+/// `STAR_COMMENT_REGEX`: the `*` that starts a line (white space before it), removed.
+fn star_comment(values: &str) -> String {
+    values
+        .split('\n')
+        .map(|line| match line.trim_start().strip_prefix('*') {
+            Some(rest) => rest,
+            None => line,
         })
-        .collect()
+        .collect::<Vec<_>>()
+        .join("\n")
+}
+
+/// `createDoctrineSpacelessPhpDocTagNode()`; `None` where Rector's parsers never finish reading `content`.
+fn annotation(tag: &str, content: String, class: String, resolve_tag: &dyn Fn(&str) -> String) -> Option<Value> {
+    let values = parser::annotation_values(&content, resolve_tag).ok()?;
+    Some(Value::Annotation(Annotation {
+        class,
+        identifier: tag.to_string(),
+        original: content,
+        values,
+    }))
 }
 
 /// A `GenericTagValueNode`'s value: what follows the tag name, its leading white space aside, its lines joined by
 /// `\n`.
-fn generic_value(text: &str, tokens: &[(Kind, usize, usize)], from: usize, to: usize) -> String {
+fn generic_value(text: &str, tokens: &[parser::Tok], from: usize, to: usize) -> String {
     let mut value = String::new();
-    for t in tokens.iter().filter(|t| t.1 >= from && t.2 <= to) {
-        match t.0 {
-            Kind::Eol => value.push('\n'),
-            _ => value.push_str(&text[t.1..t.2]),
+    for t in tokens.iter().filter(|t| t.start >= from && t.end <= to) {
+        match t.ty {
+            t::PHPDOC_EOL => value.push('\n'),
+            _ => value.push_str(&text[t.start..t.end]),
         }
     }
-    if let Some(t) = tokens.iter().find(|t| t.1 < from && t.2 > from) {
-        value.insert_str(0, &text[from..t.2]);
+    if let Some(t) = tokens.iter().find(|t| t.start < from && t.end > from) {
+        value.insert_str(0, &text[from..t.end]);
     }
     value.trim_matches([' ', '\t']).trim_end_matches('\n').to_string()
-}
-
-/// `Lexer::generateRegexp()`'s alternatives in order (phpdoc-parser 2.3; PCRE alternation: the first that matches
-/// wins). Only the token values matter here, so the types are left out.
-const LEXER_PATTERNS: &[&str] = &[
-    r"[\x09\x20]++",
-    r"(?:[\\]?+[a-z_\x80-\xFF][0-9a-z_\x80-\xFF-]*+)++",
-    r"\$this(?![0-9a-z_\x80-\xFF])",
-    r"\$[a-z_\x80-\xFF][0-9a-z_\x80-\xFF]*+",
-    r"&(?=\s*+(?:[.,=)]|(?:\$(?!this(?![0-9a-z_\x80-\xFF])))))",
-    r"\|",
-    "&",
-    r"\?",
-    "!",
-    r"\(",
-    r"\)",
-    "<",
-    ">",
-    r"\[",
-    r"\]",
-    r"\{",
-    r"\}",
-    ",",
-    r"\/\/[^\r\n]*(?=\n|\r|\*/)",
-    r"\.\.\.",
-    "::",
-    "=>",
-    "->",
-    "=",
-    ":",
-    r"/\*\*(?=\s)\x20?+",
-    r"\*/",
-    r"@(?:[a-z][a-z0-9-\\]+:)?[a-z][a-z0-9-\\]*+",
-    r"@[a-z_\\][a-z0-9_\:\\]*[a-z_][a-z0-9_]*",
-    r"\r?+\n[\x09\x20]*+(?:\*(?!/)\x20?+)?",
-    r"[+\-]?(?:(?:[0-9]++(?:_[0-9]++)*\.[0-9]*+(?:_[0-9]++)*(?:e[+\-]?[0-9]++(?:_[0-9]++)*)?)|(?:[0-9]*+(?:_[0-9]++)*\.[0-9]++(?:_[0-9]++)*(?:e[+\-]?[0-9]++(?:_[0-9]++)*)?)|(?:[0-9]++(?:_[0-9]++)*e[+\-]?[0-9]++(?:_[0-9]++)*))",
-    r"[+\-]?(?:(?:0b[0-1]++(?:_[0-1]++)*)|(?:0o[0-7]++(?:_[0-7]++)*)|(?:0x[0-9a-f]++(?:_[0-9a-f]++)*)|(?:[0-9]++(?:_[0-9]++)*))",
-    r"'(?:\\[^\r\n]|[^'\r\n\\])*+'",
-    r#""(?:\\[^\r\n]|[^"\r\n\\])*+""#,
-    r#""(?:""|[^"])*+""#,
-    r"\*",
-    r"(?:(?!\*/)[^\s])++",
-];
-
-/// phpdoc-parser's `Lexer::tokenize()`, the token values without `TOKEN_END`. Like `preg_match_all` with the `A`
-/// modifier, lexing stops at the first byte no alternative matches (a lone `\r`, a vertical tab).
-fn lexer_values(input: &str) -> Vec<&str> {
-    use std::sync::OnceLock;
-    static RE: OnceLock<pcre2::bytes::Regex> = OnceLock::new();
-    let re = RE.get_or_init(|| {
-        pcre2::bytes::RegexBuilder::new()
-            .caseless(true)
-            .dotall(true)
-            .build(&format!(r"\G(?:{})", LEXER_PATTERNS.join("|")))
-            .expect("phpdoc lexer regex")
-    });
-    let mut values = Vec::new();
-    let mut offset = 0;
-    while let Some(found) = re.find_at(input.as_bytes(), offset).ok().flatten() {
-        values.push(&input[found.start()..found.end()]);
-        offset = found.end();
-    }
-    values
 }
 
 /// `DoctrineAnnotationDecorator::isClosedContent()` (phpdoc-parser's tokens holding a bracket, counted).
 fn closed_content(value: &str) -> bool {
     let (mut open, mut close) = (0, 0);
-    for token in lexer_values(value) {
+    for token in parser::tokenize(value) {
+        let token = &value[token.start..token.end];
         open += usize::from(token.contains(['(', '{']));
         close += usize::from(token.contains([')', '}']));
     }
     open == close
 }
 
-/// A Doctrine annotation child: its arguments read where they are flat and on one line.
-fn annotation(
-    text: &str,
-    tokens: &[(Kind, usize, usize)],
-    end: usize,
-    value_from: usize,
-    class: String,
-    parenthesized: bool,
-) -> Annotation {
-    let value = generic_value(text, tokens, value_from, tokens[end].1);
-    let inner_names = inner_names(&value);
-    let items = match parenthesized {
-        true => flat_items(&value),
-        false => Some(Vec::new()),
-    };
-    Annotation {
-        class,
-        items,
-        inner_names,
+/// The identifiers of the annotations nested in `values`, each before its own values.
+fn nested_identifiers(values: &[ArrayItem], f: &mut dyn FnMut(&str)) {
+    for item in values {
+        for (_, v) in item_vals(item) {
+            match v {
+                Val::Curly(items) | Val::List(items) => nested_identifiers(items, f),
+                Val::Annotation(nested) => {
+                    f(&nested.identifier);
+                    nested_identifiers(&nested.values, f);
+                }
+                _ => {}
+            }
+        }
     }
 }
 
-/// The names of the annotations nested in an annotation's arguments, and the classes of its `Class::NAME` values.
-fn inner_names(value: &str) -> Vec<String> {
-    let mut names = Vec::new();
-    let b = value.as_bytes();
-    let word = |i: usize| {
-        i + b[i..]
-            .iter()
-            .take_while(|c| c.is_ascii_alphanumeric() || **c == b'_' || **c == b'\\' || **c >= 0x80)
-            .count()
+/// [`nested_identifiers`], to replace them.
+fn nested_identifiers_mut(values: &mut [ArrayItem], f: &mut dyn FnMut(&mut String)) {
+    for item in values {
+        let key = match &mut item.key {
+            Some(Key::Val(key)) => Some(key),
+            _ => None,
+        };
+        for v in std::iter::once(&mut item.value).chain(key) {
+            match v {
+                Val::Curly(items) | Val::List(items) => nested_identifiers_mut(items, f),
+                Val::Annotation(nested) => {
+                    f(&mut nested.identifier);
+                    nested_identifiers_mut(&mut nested.values, f);
+                }
+                _ => {}
+            }
+        }
+    }
+}
+
+/// The value of `item`, then its key (`ArrayItemNode`'s properties in order).
+fn item_vals(item: &ArrayItem) -> impl Iterator<Item = (bool, &Val)> {
+    let key = match &item.key {
+        Some(Key::Val(key)) => Some((true, key)),
+        _ => None,
     };
-    let mut i = 0;
-    let mut in_string = false;
-    while i < b.len() {
-        match b[i] {
-            b'"' => in_string = !in_string,
-            b'@' if !in_string => {
-                let end = word(i + 1);
-                if end > i + 1 {
-                    names.push(format!("@{}", &value[i + 1..end]));
-                }
-                i = end;
-                continue;
+    std::iter::once((false, &item.value)).chain(key)
+}
+
+/// Whether a nested annotation in `values` is one `is` accepts, the path to it then in `path`.
+fn locate(values: &[ArrayItem], is: &dyn Fn(&str, &str) -> bool, path: &mut Vec<(usize, bool)>) -> bool {
+    for (i, item) in values.iter().enumerate() {
+        for (in_key, v) in item_vals(item) {
+            path.push((i, in_key));
+            let found = match v {
+                Val::Annotation(nested) => is(&nested.identifier, &nested.class) || locate(&nested.values, is, path),
+                Val::Curly(items) | Val::List(items) => locate(items, is, path),
+                _ => false,
+            };
+            if found {
+                return true;
             }
-            c if !in_string && (c.is_ascii_alphabetic() || c == b'_' || c == b'\\') => {
-                let end = word(i);
-                if value[end..].starts_with("::") {
-                    names.push(value[i..end].to_string());
-                }
-                i = end;
-                continue;
-            }
+            path.pop();
+        }
+    }
+    false
+}
+
+/// The nested annotation at `path` in `values`: the class it resolves to and its values.
+fn navigate<'a>(values: &'a mut [ArrayItem], path: &[(usize, bool)]) -> (&'a str, &'a mut Vec<ArrayItem>) {
+    let (i, in_key) = path[0];
+    let item = &mut values[i];
+    let v = match (in_key, &mut item.key) {
+        (true, Some(Key::Val(key))) => key,
+        _ => &mut item.value,
+    };
+    match (v, path.len()) {
+        (Val::Annotation(nested), 1) => (&nested.class, &mut nested.values),
+        (Val::Annotation(nested), _) => navigate(&mut nested.values, &path[1..]),
+        (Val::Curly(items) | Val::List(items), _) => navigate(items, &path[1..]),
+        _ => unreachable!("a path to an annotation"),
+    }
+}
+
+/// Every `ArrayItemNode` in `values`, nested ones included.
+fn array_items(values: &[ArrayItem], f: &mut dyn FnMut(&ArrayItem)) {
+    for item in values {
+        f(item);
+        match &item.value {
+            Val::Curly(items) | Val::List(items) => array_items(items, f),
+            Val::Annotation(nested) => array_items(&nested.values, f),
             _ => {}
         }
-        i += 1;
-    }
-    names
-}
-
-/// The arguments of `(...)` as `ArrayParser` makes them, where each is `key=value` or a value, the value a `"..."`
-/// string, a plain word or a `{...}` list of those (`CurlyListNode`) on the one line; `None` otherwise.
-fn flat_items(value: &str) -> Option<Vec<Item>> {
-    let inner = value.strip_prefix('(')?.trim_end().strip_suffix(')')?;
-    if inner.contains(['\n', '@', '(', ')']) {
-        return None;
-    }
-    let mut items = Vec::new();
-    let mut rest = inner.trim();
-    while !rest.is_empty() {
-        // a key: a word followed by `=`
-        let mut key = None;
-        let word_len = rest
-            .bytes()
-            .take_while(|c| c.is_ascii_alphanumeric() || *c == b'_')
-            .count();
-        if word_len > 0 && rest[word_len..].trim_start().starts_with('=') {
-            key = Some(rest[..word_len].to_string());
-            rest = rest[word_len..].trim_start()[1..].trim_start();
-        }
-        let (value, after) = match rest.strip_prefix('{') {
-            Some(list) => {
-                let (inside, after) = list.split_once('}')?;
-                let mut values = Vec::new();
-                let mut rest = inside.trim();
-                while !rest.is_empty() {
-                    let (value, after) = item_value(rest)?;
-                    values.push(value);
-                    rest = next_item(after)?;
-                }
-                (ItemValue::Curly(values), after)
-            }
-            None => item_value(rest)?,
-        };
-        items.push(Item { key, value });
-        rest = next_item(after)?;
-    }
-    Some(items)
-}
-
-/// What follows a value: the next item after its `,`, `""` at the end, `None` for anything else.
-fn next_item(after: &str) -> Option<&str> {
-    let after = after.trim_start();
-    match after.strip_prefix(',') {
-        Some(next) => Some(next.trim_start()),
-        None if after.is_empty() => Some(after),
-        None => None,
-    }
-}
-
-/// A `"..."` string or a plain word at the start of `rest`, and what follows it.
-fn item_value(rest: &str) -> Option<(ItemValue, &str)> {
-    if let Some(quoted) = rest.strip_prefix('"') {
-        // `""` stands for one `"`
-        let qb = quoted.as_bytes();
-        let mut i = 0;
-        while i < qb.len() {
-            if qb[i] == b'"' {
-                if qb.get(i + 1) == Some(&b'"') {
-                    i += 2;
-                    continue;
-                }
-                return Some((ItemValue::String(quoted[..i].replace("\"\"", "\"")), &quoted[i + 1..]));
-            }
-            i += 1;
-        }
-        return None;
-    }
-    let len = rest.find(',').unwrap_or(rest.len());
-    let plain = rest[..len].trim();
-    if plain.is_empty() || plain.contains([' ', '\t', '\'', '=', '{', '}']) {
-        return None;
-    }
-    Some((ItemValue::Plain(plain.to_string()), &rest[len..]))
-}
-
-/// `ArrayItemNode::__toString()`'s value: a `StringNode` quoted, `true` and `false` as constants, `null` empty.
-fn print_value(value: &ItemValue) -> String {
-    match value {
-        ItemValue::String(s) => format!("\"{}\"", s.replace('"', "\"\"")),
-        ItemValue::Plain(p) => match p.to_ascii_lowercase().as_str() {
-            "true" | "false" => p.to_ascii_lowercase(),
-            "null" => String::new(),
-            _ => p.clone(),
-        },
-        // `CurlyListNode::implode()`
-        ItemValue::Curly(values) => format!("{{{}}}", values.iter().map(print_value).collect::<Vec<_>>().join(", ")),
     }
 }
 
@@ -1020,31 +911,19 @@ fn print_child(child: &Child) -> Option<String> {
             };
             Some(format!("{name} {}", value.trim()).trim().to_string())
         }
-        Value::Annotation(Annotation { items: Some(items), .. }) => {
-            // `SpacelessPhpDocTagNode`: the name, then the annotation's `(%s)` of its items (nothing without items:
-            // `DoctrineAnnotationTagValueNode::__toString()` of a changed node without values)
-            let printed: Vec<String> = items
-                .iter()
-                .map(|item| {
-                    let value = print_value(&item.value);
-                    match &item.key {
-                        Some(key) => format!("{key}={value}"),
-                        None => value,
-                    }
-                })
-                .collect();
-            Some(match printed.is_empty() {
-                true => name.to_string(),
-                false => format!("{name}({})", printed.join(", ")),
-            })
-        }
+        // `SpacelessPhpDocTagNode`: the name, then `DoctrineAnnotationTagValueNode::__toString()` (always changed)
+        Value::Annotation(a) => Some(match (a.values.is_empty(), a.original == "()") {
+            (false, _) => format!("{name}({})", parser::join(&a.values)),
+            (true, true) => format!("{name}()"),
+            (true, false) => name.to_string(),
+        }),
         _ => None,
     }
 }
 
 /// The value of a typed tag from `from` to `to` (bytes of the doc), `None` for a tag Pun does not read this way or a
 /// value its parser rejects.
-fn typed(text: &str, tokens: &[(Kind, usize, usize)], name: &str, from: usize, to: usize) -> Option<Value> {
+fn typed(text: &str, tokens: &[parser::Tok], name: &str, from: usize, to: usize) -> Option<Value> {
     let value = &text[from..to];
     let skip = |at: usize| at + value[at..].len() - value[at..].trim_start_matches([' ', '\t']).len();
     let preceded_by_ws = |at: usize| at > 0 && matches!(value.as_bytes()[at - 1], b' ' | b'\t');

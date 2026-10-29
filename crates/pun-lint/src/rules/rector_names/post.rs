@@ -237,7 +237,11 @@ impl<'s> Session<'s> {
                 uses: &uses,
             };
             let ctx = self.ctx;
-            let doc = Doc::parse(text, &|tag| resolve::resolve_tag(ctx, scope, tag));
+            let doc = Doc::parse(
+                text,
+                &|tag| resolve::resolve_tag(ctx, scope, tag),
+                &|name| resolve::narrow(ctx, scope, name).class_name().map(str::to_string),
+            );
             self.docs.push(DocState {
                 span,
                 view,
@@ -747,31 +751,31 @@ impl<'s> Session<'s> {
             let mut doc = doc;
             for ident in doc.idents() {
                 let annotation = matches!(doc.children[ident.child].value, super::doc::Value::Annotation(_));
-                // the annotation's own name is read twice: as the tag (`@` and `\` trimmed) and as its identifier
-                let candidates: Vec<String> = match annotation {
-                    true => vec![ident.name.trim_start_matches(['@', '\\']).to_string(), ident.name.clone()],
-                    false if ident.name.contains('\\') => vec![ident.name.clone()],
-                    false => Vec::new(),
-                };
-                for name in candidates {
-                    let Some(short) = self.import_doc_name(&name, ident.template_parent, namespace.as_deref(), class.as_deref(), options) else {
-                        continue;
-                    };
-                    match annotation {
-                        true => doc.set_tag(ident.child, &format!("@{short}")),
-                        false => doc.set_ident(&ident, &short),
+                match (annotation, ident.index) {
+                    // the annotation's own name is read twice: as the tag (`@` and `\` trimmed,
+                    // `enterSpacelessPhpDocTagNode()`) and as its identifier (`processDoctrineAnnotationTagValueNode()`)
+                    (true, 0) => {
+                        let tag = doc.children[ident.child].tag.clone().unwrap_or_default();
+                        if let Some(short) = self.import_doc_name(tag.trim_start_matches(['@', '\\']), false, namespace.as_deref(), class.as_deref(), options) {
+                            doc.set_tag(ident.child, &format!("@{short}"));
+                        }
+                        if let Some(short) = self.import_doc_name(&ident.name, false, namespace.as_deref(), class.as_deref(), options) {
+                            doc.set_ident(&ident, &short);
+                        }
                     }
-                }
-            }
-            for child in 0..doc.children.len() {
-                let inner = match &doc.children[child].value {
-                    super::doc::Value::Annotation(a) => a.inner_names.clone(),
-                    _ => continue,
-                };
-                for name in inner.iter().filter(|n| n.starts_with('@')) {
-                    if self.import_doc_name(name, false, namespace.as_deref(), class.as_deref(), options).is_some() {
-                        self.unsupported = true;
+                    // a nested annotation's identifier (`processDoctrineAnnotationTagValueNode()`, which reads it
+                    // without a `\`)
+                    (true, _) => {
+                        if let Some(short) = self.import_doc_name(&ident.name, false, namespace.as_deref(), class.as_deref(), options) {
+                            doc.set_ident(&ident, &short);
+                        }
                     }
+                    (false, _) if ident.name.contains('\\') => {
+                        if let Some(short) = self.import_doc_name(&ident.name, ident.template_parent, namespace.as_deref(), class.as_deref(), options) {
+                            doc.set_ident(&ident, &short);
+                        }
+                    }
+                    _ => {}
                 }
             }
             if doc.is_changed() {

@@ -18,7 +18,7 @@ use pun_problem::{Edit, Span};
 use serde_json::Value;
 
 use super::report;
-use crate::rules::rector_names::doc::ItemValue;
+use crate::rules::rector_names::phpdoc_parser::Val;
 use crate::rules::rector_names::post::{Carry, Options, Session, doc_type};
 use crate::rules::rector_names::resolve::{has_class, resolve_tag};
 use crate::rules::types::facts::facts;
@@ -211,7 +211,7 @@ impl RenameClass {
                 session.unsupported();
                 continue;
             };
-            if !doc.has_type_aware() && doc.annotation(TYPE_AWARE_ANNOTATIONS).is_none() {
+            if !doc.has_type_aware() && doc.find_annotation(TYPE_AWARE_ANNOTATIONS).is_none() {
                 continue;
             }
             let mut doc = doc.clone();
@@ -228,7 +228,6 @@ impl RenameClass {
                 }
             }
             // `PhpDocClassRenamer`
-            let mut unsupported = false;
             for class in [
                 "Symfony\\Component\\Validator\\Constraints\\Choice",
                 "Doctrine\\ORM\\Mapping\\OneToMany",
@@ -242,21 +241,18 @@ impl RenameClass {
                     ],
                     _ => &[class],
                 };
-                let Some(child) = doc.annotation(classes) else {
+                let Some((child, path)) = doc.find_annotation(classes) else {
                     continue;
                 };
-                let embedded = doc.annotation(&["Doctrine\\ORM\\Mapping\\Embedded"]) == Some(child);
-                let Some(items) = doc.items_mut(child) else {
-                    unsupported = true;
-                    continue;
-                };
+                let (resolved, items) = doc.values_mut(child, &path);
+                let embedded = resolved == "Doctrine\\ORM\\Mapping\\Embedded";
                 let mut changed = false;
                 match class {
                     // `processAssertChoiceTagValueNode()`: the class of a `callback={"Class", "method"}`
                     "Symfony\\Component\\Validator\\Constraints\\Choice" => {
-                        if let Some(item) = items.iter_mut().find(|i| i.key.as_deref() == Some("callback"))
-                            && let ItemValue::Curly(values) = &mut item.value
-                            && let Some(ItemValue::String(callback_class)) = values.first_mut()
+                        if let Some(item) = items.iter_mut().find(|i| i.key_is("callback"))
+                            && let Val::Curly(values) = &mut item.value
+                            && let Some(Val::StringNode(callback_class)) = values.first_mut().map(|v| &mut v.value)
                             && let Some((old, new)) = self.renames.iter().find(|(old, _)| old == callback_class)
                         {
                             collected.push(old.clone());
@@ -266,14 +262,14 @@ impl RenameClass {
                     }
                     "Doctrine\\ORM\\Mapping\\OneToMany" => {
                         let key = if embedded { "class" } else { "targetEntity" };
-                        if let Some(item) = items.iter_mut().find(|i| i.key.as_deref() == Some(key))
-                            && let ItemValue::String(target) = &item.value
+                        if let Some(item) = items.iter_mut().find(|i| i.key_is(key))
+                            && let Val::StringNode(target) = &item.value
                         {
                             let resolved = resolve_tag(ctx, scope, target);
                             for (old, new) in &self.renames {
                                 if resolved == *old {
                                     collected.push(old.clone());
-                                    item.value = ItemValue::String(new.clone());
+                                    item.value = Val::StringNode(new.clone());
                                     changed = true;
                                 }
                             }
@@ -282,25 +278,25 @@ impl RenameClass {
                     _ => {
                         for (old, new) in &self.renames {
                             if let Some(item) = items.iter_mut().find(|i| i.key.is_none())
-                                && let ItemValue::String(value) = &item.value
+                                && let Val::StringNode(value) = &item.value
                             {
                                 if value == old {
-                                    item.value = ItemValue::String(new.clone());
+                                    item.value = Val::StringNode(new.clone());
                                     continue;
                                 }
                                 collected.push(old.clone());
                                 // `'#\b' . preg_quote($oldClass, '#') . 'b#'`: the old name followed by a `b`
                                 let replaced = replace_followed_by_b(value, old, new);
-                                item.value = ItemValue::String(replaced);
+                                item.value = Val::StringNode(replaced);
                                 changed = true;
                             }
-                            if let Some(item) = items.iter_mut().find(|i| i.key.as_deref() == Some("type"))
-                                && let ItemValue::String(value) = &item.value
+                            if let Some(item) = items.iter_mut().find(|i| i.key_is("type"))
+                                && let Val::StringNode(value) = &item.value
                                 && value == old
                             {
                                 // without a reprint (Rector resets `ORIG_NODE` of the silent item only), the
                                 // printer keeps this item as written unless the silent one changed too
-                                item.value = ItemValue::String(new.clone());
+                                item.value = Val::StringNode(new.clone());
                             }
                         }
                     }
@@ -308,10 +304,6 @@ impl RenameClass {
                 if changed {
                     doc.set_changed(child);
                 }
-            }
-            if unsupported {
-                session.unsupported();
-                continue;
             }
             for old in collected {
                 session.collect_renamed(&old);
