@@ -12,7 +12,7 @@ use mago_analyzer::{
     analysis_result::AnalysisResult,
     plugin::{
         ExpressionHook, HookContext, HookResult, InvocationInfo, MethodReturnTypeProvider,
-        MethodTarget, PluginRegistry, Provider, ProviderContext, ProviderMeta,
+        MethodTarget, Provider, ProviderContext, ProviderMeta, create_registry_with_plugins,
     },
     settings::Settings,
 };
@@ -21,7 +21,14 @@ use mago_codex::{
     reference::SymbolReferences,
     scanner::scan_program,
     ttype::{
-        TType, get_explicit_never, get_literal_int, get_never, get_non_accepting_never,
+        TType,
+        atomic::{
+            TAtomic,
+            array::{TArray, key::ArrayKey},
+            object::TObject,
+            scalar::{TScalar, class_like_string::TClassLikeString},
+        },
+        get_explicit_never, get_literal_int, get_never, get_non_accepting_never,
         union::{NeverKind, TUnion},
     },
 };
@@ -31,6 +38,10 @@ use mago_span::{HasSpan, Position, Span};
 use mago_syntax::{cst::Expression, parser::parse_file};
 use mago_word::word;
 use pun_analyse::{Project, run};
+use pun_phpstan::{
+    resolve::resolve_str,
+    types::{Level, Type},
+};
 use serde_json::{Value, json};
 
 fn oracle() -> Value {
@@ -39,16 +50,19 @@ fn oracle() -> Value {
 
 #[test]
 fn failed_instantiations_keep_complete_primary_diagnostics() {
+    check_diagnostics(&["illegal.php", "controls.php"], oracle());
+}
+
+#[test]
+fn nonexistent_parent_keeps_registered_diagnostics_and_object_rejection() {
+    check_diagnostics(&["parent-sentinel.php"], parent_oracle());
+}
+
+fn check_diagnostics(files: &[&str], expected: Value) {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/failed-instantiation");
-    let expected = oracle();
     let mut failures = Vec::new();
     for level in [0, 5, 9] {
-        let mut project = Project::new(
-            ["illegal.php", "controls.php"]
-                .map(|name| root.join(name))
-                .to_vec(),
-            vec![],
-        );
+        let mut project = Project::new(files.iter().map(|name| root.join(name)).collect(), vec![]);
         project.level = level;
         project.php_version = 80500;
         project.check_this_only = Some(false);
@@ -71,8 +85,17 @@ fn failed_instantiations_keep_complete_primary_diagnostics() {
             })
             .collect();
         actual.sort_by_key(Value::to_string);
-        if actual != *expected["errors"][level.to_string()].as_array().unwrap() {
-            failures.push(json!({"level": level, "actual": actual, "expected": expected["errors"][level.to_string()]}));
+        // Keep the complete oracle capture, including NonexistentOffsetInArrayDimFetchRule,
+        // whose mapping is not ported. Compare every registered diagnostic, without hiding extras.
+        let registered: Vec<_> = expected["errors"][level.to_string()]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter(|row| pun_analyse::reports(row[2].as_str().unwrap()))
+            .cloned()
+            .collect();
+        if actual != registered {
+            failures.push(json!({"level": level, "actual": actual, "expected": registered}));
         }
     }
     assert!(
@@ -120,6 +143,21 @@ fn successful_reference_private_true_never_and_dynamic_controls_remain_distinct(
     check_types(
         "controls.php",
         include_bytes!("fixtures/failed-instantiation/controls.php"),
+    );
+}
+
+fn parent_oracle() -> Value {
+    serde_json::from_str(include_str!(
+        "fixtures/failed-instantiation/expected-parent-sentinel.json"
+    ))
+    .unwrap()
+}
+
+#[test]
+fn nonexistent_parent_preserves_identity_values_and_continuation_in_both_native_modes() {
+    check_types(
+        "parent-sentinel.php",
+        include_bytes!("fixtures/failed-instantiation/parent-sentinel.php"),
     );
 }
 
@@ -200,7 +238,56 @@ fn describe(ty: &TUnion) -> Value {
     } else if let Some(string) = ty.get_single_class_string_value() {
         format!("'{}'", string.to_string().replace('\\', "\\\\"))
     } else {
-        ty.get_id().to_string()
+        ty.types
+            .iter()
+            .map(|atomic| match atomic {
+                TAtomic::Array(TArray::List(array)) if array.known_elements.is_some() => {
+                    assert!(array.element_type.is_never());
+                    let fields = array
+                        .known_elements
+                        .as_ref()
+                        .unwrap()
+                        .iter()
+                        .map(|(key, (optional, value))| {
+                            format!(
+                                "{key}{}: {}",
+                                if *optional { "?" } else { "" },
+                                describe(value)["type"].as_str().unwrap()
+                            )
+                        })
+                        .collect::<Vec<_>>();
+                    format!("array{{{}}}", fields.join(", "))
+                }
+                TAtomic::Array(TArray::Keyed(array)) if array.known_items.is_some() => {
+                    assert!(array.parameters.is_none());
+                    let fields = array
+                        .known_items
+                        .as_ref()
+                        .unwrap()
+                        .iter()
+                        .map(|(key, (optional, value))| {
+                            let key = match key {
+                                ArrayKey::Integer(value) => value.to_string(),
+                                ArrayKey::String(value) => format!("'{value}'"),
+                                _ => panic!("unexpected symbolic key in oracle fixture"),
+                            };
+                            format!(
+                                "{key}{}: {}",
+                                if *optional { "?" } else { "" },
+                                describe(value)["type"].as_str().unwrap()
+                            )
+                        })
+                        .collect::<Vec<_>>();
+                    format!("array{{{}}}", fields.join(", "))
+                }
+                _ if ty.types.len() > 1 => describe(&TUnion::from_atomic(atomic.clone()))["type"]
+                    .as_str()
+                    .unwrap()
+                    .to_owned(),
+                _ => atomic.get_id().to_string(),
+            })
+            .collect::<Vec<_>>()
+            .join("|")
     };
     json!({
         "type": text,
@@ -214,31 +301,66 @@ fn describe(ty: &TUnion) -> Value {
     })
 }
 
+// Compare values and shape entries, not Mago's presentation order. Sentinel identity is checked separately.
+fn canonical(mut description: Value) -> Value {
+    fn ordered(ty: &Type) -> Type {
+        let mut ty = ty.traverse(&ordered);
+        if let Type::ConstArray(array) = &mut ty {
+            let mut indices: Vec<_> = (0..array.keys.len()).collect();
+            indices.sort_by_key(|&i| array.keys[i].describe(Level::Precise));
+            array.keys = indices.iter().map(|&i| array.keys[i].clone()).collect();
+            array.values = indices.iter().map(|&i| array.values[i].clone()).collect();
+            array.optional = indices
+                .iter()
+                .enumerate()
+                .filter_map(|(new, old)| array.optional.contains(old).then_some(new))
+                .collect();
+        }
+        ty
+    }
+    if !description.is_null() {
+        description["type"] = json!(
+            ordered(&resolve_str(description["type"].as_str().unwrap(), None))
+                .describe(Level::Precise)
+        );
+    }
+    description
+}
+
 fn check_types(name: &'static str, source: &'static [u8]) {
-    let expected = if name == "providers.php" {
-        serde_json::from_str(include_str!(
+    let expected = match name {
+        "providers.php" => serde_json::from_str(include_str!(
             "fixtures/failed-instantiation/expected-providers.json"
         ))
-        .unwrap()
-    } else {
-        oracle()
+        .unwrap(),
+        "parent-sentinel.php" => parent_oracle(),
+        _ => oracle(),
     };
     let arena = LocalArena::new();
     let file = File::ephemeral(Cow::Borrowed(name.as_bytes()), Cow::Borrowed(source));
     let program = parse_file(&arena, &file);
     assert!(!program.has_errors());
     let names = NameResolver::new(&arena).resolve(program);
-    let mut codebase = scan_program(&arena, &file, program, &names, Settings::default().version);
+    let prelude = mago_prelude::Prelude::build();
+    let mut codebase = prelude.metadata;
+    let mut references = prelude.symbol_references;
+    codebase.extend(scan_program(
+        &arena,
+        &file,
+        program,
+        &names,
+        Settings::default().version,
+    ));
     populate_codebase(
         &mut codebase,
-        &mut SymbolReferences::new(),
+        &mut references,
         Default::default(),
         Default::default(),
     );
     let mut baseline = None;
     for native in [false, true] {
         let observed = Arc::new(Mutex::new(BTreeMap::new()));
-        let mut registry = PluginRegistry::new();
+        let mut registry = create_registry_with_plugins(&[], false);
         registry.register_expression_hook(Continuation {
             source,
             observed: Arc::clone(&observed),
@@ -270,8 +392,22 @@ fn check_types(name: &'static str, source: &'static [u8]) {
             let ty = artifacts.get_expression_type(&span);
             let actual = ty.map(describe).unwrap_or(Value::Null);
             let want = json!({"type": row["type"], "error": row["error"], "kind": row["kind"]});
-            if actual != want {
+            if canonical(actual.clone()) != canonical(want.clone()) {
                 failures.push(json!({"expression": row["expression"], "start": start, "actual": actual, "expected": want}));
+            }
+            if row["class"] == "PHPStan\\Type\\NonexistentParentClassType" {
+                assert_eq!(
+                    ty.unwrap().get_single(),
+                    &TAtomic::Object(TObject::NonexistentParent)
+                );
+                assert!(ty.unwrap().get_single_named_object().is_none());
+            }
+            if row["type"] == "class-string&literal-string" {
+                assert_eq!(
+                    ty.unwrap().get_single(),
+                    &TAtomic::Scalar(TScalar::ClassLikeString(TClassLikeString::LiteralAny))
+                );
+                assert!(ty.unwrap().get_single_class_string_value().is_none());
             }
             if let Some(expected_final) = row.get("final") {
                 let finality = ty
@@ -290,7 +426,7 @@ fn check_types(name: &'static str, source: &'static [u8]) {
                     .get_raw_expression_type(&span)
                     .map(describe)
                     .unwrap_or(Value::Null);
-                if raw != want {
+                if canonical(raw.clone()) != canonical(want.clone()) {
                     failures.push(json!({"expression": row["expression"], "start": start, "raw": raw, "expected": want}));
                 }
             }

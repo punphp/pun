@@ -260,6 +260,11 @@ pub(crate) fn resolve_method_targets_after_receiver<'ctx, 'ast, 'arena, A: Arena
 
             let closure_object;
             let obj_type = match object_atomic {
+                TAtomic::Object(TObject::NonexistentParent) => {
+                    result.has_invalid_target = true;
+                    report_call_on_non_object(context, object_atomic, object.span(), selector.span());
+                    continue;
+                }
                 TAtomic::Object(obj_type) => obj_type,
                 TAtomic::Callable(callable) if callable.is_closure() => {
                     closure_object = TObject::new_named(word("Closure"));

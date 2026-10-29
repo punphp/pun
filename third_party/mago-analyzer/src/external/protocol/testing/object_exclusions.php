@@ -44,6 +44,16 @@ function optionalMembers(string $data, int &$offset, int $minor, bool $unions): 
 }
 function completeAtomic(string $data, int &$offset, int $minor): string {
     $tag = take($data, $offset, 2);
+    if ($tag === "\4\1" || $tag === "\4\7") { return $tag; }
+    if ($tag === "\1\10") {
+        $variant = take($data, $offset, 1);
+        return $tag.$variant.match ($variant) {
+            "\1" => take($data, $offset, 1),
+            "\3" => bytesField($data, $offset),
+            "\5" => '',
+            default => throw new RuntimeException('Unexpected class-string snapshot'),
+        };
+    }
     if ($tag === "\1\7") {
         $literal = take($data, $offset, 1);
         return $tag.$literal.($literal === "\2" ? bytesField($data, $offset) : '').take($data, $offset, 2);

@@ -36,6 +36,8 @@ use crate::utils::names::display_class_like_name;
 pub enum ResolutionOrigin {
     /// The resolution is definitively invalid (e.g., from a numeric literal).
     Invalid,
+    /// NonexistentParentClassType has object identity but no class-name projection for dynamic `new`.
+    NonexistentParent,
     /// Resolved from a direct identifier (`Foo`), or the `self` or `parent` keywords.
     Named { is_parent: bool, is_self: bool },
     /// Resolved from the `static` keyword. `can_extend` is true if the class is not final.
@@ -470,6 +472,7 @@ pub fn get_class_name_from_atomic(codebase: &CodebaseMetadata, atomic: &TAtomic)
                 })
                 .unwrap_or_else(ResolvedClassname::invalid),
             TAtomic::Object(object) => match object {
+                TObject::NonexistentParent => ResolvedClassname::new(None, ResolutionOrigin::NonexistentParent, false),
                 TObject::Any => {
                     let origin = if let Some(class_string) = active_class_string {
                         ResolutionOrigin::SpecificClassLikeString(class_string.clone())
@@ -513,7 +516,7 @@ pub fn get_class_name_from_atomic(codebase: &CodebaseMetadata, atomic: &TAtomic)
             },
             TAtomic::Scalar(TScalar::ClassLikeString(class_string)) => {
                 match class_string {
-                    TClassLikeString::Any { .. } => {
+                    TClassLikeString::Any { .. } | TClassLikeString::LiteralAny => {
                         ResolvedClassname::new(None, ResolutionOrigin::AnyClassString, false)
                     }
                     TClassLikeString::OfType { constraint, .. } | TClassLikeString::Generic { constraint, .. } => {

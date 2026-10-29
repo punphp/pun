@@ -1478,7 +1478,7 @@ where
             }
             TAtomic::Scalar(TScalar::ClassLikeString(class_like_string)) => {
                 let constraint = match class_like_string {
-                    TClassLikeString::Any { .. } => {
+                    TClassLikeString::Any { .. } | TClassLikeString::LiteralAny => {
                         return TUnion::from_atomic(asserted_atomic);
                     }
                     TClassLikeString::Literal { value } => {

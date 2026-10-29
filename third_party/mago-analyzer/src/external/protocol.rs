@@ -133,8 +133,9 @@ use crate::invocation::MethodTargetContext;
 pub const ANALYZER_PROTOCOL_MAGIC: [u8; 4] = *b"MANA";
 // Version 2.1 adds string casing tag 3 (both ASCII casing guarantees).
 // Version 2.2 appends named-object exclusions and exact-class identity; older layouts must be rejected before decoding.
+// Version 2.3 adds nonexistent-parent objects and unnamed literal class strings.
 pub const ANALYZER_PROTOCOL_MAJOR: u16 = 2;
-pub const ANALYZER_PROTOCOL_MINOR: u16 = 2;
+pub const ANALYZER_PROTOCOL_MINOR: u16 = 3;
 
 const HEADER_LENGTH: usize = 12;
 const INITIAL_MESSAGE_CAPACITY: usize = 256;
@@ -1610,6 +1611,7 @@ fn encode_scalar_snapshot<'type_info>(
                     encode_class_like_string_kind(writer, *kind);
                     encode_atomic_snapshot(writer, constraint, types, depth + 1)?;
                 }
+                TClassLikeString::LiteralAny => writer.write_u8(5),
             }
         }
     }
@@ -1739,6 +1741,7 @@ fn encode_object_snapshot<'type_info>(
             writer.write_bytes(property.property.as_bytes())?;
             encode_optional_atomic_snapshots(writer, property.intersection_types.as_deref(), types, depth + 1)?;
         }
+        TObject::NonexistentParent => writer.write_u8(7),
     }
 
     Ok(())
@@ -2680,6 +2683,7 @@ fn decode_complete_class_like_string(
             kind: decode_class_like_string_kind(reader)?,
             constraint: Arc::new(decode_complete_atomic(reader, depth + 1)?),
         },
+        5 => TClassLikeString::LiteralAny,
         unknown => return Err(protocol(format!("unknown class-like string variant {unknown}"))),
     })
 }
@@ -2840,6 +2844,7 @@ fn decode_complete_object(reader: &mut PayloadReader<'_>, depth: usize) -> Resul
             property: word(reader.read_bytes("required property name")?),
             intersection_types: decode_optional_complete_atomics(reader, depth + 1)?,
         }),
+        7 => TObject::NonexistentParent,
         unknown => return Err(protocol(format!("unknown complete object kind {unknown}"))),
     })
 }
@@ -3270,10 +3275,10 @@ pub(super) mod testing {
         let mut writer = message_writer(CALLABLE_SIGNATURE_RESPONSE);
         writer.write_bool(false);
         let payload = writer.finish();
-        assert_eq!(&payload[4..8], &[0, 2, 0, 2]);
+        assert_eq!(&payload[4..8], &[0, 2, 0, 3]);
         assert_eq!(message_kind(&payload).unwrap(), CALLABLE_SIGNATURE_RESPONSE);
         assert!(decode_callable_signature_response(&payload, |_| None).unwrap().is_none());
-        for minor in [0, 1] {
+        for minor in [0, 1, 2] {
             let mut old = payload.clone();
             old[4..8].copy_from_slice(&[0, 2, 0, minor]);
             let expected = format!("unsupported analyzer protocol version 2.{minor}");

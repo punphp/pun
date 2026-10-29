@@ -106,6 +106,11 @@ where
                 continue;
             }
 
+            if matches!(class_resolution.origin, ResolutionOrigin::NonexistentParent) {
+                result.has_invalid_path = true;
+                continue;
+            }
+
             let Some(fq_class_id) = class_resolution.fqcn else {
                 result.has_ambiguous_path = true;
                 report_ambiguous_constant_access(context, class_expr);
@@ -195,6 +200,10 @@ fn handle_class_magic_constant<'ast, 'arena, A>(
 where
     A: Arena,
 {
+    if matches!(class_resolution.origin, ResolutionOrigin::NonexistentParent) {
+        return Some(TUnion::from_atomic(TAtomic::Scalar(TScalar::ClassLikeString(TClassLikeString::LiteralAny))));
+    }
+
     if matches!(class_resolution.origin, ResolutionOrigin::AnyString) {
         context.collector.report_with_code(
             IssueCode::InvalidClassConstantOnString,

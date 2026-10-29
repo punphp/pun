@@ -86,6 +86,13 @@ where
     }
 
     for resolved_classname in &class_resolutions {
+        if matches!(resolved_classname.origin, ResolutionOrigin::NonexistentParent) {
+            // The class-string/object projection is ErrorType; its permissive reflection returns mixed.
+            result.has_ambiguous_target = true;
+            result.has_invalid_target = true;
+            continue;
+        }
+
         if resolved_classname.is_possibly_invalid() {
             result.has_ambiguous_target = true;
             if resolved_classname.origin == ResolutionOrigin::Invalid {

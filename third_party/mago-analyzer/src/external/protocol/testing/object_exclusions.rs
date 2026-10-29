@@ -171,6 +171,46 @@ $seed = new CamelCaseChild(); $roundtrip = demo_service($seed); $roundtrip;";
 }
 
 #[test]
+fn analyzer_worker_roundtrip_retains_nonexistent_parent_and_literal_class_string() {
+    let source = b"<?php function demo_service($value) {}
+class Parentless { public function check(): void {
+    $seed = new parent(); $roundtrip = demo_service($seed); $roundtrip;
+}}";
+    let (returned, _, warnings) = analyze("echo", source).unwrap();
+    assert!(warnings.is_empty(), "{warnings:?}");
+    assert_eq!(returned.get_single(), &TAtomic::Object(TObject::NonexistentParent));
+    assert!(returned.get_single_named_object().is_none());
+
+    let source = b"<?php function demo_service($value) {}
+class Parentless { public function check(): void {
+    $seed = (new parent())::class; $roundtrip = demo_service($seed); $roundtrip;
+}}";
+    let (returned, _, warnings) = analyze("echo", source).unwrap();
+    assert!(warnings.is_empty(), "{warnings:?}");
+    assert_eq!(returned.get_single(), &TAtomic::Scalar(TScalar::ClassLikeString(TClassLikeString::LiteralAny)));
+    assert!(returned.get_single_class_string_value().is_none());
+
+    let source = b"<?php function demo_service($value) {}
+class Parentless { public function check(object $normal, bool $choose): void {
+    $seed = $choose ? new parent() : $normal;
+    $roundtrip = demo_service($seed); $roundtrip;
+}}";
+    let (returned, _, warnings) = analyze("echo", source).unwrap();
+    assert!(warnings.is_empty(), "{warnings:?}");
+    assert_eq!(returned.types.len(), 2);
+    assert!(returned.types.contains(&TAtomic::Object(TObject::NonexistentParent)));
+    assert!(returned.types.contains(&TAtomic::Object(TObject::Any)));
+
+    let source = b"<?php function demo_service($value) {}
+class Existing {} class Child extends Existing { public function check(): void {
+    $seed = new parent(); $roundtrip = demo_service($seed); $roundtrip;
+}}";
+    let (returned, _, warnings) = analyze("echo", source).unwrap();
+    assert!(warnings.is_empty(), "{warnings:?}");
+    assert_eq!(returned.get_single_named_object().unwrap().name, word("Existing"));
+}
+
+#[test]
 fn analyzer_worker_roundtrip_retains_a_real_narrowed_object_exclusion() {
     let (returned, codebase, warnings) = analyze("echo", FLOW).unwrap();
     assert!(warnings.is_empty(), "{warnings:?}");

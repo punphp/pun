@@ -191,6 +191,10 @@ Braces belonging to control statements do not count as standalone blocks.
 Dynamic `new $class` expressions report unknown class names even when another possible name exists.
 Invalid named instantiations retain their object types and constructor argument effects independently of legality diagnostics.
 An invalid target expression retains an error value rather than making later statements unreachable.
+An unresolved `new parent()` retains PHPStan's distinct `parent` type, with no class name or accessible members.
+It does not satisfy an `object` parameter. Copies, array elements, and unions preserve that distinction.
+Its boolean cast is `true`; integer, float, string, and array casts retain error values.
+`get_class()` returns `class-string`, while `::class` returns `class-string&literal-string` without a known string value.
 
 Dynamic constant fetches such as `Example::{$name}` check each possible name when the selector has a finite set of string values. The checks preserve branch narrowing and report missing or inaccessible constants.
 Their expression value remains `mixed`, even for a literal dynamic name.

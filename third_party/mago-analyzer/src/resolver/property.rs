@@ -22,6 +22,7 @@ use mago_codex::ttype::comparator::union_comparator;
 use mago_codex::ttype::expander;
 use mago_codex::ttype::expander::StaticClassType;
 use mago_codex::ttype::expander::TypeExpansionOptions;
+use mago_codex::ttype::get_error;
 use mago_codex::ttype::get_mixed;
 use mago_codex::ttype::template::TemplateResult;
 use mago_codex::ttype::template::inferred_type_replacer;
@@ -186,6 +187,23 @@ where
         };
 
         let classname = match object {
+            TObject::NonexistentParent => {
+                if !block_context.flags.inside_isset() {
+                    report_access_on_non_object(context, object_atomic, property_selector, object_expression.span());
+                }
+                for property_name in &property_names {
+                    result.properties.push(ResolvedProperty {
+                        property_name: *property_name,
+                        lookup_class: None,
+                        declaring_class_id: None,
+                        property_span: None,
+                        property_type: get_error(),
+                        is_magic: false,
+                        read_type: None,
+                    });
+                }
+                continue;
+            }
             TObject::Any => {
                 result.has_ambiguous_path = true;
 

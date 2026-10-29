@@ -386,9 +386,6 @@ pub(super) fn class_aliases(c: &Checker, k: &ClassLikeMetadata, using: Option<&C
     aliases
 }
 
-/// `parent` without a parent class: NonexistentParentClassType, which is no ErrorType and references no class.
-const NO_PARENT: &str = "\0parent";
-
 /// The NameScope a PHPDoc's types resolve in, with its type aliases.
 struct AliasScope<'r, 'c, 'a, 'arena> {
     resolver: &'r Resolver<'c, 'a, 'arena>,
@@ -403,12 +400,7 @@ impl Scope for AliasScope<'_, '_, '_, '_> {
         self.doc.scope.class()
     }
     fn parent(&self) -> Option<String> {
-        Some(
-            self.doc
-                .scope
-                .parent()
-                .unwrap_or_else(|| NO_PARENT.to_string()),
-        )
+        self.doc.scope.parent()
     }
     fn resolve_name(&self, name: &str) -> String {
         self.doc.scope.resolve_name(name)
@@ -459,7 +451,7 @@ fn referenced_classes(ty: &Type) -> Vec<String> {
         | Type::Static(name, _)
         | Type::This(name)
         | Type::EnumCase(name, _)
-            if !out.contains(name) && name != NO_PARENT =>
+            if !out.contains(name) =>
         {
             out.push(name.clone());
         }

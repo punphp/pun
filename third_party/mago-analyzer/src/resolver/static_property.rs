@@ -117,7 +117,9 @@ where
         || artifacts.get_expression_type(&class_expression.span().join(property_variable.span())).is_none();
 
     for resolved_classname in classnames {
-        if resolved_classname.is_from_mixed() {
+        if resolved_classname.is_from_mixed()
+            || matches!(resolved_classname.origin, crate::resolver::class_name::ResolutionOrigin::NonexistentParent)
+        {
             result.encountered_mixed = true;
             continue;
         }

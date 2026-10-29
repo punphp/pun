@@ -56,7 +56,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Clone<'arena> {
                     | TObject::HasProperty(_) => {
                         has_cloneable_object = true;
                     }
-                    TObject::Enum(_) => {
+                    TObject::Enum(_) | TObject::NonexistentParent => {
                         invalid_clone_atomics.push(atomic_type);
                     }
                     TObject::Named(named_object) => {

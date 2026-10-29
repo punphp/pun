@@ -3292,9 +3292,9 @@ from PHPStan 2.3.1, including a genuinely terminating selector and fatal analysi
 Named interface, trait, enum, abstract and unknown-class instantiations retain named object values.
 Constructor arguments, references, OUT writes and return providers still execute. Invalid expression
 targets retain ErrorType. Explicit-never constructor returns and dynamic-target asymmetry remain separate.
-Out-of-class `self`, `static` and `parent` follow their distinct value paths; the named `parent` placeholder
-does not yet implement NonexistentParentClassType's exact reflection identity. `failed_instantiation`
-retains independent raw/new, post-write and continuation controls without fabricating frontend types.
+Out-of-class `self`, `static` and `parent` follow their distinct value paths. Missing-parent constructions
+retain a nameless `NonexistentParent` leaf rather than a named object. `failed_instantiation` retains
+independent raw/new, post-write and continuation controls without fabricating frontend types.
 
 ## Prepared compound reads survive writes
 
@@ -3319,3 +3319,27 @@ their literal domain rather than an unknown integer tail.
 `foreach_conditional_holders` compares complete Bug13054 diagnostics at levels 0 and 5, independent
 generic unions, overwritten selectors and reference controls against PHPStan 2.3.1. Ordinary observations
 match in both native modes; the partial native API still leaves foreach values unavailable.
+
+## Nonexistent-parent values and class strings
+
+PHPStan 2.3.1's `NonexistentParentClassType` is an object with no class names, member capabilities,
+or generic-object containment. Instantiation produces that leaf for both missing class scope and an
+unresolved inherited parent. Ordinary unknown class names and native named-parent hints stay named.
+Copies, joins, array elements, and complete external-worker snapshots preserve the distinct leaf.
+
+Integer, float, string, array and unary numeric conversions return ErrorType. Boolean conversion
+retains object truthiness. Failed instance members and offsets return ErrorType; clone intersects
+with generic object and returns implicit never. Failed static method and property reads keep mixed
+full-type results. Foreach retains ErrorType keys and values for a lone sentinel, but preserves valid
+array alternatives when the sentinel appears in a union. Operand writes and continuation still run.
+
+`get_class` projects object arguments to their class-string types, keeping a nonspecific class-string
+for the sentinel. Its `::class` projection is `TClassLikeString::LiteralAny`: an unnamed
+`class-string&literal-string`, not the literal string `parent` or a bound generic class-string.
+The provider leaves unsupported non-object and no-argument calls to existing inference.
+
+Protocol 2.3 adds object tag 7 and class-string variant 5 without reusing existing tags. Both header
+readers reject older minor versions before decoding. The real PHP worker round-trip control checks
+the sentinel, its literal class string, an object/sentinel union, and a valid inherited-parent object.
+The public fixture's observations and complete level-0, level-5 and level-9 diagnostics come from the
+hash-pinned PHPStan capture under `tests/fixtures/failed-instantiation/`.

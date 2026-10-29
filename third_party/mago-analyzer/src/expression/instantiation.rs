@@ -158,11 +158,14 @@ where
 
         return Ok(match class_expression.unparenthesized() {
             Expression::Self_(_) => get_named_object(word("self"), None),
-            // The named representation preserves the value/display, but does not yet model
-            // NonexistentParentClassType's deliberately empty reflection contract.
-            Expression::Parent(_) => get_named_object(word("parent"), None),
+            Expression::Parent(_) => wrap_atomic(TAtomic::Object(TObject::NonexistentParent)),
             _ => get_error(),
         });
+    }
+
+    if matches!(classname.origin, ResolutionOrigin::NonexistentParent) {
+        argument_list.analyze(context, block_context, artifacts)?;
+        return Ok(get_error());
     }
 
     let Some(fq_classname) = classname.fqcn else {
@@ -201,7 +204,11 @@ where
 
         argument_list.analyze(context, block_context, artifacts)?;
 
-        return Ok(get_named_object(fq_classname, None));
+        return Ok(if matches!(class_expression.unparenthesized(), Expression::Parent(_)) {
+            wrap_atomic(TAtomic::Object(TObject::NonexistentParent))
+        } else {
+            get_named_object(fq_classname, None)
+        });
     };
 
     let classname_str = &metadata.original_name;

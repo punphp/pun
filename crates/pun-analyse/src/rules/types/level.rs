@@ -155,7 +155,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                 return None;
             }
         }
-        if !l.check_union_types && matches!(t, Type::ObjectWithoutClass | Type::ObjectShape(_)) {
+        if !l.check_union_types && t.is_object().yes() && t.object_class_names().is_empty() {
             return None;
         }
         // TemplateUnionType/TemplateIntersectionType inherit their bound's compound dispatch.

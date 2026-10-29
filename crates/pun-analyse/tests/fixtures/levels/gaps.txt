@@ -593,8 +593,6 @@
 # callables is not split into its arrays, pipe calls by expression are not checked, and Pun reports bug-3616's constant PHPDoc
 2 Functions/CallCallablesRuleTest::testBug3616
 2 Functions/CallCallablesRuleTest::testRule
-# an-types2: Pun finds array<NonexistentClass, AnotherNonexistentClass> unresolvable (parameter.unresolvableType)
-2 Methods/ExistingClassesInTypehintsRuleTest::testExistingClassInTypehint
 # an-types2: PHPDoc classes (FunctionDefinitionCheck, level 2): imported type aliases that import each other, and an anonymous
 # class's use of its enclosing method's template are not resolved; Closure::bind() returns ?Closure (no dynamic return type extension)
 # class's use of its enclosing method's template are not resolved

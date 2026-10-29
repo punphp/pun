@@ -34,6 +34,7 @@ use mago_codex::ttype::combine_union_types_preserving_array_shapes;
 use mago_codex::ttype::combiner::CombinerOptions;
 use mago_codex::ttype::get_array_parameters;
 use mago_codex::ttype::get_arraykey;
+use mago_codex::ttype::get_error;
 use mago_codex::ttype::get_iterable_parameters;
 use mago_codex::ttype::get_literal_string;
 use mago_codex::ttype::get_mixed;
@@ -1695,6 +1696,7 @@ where
     let mut key_type = None;
     let mut value_type = None;
     let mut has_valid_iterable_type = false;
+    let mut has_nonexistent_parent = false;
     let mut invalid_atomic_ids = Vec::with_capacity(iterator_type.types.len());
 
     for iterator_atomic_original in iterator_type.types.iter().flat_map(|atomic| match atomic {
@@ -1740,6 +1742,11 @@ where
             }
             TAtomic::Object(object) => {
                 let (obj_key_type, obj_value_type) = match object {
+                    TObject::NonexistentParent => {
+                        has_nonexistent_parent = true;
+                        invalid_atomic_ids.push(iterator_atomic.get_id().to_string());
+                        continue;
+                    }
                     TObject::Any | TObject::WithProperties(_) | TObject::HasMethod(_) | TObject::HasProperty(_) => {
                         always_enters_loop = false;
 
@@ -1866,7 +1873,8 @@ where
             ),
         );
 
-        return Ok((false, get_never(), get_never()));
+        let failed_type = if has_nonexistent_parent { get_error() } else { get_never() };
+        return Ok((false, failed_type.clone(), failed_type));
     } else if !invalid_atomic_ids.is_empty() {
         let iterator_type_id_str = iterator_type.get_id();
         let problematic_types_list_str = invalid_atomic_ids.join("`, `");
@@ -1888,6 +1896,9 @@ where
             ),
         );
 
+        if has_nonexistent_parent && invalid_atomic_ids.len() == 1 {
+            return Ok((false, key_type.unwrap_or_else(get_mixed), value_type.unwrap_or_else(get_mixed)));
+        }
         return Ok((false, get_mixed(), get_mixed()));
     }
     // every atomic in the iterator type is iterable; no diagnostic needed

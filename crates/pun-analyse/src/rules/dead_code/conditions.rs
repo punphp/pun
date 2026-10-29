@@ -1418,7 +1418,7 @@ fn unequal(c: &Checker, subject: &Type, value: Option<&Type>, cond: &Expression)
 fn truthy(t: &Type) -> Option<bool> {
     match t {
         t if scalar(t) => Some(loose_scalars(t, &Type::ConstBool(true))),
-        Type::Object(..) | Type::EnumCase(..) => Some(true),
+        Type::Object(..) | Type::EnumCase(..) | Type::NonexistentParent => Some(true),
         _ => None,
     }
 }

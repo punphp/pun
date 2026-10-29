@@ -31,6 +31,7 @@ use mago_codex::ttype::atomic::scalar::string::TStringLiteral;
 use mago_codex::ttype::combiner::combine;
 use mago_codex::ttype::get_arraykey;
 use mago_codex::ttype::get_bool;
+use mago_codex::ttype::get_error;
 use mago_codex::ttype::get_false;
 use mago_codex::ttype::get_float;
 use mago_codex::ttype::get_int;
@@ -105,6 +106,12 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for UnaryPrefix<'arena> {
         block_context.flags.set_inside_variable_reference(was_in_variable_reference);
 
         let operand_type = artifacts.get_rc_expression_type(&self.operand).cloned();
+        if matches!(self.operator, UnaryPrefixOperator::Plus(_) | UnaryPrefixOperator::Negation(_) | UnaryPrefixOperator::BitwiseNot(_))
+            && operand_type.as_ref().is_some_and(|ty| ty.types.iter().any(|atomic| matches!(atomic, TAtomic::Object(TObject::NonexistentParent))))
+        {
+            artifacts.set_expression_type(self, get_error());
+            return Ok(());
+        }
         match self.operator {
             // operators that always retain the type of the operand
             UnaryPrefixOperator::Reference(_) => {
@@ -122,6 +129,10 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for UnaryPrefix<'arena> {
             }
             UnaryPrefixOperator::BitwiseNot(_) => {
                 if let Some(operand_type) = operand_type {
+                    if let Some(value) = operand_type.get_single_literal_int_value() {
+                        artifacts.set_expression_type(self, wrap_atomic(TAtomic::Scalar(TScalar::Integer(TInteger::Literal(!value)))));
+                        return Ok(());
+                    }
                     let is_class_without_bitwise_not = |atomic: &TAtomic| {
                         get_operator_overloading_class(atomic)
                             .is_some_and(|class| !class.overloads(OverloadedOperator::BitwiseNot))
@@ -1272,6 +1283,10 @@ fn cast_type_to_array<'arena, A>(
 where
     A: Arena,
 {
+    if operand_type.types.iter().any(|atomic| matches!(atomic, TAtomic::Object(TObject::NonexistentParent))) {
+        return get_error();
+    }
+
     if operand_type.is_never() {
         context.collector.report_with_code(
             IssueCode::InvalidTypeCast,
@@ -1460,6 +1475,10 @@ fn cast_type_to_float<'arena, A>(
 where
     A: Arena,
 {
+    if operand_type.types.iter().any(|atomic| matches!(atomic, TAtomic::Object(TObject::NonexistentParent))) {
+        return get_error();
+    }
+
     if operand_type.is_never() {
         return get_never();
     }
@@ -1735,6 +1754,10 @@ fn cast_type_to_int<A>(
 where
     A: Arena,
 {
+    if operand_type.types.iter().any(|atomic| matches!(atomic, TAtomic::Object(TObject::NonexistentParent))) {
+        return get_error();
+    }
+
     if operand_type.has_float()
         && let Some(integer) =
             NumericInterval::from_expression(operand, artifacts).and_then(NumericInterval::into_integer)
@@ -1896,6 +1919,10 @@ pub fn cast_type_to_string<'ctx, A>(
 where
     A: Arena,
 {
+    if operand_type.types.iter().any(|atomic| matches!(atomic, TAtomic::Object(TObject::NonexistentParent))) {
+        return Ok(get_error());
+    }
+
     // IntegerRangeType's inclusive finite limit permits 129 constants. A second generic string
     // combiner pass would incorrectly generalize that boundary at Mago's 128-string threshold.
     if let [TAtomic::Scalar(TScalar::Integer(integer))] = operand_type.types.as_ref() {

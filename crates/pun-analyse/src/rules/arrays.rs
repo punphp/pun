@@ -11,7 +11,7 @@ use mago_names::ResolvedNames;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use mago_syntax::walker::MutWalker;
-use pun_phpstan::types::{ConstArray, NeverKind, Type, is_super_type_of, union};
+use pun_phpstan::types::{Accessory, ConstArray, NeverKind, Type, intersect, is_super_type_of, union};
 use pun_phpstan::value::{Value, float_var_export, numeric};
 
 use super::{Checker, declared, reflection};
@@ -599,6 +599,9 @@ fn signed(t: Type, negative: bool) -> Option<Type> {
 /// ClassConstFetchHandler: a constant class-string is exact, an object/generic class-string is late-bound.
 fn receiver_constant(c: &Checker, holder: &Type, name: &[u8], late: bool, types: &ExpressionTypes<impl BuildHasher>) -> Option<Type> {
     match holder {
+        Type::NonexistentParent if name.eq_ignore_ascii_case(b"class") => {
+            Some(intersect(vec![Type::ClassString(None), Type::Accessory(Accessory::LiteralString)]))
+        }
         Type::ConstString(class) => class_constant(c, std::str::from_utf8(class).ok()?, name, false, types),
         Type::Object(class, _, _) | Type::Static(class, _) | Type::This(class) => {
             class_constant(c, class, name, late, types)

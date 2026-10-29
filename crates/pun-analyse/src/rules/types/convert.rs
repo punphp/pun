@@ -734,6 +734,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                 }
             }
             TScalar::ClassLikeString(c) => match c {
+                TClassLikeString::LiteralAny => intersect(vec![Type::ClassString(None), Type::Accessory(Accessory::LiteralString)]),
                 TClassLikeString::Literal { value } => Type::ConstString(self.reflected_name(value.as_bytes()).into_bytes()),
                 TClassLikeString::OfType { constraint, .. } => {
                     Type::ClassString(Some(Box::new(self.atom(constraint))))
@@ -764,6 +765,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
 
     fn object(&self, o: &TObject) -> Type {
         match o {
+            TObject::NonexistentParent => Type::NonexistentParent,
             TObject::Any => Type::ObjectWithoutClass,
             TObject::Named(n) => {
                 let mut name = self.reflected_name(n.name.as_bytes());
