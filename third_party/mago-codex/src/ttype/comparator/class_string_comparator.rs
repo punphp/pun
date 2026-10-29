@@ -22,8 +22,12 @@ pub fn is_contained_by(
     inside_assertion: bool,
     atomic_comparison_result: &mut ComparisonResult,
 ) -> bool {
+    if matches!(container_class_string, TClassLikeString::LiteralAny) && !input_scalar.is_literal_origin_string() {
+        return false;
+    }
+
     let fake_container_type = match container_class_string {
-        TClassLikeString::Any { .. } => Cow::Owned(TAtomic::Object(TObject::Any)),
+        TClassLikeString::Any { .. } | TClassLikeString::LiteralAny => Cow::Owned(TAtomic::Object(TObject::Any)),
         TClassLikeString::Literal { value } => {
             if let Some(str_value) = input_scalar.get_known_literal_string_value()
                 && is_valid_class_string(str_value)
@@ -54,7 +58,7 @@ pub fn is_contained_by(
             Cow::Owned(class_name_object(codebase, *string_value))
         }
         TScalar::ClassLikeString(input_class_string) => match input_class_string {
-            TClassLikeString::Any { .. } => {
+            TClassLikeString::Any { .. } | TClassLikeString::LiteralAny => {
                 return matches!(fake_container_type.as_ref(), TAtomic::Object(TObject::Any));
             }
             TClassLikeString::Literal { value } => Cow::Owned(class_name_object(codebase, *value)),

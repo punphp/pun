@@ -368,7 +368,7 @@ pub fn is_contained_by(
         && (matches!(input_type_part, TAtomic::Object(_))
             || matches!(input_type_part, TAtomic::Callable(callable) if callable.is_closure()))
     {
-        return true;
+        return !matches!(input_type_part, TAtomic::Object(TObject::NonexistentParent));
     }
 
     if let TAtomic::Object(TObject::HasMethod(container_has_method)) = container_type_part {
@@ -506,7 +506,7 @@ pub fn is_contained_by(
 
                 true
             }
-            TObject::HasMethod(_) | TObject::HasProperty(_) => false,
+            TObject::NonexistentParent | TObject::HasMethod(_) | TObject::HasProperty(_) => false,
         };
     }
 
@@ -622,6 +622,15 @@ pub(crate) fn can_be_identical(
     inside_assertion: bool,
     allow_type_coercion: bool,
 ) -> bool {
+    // The sentinel has no runtime object capabilities, even though isObject() is yes.
+    if matches!(first_part, TAtomic::Object(TObject::NonexistentParent))
+        || matches!(second_part, TAtomic::Object(TObject::NonexistentParent))
+    {
+        return !first_part.is_never() && !second_part.is_never()
+            && (is_contained_by(codebase, first_part, second_part, inside_assertion, &mut ComparisonResult::new())
+                || is_contained_by(codebase, second_part, first_part, inside_assertion, &mut ComparisonResult::new()));
+    }
+
     if matches!(
         (first_part, second_part),
         // If either part is a variable, they can be identical

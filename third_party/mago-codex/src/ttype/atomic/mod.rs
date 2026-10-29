@@ -550,7 +550,7 @@ impl TAtomic {
         matches!(
             self,
             TAtomic::Callable(_)
-                | TAtomic::Scalar(TScalar::String(_))
+                | TAtomic::Scalar(TScalar::String(_) | TScalar::ClassLikeString(TClassLikeString::LiteralAny))
                 | TAtomic::Array(TArray::List(_) | TArray::Keyed(_))
                 | TAtomic::Object(TObject::Named(_))
         )

@@ -28,6 +28,30 @@ fn display(ty: &TUnion) -> String {
 }
 
 #[test]
+fn nameless_parent_and_literal_class_string_render_without_invented_names() {
+    for (atomic, expected) in [
+        (TAtomic::Object(TObject::NonexistentParent), "parent"),
+        (TAtomic::Scalar(TScalar::ClassLikeString(TClassLikeString::LiteralAny)), "class-string&literal-string"),
+    ] {
+        let ty = TUnion::from_atomic(atomic);
+        assert_eq!(canonical_bytes(&ty), expected.as_bytes());
+        assert_eq!(qualified_bytes(&CodebaseMetadata::default(), &ty), expected.as_bytes());
+        assert_eq!(display(&ty), expected);
+    }
+    let ty = TUnion::from_vec(vec![TAtomic::Object(TObject::NonexistentParent), TAtomic::Object(TObject::Any)]);
+    assert_eq!(canonical_bytes(&ty), b"object|parent");
+    assert_eq!(display(&ty), "object|parent");
+    let ty = TUnion::from_vec(vec![
+        TAtomic::Object(TObject::NonexistentParent),
+        TAtomic::Scalar(TScalar::ClassLikeString(TClassLikeString::LiteralAny)),
+    ]);
+    assert_eq!(canonical_bytes(&ty), b"(class-string&literal-string)|parent");
+    assert_eq!(display(&ty), "(class-string&literal-string)|parent");
+    assert_eq!(ty.get_id(), word("(class-string&literal-string)|parent"));
+    assert_eq!(ty.get_pretty_id(), word("(class-string&literal-string) | parent"));
+}
+
+#[test]
 fn qualified_names_restore_class_casing_without_changing_type_syntax_or_literals() {
     use crate::metadata::class_like::ClassLikeMetadata;
     use crate::metadata::flags::MetadataFlags;

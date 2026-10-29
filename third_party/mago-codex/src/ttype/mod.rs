@@ -1531,6 +1531,16 @@ fn intersect_atomic_types(
         return Some(narrower.clone());
     }
 
+    if let (TAtomic::Scalar(TScalar::ClassLikeString(TClassLikeString::Any { kind: TClassLikeStringKind::Class })),
+        TAtomic::Scalar(TScalar::String(string)))
+        | (TAtomic::Scalar(TScalar::String(string)),
+        TAtomic::Scalar(TScalar::ClassLikeString(TClassLikeString::Any { kind: TClassLikeStringKind::Class }))) = (type_1, type_2)
+        && *string == TString::unspecified_literal(false)
+    {
+        *intersection_performed = true;
+        return Some(TAtomic::Scalar(TScalar::ClassLikeString(TClassLikeString::LiteralAny)));
+    }
+
     if let (TAtomic::Array(left_array), TAtomic::Array(right_array)) = (type_1, type_2) {
         if let (Some((left_items, left_tail)), Some((right_items, right_tail))) =
             (constant_array_parts(left_array), constant_array_parts(right_array))

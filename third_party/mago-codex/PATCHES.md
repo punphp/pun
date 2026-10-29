@@ -1015,3 +1015,29 @@ retain the existing signature-comparison path. This follows PHPStan 2.3.1 at
 `failed_method_callables` retains the bare-Closure producer results and compares compatibility,
 known-signature, purity, refined-signature and invokable-object controls with the pinned capture.
 The original native dynamic-literal callback test remains unchanged.
+
+## Nonexistent parent and unnamed literal class strings
+
+`TObject::NonexistentParent` represents PHPStan's `NonexistentParentClassType`. It displays as
+`parent` but has no class name, child type, member, callable target, iterable parameter, or offset
+capability. It remains truthy. Ordinary named `parent` objects retain their separate identity.
+Generic `object` does not contain the sentinel: `object|parent` retains both members, and
+`object&parent` is bottom. Mixed and never retain their usual containment and combination behavior.
+
+`TClassLikeString::LiteralAny` represents `class-string&literal-string` without a constant value
+or object bound. It differs from both `Any` and value-bearing `Literal`. Literal-origin queries,
+containment, union reduction, intersection, population, and displays preserve that distinction.
+Object projection and `new<...>` yield generic object, not a fabricated `parent` class name.
+Callable queries retain possibility without inventing a concrete signature.
+
+The source contracts are PHPStan 2.3.1's
+[`NonexistentParentClassType`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/NonexistentParentClassType.php),
+`JustNullableTypeTrait`, `ObjectWithoutClassType`, `ClassStringType`, and `AccessoryLiteralStringType`.
+Public type API controls in `ttype/union/tests.rs` and `ttype/display/tests.rs` check both operand
+orders against pinned-PHAR observations. They include ordinary named `parent`, object, mixed,
+never, class-string, literal-string, and known literal class-string controls.
+
+Codex's cast module resolves callable targets only. Scalar conversions and the analyzer's `::class`
+producer belong to analyzer consumers. PHPStan converts the sentinel to boolean true and rejects
+its nonboolean scalar and array conversions. `getClassStringType()` yields plain class-string,
+while `toClassConstantType()` adds literal-string provenance. Neither projection carries a name.

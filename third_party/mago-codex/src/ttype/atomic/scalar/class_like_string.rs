@@ -41,6 +41,8 @@ pub enum TClassLikeString {
     Any {
         kind: TClassLikeStringKind,
     },
+    /// An unnamed `class-string&literal-string`, without a value or object bound.
+    LiteralAny,
     Generic {
         kind: TClassLikeStringKind,
         parameter_name: Word,
@@ -158,13 +160,14 @@ impl TClassLikeString {
         matches!(self, Self::Generic { .. } | Self::OfType { .. })
     }
 
-    /// Returns the base kind (class, interface, enum) if explicitly stored (`Any`, `Generic`, `OfType`).
+    /// Returns the base kind when known. `LiteralAny` is always a class-string.
     /// Returns `None` for the `Literal` variant, as the kind must be looked up externally.
     #[inline]
     #[must_use]
     pub const fn kind(&self) -> Option<TClassLikeStringKind> {
         match self {
             Self::Any { kind } => Some(*kind),
+            Self::LiteralAny => Some(TClassLikeStringKind::Class),
             Self::Generic { kind, .. } => Some(*kind),
             Self::Literal { .. } => None,
             Self::OfType { kind, .. } => Some(*kind),
@@ -197,7 +200,7 @@ impl TClassLikeString {
     #[must_use]
     pub fn get_object_type(&self, codebase: &CodebaseMetadata) -> TAtomic {
         match self {
-            TClassLikeString::Any { .. } => TAtomic::Object(TObject::Any),
+            TClassLikeString::Any { .. } | TClassLikeString::LiteralAny => TAtomic::Object(TObject::Any),
             TClassLikeString::Generic { parameter_name, defining_entity, constraint, .. } => {
                 TAtomic::GenericParameter(TGenericParameter::new(
                     *parameter_name,
@@ -226,7 +229,7 @@ impl TType for TClassLikeString {
 
     fn needs_population(&self) -> bool {
         match self {
-            TClassLikeString::Any { .. } => false,
+            TClassLikeString::Any { .. } | TClassLikeString::LiteralAny => false,
             TClassLikeString::Generic { constraint, .. } => constraint.needs_population(),
             TClassLikeString::Literal { .. } => false,
             TClassLikeString::OfType { constraint, .. } => constraint.needs_population(),
@@ -235,7 +238,7 @@ impl TType for TClassLikeString {
 
     fn is_expandable(&self) -> bool {
         match self {
-            TClassLikeString::Any { .. } => false,
+            TClassLikeString::Any { .. } | TClassLikeString::LiteralAny => false,
             TClassLikeString::Generic { constraint, .. } => constraint.is_expandable(),
             TClassLikeString::Literal { .. } => false,
             TClassLikeString::OfType { constraint, .. } => constraint.is_expandable(),
@@ -245,6 +248,7 @@ impl TType for TClassLikeString {
     fn get_id(&self) -> Word {
         match self {
             TClassLikeString::Any { kind } => word(kind.as_bytes()),
+            TClassLikeString::LiteralAny => word("class-string&literal-string"),
             TClassLikeString::Generic { kind, parameter_name, defining_entity, constraint } => {
                 concat_word!(
                     kind.as_bytes(),

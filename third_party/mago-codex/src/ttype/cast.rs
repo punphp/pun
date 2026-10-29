@@ -19,6 +19,7 @@ use crate::ttype::atomic::callable::TCallableSignature;
 use crate::ttype::atomic::object::TObject;
 use crate::ttype::atomic::reference::TReference;
 use crate::ttype::atomic::scalar::TScalar;
+use crate::ttype::atomic::scalar::class_like_string::TClassLikeString;
 use crate::ttype::comparator::ComparisonResult;
 use crate::ttype::comparator::union_comparator;
 use crate::ttype::template::GenericTemplate;
@@ -135,7 +136,8 @@ pub fn can_atomic_be_callable(atomic: &TAtomic, codebase: &CodebaseMetadata) -> 
                 &mut ComparisonResult::new(),
             )
         }),
-        TAtomic::Scalar(TScalar::String(_)) | TAtomic::Array(TArray::List(_) | TArray::Keyed(_)) => true,
+        TAtomic::Scalar(TScalar::String(_) | TScalar::ClassLikeString(TClassLikeString::LiteralAny))
+        | TAtomic::Array(TArray::List(_) | TArray::Keyed(_)) => true,
         TAtomic::Object(TObject::Any) => true,
         TAtomic::Object(TObject::Named(named_object)) => {
             codebase.get_class_like_by_name(named_object.get_name()).is_none()

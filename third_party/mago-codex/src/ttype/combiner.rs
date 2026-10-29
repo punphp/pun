@@ -38,6 +38,7 @@ use crate::ttype::atomic::object::TObject;
 use crate::ttype::atomic::object::named::TNamedObject;
 use crate::ttype::atomic::resource::TResource;
 use crate::ttype::atomic::scalar::TScalar;
+use crate::ttype::atomic::scalar::class_like_string::TClassLikeString;
 use crate::ttype::atomic::scalar::float::TFloat;
 use crate::ttype::atomic::scalar::int::TInteger;
 use crate::ttype::atomic::scalar::string::TString;
@@ -178,6 +179,27 @@ pub fn combine(types: Vec<TAtomic>, codebase: &CodebaseMetadata, options: Combin
     // An incoming callable absorbs its narrowed array/object alternatives at real-edge joins.
     // Keep distinct callable origins; only remove non-callable atomics proven to be subtypes.
     let mut types = types;
+    // An unnamed literal class string is narrower than class-string and literal-string,
+    // but does not absorb either. Compare structurally, never through a fabricated name.
+    let literal_class_string = TAtomic::Scalar(TScalar::ClassLikeString(TClassLikeString::LiteralAny));
+    if types.contains(&literal_class_string) {
+        let absorbed = types.iter().any(|other| {
+            other != &literal_class_string
+                && atomic_comparator::is_contained_by(
+                    codebase, &literal_class_string, other, false, &mut ComparisonResult::new(),
+                )
+        });
+        if absorbed {
+            types.retain(|atomic| atomic != &literal_class_string);
+        } else {
+            types.retain(|atomic| {
+                atomic == &literal_class_string
+                    || !atomic_comparator::is_contained_by(
+                        codebase, atomic, &literal_class_string, false, &mut ComparisonResult::new(),
+                    )
+            });
+        }
+    }
     let callables: Vec<_> = types.iter().filter(|atomic| matches!(atomic, TAtomic::Callable(_))).cloned().collect();
     types.retain(|atomic| {
         matches!(atomic, TAtomic::Callable(_))

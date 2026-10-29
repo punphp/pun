@@ -1315,7 +1315,8 @@ impl TType for TUnion {
             .iter()
             .map(|atomic| {
                 let id = atomic.get_id();
-                if atomic.is_generic_parameter() || atomic.has_intersection_types() {
+                if atomic.is_generic_parameter() || atomic.has_intersection_types()
+                    || matches!(atomic, TAtomic::Scalar(TScalar::ClassLikeString(TClassLikeString::LiteralAny))) {
                     concat_word!(b"(", id.as_bytes(), b")")
                 } else {
                     id
@@ -1342,7 +1343,12 @@ impl TType for TUnion {
                 .iter()
                 .map(|atomic| {
                     let id = atomic.get_pretty_id_with_indent(if multiline { indent + 2 } else { indent });
-                    if atomic.has_intersection_types() { concat_word!(b"(", id.as_bytes(), b")") } else { id }
+                    if atomic.has_intersection_types()
+                        || matches!(atomic, TAtomic::Scalar(TScalar::ClassLikeString(TClassLikeString::LiteralAny))) {
+                        concat_word!(b"(", id.as_bytes(), b")")
+                    } else {
+                        id
+                    }
                 })
                 .collect();
             atomic_ids.sort_unstable();
@@ -1463,10 +1469,10 @@ pub fn populate_union_type(
                         | TScalar::Integer(_)
                         | TScalar::Float(_)
                         | TScalar::String(_)
-                        | TScalar::ClassLikeString(TClassLikeString::Any { .. } | TClassLikeString::Literal { .. })
+                        | TScalar::ClassLikeString(TClassLikeString::Any { .. } | TClassLikeString::LiteralAny | TClassLikeString::Literal { .. })
                 ) | TAtomic::Mixed(_)
                     | TAtomic::Resource(_)
-                    | TAtomic::Object(TObject::Any)
+                    | TAtomic::Object(TObject::Any | TObject::NonexistentParent)
                     | TAtomic::Never
                     | TAtomic::Null
                     | TAtomic::Void

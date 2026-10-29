@@ -62,7 +62,8 @@ impl Renderer<'_> {
                 let mut part = Vec::new();
                 self.write_wrapped_atomic(
                     atomic,
-                    self.wrap_generic(atomic) || atomic.has_intersection_types(),
+                    self.wrap_generic(atomic) || atomic.has_intersection_types()
+                        || matches!(atomic, TAtomic::Scalar(TScalar::ClassLikeString(TClassLikeString::LiteralAny))),
                     &mut part,
                 );
                 part
@@ -256,7 +257,7 @@ impl Renderer<'_> {
             }
             TAtomic::Derived(derived) => self.write_derived(derived, output),
             TAtomic::Scalar(scalar) => write_scalar(scalar, output),
-            TAtomic::Object(TObject::Any)
+            TAtomic::Object(TObject::Any | TObject::NonexistentParent)
             | TAtomic::Mixed(_)
             | TAtomic::Resource(_)
             | TAtomic::Variable(_)
@@ -334,6 +335,7 @@ impl Renderer<'_> {
     fn write_class_string(&self, string: &TClassLikeString, output: &mut Vec<u8>) {
         match string {
             TClassLikeString::Any { kind } => output.extend_from_slice(kind.as_bytes()),
+            TClassLikeString::LiteralAny => output.extend_from_slice(b"class-string&literal-string"),
             TClassLikeString::Literal { value } => {
                 output.extend_from_slice(b"class-string('");
                 output.extend_from_slice(value.as_bytes());

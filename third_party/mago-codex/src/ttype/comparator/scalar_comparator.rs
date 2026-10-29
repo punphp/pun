@@ -122,7 +122,8 @@ pub fn is_contained_by(
             });
         }
         (TAtomic::Scalar(TScalar::String(c)), TAtomic::Scalar(TScalar::ClassLikeString(i)))
-            if !c.is_literal_origin() && !c.is_numeric =>
+            if (!c.is_literal_origin() || (c.is_unspecified_literal() && input_type_part.is_string_of_literal_origin()))
+                && !c.is_numeric =>
         {
             return c.casing.is_unspecified()
                 || i.literal_value().is_some_and(|value| {
