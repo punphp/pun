@@ -13141,7 +13141,7 @@
         "RenameClass",
         "RenameClassRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/refactor/rename-class-constant",

@@ -750,7 +750,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "refactor/remove-function-call" = { fix = "unsafe", ported = true, status = "decided", summary = "Remove defined function calls" }
 "refactor/remove-phpdoc-annotation" = { fix = "safe", ported = true, status = "decided", summary = "Removes configured annotations from PHPDoc." }
 "refactor/rename-cast" = { fix = "unsafe", ported = true, status = "decided", summary = "Renames casts" }
-"refactor/rename-class" = { fix = "unsafe", gated_by = "laravel-version", ported = false, status = "decided", summary = "Replace defined classes by new ones" }
+"refactor/rename-class" = { fix = "unsafe", gated_by = "laravel-version", ported = true, status = "decided", summary = "Replace defined classes by new ones" }
 "refactor/rename-class-constant" = { fix = "unsafe", ported = true, status = "decided", summary = "Replace defined class constants in their calls" }
 "refactor/rename-constant" = { fix = "unsafe", ported = true, status = "decided", summary = "Replace constant by new ones" }
 "refactor/rename-function" = { fix = "unsafe", gated_by = "laravel-version", ported = true, status = "decided", summary = "Turn defined function call new one" }
