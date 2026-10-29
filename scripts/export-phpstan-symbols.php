@@ -142,7 +142,19 @@ function variant(ParametersAcceptor $v): array
         $params[] = $param;
     }
 
-    return ['params' => $params, 'return' => t($v->getReturnType())];
+    return ['params' => $params, 'return' => t($v->getReturnType()), 'signature' => signature($v)];
+}
+
+// Keep the channels returned by the reflection, not guesses based on its effective return description.
+function signature(ParametersAcceptor $v): array
+{
+    return [
+        'phpDocReturn' => t($v->getPhpDocReturnType()),
+        'nativeReturn' => t($v->getNativeReturnType()),
+        'templates' => array_map('t', $v->getTemplateTypeMap()->getTypes()),
+        'resolvedTemplates' => array_map('t', $v->getResolvedTemplateTypeMap()->getTypes()),
+        'variances' => array_map(fn ($variance) => $variance->describe(), $v->getCallSiteVarianceMap()->getVariances()),
+    ];
 }
 
 function callable_entry(PHPStan\Reflection\FunctionReflection|PHPStan\Reflection\ExtendedMethodReflection $f): array
@@ -852,12 +864,20 @@ if (($argv[1] ?? '') === 'dump') {
 }
 
 // Refresh just this reflection contract without changing host-dependent extension constant values or fixtures.
-if (($argv[1] ?? '') === 'allowed-constants') {
+if (in_array($argv[1] ?? '', ['allowed-constants', 'signatures'], true)) {
     $path = $root.'/crates/pun-phpstan/data/symbols.json';
     $symbols = json_decode(file_get_contents($path), false, 512, JSON_THROW_ON_ERROR);
     foreach ([80400, 80500] as $version) {
         $provider = container($version)->getByType(ReflectionProvider::class);
+        // A new reflection channel can differ on 8.5 even when the old effective signature did not.
         $data = $version === 80400 ? $symbols : $symbols->php85;
+        if ($version === 80500 && $argv[1] === 'signatures') {
+            $data = (object) [];
+            foreach (['functions', 'classes'] as $kind) {
+                $data->$kind = (object) array_replace((array) $symbols->$kind, (array) $symbols->php85->$kind);
+                $data->$kind = json_decode(json_encode($data->$kind), false, 512, JSON_THROW_ON_ERROR);
+            }
+        }
         foreach (['functions', 'classes'] as $kind) {
             foreach ($data->$kind as $name => $entry) {
                 if ($entry === null) {
@@ -871,6 +891,10 @@ if (($argv[1] ?? '') === 'allowed-constants') {
                     $fresh = callable_entry($reflection);
                     foreach (['variants', 'named'] as $variants) {
                         foreach ($callable->$variants ?? [] as $i => $variant) {
+                            if ($argv[1] === 'signatures') {
+                                $variant->signature = $fresh[$variants][$i]['signature'];
+                                continue;
+                            }
                             foreach ($variant->params as $p => $param) {
                                 unset($param->allowedConstants);
                                 if (isset($fresh[$variants][$i]['params'][$p]['allowedConstants'])) {
@@ -878,6 +902,13 @@ if (($argv[1] ?? '') === 'allowed-constants') {
                                 }
                             }
                         }
+                    }
+                }
+            }
+            if ($version === 80500 && $argv[1] === 'signatures') {
+                foreach ($data->$kind as $name => $entry) {
+                    if (json_encode($entry) !== json_encode($symbols->$kind->$name ?? null)) {
+                        $symbols->php85->$kind->$name = $entry;
                     }
                 }
             }

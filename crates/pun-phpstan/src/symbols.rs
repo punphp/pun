@@ -81,6 +81,17 @@ impl ParameterAllowedConstants {
 pub struct Variant {
     pub params: Vec<Param>,
     pub ret: String,
+    /// ExtendedParametersAcceptor's independent return channels and template maps.
+    pub signature: Option<Signature>,
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct Signature {
+    pub phpdoc_return: String,
+    pub native_return: String,
+    pub templates: Vec<(String, String)>,
+    pub resolved_templates: Vec<(String, String)>,
+    pub variances: Vec<(String, String)>,
 }
 
 #[derive(Debug, PartialEq)]
@@ -194,6 +205,19 @@ struct RawVariant {
     params: Vec<RawParam>,
     #[serde(rename = "return")]
     ret: String,
+    signature: Option<RawSignature>,
+}
+
+#[derive(Deserialize)]
+struct RawSignature {
+    #[serde(rename = "phpDocReturn")]
+    phpdoc_return: String,
+    #[serde(rename = "nativeReturn")]
+    native_return: String,
+    templates: Entries<String>,
+    #[serde(rename = "resolvedTemplates")]
+    resolved_templates: Entries<String>,
+    variances: Entries<String>,
 }
 
 #[derive(Deserialize)]
@@ -272,6 +296,13 @@ fn variants(v: Vec<RawVariant>) -> Vec<Variant> {
                 })
                 .collect(),
             ret: v.ret,
+            signature: v.signature.map(|s| Signature {
+                phpdoc_return: s.phpdoc_return,
+                native_return: s.native_return,
+                templates: s.templates.0,
+                resolved_templates: s.resolved_templates.0,
+                variances: s.variances.0,
+            }),
         })
         .collect()
 }

@@ -1,0 +1,150 @@
+[
+    {
+        "version": 80400,
+        "class": "ArrayObject",
+        "method": "offsetGet",
+        "variant": 0,
+        "effective": "TValue (class ArrayObject, parameter)|null",
+        "phpdoc": "TValue (class ArrayObject, parameter)|null",
+        "native": "mixed",
+        "templates": [],
+        "resolvedTemplates": [],
+        "variances": []
+    },
+    {
+        "version": 80400,
+        "class": "DateTimeImmutable",
+        "method": "modify",
+        "variant": 0,
+        "effective": "static(DateTimeImmutable)",
+        "phpdoc": "static(DateTimeImmutable)|false",
+        "native": "mixed",
+        "templates": [],
+        "resolvedTemplates": [],
+        "variances": []
+    },
+    {
+        "version": 80400,
+        "class": "ArrayIterator",
+        "method": "current",
+        "variant": 0,
+        "effective": "TValue (class ArrayIterator, parameter)",
+        "phpdoc": "TValue (class ArrayIterator, parameter)",
+        "native": "mixed",
+        "templates": [],
+        "resolvedTemplates": [],
+        "variances": []
+    },
+    {
+        "version": 80400,
+        "class": "Directory",
+        "method": "read",
+        "variant": 0,
+        "effective": "string|false",
+        "phpdoc": "string|false",
+        "native": "mixed",
+        "templates": [],
+        "resolvedTemplates": [],
+        "variances": []
+    },
+    {
+        "version": 80400,
+        "class": "ReflectionGenerator",
+        "method": "getExecutingLine",
+        "variant": 0,
+        "effective": "int",
+        "phpdoc": "int",
+        "native": "mixed",
+        "templates": [],
+        "resolvedTemplates": [],
+        "variances": []
+    },
+    {
+        "version": 80400,
+        "class": "Ds\\Deque",
+        "method": "map",
+        "variant": 0,
+        "effective": "Ds\\Deque<TNewValue (method Ds\\Deque::map(), parameter)>",
+        "phpdoc": "Ds\\Deque<TNewValue (method Ds\\Deque::map(), parameter)>",
+        "native": "Ds\\Deque",
+        "templates": {
+            "TNewValue": "TNewValue (method Ds\\Deque::map(), parameter)"
+        },
+        "resolvedTemplates": [],
+        "variances": []
+    },
+    {
+        "version": 80500,
+        "class": "ArrayObject",
+        "method": "offsetGet",
+        "variant": 0,
+        "effective": "TValue (class ArrayObject, parameter)|null",
+        "phpdoc": "TValue (class ArrayObject, parameter)|null",
+        "native": "mixed",
+        "templates": [],
+        "resolvedTemplates": [],
+        "variances": []
+    },
+    {
+        "version": 80500,
+        "class": "DateTimeImmutable",
+        "method": "modify",
+        "variant": 0,
+        "effective": "static(DateTimeImmutable)",
+        "phpdoc": "static(DateTimeImmutable)|false",
+        "native": "mixed",
+        "templates": [],
+        "resolvedTemplates": [],
+        "variances": []
+    },
+    {
+        "version": 80500,
+        "class": "ArrayIterator",
+        "method": "current",
+        "variant": 0,
+        "effective": "TValue (class ArrayIterator, parameter)",
+        "phpdoc": "TValue (class ArrayIterator, parameter)",
+        "native": "mixed",
+        "templates": [],
+        "resolvedTemplates": [],
+        "variances": []
+    },
+    {
+        "version": 80500,
+        "class": "Directory",
+        "method": "read",
+        "variant": 0,
+        "effective": "string|false",
+        "phpdoc": "string|false",
+        "native": "string|false",
+        "templates": [],
+        "resolvedTemplates": [],
+        "variances": []
+    },
+    {
+        "version": 80500,
+        "class": "ReflectionGenerator",
+        "method": "getExecutingLine",
+        "variant": 0,
+        "effective": "int",
+        "phpdoc": "int",
+        "native": "int",
+        "templates": [],
+        "resolvedTemplates": [],
+        "variances": []
+    },
+    {
+        "version": 80500,
+        "class": "Ds\\Deque",
+        "method": "map",
+        "variant": 0,
+        "effective": "Ds\\Deque<TNewValue (method Ds\\Deque::map(), parameter)>",
+        "phpdoc": "Ds\\Deque<TNewValue (method Ds\\Deque::map(), parameter)>",
+        "native": "Ds\\Deque",
+        "templates": {
+            "TNewValue": "TNewValue (method Ds\\Deque::map(), parameter)"
+        },
+        "resolvedTemplates": [],
+        "variances": []
+    }
+]
