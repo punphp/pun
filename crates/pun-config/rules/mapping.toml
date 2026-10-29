@@ -471,7 +471,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "laravel/prefer-collects-attribute" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes the collects property to use the Collects attribute" }
 "laravel/prefer-command-hidden-attribute" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes the hidden property to use the Hidden attribute on console commands" }
 "laravel/prefer-connection-attribute" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes model connection property to use the Connection attribute" }
-"laravel/prefer-constructor-injection" = { fix = "unsafe", ported = false, status = "decided", summary = "Move help facade-like function calls to constructor injection" }
+"laravel/prefer-constructor-injection" = { fix = "unsafe", ported = true, status = "decided", summary = "Move help facade-like function calls to constructor injection" }
 "laravel/prefer-date-facade" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Refactor Carbon static method calls to use the Date facade instead." }
 "laravel/prefer-date-format-attribute" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes model dateFormat property to use the DateFormat attribute" }
 "laravel/prefer-dedicated-status-assertion" = { fix = "safe", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Use assertOk(), assertNotFound() and similar instead of assertStatus(200)." }
@@ -760,7 +760,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "refactor/replace-function-with-constant" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes use of function calls to use constants" }
 "refactor/replace-function-with-new" = { fix = "unsafe", ported = true, status = "decided", summary = "Change configured function calls to new Instance" }
 "refactor/replace-function-with-static" = { fix = "unsafe", ported = true, status = "decided", summary = "Turn defined function call to static method call" }
-"refactor/replace-static-with-method" = { fix = "unsafe", ported = false, status = "decided", summary = "Change static call to service method via constructor injection" }
+"refactor/replace-static-with-method" = { fix = "unsafe", ported = true, status = "decided", summary = "Change static call to service method via constructor injection" }
 "security/add-sensitive-parameter" = { fix = "safe", intent = "suspicious", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Requires that parameters that are likely to contain sensitive information (e.g., passwords) are marked with the `#[SensitiveParameter]` attribute." }
 "security/no-debug-calls" = { fix = "unsafe", intent = "suspicious", sets = ["coding-style"], ported = true, status = "decided", summary = "Remove or report debug calls left in code: dd(), dump(), var_dump(), ray(), and ->dd()/->dump() in Pest expectations." }
 "security/no-eval" = { fix = "none", intent = "suspicious", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects unsafe uses of the `eval` construct." }

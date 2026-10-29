@@ -7542,7 +7542,7 @@
         "ArgumentFuncCallToMethodCallRector",
         "RectorLaravel\\Rector\\FuncCall\\ArgumentFuncCallToMethodCallRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-date-facade",
@@ -13320,7 +13320,7 @@
         "StaticCallToMethodCall",
         "StaticCallToMethodCallRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/security/add-sensitive-parameter",
