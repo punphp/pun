@@ -10,7 +10,8 @@
 //! takes the parameter's type away (`null` alone). Only a `function` counts, not an arrow function.
 //!
 //! The type of `new` with a class name is Rector's own (`NewTypeResolver`): the name as written, and none for
-//! `new static`.
+//! `new static`. A property that PHPStan does not find (`*ERROR*`; a `@property` tag or a `@mixin` counts only for a
+//! class that allows dynamic properties) or one of `stdClass` (`mixed`) takes the parameter's type away.
 //!
 //! Pun leaves the call alone where Mago does not tell what PHPStan would: a `mixed` value (PHPStan writes `mixed` for
 //! a declared one and takes the type away for an inferred one; Mago has no such difference), an `object` value (Mago's
@@ -19,14 +20,21 @@
 //! type has generics decides the comparison), an intersection hint, and another case of a keyword hint that is not
 //! `int`, `float`, `string` or `bool` (PHPStan may hold it equal).
 
+use std::collections::HashSet;
+
+use mago_codex::metadata::CodebaseMetadata;
+use mago_codex::metadata::class_like::ClassLikeMetadata;
+use mago_codex::ttype::TType;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::scalar::TScalar;
-use mago_syntax::cst::{Argument, Closure, Expression, Hint, Node, NodeKind};
+use mago_syntax::cst::{
+    Access, Argument, ClassLikeMemberSelector, Closure, Expression, Hint, Node, NodeKind,
+};
 use pun_problem::{Edit, Fix, Safety, Span};
 
 use super::names::resolve_class_name;
-use super::object_type::is_object_type;
+use super::object_type::{is_object_type, object_class};
 use super::print::set_param_type;
 use super::{is_name, member_name};
 use crate::rules::rector_code_quality::named;
@@ -125,6 +133,17 @@ fn refactor_parameter(
     if let Some((declared, values)) = new_type(ancestors, &facts, value) {
         return parameter_edit(ctx, ancestors, param, own.as_deref(), declared, &values);
     }
+    if undeclared_property(&facts, value) {
+        // PHPStan's `*ERROR*` or implicit `mixed`, which equals no hint and has no declaration (Mago's is `mixed`)
+        return parameter_edit(
+            ctx,
+            ancestors,
+            param,
+            own.as_deref(),
+            None,
+            &[Member::Other],
+        );
+    }
     let t = facts.full_type(node_span(unparenthesize(value)))?;
     // a `mixed`, a class the codebase does not know, `object` (Mago's type of a conditional return type PHPStan
     // resolves to `mixed`, a template's bound) and `never` (Mago's type of code it finds wrong)
@@ -144,6 +163,121 @@ fn refactor_parameter(
     let declared = declaration(&facts, &t.types, ctx.php_version)?;
     let values = value_members(&facts, &t.types, own.as_deref());
     parameter_edit(ctx, ancestors, param, own.as_deref(), declared, &values)
+}
+
+/// Whether `value` reads a property (`$a->b`) whose type PHPStan does not take from a declaration on any class of
+/// `$a`'s type: one it does not find (`*ERROR*`) or one of `stdClass` (`mixed`).
+fn undeclared_property(facts: &Facts, value: &Expression<'_>) -> bool {
+    let Expression::Access(Access::Property(access)) = unparenthesize(value) else {
+        return false;
+    };
+    let (ClassLikeMemberSelector::Identifier(name), Some(t)) =
+        (&access.property, facts.full_type(node_span(access.object)))
+    else {
+        return false;
+    };
+    let property = [b"$", name.value].concat();
+    t.types.iter().all(|a| match a {
+        TAtomic::Object(TObject::Named(n)) => {
+            declared_property(
+                facts.documented(),
+                n.name.as_bytes(),
+                &property,
+                &mut HashSet::new(),
+            ) == Some(false)
+        }
+        _ => false,
+    })
+}
+
+/// Whether the class has the instance property with a declared type, as `ClassReflection::hasInstanceProperty` on
+/// PHP 8.2 and later finds it: a property the class declares, or, when the class `allowsDynamicProperties()`, one of a
+/// `@property` tag of the class or its ancestors (`AnnotationsPropertiesClassReflectionExtension`) or one that every
+/// class of a `@mixin` of the class, its traits or its parents has (`MixinPropertiesClassReflectionExtension`, a mixin
+/// reached again skipped); then one of a `@phpstan-require-extends` class. Every property of `stdClass` is a `mixed`
+/// one (`UniversalObjectCratesClassReflectionExtension`). `None` where Pun does not know: a class or parent the
+/// codebase lacks, an enum, a mixin that is not a class.
+fn declared_property(
+    codebase: &CodebaseMetadata,
+    class: &[u8],
+    property: &[u8],
+    seen: &mut HashSet<Vec<u8>>,
+) -> Option<bool> {
+    let metadata = codebase.get_class_like(class)?;
+    (!metadata.kind.is_enum()).then_some(())?;
+    if codebase.property_exists(class, property) {
+        return Some(true);
+    }
+    let lineage = (metadata.all_parent_classes.iter())
+        .map(|p| codebase.get_class_like(p.as_bytes()))
+        .collect::<Option<Vec<_>>>()?;
+    let lineage: Vec<_> = std::iter::once(metadata).chain(lineage).collect();
+    if allows_dynamic_properties(codebase, &lineage)? {
+        if codebase.magic_property_exists(class, property) {
+            return Some(true);
+        }
+        let traits = lineage.iter().flat_map(|c| &c.used_traits);
+        let mixins = (lineage.iter().map(|c| &c.mixins)).chain(
+            traits
+                .filter_map(|t| codebase.get_class_like(t.as_bytes()))
+                .map(|t| &t.mixins),
+        );
+        for mixin in mixins.flatten() {
+            if !seen.insert(mixin.type_union.get_id().as_bytes().to_vec()) {
+                continue;
+            }
+            let mut every = true;
+            for atomic in mixin.type_union.types.iter() {
+                let class = object_class(atomic)?;
+                every &= declared_property(codebase, class.as_bytes(), property, seen)?;
+            }
+            if every {
+                return Some(true);
+            }
+        }
+        if lineage.iter().any(|c| c.name.as_bytes() == b"stdclass") {
+            return Some(false);
+        }
+    }
+    for required in &metadata.require_extends {
+        if declared_property(codebase, required.as_bytes(), property, seen)? {
+            return Some(true);
+        }
+    }
+    Some(false)
+}
+
+/// `ClassReflection::allowsDynamicProperties()` on PHP 8.2 and later, for a class and its parents: a native `__get`,
+/// `__set` or `__isset`, a `@phpstan-require-extends` class that allows them, `stdClass`, or
+/// `#[AllowDynamicProperties]` on the class or a parent.
+fn allows_dynamic_properties(
+    codebase: &CodebaseMetadata,
+    lineage: &[&ClassLikeMetadata],
+) -> Option<bool> {
+    let class = lineage[0].name.as_bytes();
+    if ["__get", "__set", "__isset"]
+        .iter()
+        .any(|m| codebase.method_exists(class, m.as_bytes()))
+    {
+        return Some(true);
+    }
+    for required in &lineage[0].require_extends {
+        let required = codebase.get_class_like(required.as_bytes())?;
+        let parents = (required.all_parent_classes.iter())
+            .map(|p| codebase.get_class_like(p.as_bytes()))
+            .collect::<Option<Vec<_>>>()?;
+        if allows_dynamic_properties(codebase, &[&[required][..], &parents].concat())? {
+            return Some(true);
+        }
+    }
+    Some(lineage.iter().any(|c| {
+        c.name.as_bytes() == b"stdclass"
+            || (c.attributes.iter()).any(|a| {
+                a.name
+                    .as_bytes()
+                    .eq_ignore_ascii_case(b"AllowDynamicProperties")
+            })
+    }))
 }
 
 /// `NewTypeResolver`: the type of `new` with a class name is that name's object as written (resolved), `new static`
