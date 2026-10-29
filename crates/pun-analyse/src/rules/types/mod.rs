@@ -203,9 +203,10 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_> {
         }
     }
     fn walk_in_argument_list(&mut self, l: &'ast ArgumentList<'arena>, _: &mut ()) {
-        if self.check_arguments {
-            for a in l.arguments.iter() {
-                self.spans.push(a.value().span());
+        for a in l.arguments.iter() {
+            // Overload selection reads operands even when argument diagnostics are disabled.
+            self.spans.push(a.value().span());
+            if self.check_arguments {
                 match a.value() {
                     Expression::Array(arr) => self.spans.extend(arr.elements.iter().map(element)),
                     Expression::LegacyArray(arr) => self.spans.extend(arr.elements.iter().map(element)),

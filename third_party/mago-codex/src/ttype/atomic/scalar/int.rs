@@ -21,6 +21,8 @@ use mago_word::word;
 use crate::ttype::TType;
 use crate::ttype::atomic::TAtomic;
 use crate::ttype::atomic::scalar::TScalar;
+use crate::ttype::atomic::scalar::string::TString;
+use crate::ttype::union::TUnion;
 
 /// Represents an integer type in a static analysis context, which can be either a
 /// specific known value or a range of possible values.
@@ -44,6 +46,21 @@ pub enum TInteger {
 }
 
 impl TInteger {
+    /// IntegerType/IntegerRangeType::toString(), including the 128-wide finite expansion boundary.
+    #[must_use]
+    pub fn to_string_type(&self) -> TUnion {
+        if let (Some(min), Some(max)) = self.get_bounds()
+            && (max as i128 - min as i128) <= 128
+        {
+            return TUnion::from_vec((min..=max).map(|value| {
+                TAtomic::Scalar(TScalar::literal_string(i64_word(value)))
+            }).collect());
+        }
+        let mut string = TString::decimal_integer(false);
+        string.is_truthy = !self.contains(Self::Literal(0));
+        TUnion::from_atomic(TAtomic::Scalar(TScalar::String(string)))
+    }
+
     /// Creates a new integer type from an optional literal value.
     ///
     /// If `Some(v)` is provided, it creates a `Literal(v)`. Otherwise, `Unspecified`.

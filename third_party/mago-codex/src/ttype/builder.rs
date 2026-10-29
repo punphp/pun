@@ -406,6 +406,15 @@ pub fn get_union_from_type(
         }
         Type::Reference(reference_type) => {
             if let ReferenceKind::Identifier(identifier) = &reference_type.kind {
+                if identifier.value.eq_ignore_ascii_case(b"decimal-int-string")
+                    || identifier.value.eq_ignore_ascii_case(b"non-decimal-int-string")
+                {
+                    return Ok(wrap_atomic(TAtomic::Scalar(TScalar::String(
+                        crate::ttype::atomic::scalar::string::TString::decimal_integer(
+                            identifier.value.eq_ignore_ascii_case(b"non-decimal-int-string"),
+                        ),
+                    ))));
+                }
                 let reference_name_atom = word(identifier.value);
 
                 if let Some((source_class, original_name)) = type_context.get_imported_type_alias(reference_name_atom) {
@@ -468,7 +477,7 @@ pub fn get_union_from_type(
             get_literal_string(word(pun_tokens::php_compat::unescape_phpdoc_string(lit.raw)))
         }
         Type::Negated(negated) => match negated.operand {
-            Type::LiteralInt(lit) => get_literal_int(-(lit.value as i64)),
+            Type::LiteralInt(lit) => get_literal_int(i64::try_from(-(lit.value as i128)).unwrap_or(i64::MIN)),
             Type::LiteralFloat(lit) => get_literal_float(-(*lit.value)),
             _ => return Err(TypeError::UnsupportedType(ttype.to_string(), ttype.span())),
         },
@@ -503,13 +512,13 @@ pub fn get_union_from_type(
         Type::TrailingPipe(trailing) => get_union_from_type(trailing.inner, scope, type_context, classname)?,
         Type::IntRange(range) => {
             let min = match range.min {
-                IntOrKeyword::NegativeInt { int, .. } => Some(-(int.value as i64)),
+                IntOrKeyword::NegativeInt { int, .. } => Some(i64::try_from(-(int.value as i128)).unwrap_or(i64::MIN)),
                 IntOrKeyword::Int(literal_int_type) => Some(literal_int_type.value as i64),
                 IntOrKeyword::Keyword(_) => None,
             };
 
             let max = match range.max {
-                IntOrKeyword::NegativeInt { int, .. } => Some(-(int.value as i64)),
+                IntOrKeyword::NegativeInt { int, .. } => Some(i64::try_from(-(int.value as i128)).unwrap_or(i64::MIN)),
                 IntOrKeyword::Int(literal_int_type) => Some(literal_int_type.value as i64),
                 IntOrKeyword::Keyword(_) => None,
             };

@@ -1,5 +1,4 @@
 use std::rc::Rc;
-use std::sync::Arc;
 
 use foldhash::HashMap;
 
@@ -9,10 +8,7 @@ use mago_codex::context::ScopeContext;
 use mago_codex::identifier::function_like::FunctionLikeIdentifier;
 use mago_codex::ttype::add_union_type;
 use mago_codex::ttype::atomic::TAtomic;
-use mago_codex::ttype::atomic::array::TArray;
-use mago_codex::ttype::atomic::array::keyed::TKeyedArray;
 use mago_codex::ttype::atomic::callable::TCallable;
-use mago_codex::ttype::get_arraykey;
 use mago_codex::ttype::get_mixed;
 use mago_codex::ttype::union::TUnion;
 use mago_database::file::File;
@@ -73,6 +69,25 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Closure<'arena> {
 
         let mut inner_block_context = BlockContext::new(scope, context.settings.register_super_globals);
         inner_block_context.native_locals = block_context.native_locals.as_ref().map(|_| Default::default());
+
+        if !scope.is_static() {
+            let binding = artifacts.closure_bind_scope.as_ref();
+            if let Some(this_type) = binding
+                .and_then(|binding| binding.this_type.clone())
+                .or_else(|| block_context.locals.get(&word("$this")).cloned())
+            {
+                inner_block_context.locals.insert(word("$this"), this_type);
+            }
+            let native_this = binding.map_or_else(
+                || block_context.native_locals.as_ref().and_then(|locals| locals.get(&word("$this"))).cloned(),
+                |binding| binding.native_this_type.clone(),
+            );
+            if let Some(locals) = &mut inner_block_context.native_locals
+                && let Some(this_type) = native_this
+            {
+                locals.insert(word("$this"), this_type);
+            }
+        }
 
         let mut variable_spans = HashMap::default();
         if let Some(use_clause) = self.use_clause.as_ref() {
@@ -143,7 +158,6 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Closure<'arena> {
 
                     // Writes from one call are visible in the next call, the same as for a
                     // `static` local, so the capture takes part in static local inference.
-                    // Its type is widened after that inference, see `add_captured_types`.
                     // A closure that captures itself for recursion keeps its own type.
                     if !captures_itself {
                         inner_block_context.static_locals.insert(variable_atom);
@@ -172,7 +186,6 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Closure<'arena> {
                         if is_by_reference {
                             let inner_descendant = Rc::make_mut(&mut imported_type);
                             inner_descendant.set_by_reference(true);
-                            widen_by_reference_type(inner_descendant);
                         }
 
                         inner_block_context.locals.insert(*variable_id, imported_type);
@@ -181,6 +194,8 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Closure<'arena> {
                 }
             }
         }
+
+        inner_block_context.capture_variable_conditions(block_context, |name| variable_spans.contains_key(name.as_bytes()));
 
         if !context.settings.allow_implicit_pipe_callable_types || !block_context.flags.inside_pipe_callable() {
             for parameter in &self.parameter_list.parameters {
@@ -230,15 +245,6 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Closure<'arena> {
             inferred_parameter_types,
         )?;
 
-        if !inner_block_context.references_to_external_scope.is_empty() {
-            block_context.native_locals = block_context.native_locals.take()
-                .zip(inner_block_context.native_locals.as_ref()).and_then(|(mut outer, inner)| {
-                    for variable in &inner_block_context.references_to_external_scope {
-                        outer.insert(*variable, inner.get(variable)?.clone());
-                    }
-                    Some(outer)
-                });
-        }
         for referenced_variable in inner_block_context.references_to_external_scope {
             let Some(inner_type) = inner_block_context.locals.remove(&referenced_variable) else {
                 continue;
@@ -259,6 +265,12 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Closure<'arena> {
                 block_context.remove_descendants(context, referenced_variable, existing, Some(&variable_type));
             }
 
+            // processClosureScope installs its selected full holder in both lanes. A
+            // deferred body's final native scope is neither the creation scope nor
+            // the converged by-ref result scope; it may be narrower or unavailable.
+            if let Some(native) = &mut block_context.native_locals {
+                native.insert(referenced_variable, Rc::clone(&variable_type));
+            }
             block_context.locals.insert(referenced_variable, variable_type);
         }
 
@@ -294,37 +306,6 @@ fn is_closure_itself(variable_type: &TUnion, file: &File, span: Span) -> bool {
             variable_type.get_single(),
             TAtomic::Callable(TCallable::Alias(identifier)) if *identifier == FunctionLikeIdentifier::for_closure(file, span)
         )
-}
-
-pub(crate) fn widen_by_reference_type(union: &mut TUnion) {
-    union.widen_literals();
-
-    for atomic in union.types.to_mut() {
-        if let TAtomic::Array(array) = atomic {
-            if array.is_empty() {
-                *atomic = TAtomic::Array(TArray::Keyed(TKeyedArray::new_with_parameters(
-                    Arc::new(get_arraykey()),
-                    Arc::new(get_mixed()),
-                )));
-            } else {
-                match array {
-                    TArray::Keyed(keyed) => {
-                        if keyed.parameters.is_none() {
-                            keyed.parameters = Some((Arc::new(get_arraykey()), Arc::new(get_mixed())));
-                        }
-                        keyed.non_empty = false;
-                    }
-                    TArray::List(list) => {
-                        if list.element_type.is_never() {
-                            list.element_type = Arc::new(get_mixed());
-                        }
-                        list.known_count = None;
-                        list.non_empty = false;
-                    }
-                }
-            }
-        }
-    }
 }
 
 #[cfg(test)]
@@ -468,12 +449,7 @@ mod tests {
             }
 
             echo fibaonacci(10);
-        "},
-        issues = [
-            IssueCode::InvalidStaticMethodCall,
-            IssueCode::ImpossibleAssignment,
-            IssueCode::UnevaluatedCode,
-        ]
+        "}
     }
 
     test_analysis! {
@@ -501,12 +477,7 @@ mod tests {
             }
 
             echo (new Foo())->fibaonacci(10);
-        "},
-        issues = [
-            IssueCode::InvalidStaticMethodCall,
-            IssueCode::ImpossibleAssignment,
-            IssueCode::UnevaluatedCode,
-        ]
+        "}
     }
 
     test_analysis! {
@@ -522,11 +493,7 @@ mod tests {
             }
 
             $_fn = Closure::getCurrent();
-        "},
-        issues = [
-            IssueCode::InvalidStaticMethodCall,
-            IssueCode::ImpossibleAssignment,
-        ]
+        "}
     }
 
     test_analysis! {

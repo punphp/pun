@@ -1,5 +1,5 @@
 <?php
-// php capture.php /absolute/path/to/phpstan-2.3.1.phar [providers.php] > expected.json
+// php capture.php /absolute/path/to/phpstan-2.3.1.phar [fixture.php] [--dependencies] [--function-events] [--method-events] > expected.json
 $phar = $argv[1];
 require 'phar://' . $phar . '/vendor/autoload.php';
 $root = sys_get_temp_dir() . '/pun-call-observations-' . getmypid();
@@ -8,6 +8,7 @@ $file = __DIR__ . '/' . ($argv[2] ?? 'matrix.php');
 $dependencies = in_array('--dependencies', $argv, true);
 $reflections = in_array('--reflections', $argv, true);
 $functionEvents = in_array('--function-events', $argv, true) ? [] : null;
+$methodEvents = in_array('--method-events', $argv, true) ? [] : null;
 try {
     $config = "parameters:\n    phpVersion: 80500\n    checkThisOnly: false\n    checkFunctionArgumentTypes: true\n";
     if (($argv[2] ?? '') === 'providers.php') {
@@ -25,12 +26,16 @@ try {
     $out = [];
     $result = $container->getByType(PHPStan\Analyser\FileAnalyser::class)->analyseFile(
         $file, [$file => true], new PHPStan\Rules\DirectRegistry([]), new PHPStan\Collectors\Registry([]),
-        static function ($node, $scope) use (&$out, &$functionEvents, $text, $source, $dependencies, $reflections): void {
+        static function ($node, $scope) use (&$out, &$functionEvents, &$methodEvents, $text, $source, $dependencies, $reflections): void {
             if ($functionEvents !== null && $node instanceof PhpParser\Node\Expr\FuncCall) {
                 $position = $node->getStartFilePos();
                 $functionEvents[$position] = ($functionEvents[$position] ?? 0) + 1;
             }
             if (!$node instanceof PhpParser\Node\Expr\MethodCall) return;
+            if ($methodEvents !== null) {
+                $position = $node->getStartFilePos();
+                $methodEvents[$position] = ($methodEvents[$position] ?? 0) + 1;
+            }
             $last = $node->getEndFilePos() + 1;
             $marker = substr($source, $last, 14);
             if (!str_starts_with($marker, '; // observe') && !str_starts_with($marker, '/* observe */')) return;
@@ -83,6 +88,10 @@ try {
     if ($functionEvents !== null) {
         ksort($functionEvents, SORT_NUMERIC);
         $capture['function_events'] = $functionEvents;
+    }
+    if ($methodEvents !== null) {
+        ksort($methodEvents, SORT_NUMERIC);
+        $capture['method_events'] = $methodEvents;
     }
     echo json_encode($capture, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR), "\n";
 } finally {

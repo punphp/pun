@@ -362,6 +362,12 @@ impl TUnion {
         }
     }
 
+    /// PHPStan's TypeCombinator::removeNull subtracts null only when it is an explicit alternative.
+    #[must_use]
+    pub fn remove_null(&self) -> TUnion {
+        if self.has_null() { self.to_non_nullable() } else { self.clone() }
+    }
+
     #[must_use]
     pub fn to_truthy(&self) -> TUnion {
         TUnion { types: Cow::Owned(ensure_non_empty_types(self.get_truthy_types())), flags: self.flags }
@@ -372,7 +378,7 @@ impl TUnion {
         self.types
             .iter()
             .filter_map(|t| match t {
-                TAtomic::Null | TAtomic::Void => None,
+                TAtomic::Null => None,
                 TAtomic::GenericParameter(parameter) => Some(TAtomic::GenericParameter(TGenericParameter {
                     parameter_name: parameter.parameter_name,
                     defining_entity: parameter.defining_entity,

@@ -7,7 +7,6 @@ use std::sync::Arc;
 
 use mago_word::empty_word;
 use mago_word::f64_word;
-use mago_word::i64_word;
 use mago_word::word;
 
 use mago_bytes::BytesDisplay;
@@ -1240,6 +1239,11 @@ fn report_redundant_type_cast<'ast, 'arena, A>(
 ) where
     A: Arena,
 {
+    // A holder's present-value type does not make a possibly absent read redundant.
+    if known_type.possibly_undefined() || known_type.possibly_undefined_from_try() {
+        return;
+    }
+
     context.collector.propose_with_code(
         IssueCode::RedundantCast,
         Issue::help(format!(
@@ -1892,6 +1896,11 @@ pub fn cast_type_to_string<'ctx, A>(
 where
     A: Arena,
 {
+    // IntegerRangeType's inclusive finite limit permits 129 constants. A second generic string
+    // combiner pass would incorrectly generalize that boundary at Mago's 128-string threshold.
+    if let [TAtomic::Scalar(TScalar::Integer(integer))] = operand_type.types.as_ref() {
+        return Ok(integer.to_string_type());
+    }
     let (has_array, has_non_array) = operand_type
         .types
         .iter()
@@ -1914,11 +1923,7 @@ where
                     }
                 }
                 TScalar::Integer(integer) => {
-                    if let Some(value) = integer.get_literal_value() {
-                        possibilities.push(TAtomic::Scalar(TScalar::literal_string(i64_word(value))));
-                    } else {
-                        possibilities.push(TAtomic::Scalar(TScalar::numeric_string()));
-                    }
+                    possibilities.extend(integer.to_string_type().types.into_owned());
                 }
                 TScalar::Float(float) => {
                     if let Some(value) = float.get_literal_value() {

@@ -1,0 +1,239 @@
+{
+    "calls": {
+        "450": {
+            "line": 19,
+            "expression": "$target->$name(++$i, $i)",
+            "names": [
+                {
+                    "name": "bar",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 450,
+                            "end": 457,
+                            "expression": "$target",
+                            "type": "SingleCallTargets"
+                        },
+                        {
+                            "start": 465,
+                            "end": 469,
+                            "expression": "++$i",
+                            "type": "1"
+                        },
+                        {
+                            "start": 467,
+                            "end": 469,
+                            "expression": "$i",
+                            "type": "0"
+                        },
+                        {
+                            "start": 471,
+                            "end": 473,
+                            "expression": "$i",
+                            "type": "1"
+                        }
+                    ]
+                },
+                {
+                    "name": "foo",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 450,
+                            "end": 457,
+                            "expression": "$target",
+                            "type": "SingleCallTargets"
+                        },
+                        {
+                            "start": 465,
+                            "end": 469,
+                            "expression": "++$i",
+                            "type": "1"
+                        },
+                        {
+                            "start": 467,
+                            "end": 469,
+                            "expression": "$i",
+                            "type": "0"
+                        },
+                        {
+                            "start": 471,
+                            "end": 473,
+                            "expression": "$i",
+                            "type": "1"
+                        }
+                    ]
+                }
+            ]
+        },
+        "613": {
+            "line": 24,
+            "expression": "$target->$name(input: ++$i, later: $i)",
+            "names": [
+                {
+                    "name": "bar",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 613,
+                            "end": 620,
+                            "expression": "$target",
+                            "type": "SingleCallTargets"
+                        },
+                        {
+                            "start": 635,
+                            "end": 639,
+                            "expression": "++$i",
+                            "type": "11"
+                        },
+                        {
+                            "start": 637,
+                            "end": 639,
+                            "expression": "$i",
+                            "type": "10"
+                        },
+                        {
+                            "start": 648,
+                            "end": 650,
+                            "expression": "$i",
+                            "type": "11"
+                        }
+                    ]
+                },
+                {
+                    "name": "foo",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 613,
+                            "end": 620,
+                            "expression": "$target",
+                            "type": "SingleCallTargets"
+                        },
+                        {
+                            "start": 635,
+                            "end": 639,
+                            "expression": "++$i",
+                            "type": "11"
+                        },
+                        {
+                            "start": 637,
+                            "end": 639,
+                            "expression": "$i",
+                            "type": "10"
+                        },
+                        {
+                            "start": 648,
+                            "end": 650,
+                            "expression": "$i",
+                            "type": "11"
+                        }
+                    ]
+                }
+            ]
+        },
+        "958": {
+            "line": 33,
+            "expression": "$target->$name(...['input' => ++$i, 'later' => $i])",
+            "names": [
+                {
+                    "name": "bar",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 958,
+                            "end": 965,
+                            "expression": "$target",
+                            "type": "SingleCallUnpackTargets"
+                        },
+                        {
+                            "start": 976,
+                            "end": 1008,
+                            "expression": "['input' => ++$i, 'later' => $i]",
+                            "type": "array{input: 21, later: 21}"
+                        },
+                        {
+                            "start": 977,
+                            "end": 984,
+                            "expression": "'input'",
+                            "type": "'input'"
+                        },
+                        {
+                            "start": 988,
+                            "end": 992,
+                            "expression": "++$i",
+                            "type": "21"
+                        },
+                        {
+                            "start": 990,
+                            "end": 992,
+                            "expression": "$i",
+                            "type": "20"
+                        },
+                        {
+                            "start": 994,
+                            "end": 1001,
+                            "expression": "'later'",
+                            "type": "'later'"
+                        },
+                        {
+                            "start": 1005,
+                            "end": 1007,
+                            "expression": "$i",
+                            "type": "21"
+                        }
+                    ]
+                },
+                {
+                    "name": "foo",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 958,
+                            "end": 965,
+                            "expression": "$target",
+                            "type": "SingleCallUnpackTargets"
+                        },
+                        {
+                            "start": 976,
+                            "end": 1008,
+                            "expression": "['input' => ++$i, 'later' => $i]",
+                            "type": "array{input: 21, later: 21}"
+                        },
+                        {
+                            "start": 977,
+                            "end": 984,
+                            "expression": "'input'",
+                            "type": "'input'"
+                        },
+                        {
+                            "start": 988,
+                            "end": 992,
+                            "expression": "++$i",
+                            "type": "21"
+                        },
+                        {
+                            "start": 990,
+                            "end": 992,
+                            "expression": "$i",
+                            "type": "20"
+                        },
+                        {
+                            "start": 994,
+                            "end": 1001,
+                            "expression": "'later'",
+                            "type": "'later'"
+                        },
+                        {
+                            "start": 1005,
+                            "end": 1007,
+                            "expression": "$i",
+                            "type": "21"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "errors": []
+}

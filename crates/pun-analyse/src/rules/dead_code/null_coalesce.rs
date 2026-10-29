@@ -303,9 +303,8 @@ fn type_message(t: &Type) -> Option<&'static str> {
     }
 }
 
-/// `ConstantArrayType::hasOffsetValueType()` and the other types' (offsets as array keys).
+/// `hasOffsetValueType()`: arrays coerce their keys, while strings inspect the raw offset type.
 fn has_offset(t: &Type, offset: &Type) -> Tri {
-    let offset = &array_key(offset);
     match t {
         Type::Union(ts) | Type::Benevolent(ts) => {
             let all: Vec<Tri> = ts.iter().map(|t| has_offset(t, offset)).collect();
@@ -313,16 +312,19 @@ fn has_offset(t: &Type, offset: &Type) -> Tri {
         }
         Type::Intersection(ts) => {
             // a non-empty list has offset 0
-            if t.is_list().yes() && t.is_iterable_at_least_once().yes() && *offset == Type::ConstInt(0) {
+            if t.is_list().yes() && t.is_iterable_at_least_once().yes() && array_key(offset) == Type::ConstInt(0) {
                 return Tri::Yes;
             }
             ts.iter().map(|t| has_offset(t, offset)).fold(Tri::Maybe, |a, b| if a.yes() || b.yes() { Tri::Yes } else if b.no() { Tri::No } else { a })
         }
         Type::ConstArray(a) => {
+            let offset = &array_key(offset);
             let mut result = Tri::No;
             for (i, key) in a.keys.iter().enumerate() {
                 // (a decimal-integer string offset is an int key)
-                if matches!(key, Type::ConstInt(_)) && !offset.is_string().no() && !is_constant(offset) {
+                if matches!(key, Type::ConstInt(_)) && !offset.is_string().no() && !is_constant(offset)
+                    && !offset.is_decimal_int_string().no()
+                {
                     return Tri::Maybe;
                 }
                 let has = is_super_type_of(key, offset);
@@ -334,8 +336,14 @@ fn has_offset(t: &Type, offset: &Type) -> Tri {
             let unsealed = a.unsealed.as_ref().is_some_and(|(k, _)| !is_super_type_of(k, offset).no());
             if result.no() && unsealed { Tri::Maybe } else { result }
         }
-        Type::Array(key, _) if is_super_type_of(key, offset).no() && (offset.is_string().no() || is_constant(offset)) => Tri::No,
-        Type::Array(..) => Tri::Maybe,
+        Type::Array(key, _) => {
+            let offset = &array_key(offset);
+            if is_super_type_of(key, offset).no() && (offset.is_string().no() || is_constant(offset)) {
+                Tri::No
+            } else {
+                Tri::Maybe
+            }
+        }
         // a constant string's offsets in range
         Type::ConstString(v) if is_super_type_of(&Type::Int, offset).yes() => {
             let len = v.len() as i64;
@@ -349,12 +357,14 @@ fn has_offset(t: &Type, offset: &Type) -> Tri {
 
 /// `getOffsetValueType()` of an offset `t` has.
 fn offset_value(t: &Type, offset: &Type) -> Type {
-    let offset = &array_key(offset);
     match t {
         Type::Union(ts) | Type::Benevolent(ts) => {
             union(ts.iter().filter(|t| !has_offset(t, offset).no()).map(|t| offset_value(t, offset)).collect())
         }
-        Type::ConstArray(a) => a.keys.iter().position(|k| k == offset).map_or_else(|| t.iterable_value_type(), |i| a.values[i].clone()),
+        Type::ConstArray(a) => {
+            let offset = array_key(offset);
+            a.keys.iter().position(|k| *k == offset).map_or_else(|| t.iterable_value_type(), |i| a.values[i].clone())
+        }
         t if t.is_string().yes() => Type::String,
         t => t.iterable_value_type(),
     }
@@ -364,9 +374,12 @@ fn is_constant(t: &Type) -> bool {
     matches!(t, Type::ConstInt(_) | Type::ConstString(_) | Type::ConstBool(_) | Type::ConstFloat(_) | Type::Null)
 }
 
-/// `toArrayKey()` of a constant offset.
+/// The scalar and refined-string cases of `toArrayKey()`, preserving template identity.
 fn array_key(t: &Type) -> Type {
     match t {
+        Type::Union(ts) => union(ts.iter().map(array_key).collect()),
+        Type::Accessory(_) | Type::Intersection(_) if t.is_decimal_int_string().yes() => Type::Int,
+        Type::Accessory(_) | Type::Intersection(_) if t.is_numeric_string().yes() => union(vec![Type::Int, t.clone()]),
         Type::ConstString(s) if std::str::from_utf8(s).ok().and_then(|s| s.parse::<i64>().ok()).is_some_and(|i| i.to_string().as_bytes() == s) => Type::ConstInt(std::str::from_utf8(s).unwrap().parse().unwrap_or(0)),
         Type::ConstBool(b) => Type::ConstInt(i64::from(*b)),
         Type::ConstFloat(f) => Type::ConstInt(*f as i64),

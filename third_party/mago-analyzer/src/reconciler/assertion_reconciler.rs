@@ -461,7 +461,8 @@ where
         first_type,
         true,
         &mut atomic_comparison_results,
-    ) {
+    ) && !atomic_comparison_results.is_only_accepted
+    {
         let second_type = if let Some(replacement) = atomic_comparison_results.replacement_atomic_type {
             replacement
         } else {
@@ -483,7 +484,8 @@ where
         second_type,
         false,
         &mut atomic_comparison_results,
-    ) {
+    ) && !atomic_comparison_results.is_only_accepted
+    {
         let type_1_atomic = if let Some(replacement) = atomic_comparison_results.replacement_atomic_type {
             replacement
         } else {

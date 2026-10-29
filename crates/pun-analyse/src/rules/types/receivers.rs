@@ -284,16 +284,60 @@ pub(in super::super) fn check_method<'arena>(
     arguments: Option<(Span, &ArgumentList<'arena>)>,
     nullsafe: bool,
 ) {
-    if !c.checks_expression(object) || arguments.is_some() && is_this(object) {
+    if !c.checks_expression(object) {
         return;
     }
-    let ClassLikeMemberSelector::Identifier(name) = selector else {
-        return; // ponytail: a dynamic name's constant strings
+    let dynamic = match selector {
+        ClassLikeMemberSelector::Identifier(name) => {
+            if arguments.is_some() && is_this(object) {
+                return;
+            }
+            check_single_method(c, object, name, arguments, nullsafe, None, false);
+            return;
+        }
+        ClassLikeMemberSelector::Variable(variable) => &Expression::Variable(variable.clone()),
+        ClassLikeMemberSelector::Expression(expression) => expression.expression,
+        ClassLikeMemberSelector::Missing(_) => return,
     };
-    // NullsafeOperatorHelper: a nullsafe call is checked on the receiver without `null`
-    let ty = c
-        .phpstan_type(object)
-        .map(|t| if nullsafe || super::super::assign::contains_nullsafe(object) { non_null(t) } else { t });
+    let Some((span, _)) = arguments else { return; };
+    if is_this(object) && !c.this_defined() {
+        return;
+    }
+    // CallMethodsRule::processNode: every constant string gets its own truthy identical scope.
+    // The producer owns union vetoes and template bounds; never substitute the global receiver or arguments.
+    let scopes = c.named_call_scopes.get(&span).cloned().unwrap_or_default();
+    for scope in &scopes {
+        let at = super::dynamic_names::member(selector).unwrap_or(selector.span());
+        let name = LocalIdentifier { span: at, value: scope.name.as_bytes() };
+        let method_exists = c.in_dynamic_method_exists(object, dynamic, &scope.name.to_string());
+        check_single_method(c, object, &name, arguments, nullsafe, Some(scope), method_exists);
+    }
+}
+
+fn check_single_method<'arena>(
+    c: &mut Checker<'_, 'arena>,
+    object: &Expression<'arena>,
+    name: &LocalIdentifier,
+    arguments: Option<(Span, &ArgumentList<'arena>)>,
+    nullsafe: bool,
+    scope: Option<&super::super::infer::NamedCallScope>,
+    method_exists: bool,
+) {
+    let ty = match scope {
+        Some(scope) => c.phpstan_type_in(object, &scope.types),
+        None => c.phpstan_type(object),
+    };
+    let short_circuit = match scope {
+        Some(scope) => scope.types.get(&object.span()),
+        None => c.type_of(object),
+    }.is_some_and(|t| t.has_nullsafe_null());
+    // The direct nullsafe twin keeps a literal-null receiver error. An ordinary chained call instead
+    // checks the short-circuited expression, discarding only null introduced by the earlier operator.
+    let ty = ty.map(|t| {
+        if nullsafe { non_null(t) }
+        else if short_circuit && super::super::assign::contains_nullsafe(object) { t.remove_null() }
+        else { t }
+    });
     let found = if arguments.is_none() {
         callable_receiver(c, object, name, false)
     } else {
@@ -317,6 +361,9 @@ pub(in super::super) fn check_method<'arena>(
         return;
     }
     if !c.has_method(&t, name.value).yes() {
+        if method_exists {
+            return;
+        }
         // ponytail: a parent's private method of the one class named (`method.private`) is reported as not found
         let message = format!("Call to an undefined method {}::{method_name}().", describe(c, &t));
         c.report(name, "method.notFound", message, None);
@@ -337,6 +384,9 @@ pub(in super::super) fn check_method<'arena>(
         calls::method_name_case(c, name, &method, &declaring, false);
         return;
     };
+    if scope.is_some() {
+        calls::method_name_case(c, name, &method, &declaring, false);
+    }
     // ponytail: a union's or intersection's method merges its members' variants in PHPStan; checked only when one
     // member has it
     if c.classes_with(&t, name.value) != 1 {
@@ -355,18 +405,19 @@ pub(in super::super) fn check_method<'arena>(
         let var = String::from_utf8_lossy(&v.name[1..]);
         variants = super::super::selector::closure_bind(c, &var, span.start.offset, 0, variants);
     }
-    params::check(
-        c,
-        &params::select(c, variants, &counts),
-        &counts,
-        name,
-        params::Call {
-            kind: params::CallKind::Method,
-            subject: &format!("Method {subject}"),
-            void_message: Some(format!("Result of method {subject} (void) is used.")),
-        },
-        first_level,
-    );
+    let acceptor = params::select_in(c, variants, &counts, scope);
+    let void_message = Some(format!("Result of method {subject} (void) is used."));
+    let subject = format!("Method {subject}");
+    let call = params::Call {
+        kind: params::CallKind::Method,
+        subject: &subject,
+        scope: Some(span),
+        void_message,
+    };
+    match scope {
+        Some(scope) => params::check_in(c, &acceptor, &counts, name, call, first_level, Some(scope)),
+        None => params::check(c, &acceptor, &counts, name, call, first_level),
+    }
 }
 
 /// The class expressions of static calls the check reads (`$x::foo()`; names and keywords are calls.rs's).
@@ -497,6 +548,7 @@ pub(in super::super) fn check_static<'arena>(
         params::Call {
             kind: params::CallKind::StaticMethod,
             subject: &format!("{display_kind} {subject}"),
+            scope: None,
             void_message: Some(format!("Result of {kind} {subject} (void) is used.")),
         },
         first_level,

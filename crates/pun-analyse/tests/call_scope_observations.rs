@@ -16,7 +16,8 @@ use mago_codex::ttype::{
     union::TUnion,
 };
 use mago_codex::{
-    populator::populate_codebase, reference::SymbolReferences, scanner::scan_program,
+    metadata::CodebaseMetadata, populator::populate_codebase, reference::SymbolReferences,
+    scanner::scan_program,
 };
 use mago_database::file::File;
 use mago_names::resolver::NameResolver;
@@ -86,7 +87,14 @@ fn canonical(s: &str) -> String {
     s.into()
 }
 
-fn describe(t: &TUnion) -> String {
+fn display_codebase(file: &File) -> CodebaseMetadata {
+    let arena = LocalArena::new();
+    let program = parse_file(&arena, file);
+    let names = NameResolver::new(&arena).resolve(program);
+    scan_program(&arena, file, program, &names, Settings::default().version)
+}
+
+fn describe(t: &TUnion, codebase: &CodebaseMetadata) -> String {
     let mut parts: Vec<_> = t
         .types
         .iter()
@@ -100,11 +108,17 @@ fn describe(t: &TUnion) -> String {
                 };
                 format!("'{}'", s)
             }
-            TAtomic::Object(TObject::Named(o)) => o.get_name().to_string(),
+            TAtomic::Object(TObject::Named(o)) => codebase
+                .get_class_like(o.get_name().as_bytes())
+                .map_or(o.get_name(), |class| class.original_name)
+                .to_string(),
             TAtomic::Callable(TCallable::Signature(c))
                 if c.is_closure && c.parameters.is_empty() =>
             {
-                format!("Closure(): {}", describe(c.return_type.as_ref().unwrap()))
+                format!(
+                    "Closure(): {}",
+                    describe(c.return_type.as_ref().unwrap(), codebase)
+                )
             }
             TAtomic::Array(a) if a.is_empty() => "array{}".into(),
             TAtomic::Array(TArray::List(a)) if a.known_elements.is_some() => format!(
@@ -113,7 +127,7 @@ fn describe(t: &TUnion) -> String {
                     .as_ref()
                     .unwrap()
                     .values()
-                    .map(|(_, t)| describe(t))
+                    .map(|(_, t)| describe(t, codebase))
                     .collect::<Vec<_>>()
                     .join(", ")
             ),
@@ -124,10 +138,16 @@ fn describe(t: &TUnion) -> String {
                     .unwrap()
                     .iter()
                     .map(|(k, (optional, t))| match k {
-                        ArrayKey::String(s) =>
-                            format!("{s}{}: {}", if *optional { "?" } else { "" }, describe(t)),
-                        ArrayKey::Integer(n) =>
-                            format!("{n}{}: {}", if *optional { "?" } else { "" }, describe(t)),
+                        ArrayKey::String(s) => format!(
+                            "{s}{}: {}",
+                            if *optional { "?" } else { "" },
+                            describe(t, codebase)
+                        ),
+                        ArrayKey::Integer(n) => format!(
+                            "{n}{}: {}",
+                            if *optional { "?" } else { "" },
+                            describe(t, codebase)
+                        ),
                         _ => panic!("unexpected symbolic key in oracle fixture"),
                     })
                     .collect::<Vec<_>>()
@@ -215,6 +235,7 @@ fn analyze_with_settings(
 
 fn check(file: &File, artifacts: &AnalysisArtifacts, oracle: &str) {
     let expected: Value = serde_json::from_str(oracle).unwrap();
+    let codebase = display_codebase(file);
     let mut differences = BTreeMap::new();
     for (call, expected) in expected["calls"].as_object().unwrap() {
         let start: u32 = call.parse().unwrap();
@@ -243,20 +264,29 @@ fn check(file: &File, artifacts: &AnalysisArtifacts, oracle: &str) {
                 .find(|o| o.name.as_str() == name["name"].as_str())
                 .unwrap();
             assert_eq!(observed.filtered, name["filtered"].as_bool().unwrap());
-            assert_eq!(
-                observed.types.len(),
-                name["types"].as_array().unwrap().len()
-            );
+            let expected_types = name["types"].as_array().unwrap();
+            if observed.types.len() != expected_types.len() {
+                differences.insert(
+                    format!("{call}/{}:number of answers", name["name"]),
+                    (
+                        Value::from(expected_types.len()),
+                        Some(observed.types.len().to_string()),
+                    ),
+                );
+            }
             for wanted in name["types"].as_array().unwrap() {
                 let span = Span::new(
                     file.id,
                     Position::new(wanted["start"].as_u64().unwrap() as u32),
                     Position::new(wanted["end"].as_u64().unwrap() as u32),
                 );
-                let actual = observed.types.get(&span).map(describe);
+                let actual = observed.types.get(&span).map(|ty| describe(ty, &codebase));
                 if actual.as_deref().map(canonical) != wanted["type"].as_str().map(canonical) {
                     differences.insert(
-                        format!("{call}/{}:{}", name["name"], wanted["expression"]),
+                        format!(
+                            "{call}/{}:{}..{}:{}",
+                            name["name"], wanted["start"], wanted["end"], wanted["expression"]
+                        ),
                         (wanted["type"].clone(), actual),
                     );
                 }
@@ -699,6 +729,326 @@ fn pricing_closures_and_anonymous_constructors_keeps_declaration_events_isolated
 }
 
 #[test]
+fn nullsafe_historical_dependencies_keep_the_twin_consumption_mode() {
+    check_nullsafe_scopes(
+        include_bytes!("fixtures/call-scope-observations/nullsafe-historical.php"),
+        include_str!("fixtures/call-scope-observations/nullsafe-historical-expected.json"),
+    );
+}
+
+#[test]
+fn nullsafe_method_holders_price_children_from_the_ensured_scope() {
+    check_nullsafe_scopes(
+        include_bytes!("fixtures/call-scope-observations/nullsafe-memo.php"),
+        include_str!("fixtures/call-scope-observations/nullsafe-memo-expected.json"),
+    );
+}
+
+#[test]
+fn nullsafe_receiver_skipped_without_a_type_does_not_gain_an_answer() {
+    struct UntypedReceiver;
+    impl ExpressionHook for UntypedReceiver {
+        fn before_expression(
+            &self,
+            expression: &Expression<'_>,
+            _: &mut HookContext<'_, '_>,
+        ) -> HookResult<ExpressionHookResult> {
+            Ok(
+                if matches!(expression, Expression::Call(Call::Function(call))
+                if matches!(call.function, Expression::Identifier(id) if id.value() == b"nullsafeNoTypeFactory"))
+                {
+                    ExpressionHookResult::Skip
+                } else {
+                    ExpressionHookResult::Continue
+                },
+            )
+        }
+    }
+    const CODE: &[u8] = include_bytes!("fixtures/call-scope-observations/nullsafe-memo.php");
+    const ORACLE: &str =
+        include_str!("fixtures/call-scope-observations/nullsafe-memo-expected.json");
+    let expected: Value = serde_json::from_str(ORACLE).unwrap();
+    let expected = expected["calls"]
+        .as_object()
+        .unwrap()
+        .values()
+        .find(|call| call["expression"] == "nullsafeNoTypeFactory()?->foo(0)")
+        .unwrap();
+    let receiver = &expected["names"][0]["types"][0];
+    let start = receiver["start"].as_u64().unwrap() as u32;
+    let end = receiver["end"].as_u64().unwrap() as u32;
+    let mut runs = Vec::new();
+    for observe in [false, true] {
+        let events = Events::default();
+        let mut registry = providers(&events);
+        registry.register_expression_hook(UntypedReceiver);
+        let (file, artifacts, result) = analyze(CODE, ORACLE, observe, &registry);
+        let receiver = Span::new(file.id, Position::new(start), Position::new(end));
+        // Skip is deliberately different from PHPStan's declared return above:
+        // this semantic provider supplies no result, not a mixed result.
+        assert!(artifacts.get_expression_result(&receiver).is_none());
+        let events = events.0.lock().unwrap();
+        assert_eq!(events.get(&("expression-before", start, end)), Some(&1));
+        if observe {
+            let call = Span::new(
+                file.id,
+                Position::new(start),
+                Position::new(start + expected["expression"].as_str().unwrap().len() as u32),
+            );
+            let selected = &artifacts.call_scope_observations[&call][0];
+            assert_eq!(selected.name.as_str(), Some("foo"));
+            assert!(!selected.types.contains_key(&receiver));
+        }
+        runs.push((events.clone(), artifacts.expression_types, result.issues));
+    }
+    assert_eq!(runs[0], runs[1]);
+}
+
+#[test]
+fn nullsafe_observations_use_the_ensured_twin_and_stored_consumption() {
+    check_nullsafe_scopes(
+        include_bytes!("fixtures/call-scope-observations/nullsafe.php"),
+        include_str!("fixtures/call-scope-observations/nullsafe-expected.json"),
+    );
+}
+
+#[test]
+fn prepared_assignment_positions_and_cached_property_receivers_keep_their_own_answers() {
+    check_nullsafe_scopes(
+        include_bytes!("fixtures/call-scope-observations/prepared-positions.php"),
+        include_str!("fixtures/call-scope-observations/prepared-positions-expected.json"),
+    );
+}
+
+#[test]
+fn prepared_property_array_receivers_and_rhs_calls_are_evaluated_once() {
+    const CODE: &[u8] = include_bytes!("fixtures/call-scope-observations/prepared-effects.php");
+    const ORACLE: &str = include_str!("fixtures/call-scope-observations/prepared-effects-expected.json");
+    check_nullsafe_scopes(CODE, ORACLE);
+    let source = std::str::from_utf8(CODE).unwrap();
+    let start = source.rfind("preparedEffectBox()").unwrap() as u32;
+    for native in [false, true] {
+        let (file, artifacts, _) = analyze_with_settings(
+            CODE,
+            ORACLE,
+            true,
+            &PluginRegistry::with_library_providers(),
+            Settings {
+                track_native_types: native,
+                ..Settings::default()
+            },
+        );
+        let receiver = Span::new(file.id, Position::new(start), Position::new(start + 19));
+        let result = artifacts.get_expression_result(&receiver).unwrap();
+        let codebase = display_codebase(&file);
+        // The declared call result stays lazy after the property writer consumes it.
+        assert!(!result.is_eager());
+        assert!(!result.has_value_override());
+        assert_eq!(describe(result.get_raw_type(), &codebase), "PreparedEffectBox");
+        assert_eq!(describe(result.get_type(), &codebase), "PreparedEffectBox");
+        assert!(result.get_native_type().is_none());
+        assert!(result.get_raw_native_type().is_none());
+    }
+}
+
+#[test]
+fn prepared_targets_do_not_add_public_diagnostics() {
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/call-scope-observations");
+    for fixture in ["prepared-positions", "prepared-effects"] {
+        let expected: Value = serde_json::from_slice(
+            &std::fs::read(root.join(format!("{fixture}-expected.json"))).unwrap(),
+        )
+        .unwrap();
+        let project = pun_analyse::Project::new(vec![root.join(format!("{fixture}.php"))], vec![]);
+        let mut actual: Vec<_> = pun_analyse::run(&project)
+            .unwrap()
+            .into_iter()
+            .map(|error| {
+                serde_json::json!([
+                    error.line, error.identifier, error.message, error.tip, error.can_be_ignored,
+                ])
+            })
+            .collect();
+        actual.sort_by_key(Value::to_string);
+        assert_eq!(serde_json::json!(actual), expected["errors"], "{fixture}");
+    }
+}
+
+#[test]
+fn failed_target_operands_abort_before_rhs_effects() {
+    use mago_analyzer::error::AnalysisError;
+
+    struct FailOperand(Span);
+    impl Provider for FailOperand {
+        fn meta() -> &'static ProviderMeta {
+            static META: ProviderMeta =
+                ProviderMeta::new("failed-target", "failed-target", "target error order");
+            &META
+        }
+    }
+    impl ExpressionHook for FailOperand {
+        fn before_expression(
+            &self,
+            expression: &Expression<'_>,
+            _: &mut HookContext<'_, '_>,
+        ) -> HookResult<ExpressionHookResult> {
+            if expression.span() == self.0 {
+                Err(PluginError::Internal {
+                    reason: "target operand failed".into(),
+                })
+            } else {
+                Ok(ExpressionHookResult::Continue)
+            }
+        }
+    }
+
+    for (target, needle, skip, len) in [
+        ("$object->field", "$object->", 0, 7),
+        ("$object?->field", "$object?->", 0, 7),
+        ("$$name", "$$name", 1, 5),
+        ("$$class::$field", "$$class", 1, 6),
+        ("${preparedFailure()}", "${preparedFailure()}", 2, 17),
+    ] {
+        let code = format!("<?php function exercise($object): void {{ {target} = preparedLater(); }}");
+        for native in [false, true] {
+            let arena = LocalArena::new();
+            let file = File::ephemeral(
+                Cow::Borrowed(b"target-error.php"),
+                Cow::Owned(code.as_bytes().to_vec()),
+            );
+            let start = code.find(needle).unwrap() as u32 + skip;
+            let failed = Span::new(file.id, Position::new(start), Position::new(start + len));
+            let later = code.find("preparedLater()").unwrap() as u32;
+            let program = parse_file(&arena, &file);
+            assert!(!program.has_errors());
+            let names = NameResolver::new(&arena).resolve(program);
+            let settings = Settings {
+                track_native_types: native,
+                ..Settings::default()
+            };
+            let mut codebase = scan_program(&arena, &file, program, &names, settings.version);
+            let mut references = SymbolReferences::new();
+            populate_codebase(&mut codebase, &mut references, Default::default(), Default::default());
+            let events = Events::default();
+            let mut registry = providers(&events);
+            registry.register_expression_hook(FailOperand(failed));
+            let mut result = AnalysisResult::new(references);
+            assert!(matches!(
+                Analyzer::new(&arena, &file, &names, &codebase, &registry, settings)
+                    .analyze_with_artifacts(program, &mut result),
+                Err(AnalysisError::Plugin(PluginError::Internal { reason })) if reason == "target operand failed"
+            ), "{target}");
+            let events = events.0.lock().unwrap();
+            assert_eq!(
+                events.get(&("expression-before", start, start + len)),
+                Some(&1),
+                "{target}"
+            );
+            assert!(
+                !events.contains_key(&("expression-before", later, later + 15)),
+                "{target}"
+            );
+        }
+    }
+}
+
+#[test]
+fn untyped_prepared_operands_remain_absent_without_a_second_visit() {
+    struct NoRootType;
+    impl Provider for NoRootType {
+        fn meta() -> &'static ProviderMeta {
+            static META: ProviderMeta = ProviderMeta::new("no-root", "no-root", "untyped operand");
+            &META
+        }
+    }
+    impl ExpressionHook for NoRootType {
+        fn before_expression(
+            &self,
+            expression: &Expression<'_>,
+            _: &mut HookContext<'_, '_>,
+        ) -> HookResult<ExpressionHookResult> {
+            Ok(if matches!(expression, Expression::Call(Call::Function(call))
+                if matches!(call.function, Expression::Identifier(name) if name.value() == b"preparedEffectBox"))
+            {
+                ExpressionHookResult::Skip
+            } else {
+                ExpressionHookResult::Continue
+            })
+        }
+    }
+    const CODE: &[u8] = include_bytes!("fixtures/call-scope-observations/prepared-effects.php");
+    const ORACLE: &str = include_str!("fixtures/call-scope-observations/prepared-effects-expected.json");
+    let source = std::str::from_utf8(CODE).unwrap();
+    let root_start = source.find("preparedEffectBox()->").unwrap() as u32;
+    let root_end = root_start + "preparedEffectBox()".len() as u32;
+    for native in [false, true] {
+        let mut runs = Vec::new();
+        for observe in [false, true] {
+            let events = Events::default();
+            let mut registry = providers(&events);
+            registry.register_expression_hook(NoRootType);
+            let (file, artifacts, result) = analyze_with_settings(
+                CODE,
+                ORACLE,
+                observe,
+                &registry,
+                Settings {
+                    track_native_types: native,
+                    ..Settings::default()
+                },
+            );
+            assert_eq!(
+                events.0.lock().unwrap().get(&("expression-before", root_start, root_end)),
+                Some(&1)
+            );
+            let root = Span::new(file.id, Position::new(root_start), Position::new(root_end));
+            assert!(artifacts.get_expression_result(&root).is_none());
+            if observe {
+                let wanted: Value = serde_json::from_str(ORACLE).unwrap();
+                for (call, data) in wanted["calls"].as_object().unwrap() {
+                    let start: u32 = call.parse().unwrap();
+                    let call_span = Span::new(
+                        file.id,
+                        Position::new(start),
+                        Position::new(start + data["expression"].as_str().unwrap().len() as u32),
+                    );
+                    for answer in &artifacts.call_scope_observations[&call_span] {
+                        assert!(!answer.types.contains_key(&root));
+                    }
+                }
+            }
+            runs.push((events.0.lock().unwrap().clone(), artifacts.expression_types, result.issues));
+        }
+        assert_eq!(runs[0], runs[1]);
+    }
+}
+
+#[test]
+fn nullsafe_scopes_restore_and_merge_without_repeating_receiver_events() {
+    check_nullsafe_scopes(
+        include_bytes!("fixtures/call-scope-observations/nullsafe-boundaries.php"),
+        include_str!("fixtures/call-scope-observations/nullsafe-boundaries-expected.json"),
+    );
+}
+
+#[test]
+fn nullsafe_parent_devices_preserve_other_writes_and_assignment_identity() {
+    check_nullsafe_scopes(
+        include_bytes!("fixtures/call-scope-observations/nullsafe-devices.php"),
+        include_str!("fixtures/call-scope-observations/nullsafe-devices-expected.json"),
+    );
+}
+
+#[test]
+fn nullsafe_nullability_trinary_is_distinct_from_explicit_null_members() {
+    check_nullsafe_scopes(
+        include_bytes!("fixtures/call-scope-observations/nullsafe-trinary.php"),
+        include_str!("fixtures/call-scope-observations/nullsafe-trinary-expected.json"),
+    );
+}
+
+#[test]
 fn nullsafe_devices_and_exit_scopes() {
     const CODE: &[u8] = include_bytes!("fixtures/call-scope-observations/nullsafe-scopes.php");
     const ORACLE: &str =
@@ -805,33 +1155,164 @@ function exercise(?NullsafeSelectorFailure $receiver): void {
 }
 
 fn check_nullsafe_scopes(code: &'static [u8], oracle: &str) {
-    let baseline_events = Events::default();
-    let (_, baseline, baseline_result) = analyze(code, oracle, false, &providers(&baseline_events));
-    let observed_events = Events::default();
-    let (file, observed, observed_result) =
-        analyze(code, oracle, true, &providers(&observed_events));
-    assert_eq!(
-        *baseline_events.0.lock().unwrap(),
-        *observed_events.0.lock().unwrap()
-    );
-    let expected: Value = serde_json::from_str(oracle).unwrap();
-    let events = observed_events.0.lock().unwrap();
-    for (position, count) in expected["function_events"]
-        .as_object()
-        .into_iter()
-        .flatten()
-    {
-        let start = position.parse::<u32>().unwrap();
-        let actual: usize = events
-            .iter()
-            .filter(|((kind, position, _), _)| *kind == "function-before" && *position == start)
-            .map(|(_, count)| count)
-            .sum();
-        assert_eq!(actual as u64, count.as_u64().unwrap());
+    for native in [false, true] {
+        let settings = Settings {
+            track_native_types: native,
+            ..Settings::default()
+        };
+        let baseline_events = Events::default();
+        let (_, baseline, baseline_result) = analyze_with_settings(
+            code,
+            oracle,
+            false,
+            &providers(&baseline_events),
+            settings.clone(),
+        );
+        let observed_events = Events::default();
+        let (file, observed, observed_result) =
+            analyze_with_settings(code, oracle, true, &providers(&observed_events), settings);
+        assert_eq!(
+            *baseline_events.0.lock().unwrap(),
+            *observed_events.0.lock().unwrap()
+        );
+        let expected: Value = serde_json::from_str(oracle).unwrap();
+        let events = observed_events.0.lock().unwrap();
+        for (position, count) in expected["function_events"]
+            .as_object()
+            .into_iter()
+            .flatten()
+        {
+            let start = position.parse::<u32>().unwrap();
+            let actual: usize = events
+                .iter()
+                .filter(|((kind, position, _), _)| *kind == "function-before" && *position == start)
+                .map(|(_, count)| count)
+                .sum();
+            assert_eq!(actual as u64, count.as_u64().unwrap());
+        }
+        // PHPStan publishes the nullsafe plain twin as a MethodCall; Mago's
+        // matching public hook is nullsafe-before, not a second method hook.
+        for (position, count) in expected["method_events"].as_object().into_iter().flatten() {
+            let start = position.parse::<u32>().unwrap();
+            let actual: usize = events
+                .iter()
+                .filter(|((kind, position, _), _)| {
+                    matches!(*kind, "method-before" | "nullsafe-before") && *position == start
+                })
+                .map(|(_, count)| count)
+                .sum();
+            assert_eq!(actual as u64, count.as_u64().unwrap(), "method at {start}");
+        }
+        assert_eq!(baseline.expression_types, observed.expression_types);
+        for &(start, end) in baseline.expression_types.keys() {
+            let span = Span::new(file.id, Position::new(start), Position::new(end));
+            assert_eq!(
+                baseline.get_raw_expression_type(&span),
+                observed.get_raw_expression_type(&span)
+            );
+            assert_eq!(
+                baseline.get_native_expression_type(&span),
+                observed.get_native_expression_type(&span)
+            );
+            let previous = baseline.get_expression_result(&span).unwrap();
+            let current = observed.get_expression_result(&span).unwrap();
+            assert_eq!(previous.is_eager(), current.is_eager());
+            assert_eq!(previous.has_value_override(), current.has_value_override());
+        }
+        assert_eq!(baseline_result.issues, observed_result.issues);
+        check(&file, &observed, oracle);
     }
-    assert_eq!(baseline.expression_types, observed.expression_types);
-    assert_eq!(baseline_result.issues, observed_result.issues);
-    check(&file, &observed, oracle);
+}
+
+#[derive(Clone, Default)]
+struct ResultTransport(Arc<Mutex<(usize, BTreeMap<u32, Option<String>>)>>);
+
+impl ExpressionHook for ResultTransport {
+    fn after_expression(
+        &self,
+        expression: &Expression<'_>,
+        context: &mut HookContext<'_, '_>,
+    ) -> HookResult<()> {
+        if !matches!(expression, Expression::Array(_)) {
+            return Ok(());
+        }
+        let parent = expression.span();
+        let mut observed = self.0.lock().unwrap();
+        for row in include_str!("fixtures/call-scope-observations/result-transport.tsv").lines() {
+            let fields: Vec<_> = row.split('\t').collect();
+            let start: u32 = fields[8].parse().unwrap();
+            let end: u32 = fields[9].parse().unwrap();
+            if start < parent.start.offset || end > parent.end.offset {
+                continue;
+            }
+            let span = Span::new(parent.file_id, Position::new(start), Position::new(end));
+            let result = context.get_expression_result(&span).unwrap();
+            assert_eq!(
+                canonical(&describe(result.get_type(), context.codebase())),
+                canonical(fields[2]),
+                "{} value",
+                fields[1]
+            );
+            assert_eq!(
+                canonical(&describe(result.get_raw_type(), context.codebase())),
+                canonical(fields[3]),
+                "{} raw",
+                fields[1]
+            );
+            assert_eq!(
+                canonical(&describe(result.get_keep_void_type(), context.codebase())),
+                canonical(fields[4]),
+                "{} keep-void",
+                fields[1]
+            );
+            if fields[1].ends_with("()") {
+                assert!(
+                    !result.is_eager(),
+                    "consumption must preserve call-return provenance"
+                );
+            }
+            let native = result
+                .get_native_type()
+                .map(|ty| describe(ty, context.codebase()));
+            if let Some(previous) = observed.1.insert(start, native.clone()) {
+                assert_eq!(native, previous, "{} independent native result", fields[1]);
+            }
+            observed.0 += 1;
+        }
+        Ok(())
+    }
+}
+
+#[test]
+fn pricing_transports_raw_value_and_native_results_without_reprojecting_calls_or_match_arms() {
+    const CODE: &[u8] = include_bytes!("fixtures/call-scope-observations/result-transport.php");
+    const ORACLE: &str =
+        include_str!("fixtures/call-scope-observations/result-transport-expected.json");
+    for native in [false, true] {
+        let baseline_audit = ResultTransport::default();
+        let mut baseline_registry = PluginRegistry::with_library_providers();
+        baseline_registry.register_expression_hook(baseline_audit.clone());
+        let mut settings = Settings::default();
+        settings.track_native_types = native;
+        let (_, baseline, baseline_result) =
+            analyze_with_settings(CODE, ORACLE, false, &baseline_registry, settings.clone());
+        let observed_audit = ResultTransport::default();
+        let mut observed_registry = PluginRegistry::with_library_providers();
+        observed_registry.register_expression_hook(observed_audit.clone());
+        let (file, observed, observed_result) =
+            analyze_with_settings(CODE, ORACLE, true, &observed_registry, settings);
+        assert_eq!(baseline.expression_types, observed.expression_types);
+        assert_eq!(baseline_result.issues, observed_result.issues);
+        let baseline_audit = baseline_audit.0.lock().unwrap();
+        let observed_audit = observed_audit.0.lock().unwrap();
+        assert_eq!(baseline_audit.1.len(), 16);
+        assert_eq!(baseline_audit.1, observed_audit.1);
+        assert!(
+            observed_audit.0 > baseline_audit.0,
+            "the filtered array must actually be repriced"
+        );
+        check(&file, &observed, ORACLE);
+    }
 }
 
 #[test]
@@ -1086,7 +1567,8 @@ fn nonvariadic_unpack_is_evaluated_once_even_when_a_semantic_hook_has_no_type() 
 
 fn check_unpack_order(code: &'static [u8], oracle: &str) {
     let events = Events::default();
-    let (_, artifacts, _) = analyze(code, oracle, false, &providers(&events));
+    let (file, artifacts, _) = analyze(code, oracle, false, &providers(&events));
+    let codebase = display_codebase(&file);
     let oracle: Value = serde_json::from_str(oracle).unwrap();
     let events = events.0.lock().unwrap();
     let mut differences = BTreeMap::new();
@@ -1100,7 +1582,7 @@ fn check_unpack_order(code: &'static [u8], oracle: &str) {
             {
                 "array".to_owned()
             } else {
-                describe(ty)
+                describe(ty, &codebase)
             }
         });
         let before = events

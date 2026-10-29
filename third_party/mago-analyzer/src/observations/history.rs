@@ -83,10 +83,15 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Index<'arena> {
         if let Some(slot) = self.expressions.get_mut(&span) {
             *slot = Some(expression.clone());
         }
-        if let Expression::Call(Call::Method(call)) = expression
+        let method = match expression {
+            Expression::Call(Call::Method(call)) => Some(&call.method),
+            Expression::Call(Call::NullSafeMethod(call)) => Some(&call.method),
+            _ => None,
+        };
+        if let Some(method) = method
             && let Some(selector) = self.selectors.get_mut(&span)
         {
-            *selector = match &call.method {
+            *selector = match method {
                 ClassLikeMemberSelector::Variable(v) => Some(Expression::Variable(v.clone())),
                 ClassLikeMemberSelector::Expression(e) => Some(e.expression.clone()),
                 _ => None,

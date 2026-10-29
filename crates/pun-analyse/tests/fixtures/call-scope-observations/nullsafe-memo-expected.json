@@ -1,0 +1,159 @@
+{
+  "calls": {
+    "340": {
+      "line": 11,
+      "expression": "$sink->read()?->$name([$sink->read()])",
+      "names": [
+        {
+          "name": "bar",
+          "filtered": true,
+          "types": [
+            {
+              "start": 340,
+              "end": 353,
+              "expression": "$sink->read()",
+              "type": "nullsafememosink"
+            },
+            {
+              "start": 340,
+              "end": 345,
+              "expression": "$sink",
+              "type": "nullsafememosink"
+            },
+            {
+              "start": 362,
+              "end": 377,
+              "expression": "[$sink->read()]",
+              "type": "array{nullsafememosink}"
+            },
+            {
+              "start": 363,
+              "end": 376,
+              "expression": "$sink->read()",
+              "type": "nullsafememosink"
+            },
+            {
+              "start": 363,
+              "end": 368,
+              "expression": "$sink",
+              "type": "nullsafememosink"
+            }
+          ]
+        },
+        {
+          "name": "foo",
+          "filtered": true,
+          "types": [
+            {
+              "start": 340,
+              "end": 353,
+              "expression": "$sink->read()",
+              "type": "nullsafememosink"
+            },
+            {
+              "start": 340,
+              "end": 345,
+              "expression": "$sink",
+              "type": "nullsafememosink"
+            },
+            {
+              "start": 362,
+              "end": 377,
+              "expression": "[$sink->read()]",
+              "type": "array{nullsafememosink}"
+            },
+            {
+              "start": 363,
+              "end": 376,
+              "expression": "$sink->read()",
+              "type": "nullsafememosink"
+            },
+            {
+              "start": 363,
+              "end": 368,
+              "expression": "$sink",
+              "type": "nullsafememosink"
+            }
+          ]
+        }
+      ]
+    },
+    "508": {
+      "line": 15,
+      "expression": "nullsafeNoTypeFactory()?->foo(0)",
+      "names": [
+        {
+          "name": "foo",
+          "filtered": false,
+          "types": [
+            {
+              "start": 508,
+              "end": 531,
+              "expression": "nullsafeNoTypeFactory()",
+              "type": "nullsafememosink"
+            },
+            {
+              "start": 538,
+              "end": 539,
+              "expression": "0",
+              "type": "0"
+            }
+          ]
+        }
+      ]
+    },
+    "639": {
+      "line": 19,
+      "expression": "$sink->read()?->$name([$sink->read()])",
+      "names": [
+        {
+          "name": "foo",
+          "filtered": true,
+          "types": [
+            {
+              "start": 639,
+              "end": 652,
+              "expression": "$sink->read()",
+              "type": "nullsafememosink"
+            },
+            {
+              "start": 639,
+              "end": 644,
+              "expression": "$sink",
+              "type": "nullsafememosink"
+            },
+            {
+              "start": 661,
+              "end": 676,
+              "expression": "[$sink->read()]",
+              "type": "array{nullsafememosink}"
+            },
+            {
+              "start": 662,
+              "end": 675,
+              "expression": "$sink->read()",
+              "type": "nullsafememosink"
+            },
+            {
+              "start": 662,
+              "end": 667,
+              "expression": "$sink",
+              "type": "nullsafememosink"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "errors": [],
+  "function_events": {
+    "508": 1
+  },
+  "method_events": {
+    "340": 2,
+    "363": 1,
+    "508": 1,
+    "639": 2,
+    "662": 1
+  }
+}

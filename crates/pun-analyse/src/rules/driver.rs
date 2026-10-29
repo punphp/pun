@@ -206,7 +206,13 @@ fn checker<'a, 'arena>(
     let (include_typed, include_state) = super::include_file::prepare(arena, file, program, names, codebase, php_version, project.pollute_scope_with_loop_initial_assignments, project.pollute_scope_with_always_iterable_foreach, project.pollute_scope_with_block, &project.include_file);
     typed.extend(include_typed);
     let mut variables = super::variables::Observations::default();
-    let (mut types, defined, origins, call_terminations) = infer(arena, file, program, names, codebase, php_version, project.level, project.pollute_scope_with_loop_initial_assignments, project.pollute_scope_with_always_iterable_foreach, project.pollute_scope_with_block, typed, &mut variables);
+    let calls = if project.method_rules.call_methods {
+        super::named_argument::requests(program)
+    } else {
+        Vec::new()
+    };
+    let mut variable_writes = HashMap::new();
+    let (mut types, defined, origins, call_terminations, named_call_scopes, keep_void_types, native_types, nullsafe_method_receiver_types) = infer(arena, file, program, names, codebase, php_version, project.level, project.pollute_scope_with_loop_initial_assignments, project.pollute_scope_with_always_iterable_foreach, project.pollute_scope_with_block, typed, calls, &mut variables, &mut variable_writes);
     if project.level >= 4 {
         let (subjects, unknown) = super::dead_code::match_subject_types(file, program, codebase, php_version, project.pollute_scope_with_loop_initial_assignments, project.pollute_scope_with_always_iterable_foreach, project.pollute_scope_with_block);
         types.extend(subjects);
@@ -221,7 +227,12 @@ fn checker<'a, 'arena>(
         file,
         has_compiler_halt: false,
         types,
+        keep_void_types,
+        native_types,
+        nullsafe_method_receiver_types,
+        variable_writes,
         call_terminations,
+        named_call_scopes,
         defined,
         variables,
         origins,
@@ -276,7 +287,7 @@ fn checker<'a, 'arena>(
         internal: project.internal.as_ref(),
         internal_tag: project.internal_tag,
         precise_unused_parameter_line: project.precise_unused_parameter_line,
-        unreachable: HashSet::new(),
+        unreachable: Default::default(),
         conditions: Default::default(),
         internal_members: project.internal_members,
         deprecations: project.deprecations,

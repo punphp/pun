@@ -1,0 +1,355 @@
+{
+    "phar_sha256": "85157dba3d95d77ca603d2b7303aa78a538f9e3b56ccad07dd794c53aa96d1ae",
+    "types": {
+        "providers.php": [
+            {
+                "start": 611,
+                "end": 660,
+                "expression": "$value = new Provided($written = 1, $written = 2)",
+                "type": "1",
+                "error": false,
+                "kind": null
+            },
+            {
+                "start": 620,
+                "end": 660,
+                "expression": "new Provided($written = 1, $written = 2)",
+                "type": "1",
+                "error": false,
+                "kind": null
+            },
+            {
+                "start": 633,
+                "end": 645,
+                "expression": "$written = 1",
+                "type": "1",
+                "error": false,
+                "kind": null
+            },
+            {
+                "start": 647,
+                "end": 659,
+                "expression": "$written = 2",
+                "type": "2",
+                "error": false,
+                "kind": null
+            },
+            {
+                "start": 676,
+                "end": 682,
+                "expression": "$value",
+                "type": "1",
+                "error": false,
+                "kind": null
+            },
+            {
+                "start": 698,
+                "end": 706,
+                "expression": "$written",
+                "type": "2",
+                "error": false,
+                "kind": null
+            },
+            {
+                "start": 763,
+                "end": 819,
+                "expression": "$value = new IllegalProvided($written = 3, $written = 4)",
+                "type": "3",
+                "error": false,
+                "kind": null
+            },
+            {
+                "start": 772,
+                "end": 819,
+                "expression": "new IllegalProvided($written = 3, $written = 4)",
+                "type": "3",
+                "error": false,
+                "kind": null
+            },
+            {
+                "start": 792,
+                "end": 804,
+                "expression": "$written = 3",
+                "type": "3",
+                "error": false,
+                "kind": null
+            },
+            {
+                "start": 806,
+                "end": 818,
+                "expression": "$written = 4",
+                "type": "4",
+                "error": false,
+                "kind": null
+            },
+            {
+                "start": 835,
+                "end": 841,
+                "expression": "$value",
+                "type": "3",
+                "error": false,
+                "kind": null
+            },
+            {
+                "start": 857,
+                "end": 865,
+                "expression": "$written",
+                "type": "4",
+                "error": false,
+                "kind": null
+            },
+            {
+                "start": 938,
+                "end": 968,
+                "expression": "$value = new OverriddenNever()",
+                "type": "17",
+                "error": false,
+                "kind": null
+            },
+            {
+                "start": 947,
+                "end": 968,
+                "expression": "new OverriddenNever()",
+                "type": "17",
+                "error": false,
+                "kind": null
+            },
+            {
+                "start": 984,
+                "end": 990,
+                "expression": "$value",
+                "type": "17",
+                "error": false,
+                "kind": null
+            },
+            {
+                "start": 1062,
+                "end": 1091,
+                "expression": "$value = new ImplicitBottom()",
+                "type": "*NEVER*",
+                "error": false,
+                "kind": "implicit"
+            },
+            {
+                "start": 1071,
+                "end": 1091,
+                "expression": "new ImplicitBottom()",
+                "type": "*NEVER*",
+                "error": false,
+                "kind": "implicit"
+            },
+            {
+                "start": 1107,
+                "end": 1113,
+                "expression": "$value",
+                "type": "*NEVER*",
+                "error": false,
+                "kind": "implicit"
+            },
+            {
+                "start": 1184,
+                "end": 1213,
+                "expression": "$value = new ExplicitBottom()",
+                "type": "*NEVER*",
+                "error": false,
+                "kind": "explicit"
+            },
+            {
+                "start": 1193,
+                "end": 1213,
+                "expression": "new ExplicitBottom()",
+                "type": "*NEVER*",
+                "error": false,
+                "kind": "explicit"
+            },
+            {
+                "start": 1310,
+                "end": 1343,
+                "expression": "$value = new NonacceptingBottom()",
+                "type": "never",
+                "error": false,
+                "kind": "nonaccepting"
+            },
+            {
+                "start": 1319,
+                "end": 1343,
+                "expression": "new NonacceptingBottom()",
+                "type": "never",
+                "error": false,
+                "kind": "nonaccepting"
+            },
+            {
+                "start": 1433,
+                "end": 1458,
+                "expression": "$target = Provided::class",
+                "type": "'FailedInstantiationProviders\\\\Provided'",
+                "error": false,
+                "kind": null
+            },
+            {
+                "start": 1464,
+                "end": 1512,
+                "expression": "$value = new $target($written = 5, $written = 6)",
+                "type": "FailedInstantiationProviders\\Provided",
+                "error": false,
+                "kind": null
+            },
+            {
+                "start": 1473,
+                "end": 1512,
+                "expression": "new $target($written = 5, $written = 6)",
+                "type": "FailedInstantiationProviders\\Provided",
+                "error": false,
+                "kind": null
+            },
+            {
+                "start": 1485,
+                "end": 1497,
+                "expression": "$written = 5",
+                "type": "5",
+                "error": false,
+                "kind": null
+            },
+            {
+                "start": 1499,
+                "end": 1511,
+                "expression": "$written = 6",
+                "type": "6",
+                "error": false,
+                "kind": null
+            },
+            {
+                "start": 1528,
+                "end": 1534,
+                "expression": "$value",
+                "type": "FailedInstantiationProviders\\Provided",
+                "error": false,
+                "kind": null
+            },
+            {
+                "start": 1550,
+                "end": 1558,
+                "expression": "$written",
+                "type": "6",
+                "error": false,
+                "kind": null
+            },
+            {
+                "start": 1632,
+                "end": 1672,
+                "expression": "$value = new EmptyProvided($written = 7)",
+                "type": "7",
+                "error": false,
+                "kind": null
+            },
+            {
+                "start": 1641,
+                "end": 1672,
+                "expression": "new EmptyProvided($written = 7)",
+                "type": "7",
+                "error": false,
+                "kind": null
+            },
+            {
+                "start": 1659,
+                "end": 1671,
+                "expression": "$written = 7",
+                "type": "7",
+                "error": false,
+                "kind": null
+            },
+            {
+                "start": 1688,
+                "end": 1694,
+                "expression": "$value",
+                "type": "7",
+                "error": false,
+                "kind": null
+            },
+            {
+                "start": 1710,
+                "end": 1718,
+                "expression": "$written",
+                "type": "7",
+                "error": false,
+                "kind": null
+            },
+            {
+                "start": 1822,
+                "end": 1853,
+                "expression": "$value = new NoArgumentProvided",
+                "type": "17",
+                "error": false,
+                "kind": null
+            },
+            {
+                "start": 1831,
+                "end": 1853,
+                "expression": "new NoArgumentProvided",
+                "type": "17",
+                "error": false,
+                "kind": null
+            },
+            {
+                "start": 1869,
+                "end": 1875,
+                "expression": "$value",
+                "type": "17",
+                "error": false,
+                "kind": null
+            },
+            {
+                "start": 2097,
+                "end": 2141,
+                "expression": "$value = new InheritedProvided($written = 8)",
+                "type": "8",
+                "error": false,
+                "kind": null
+            },
+            {
+                "start": 2106,
+                "end": 2141,
+                "expression": "new InheritedProvided($written = 8)",
+                "type": "8",
+                "error": false,
+                "kind": null
+            },
+            {
+                "start": 2128,
+                "end": 2140,
+                "expression": "$written = 8",
+                "type": "8",
+                "error": false,
+                "kind": null
+            },
+            {
+                "start": 2157,
+                "end": 2163,
+                "expression": "$value",
+                "type": "8",
+                "error": false,
+                "kind": null
+            },
+            {
+                "start": 2179,
+                "end": 2187,
+                "expression": "$written",
+                "type": "8",
+                "error": false,
+                "kind": null
+            }
+        ]
+    },
+    "continued": {
+        "providers.php": {
+            "after-dummy-provider": 1724,
+            "after-dynamic-provider": 1564,
+            "after-illegal-provider": 871,
+            "after-implicit-bottom": 1119,
+            "after-inherited-provider": 2193,
+            "after-no-parentheses-provider": 1881,
+            "after-overridden-never": 996,
+            "after-provider": 712
+        }
+    }
+}

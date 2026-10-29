@@ -718,6 +718,11 @@ pub const IDENTIFIERS: &[&str] = &[
     "nullsafe.neverNull",
     "nullCoalesce.unnecessary",
     "nullCoalesce.initializedProperty",
+    "isset.variable",
+    "isset.offset",
+    "isset.property",
+    "isset.expr",
+    "isset.initializedProperty",
     "switch.duplicateCase",
     "switch.alwaysFalse",
     "switch.alwaysTrue",
@@ -790,8 +795,18 @@ pub struct Checker<'a, 'arena> {
     relative_path: &'a crate::relative_path::RelativePath,
     /// Mago's inferred types of the expressions rules ask about (see [`typed_expressions()`]).
     types: HashMap<Span, TUnion>,
+    /// ExpressionResult keep-void answers, read only behind Scope's explicit-null gate.
+    keep_void_types: HashMap<Span, TUnion>,
+    /// Independent native answers from the same evaluations; absence never substitutes the full type.
+    native_types: HashMap<Span, TUnion>,
+    /// The processed nullsafe receiver before its non-null plain twin, not the ensured operand view.
+    nullsafe_method_receiver_types: HashMap<Span, TUnion>,
+    /// PHPStan VariableWritesNode results for completed closure bodies.
+    variable_writes: HashMap<Span, mago_analyzer::variable_flow::VariableWritesNode>,
     /// Resolved calls' own termination, independent of their provider-selected result type.
     call_terminations: HashMap<(u32, u32), bool>,
+    /// Operand-position answers for each method name, including its expression conversion dependencies.
+    named_call_scopes: HashMap<Span, Vec<infer::NamedCallScope>>,
     /// `$scope->hasVariableType()` where the wanted direct variables are read (see [`infer::analyse()`]).
     defined: HashMap<Span, pun_phpstan::types::Tri>,
     /// The running inference blocks observed by DefinedVariableRule and CompactVariablesRule.
@@ -883,8 +898,8 @@ pub struct Checker<'a, 'arena> {
     /// [`driver::Checks`]'s `featureToggles.internalTag`.
     internal_tag: bool,
     precise_unused_parameter_line: bool,
-    /// The statements UnreachableStatementRule reports.
-    unreachable: HashSet<Span>,
+    /// UnreachableStatementNode positions and statement traversal after termination.
+    unreachable: dead_code::UnreachableStatements,
     /// LastConditionVisitor's attributes and more the constant condition rules read.
     conditions: dead_code::ConditionFacts,
     /// [`driver::Checks`]'s level-2 RestrictedInternalMethodUsageExtension and RestrictedInternalPropertyUsageExtension.
@@ -1975,6 +1990,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_in_construct(&mut self, construct: &'ast Construct<'arena>, _: &mut ()) {
         include_file::construct(self, construct);
+        if let Construct::Isset(i) = construct {
+            dead_code::isset(self, i);
+        }
     }
     fn walk_in_property_access(&mut self, p: &'ast PropertyAccess<'arena>, _: &mut ()) {
         property_access::read(self, p);
@@ -2054,7 +2072,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     ) {
         self.bind_method_arguments(call.object, &call.method, &call.argument_list, false);
         if self.method_rules.call_methods {
-            named_argument::call(self, call.object, &call.method, &call.argument_list, true);
+            named_argument::call(self, call.span(), call.object, &call.argument_list, true);
         }
         internal::method_call(self, call.span(), call.object, &call.method);
         strict::dynamic_call(self, call.span(), call.object, &call.method);
@@ -2069,7 +2087,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, _: &mut ()) {
         self.bind_method_arguments(call.object, &call.method, &call.argument_list, false);
         if self.method_rules.call_methods {
-            named_argument::call(self, call.object, &call.method, &call.argument_list, false);
+            named_argument::call(self, call.span(), call.object, &call.argument_list, false);
         }
         dead_code::method_check(self, call);
         internal::method_call(self, call.span(), call.object, &call.method);
@@ -2509,13 +2527,18 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     ) {
         self.pop_frame();
     }
+    fn walk_statement(&mut self, s: &'ast Statement<'arena>, context: &mut ()) {
+        if self.unreachable.reported.contains(&s.span()) {
+            self.report(s, "deadCode.unreachable", "Unreachable statement - code above always terminates.".into(), None);
+        }
+        if !self.unreachable.skipped.contains(&s.span()) {
+            mago_syntax::walker::walk_statement_mut(self, s, context);
+        }
+    }
     fn walk_in_statement(&mut self, s: &'ast Statement<'arena>, _: &mut ()) {
         invalid_throws::statement(self, s);
         phpdoc_tags::statement(self, s);
         statements::statement_position(self, s);
-        if self.unreachable.contains(&s.span()) {
-            self.report(s, "deadCode.unreachable", "Unreachable statement - code above always terminates.".into(), None);
-        }
     }
     fn walk_in_declare(&mut self, d: &'ast Declare<'arena>, _: &mut ()) {
         statements::declare(self, d);

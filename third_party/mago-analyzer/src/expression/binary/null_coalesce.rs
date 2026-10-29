@@ -6,6 +6,8 @@ use mago_algebra::AssertionMap;
 use mago_codex::assertion::Assertion;
 use mago_codex::ttype::TType;
 use mago_codex::ttype::atomic::TAtomic;
+use mago_codex::ttype::atomic::array::TArray;
+use mago_codex::ttype::atomic::array::key::ArrayKey;
 use mago_codex::ttype::combine_union_types;
 use mago_codex::ttype::get_mixed;
 use mago_codex::ttype::union::TUnion;
@@ -14,6 +16,8 @@ use mago_reporting::Issue;
 use mago_span::HasSpan;
 use mago_syntax::cst::Binary;
 use mago_syntax::cst::Expression;
+use mago_syntax::cst::Literal;
+use mago_syntax::cst::UnaryPrefixOperator;
 use mago_syntax::cst::Variable;
 use mago_text_edit::Safety;
 use mago_text_edit::TextEdit;
@@ -27,10 +31,12 @@ use crate::artifacts::AnalysisArtifacts;
 use crate::code::IssueCode;
 use crate::context::Context;
 use crate::context::block::BlockContext;
+use crate::context::non_nullability::may_be_null;
 use crate::error::AnalysisError;
 use crate::reconciler::reconcile_keyed_types;
 use crate::reconciler::simple_negated_assertion_reconciler::offset_is_required;
 use crate::utils::expression::get_block_expression_id;
+use crate::utils::expression::get_literal_array_key;
 use crate::utils::expression::get_root_expression_id;
 use crate::utils::misc::unwrap_expression;
 
@@ -76,9 +82,39 @@ where
     // Narrow without walking the LHS again: its assignments and observer events must occur only once.
     // An isset-allowed absent variable has a mixed placeholder read, but only the RHS supplies its value.
     let left_is_absent = get_variable_name(binary.lhs)
-        .is_some_and(|name| block_context.variable_certainty(name).is_absent());
+        .is_some_and(|name| block_context.variable_certainty(name).is_absent())
+        || offset_is_absent(binary.lhs, artifacts);
     let is_static_var = is_rooted_in_static_local(binary.lhs, &block_context.static_locals);
     let lhs_id = evaluated_offset_id(binary.lhs, context, block_context, artifacts);
+    // Array refinement uses evaluated, coerced keys. ScopeOps::nodeKey instead
+    // remembers the expression itself, for arrays as well as string receivers.
+    let mut offsets = Vec::new();
+    let mut link = unwrap_expression(binary.lhs);
+    while let Expression::ArrayAccess(access) = link {
+        if let Some(evaluated) = evaluated_offset_id(link, context, block_context, artifacts)
+            && let Some(value) = artifacts.get_rc_expression_type(link)
+        {
+            offsets.push((
+                evaluated,
+                offset_expression_id(link, context, block_context, artifacts),
+                Rc::clone(value),
+            ));
+        }
+        link = unwrap_expression(access.array);
+    }
+    let required_offset = if let Expression::ArrayAccess(access) = unwrap_expression(binary.lhs)
+        && let Some(id) = lhs_id
+        && let Some(parent) = evaluated_offset_id(access.array, context, block_context, artifacts)
+        && let Some(parent_type) = artifacts.get_rc_expression_type(access.array)
+    {
+        // A nested parent may be an evaluated read, not a specified holder.
+        // Query its actual read type without publishing a parent existence fact.
+        let mut presence = BlockContext::new(block_context.scope.clone(), false);
+        presence.locals.insert(parent, Rc::clone(parent_type));
+        offset_is_required(id, &presence)
+    } else {
+        false
+    };
     let mut lhs_context = block_context.clone();
     if let Some(root) = get_root_expression_id(binary.lhs)
         && !block_context.variable_certainty(root).is_absent()
@@ -113,12 +149,19 @@ where
         present_value.set_possibly_undefined(false, Some(false));
         lhs_context.locals.insert(id, Rc::new(present_value));
     }
+    // CoalesceCompositionHelper reads the LHS on its isset-success scope.
+    // Removing an explicit null from the raw read alone does not narrow mixed.
+    let non_null_lhs_type = lhs_id
+        .and_then(|id| lhs_context.locals.get(&id))
+        .unwrap_or(lhs_type)
+        .remove_null();
+    restore_offset_holders(&offsets, block_context, &mut lhs_context);
     let lhs_scope = lhs_context.variable_scope();
     let rhs_scope;
     let mut result_type: TUnion;
 
     let left_is_set = !left_is_absent
-        && !lhs_type.has_nullish()
+        && !may_be_null(lhs_type)
         && !lhs_type.possibly_undefined()
         && !lhs_type.possibly_undefined_from_try()
         && !is_static_var;
@@ -128,20 +171,20 @@ where
     let mut rhs_context = block_context.clone();
     let mut assertions = AssertionMap::default();
     if let Expression::ArrayAccess(access) = unwrap_expression(binary.lhs) {
-        if !lhs_type.is_error()
-            && let Some(id) = lhs_id
-        {
-            // An absent-read placeholder is not a stored null value.
-            rhs_context.locals.insert(id, Rc::clone(lhs_type));
-        }
         if let Some(id) = lhs_id
-            && offset_is_required(id, block_context)
+            && required_offset
         {
+            // Only actual required entries can be pinned to null. Absent-read
+            // placeholders and maybe-absent values do not specify RHS holders.
+            // Seed evaluated parents too, so a nested null pin refines the chain.
+            for (evaluated, _, value) in offsets.iter().rev() {
+                rhs_context.locals.insert(*evaluated, Rc::clone(value));
+            }
             assertions.insert(id, vec![vec![Assertion::IsType(TAtomic::Null)]]);
         } else if !matches!(unwrap_expression(access.array), Expression::ArrayAccess(_))
             && artifacts.get_expression_type(access.array).is_some_and(|parent| !parent.is_mixed())
             && let Some(parent) = evaluated_offset_id(access.array, context, block_context, artifacts)
-            && let Some(key) = artifacts.get_expression_type(access.index).and_then(TUnion::get_single_array_key)
+            && let Some(key) = get_literal_array_key(access.index, artifacts)
         {
             // DefaultNarrowingHelper preserves maybe-absent values and filters only
             // top-level constant-array parents, without leaking nested-key existence.
@@ -165,6 +208,7 @@ where
             false,
         );
     }
+    restore_offset_holders(&offsets, block_context, &mut rhs_context);
 
     if (lhs_type.is_null() || left_is_absent) && !is_static_var {
         context.collector.propose_with_code(
@@ -213,7 +257,7 @@ where
             },
         );
 
-        result_type = (**lhs_type).clone();
+        result_type = non_null_lhs_type;
 
         // Analyze the unreachable right-hand side in a separate disposable context
         // Prevents its terminating control flow and recorded thrown exceptions from affecting the remainder of the block
@@ -222,7 +266,6 @@ where
         binary.rhs.analyze(context, &mut dead_rhs_context, artifacts)?;
         rhs_scope = dead_rhs_context.variable_scope();
     } else {
-        let non_null_lhs_type = lhs_type.to_non_nullable();
         *block_context = rhs_context;
         let has_returned = block_context.flags.has_returned();
         block_context.flags.set_has_returned(false);
@@ -266,11 +309,21 @@ where
                 });
 
                 if lhs_not_null && rhs_not_null {
-                    result_type = result_type.to_non_nullable();
+                    result_type = result_type.remove_null();
                     break;
                 }
             }
         }
+    }
+
+    if is_coalesce_assignment
+        && matches!(unwrap_expression(binary.lhs), Expression::ArrayAccess(_))
+        && let Some(id) = offset_expression_id(binary.lhs, context, block_context, artifacts)
+    {
+        // AssignHandler publishes a written target with Yes certainty even for
+        // MixedType/ErrorType receivers. Parent-array refinement is separate;
+        // array_assignment commits it after this synthetic ??= result.
+        block_context.locals.insert(id, Rc::new(result_type.clone()));
     }
 
     artifacts.set_rc_expression_type(binary, Rc::new(result_type));
@@ -285,6 +338,93 @@ fn get_variable_name(expr: &Expression<'_>) -> Option<Word> {
     }
 }
 
+/// IssetabilityResolution checks offset existence separately from the read's value.
+/// A prepared missing read may be ErrorType, just like a required error-valued entry.
+/// Query evaluated array metadata, not that sentinel, and never evaluate an index twice.
+fn offset_is_absent(expression: &Expression<'_>, artifacts: &AnalysisArtifacts) -> bool {
+    let Expression::ArrayAccess(access) = unwrap_expression(expression) else {
+        return false;
+    };
+    if offset_is_absent(access.array, artifacts) {
+        return true;
+    }
+    artifacts.get_expression_type(access.array).zip(get_literal_array_key(access.index, artifacts)).is_some_and(
+        |(parent, key)| {
+            parent.types.iter().all(|atomic| match atomic {
+                TAtomic::Array(TArray::Keyed(array)) => {
+                    array.parameters.is_none() && !array.known_items.as_ref().is_some_and(|items| items.contains_key(&key))
+                }
+                TAtomic::Array(TArray::List(list)) => {
+                    key.get_integer().and_then(|index| usize::try_from(index).ok()).is_none_or(|index| {
+                        list.known_count.is_some_and(|count| index >= count)
+                            || (list.element_type.is_never()
+                                && !list.known_elements.as_ref().is_some_and(|items| items.contains_key(&index)))
+                    })
+                }
+                _ => false,
+            })
+        },
+    )
+}
+
+/// Publish specified expressions, not the temporary paths used for parent-array refinement.
+fn restore_offset_holders(
+    offsets: &[(Word, Option<Word>, Rc<TUnion>)],
+    before: &BlockContext<'_>,
+    scope: &mut BlockContext<'_>,
+) {
+    for (evaluated, expression, _) in offsets {
+        if Some(*evaluated) == *expression {
+            continue;
+        }
+        if let Some(value) = scope.locals.remove(evaluated)
+            && let Some(expression) = expression
+        {
+            scope.locals.insert(*expression, value);
+        }
+        if let Some(original) = before.locals.get(evaluated) {
+            scope.locals.insert(*evaluated, Rc::clone(original));
+        }
+    }
+}
+
+/// ScopeOps keys a fetch by its expression, not by the index's value or toArrayKey().
+fn offset_expression_id<'arena, A: Arena>(
+    expression: &Expression<'arena>,
+    context: &Context<'_, 'arena, A>,
+    block_context: &BlockContext<'_>,
+    artifacts: &AnalysisArtifacts,
+) -> Option<Word> {
+    match unwrap_expression(expression) {
+        Expression::ArrayAccess(access) => {
+            let parent = offset_expression_id(access.array, context, block_context, artifacts)?;
+            let index = offset_expression_id(access.index, context, block_context, artifacts)?;
+            Some(concat_word!(parent.as_bytes(), b"[", index.as_bytes(), b"]"))
+        }
+        Expression::Literal(Literal::String(_)) => {
+            let value = artifacts.get_expression_type(expression)?.get_single_literal_string_value()?;
+            Some(ArrayKey::String(word(value)).id_word())
+        }
+        Expression::Literal(Literal::Integer(_)) => {
+            Some(artifacts.get_expression_type(expression)?.get_single_array_key()?.id_word())
+        }
+        Expression::Literal(Literal::True(keyword) | Literal::False(keyword) | Literal::Null(keyword)) => {
+            Some(word(keyword.value))
+        }
+        Expression::UnaryPrefix(prefix)
+            if matches!(prefix.operator, UnaryPrefixOperator::Plus(_) | UnaryPrefixOperator::Negation(_)) =>
+        {
+            let operand = offset_expression_id(prefix.operand, context, block_context, artifacts)?;
+            Some(concat_word!(prefix.operator.as_bytes(), operand.as_bytes()))
+        }
+        Expression::UnaryPostfix(postfix) => {
+            let operand = offset_expression_id(postfix.operand, context, block_context, artifacts)?;
+            Some(concat_word!(operand.as_bytes(), postfix.operator.as_str().as_bytes()))
+        }
+        _ => get_block_expression_id(expression, context, block_context),
+    }
+}
+
 /// Refer to an evaluated offset, never to the changed operand of a postfix index.
 fn evaluated_offset_id<'arena, A: Arena>(
     expression: &Expression<'arena>,
@@ -295,9 +435,7 @@ fn evaluated_offset_id<'arena, A: Arena>(
     match unwrap_expression(expression) {
         Expression::ArrayAccess(access) => {
             let parent = evaluated_offset_id(access.array, context, block_context, artifacts)?;
-            let index = artifacts
-                .get_expression_type(access.index)
-                .and_then(TUnion::get_single_array_key)
+            let index = get_literal_array_key(access.index, artifacts)
                 .map(|key| key.id_word())
                 .or_else(|| evaluated_offset_id(access.index, context, block_context, artifacts))?;
             Some(concat_word!(parent.as_bytes(), b"[", index.as_bytes(), b"]"))

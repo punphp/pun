@@ -17,8 +17,6 @@ Properties/AccessPropertiesRuleTest::testRequireExtends
 # declare inside a method body), so it reports none of the file's errors; Pun reports the two declares as the
 # RuleTestCase expects
 Keywords/DeclareStrictTypesRuleTest::testNested
-# classConstant.value on a trait's duplicate constants (a PHP error): PHP's reflection keeps the last, the codex the first
-Classes/DuplicateTraitDeclarationRuleTest::testBug14250
 # an anonymous class's getName() hashes its path relative to the working directory, which the export ran from elsewhere
 Classes/ExistingClassInClassExtendsRuleTest::testEnums
 # argument.missing on built-ins called with named arguments: PHPStan's named-argument variant selection (and
@@ -28,8 +26,4 @@ Classes/ExistingClassInClassExtendsRuleTest::testEnums
 # version-gated rules read; Pun checks against the one configured version
 # PHPStan 2.3 replaced PrintfHelper with PrintfFormatParser (`%5%`, `%ls`, `%*2$d` and positional width/precision
 # arguments, sscanf() counted by PHP itself); not ported
-# PHPStan 2.3's template types in return.missing descriptions: an array shape with a template key of a non-key bound
-# is no shape, a template key prints as `T|TKey of (int|string)`, and an inherited template argument resolves to its
-# bound (`RecursiveIterator<mixed, mixed>`)
-Methods/CallMethodsRuleTest::testArrayShapeTemplateKey
 Methods/OverridingMethodRuleTest::testBug9615

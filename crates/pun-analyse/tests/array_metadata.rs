@@ -51,3 +51,8 @@ fn introduced_parent_keys_follow_write_back_order() {
 fn nonempty_open_shapes_keep_unknown_length_unpacking() {
     check("unpacking.php", "unpacking.json");
 }
+
+#[test]
+fn callable_intersections_restore_erased_bounds_without_widening_replacements() {
+    check("callable-restoration.php", "callable-restoration.json");
+}

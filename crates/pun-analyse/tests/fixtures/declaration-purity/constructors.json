@@ -1,0 +1,1090 @@
+{
+    "1": [
+        {
+            "file": "constructors.php",
+            "line": 14,
+            "identifier": "constructor.unusedParameter",
+            "message": "Constructor of class DeclarationConstructorEffects\\PureConstructor has an unused parameter $value.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 73,
+            "identifier": "constructor.unusedParameter",
+            "message": "Constructor of class DeclarationConstructorEffects\\ConditionalConstructor has an unused parameter $value.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 97,
+            "identifier": "new.interface",
+            "message": "Cannot instantiate interface DeclarationConstructorEffects\\Contract.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 98,
+            "identifier": "new.trait",
+            "message": "Cannot instantiate trait DeclarationConstructorEffects\\Reusable.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 99,
+            "identifier": "new.enum",
+            "message": "Cannot instantiate enum DeclarationConstructorEffects\\Choice.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 100,
+            "identifier": "new.abstract",
+            "message": "Instantiated class DeclarationConstructorEffects\\AbstractEmpty is abstract.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 101,
+            "identifier": "class.notFound",
+            "message": "Instantiated class DeclarationConstructorEffects\\Missing not found.",
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 119,
+            "identifier": "new.noConstructor",
+            "message": "Class DeclarationConstructorEffects\\EmptyClass does not have a constructor and must be instantiated without any parameters.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 125,
+            "identifier": "class.notFound",
+            "message": "Instantiated class DeclarationConstructorEffects\\Missing not found.",
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 127,
+            "identifier": "arguments.count",
+            "message": "Class DeclarationConstructorEffects\\ImpureConstructor constructor invoked with 1 parameter, 0 required.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 143,
+            "identifier": "constructor.unusedParameter",
+            "message": "Constructor of class DeclarationConstructorEffects\\ConditionalThrows has an unused parameter $value.",
+            "tip": null,
+            "ignorable": true
+        }
+    ],
+    "2": [
+        {
+            "file": "constructors.php",
+            "line": 14,
+            "identifier": "constructor.unusedParameter",
+            "message": "Constructor of class DeclarationConstructorEffects\\PureConstructor has an unused parameter $value.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 45,
+            "identifier": "impure.exit",
+            "message": "Impure exit in pure method DeclarationConstructorEffects\\Stops::__construct().",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 73,
+            "identifier": "constructor.unusedParameter",
+            "message": "Constructor of class DeclarationConstructorEffects\\ConditionalConstructor has an unused parameter $value.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 73,
+            "identifier": "pureMethod.parameterPassedNotByRef",
+            "message": "Method DeclarationConstructorEffects\\ConditionalConstructor::__construct() is marked @pure-unless-parameter-passed for parameter $value, but $value is not passed by reference.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 80,
+            "identifier": "pureMethod.parameterByRef",
+            "message": "Method DeclarationConstructorEffects\\ReferenceConstructor::__construct() is marked as pure but parameter $value is passed by reference.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 91,
+            "identifier": "impureFunction.pure",
+            "message": "Function DeclarationConstructorEffects\\impureArgument() is marked as impure but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 95,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\namedEmpty() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 96,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\builtinEmpty() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 97,
+            "identifier": "new.interface",
+            "message": "Cannot instantiate interface DeclarationConstructorEffects\\Contract.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 97,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\illegalInterface() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 98,
+            "identifier": "new.trait",
+            "message": "Cannot instantiate trait DeclarationConstructorEffects\\Reusable.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 98,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\illegalTrait() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 99,
+            "identifier": "new.enum",
+            "message": "Cannot instantiate enum DeclarationConstructorEffects\\Choice.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 99,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\illegalEnum() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 100,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\illegalAbstract() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 100,
+            "identifier": "new.abstract",
+            "message": "Instantiated class DeclarationConstructorEffects\\AbstractEmpty is abstract.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 101,
+            "identifier": "class.notFound",
+            "message": "Instantiated class DeclarationConstructorEffects\\Missing not found.",
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 102,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\pureConstructor() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 103,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\inheritedConstructor() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 105,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\caughtImplicitThrow() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 107,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\caughtExplicitThrow() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 110,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\prefixedThrows() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 111,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\classPure() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 112,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\localArgument() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 113,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\namedArgument() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 114,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\pureCallArgument() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 117,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\caughtArgumentThrow() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 119,
+            "identifier": "new.noConstructor",
+            "message": "Class DeclarationConstructorEffects\\EmptyClass does not have a constructor and must be instantiated without any parameters.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 120,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\directNever() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 125,
+            "identifier": "class.notFound",
+            "message": "Instantiated class DeclarationConstructorEffects\\Missing not found.",
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 127,
+            "identifier": "arguments.count",
+            "message": "Class DeclarationConstructorEffects\\ImpureConstructor constructor invoked with 1 parameter, 0 required.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 128,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\arrayAfterEmpty() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 129,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\arrayAfterPure() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 132,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\unpacked() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 133,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\reference() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 134,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\conditional() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 135,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\closureArgument() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 143,
+            "identifier": "constructor.unusedParameter",
+            "message": "Constructor of class DeclarationConstructorEffects\\ConditionalThrows has an unused parameter $value.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 145,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\conditionalThrows() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        }
+    ],
+    "4": [
+        {
+            "file": "constructors.php",
+            "line": 14,
+            "identifier": "constructor.unusedParameter",
+            "message": "Constructor of class DeclarationConstructorEffects\\PureConstructor has an unused parameter $value.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 45,
+            "identifier": "impure.exit",
+            "message": "Impure exit in pure method DeclarationConstructorEffects\\Stops::__construct().",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 73,
+            "identifier": "constructor.unusedParameter",
+            "message": "Constructor of class DeclarationConstructorEffects\\ConditionalConstructor has an unused parameter $value.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 73,
+            "identifier": "pureMethod.parameterPassedNotByRef",
+            "message": "Method DeclarationConstructorEffects\\ConditionalConstructor::__construct() is marked @pure-unless-parameter-passed for parameter $value, but $value is not passed by reference.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 80,
+            "identifier": "pureMethod.parameterByRef",
+            "message": "Method DeclarationConstructorEffects\\ReferenceConstructor::__construct() is marked as pure but parameter $value is passed by reference.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 91,
+            "identifier": "impureFunction.pure",
+            "message": "Function DeclarationConstructorEffects\\impureArgument() is marked as impure but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 95,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\namedEmpty() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 96,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\builtinEmpty() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 97,
+            "identifier": "new.interface",
+            "message": "Cannot instantiate interface DeclarationConstructorEffects\\Contract.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 97,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\illegalInterface() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 98,
+            "identifier": "new.trait",
+            "message": "Cannot instantiate trait DeclarationConstructorEffects\\Reusable.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 98,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\illegalTrait() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 99,
+            "identifier": "new.enum",
+            "message": "Cannot instantiate enum DeclarationConstructorEffects\\Choice.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 99,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\illegalEnum() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 100,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\illegalAbstract() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 100,
+            "identifier": "new.abstract",
+            "message": "Instantiated class DeclarationConstructorEffects\\AbstractEmpty is abstract.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 101,
+            "identifier": "class.notFound",
+            "message": "Instantiated class DeclarationConstructorEffects\\Missing not found.",
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 102,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\pureConstructor() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 103,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\inheritedConstructor() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 105,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\caughtImplicitThrow() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 107,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\caughtExplicitThrow() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 110,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\prefixedThrows() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 111,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\classPure() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 112,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\localArgument() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 113,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\namedArgument() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 114,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\pureCallArgument() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 117,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\caughtArgumentThrow() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 119,
+            "identifier": "new.noConstructor",
+            "message": "Class DeclarationConstructorEffects\\EmptyClass does not have a constructor and must be instantiated without any parameters.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 120,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\directNever() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 120,
+            "identifier": "deadCode.unreachable",
+            "message": "Unreachable statement - code above always terminates.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 124,
+            "identifier": "deadCode.unreachable",
+            "message": "Unreachable statement - code above always terminates.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 125,
+            "identifier": "class.notFound",
+            "message": "Instantiated class DeclarationConstructorEffects\\Missing not found.",
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 126,
+            "identifier": "catch.neverThrown",
+            "message": "Dead catch - Throwable is never thrown in the try block.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 127,
+            "identifier": "arguments.count",
+            "message": "Class DeclarationConstructorEffects\\ImpureConstructor constructor invoked with 1 parameter, 0 required.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 128,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\arrayAfterEmpty() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 129,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\arrayAfterPure() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 132,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\unpacked() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 133,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\reference() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 134,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\conditional() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 135,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\closureArgument() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 143,
+            "identifier": "constructor.unusedParameter",
+            "message": "Constructor of class DeclarationConstructorEffects\\ConditionalThrows has an unused parameter $value.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 145,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\conditionalThrows() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        }
+    ],
+    "10": [
+        {
+            "file": "constructors.php",
+            "line": 14,
+            "identifier": "constructor.unusedParameter",
+            "message": "Constructor of class DeclarationConstructorEffects\\PureConstructor has an unused parameter $value.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 45,
+            "identifier": "impure.exit",
+            "message": "Impure exit in pure method DeclarationConstructorEffects\\Stops::__construct().",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 73,
+            "identifier": "constructor.unusedParameter",
+            "message": "Constructor of class DeclarationConstructorEffects\\ConditionalConstructor has an unused parameter $value.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 73,
+            "identifier": "pureMethod.parameterPassedNotByRef",
+            "message": "Method DeclarationConstructorEffects\\ConditionalConstructor::__construct() is marked @pure-unless-parameter-passed for parameter $value, but $value is not passed by reference.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 80,
+            "identifier": "pureMethod.parameterByRef",
+            "message": "Method DeclarationConstructorEffects\\ReferenceConstructor::__construct() is marked as pure but parameter $value is passed by reference.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 91,
+            "identifier": "impureFunction.pure",
+            "message": "Function DeclarationConstructorEffects\\impureArgument() is marked as impure but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 95,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\namedEmpty() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 96,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\builtinEmpty() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 97,
+            "identifier": "new.interface",
+            "message": "Cannot instantiate interface DeclarationConstructorEffects\\Contract.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 97,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\illegalInterface() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 98,
+            "identifier": "new.trait",
+            "message": "Cannot instantiate trait DeclarationConstructorEffects\\Reusable.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 98,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\illegalTrait() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 99,
+            "identifier": "new.enum",
+            "message": "Cannot instantiate enum DeclarationConstructorEffects\\Choice.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 99,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\illegalEnum() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 100,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\illegalAbstract() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 100,
+            "identifier": "new.abstract",
+            "message": "Instantiated class DeclarationConstructorEffects\\AbstractEmpty is abstract.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 101,
+            "identifier": "class.notFound",
+            "message": "Instantiated class DeclarationConstructorEffects\\Missing not found.",
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 102,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\pureConstructor() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 103,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\inheritedConstructor() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 105,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\caughtImplicitThrow() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 107,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\caughtExplicitThrow() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 110,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\prefixedThrows() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 111,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\classPure() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 112,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\localArgument() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 113,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\namedArgument() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 114,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\pureCallArgument() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 117,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\caughtArgumentThrow() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 119,
+            "identifier": "new.noConstructor",
+            "message": "Class DeclarationConstructorEffects\\EmptyClass does not have a constructor and must be instantiated without any parameters.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 120,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\directNever() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 120,
+            "identifier": "deadCode.unreachable",
+            "message": "Unreachable statement - code above always terminates.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 124,
+            "identifier": "deadCode.unreachable",
+            "message": "Unreachable statement - code above always terminates.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 125,
+            "identifier": "class.notFound",
+            "message": "Instantiated class DeclarationConstructorEffects\\Missing not found.",
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 126,
+            "identifier": "catch.neverThrown",
+            "message": "Dead catch - Throwable is never thrown in the try block.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 127,
+            "identifier": "arguments.count",
+            "message": "Class DeclarationConstructorEffects\\ImpureConstructor constructor invoked with 1 parameter, 0 required.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 128,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\arrayAfterEmpty() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 129,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\arrayAfterPure() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 132,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\unpacked() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 133,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\reference() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 134,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\conditional() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 135,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\closureArgument() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 135,
+            "identifier": "argument.type",
+            "message": "Parameter #1 $value of class DeclarationConstructorEffects\\PureConstructor constructor expects int, Closure given.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 143,
+            "identifier": "constructor.unusedParameter",
+            "message": "Constructor of class DeclarationConstructorEffects\\ConditionalThrows has an unused parameter $value.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "constructors.php",
+            "line": 145,
+            "identifier": "void.pure",
+            "message": "Function DeclarationConstructorEffects\\conditionalThrows() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        }
+    ]
+}

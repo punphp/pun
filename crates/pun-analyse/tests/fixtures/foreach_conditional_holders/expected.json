@@ -1,0 +1,248 @@
+{
+    "phar_sha256": "85157dba3d95d77ca603d2b7303aa78a538f9e3b56ccad07dd794c53aa96d1ae",
+    "bug13054-0": {
+        "errors": [],
+        "observations": []
+    },
+    "bug13054-5": {
+        "errors": [],
+        "observations": []
+    },
+    "calls-0": {
+        "errors": [
+            [
+                "calls.php",
+                16,
+                "arguments.count",
+                "Method ForeachConditionalHolders\\Target::fetchTest() invoked with 0 parameters, 1 required.",
+                null,
+                true
+            ],
+            [
+                "calls.php",
+                27,
+                "arguments.count",
+                "Method ForeachConditionalHolders\\Target::fetchTest() invoked with 0 parameters, 1 required.",
+                null,
+                true
+            ]
+        ],
+        "observations": []
+    },
+    "calls-5": {
+        "errors": [
+            [
+                "calls.php",
+                14,
+                "arguments.count",
+                "Method ForeachConditionalHolders\\Target::fetchTest2() invoked with 1 parameter, 0 required.",
+                null,
+                true
+            ],
+            [
+                "calls.php",
+                16,
+                "arguments.count",
+                "Method ForeachConditionalHolders\\Target::fetchTest() invoked with 0 parameters, 1 required.",
+                null,
+                true
+            ],
+            [
+                "calls.php",
+                27,
+                "arguments.count",
+                "Method ForeachConditionalHolders\\Target::fetchTest() invoked with 0 parameters, 1 required.",
+                null,
+                true
+            ]
+        ],
+        "observations": []
+    },
+    "scopes-0": {
+        "errors": [],
+        "observations": [
+            {
+                "start": 269,
+                "end": 275,
+                "expression": "$value",
+                "type": "'Test'",
+                "native": "'Test'|'Test2'"
+            },
+            {
+                "start": 300,
+                "end": 311,
+                "expression": "$list[$key]",
+                "type": "'Test'",
+                "native": "'Test'|'Test2'"
+            },
+            {
+                "start": 336,
+                "end": 344,
+                "expression": "$derived",
+                "type": "'fetchTest'",
+                "native": "'fetchTest'|'fetchTest2'"
+            },
+            {
+                "start": 386,
+                "end": 392,
+                "expression": "$value",
+                "type": "'Test2'",
+                "native": "'Test'|'Test2'"
+            },
+            {
+                "start": 417,
+                "end": 428,
+                "expression": "$list[$key]",
+                "type": "'Test2'",
+                "native": "'Test'|'Test2'"
+            },
+            {
+                "start": 453,
+                "end": 461,
+                "expression": "$derived",
+                "type": "'fetchTest2'",
+                "native": "'fetchTest'|'fetchTest2'"
+            },
+            {
+                "start": 628,
+                "end": 634,
+                "expression": "$value",
+                "type": "'one'",
+                "native": "'one'|'two'"
+            },
+            {
+                "start": 676,
+                "end": 682,
+                "expression": "$value",
+                "type": "'two'",
+                "native": "'one'|'two'"
+            },
+            {
+                "start": 844,
+                "end": 850,
+                "expression": "$value",
+                "type": "'one'",
+                "native": "'one'|'two'"
+            },
+            {
+                "start": 892,
+                "end": 898,
+                "expression": "$value",
+                "type": "'two'",
+                "native": "'one'|'two'"
+            },
+            {
+                "start": 1082,
+                "end": 1088,
+                "expression": "$value",
+                "type": "'one'",
+                "native": "'one'|'two'"
+            },
+            {
+                "start": 1113,
+                "end": 1124,
+                "expression": "$list[$key]",
+                "type": "'one'",
+                "native": "'one'|'two'"
+            },
+            {
+                "start": 1166,
+                "end": 1172,
+                "expression": "$value",
+                "type": "'two'",
+                "native": "'one'|'two'"
+            },
+            {
+                "start": 1197,
+                "end": 1208,
+                "expression": "$list[$key]",
+                "type": "'two'",
+                "native": "'one'|'two'"
+            },
+            {
+                "start": 1406,
+                "end": 1412,
+                "expression": "$value",
+                "type": "'one'|'two'",
+                "native": "mixed"
+            },
+            {
+                "start": 1673,
+                "end": 1679,
+                "expression": "$value",
+                "type": "'one'|'two'",
+                "native": "'one'|'two'"
+            },
+            {
+                "start": 1935,
+                "end": 1943,
+                "expression": "$derived",
+                "type": "'replacement'",
+                "native": "'replacement'"
+            },
+            {
+                "start": 2141,
+                "end": 2147,
+                "expression": "$value",
+                "type": "'one'",
+                "native": "mixed"
+            },
+            {
+                "start": 2377,
+                "end": 2383,
+                "expression": "$value",
+                "type": "'four'|'one'|'three'|'two'",
+                "native": "mixed"
+            },
+            {
+                "start": 2601,
+                "end": 2607,
+                "expression": "$value",
+                "type": "'one'",
+                "native": "mixed"
+            },
+            {
+                "start": 2837,
+                "end": 2853,
+                "expression": "$target['value']",
+                "type": "'one'|'two'",
+                "native": "'one'|'two'"
+            },
+            {
+                "start": 3089,
+                "end": 3095,
+                "expression": "$value",
+                "type": "'one'|'two'",
+                "native": "'one'|'two'"
+            },
+            {
+                "start": 3219,
+                "end": 3225,
+                "expression": "$value",
+                "type": "'one'|'two'",
+                "native": "'one'|'two'"
+            },
+            {
+                "start": 3425,
+                "end": 3431,
+                "expression": "$value",
+                "type": "'fetch'",
+                "native": "mixed"
+            },
+            {
+                "start": 3639,
+                "end": 3645,
+                "expression": "$value",
+                "type": "'one'|'two'",
+                "native": "'one'|'two'"
+            },
+            {
+                "start": 3867,
+                "end": 3873,
+                "expression": "$value",
+                "type": "'replacement'",
+                "native": "'replacement'"
+            }
+        ]
+    }
+}

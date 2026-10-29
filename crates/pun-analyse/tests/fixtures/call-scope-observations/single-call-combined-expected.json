@@ -1,0 +1,201 @@
+{
+    "calls": {
+        "296": {
+            "line": 11,
+            "expression": "$target->output($value)",
+            "names": [
+                {
+                    "name": "output",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 296,
+                            "end": 303,
+                            "expression": "$target",
+                            "type": "MissingOutput|OptionalOutput"
+                        },
+                        {
+                            "start": 312,
+                            "end": 318,
+                            "expression": "$value",
+                            "type": "'before'"
+                        }
+                    ]
+                }
+            ]
+        },
+        "739": {
+            "line": 24,
+            "expression": "$target->invoke(fn($value) => $value, ++$i, $i)",
+            "names": [
+                {
+                    "name": "invoke",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 739,
+                            "end": 746,
+                            "expression": "$target",
+                            "type": "TailLeft|TailRight"
+                        },
+                        {
+                            "start": 755,
+                            "end": 775,
+                            "expression": "fn($value) => $value",
+                            "type": "Closure(mixed): (int|string)"
+                        },
+                        {
+                            "start": 758,
+                            "end": 764,
+                            "expression": "$value",
+                            "type": "*ERROR*"
+                        },
+                        {
+                            "start": 769,
+                            "end": 775,
+                            "expression": "$value",
+                            "type": "int|string"
+                        },
+                        {
+                            "start": 777,
+                            "end": 781,
+                            "expression": "++$i",
+                            "type": "1"
+                        },
+                        {
+                            "start": 779,
+                            "end": 781,
+                            "expression": "$i",
+                            "type": "0"
+                        },
+                        {
+                            "start": 783,
+                            "end": 785,
+                            "expression": "$i",
+                            "type": "0"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1077": {
+            "line": 36,
+            "expression": "$target->output(left: $value)",
+            "names": [
+                {
+                    "name": "output",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 1077,
+                            "end": 1084,
+                            "expression": "$target",
+                            "type": "NameLeft|NameRight"
+                        },
+                        {
+                            "start": 1099,
+                            "end": 1105,
+                            "expression": "$value",
+                            "type": "0"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1724": {
+            "line": 60,
+            "expression": "$target->invoke(function () { return $this->read(); })",
+            "names": [
+                {
+                    "name": "invoke",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 1724,
+                            "end": 1731,
+                            "expression": "$target",
+                            "type": "BindLeft|BindRight"
+                        },
+                        {
+                            "start": 1740,
+                            "end": 1777,
+                            "expression": "function () { return $this->read(); }",
+                            "type": "Closure(): (int|string)"
+                        },
+                        {
+                            "start": 1761,
+                            "end": 1774,
+                            "expression": "$this->read()",
+                            "type": "int|string"
+                        },
+                        {
+                            "start": 1761,
+                            "end": 1766,
+                            "expression": "$this",
+                            "type": "ThisInteger|ThisString"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1992": {
+            "line": 67,
+            "expression": "$target->invoke(function () { return $this->read(); })",
+            "names": [
+                {
+                    "name": "invoke",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 1992,
+                            "end": 1999,
+                            "expression": "$target",
+                            "type": "BindAbsent|BindLeft"
+                        },
+                        {
+                            "start": 2008,
+                            "end": 2045,
+                            "expression": "function () { return $this->read(); }",
+                            "type": "Closure(): mixed"
+                        },
+                        {
+                            "start": 2029,
+                            "end": 2042,
+                            "expression": "$this->read()",
+                            "type": "mixed"
+                        },
+                        {
+                            "start": 2029,
+                            "end": 2034,
+                            "expression": "$this",
+                            "type": "*ERROR*"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "errors": [
+        [
+            36,
+            "argument.missing",
+            "Missing parameter $left|right (mixed) in call to method NameLeft::output().",
+            null,
+            true
+        ],
+        [
+            36,
+            "argument.unknown",
+            "Unknown parameter $left in call to method NameLeft::output().",
+            null,
+            true
+        ],
+        [
+            67,
+            "variable.undefined",
+            "Undefined variable: $this",
+            null,
+            true
+        ]
+    ]
+}

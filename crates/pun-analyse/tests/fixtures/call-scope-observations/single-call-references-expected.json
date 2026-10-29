@@ -1,0 +1,71 @@
+{
+    "calls": {
+        "295": {
+            "line": 12,
+            "expression": "$target->output($value)",
+            "names": [
+                {
+                    "name": "output",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 295,
+                            "end": 302,
+                            "expression": "$target",
+                            "type": "NumberOutput|StringOutput"
+                        },
+                        {
+                            "start": 311,
+                            "end": 317,
+                            "expression": "$value",
+                            "type": "0"
+                        }
+                    ]
+                }
+            ]
+        },
+        "659": {
+            "line": 24,
+            "expression": "$target->$name($value)",
+            "names": [
+                {
+                    "name": "bar",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 659,
+                            "end": 666,
+                            "expression": "$target",
+                            "type": "DynamicOutput"
+                        },
+                        {
+                            "start": 674,
+                            "end": 680,
+                            "expression": "$value",
+                            "type": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "foo",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 659,
+                            "end": 666,
+                            "expression": "$target",
+                            "type": "DynamicOutput"
+                        },
+                        {
+                            "start": 674,
+                            "end": 680,
+                            "expression": "$value",
+                            "type": "0"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "errors": []
+}

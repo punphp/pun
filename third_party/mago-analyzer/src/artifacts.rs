@@ -71,6 +71,10 @@ pub struct ClosureBindScope {
     pub class_name: Option<Word>,
     /// Whether the closure has `$this` bound (newThis argument is non-null object).
     pub has_this: bool,
+    /// Runtime `$this` is independent of the class used for member access.
+    pub this_type: Option<Rc<TUnion>>,
+    /// The same binding's native holder, not its PHPDoc-selected full type.
+    pub native_this_type: Option<Rc<TUnion>>,
 }
 
 /// One semantic receiver and method target retained for a source-level call.
@@ -143,6 +147,10 @@ pub struct AnalysisArtifacts {
     pub resolved_method_calls: Vec<ResolvedMethodCall>,
     /// Requested, owned rule-facing answers; distinct from the actual walk's expression types.
     pub call_scope_observations: HashMap<Span, Vec<crate::observations::NamedCallScope>>,
+    /// NullsafeMethodCallExpressionNode's processed receiver, before shallow non-null specification.
+    pub nullsafe_method_receiver_types: HashMap<Span, TUnion>,
+    /// Body-boundary value-read/write answers, separate from type and definedness observations.
+    pub variable_writes: HashMap<Span, crate::variable_flow::VariableWritesNode>,
     pub(crate) editor: Option<EditorArtifacts>,
     pub(crate) variable_definedness: HashMap<(u32, u32), WordMap<VariableDefinedness>>,
     pub(crate) variable_throw_scopes: HashMap<(Span, VariableThrowKind), WordMap<VariableScope>>,
@@ -189,6 +197,8 @@ impl AnalysisArtifacts {
             closure_bind_scope: None,
             resolved_method_calls: Vec::new(),
             call_scope_observations: HashMap::default(),
+            nullsafe_method_receiver_types: HashMap::default(),
+            variable_writes: HashMap::default(),
             editor: None,
             variable_definedness: HashMap::default(),
             variable_throw_scopes: HashMap::default(),

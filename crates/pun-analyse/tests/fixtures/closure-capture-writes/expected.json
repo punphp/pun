@@ -1,0 +1,1150 @@
+{
+    "captures-0-0": [
+        [
+            16,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left",
+            null,
+            false
+        ],
+        [
+            18,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            23,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left|ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            28,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left",
+            null,
+            false
+        ],
+        [
+            33,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left",
+            null,
+            false
+        ],
+        [
+            37,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left",
+            null,
+            false
+        ],
+        [
+            38,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            40,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left",
+            null,
+            false
+        ],
+        [
+            41,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            43,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left|ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            44,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left|ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            46,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            47,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            50,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            53,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left|ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            64,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left|ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            69,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            75,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ]
+    ],
+    "captures-0-1": [
+        [
+            16,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left",
+            null,
+            false
+        ],
+        [
+            18,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            23,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left|ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            28,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left",
+            null,
+            false
+        ],
+        [
+            33,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left",
+            null,
+            false
+        ],
+        [
+            37,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left",
+            null,
+            false
+        ],
+        [
+            38,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            40,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left",
+            null,
+            false
+        ],
+        [
+            41,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            43,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left|ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            44,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left|ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            46,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            47,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            50,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            53,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left|ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            64,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left|ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            69,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            75,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ]
+    ],
+    "captures-9-0": [
+        [
+            12,
+            "void.pure",
+            "Function ParameterCaptures\\captures() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            16,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left",
+            null,
+            false
+        ],
+        [
+            18,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            23,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left|ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            28,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left",
+            null,
+            false
+        ],
+        [
+            33,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left",
+            null,
+            false
+        ],
+        [
+            37,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left",
+            null,
+            false
+        ],
+        [
+            38,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            40,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left",
+            null,
+            false
+        ],
+        [
+            41,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            43,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left|ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            44,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left|ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            46,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            47,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            50,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            53,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left|ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            60,
+            "void.pure",
+            "Function ParameterCaptures\\captureWrites() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            62,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $method.",
+            null,
+            true
+        ],
+        [
+            64,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left|ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            66,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $value.",
+            null,
+            true
+        ],
+        [
+            69,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            75,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ]
+    ],
+    "captures-9-1": [
+        [
+            12,
+            "void.pure",
+            "Function ParameterCaptures\\captures() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            16,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left",
+            null,
+            false
+        ],
+        [
+            18,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            23,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left|ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            28,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left",
+            null,
+            false
+        ],
+        [
+            33,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left",
+            null,
+            false
+        ],
+        [
+            37,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left",
+            null,
+            false
+        ],
+        [
+            38,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            40,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left",
+            null,
+            false
+        ],
+        [
+            41,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            43,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left|ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            44,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left|ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            46,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            47,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            50,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            53,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left|ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            60,
+            "void.pure",
+            "Function ParameterCaptures\\captureWrites() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            62,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $method.",
+            null,
+            true
+        ],
+        [
+            64,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left|ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            66,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $value.",
+            null,
+            true
+        ],
+        [
+            69,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            75,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ]
+    ],
+    "overwrites-0-0": [],
+    "overwrites-0-1": [],
+    "overwrites-1-0": [
+        [
+            7,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $left.",
+            null,
+            true
+        ],
+        [
+            11,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $left.",
+            null,
+            true
+        ],
+        [
+            15,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $right.",
+            null,
+            true
+        ],
+        [
+            19,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $left.",
+            null,
+            true
+        ],
+        [
+            19,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $right.",
+            null,
+            true
+        ],
+        [
+            23,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $left.",
+            null,
+            true
+        ],
+        [
+            37,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $left.",
+            null,
+            true
+        ],
+        [
+            53,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $left.",
+            null,
+            true
+        ],
+        [
+            62,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $left.",
+            null,
+            true
+        ],
+        [
+            71,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $left.",
+            null,
+            true
+        ],
+        [
+            74,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $left.",
+            null,
+            true
+        ],
+        [
+            81,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $left.",
+            null,
+            true
+        ],
+        [
+            88,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $left.",
+            null,
+            true
+        ],
+        [
+            96,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $right.",
+            null,
+            true
+        ],
+        [
+            98,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $left.",
+            null,
+            true
+        ]
+    ],
+    "overwrites-1-1": [
+        [
+            7,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $left.",
+            null,
+            true
+        ],
+        [
+            11,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $left.",
+            null,
+            true
+        ],
+        [
+            15,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $right.",
+            null,
+            true
+        ],
+        [
+            19,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $left.",
+            null,
+            true
+        ],
+        [
+            19,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $right.",
+            null,
+            true
+        ],
+        [
+            23,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $left.",
+            null,
+            true
+        ],
+        [
+            37,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $left.",
+            null,
+            true
+        ],
+        [
+            53,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $left.",
+            null,
+            true
+        ],
+        [
+            62,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $left.",
+            null,
+            true
+        ],
+        [
+            71,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $left.",
+            null,
+            true
+        ],
+        [
+            74,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $left.",
+            null,
+            true
+        ],
+        [
+            81,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $left.",
+            null,
+            true
+        ],
+        [
+            88,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $left.",
+            null,
+            true
+        ],
+        [
+            96,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $right.",
+            null,
+            true
+        ],
+        [
+            98,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $left.",
+            null,
+            true
+        ]
+    ],
+    "reads-0-0": [],
+    "reads-0-1": [],
+    "reads-1-0": [
+        [
+            81,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $value.",
+            null,
+            true
+        ]
+    ],
+    "reads-1-1": [
+        [
+            81,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $value.",
+            null,
+            true
+        ]
+    ],
+    "boundaries-0-0": [],
+    "boundaries-0-1": [],
+    "boundaries-1-0": [
+        [
+            18,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $value.",
+            null,
+            true
+        ],
+        [
+            32,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $value.",
+            null,
+            true
+        ],
+        [
+            48,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $value.",
+            null,
+            true
+        ],
+        [
+            63,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $guard.",
+            null,
+            true
+        ],
+        [
+            71,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $value.",
+            null,
+            true
+        ],
+        [
+            89,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $value.",
+            null,
+            true
+        ]
+    ],
+    "boundaries-1-1": [
+        [
+            18,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $value.",
+            null,
+            true
+        ],
+        [
+            32,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $value.",
+            null,
+            true
+        ],
+        [
+            48,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $value.",
+            null,
+            true
+        ],
+        [
+            63,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $guard.",
+            null,
+            true
+        ],
+        [
+            71,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $value.",
+            null,
+            true
+        ],
+        [
+            89,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $value.",
+            null,
+            true
+        ]
+    ],
+    "original-closure-0-0": [
+        [
+            22,
+            "include.fileNotFound",
+            "Path in include() \"foo.php\" is not a file or it does not exist.",
+            null,
+            true
+        ],
+        [
+            44,
+            "variable.undefined",
+            "Undefined variable: $notContainer",
+            null,
+            true
+        ]
+    ],
+    "original-closure-0-1": [
+        [
+            22,
+            "include.fileNotFound",
+            "Path in include() \"foo.php\" is not a file or it does not exist.",
+            null,
+            true
+        ],
+        [
+            44,
+            "variable.undefined",
+            "Undefined variable: $notContainer",
+            null,
+            true
+        ]
+    ],
+    "original-closure-1-0": [
+        [
+            3,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $anotherUnused.",
+            null,
+            true
+        ],
+        [
+            3,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $unused.",
+            null,
+            true
+        ],
+        [
+            4,
+            "variable.undefined",
+            "Variable $used might not be defined.",
+            null,
+            true
+        ],
+        [
+            5,
+            "variable.undefined",
+            "Variable $usedInClosureUse might not be defined.",
+            null,
+            true
+        ],
+        [
+            6,
+            "variable.undefined",
+            "Variable $unused might not be defined.",
+            null,
+            true
+        ],
+        [
+            7,
+            "variable.undefined",
+            "Variable $anotherUnused might not be defined.",
+            null,
+            true
+        ],
+        [
+            10,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $usedInClosureUse.",
+            null,
+            true
+        ],
+        [
+            22,
+            "include.fileNotFound",
+            "Path in include() \"foo.php\" is not a file or it does not exist.",
+            null,
+            true
+        ],
+        [
+            43,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $container.",
+            null,
+            true
+        ],
+        [
+            44,
+            "variable.undefined",
+            "Undefined variable: $notContainer",
+            null,
+            true
+        ]
+    ],
+    "original-closure-1-1": [
+        [
+            4,
+            "variable.undefined",
+            "Variable $used might not be defined.",
+            null,
+            true
+        ],
+        [
+            5,
+            "variable.undefined",
+            "Variable $usedInClosureUse might not be defined.",
+            null,
+            true
+        ],
+        [
+            6,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $unused.",
+            null,
+            true
+        ],
+        [
+            6,
+            "variable.undefined",
+            "Variable $unused might not be defined.",
+            null,
+            true
+        ],
+        [
+            7,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $anotherUnused.",
+            null,
+            true
+        ],
+        [
+            7,
+            "variable.undefined",
+            "Variable $anotherUnused might not be defined.",
+            null,
+            true
+        ],
+        [
+            10,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $usedInClosureUse.",
+            null,
+            true
+        ],
+        [
+            22,
+            "include.fileNotFound",
+            "Path in include() \"foo.php\" is not a file or it does not exist.",
+            null,
+            true
+        ],
+        [
+            43,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $container.",
+            null,
+            true
+        ],
+        [
+            44,
+            "variable.undefined",
+            "Undefined variable: $notContainer",
+            null,
+            true
+        ]
+    ],
+    "original-constructor-0-0": [
+        [
+            27,
+            "function.notFound",
+            "Function doFoo not found.",
+            "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            true
+        ]
+    ],
+    "original-constructor-0-1": [
+        [
+            27,
+            "function.notFound",
+            "Function doFoo not found.",
+            "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            true
+        ]
+    ],
+    "original-constructor-1-0": [
+        [
+            11,
+            "constructor.unusedParameter",
+            "Constructor of class UnusedConstructorParameters\\Foo has an unused parameter $anotherUnusedParameter.",
+            null,
+            true
+        ],
+        [
+            11,
+            "constructor.unusedParameter",
+            "Constructor of class UnusedConstructorParameters\\Foo has an unused parameter $unusedParameter.",
+            null,
+            true
+        ],
+        [
+            27,
+            "function.notFound",
+            "Function doFoo not found.",
+            "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            true
+        ],
+        [
+            30,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $usedParameterInClosureUse.",
+            null,
+            true
+        ]
+    ],
+    "original-constructor-1-1": [
+        [
+            19,
+            "constructor.unusedParameter",
+            "Constructor of class UnusedConstructorParameters\\Foo has an unused parameter $unusedParameter.",
+            null,
+            true
+        ],
+        [
+            20,
+            "constructor.unusedParameter",
+            "Constructor of class UnusedConstructorParameters\\Foo has an unused parameter $anotherUnusedParameter.",
+            null,
+            true
+        ],
+        [
+            27,
+            "function.notFound",
+            "Function doFoo not found.",
+            "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            true
+        ],
+        [
+            30,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $usedParameterInClosureUse.",
+            null,
+            true
+        ]
+    ]
+}

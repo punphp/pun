@@ -1,0 +1,113 @@
+{
+    "phar_sha256": "85157dba3d95d77ca603d2b7303aa78a538f9e3b56ccad07dd794c53aa96d1ae",
+    "types": [
+        {
+            "start": 151,
+            "end": 187,
+            "expression": "static fn(int $value): int => $value",
+            "full": {
+                "kind": "signature",
+                "parameters": [
+                    "int"
+                ],
+                "return": "int"
+            },
+            "native": {
+                "kind": "signature",
+                "parameters": [
+                    "int"
+                ],
+                "return": "int"
+            }
+        },
+        {
+            "start": 247,
+            "end": 259,
+            "expression": "$callback(7)",
+            "full": {
+                "kind": "value",
+                "type": "int"
+            },
+            "native": {
+                "kind": "value",
+                "type": "int"
+            }
+        }
+    ],
+    "errors": {
+        "0": [],
+        "5": [
+            [
+                "relation-controls.php",
+                11,
+                "argument.type",
+                "Parameter #1 $value of closure expects int, string given.",
+                null,
+                true
+            ],
+            [
+                "relation-controls.php",
+                9,
+                "instanceof.alwaysTrue",
+                "Instanceof between Closure and Closure will always evaluate to true.",
+                null,
+                true
+            ]
+        ],
+        "9": [
+            [
+                "relation-controls.php",
+                11,
+                "argument.type",
+                "Parameter #1 $value of closure expects int, string given.",
+                null,
+                true
+            ],
+            [
+                "relation-controls.php",
+                9,
+                "instanceof.alwaysTrue",
+                "Instanceof between Closure and Closure will always evaluate to true.",
+                null,
+                true
+            ]
+        ],
+        "0-bleeding": [],
+        "5-bleeding": [
+            [
+                "relation-controls.php",
+                11,
+                "argument.type",
+                "Parameter #1 $value of closure expects int, string given.",
+                null,
+                true
+            ],
+            [
+                "relation-controls.php",
+                9,
+                "instanceof.alwaysTrue",
+                "Instanceof between Closure and Closure will always evaluate to true.",
+                null,
+                true
+            ]
+        ],
+        "9-bleeding": [
+            [
+                "relation-controls.php",
+                11,
+                "argument.type",
+                "Parameter #1 $value of closure expects int, string given.",
+                null,
+                true
+            ],
+            [
+                "relation-controls.php",
+                9,
+                "instanceof.alwaysTrue",
+                "Instanceof between Closure and Closure will always evaluate to true.",
+                null,
+                true
+            ]
+        ]
+    }
+}

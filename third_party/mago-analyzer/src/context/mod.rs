@@ -73,9 +73,11 @@ where
     pub(super) constant_types: HashMap<Span, TUnion>,
     /// PHPStan's speculative closure-return walk must not publish observer events.
     pub(super) raw_callback_gather_depth: u8,
+    pub(crate) variable_flow: crate::variable_flow::State,
     pub(super) observations: crate::observations::ObservationState<'ctx, 'arena>,
     pub(super) observation_program: Option<&'arena mago_syntax::cst::Program<'arena>>,
     pub(super) ensured_non_null_types: Vec<WordMap<TUnion>>,
+    pub(crate) consume_stored_expression_results: bool,
 }
 
 impl<'ctx, 'arena, A> Context<'ctx, 'arena, A>
@@ -114,9 +116,11 @@ where
             class_initializers: WordMap::default(),
             constant_types: HashMap::default(),
             raw_callback_gather_depth: 0,
+            variable_flow: crate::variable_flow::State::default(),
             observations: crate::observations::ObservationState::default(),
             observation_program: None,
             ensured_non_null_types: Vec::new(),
+            consume_stored_expression_results: false,
         }
     }
 
@@ -312,6 +316,7 @@ where
         fork.class_initializers = self.class_initializers.clone();
         fork.constant_types = self.constant_types.clone();
         fork.ensured_non_null_types = self.ensured_non_null_types.clone();
+        fork.consume_stored_expression_results = self.consume_stored_expression_results;
         fork.observation_program = self.observation_program;
         fork.observations.calls = self.observations.calls.clone();
         fork.observations.pricing = true;

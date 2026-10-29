@@ -1,0 +1,139 @@
+{
+    "calls": {
+        "472": {
+            "line": 13,
+            "expression": "$inspect->consume($sink?->$name())",
+            "names": [
+                {
+                    "name": "consume",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 472,
+                            "end": 480,
+                            "expression": "$inspect",
+                            "type": "NullsafeCallProvenance<stdClass|null>"
+                        },
+                        {
+                            "start": 490,
+                            "end": 505,
+                            "expression": "$sink?->$name()",
+                            "type": "null"
+                        },
+                        {
+                            "start": 490,
+                            "end": 495,
+                            "expression": "$sink",
+                            "type": "NullsafeCallProvenance"
+                        },
+                        {
+                            "start": 498,
+                            "end": 503,
+                            "expression": "$name",
+                            "type": "'nullOnly'|'voidOnly'"
+                        }
+                    ]
+                }
+            ]
+        },
+        "523": {
+            "line": 14,
+            "expression": "$inspect->consume($sink?->voidOnly())",
+            "names": [
+                {
+                    "name": "consume",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 523,
+                            "end": 531,
+                            "expression": "$inspect",
+                            "type": "NullsafeCallProvenance<stdClass|null>"
+                        },
+                        {
+                            "start": 541,
+                            "end": 559,
+                            "expression": "$sink?->voidOnly()",
+                            "type": "null"
+                        },
+                        {
+                            "start": 541,
+                            "end": 546,
+                            "expression": "$sink",
+                            "type": "NullsafeCallProvenance"
+                        }
+                    ]
+                }
+            ]
+        },
+        "577": {
+            "line": 15,
+            "expression": "$inspect->consume($sink?->nullOnly())",
+            "names": [
+                {
+                    "name": "consume",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 577,
+                            "end": 585,
+                            "expression": "$inspect",
+                            "type": "NullsafeCallProvenance<stdClass|null>"
+                        },
+                        {
+                            "start": 595,
+                            "end": 613,
+                            "expression": "$sink?->nullOnly()",
+                            "type": "null"
+                        },
+                        {
+                            "start": 595,
+                            "end": 600,
+                            "expression": "$sink",
+                            "type": "NullsafeCallProvenance"
+                        }
+                    ]
+                }
+            ]
+        },
+        "809": {
+            "line": 23,
+            "expression": "$inspect->consume($sink?->templateBound())",
+            "names": [
+                {
+                    "name": "consume",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 809,
+                            "end": 817,
+                            "expression": "$inspect",
+                            "type": "NullsafeCallProvenance<stdClass|null>"
+                        },
+                        {
+                            "start": 827,
+                            "end": 850,
+                            "expression": "$sink?->templateBound()",
+                            "type": "(T of stdClass|null (function genericNullReturn(), argument))|null"
+                        },
+                        {
+                            "start": 827,
+                            "end": 832,
+                            "expression": "$sink",
+                            "type": "NullsafeCallProvenance<T of stdClass|null (function genericNullReturn(), argument)>"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "errors": [
+        [
+            14,
+            "method.void",
+            "Result of method NullsafeCallProvenance<stdClass|null>::voidOnly() (void) is used.",
+            null,
+            true
+        ]
+    ]
+}

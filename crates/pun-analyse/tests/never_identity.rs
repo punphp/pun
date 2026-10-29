@@ -9,7 +9,7 @@ use mago_allocator::LocalArena;
 use mago_analyzer::Analyzer;
 use mago_analyzer::analysis_result::AnalysisResult;
 use mago_analyzer::plugin::create_registry_with_plugins;
-use mago_analyzer::plugin::{ExpressionHook, HookContext, HookResult, PluginRegistry};
+use mago_analyzer::plugin::{ExpressionHook, HookContext, HookResult};
 use mago_analyzer::settings::Settings;
 use mago_codex::metadata::CodebaseMetadata;
 use mago_codex::metadata::ttype::TypeMetadata;
@@ -572,7 +572,7 @@ fn exit_throw_producers_and_forwarded_returns_keep_their_actual_never_kind() {
         Default::default(),
     );
     let continued = Arc::new(Mutex::new(BTreeMap::new()));
-    let mut plugins = PluginRegistry::new();
+    let mut plugins = create_registry_with_plugins(&[], false);
     plugins.register_expression_hook(NeverControls(Arc::clone(&continued)));
     let mut result = AnalysisResult::new(references);
     let artifacts = Analyzer::new(
@@ -613,6 +613,9 @@ fn exit_throw_producers_and_forwarded_returns_keep_their_actual_never_kind() {
         };
         if identity["type"] == "void" {
             assert!(ty.is_void(), "{expression}: {ty:?}");
+        }
+        if identity["type"] == "*ERROR*" {
+            assert!(ty.is_error(), "{expression}: {ty:?}");
         }
         let expected_kind = match identity["kind"].as_str() {
             Some("explicit-accepting") => json!("explicit"),

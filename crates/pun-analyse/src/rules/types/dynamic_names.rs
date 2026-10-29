@@ -62,23 +62,13 @@ pub(super) fn typed(e: &Expression, out: &mut Vec<Span>) {
     }
 }
 
-/// The type at `span`. Mago leaves both `$this` of `$this->$this->name` untyped (the outer fetch reads the inner
-/// one's name from the block's locals).
-pub(in super::super) fn type_at(c: &Checker, span: Span) -> Option<Type> {
-    c.phpstan_type_at(span).or_else(|| {
-        (c.written(span) == "$this" && c.this_defined())
-            .then(|| c.class_scope().map(|k| Type::This(k.original_name.to_string())))
-            .flatten()
-    })
-}
-
 /// `findTypeToCheck()` of the name at `name` against `isString()` (`castable`: against `toString()`): the name's
 /// type and the type found when that is not one; with checkThisOnly (levels 0 and 1) only a `$this` name is checked.
 pub(in super::super) fn not_string(c: &Checker, name: Span, castable: bool) -> Option<(Type, Type)> {
     if c.level < 2 && c.written(name) != "$this" {
         return None;
     }
-    let ty = type_at(c, name)?;
+    let ty = c.phpstan_type_at(name)?;
     let sm = StrictMixed::default();
     let fine = |t: &Type| if castable { !cast_is_error(t, Cast::String, sm) } else { t.is_string().yes() };
     let found = c.find_type_to_check_of(Some(ty.clone()), &fine)?;
@@ -118,7 +108,7 @@ pub(in super::super) fn check(
         Expression::Static(_) => keyword("static"),
         Expression::Parent(_) => keyword("parent"),
         // a nullsafe access is checked as a plain one on the holder without `null`
-        e => type_at(c, e.span())
+        e => c.phpstan_type_at(e.span())
             .map(|t| if nullsafe { t.remove_null() } else { t })
             .map(|t| declared::with_classes(c, || t.describe(Level::TypeOnly))),
     };

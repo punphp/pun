@@ -40,7 +40,8 @@ use crate::invocation::InvocationArgumentsSource;
 use crate::invocation::InvocationTarget;
 use crate::invocation::MethodInvocationKind;
 use crate::invocation::MethodTargetContext;
-use crate::invocation::analyzer::analyze_invocation;
+use crate::invocation::analyzer::EvaluatedArguments;
+use crate::invocation::analyzer::analyze_invocation_with_arguments;
 use crate::invocation::analyzer::apply_callable_signature;
 use crate::invocation::post_process::post_invocation_process;
 use crate::invocation::return_type_fetcher::fetch_declared_invocation_return_type;
@@ -124,6 +125,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for NullSafeMethodCall<'arena> {
     where
         A: Arena,
     {
+        artifacts.nullsafe_method_receiver_types.remove(&self.span());
         if context.plugin_registry.has_nullsafe_method_call_hooks() {
             let mut hook_context = HookContext::new(context.codebase, context.source_file, block_context, artifacts);
             let result = context.plugin_registry.before_nullsafe_method_call(self, &mut hook_context)?;
@@ -143,6 +145,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for NullSafeMethodCall<'arena> {
             }
         }
 
+        let observation = crate::observations::begin_nullsafe_call(self, context, block_context);
         // PHPStan's NullsafeMethodCallHandler always returns a non-terminating expression result.
         let has_returned = block_context.flags.has_returned();
         let control_actions = block_context.control_actions.clone();
@@ -154,21 +157,34 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for NullSafeMethodCall<'arena> {
         receiver_result?;
         let ensured = crate::context::non_nullability::ensure(self.object, context, block_context, artifacts);
         let receiver_type = ensured.original_type.clone();
-        let result = analyze_method_call(
-            context,
-            block_context,
-            artifacts,
-            self.object,
-            &self.method,
-            &self.argument_list,
-            true, // is_nullsafe
-            self.span(),
-            Some(&ensured),
+        artifacts.nullsafe_method_receiver_types.insert(self.span(), receiver_type.clone());
+        let previous_consume = context.consume_stored_expression_results;
+        context.consume_stored_expression_results = true;
+        crate::observations::enter_nullsafe_twin(
+            self, &ensured.receiver_type, ensured.scope_authoritative, context, block_context,
         );
+        let result = (|| {
+            analyze_method_call(
+                context,
+                block_context,
+                artifacts,
+                self.object,
+                &self.method,
+                &self.argument_list,
+                true, // is_nullsafe
+                self.span(),
+                Some(&ensured),
+            )?;
+            crate::observations::finish_call(observation, context, artifacts)
+        })();
+        context.consume_stored_expression_results = previous_consume;
         ensured.revert(context, block_context, artifacts);
         result?;
         if receiver_type.is_null() {
             *block_context = before;
+            let mut return_type = get_null();
+            return_type.set_nullsafe_null(true);
+            artifacts.set_resolved_expression_type(&self.span(), return_type);
         } else if crate::context::non_nullability::may_be_null(&receiver_type) {
             crate::context::non_nullability::merge_short_circuit(block_context, &before, context);
         }
@@ -312,6 +328,7 @@ fn analyze_method_call<'ctx, 'ast, 'arena, A>(
 where
     A: Arena,
 {
+    let reflection_scope = block_context.clone();
     if block_context.flags.collect_initializations()
         && let ClassLikeMemberSelector::Identifier(method_ident) = selector
         && is_this_or_self_returning_chain(object, context, block_context)
@@ -340,7 +357,10 @@ where
         resolve_method_targets(context, block_context, artifacts, object, selector, is_null_safe, span)?
     };
 
-    if artifacts.get_expression_type(object).is_some_and(|ty| ty.is_null() && (is_null_safe || ty.has_nullsafe_null()))
+    // The ensured nullsafe twin still walks its arguments when the original
+    // receiver is null. Its handler discards those effects afterwards.
+    if receiver.is_none()
+        && artifacts.get_expression_type(object).is_some_and(|ty| ty.is_null() && (is_null_safe || ty.has_nullsafe_null()))
     {
         let mut return_type = get_null();
         return_type.set_nullsafe_null(true);
@@ -436,6 +456,7 @@ where
         analyze_invocation_targets(
             context,
             block_context,
+            &reflection_scope,
             artifacts,
             method_resolution.template_result,
             invocation_targets,
@@ -446,6 +467,7 @@ where
             is_null_safe && method_resolution.encountered_null,
             artifacts.get_expression_type(object).is_some_and(|t| t.has_nullsafe_null()),
             is_null_safe,
+            matches!(selector, ClassLikeMemberSelector::Identifier(_)),
         )?;
     }
 
@@ -558,6 +580,7 @@ where
     A: Arena,
 {
     let mut arguments_analyzed = !analyze_arguments;
+    let mut evaluated_arguments = EvaluatedArguments::new(argument_list.arguments.len());
     let mut resulting_type: Option<TUnion> = None;
     for undocumented_method in undocumented_methods {
         let magic_call_method = undocumented_method.magic_method;
@@ -606,7 +629,7 @@ where
         let mut invocation_template_result = template_result.clone();
         let mut parameter_types = WordMap::default();
         if signature_handled && analyze_arguments {
-            analyze_invocation(
+            analyze_invocation_with_arguments(
                 context,
                 block_context,
                 artifacts,
@@ -615,11 +638,13 @@ where
                 None,
                 &mut invocation_template_result,
                 &mut parameter_types,
+                &mut evaluated_arguments,
             )?;
 
             arguments_analyzed = true;
         } else if !arguments_analyzed {
             argument_list.analyze(context, block_context, artifacts)?;
+            evaluated_arguments.remember(&InvocationArgumentsSource::ArgumentList(argument_list), artifacts);
             arguments_analyzed = true;
         }
 

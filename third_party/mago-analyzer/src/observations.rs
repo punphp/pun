@@ -22,14 +22,14 @@ use mago_codex::ttype::{
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::{
     Access, Call, ClassLikeMemberSelector, Closure, Expression, Literal, LiteralString, LiteralStringKind, MethodCall,
-    Variable,
+    NullSafeMethodCall, Variable,
 };
 use mago_syntax::walker::MutWalker;
 use mago_word::{Word, WordMap, WordSet, word};
 
 use crate::{
     analyzable::Analyzable,
-    artifacts::AnalysisArtifacts,
+    artifacts::{AnalysisArtifacts, ExpressionResult},
     common::synthetic::new_synthetic_identical,
     context::{
         Context,
@@ -103,7 +103,7 @@ pub(crate) fn stored_type<A: Arena>(context: &Context<'_, '_, A>, span: Span) ->
         .observations
         .stored
         .get(&span)
-        .and_then(|result| result.value.clone())
+        .and_then(|result| result.result.as_ref().map(|result| result.get_type().clone()))
 }
 
 /// A resolved PHPStan parameter reflection includes inference from the argument's own type.
@@ -157,12 +157,15 @@ struct StoredResult {
     calls: Vec<CallContext>,
     closure: bool,
     reads: WordSet,
-    value: Option<TUnion>,
+    result: Option<ExpressionResult>,
+    evaluated: bool,
+    /// atAskPosition pins a scope-authoritative nullsafe receiver at its ensured position.
+    eager: bool,
 }
 
 type StoredResults = HashMap<Span, StoredResult>;
 type Price<'ctx> =
-    Rc<dyn Fn(Span, Option<Word>, &AnalysisArtifacts, &StoredResults) -> Result<Option<TUnion>, AnalysisError> + 'ctx>;
+    Rc<dyn Fn(Span, Option<Word>, &AnalysisArtifacts, &StoredResults, bool) -> Result<Option<TUnion>, AnalysisError> + 'ctx>;
 
 #[derive(Clone)]
 struct PricingScope<'ctx> {
@@ -193,11 +196,15 @@ struct CallObservation<'ctx, 'arena> {
     receiver: Span,
     request: CallScopeRequest,
     evaluated: HashMap<Span, EvaluatedExpression<'ctx>>,
+    consumes_stored: bool,
 }
 
 #[derive(Debug, Default)]
 pub(crate) struct ObservationState<'ctx, 'arena> {
     stored: StoredResults,
+    /// A lexical assignment-preparation handoff, not the historical observation store.
+    prepared_operands: Vec<(Span, Option<ExpressionResult>)>,
+    preparing: Vec<Vec<(Span, Option<ExpressionResult>)>>,
     pub calls: Vec<CallContext>,
     history: Option<history::History<'arena>>,
     retained: HashMap<Span, HashMap<Span, EvaluatedExpression<'ctx>>>,
@@ -279,7 +286,7 @@ fn capture<'ctx, 'arena, A: Arena>(
         locals: scope.locals.clone(),
         certainty: Rc::new(move |name| certainty.variable_certainty(name)),
         calls: context.observations.calls.clone(),
-        price: Rc::new(move |span, name, artifacts, stored| {
+        price: Rc::new(move |span, name, artifacts, stored, consume_stored| {
             let mut finder = Find {
                 wanted: span,
                 found: None,
@@ -295,6 +302,9 @@ fn capture<'ctx, 'arena, A: Arena>(
             sandbox.case_scopes.clear();
             let mut fork = prototype.fork_for_observation();
             fork.observations.stored = stored.clone();
+            // The asking callback's plain twin supplies this mode, including
+            // historical dependencies captured before the asking call existed.
+            fork.consume_stored_expression_results = consume_stored;
             let (answer, _) = crate::plugin::registry::with_isolated_type_pricing(|| {
                 fork.record(|context| {
                     if let (Some(selector), Some(name)) = (selector, name) {
@@ -387,7 +397,9 @@ pub(crate) fn before<'ctx, 'arena, A: Arena>(
             calls: context.observations.calls.clone(),
             closure: matches!(expression, Expression::Closure(_) | Expression::ArrowFunction(_)),
             reads: reads.0,
-            value: None,
+            result: None,
+            evaluated: false,
+            eager: false,
         },
     );
 }
@@ -398,11 +410,19 @@ pub(crate) fn after<'ctx, 'arena, A: Arena>(
     scope: &BlockContext<'ctx>,
     artifacts: &AnalysisArtifacts,
 ) {
+    // Retain only completions emitted by this operand's real walk. In particular,
+    // a semantic hook that skips a parent does not manufacture child results.
+    if context.raw_callback_gather_depth == 0 {
+        for operands in &mut context.observations.preparing {
+            operands.push((expression.span(), artifacts.get_expression_result(expression)));
+        }
+    }
     if context.observations.pricing || context.raw_callback_gather_depth > 0 {
         return;
     }
     if let Some(result) = context.observations.stored.get_mut(&expression.span()) {
-        result.value = artifacts.get_expression_type(expression).cloned();
+        result.result = artifacts.get_expression_result(expression);
+        result.evaluated = true;
     }
     // A variable member selector bypasses Expression::analyze. Its position is
     // immediately after the receiver, not call entry or the final argument.
@@ -418,7 +438,8 @@ pub(crate) fn after<'ctx, 'arena, A: Arena>(
         before(selector, context, scope);
         let value = state_type(selector, context, scope);
         if let Some(result) = context.observations.stored.get_mut(&selector.span()) {
-            result.value = value;
+            result.result = value.map(ExpressionResult::from_value);
+            result.evaluated = true;
         }
     }
 }
@@ -492,29 +513,92 @@ fn state_type<'arena, A: Arena>(
     }
 }
 
+/// AssignHandler passes the results of its one target walk to the subsequent write.
+/// Keep this handoff bounded to that assignment, including nested writes and errors.
+pub(crate) fn collect_prepared_operands<'ctx, 'arena, A: Arena, T>(
+    context: &mut Context<'ctx, 'arena, A>,
+    walk: impl FnOnce(&mut Context<'ctx, 'arena, A>) -> T,
+) -> (T, Vec<(Span, Option<ExpressionResult>)>) {
+    context.observations.preparing.push(Vec::new());
+    let result = walk(context);
+    let operands = context.observations.preparing.pop().expect("the operand walk owns its completion list");
+    (result, operands)
+}
+
+pub(crate) fn with_prepared_operands<'ctx, 'arena, A: Arena, T>(
+    context: &mut Context<'ctx, 'arena, A>,
+    operands: &[(Span, Option<ExpressionResult>)],
+    write: impl FnOnce(&mut Context<'ctx, 'arena, A>) -> T,
+) -> T {
+    let depth = context.observations.prepared_operands.len();
+    context.observations.prepared_operands.extend_from_slice(operands);
+    let result = write(context);
+    context.observations.prepared_operands.truncate(depth);
+    result
+}
+
 /// Compatible child results are consumed without replaying their effects.
 pub(crate) fn consume<'arena, A: Arena>(
     expression: &Expression<'arena>,
     context: &Context<'_, 'arena, A>,
     scope: &BlockContext<'_>,
-) -> Option<TUnion> {
+    artifacts: &mut AnalysisArtifacts,
+) -> bool {
+    if let Some((_, result)) = context.observations.prepared_operands.iter().rev()
+        .find(|(span, _)| *span == expression.span())
+    {
+        match result {
+            Some(result) => artifacts.set_expression_result(expression, result.clone()),
+            None => {
+                let span = expression.span();
+                artifacts.remove_expression_type(&(span.start.offset, span.end.offset));
+            }
+        }
+        return true;
+    }
     if !context.observations.pricing {
-        return None;
+        return false;
+    }
+    let stored = context.observations.stored.get(&expression.span());
+    if let Some(result) = stored.filter(|result| result.eager).and_then(|result| result.result.as_ref()) {
+        artifacts.set_expression_result(expression, result.clone());
+        return true;
+    }
+    if matches!(expression, Expression::Call(Call::Method(_)))
+        && let Some(id) = get_block_expression_id(expression, context, scope)
+        && scope.variable_certainty(id).is_defined()
+        && let Some(value) = scope.locals.get(&id)
+        && let Some(result) = stored.and_then(|result| result.result.as_ref())
+    {
+        let native = scope.native_locals.as_ref().and_then(|locals| locals.get(&id)).map(Rc::as_ref);
+        artifacts.set_expression_result(expression, result.at_ask_position(Some((value, native)), None, None));
+        return true;
     }
     if let Some(value) = state_type(expression, context, scope) {
-        return Some(value);
+        artifacts.set_expression_type(expression, value);
+        return true;
     }
-    let result = context.observations.stored.get(&expression.span())?;
-    state_matches(
+    let Some(result) = stored else {
+        return false;
+    };
+    if !result.evaluated || !(context.consume_stored_expression_results || state_matches(
         context,
         result,
         &scope.locals,
         &|name| scope.variable_certainty(name),
         &context.observations.calls,
         false,
-    )
-    .then(|| result.value.clone())
-    .flatten()
+    )) {
+        return false;
+    }
+    match &result.result {
+        Some(result) => artifacts.set_expression_result(expression, result.clone()),
+        None => {
+            let span = expression.span();
+            artifacts.remove_expression_type(&(span.start.offset, span.end.offset));
+        }
+    }
+    true
 }
 
 fn unfiltered<A: Arena>(
@@ -523,20 +607,22 @@ fn unfiltered<A: Arena>(
     context: &Context<'_, '_, A>,
     artifacts: &AnalysisArtifacts,
 ) -> Result<Option<TUnion>, AnalysisError> {
-    // Only evaluated expressions or a selector following its completed receiver
-    // reach this function. Both positions retain their result before evaluation.
-    let result = context.observations.stored.get(&span).expect("an evaluated observation retains its position");
-    if state_matches(
-        context,
-        result,
-        &call.entry.locals,
-        &*call.entry.certainty,
-        &call.entry.calls,
-        true,
-    ) {
-        Ok(result.value.clone())
+    // Raw target callbacks retain their entry position without a completed read.
+    // Price those asks there instead of mistaking them for evaluated, untyped operands.
+    let result = context.observations.stored.get(&span).expect("an observed expression retains its position");
+    if result.evaluated
+        && state_matches(
+            context,
+            result,
+            &call.entry.locals,
+            &*call.entry.certainty,
+            &call.entry.calls,
+            true,
+        )
+    {
+        Ok(result.result.as_ref().map(|result| result.get_type().clone()))
     } else {
-        (call.entry.price)(span, None, artifacts, &context.observations.stored)
+        (call.entry.price)(span, None, artifacts, &context.observations.stored, call.consumes_stored)
     }
 }
 
@@ -589,6 +675,24 @@ pub(crate) fn begin_call<'ctx, 'arena, A: Arena>(
     context: &mut Context<'ctx, 'arena, A>,
     scope: &BlockContext<'ctx>,
 ) -> Option<Span> {
+    begin(&Expression::Call(Call::Method(call.clone())), call.object, &call.method, context, scope)
+}
+
+pub(crate) fn begin_nullsafe_call<'ctx, 'arena, A: Arena>(
+    call: &NullSafeMethodCall<'arena>,
+    context: &mut Context<'ctx, 'arena, A>,
+    scope: &BlockContext<'ctx>,
+) -> Option<Span> {
+    begin(&Expression::Call(Call::NullSafeMethod(call.clone())), call.object, &call.method, context, scope)
+}
+
+fn begin<'ctx, 'arena, A: Arena>(
+    root: &Expression<'arena>,
+    receiver: &Expression<'arena>,
+    method: &ClassLikeMemberSelector<'arena>,
+    context: &mut Context<'ctx, 'arena, A>,
+    scope: &BlockContext<'ctx>,
+) -> Option<Span> {
     if context.observations.pricing || context.raw_callback_gather_depth > 0 {
         return None;
     }
@@ -596,34 +700,97 @@ pub(crate) fn begin_call<'ctx, 'arena, A: Arena>(
         .settings
         .call_scope_observations
         .iter()
-        .find(|r| r.call == call.span())?
+        .find(|r| r.call == root.span())?
         .clone();
     prepare_history(context);
-    let (selector, identifier) = match &call.method {
+    let (selector, identifier) = match method {
         ClassLikeMemberSelector::Identifier(n) => (None, Some(word(n.value))),
         ClassLikeMemberSelector::Variable(v) => (Some(&*context.arena.alloc(Expression::Variable(v.clone()))), None),
         ClassLikeMemberSelector::Expression(e) => (Some(e.expression), None),
         ClassLikeMemberSelector::Missing(_) => return None,
     };
-    let root = Expression::Call(Call::Method(call.clone()));
-    let entry = capture(&root, selector, context, scope);
+    let entry = capture(root, selector, context, scope);
     context.observations.active.insert(
-        call.span(),
+        root.span(),
         CallObservation {
             entry,
             selector,
             identifier,
-            receiver: call.object.span(),
+            receiver: receiver.span(),
             request,
             evaluated: context
                 .observations
                 .retained
-                .get(&call.span())
+                .get(&root.span())
                 .cloned()
                 .unwrap_or_default(),
+            consumes_stored: context.consume_stored_expression_results,
         },
     );
-    Some(call.span())
+    Some(root.span())
+}
+
+/// NullsafeMethodCallHandler pre-stores the receiver at the ensured position,
+/// then emits the plain twin from that same post-receiver scope.
+pub(crate) fn enter_nullsafe_twin<'ctx, 'arena, A: Arena>(
+    call: &NullSafeMethodCall<'arena>,
+    receiver_type: &TUnion,
+    authoritative: bool,
+    context: &mut Context<'ctx, 'arena, A>,
+    scope: &BlockContext<'ctx>,
+) {
+    if context.observations.pricing || context.raw_callback_gather_depth > 0 || context.observation_program.is_none() {
+        return;
+    }
+    let root = Expression::Call(Call::NullSafeMethod(call.clone()));
+    if let Some(selector) = context.observations.active.get(&call.span()).map(|call| call.selector) {
+        let entry = capture(&root, selector, context, scope);
+        let active = context.observations.active.get_mut(&call.span()).expect("active nullsafe twin");
+        active.entry = entry;
+        active.consumes_stored = true;
+    }
+    let mut receiver = call.object;
+    loop {
+        let span = receiver.span();
+        let id = get_block_expression_id(receiver, context, scope);
+        let native = id.and_then(|id| scope.native_locals.as_ref().and_then(|locals| locals.get(&id))).map(Rc::as_ref);
+        if let Some(result) = context.observations.stored.get_mut(&span) {
+            result.locals = scope.locals.clone();
+            result.certainty = result.reads.iter().map(|name| (*name, scope.variable_certainty(*name))).collect();
+            if let Some(own) = &result.result {
+                result.result = Some(if authoritative && !matches!(receiver, Expression::Call(_)) {
+                    ExpressionResult::from_value(receiver_type.clone())
+                } else {
+                    own.at_ask_position(authoritative.then_some((receiver_type, native)), None, None)
+                });
+            }
+            result.eager = authoritative;
+        }
+        let calls: Vec<_> = context.observations.active.iter()
+            .filter(|(_, call)| call.evaluated.contains_key(&span))
+            .map(|(span, call)| (*span, call.selector)).collect();
+        for (call, selector) in calls {
+            let before = capture(receiver, selector, context, scope);
+            context.observations.active.get_mut(&call).expect("active receiver observation")
+                .evaluated.insert(span, EvaluatedExpression { before });
+        }
+        let Expression::Parenthesized(parenthesized) = receiver else { break };
+        receiver = parenthesized.expression;
+    }
+    // Variable selectors bypass Expression::analyze. Move their retained
+    // position from receiver completion to the twin's ensured entry scope.
+    let selectors: Vec<_> = context.observations.active.values()
+        .filter(|active| active.receiver == call.object.span())
+        .filter_map(|active| active.selector)
+        .filter(|selector| matches!(selector, Expression::Variable(_))).collect();
+    for selector in selectors {
+        before(selector, context, scope);
+        let value = state_type(selector, context, scope);
+        if let Some(result) = context.observations.stored.get_mut(&selector.span()) {
+            result.result = value.map(ExpressionResult::from_value);
+            result.evaluated = true;
+        }
+    }
 }
 
 // UnionType::pickFromTypes vetoes an alternative with no constant strings;
@@ -671,7 +838,7 @@ pub(crate) fn finish_call<A: Arena>(
                 continue;
             };
             let value = if call.selector.is_some() {
-                (result.before.price)(*span, Some(name), artifacts, &context.observations.stored)?
+                (result.before.price)(*span, Some(name), artifacts, &context.observations.stored, call.consumes_stored)?
             } else {
                 unfiltered(*span, &call, context, artifacts)?
             };
@@ -796,7 +963,7 @@ mod tests {
             locals: WordMap::default(),
             certainty: Rc::new(|_| panic!("formatting must not query state")),
             calls: Vec::new(),
-            price: Rc::new(|_, _, _, _| panic!("formatting must not price expressions")),
+            price: Rc::new(|_, _, _, _, _| panic!("formatting must not price expressions")),
         };
         assert_eq!(format!("{scope:?}"), "PricingScope { locals: {}, .. }");
     }

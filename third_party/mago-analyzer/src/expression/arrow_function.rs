@@ -60,6 +60,25 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for ArrowFunction<'arena> {
         let mut inner_block_context = BlockContext::new(scope, context.settings.register_super_globals);
         inner_block_context.native_locals = block_context.native_locals.as_ref().map(|_| Default::default());
 
+        if !scope.is_static() {
+            let binding = artifacts.closure_bind_scope.as_ref();
+            if let Some(this_type) = binding
+                .and_then(|binding| binding.this_type.clone())
+                .or_else(|| block_context.locals.get(&word("$this")).cloned())
+            {
+                inner_block_context.locals.insert(word("$this"), this_type);
+            }
+            let native_this = binding.map_or_else(
+                || block_context.native_locals.as_ref().and_then(|locals| locals.get(&word("$this"))).cloned(),
+                |binding| binding.native_this_type.clone(),
+            );
+            if let Some(locals) = &mut inner_block_context.native_locals
+                && let Some(this_type) = native_this
+            {
+                locals.insert(word("$this"), this_type);
+            }
+        }
+
         let variables = get_variables_referenced_in_expression(self.expression, true);
         let params = self.parameter_list.parameters.iter().map(|param| param.variable.name).collect::<HashSet<_>>();
 
@@ -84,6 +103,12 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for ArrowFunction<'arena> {
                 .zip(block_context.native_locals.as_ref().and_then(|locals| locals.get(&variable_atom)))
                 .map(|(mut locals, ty)| { locals.insert(variable_atom, ty.clone()); locals });
             inner_block_context.variables_possibly_in_scope.insert(variable_atom);
+        }
+
+        // enterArrowFunction retains outer holders; parameter writes invalidate shadows below.
+        inner_block_context.capture_variable_conditions(block_context, |_| true);
+        if self.r#static.is_some() {
+            inner_block_context.invalidate_variable_certainty(word("$this"));
         }
 
         if !context.settings.allow_implicit_pipe_callable_types || !block_context.flags.inside_pipe_callable() {

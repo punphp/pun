@@ -1,0 +1,63 @@
+{
+    "calls": {
+        "422": {
+            "line": 12,
+            "expression": "$sink->foo(preparedEffectBox()->slots['slot'] = preparedEffectValue())",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 422,
+                            "end": 427,
+                            "expression": "$sink",
+                            "type": "PreparedEffectSink"
+                        },
+                        {
+                            "start": 433,
+                            "end": 491,
+                            "expression": "preparedEffectBox()->slots['slot'] = preparedEffectValue()",
+                            "type": "PreparedEffectSink|null"
+                        },
+                        {
+                            "start": 433,
+                            "end": 467,
+                            "expression": "preparedEffectBox()->slots['slot']",
+                            "type": "PreparedEffectSink|null"
+                        },
+                        {
+                            "start": 433,
+                            "end": 459,
+                            "expression": "preparedEffectBox()->slots",
+                            "type": "array{slot: PreparedEffectSink|null}"
+                        },
+                        {
+                            "start": 433,
+                            "end": 452,
+                            "expression": "preparedEffectBox()",
+                            "type": "PreparedEffectBox"
+                        },
+                        {
+                            "start": 460,
+                            "end": 466,
+                            "expression": "'slot'",
+                            "type": "'slot'"
+                        },
+                        {
+                            "start": 470,
+                            "end": 491,
+                            "expression": "preparedEffectValue()",
+                            "type": "PreparedEffectSink|null"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "errors": [],
+    "function_events": {
+        "433": 1,
+        "470": 1
+    }
+}

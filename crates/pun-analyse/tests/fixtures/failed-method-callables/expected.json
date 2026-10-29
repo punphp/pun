@@ -1,0 +1,698 @@
+{
+    "phar_sha256": "85157dba3d95d77ca603d2b7303aa78a538f9e3b56ccad07dd794c53aa96d1ae",
+    "types": [
+        {
+            "start": 169,
+            "end": 176,
+            "expression": "'hello'",
+            "full": {
+                "kind": "value",
+                "type": "'hello'"
+            },
+            "native": {
+                "kind": "value",
+                "type": "'hello'"
+            }
+        },
+        {
+            "start": 193,
+            "end": 216,
+            "expression": "$receiver->missing(...)",
+            "full": {
+                "kind": "bare-closure"
+            },
+            "native": {
+                "kind": "bare-closure"
+            }
+        },
+        {
+            "start": 230,
+            "end": 238,
+            "expression": "$closure",
+            "full": {
+                "kind": "bare-closure"
+            },
+            "native": {
+                "kind": "bare-closure"
+            }
+        },
+        {
+            "start": 261,
+            "end": 279,
+            "expression": "$closure(1, 'two')",
+            "full": {
+                "kind": "value",
+                "type": "mixed"
+            },
+            "native": {
+                "kind": "value",
+                "type": "mixed"
+            }
+        },
+        {
+            "start": 298,
+            "end": 300,
+            "expression": "41",
+            "full": {
+                "kind": "value",
+                "type": "41"
+            },
+            "native": {
+                "kind": "value",
+                "type": "41"
+            }
+        },
+        {
+            "start": 404,
+            "end": 406,
+            "expression": "42",
+            "full": {
+                "kind": "value",
+                "type": "42"
+            },
+            "native": {
+                "kind": "value",
+                "type": "42"
+            }
+        },
+        {
+            "start": 423,
+            "end": 446,
+            "expression": "$receiver->missing(...)",
+            "full": {
+                "kind": "bare-closure"
+            },
+            "native": {
+                "kind": "bare-closure"
+            }
+        },
+        {
+            "start": 460,
+            "end": 468,
+            "expression": "$closure",
+            "full": {
+                "kind": "bare-closure"
+            },
+            "native": {
+                "kind": "bare-closure"
+            }
+        },
+        {
+            "start": 487,
+            "end": 489,
+            "expression": "42",
+            "full": {
+                "kind": "value",
+                "type": "42"
+            },
+            "native": {
+                "kind": "value",
+                "type": "42"
+            }
+        },
+        {
+            "start": 574,
+            "end": 578,
+            "expression": "null",
+            "full": {
+                "kind": "value",
+                "type": "null"
+            },
+            "native": {
+                "kind": "value",
+                "type": "null"
+            }
+        },
+        {
+            "start": 595,
+            "end": 618,
+            "expression": "$receiver->missing(...)",
+            "full": {
+                "kind": "bare-closure"
+            },
+            "native": {
+                "kind": "bare-closure"
+            }
+        },
+        {
+            "start": 632,
+            "end": 640,
+            "expression": "$closure",
+            "full": {
+                "kind": "bare-closure"
+            },
+            "native": {
+                "kind": "bare-closure"
+            }
+        },
+        {
+            "start": 659,
+            "end": 661,
+            "expression": "43",
+            "full": {
+                "kind": "value",
+                "type": "43"
+            },
+            "native": {
+                "kind": "value",
+                "type": "43"
+            }
+        },
+        {
+            "start": 770,
+            "end": 793,
+            "expression": "$receiver->missing(...)",
+            "full": {
+                "kind": "bare-closure"
+            },
+            "native": {
+                "kind": "bare-closure"
+            }
+        },
+        {
+            "start": 807,
+            "end": 815,
+            "expression": "$closure",
+            "full": {
+                "kind": "bare-closure"
+            },
+            "native": {
+                "kind": "bare-closure"
+            }
+        },
+        {
+            "start": 834,
+            "end": 836,
+            "expression": "44",
+            "full": {
+                "kind": "value",
+                "type": "44"
+            },
+            "native": {
+                "kind": "value",
+                "type": "44"
+            }
+        },
+        {
+            "start": 943,
+            "end": 946,
+            "expression": "123",
+            "full": {
+                "kind": "value",
+                "type": "123"
+            },
+            "native": {
+                "kind": "value",
+                "type": "123"
+            }
+        },
+        {
+            "start": 963,
+            "end": 984,
+            "expression": "$receiver->$name(...)",
+            "full": {
+                "kind": "bare-closure"
+            },
+            "native": {
+                "kind": "bare-closure"
+            }
+        },
+        {
+            "start": 998,
+            "end": 1006,
+            "expression": "$closure",
+            "full": {
+                "kind": "bare-closure"
+            },
+            "native": {
+                "kind": "bare-closure"
+            }
+        },
+        {
+            "start": 1025,
+            "end": 1027,
+            "expression": "45",
+            "full": {
+                "kind": "value",
+                "type": "45"
+            },
+            "native": {
+                "kind": "value",
+                "type": "45"
+            }
+        },
+        {
+            "start": 1113,
+            "end": 1169,
+            "expression": "($receiver = new CallableTarget())->{($name = 123)}(...)",
+            "full": {
+                "kind": "bare-closure"
+            },
+            "native": {
+                "kind": "bare-closure"
+            }
+        },
+        {
+            "start": 1126,
+            "end": 1146,
+            "expression": "new CallableTarget()",
+            "full": {
+                "kind": "value",
+                "type": "CallableTarget"
+            },
+            "native": {
+                "kind": "value",
+                "type": "CallableTarget"
+            }
+        },
+        {
+            "start": 1159,
+            "end": 1162,
+            "expression": "123",
+            "full": {
+                "kind": "value",
+                "type": "123"
+            },
+            "native": {
+                "kind": "value",
+                "type": "123"
+            }
+        },
+        {
+            "start": 1183,
+            "end": 1191,
+            "expression": "$closure",
+            "full": {
+                "kind": "bare-closure"
+            },
+            "native": {
+                "kind": "bare-closure"
+            }
+        },
+        {
+            "start": 1214,
+            "end": 1223,
+            "expression": "$receiver",
+            "full": {
+                "kind": "value",
+                "type": "CallableTarget"
+            },
+            "native": {
+                "kind": "value",
+                "type": "CallableTarget"
+            }
+        },
+        {
+            "start": 1246,
+            "end": 1251,
+            "expression": "$name",
+            "full": {
+                "kind": "value",
+                "type": "123"
+            },
+            "native": {
+                "kind": "value",
+                "type": "123"
+            }
+        },
+        {
+            "start": 1270,
+            "end": 1272,
+            "expression": "46",
+            "full": {
+                "kind": "value",
+                "type": "46"
+            },
+            "native": {
+                "kind": "value",
+                "type": "46"
+            }
+        },
+        {
+            "start": 1409,
+            "end": 1416,
+            "expression": "'known'",
+            "full": {
+                "kind": "value",
+                "type": "'known'"
+            },
+            "native": {
+                "kind": "value",
+                "type": "'known'"
+            }
+        },
+        {
+            "start": 1433,
+            "end": 1456,
+            "expression": "$receiver->{$name}(...)",
+            "full": {
+                "kind": "bare-closure"
+            },
+            "native": {
+                "kind": "bare-closure"
+            }
+        },
+        {
+            "start": 1470,
+            "end": 1478,
+            "expression": "$closure",
+            "full": {
+                "kind": "bare-closure"
+            },
+            "native": {
+                "kind": "bare-closure"
+            }
+        },
+        {
+            "start": 1501,
+            "end": 1519,
+            "expression": "$closure(1, 'two')",
+            "full": {
+                "kind": "value",
+                "type": "mixed"
+            },
+            "native": {
+                "kind": "value",
+                "type": "mixed"
+            }
+        },
+        {
+            "start": 1538,
+            "end": 1540,
+            "expression": "47",
+            "full": {
+                "kind": "value",
+                "type": "47"
+            },
+            "native": {
+                "kind": "value",
+                "type": "47"
+            }
+        },
+        {
+            "start": 1644,
+            "end": 1663,
+            "expression": "'hello'->{123}(...)",
+            "full": {
+                "kind": "bare-closure"
+            },
+            "native": {
+                "kind": "bare-closure"
+            }
+        },
+        {
+            "start": 1677,
+            "end": 1685,
+            "expression": "$closure",
+            "full": {
+                "kind": "bare-closure"
+            },
+            "native": {
+                "kind": "bare-closure"
+            }
+        },
+        {
+            "start": 1704,
+            "end": 1706,
+            "expression": "48",
+            "full": {
+                "kind": "value",
+                "type": "48"
+            },
+            "native": {
+                "kind": "value",
+                "type": "48"
+            }
+        },
+        {
+            "start": 1813,
+            "end": 1834,
+            "expression": "$receiver->known(...)",
+            "full": {
+                "kind": "signature",
+                "parameters": [
+                    "string"
+                ],
+                "return": "int"
+            },
+            "native": {
+                "kind": "signature",
+                "parameters": [
+                    "string"
+                ],
+                "return": "int"
+            }
+        },
+        {
+            "start": 1848,
+            "end": 1856,
+            "expression": "$closure",
+            "full": {
+                "kind": "signature",
+                "parameters": [
+                    "string"
+                ],
+                "return": "int"
+            },
+            "native": {
+                "kind": "signature",
+                "parameters": [
+                    "string"
+                ],
+                "return": "int"
+            }
+        },
+        {
+            "start": 1872,
+            "end": 1889,
+            "expression": "$closure('value')",
+            "full": {
+                "kind": "value",
+                "type": "int"
+            },
+            "native": {
+                "kind": "value",
+                "type": "int"
+            }
+        },
+        {
+            "start": 1908,
+            "end": 1910,
+            "expression": "49",
+            "full": {
+                "kind": "value",
+                "type": "49"
+            },
+            "native": {
+                "kind": "value",
+                "type": "49"
+            }
+        }
+    ],
+    "errors": {
+        "0": [
+            [
+                "cases.php",
+                10,
+                "method.nonObject",
+                "Cannot call method missing() on string.",
+                null,
+                true
+            ],
+            [
+                "cases.php",
+                18,
+                "method.nonObject",
+                "Cannot call method missing() on int.",
+                null,
+                true
+            ],
+            [
+                "cases.php",
+                25,
+                "method.nonObject",
+                "Cannot call method missing() on null.",
+                null,
+                true
+            ],
+            [
+                "cases.php",
+                31,
+                "method.notFound",
+                "Call to an undefined method CallableTarget::missing().",
+                null,
+                true
+            ]
+        ],
+        "5": [
+            [
+                "cases.php",
+                10,
+                "method.nonObject",
+                "Cannot call method missing() on string.",
+                null,
+                true
+            ],
+            [
+                "cases.php",
+                18,
+                "method.nonObject",
+                "Cannot call method missing() on int.",
+                null,
+                true
+            ],
+            [
+                "cases.php",
+                25,
+                "method.nonObject",
+                "Cannot call method missing() on null.",
+                null,
+                true
+            ],
+            [
+                "cases.php",
+                31,
+                "method.notFound",
+                "Call to an undefined method CallableTarget::missing().",
+                null,
+                true
+            ]
+        ],
+        "9": [
+            [
+                "cases.php",
+                10,
+                "method.nonObject",
+                "Cannot call method missing() on string.",
+                null,
+                true
+            ],
+            [
+                "cases.php",
+                18,
+                "method.nonObject",
+                "Cannot call method missing() on int.",
+                null,
+                true
+            ],
+            [
+                "cases.php",
+                25,
+                "method.nonObject",
+                "Cannot call method missing() on null.",
+                null,
+                true
+            ],
+            [
+                "cases.php",
+                31,
+                "method.notFound",
+                "Call to an undefined method CallableTarget::missing().",
+                null,
+                true
+            ]
+        ],
+        "0-bleeding": [
+            [
+                "cases.php",
+                10,
+                "method.nonObject",
+                "Cannot call method missing() on string.",
+                null,
+                true
+            ],
+            [
+                "cases.php",
+                18,
+                "method.nonObject",
+                "Cannot call method missing() on int.",
+                null,
+                true
+            ],
+            [
+                "cases.php",
+                25,
+                "method.nonObject",
+                "Cannot call method missing() on null.",
+                null,
+                true
+            ],
+            [
+                "cases.php",
+                31,
+                "method.notFound",
+                "Call to an undefined method CallableTarget::missing().",
+                null,
+                true
+            ]
+        ],
+        "5-bleeding": [
+            [
+                "cases.php",
+                10,
+                "method.nonObject",
+                "Cannot call method missing() on string.",
+                null,
+                true
+            ],
+            [
+                "cases.php",
+                18,
+                "method.nonObject",
+                "Cannot call method missing() on int.",
+                null,
+                true
+            ],
+            [
+                "cases.php",
+                25,
+                "method.nonObject",
+                "Cannot call method missing() on null.",
+                null,
+                true
+            ],
+            [
+                "cases.php",
+                31,
+                "method.notFound",
+                "Call to an undefined method CallableTarget::missing().",
+                null,
+                true
+            ]
+        ],
+        "9-bleeding": [
+            [
+                "cases.php",
+                10,
+                "method.nonObject",
+                "Cannot call method missing() on string.",
+                null,
+                true
+            ],
+            [
+                "cases.php",
+                18,
+                "method.nonObject",
+                "Cannot call method missing() on int.",
+                null,
+                true
+            ],
+            [
+                "cases.php",
+                25,
+                "method.nonObject",
+                "Cannot call method missing() on null.",
+                null,
+                true
+            ],
+            [
+                "cases.php",
+                31,
+                "method.notFound",
+                "Call to an undefined method CallableTarget::missing().",
+                null,
+                true
+            ]
+        ]
+    }
+}

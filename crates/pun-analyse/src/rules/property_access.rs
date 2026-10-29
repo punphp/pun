@@ -731,7 +731,7 @@ fn static_check(c: &mut Checker, p: &StaticPropertyAccess) {
         return static_check_named(c, p, v.name);
     }
     let names = super::types::dynamic_names::static_property(&p.property)
-        .and_then(|at| super::types::dynamic_names::type_at(c, at))
+        .and_then(|at| c.phpstan_type_at(at))
         .map_or_else(Vec::new, |ty| ty.constant_strings());
     for mut property in names {
         property.insert(0, b'$');

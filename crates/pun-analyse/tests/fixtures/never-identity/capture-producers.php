@@ -61,7 +61,7 @@ try {
             }
             if (!$node instanceof PhpParser\Node\Expr\Exit_ && !$node instanceof PhpParser\Node\Expr\Throw_
                 && !$node instanceof PhpParser\Node\Expr\ArrowFunction && !$node instanceof PhpParser\Node\Expr\Closure
-                && !$node instanceof PhpParser\Node\Expr\FuncCall) {
+                && !$node instanceof PhpParser\Node\Expr\FuncCall && !$node instanceof PhpParser\Node\Expr\StaticCall) {
                 return;
             }
             $type = $scope->getType($node);
@@ -76,7 +76,7 @@ try {
                 $record['callable_return'] = describeType($type->getReturnType());
                 $record['native_callable_return'] = describeType($native->getReturnType());
             }
-            if ($node instanceof PhpParser\Node\Expr\FuncCall) {
+            if ($node instanceof PhpParser\Node\Expr\FuncCall || $node instanceof PhpParser\Node\Expr\StaticCall) {
                 $record['terminates'] = $scope->getCurrentExpressionResultStorage()->findExpressionResult($node)?->isAlwaysTerminating();
             }
             $out[(string)$node->getStartFilePos()] = $record;

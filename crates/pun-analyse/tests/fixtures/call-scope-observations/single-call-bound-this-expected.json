@@ -1,0 +1,662 @@
+{
+    "events": {
+        "531:536": {
+            "start": 531,
+            "end": 536,
+            "expression": "$this",
+            "full": "boundint|boundstring",
+            "native": "object",
+            "visits": 1
+        },
+        "538:549": {
+            "start": 538,
+            "end": 549,
+            "expression": "self::class",
+            "full": "'lexicalscope'",
+            "native": "'lexicalscope'",
+            "visits": 1
+        },
+        "558:563": {
+            "start": 558,
+            "end": 563,
+            "expression": "$this",
+            "full": "boundint|boundstring",
+            "native": "object",
+            "visits": 1
+        },
+        "558:571": {
+            "start": 558,
+            "end": 571,
+            "expression": "$this->read()",
+            "full": "int|string",
+            "native": "*ERROR*",
+            "visits": 1
+        },
+        "606:611": {
+            "start": 606,
+            "end": 611,
+            "expression": "$this",
+            "full": "boundint|boundstring",
+            "native": "object",
+            "visits": 1
+        },
+        "613:624": {
+            "start": 613,
+            "end": 624,
+            "expression": "self::class",
+            "full": "'lexicalscope'",
+            "native": "'lexicalscope'",
+            "visits": 1
+        },
+        "626:631": {
+            "start": 626,
+            "end": 631,
+            "expression": "$this",
+            "full": "boundint|boundstring",
+            "native": "object",
+            "visits": 1
+        },
+        "626:639": {
+            "start": 626,
+            "end": 639,
+            "expression": "$this->read()",
+            "full": "int|string",
+            "native": "*ERROR*",
+            "visits": 1
+        },
+        "705:710": {
+            "start": 705,
+            "end": 710,
+            "expression": "$this",
+            "full": "boundint|boundstring",
+            "native": "object",
+            "visits": 1
+        },
+        "705:718": {
+            "start": 705,
+            "end": 718,
+            "expression": "$this->read()",
+            "full": "int|string",
+            "native": "*ERROR*",
+            "visits": 1
+        },
+        "763:768": {
+            "start": 763,
+            "end": 768,
+            "expression": "$this",
+            "full": "boundint|boundstring",
+            "native": "object",
+            "visits": 1
+        },
+        "763:776": {
+            "start": 763,
+            "end": 776,
+            "expression": "$this->read()",
+            "full": "int|string",
+            "native": "*ERROR*",
+            "visits": 1
+        },
+        "813:818": {
+            "start": 813,
+            "end": 818,
+            "expression": "$this",
+            "full": "$this(lexicalscope)",
+            "native": "$this(lexicalscope)",
+            "visits": 1
+        },
+        "827:832": {
+            "start": 827,
+            "end": 832,
+            "expression": "$this",
+            "full": "$this(lexicalscope)",
+            "native": "$this(lexicalscope)",
+            "visits": 1
+        },
+        "827:840": {
+            "start": 827,
+            "end": 840,
+            "expression": "$this->read()",
+            "full": "bool",
+            "native": "bool",
+            "visits": 1
+        },
+        "871:876": {
+            "start": 871,
+            "end": 876,
+            "expression": "$this",
+            "full": "$this(lexicalscope)",
+            "native": "$this(lexicalscope)",
+            "visits": 1
+        },
+        "878:883": {
+            "start": 878,
+            "end": 883,
+            "expression": "$this",
+            "full": "$this(lexicalscope)",
+            "native": "$this(lexicalscope)",
+            "visits": 1
+        },
+        "878:891": {
+            "start": 878,
+            "end": 891,
+            "expression": "$this->read()",
+            "full": "bool",
+            "native": "bool",
+            "visits": 1
+        },
+        "933:944": {
+            "start": 933,
+            "end": 944,
+            "expression": "self::class",
+            "full": "'lexicalscope'",
+            "native": "'lexicalscope'",
+            "visits": 1
+        },
+        "987:998": {
+            "start": 987,
+            "end": 998,
+            "expression": "self::class",
+            "full": "'lexicalscope'",
+            "native": "'lexicalscope'",
+            "visits": 1
+        },
+        "1008:1013": {
+            "start": 1008,
+            "end": 1013,
+            "expression": "$this",
+            "full": "$this(lexicalscope)",
+            "native": "$this(lexicalscope)",
+            "visits": 1
+        },
+        "1008:1071": {
+            "start": 1008,
+            "end": 1071,
+            "expression": "$this->bindStatic(function () { $this; return $this->read(); })",
+            "full": "null",
+            "native": "void",
+            "visits": 1
+        },
+        "1040:1045": {
+            "start": 1040,
+            "end": 1045,
+            "expression": "$this",
+            "full": "static(lexicalscope)",
+            "native": "object",
+            "visits": 1
+        },
+        "1054:1059": {
+            "start": 1054,
+            "end": 1059,
+            "expression": "$this",
+            "full": "static(lexicalscope)",
+            "native": "object",
+            "visits": 1
+        },
+        "1054:1067": {
+            "start": 1054,
+            "end": 1067,
+            "expression": "$this->read()",
+            "full": "bool",
+            "native": "*ERROR*",
+            "visits": 1
+        },
+        "1081:1086": {
+            "start": 1081,
+            "end": 1086,
+            "expression": "$this",
+            "full": "$this(lexicalscope)",
+            "native": "$this(lexicalscope)",
+            "visits": 1
+        },
+        "1081:1130": {
+            "start": 1081,
+            "end": 1130,
+            "expression": "$this->bindStatic(fn() => [$this, $this->read()])",
+            "full": "null",
+            "native": "void",
+            "visits": 1
+        },
+        "1108:1113": {
+            "start": 1108,
+            "end": 1113,
+            "expression": "$this",
+            "full": "static(lexicalscope)",
+            "native": "object",
+            "visits": 1
+        },
+        "1115:1120": {
+            "start": 1115,
+            "end": 1120,
+            "expression": "$this",
+            "full": "static(lexicalscope)",
+            "native": "object",
+            "visits": 1
+        },
+        "1115:1128": {
+            "start": 1115,
+            "end": 1128,
+            "expression": "$this->read()",
+            "full": "bool",
+            "native": "*ERROR*",
+            "visits": 1
+        },
+        "1408:1413": {
+            "start": 1408,
+            "end": 1413,
+            "expression": "$this",
+            "full": "boundint|boundstring",
+            "native": "boundint|boundstring",
+            "visits": 1
+        },
+        "1422:1427": {
+            "start": 1422,
+            "end": 1427,
+            "expression": "$this",
+            "full": "boundint|boundstring",
+            "native": "boundint|boundstring",
+            "visits": 1
+        },
+        "1422:1435": {
+            "start": 1422,
+            "end": 1435,
+            "expression": "$this->read()",
+            "full": "int|string",
+            "native": "int|string",
+            "visits": 1
+        },
+        "1476:1481": {
+            "start": 1476,
+            "end": 1481,
+            "expression": "$this",
+            "full": "boundint|boundstring",
+            "native": "boundint|boundstring",
+            "visits": 1
+        },
+        "1483:1488": {
+            "start": 1483,
+            "end": 1488,
+            "expression": "$this",
+            "full": "boundint|boundstring",
+            "native": "boundint|boundstring",
+            "visits": 1
+        },
+        "1483:1496": {
+            "start": 1483,
+            "end": 1496,
+            "expression": "$this->read()",
+            "full": "int|string",
+            "native": "int|string",
+            "visits": 1
+        },
+        "1540:1545": {
+            "start": 1540,
+            "end": 1545,
+            "expression": "$this",
+            "full": "boundstring",
+            "native": "boundint|boundstring",
+            "visits": 1
+        },
+        "1554:1559": {
+            "start": 1554,
+            "end": 1559,
+            "expression": "$this",
+            "full": "boundstring",
+            "native": "boundint|boundstring",
+            "visits": 1
+        },
+        "1554:1567": {
+            "start": 1554,
+            "end": 1567,
+            "expression": "$this->read()",
+            "full": "string",
+            "native": "int|string",
+            "visits": 1
+        },
+        "1580:1598": {
+            "start": 1580,
+            "end": 1598,
+            "expression": "boundstring::class",
+            "full": "'boundstring'",
+            "native": "'boundstring'",
+            "visits": 1
+        },
+        "1628:1633": {
+            "start": 1628,
+            "end": 1633,
+            "expression": "$this",
+            "full": "boundstring",
+            "native": "boundint|boundstring",
+            "visits": 1
+        },
+        "1635:1640": {
+            "start": 1635,
+            "end": 1640,
+            "expression": "$this",
+            "full": "boundstring",
+            "native": "boundint|boundstring",
+            "visits": 1
+        },
+        "1635:1648": {
+            "start": 1635,
+            "end": 1648,
+            "expression": "$this->read()",
+            "full": "string",
+            "native": "int|string",
+            "visits": 1
+        },
+        "1659:1677": {
+            "start": 1659,
+            "end": 1677,
+            "expression": "boundstring::class",
+            "full": "'boundstring'",
+            "native": "'boundstring'",
+            "visits": 1
+        },
+        "1707:1712": {
+            "start": 1707,
+            "end": 1712,
+            "expression": "$this",
+            "full": "boundint|boundstring",
+            "native": "boundint|boundstring",
+            "visits": 1
+        },
+        "1714:1719": {
+            "start": 1714,
+            "end": 1719,
+            "expression": "$this",
+            "full": "boundint|boundstring",
+            "native": "boundint|boundstring",
+            "visits": 1
+        },
+        "1714:1727": {
+            "start": 1714,
+            "end": 1727,
+            "expression": "$this->read()",
+            "full": "int|string",
+            "native": "int|string",
+            "visits": 1
+        },
+        "1786:1791": {
+            "start": 1786,
+            "end": 1791,
+            "expression": "$this",
+            "full": "boundstring",
+            "native": "*ERROR*",
+            "visits": 1
+        },
+        "1786:1799": {
+            "start": 1786,
+            "end": 1799,
+            "expression": "$this->read()",
+            "full": "string",
+            "native": "mixed",
+            "visits": 1
+        },
+        "1810:1828": {
+            "start": 1810,
+            "end": 1828,
+            "expression": "boundstring::class",
+            "full": "'boundstring'",
+            "native": "'boundstring'",
+            "visits": 1
+        }
+    },
+    "calls": {
+        "558": {
+            "expression": "$this->read()",
+            "names": [
+                {
+                    "name": "read",
+                    "types": [
+                        {
+                            "start": 558,
+                            "end": 563,
+                            "expression": "$this",
+                            "type": "boundint|boundstring"
+                        }
+                    ]
+                }
+            ]
+        },
+        "626": {
+            "expression": "$this->read()",
+            "names": [
+                {
+                    "name": "read",
+                    "types": [
+                        {
+                            "start": 626,
+                            "end": 631,
+                            "expression": "$this",
+                            "type": "boundint|boundstring"
+                        }
+                    ]
+                }
+            ]
+        },
+        "705": {
+            "expression": "$this->read()",
+            "names": [
+                {
+                    "name": "read",
+                    "types": [
+                        {
+                            "start": 705,
+                            "end": 710,
+                            "expression": "$this",
+                            "type": "boundint|boundstring"
+                        }
+                    ]
+                }
+            ]
+        },
+        "763": {
+            "expression": "$this->read()",
+            "names": [
+                {
+                    "name": "read",
+                    "types": [
+                        {
+                            "start": 763,
+                            "end": 768,
+                            "expression": "$this",
+                            "type": "boundint|boundstring"
+                        }
+                    ]
+                }
+            ]
+        },
+        "827": {
+            "expression": "$this->read()",
+            "names": [
+                {
+                    "name": "read",
+                    "types": [
+                        {
+                            "start": 827,
+                            "end": 832,
+                            "expression": "$this",
+                            "type": "$this(lexicalscope)"
+                        }
+                    ]
+                }
+            ]
+        },
+        "878": {
+            "expression": "$this->read()",
+            "names": [
+                {
+                    "name": "read",
+                    "types": [
+                        {
+                            "start": 878,
+                            "end": 883,
+                            "expression": "$this",
+                            "type": "$this(lexicalscope)"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1008": {
+            "expression": "$this->bindStatic(function () { $this; return $this->read(); })",
+            "names": [
+                {
+                    "name": "bindStatic",
+                    "types": [
+                        {
+                            "start": 1008,
+                            "end": 1013,
+                            "expression": "$this",
+                            "type": "$this(lexicalscope)"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1054": {
+            "expression": "$this->read()",
+            "names": [
+                {
+                    "name": "read",
+                    "types": [
+                        {
+                            "start": 1054,
+                            "end": 1059,
+                            "expression": "$this",
+                            "type": "static(lexicalscope)"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1081": {
+            "expression": "$this->bindStatic(fn() => [$this, $this->read()])",
+            "names": [
+                {
+                    "name": "bindStatic",
+                    "types": [
+                        {
+                            "start": 1081,
+                            "end": 1086,
+                            "expression": "$this",
+                            "type": "$this(lexicalscope)"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1115": {
+            "expression": "$this->read()",
+            "names": [
+                {
+                    "name": "read",
+                    "types": [
+                        {
+                            "start": 1115,
+                            "end": 1120,
+                            "expression": "$this",
+                            "type": "static(lexicalscope)"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1422": {
+            "expression": "$this->read()",
+            "names": [
+                {
+                    "name": "read",
+                    "types": [
+                        {
+                            "start": 1422,
+                            "end": 1427,
+                            "expression": "$this",
+                            "type": "boundint|boundstring"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1483": {
+            "expression": "$this->read()",
+            "names": [
+                {
+                    "name": "read",
+                    "types": [
+                        {
+                            "start": 1483,
+                            "end": 1488,
+                            "expression": "$this",
+                            "type": "boundint|boundstring"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1554": {
+            "expression": "$this->read()",
+            "names": [
+                {
+                    "name": "read",
+                    "types": [
+                        {
+                            "start": 1554,
+                            "end": 1559,
+                            "expression": "$this",
+                            "type": "boundstring"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1635": {
+            "expression": "$this->read()",
+            "names": [
+                {
+                    "name": "read",
+                    "types": [
+                        {
+                            "start": 1635,
+                            "end": 1640,
+                            "expression": "$this",
+                            "type": "boundstring"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1714": {
+            "expression": "$this->read()",
+            "names": [
+                {
+                    "name": "read",
+                    "types": [
+                        {
+                            "start": 1714,
+                            "end": 1719,
+                            "expression": "$this",
+                            "type": "boundint|boundstring"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1786": {
+            "expression": "$this->read()",
+            "names": [
+                {
+                    "name": "read",
+                    "types": [
+                        {
+                            "start": 1786,
+                            "end": 1791,
+                            "expression": "$this",
+                            "type": "boundstring"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

@@ -63,6 +63,47 @@ fn check(neon: &str) {
     assert_eq!(got, want);
 }
 
+/// PHPStan 2.3.1 --level=4: skip terminated statements, but keep labels and declarations live.
+#[test]
+fn unreachable_walk_preserves_labels_and_independent_declarations() {
+    let path =
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/dead_code/unreachable-walk.php");
+    let mut project = Project::new(vec![path], vec![]);
+    project.level = 4;
+    let mut got: Vec<_> = run(&project)
+        .unwrap()
+        .into_iter()
+        .map(|error| {
+            (
+                error.line,
+                error.identifier,
+                error.message,
+                error.tip,
+                error.can_be_ignored,
+            )
+        })
+        .collect();
+    got.sort();
+    let unreachable = "Unreachable statement - code above always terminates.";
+    let mut want: Vec<_> = [
+        (6, "deadCode.unreachable", unreachable),
+        (12, "deadCode.unreachable", unreachable),
+        (14, "expr.resultUnused", "Expression \"'reachable'\" on a separate line does not do anything."),
+        (20, "deadCode.unreachable", unreachable),
+        (20, "function.inner", "Inner named functions are not supported by PHPStan. Consider refactoring to an anonymous function, class method, or a top-level-defined function. See issue #165 (https://github.com/phpstan/phpstan/issues/165) for more details."),
+        (21, "expr.resultUnused", "Expression \"'nested-reachable'\" on a separate line does not do anything."),
+        (23, "deadCode.unreachable", unreachable),
+        (30, "expr.resultUnused", "Expression \"'early-bound-reachable'\" on a separate line does not do anything."),
+        (35, "expr.resultUnused", "Expression \"'class-reachable'\" on a separate line does not do anything."),
+        (39, "deadCode.unreachable", unreachable),
+    ]
+    .into_iter()
+    .map(|(line, identifier, message)| (line, identifier.to_owned(), message.to_owned(), None, true))
+    .collect();
+    want.sort();
+    assert_eq!(got, want);
+}
+
 #[test]
 fn default_toggles() {
     check("phpstan");

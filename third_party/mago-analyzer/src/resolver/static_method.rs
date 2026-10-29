@@ -150,7 +150,7 @@ where
          from_class_string: bool,
          method_name: Word,
          has_magic_static_call: bool,
-         result: Option<&mut MethodResolutionResult>| {
+         mut result: Option<&mut MethodResolutionResult>| {
             let Some(defining_class_metadata) = context.codebase.get_class_like_by_name(fq_class_id) else {
                 return (false, None);
             };
@@ -163,12 +163,10 @@ where
                     from_class_string,
                 );
 
-                if !from_class_string {
-                    if let Some(result) = result {
-                        result.has_invalid_target = true;
-                    }
-                    return (true, None);
+                if !from_class_string && let Some(result) = result.as_deref_mut() {
+                    result.has_invalid_target = true;
                 }
+                // StaticMethodCallCheck keeps the reflection after reporting an abstract call.
             }
 
             let Some(method) = resolve_method_from_metadata(

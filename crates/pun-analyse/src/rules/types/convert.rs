@@ -52,7 +52,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
     }
 
     /// Selectors are stored as spans rather than Expression nodes, but have the same scope-owned metadata.
-    pub(super) fn phpstan_type_at(&self, at: Span) -> Option<Type> {
+    pub(in super::super) fn phpstan_type_at(&self, at: Span) -> Option<Type> {
         self.phpstan_type_at_in(at, &self.types)
     }
 
@@ -91,15 +91,6 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         scope: ConversionScope,
     ) -> Type {
         use mago_syntax::cst::Expression as E;
-        // NewHandler retains the named object for unknown/abstract instantiations, despite their errors.
-        // An abstract declaration's asFinal() is a no-op, not an exact reflection or an unreachable value.
-        if let E::Instantiation(new) = e
-            && let E::Identifier(id) = new.class
-            && t.is_never()
-            && self.codebase.get_class_like(self.names.get(id)).is_none_or(|class| class.flags.is_abstract())
-        {
-            return Type::Object(self.reflected_name(self.names.get(id)), vec![], false);
-        }
         declared::with_classes(self, || {
             let source = self.source_type(e.span(), &self.origins, types).or_else(|| {
                 match e.unparenthesized() {
@@ -701,7 +692,10 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                     return Type::ConstString(v.as_bytes().to_vec());
                 }
                 let mut accessories = Vec::new();
-                if s.is_numeric {
+                if let Some(decimal) = s.decimal_integer {
+                    accessories.push(Accessory::DecimalIntString { inverse: !decimal });
+                }
+                if s.is_numeric && s.decimal_integer != Some(true) {
                     accessories.push(Accessory::NumericString);
                 }
                 if s.is_truthy {
@@ -724,7 +718,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                 if s.is_callable {
                     let mut members = vec![Type::String, Type::Callable(None)];
                     members.extend(accessories.into_iter().filter_map(|accessory| {
-                        matches!(accessory, Accessory::LowercaseString | Accessory::UppercaseString)
+                        matches!(accessory, Accessory::LowercaseString | Accessory::UppercaseString | Accessory::DecimalIntString { .. })
                             .then_some(Type::Accessory(accessory))
                     }));
                     return Type::Intersection(members);

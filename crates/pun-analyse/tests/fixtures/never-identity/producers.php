@@ -43,3 +43,19 @@ function nestedForwarded(): void { consume(\call_user_func(fn () => exit())); ec
 function afterImplicit(): void { implicitBottom(); echo 'after-implicit'; }
 function afterAccepting(): void { acceptingBottom(); echo 'after-accepting'; }
 function afterNonaccepting(): void { nonacceptingBottom(); echo 'after-nonaccepting'; }
+
+function afterCurrentFunction(): void {
+    $current = \Closure::getCurrent();
+    $current();
+    echo 'after-current-function';
+}
+final class CurrentMethod {
+    public function afterCurrentMethod(): void {
+        $current = \Closure::getCurrent();
+        $current();
+        echo 'after-current-method';
+    }
+}
+$current = \Closure::getCurrent();
+$current();
+echo 'after-current-global';

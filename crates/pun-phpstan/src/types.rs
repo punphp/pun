@@ -741,7 +741,7 @@ impl Type {
         })
     }
 
-    fn is_numeric_string(&self) -> Tri {
+    pub fn is_numeric_string(&self) -> Tri {
         self.query(&|t| match t {
             Type::Accessory(Accessory::NumericString)
             | Type::Accessory(Accessory::DecimalIntString { inverse: false }) => Tri::Yes,
@@ -761,7 +761,7 @@ impl Type {
     }
 
     /// `isDecimalIntegerString()`
-    fn is_decimal_int_string(&self) -> Tri {
+    pub fn is_decimal_int_string(&self) -> Tri {
         self.query(&|t| match t {
             Type::Accessory(Accessory::DecimalIntString { inverse }) => Tri::from(!inverse),
             Type::ConstString(s) => Tri::from(

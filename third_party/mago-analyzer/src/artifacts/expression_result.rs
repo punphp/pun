@@ -35,6 +35,22 @@ pub struct ExpressionResult {
 }
 
 impl ExpressionResult {
+    /// A synthetic non-call state read has no independent native result or call-return provenance.
+    pub(crate) fn from_value(value: TUnion) -> Self {
+        let value = Rc::new(value);
+        Self {
+            raw: Rc::clone(&value),
+            value,
+            raw_native: None,
+            native: None,
+            projects_void: false,
+            resolved: false,
+            overridden: false,
+            holder: None,
+            native_holder: None,
+        }
+    }
+
     pub fn is_eager(&self) -> bool {
         !self.resolved
     }

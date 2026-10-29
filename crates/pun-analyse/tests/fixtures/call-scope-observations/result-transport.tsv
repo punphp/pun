@@ -1,0 +1,16 @@
+24	$callable()	void	void	void	void	void	void	676	687
+25	transportInt()	int	int	int	int	int	int	722	736
+27	transportVoid()	null	void	void	void	void	void	794	809
+30	match ($flag) { true => transportVoid(), false => transportVoid() }	void	void	void	void	void	void	881	948
+32	match ($flag) { true => transportVoid(), false => 1 }	1|void	1|void	1|void	1|void	1|void	1|void	1005	1058
+39	$mixedCallable()	int|void	int|void	int|void	int|void	int|void	int|void	1339	1355
+40	$returns->$method()	int|null	int|void	int|void	int|void	int|void	int|void	1391	1410
+42	TransportReturns::$staticMethod()	int|null	int|void	int|void	int|void	int|void	int|void	1469	1502
+46	[$flag ? $callable() : 13]	array{13|void}	array{13|void}	array{13|void}	array{13|void}	array{13|void}	array{13|void}	1608	1634
+47	[$callable() ?? 17]	array{void}	array{void}	array{void}	array{void}	array{void}	array{void}	1670	1689
+49	[$flag ? transportVoid() : 19]	array{19|null}	array{19|null}	array{19|null}	array{19|void}	array{19|void}	array{19|void}	1747	1777
+50	$remembered	void	void	void	void	void	void	1815	1826
+55	[transportVoid() ?? 37]	array{37}	array{37}	array{37}	array{void}	array{void}	array{void}	1992	2015
+56	[$mixedCallable() ?? 29]	array{int|void}	array{int|void}	array{int|void}	array{int|void}	array{int|void}	array{int|void}	2054	2078
+57	[transportNull() ?? 31]	array{31}	array{31}	array{31}	array{31}	array{31}	array{31}	2110	2133
+58	[$nullableCallable() ?? 23]	array{23|void}	array{23|void}	array{23|void}	array{23|void}	array{23|void}	array{23|void}	2169	2196

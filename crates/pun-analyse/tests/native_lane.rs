@@ -478,10 +478,8 @@ fn unsupported_operator_shapes_invalidate_without_changing_the_full_walk() {
         "$flag or $flag",
         "$nullable ?? 2",
         "($integer % 2) + 1",
-        // Decimal-integer-string has no exact Mago scalar representation. Other casts below
+        // Integer-string casts are covered by decimal_string_producers. These casts still
         // deliberately exclude union operands, non-finite literals, and non-scalar syntax.
-        "(string) $integer",
-        "(string) ($integer % 2)",
         "(int) $nullable",
         "(float) $nullable",
         "(bool) $nullable",
@@ -999,12 +997,34 @@ namespace {
     );
     for (_, range) in marked_ranges(code, "// call") {
         assert_eq!(enabled.call_terminations.get(&range), Some(&false));
+        // PHPStan 2.3.1: named void calls have full null and raw/keep-void void.
         assert_eq!(
             enabled
                 .get_expression_type(&span(range))
                 .map(native_id)
                 .as_deref(),
+            Some("null")
+        );
+        assert_eq!(
+            enabled
+                .get_raw_expression_type(&span(range))
+                .map(native_id)
+                .as_deref(),
             Some("void")
+        );
+        assert_eq!(
+            enabled
+                .get_keep_void_expression_type(&span(range))
+                .map(native_id)
+                .as_deref(),
+            Some("void")
+        );
+        assert_eq!(
+            enabled
+                .get_native_expression_type(&span(range))
+                .map(native_id)
+                .as_deref(),
+            None, // Void is outside the current partial native lane; do not fill it from full.
         );
     }
     for (_, range) in marked_ranges(code, "// value") {
@@ -1102,4 +1122,22 @@ function example(bool $more, bool $halt): void {
         Some("int(0)")
     );
     assert!(disabled.get_native_expression_type(&before).is_none());
+}
+
+#[test]
+fn if_certainty_tips_distinguish_documented_and_native_constants() {
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/native-conditions");
+    let expected: serde_json::Value =
+        serde_json::from_str(include_str!("fixtures/native-conditions/expected.json")).unwrap();
+    let mut project = pun_analyse::Project::new(vec![root.join("conditions.php")], vec![]);
+    project.level = 9;
+    project.php_version = 80500;
+    let mut actual: Vec<_> = pun_analyse::run(&project)
+        .unwrap()
+        .into_iter()
+        .map(|error| (error.line, error.identifier, error.message, error.tip, error.can_be_ignored))
+        .collect();
+    actual.sort();
+    assert_eq!(serde_json::to_value(actual).unwrap(), expected);
 }

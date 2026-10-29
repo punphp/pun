@@ -1,0 +1,32 @@
+{
+    "430": {
+        "end": 432,
+        "expression": "$i",
+        "type": "*ERROR*",
+        "visits": 1
+    },
+    "442": {
+        "end": 463,
+        "expression": "$target->invoke(++$i)",
+        "type": "1|array{1}",
+        "visits": 1
+    },
+    "458": {
+        "end": 462,
+        "expression": "++$i",
+        "type": "1",
+        "visits": 1
+    },
+    "460": {
+        "end": 462,
+        "expression": "$i",
+        "type": "0",
+        "visits": 1
+    },
+    "480": {
+        "end": 482,
+        "expression": "$i",
+        "type": "1",
+        "visits": 1
+    }
+}

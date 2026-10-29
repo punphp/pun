@@ -358,6 +358,25 @@ pub fn handle_return_value<'ctx, A>(
             return;
         }
 
+        // PHPStan's BenevolentUnionType::isAcceptedBy accepts any matching member.
+        // Both flags carry benevolence; a strict union still requires every member.
+        if inferred_return_type.ignore_nullable_issues()
+            && inferred_return_type.ignore_falsable_issues()
+            && inferred_return_type.types.iter().any(|atomic| {
+                is_contained_by(
+                    context.codebase,
+                    &TUnion::from_atomic(atomic.clone()),
+                    &expected_return_type,
+                    false,
+                    false,
+                    false,
+                    &mut ComparisonResult::new(),
+                )
+            })
+        {
+            return;
+        }
+
         let mut union_comparison_result = ComparisonResult::new();
 
         let is_contained_by = is_contained_by(

@@ -6,10 +6,12 @@
 use std::collections::{BTreeMap, HashSet};
 use std::path::Path;
 
+use mago_analyzer::observations::CallScopeRequest;
 use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::metadata::function_like::FunctionLikeMetadata;
-use mago_span::Span;
+use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
+use mago_syntax::walker::MutWalker;
 use pun_phpstan::comments::{LinesToIgnore, lines_to_ignore};
 use pun_phpstan::ignore::{Error, ignores_without_comments, local_ignores};
 use pun_phpstan::types::{NeverKind, Type};
@@ -159,23 +161,6 @@ fn method(c: &Checker, ty: &Type, name: &[u8], counts: &params::Counts) -> Optio
     }
 }
 
-fn strings(ty: &Type) -> Vec<String> {
-    match ty {
-        Type::ConstString(s) => vec![String::from_utf8_lossy(s).into_owned()],
-        Type::Union(ts) | Type::Benevolent(ts) => {
-            let parts: Vec<_> = ts.iter().map(strings).collect();
-            if parts.iter().any(Vec::is_empty) {
-                Vec::new()
-            } else {
-                parts.concat()
-            }
-        }
-        Type::Intersection(ts) => ts.iter().flat_map(strings).collect(),
-        Type::Template(t) => strings(&t.bound),
-        _ => Vec::new(),
-    }
-}
-
 /// The part of a ConstantArrayType that FunctionCallParametersCheck reads when binding names.
 struct ArrayArguments {
     keys: Vec<Type>,
@@ -251,11 +236,52 @@ fn unpacked_names(ty: &Type, first: bool) -> Option<Vec<Option<String>>> {
     Some(names)
 }
 
+/// Named collectors and constant dynamic method checks share owned operand-position scopes.
+pub(super) fn requests(program: &Program) -> Vec<CallScopeRequest> {
+    let mut calls = Requests(Vec::new());
+    calls.walk_program(program, &mut ());
+    calls.0
+}
+
+struct Requests(Vec<CallScopeRequest>);
+impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Requests {
+    fn walk_in_expression(&mut self, expression: &'ast Expression<'arena>, _: &mut ()) {
+        let (object, selector, args) = match expression {
+            Expression::Call(Call::Method(call)) => (call.object, &call.method, &call.argument_list),
+            Expression::Call(Call::NullSafeMethod(call)) => (call.object, &call.method, &call.argument_list),
+            _ => return,
+        };
+        if matches!(selector, ClassLikeMemberSelector::Identifier(_))
+            && !args.arguments.iter().any(|arg| matches!(arg, Argument::Named(_))
+            || matches!(arg, Argument::Positional(arg) if arg.ellipsis.is_some()))
+        {
+            return;
+        }
+        let mut expressions = Expressions(Vec::new());
+        expressions.walk_expression(object, &mut ());
+        expressions.walk_class_like_member_selector(selector, &mut ());
+        expressions.walk_argument_list(args, &mut ());
+        expressions.0.sort_unstable_by_key(|span| (span.start.offset, span.end.offset));
+        expressions.0.dedup();
+        self.0.push(CallScopeRequest { call: expression.span(), expressions: expressions.0 });
+    }
+}
+
+struct Expressions(Vec<Span>);
+impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Expressions {
+    fn walk_in_expression(&mut self, expression: &'ast Expression<'arena>, _: &mut ()) {
+        self.0.push(expression.span());
+    }
+    fn walk_in_variable(&mut self, variable: &'ast Variable<'arena>, _: &mut ()) {
+        self.0.push(variable.span());
+    }
+}
+
 /// CallMethodsRule's instance calls only. Static calls, constructors and first-class callables do not emit.
 pub(super) fn call(
     c: &mut Checker,
+    span: Span,
     object: &Expression,
-    selector: &ClassLikeMemberSelector,
     args: &ArgumentList,
     nullsafe: bool,
 ) {
@@ -263,21 +289,16 @@ pub(super) fn call(
     if (!c.check_argument_types && !c.check_arguments_passed_by_reference) || !c.checks_expression(object) {
         return;
     }
-    let names = match selector {
-        ClassLikeMemberSelector::Identifier(n) => {
-            vec![String::from_utf8_lossy(n.value).into_owned()]
-        }
-        _ => super::types::dynamic_names::member(selector)
-            .and_then(|span| c.types.get(&span))
-            .map_or_else(Vec::new, |t| strings(&c.to_phpstan(t))),
-    };
     let counts = params::count(args);
-    let mut object = object;
-    while let Expression::Parenthesized(p) = object {
-        object = p.expression;
-    }
-    for name in names {
-        let ty = c.phpstan_type(object).map(|t| {
+    let object = object.unparenthesized();
+    let mut records = Vec::new();
+    for scope in c.named_call_scopes.get(&span).into_iter().flatten() {
+        // Missing observations are not mixed: later names cannot bind against an unknown unpack width.
+        if counts.args.iter().any(|arg| arg.unpack.is_some() && !scope.types.contains_key(&arg.value)) {
+            continue;
+        }
+        let name = scope.name;
+        let ty = c.phpstan_type_in(object, &scope.types).map(|t| {
             if nullsafe || super::assign::contains_nullsafe(object) {
                 t.remove_null()
             } else {
@@ -306,7 +327,7 @@ pub(super) fn call(
             let names = match &arg.unpack {
                 None => vec![arg.name.clone()],
                 Some(_) => c
-                    .phpstan_type(value)
+                    .phpstan_type_in(value, &scope.types)
                     .and_then(|t| unpacked_names(&t, position == 0))
                     .unwrap_or_else(|| vec![None]),
             };
@@ -332,21 +353,22 @@ pub(super) fn call(
                             .then(|| m.acceptor.names.len() - 1)
                     });
                 if let Some(parameter) = parameter {
-                    c.report(
+                    records.push((
                         arg.span,
-                        ID,
                         format!(
                             "{ENTRY}call\u{1f}{}\u{1f}{}\u{1f}{}",
                             m.class, m.name, m.acceptor.names[parameter]
                         ),
-                        None,
-                    );
+                    ));
                 }
             }
             if stopped {
                 break;
             }
         }
+    }
+    for (span, record) in records {
+        c.report(span, ID, record, None);
     }
 }
 

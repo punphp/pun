@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 use mago_allocator::Arena;
 use mago_codex::identifier::function_like::FunctionLikeIdentifier;
 use mago_codex::ttype::TType;
@@ -5,6 +7,7 @@ use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::callable::TCallable;
 use mago_codex::ttype::atomic::callable::TCallableSignature;
 use mago_codex::ttype::atomic::object::TObject;
+use mago_codex::ttype::cast::can_atomic_be_callable;
 use mago_codex::ttype::cast::cast_atomic_to_callable;
 use mago_codex::ttype::expander::contains_parameter_variable;
 use mago_codex::ttype::get_error;
@@ -29,6 +32,7 @@ use crate::invocation::InvocationArgumentsSource;
 use crate::invocation::InvocationTarget;
 use crate::plugin::ExpressionHookResult;
 use crate::plugin::context::HookContext;
+use crate::visibility::is_callable_method_inaccessible;
 
 impl<'ast, 'arena> Analyzable<'ast, 'arena> for FunctionCall<'arena> {
     fn analyze<'ctx, A>(
@@ -62,6 +66,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for FunctionCall<'arena> {
             }
         }
 
+        let reflection_scope = block_context.clone();
         let mut template_result = TemplateResult::default();
         let (invocation_targets, _) =
             resolve_targets(context, block_context, artifacts, self.function, &mut template_result)?;
@@ -85,6 +90,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for FunctionCall<'arena> {
         analyze_invocation_targets(
             context,
             block_context,
+            &reflection_scope,
             artifacts,
             template_result,
             invocation_targets,
@@ -95,11 +101,12 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for FunctionCall<'arena> {
             false,
             false, // object_has_nullsafe_null - not applicable for function calls
             false,
+            true,
         )?;
 
-        // FuncCallHandler::resolveReturnType(): an unknown named function has ErrorType,
-        // including function_exists guards. Dynamic callable expressions have a separate contract.
-        if matches!(self.function, Expression::Identifier(_)) && artifacts.get_expression_type(&self.span()).is_none() {
+        // FuncCallHandler::resolveReturnType() also gives invalid dynamic calls
+        // ErrorType. This does not turn an implicit-never callee into termination.
+        if artifacts.get_expression_type(&self.span()).is_none() {
             artifacts.set_resolved_expression_type(&self.span(), get_error());
         }
 
@@ -201,13 +208,20 @@ where
     let mut encountered_invalid_targets = false;
     let mut targets = vec![];
     for atomic in expression_type.types.as_ref() {
-        if (atomic.is_null() && expression_type.ignore_nullable_issues())
+        if atomic.is_never()
+            || (atomic.is_null() && expression_type.ignore_nullable_issues())
             || (atomic.is_false() && expression_type.ignore_falsable_issues())
         {
             continue;
         }
 
-        if let Some(callable) = cast_atomic_to_callable(atomic, context.codebase, Some(template_result)) {
+        let callable = if is_callable_method_inaccessible(context, block_context, atomic) {
+            // InaccessibleMethod contributes a trivial acceptor, not the declaration's signature.
+            Some(Cow::Owned(TCallable::Signature(TCallableSignature::mixed(false))))
+        } else {
+            cast_atomic_to_callable(atomic, context.codebase, Some(template_result))
+        };
+        if let Some(callable) = callable {
             match callable.as_ref() {
                 TCallable::Signature(callable_signature) => {
                     if let Some(id) = callable_signature.get_source()
@@ -255,7 +269,7 @@ where
                     }
                 }
             }
-        } else if atomic.can_be_callable() {
+        } else if can_atomic_be_callable(atomic, context.codebase) {
             targets.push(InvocationTarget::Callable {
                 signature: TCallableSignature::mixed(false),
                 effective_signature: None,

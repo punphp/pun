@@ -103,7 +103,7 @@ fn infer(c: &Checker, acceptor: &Acceptor, args: &[Entry], parameters: &[Option<
     let mut passed: Vec<Option<Type>> = vec![None; declared.len()];
     for (e, p) in args.iter().zip(parameters) {
         if let Some(p) = *p
-            && let Some(t) = e.ty.clone().or_else(|| c.type_at(e.value))
+            && let Some(t) = e.value_type(c)
         {
             let t = if e.unpack { t.iterable_value_type() } else { t };
             passed[p] = Some(passed[p].take().map_or(t.clone(), |o| union(vec![o, t])));
@@ -303,12 +303,6 @@ fn returns_by_ref(c: &Checker, class: Option<&str>, name: &[u8]) -> bool {
     })
 }
 
-impl Checker<'_, '_> {
-    fn type_at(&self, span: Span) -> Option<Type> {
-        self.phpstan_type_at(span)
-    }
-}
-
 /// The rest of `check()` after `processArguments()`, `parameters` being each argument's parameter.
 pub(in super::super) fn arguments(
     c: &mut Checker,
@@ -329,7 +323,7 @@ pub(in super::super) fn arguments(
     let allowed_type = super::super::params::allowed_constants_type(c, acceptor);
     for (i, (e, p)) in args.iter().zip(parameters).enumerate() {
         if c.check_argument_types && e.unpack && (!c.check_this_only || e.is_this) {
-            let ty = c.type_at(e.value);
+            let ty = e.value_type(c);
             let found = c.find_type_to_check_of(ty, &|t| t.is_iterable().yes());
             if let Some(t) = found
                 && !t.is_iterable().yes()
@@ -344,7 +338,7 @@ pub(in super::super) fn arguments(
         };
         super::super::params::check_named(c, acceptor, e, call);
         let by_ref = acceptor.by_ref[p];
-        let value = e.ty.clone().or_else(|| c.type_at(e.value)).map(|t| if e.unpack { t.iterable_value_type() } else { t });
+        let value = e.value_type(c).map(|t| if e.unpack { t.iterable_value_type() } else { t });
         // a built-in's by-reference parameter that creates the variable takes anything
         if c.check_argument_types && (by_ref != ByRef::CreatesNewVariable || !acceptor.builtin)
             && let (Some(param), Some(value)) = (parameter_type(&resolved, p), value)
@@ -406,7 +400,7 @@ pub(in super::super) fn arguments(
                 let class = if c.written(*object) == "$this" {
                     c.class_scope().map(|k| String::from_utf8_lossy(k.name.as_bytes()).into_owned())
                 } else {
-                    c.type_at(*object).and_then(|t| t.object_class_names().into_iter().next())
+                    e.type_at(c, *object).and_then(|t| t.object_class_names().into_iter().next())
                 };
                 returns_by_ref(c, class.as_deref(), name)
             }

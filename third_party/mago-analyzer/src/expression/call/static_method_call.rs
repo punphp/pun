@@ -77,6 +77,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for StaticMethodCall<'arena> {
             }
         }
 
+        let reflection_scope = block_context.clone();
         let mut method_resolution =
             resolve_static_method_targets(context, block_context, artifacts, self.class, &self.method, self.span())?;
         let undocumented_template_result =
@@ -158,6 +159,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for StaticMethodCall<'arena> {
             analyze_invocation_targets(
                 context,
                 block_context,
+                &reflection_scope,
                 artifacts,
                 method_resolution.template_result,
                 invocation_targets,
@@ -168,6 +170,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for StaticMethodCall<'arena> {
                 expression_is_nullsafe(self.class) || method_resolution.encountered_null,
                 class_has_nullsafe_null,
                 false,
+                matches!(&self.method, ClassLikeMemberSelector::Identifier(_)),
             )?;
         }
 
@@ -342,7 +345,6 @@ mod tests {
         issues = [
             IssueCode::StaticAccessOnInterface,
             IssueCode::StaticAccessOnInterface,
-            IssueCode::MixedArgument,
         ]
     }
 }

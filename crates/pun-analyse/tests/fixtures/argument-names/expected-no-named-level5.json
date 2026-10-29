@@ -262,5 +262,23 @@
     "line": 151,
     "ignorable": true,
     "identifier": "argument.named"
+  },
+  {
+    "message": "Closure invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+    "line": 156,
+    "ignorable": true,
+    "identifier": "argument.named"
+  },
+  {
+    "message": "Closure invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+    "line": 185,
+    "ignorable": true,
+    "identifier": "argument.named"
+  },
+  {
+    "message": "Closure invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+    "line": 216,
+    "ignorable": true,
+    "identifier": "argument.named"
   }
 ]

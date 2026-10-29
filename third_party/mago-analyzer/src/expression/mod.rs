@@ -72,8 +72,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Expression<'arena> {
     where
         A: Arena,
     {
-        if let Some(value) = crate::observations::consume(self, context, block_context) {
-            artifacts.set_expression_type(self, value);
+        if crate::observations::consume(self, context, block_context, artifacts) {
             return Ok(());
         }
         crate::observations::before(self, context, block_context);
@@ -82,6 +81,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Expression<'arena> {
             // Semantic hooks can finish an expression without the normal after hooks.
             // Its retained result and the following selector position still exist.
             crate::observations::after(self, context, block_context, artifacts);
+            crate::variable_flow::expression(self, context, block_context, artifacts);
         }
         result
     }

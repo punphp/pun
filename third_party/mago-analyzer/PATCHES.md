@@ -3006,3 +3006,316 @@ Combining partial closed-array consequences uses the separate definite constant-
 intersection port in `mago-codex`. The strict matrix also exercises the independent
 `isset.variable` diagnostic consumer at levels 4 and 5. Assignment pricing does not
 emit that diagnostic or replace the consumer's incoming-operand observation.
+
+## Transporting call results and combining match arms
+
+Observation storage now snapshots and restores `ExpressionResult`, preserving raw/value/native
+answers and call-return provenance during compatible child consumption. An evaluated expression
+without a result remains distinct from an expression not evaluated yet. Synthetic selector state
+uses an eager non-call result without inventing a native answer.
+
+Match construction reads arm keep-void results. Shared unions preserve void rather than
+performing source-call projection, retaining both all-void and mixed void/non-void arms.
+The public `call_scope_observations` result-transport regression compares fresh PHPStan captures
+while forcing filtered parent-array repricing. Its semantic hook checks the consumed children's
+raw/value/keep-void answers and native availability before and after repricing. The fixture also
+distinguishes raw invocation-target unions from eligible call values and tests ordinary ternary,
+coalescing and stored-variable void values.
+
+Pun's Checker retains keep-void answers separately from ordinary value types. Call and match
+consumers consult them only when the effective value contains explicit null, matching
+`MutatingScope::getKeepVoidType()`. Ordinary argument conversion still reads value types.
+
+## Constant dynamic method diagnostic scopes
+
+Pun's `CallMethodsRule` consumer now checks each constant dynamic method name in its owned filtered
+operand scope. Requests include positional and zero-argument dynamic calls, not just named or unpacked
+calls. Receiver conversion, acceptor selection, unpack expansion, template inference, argument types,
+and reference-return checks use the selected scope without recovery from the global type map.
+
+The reference is `CallMethodsRule::processNode()` at PHPStan revision
+`cb3b7e99489b2e3789ee2eec10501cb7a72580ea`. Literal identifier calls keep their existing path.
+The logical call span still selects the independently retained keep-void result. Diagnostic locations
+use the selector or argument span. A mixed void and non-void result does not become void merely because
+one selected method declares void.
+
+The public `dynamic_methods` regression compares complete diagnostics from the pinned PHPStan PHAR,
+including correlated receivers and arguments, union vetoes, template selector bounds, void results,
+and independent configuration switches. This consumer change does not add missing nullsafe observations.
+
+## Integer-to-string precision
+
+String casts use Codex's port of PHPStan 2.3.1 `IntegerType::toString()` and
+`IntegerRangeType::toString()`, preserving decimal-integer strings rather than widening
+them to general numeric strings. A single integer operand retains the source function's
+inclusive finite expansion limit without a second, lower string-combination threshold.
+
+The partial native lane uses the same pure conversion only for its own known integer
+operand. It does not consult PHPDoc refinements or the full expression artifacts, and
+unsupported native unions remain unavailable. The public `decimal_string_producers`
+regression checks both native modes and the original full-result artifacts.
+
+## Assignment preparation and cached property operands
+
+`expression/assignment/mod.rs` registers each target's preparation position before the RHS.
+A write-only variable has an entry position but no completed read. Array targets read the root and
+dimensions once, inside out, and compose each offset's pre-write answer from those results.
+Missing offsets retain their read error, not the writer's promotion into a new container.
+An append target has `never` as its prepared read. Property targets compose their read from the
+completed receiver and selector without installing a new property holder.
+
+The reference is
+[`AssignHandler::prepareTarget`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/AssignHandler.php#L623-L982).
+Preparation diagnostics from the composed fetch are discarded. The existing write resolver still
+validates the assignment, while the operand walks keep their effects and diagnostics.
+Literal string selectors use their evaluated bytes to select the same holder as a named fetch.
+A dynamic selector with a constant-string type keeps its own expression identity.
+
+`observations.rs` collects successful operand completions and passes their `ExpressionResult`
+values to the write in a lexical handoff. The handoff preserves raw, value, native, and call-return
+metadata. An evaluated operand without a type remains absent when consumed. The handoff ends on
+success or error and does not recover operands from the global expression map or an earlier scope.
+
+`expression/access/property_access.rs` evaluates the receiver and selector even when the property
+has a memoized value, following
+[`PropertyFetchHandler::processExpr`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/PropertyFetchHandler.php#L62-L72).
+Editor reference gathering does not replace these evaluations.
+
+The public `call_scope_observations` controls use the frozen `prepared-positions` and
+`prepared-effects` captures. Both captures come from `capture.php` with `--dependencies` and
+`--function-events`. They cover pre-write positions, cached receivers, and single operand evaluation.
+The controls compare observation-enabled and disabled effects, diagnostics, and result metadata in
+both native modes. Public semantic-hook controls also check that target errors precede RHS effects.
+These changes do not fix multiple-target invocation replay or change nullsafe call logic.
+
+## Conditional formal holders and reference-capture feedback
+
+Function entry follows PHPStan 2.3.1's `MutatingScope::enterFunctionLike()` at
+`cb3b7e99489b2e3789ee2eec10501cb7a72580ea`. It indexes every effective formal type before
+preparing top-level conditional-parameter relationships. Positive guards intersect the referenced
+formal with the target. Negative guards subtract the target. Negated conditionals swap consequences.
+Relationships enter the existing conditional-holder store after parameter writes and before use.
+Ordinary parameter unions and independent native parameter types retain their existing storage.
+
+Closures retain a relationship only when both its guard and consequence are captured. Arrows inherit
+relationships, with parameter writes and static `$this` invalidating shadows. Reference capture does
+not widen an unchanged holder. Existing convergence still generalizes changing captures, following
+`MutatingScope::processClosureScope()`. Feedback writes the selected full holder into an available
+parent native scope, without copying a deferred body's narrower or unavailable native scope.
+
+The public `parameter_conditions` and `capture_feedback` targets compare pinned PHPStan diagnostics
+and full/native readings. This patch does not implement the complete local/escaped reference-invocation
+machinery or the independent variable-value liveness producer for unused-capture diagnostics.
+
+## Nullsafe call-return provenance retains declared null
+
+Nullsafe return assembly distinguishes explicit null in a target's return type from null introduced
+by a nullable receiver. The check includes generic-parameter constraints. `NULLSAFE_NULL` applies
+only when every target lacks declared null, preserving raw `void|null` without treating its null
+as exclusively short-circuit provenance. Ordinary call-value projection remains separate.
+The public `nullsafe_call_provenance` target checks raw/value metadata in both native and observer modes.
+
+## Original receiver types for nullsafe method diagnostics
+
+`NullSafeMethodCall::analyze()` retains the processed receiver's full type separately from the ensured
+operand consumed by the plain twin. Active enclosing non-nullability devices supply their original
+types, following PHPStan 2.3.1's `NullsafeMethodCallHandler` and `NullsafeMethodCallExpressionNode`.
+The per-call artifact is cleared before hooks and replaced by each real receiver evaluation. Selected
+scope pricing clones artifacts, so its derived receiver answers cannot overwrite the real walk.
+
+Pun's `NullsafeMethodCallRule` consumes this artifact rather than the ensured operand. Nested calls on
+the same nullable receiver remain nullable; independent non-null receivers and assignment expressions
+still report redundant nullsafe access. The dynamic-method complete-record fixture covers these
+distinctions. Native nullsafe receiver transfer remains outside the partial native lane; this patch
+does not fabricate native answers or change the rule's existing bounded native-return lookup.
+
+## Coalesce offset holders
+
+`expression/binary/null_coalesce.rs` separates printed-expression holders from evaluated keys used
+to refine parent arrays. String and array receivers keep distinct holders for `['0']` and `[0]`.
+Variable, signed, postfix, boolean, null, and nested indexes retain their expression identities.
+The producer does not publish absent-read placeholders as existing nullable fallback holders.
+Required offsets retain counterfactual nullable holders, using the already-evaluated parent.
+Synthetic array `??=` retains the written target holder while assignment commits its parent shape.
+
+The references are PHPStan 2.3.1's `ScopeOps::nodeKey()`, `ArrayOffsetNormalizingVisitor`,
+`MutatingScope::specifyExpressionTypeInPlace()`, `DefaultNarrowingHelper`, `CoalesceHandler`, and
+`AssignOpHandler`, at source revision `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`.
+The public `refined_isset_keys` regression compares complete diagnostics and live holder certainty
+with pinned captures. Both native modes retain identical full artifacts. Postfix indexes run once.
+
+Prepared `??=` targets retain failed-read ErrorType. Coalesce checks the evaluated array and key
+separately: a missing sealed-array entry or list position selects the RHS, including a missing ancestor.
+Optional entries, open arrays, and required error-valued entries do not prove absence. The read artifact
+is unchanged, and the index is not evaluated again. This follows
+[`IssetabilityDescriptor::resolve()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/IssetabilityDescriptor.php#L108-L127),
+[`IssetabilityResolution::isSet()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/IssetabilityResolution.php#L68-L90),
+and [`CoalesceCompositionHelper::composeType()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/Helper/CoalesceCompositionHelper.php#L98-L139).
+[`AssignOpHandler`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/AssignOpHandler.php#L243-L272)
+writes that composed value rather than the failed target read. The `prepared.php` regression captures
+complete PHPStan records, prepared input errors, required error-valued holders, and a postfix index.
+
+## Possibly absent variable reads
+
+Direct-variable diagnostics consume the holder's possibly-undefined flag without requiring a second
+legacy name set. Cast redundancy checks retain that uncertainty instead of treating a present-value
+type as proof that the read exists. Neither change widens or replaces the value type.
+
+The references are PHPStan 2.3.1's `DefinedVariableRule::processNode()` and `ForeachHandler`, at
+source revision `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`. The existing empty/nonempty foreach
+unit controls retain their assertions. Fresh oracle captures report exactly three possibly-undefined
+variables for the possibly empty array and none for the nonempty array.
+
+## Prepared property targets are not plain reads
+
+Property-target preparation retains its composed pre-write type and the receiver and selector reads.
+A direct assignment does not publish the composed property's read reference. Compound assignments
+retain that reference because they consume the previous value.
+
+This follows PHPStan 2.3.1's `AssignHandler::prepareTarget()` and `doPrepareTarget()` property branch,
+which park a read result for type queries but mark the raw direct target as an assignment. The unchanged
+intersection-template unit and an asymmetric direct/compound property control verify the distinction.
+
+## Failed assignments and invalid interface calls retain their types
+
+An ErrorType assignment does not emit `MixedAssignment`. It retains the failed value and its primary
+offset diagnostic. Genuine mixed assignments retain their warning. The static-property units no
+longer expect `NoValue` after a failed or inaccessible read, matching the pinned PHPStan captures.
+
+Direct static interface calls retain the resolved method reflection after their primary abstract-call
+diagnostic. Declared integer and void results remain available to ordinary result consumers, and unknown
+methods remain ErrorType. Pun's frontend continues parameter checks after the abstract-call error.
+
+The references are PHPStan 2.3.1's `AssignHandler`, `StaticPropertyFetchHandler`,
+`AccessStaticPropertiesCheck`, and `StaticMethodCallCheck`, at source revision
+`cb3b7e99489b2e3789ee2eec10501cb7a72580ea`. The `assignment_error_values` and `interface_static`
+public targets retain independent type and complete diagnostic controls.
+
+## Semantic closure capture value flow
+
+`variable_flow` ports the `VariableFlowBuilder`, `VariableLivenessResolver`, and `VariableWritesNode`
+contracts from the same pinned PHPStan source. Successful expression and statement evaluations publish
+immutable fragments. Backward liveness distinguishes reading an imported value from overwriting it.
+By-reference captures retain aliases rather than importing a value write. Matched catch edges use the
+analyser's typed throw routing. Speculative callback gathers publish no flow fragments.
+
+`Settings::track_variable_flow` defaults to false. Pun's unused-capture consumer requests the producer
+and receives completed closure-body results through `AnalysisArtifacts::variable_writes`. It does not
+use lexical reads when a semantic result is absent. The constructor consumer retains its existing walk.
+
+The public `closure_capture_writes` target compares complete diagnostic records and independently
+captured write identities, dependencies, reads, and uses in both native-type modes. Its semantic-hook
+control verifies that a skipped operand does not become a fabricated read.
+
+## Implicit never is not a diagnostic or an exit edge
+
+`ClosureGetCurrentDynamicReturnTypeExtension` returns implicit never outside an anonymous function.
+The provider retains that type without Mago's additional invalid-static-call diagnostic. Assigning a
+never-valued expression does not add `ImpossibleAssignment`. Intrinsic call termination remains a
+separate result of the resolved declaration, not a consequence of the provider-selected value type.
+
+The existing closure units use fresh pinned PHPStan expectations. The extended `never_identity`
+producer fixture records global, function, and method getCurrent calls, subsequent dynamic-call
+ErrorType results, and continuing statement markers. Its capture script preserves the earlier records.
+
+## Invocation operands have one physical evaluation
+
+`EvaluatedArguments` separates the physical argument walk from each target's binding, validation,
+template inference and return provider. Statically named calls combine parameter acceptors, including
+reference, variadic and closure-this contracts. OUT writeback uses that single acceptor. Dynamic names
+retain independent beforeScope type queries without publishing another live evaluation. Invalid dynamic
+calls retain ErrorType, and implicit-never callees do not add an invalid-callable diagnostic.
+
+Closure binding carries the runtime full and native `$this` unions independently of the class used for
+member access. The existing capture-reference hook runs only after real operand analysis, never on a
+cached argument. The `single_call_arguments` target checks asymmetric effects, beforeScope returns,
+semantic providers, OUT writes and bound closure types with observations and native tracking on and off.
+
+These contracts port PHPStan 2.3.1's `ArgumentsHandler`,
+`ParametersAcceptorSelector::combineAcceptors`, `MethodCallReturnTypeHelper` and `FuncCallHandler`,
+at source revision `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`.
+
+## Mixed addition preserves benevolent result acceptance
+
+`InitializerExprTypeResolver::getPlusType` returns a benevolent float, integer and general-array union
+for mixed operands, including ErrorType. It omits the array only when both operands exclude every array.
+Both operands still evaluate before this inference, and implicit-never propagation remains unchanged.
+
+Both existing ignore-issue flags carry benevolence. The native return consumer follows
+`BenevolentUnionType::isAcceptedBy`: any accepted member is sufficient. Unmarked strict unions still
+require every member, and a disjoint declared return still fails. No global containment rule changes.
+The `mixed_addition` target retains independently captured type and complete diagnostic controls.
+The public Analyzer regression in `phpdoc_unions` independently checks int, float, string and bool
+acceptance against real PHPStan Type API results in both native-tracking modes.
+
+## Scope-aware callable acceptors and nested reference writes
+
+Dynamic function calls use the codebase-aware callable-possibility query. Mixed and bare object
+values retain a trivial mixed acceptor; definitely noncallable values retain ErrorType. Negative
+callable assertions enter the existing mixed-exclusion store, so a later invocation does not recover
+the possibility that the guard excluded.
+
+Array and string method aliases use lexical visibility when selecting their return acceptor.
+An inaccessible method contributes mixed rather than leaking its private or protected signature.
+Forwarding through `call_user_func` and `call_user_func_array` uses that same acceptor. Accessible
+aliases, existing closures and invokable objects retain their signatures. The references are
+PHPStan 2.3.1's `FuncCallHandler`, `MixedType`, `ConstantArrayType` and `ConstantStringType` at
+`cb3b7e99489b2e3789ee2eec10501cb7a72580ea`. The `callable_visibility` target compares complete
+diagnostics and independent raw producer results against the pinned capture.
+
+Input-reference writeback checks existence on the variable root of a derived offset. A composed
+offset need not have a standalone certainty holder. The existing post-argument scope still owns
+existence, and existing OUT assignment updates the offset and invalidates its parent without
+replaying the key. The `nested_reference_writes` target retains the complete original bug-3387
+fixture and asymmetric value, native-availability, event and selected-scope controls.
+
+## First-class method callable fallback values
+
+`MethodCallableNodeHandler` returns a bare `Closure` when a method name is dynamic or its reflection
+is unavailable. Dynamic selectors do not enter `MethodCallableRule`'s ordinary name validation or
+signature reflection. The receiver and selector still evaluate once, in that order. Named lookups
+retain their primary method-access diagnostics, but their fallback value is not never.
+
+`failed_method_callables` compares raw producer, post-write and continuation values with pinned
+PHPStan 2.3.1 observations, and complete diagnostics across default and bleeding-edge configurations.
+Observer and native-tracking controls preserve operand order and artifacts. Ordinary dynamic calls,
+property selectors and non-first-class partial applications retain their independent behavior.
+
+## Failed constants and instantiations retain value results
+
+`ClassConstFetchHandler` returns genuine mixed for non-Identifier names, independently of selector
+diagnostics. Unresolved named constant fetches retain ErrorType. Valid receiver-union alternatives
+survive invalid alternatives. Resolver diagnostics, references and operand evaluation remain active.
+`failed_class_constants` captures producer values, written holders, continuation and complete diagnostics
+from PHPStan 2.3.1, including a genuinely terminating selector and fatal analysis-error propagation.
+
+Named interface, trait, enum, abstract and unknown-class instantiations retain named object values.
+Constructor arguments, references, OUT writes and return providers still execute. Invalid expression
+targets retain ErrorType. Explicit-never constructor returns and dynamic-target asymmetry remain separate.
+Out-of-class `self`, `static` and `parent` follow their distinct value paths; the named `parent` placeholder
+does not yet implement NonexistentParentClassType's exact reflection identity. `failed_instantiation`
+retains independent raw/new, post-write and continuation controls without fabricating frontend types.
+
+## Prepared compound reads survive writes
+
+`AssignOpHandler` stores the completed target read separately from its subsequent write. After applyWrite,
+the analyzer restores prepared ExpressionResult artifacts, including raw/native answers and genuine
+unavailability, without replaying operands or semantic hooks. Written scope holders retain their new values.
+Constant-array slot projection removes optionality from the value lookup while retaining it in the absence
+flag. Genuine nullable values are unchanged. The private projection never replaces the written receiver.
+
+`compound_assignment_reads` compares complete implemented-rule diagnostics and actual prepared reads with
+the pinned PHPStan capture. The frozen capture also retains unported offset-rule diagnostics. Native and
+observer controls check once-only key and RHS evaluation, unavailable values and independent written holders.
+
+## Constant foreach entries produce conditional holders
+
+`ForeachHandler` relates each constant key to its entry's value when the loop has direct key/value
+variables, one constant-array alternative and no foreach doccomment. The same guard narrows the dynamic
+offset of a direct iterable variable. These holders do not depend on the separate array write-back path:
+by-reference targets and literal iterables retain their value correlations. Constant-list keys retain
+their literal domain rather than an unknown integer tail.
+
+`foreach_conditional_holders` compares complete Bug13054 diagnostics at levels 0 and 5, independent
+generic unions, overwritten selectors and reference controls against PHPStan 2.3.1. Ordinary observations
+match in both native modes; the partial native API still leaves foreach values unavailable.

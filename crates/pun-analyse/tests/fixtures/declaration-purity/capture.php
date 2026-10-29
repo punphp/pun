@@ -1,13 +1,14 @@
 <?php
 
 // php capture.php /absolute/path/to/phpstan-2.3.1.phar > expected.json
+// php capture.php /absolute/path/to/phpstan-2.3.1.phar constructors > constructors.json
 $phar = $argv[1];
 require 'phar://' . $phar . '/vendor/autoload.php';
 $root = sys_get_temp_dir() . '/pun-declaration-purity-' . getmypid();
 mkdir($root);
 try {
     $files = [];
-    foreach (['matrix', 'supported', 'boundaries'] as $name) {
+    foreach (($argv[2] ?? null) === 'constructors' ? ['constructors'] : ['matrix', 'supported', 'boundaries'] as $name) {
         $files[] = $file = "$root/$name.php";
         copy(__DIR__ . "/$name.php", $file);
     }

@@ -1,0 +1,1034 @@
+{
+    "sequential-0": [],
+    "sequential-1": [],
+    "sequential-4": [
+        [
+            "sequential.php",
+            11,
+            "isset.offset",
+            "Offset non-decimal-int-string on array{string} in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "sequential.php",
+            12,
+            "nullCoalesce.offset",
+            "Offset non-decimal-int-string on array{string} on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "sequential.php",
+            20,
+            "isset.offset",
+            "Offset '0' on string in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "sequential.php",
+            21,
+            "nullCoalesce.offset",
+            "Offset '0' on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "sequential.php",
+            24,
+            "isset.offset",
+            "Offset false on string in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "sequential.php",
+            25,
+            "nullCoalesce.offset",
+            "Offset false on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "sequential.php",
+            33,
+            "isset.offset",
+            "Offset decimal-int-string on array<string, string>|string in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "sequential.php",
+            34,
+            "nullCoalesce.offset",
+            "Offset decimal-int-string on array<string, string>|string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "sequential.php",
+            39,
+            "isset.offset",
+            "Offset '0' on non-empty-list<string> in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "sequential.php",
+            40,
+            "nullCoalesce.offset",
+            "Offset '0' on non-empty-list<string> on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "sequential.php",
+            41,
+            "isset.offset",
+            "Offset 0 on non-empty-list<string> in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "sequential.php",
+            42,
+            "nullCoalesce.offset",
+            "Offset 0 on non-empty-list<string> on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ]
+    ],
+    "sequential-5": [
+        [
+            "sequential.php",
+            11,
+            "isset.offset",
+            "Offset non-decimal-int-string on array{string} in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "sequential.php",
+            12,
+            "nullCoalesce.offset",
+            "Offset non-decimal-int-string on array{string} on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "sequential.php",
+            20,
+            "isset.offset",
+            "Offset '0' on string in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "sequential.php",
+            21,
+            "nullCoalesce.offset",
+            "Offset '0' on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "sequential.php",
+            24,
+            "isset.offset",
+            "Offset false on string in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "sequential.php",
+            25,
+            "nullCoalesce.offset",
+            "Offset false on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "sequential.php",
+            33,
+            "isset.offset",
+            "Offset decimal-int-string on array<string, string>|string in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "sequential.php",
+            34,
+            "nullCoalesce.offset",
+            "Offset decimal-int-string on array<string, string>|string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "sequential.php",
+            39,
+            "isset.offset",
+            "Offset '0' on non-empty-list<string> in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "sequential.php",
+            40,
+            "nullCoalesce.offset",
+            "Offset '0' on non-empty-list<string> on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "sequential.php",
+            41,
+            "isset.offset",
+            "Offset 0 on non-empty-list<string> in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "sequential.php",
+            42,
+            "nullCoalesce.offset",
+            "Offset 0 on non-empty-list<string> on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ]
+    ],
+    "sequential-9": [
+        [
+            "sequential.php",
+            11,
+            "isset.offset",
+            "Offset non-decimal-int-string on array{string} in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "sequential.php",
+            12,
+            "nullCoalesce.offset",
+            "Offset non-decimal-int-string on array{string} on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "sequential.php",
+            20,
+            "isset.offset",
+            "Offset '0' on string in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "sequential.php",
+            21,
+            "nullCoalesce.offset",
+            "Offset '0' on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "sequential.php",
+            24,
+            "isset.offset",
+            "Offset false on string in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "sequential.php",
+            25,
+            "nullCoalesce.offset",
+            "Offset false on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "sequential.php",
+            33,
+            "isset.offset",
+            "Offset decimal-int-string on array<string, string>|string in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "sequential.php",
+            34,
+            "nullCoalesce.offset",
+            "Offset decimal-int-string on array<string, string>|string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "sequential.php",
+            39,
+            "isset.offset",
+            "Offset '0' on non-empty-list<string> in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "sequential.php",
+            40,
+            "nullCoalesce.offset",
+            "Offset '0' on non-empty-list<string> on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "sequential.php",
+            41,
+            "isset.offset",
+            "Offset 0 on non-empty-list<string> in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "sequential.php",
+            42,
+            "nullCoalesce.offset",
+            "Offset 0 on non-empty-list<string> on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ]
+    ],
+    "history-0": [],
+    "history-1": [],
+    "history-4": [
+        [
+            "history.php",
+            7,
+            "nullCoalesce.offset",
+            "Offset '1' on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            10,
+            "nullCoalesce.offset",
+            "Offset '01' on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            15,
+            "nullCoalesce.offset",
+            "Offset false on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            30,
+            "isset.offset",
+            "Offset 0 on array{string, string|null} in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            31,
+            "nullCoalesce.offset",
+            "Offset 0 on array{string, string|null} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            32,
+            "isset.offset",
+            "Offset '0' on array{string, string|null} in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            33,
+            "nullCoalesce.offset",
+            "Offset '0' on array{string, string|null} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            35,
+            "isset.offset",
+            "Offset 1 on array{string, string} in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            36,
+            "nullCoalesce.offset",
+            "Offset 1 on array{string, string} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            37,
+            "isset.offset",
+            "Offset '1' on array{string, string} in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            38,
+            "nullCoalesce.offset",
+            "Offset '1' on array{string, string} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            43,
+            "nullCoalesce.offset",
+            "Offset '0' on array{null, string} on left side of ?? always exists and is always null.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            44,
+            "isset.offset",
+            "Offset 0 on array{null, string} in isset() always exists and is always null.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            45,
+            "nullCoalesce.offset",
+            "Offset 0 on array{null, string} on left side of ?? always exists and is always null.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            46,
+            "nullCoalesce.offset",
+            "Offset '1' on array{null, string} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            47,
+            "isset.offset",
+            "Offset 1 on array{null, string} in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            48,
+            "nullCoalesce.offset",
+            "Offset 1 on array{null, string} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            66,
+            "nullCoalesce.offset",
+            "Offset 0 on array{'first', 'second'} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            68,
+            "isset.offset",
+            "Offset 0 on array{'first', 'second'} in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            69,
+            "isset.offset",
+            "Offset 1 on array{'first', 'second'} in isset() always exists and is not nullable.",
+            null,
+            true
+        ]
+    ],
+    "history-5": [
+        [
+            "history.php",
+            7,
+            "nullCoalesce.offset",
+            "Offset '1' on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            10,
+            "nullCoalesce.offset",
+            "Offset '01' on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            15,
+            "nullCoalesce.offset",
+            "Offset false on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            30,
+            "isset.offset",
+            "Offset 0 on array{string, string|null} in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            31,
+            "nullCoalesce.offset",
+            "Offset 0 on array{string, string|null} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            32,
+            "isset.offset",
+            "Offset '0' on array{string, string|null} in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            33,
+            "nullCoalesce.offset",
+            "Offset '0' on array{string, string|null} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            35,
+            "isset.offset",
+            "Offset 1 on array{string, string} in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            36,
+            "nullCoalesce.offset",
+            "Offset 1 on array{string, string} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            37,
+            "isset.offset",
+            "Offset '1' on array{string, string} in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            38,
+            "nullCoalesce.offset",
+            "Offset '1' on array{string, string} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            43,
+            "nullCoalesce.offset",
+            "Offset '0' on array{null, string} on left side of ?? always exists and is always null.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            44,
+            "isset.offset",
+            "Offset 0 on array{null, string} in isset() always exists and is always null.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            45,
+            "nullCoalesce.offset",
+            "Offset 0 on array{null, string} on left side of ?? always exists and is always null.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            46,
+            "nullCoalesce.offset",
+            "Offset '1' on array{null, string} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            47,
+            "isset.offset",
+            "Offset 1 on array{null, string} in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            48,
+            "nullCoalesce.offset",
+            "Offset 1 on array{null, string} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            66,
+            "nullCoalesce.offset",
+            "Offset 0 on array{'first', 'second'} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            68,
+            "isset.offset",
+            "Offset 0 on array{'first', 'second'} in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            69,
+            "isset.offset",
+            "Offset 1 on array{'first', 'second'} in isset() always exists and is not nullable.",
+            null,
+            true
+        ]
+    ],
+    "history-9": [
+        [
+            "history.php",
+            7,
+            "nullCoalesce.offset",
+            "Offset '1' on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            10,
+            "nullCoalesce.offset",
+            "Offset '01' on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            15,
+            "nullCoalesce.offset",
+            "Offset false on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            30,
+            "isset.offset",
+            "Offset 0 on array{string, string|null} in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            31,
+            "nullCoalesce.offset",
+            "Offset 0 on array{string, string|null} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            32,
+            "isset.offset",
+            "Offset '0' on array{string, string|null} in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            33,
+            "nullCoalesce.offset",
+            "Offset '0' on array{string, string|null} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            35,
+            "isset.offset",
+            "Offset 1 on array{string, string} in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            36,
+            "nullCoalesce.offset",
+            "Offset 1 on array{string, string} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            37,
+            "isset.offset",
+            "Offset '1' on array{string, string} in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            38,
+            "nullCoalesce.offset",
+            "Offset '1' on array{string, string} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            43,
+            "nullCoalesce.offset",
+            "Offset '0' on array{null, string} on left side of ?? always exists and is always null.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            44,
+            "isset.offset",
+            "Offset 0 on array{null, string} in isset() always exists and is always null.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            45,
+            "nullCoalesce.offset",
+            "Offset 0 on array{null, string} on left side of ?? always exists and is always null.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            46,
+            "nullCoalesce.offset",
+            "Offset '1' on array{null, string} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            47,
+            "isset.offset",
+            "Offset 1 on array{null, string} in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            48,
+            "nullCoalesce.offset",
+            "Offset 1 on array{null, string} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            66,
+            "nullCoalesce.offset",
+            "Offset 0 on array{'first', 'second'} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            68,
+            "isset.offset",
+            "Offset 0 on array{'first', 'second'} in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "history.php",
+            69,
+            "isset.offset",
+            "Offset 1 on array{'first', 'second'} in isset() always exists and is not nullable.",
+            null,
+            true
+        ]
+    ],
+    "producer-0": [],
+    "producer-1": [],
+    "producer-4": [
+        [
+            "producer.php",
+            7,
+            "isset.offset",
+            "Offset '0' on string in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "producer.php",
+            9,
+            "nullCoalesce.offset",
+            "Offset '0' on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "producer.php",
+            13,
+            "nullCoalesce.offset",
+            "Offset '1' on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "producer.php",
+            15,
+            "nullCoalesce.offset",
+            "Offset false on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "producer.php",
+            17,
+            "nullCoalesce.offset",
+            "Offset '2' on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "producer.php",
+            27,
+            "nullCoalesce.offset",
+            "Offset '2' on array{0?: string, 1: string|null, 2: null, 3: string} on left side of ?? always exists and is always null.",
+            null,
+            true
+        ],
+        [
+            "producer.php",
+            29,
+            "nullCoalesce.offset",
+            "Offset '3' on array{0?: string, 1: string|null, 2: null, 3: string} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "producer.php",
+            36,
+            "nullCoalesce.offset",
+            "Offset '3' on array{string, string|null, null, string} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "producer.php",
+            59,
+            "nullCoalesce.offset",
+            "Offset 0 on array{'first', 'second'} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "producer.php",
+            69,
+            "offsetAccess.invalidOffset",
+            "Invalid array key type null.",
+            null,
+            true
+        ]
+    ],
+    "producer-5": [
+        [
+            "producer.php",
+            7,
+            "isset.offset",
+            "Offset '0' on string in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "producer.php",
+            9,
+            "nullCoalesce.offset",
+            "Offset '0' on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "producer.php",
+            13,
+            "nullCoalesce.offset",
+            "Offset '1' on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "producer.php",
+            15,
+            "nullCoalesce.offset",
+            "Offset false on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "producer.php",
+            17,
+            "nullCoalesce.offset",
+            "Offset '2' on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "producer.php",
+            27,
+            "nullCoalesce.offset",
+            "Offset '2' on array{0?: string, 1: string|null, 2: null, 3: string} on left side of ?? always exists and is always null.",
+            null,
+            true
+        ],
+        [
+            "producer.php",
+            29,
+            "nullCoalesce.offset",
+            "Offset '3' on array{0?: string, 1: string|null, 2: null, 3: string} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "producer.php",
+            36,
+            "nullCoalesce.offset",
+            "Offset '3' on array{string, string|null, null, string} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "producer.php",
+            59,
+            "nullCoalesce.offset",
+            "Offset 0 on array{'first', 'second'} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "producer.php",
+            69,
+            "offsetAccess.invalidOffset",
+            "Invalid array key type null.",
+            null,
+            true
+        ]
+    ],
+    "producer-9": [
+        [
+            "producer.php",
+            7,
+            "isset.offset",
+            "Offset '0' on string in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "producer.php",
+            9,
+            "nullCoalesce.offset",
+            "Offset '0' on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "producer.php",
+            13,
+            "nullCoalesce.offset",
+            "Offset '1' on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "producer.php",
+            15,
+            "nullCoalesce.offset",
+            "Offset false on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "producer.php",
+            17,
+            "nullCoalesce.offset",
+            "Offset '2' on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "producer.php",
+            27,
+            "nullCoalesce.offset",
+            "Offset '2' on array{0?: string, 1: string|null, 2: null, 3: string} on left side of ?? always exists and is always null.",
+            null,
+            true
+        ],
+        [
+            "producer.php",
+            29,
+            "nullCoalesce.offset",
+            "Offset '3' on array{0?: string, 1: string|null, 2: null, 3: string} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "producer.php",
+            36,
+            "nullCoalesce.offset",
+            "Offset '3' on array{string, string|null, null, string} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "producer.php",
+            59,
+            "nullCoalesce.offset",
+            "Offset 0 on array{'first', 'second'} on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "producer.php",
+            69,
+            "offsetAccess.invalidOffset",
+            "Invalid array key type null.",
+            null,
+            true
+        ]
+    ]
+}

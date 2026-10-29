@@ -97,6 +97,7 @@ pub(crate) fn is_contained_by(
         );
 
         if !forward_ok {
+            parameter_comparison_result.is_only_accepted = false;
             if matches!(variance, Variance::Contravariant)
                 && union_comparator::is_contained_by(
                     codebase,
@@ -108,6 +109,7 @@ pub(crate) fn is_contained_by(
                     &mut parameter_comparison_result,
                 )
             {
+                atomic_comparison_result.is_only_accepted |= parameter_comparison_result.is_only_accepted;
                 continue;
             }
 
@@ -128,6 +130,7 @@ pub(crate) fn is_contained_by(
             continue;
         }
 
+        atomic_comparison_result.is_only_accepted |= parameter_comparison_result.is_only_accepted;
         if matches!(variance, Variance::Invariant)
             && (!inside_assertion || !container_type_parameter.has_template_types())
             && !specialized_template_type.from_template_fallback()
@@ -143,6 +146,7 @@ pub(crate) fn is_contained_by(
                 inside_assertion,
                 &mut reverse_result,
             );
+            atomic_comparison_result.is_only_accepted |= reverse_result.is_only_accepted;
 
             if !reverse_ok {
                 update_failed_result_from_nested(atomic_comparison_result, &reverse_result);

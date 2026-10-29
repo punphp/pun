@@ -1326,6 +1326,7 @@ pub(crate) fn is_atomic_intersection_contained_by(
 ) -> bool {
     let input = TUnion::from_atomic(input.clone());
     let contained = |container| {
+        let mut result = ComparisonResult::default();
         union_comparator::is_contained_by(
             codebase,
             &input,
@@ -1333,8 +1334,8 @@ pub(crate) fn is_atomic_intersection_contained_by(
             false,
             false,
             false,
-            &mut ComparisonResult::default(),
-        )
+            &mut result,
+        ) && !result.is_only_accepted
     };
     if !contained(container.clone()) {
         return false;

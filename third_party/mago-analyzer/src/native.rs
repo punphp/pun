@@ -864,9 +864,7 @@ fn cast_type(cast: ScalarCast, ty: &TUnion) -> Option<TUnion> {
             }
             get_float()
         }
-        (String, Scalar(Int(TInteger::Literal(value)))) => {
-            get_literal_string(mago_word::i64_word(*value))
-        }
+        (String, Scalar(Int(integer))) => integer.to_string_type(),
         (String, Scalar(Decimal(TFloat::Literal(value)))) => {
             if **value == 0.0 {
                 // ConstantFloatType::toString intentionally represents both zero signs.
@@ -888,7 +886,6 @@ fn cast_type(cast: ScalarCast, ty: &TUnion) -> Option<TUnion> {
                 TStringCasing::Uppercase,
             ))))
         }
-        // General/ranged integer strings need PHPStan's decimal-integer-string accessory, not numeric-string.
         _ => return None,
     })
 }

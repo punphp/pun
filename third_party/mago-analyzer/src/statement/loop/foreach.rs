@@ -6,6 +6,7 @@ use mago_codex::assertion::Assertion;
 use mago_codex::ttype::TType;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::array::TArray;
+use mago_codex::ttype::atomic::array::key::ArrayKey;
 use mago_codex::ttype::atomic::array::list::TList;
 use mago_codex::ttype::combine_union_types;
 use mago_codex::ttype::combiner::CombinerOptions;
@@ -17,6 +18,7 @@ use mago_codex::ttype::union::TUnion;
 use mago_reporting::Annotation;
 use mago_reporting::Issue;
 use mago_span::HasSpan;
+use mago_syntax::comments::docblock::PrecedingDocblocks;
 use mago_syntax::cst::Expression;
 use mago_syntax::cst::Foreach;
 use mago_syntax::cst::ForeachTarget;
@@ -80,6 +82,40 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Foreach<'arena> {
         if value_type.is_never() {
             value_type = get_mixed();
         }
+
+        let mut iterator_type = artifacts.get_expression_type(iterator);
+        while let Some(ty) = iterator_type
+            && let [TAtomic::GenericParameter(parameter)] = ty.types.as_ref()
+        {
+            iterator_type = Some(&parameter.constraint);
+        }
+        let array = iterator_type.and_then(TUnion::get_single_array);
+        let callable_array = array.and_then(|array| array.callable_array_view(context.codebase)).map(TArray::Keyed);
+        let constant_entries: Option<Vec<_>> = match callable_array.as_ref().or(array) {
+            Some(TArray::Keyed(array)) if array.is_constant_shape() => Some(array
+                .known_items
+                .iter()
+                .flat_map(|items| items.iter())
+                .map(|(key, (_, value))| (key.to_union(), value.clone()))
+                .collect()),
+            Some(TArray::List(array)) if array.element_type.is_never() => {
+                let entries: Vec<_> = array
+                    .known_elements
+                    .iter()
+                    .flat_map(|items| items.iter())
+                    .map(|(key, (_, value))| (ArrayKey::Integer(*key as i64).to_union(), value.clone()))
+                    .collect();
+                // getIterableKeyType() of a constant list has no unknown integer-key tail.
+                // Keep the precise domain on the key assignment, not a later variable read.
+                if let Some(keys) = entries.iter().map(|(key, _)| key.clone()).reduce(|left, right| {
+                    combine_union_types(&left, &right, context.codebase, context.settings.combiner_options())
+                }) {
+                    key_type = keys;
+                }
+                Some(entries)
+            }
+            _ => None,
+        };
 
         let mut loop_block_context = block_context.clone();
         if context.settings.pollute_scope_with_always_iterable_foreach
@@ -184,6 +220,25 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Foreach<'arena> {
         } else {
             None
         };
+
+        // ForeachHandler's conditional holders are independent of entry write-back above:
+        // references and literal iterables also correlate each constant key with its value.
+        if PrecedingDocblocks::new(context.comments, self.span().start.offset).next().is_none()
+            && self.target.key().is_some_and(|key| matches!(key, Expression::Variable(Variable::Direct(_))))
+            && matches!(value_expression, Expression::Variable(Variable::Direct(_)))
+            && let Some(entries) = constant_entries
+            && let (Some(key_id), Some(value_id)) = (key_expression_id, value_expression_id)
+        {
+            let offset_id = iterator_variable_id
+                .filter(|_| matches!(iterator, Expression::Variable(Variable::Direct(_))))
+                .map(|iterator_id| concat_word!(iterator_id.as_bytes(), b"[", key_id.as_bytes(), b"]"));
+            for (key_type, value_type) in entries {
+                loop_block_context.add_parameter_condition(key_id, key_type.clone(), value_id, value_type.clone());
+                if let Some(offset_id) = offset_id {
+                    loop_block_context.add_parameter_condition(key_id, key_type, offset_id, value_type);
+                }
+            }
+        }
 
         let mut loop_scope = LoopScope::new(self.span(), block_context.locals.clone(), None);
         loop_scope.foreach_entry_scope = Some(entry.variable_scope());

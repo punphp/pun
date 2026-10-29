@@ -219,8 +219,8 @@ fn closure_creation_keeps_only_supported_outer_native_continuations() {
         ("$copy;", "", true),
         ("unknown();", "", true),
         ("$copy;", "&", true),
-        ("unknown();", "&", false),
-        ("$copy = 1;", "&", false),
+        ("unknown();", "&", true),
+        ("$copy = 1;", "&", true),
     ] {
         let source = format!("<?php class CaptureBoundary {{
     public mixed $prop;

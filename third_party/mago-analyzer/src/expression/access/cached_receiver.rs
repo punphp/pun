@@ -53,7 +53,7 @@ where
         name,
     );
 
-    reference.lookup_class = Some(class.name);
+    reference.lookup_class = Some(class.original_name);
     reference.static_access = true;
     let result = if let Some(constant) = class.constants.get(&name) {
         reference.kind = MemberKind::ClassConstant;

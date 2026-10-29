@@ -92,7 +92,7 @@ pub(super) fn prepare<'arena>(
         None,
         file.contents.clone(),
     );
-    let (types, _, _, _) = infer::analyse(
+    let (types, _, _, _, _, _, _, _) = infer::analyse(
         arena,
         &file,
         program,

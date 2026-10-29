@@ -319,6 +319,11 @@ pub(super) fn typed(program: &Program) -> Vec<Span> {
         fn walk_in_call(&mut self, call: &'ast Call<'arena>, _: &mut ()) {
             self.spans.push(call.span());
         }
+        fn walk_in_statement_expression(&mut self, s: &'ast ExpressionStatement<'arena>, _: &mut ()) {
+            // StatementHandler also terminates on the completed value, independently
+            // of a nested expression's isAlwaysTerminating flag (notably `new`).
+            self.spans.push(s.expression.span());
+        }
         fn walk_in_binary(&mut self, b: &'ast Binary<'arena>, _: &mut ()) {
             if matches!(b.operator, BinaryOperator::NullCoalesce(_)) {
                 self.spans.push(b.lhs.span());

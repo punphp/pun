@@ -1,0 +1,58 @@
+[
+    [
+        7,
+        "if.alwaysFalse",
+        "If condition is always false.",
+        "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.",
+        true
+    ],
+    [
+        12,
+        "if.alwaysFalse",
+        "If condition is always false.",
+        null,
+        true
+    ],
+    [
+        18,
+        "if.alwaysFalse",
+        "If condition is always false.",
+        null,
+        true
+    ],
+    [
+        25,
+        "if.alwaysTrue",
+        "If condition is always true.",
+        null,
+        true
+    ],
+    [
+        26,
+        "deadCode.unreachable",
+        "Unreachable statement - code above always terminates.",
+        null,
+        true
+    ],
+    [
+        30,
+        "if.alwaysFalse",
+        "If condition is always false.",
+        null,
+        true
+    ],
+    [
+        36,
+        "if.alwaysFalse",
+        "If condition is always false.",
+        null,
+        true
+    ],
+    [
+        43,
+        "if.alwaysFalse",
+        "If condition is always false.",
+        "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.",
+        true
+    ]
+]

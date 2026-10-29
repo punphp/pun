@@ -260,7 +260,7 @@ fn check(
     let mut acceptor = params::select(c, Variants { all, named: None }, counts);
     acceptor.accepts_named_arguments = accepts_named;
     let subject = described[..1].to_ascii_uppercase() + &described[1..];
-    let call = params::Call { kind, subject: &subject, void_message: Some(format!("Result of {described} (void) is used.")) };
+    let call = params::Call { kind, subject: &subject, scope: Some(at), void_message: Some(format!("Result of {described} (void) is used.")) };
     params::check(c, &acceptor, counts, at, call, first_level);
 }
 

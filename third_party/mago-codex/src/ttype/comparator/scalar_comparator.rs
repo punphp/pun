@@ -69,6 +69,18 @@ pub fn is_contained_by(
                 return false;
             }
 
+            if c.decimal_integer.is_some_and(|expected| i.is_decimal_integer() != Some(expected)) {
+                return false;
+            }
+
+            // A decimal accessory implies non-emptiness but is not the explicit non-empty
+            // conjunct required by IntersectionType::isSubTypeOf(). Non-falsy also proves it.
+            if c.decimal_integer.is_some() && c.has_non_empty_accessory()
+                && !i.has_non_empty_accessory() && !i.is_truthy()
+            {
+                return false;
+            }
+
             if c.is_non_empty() && !i.is_non_empty() {
                 return false;
             }

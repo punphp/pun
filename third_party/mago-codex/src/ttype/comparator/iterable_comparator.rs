@@ -47,6 +47,7 @@ pub fn is_contained_by(
 
             update_failed_result_from_nested(atomic_comparison_result, &nested_comparison_result);
         }
+        atomic_comparison_result.is_only_accepted |= nested_comparison_result.is_only_accepted;
     }
 
     all_types_contain

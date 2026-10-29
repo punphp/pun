@@ -25,6 +25,9 @@ The five [analyse presets](/docs/configuration/presets#analyse-presets) group PH
 
 The enabled rules set the PHPStan level Pun analyses at: the highest level of a core rule that is on, or of a preset type switch. `stubs`, `[[analyse.ignore]]` and the rule options `pun migrate` writes apply as PHPStan's `stubFiles`, `ignoreErrors` and parameters do. An ignore entry nothing matched is an error, with PHPStan's message. Larastan's knowledge and rules are on when composer.lock pins a Laravel that Larastan 3 supports (11.44.2 and later 11.x, 12.4.1 and later 12.x, 13.x).
 
+Pun TOML cannot yet express independent overrides of `checkFunctionArgumentTypes`, `checkArgumentsPassedByReference`, or `checkThisOnly`.
+Migration reports these overrides as unsupported rather than changing the analysis level.
+
 With every analyse rule off, `pun analyse` stops with "No rules detected", as PHPStan does without a level, and exits 2.
 
 ## Rule names
@@ -34,20 +37,45 @@ Human output uses Pun IDs such as `analyse/undefined/function`. Machine reports 
 Static calls check PHPDoc `@method` signatures, including inherited tags. Pun checks their required and named arguments and reports static calls to non-static methods.
 
 Static property checks resolve each name in a finite inferred name set.
+Property receiver eligibility follows `checkThisOnly` independently of the analysis level, including parenthesized and nullsafe receivers.
 Failed reads retain PHPStan's error type rather than `null`.
 Property increment and decrement checks validate the stored new value separately from a postfix expression's old result.
+Instance calls invalidate narrowed mutable receiver properties for constructors, known side effects, and unresolved methods.
+Possibly impure calls preserve receiver narrowings. Readonly properties and private properties declared outside the callee's class retain their target facts.
+Trait aliases use the reflected lookup name for PHPDoc purity, return types, and constructor classification.
 
 Failed named instance and static method lookups retain PHPStan's error type when no reflected or provider result exists.
 Ordinary method calls retain unknown-class diagnostics and their discovery tips. Dynamic selectors and `method_exists()` assertions retain their separate fallback behavior.
 
 Unresolved named function calls retain PHPStan's error type after argument evaluation, including inside `function_exists()` guards.
+Calls through unknown `mixed` and bare `object` values retain `mixed` results.
+Definitely invalid callees retain the error type, including `mixed` narrowed by a negative `is_callable()` guard.
+Inaccessible array and string callables retain their access diagnostic but use a `mixed` return, including through `call_user_func()` and `call_user_func_array()`.
+Accessible calls and previously created closures retain their declared signatures.
 Dynamic callable result inference remains incomplete.
+
+First-class instance method callables with dynamic names retain a bare `Closure` type, without a reflected signature.
+The receiver and name expressions still evaluate once, in that order.
+A missing named method also retains `Closure` after its method-access diagnostic.
+Bare `Closure` values satisfy ordinary callable signatures without inventing parameter or return types.
+They do not satisfy `pure-callable` signatures without known purity.
+
+Named function, method and static calls returning `void` have value type `null`.
+Void-use diagnostics retain the call's raw return type; calls through callable values retain `void` as their value type.
+Match results combine arm types without discarding `void`, including mixed void and non-void arms.
+Null coalescing uses that value type. A named void call selects the fallback, while a callable-value void call retains `void`.
+Nullsafe calls preserve declared `null` returns separately from null introduced by a nullable receiver, including nullable template bounds.
 
 Inherited PHPStan API signatures resolve PHPDoc names using the embedded declaration's namespace and imports.
 
 Argument-count checks distinguish empty arrays from non-empty open array shapes passed with `...`.
+Unpacked operands and ordinary non-closure arguments are evaluated once, in written order.
+Argument binding uses each unpack's stored type without evaluating the operand again.
+Overload selection expands constant-array operands before comparing argument types; every unpack bypasses arity filtering.
+Unknown unpacks replace collided selector keys, while constant-array alternatives combine their value types.
+Overload selection reads argument types even when argument-type and by-reference diagnostics are disabled.
 
-When argument type checks are enabled, calls respect `@no-named-arguments` on functions, methods and constructors, including inherited policies. Named arguments and string-keyed unpacking produce PHPStan's `argument.named` diagnostic after argument binding. Unknown arguments retain their binding diagnostics.
+When either argument-type or by-reference checks are enabled, calls respect `@no-named-arguments` on functions, methods and constructors, including inherited policies. Named arguments and string-keyed unpacking produce PHPStan's `argument.named` diagnostic after argument binding. Unknown arguments retain their binding diagnostics.
 
 At PHPStan level 5 and above, shared argument checks validate allowed built-in constants and report unresolvable generic parameter types.
 Unresolvable-type diagnostics preserve the explanation from the type comparison or deferred array-shape key.
@@ -59,6 +87,8 @@ Global constant reflection keeps initializer unions separate from file-local flo
 Deferred global references resolve before ternary and null-coalescing filtering.
 Loaded class and interface constants also retain canonical initializer unions separately from declared types.
 Named, `self` and `parent` dependencies resolve in the declaring class's scope before ternary and null-coalescing filtering.
+Duplicate class-like constants select the last declaration's complete reflection.
+Duplicate and conflict diagnostics still use each written declaration's location.
 Trait constants use the selected implementing class's scope. Inherited non-private constants retain that identity even when a subclass explicitly reuses the trait.
 Trait constant conflicts compare complete initializer unions and array shapes.
 Unsupported initializer expressions retain `mixed` in reflection, including trait conflicts and nested arrays. Ordinary calls retain their flow-inferred types.
@@ -117,10 +147,33 @@ The `compact()` check preserves resolved function-import names and reads variabl
 Benevolent unions and callable-array intersections retain their literal variable names.
 Its findings share `analyse/undefined/variable` selection; independent compact-rule selection remains incomplete.
 Nested variable names are checked as reads even when assignment, `isset`, `empty`, coalescing or `unset` permits an undefined outer target.
+From level 1, `isset` checks each operand's incoming variable certainty. Level 4 adds offset and property checks.
+Multiline diagnostics use the `isset` construct's line. Whole-rule parity remains incomplete for some refined offset-key types.
+Integer-to-string casts retain decimal-integer-string precision, including bounded ranges and independent native types.
+Array offset checks coerce definite decimal-integer strings to integer keys; string offset checks retain the raw key type.
 Variable-name type errors point to the name expression's line, including multiline names.
 Variable names read from literal array offsets retain branch-dependent definedness after direct offset assignments.
 Writes to the array or another offset invalidate those cached names.
 Literal string offsets use PHP bytes and support negative integer indexes.
+
+Branch joins retain conditional type correlations even when every branch defines the affected variable.
+Narrowing a discriminating guard also narrows its correlated receiver, value, or unpacked array.
+Writes and unsets invalidate affected correlations, including symbolic array indexes.
+Function and method entry also retain top-level conditional parameter relationships, including forward references and negated conditions.
+Closures preserve those relationships when both variables are captured. Arrow parameters invalidate relationships they shadow.
+Read-only by-reference captures retain their existing types instead of widening them at creation.
+Constant-array `foreach` loops correlate each literal key with its entry value when both loop targets are direct variables and the loop has no doccomment.
+Generic key and value unions do not imply that relationship. Writes invalidate derived correlations.
+Equal-key closed shapes can merge nullable nested values without merging alternatives with two unrelated fields.
+Per-name filtered observations for dynamic method calls remain incomplete.
+
+For supported native expressions, constant `if` checks distinguish documented types from native types when adding PHPStan's PHPDoc-certainty tip.
+
+Assignment targets retain their preparation-time reads before the right-hand side and subsequent write.
+Array roots, indexes, property receivers, and selectors keep their effects without a second evaluation during that write.
+Compound assignments retain the completed input value separately from the written holder.
+Optional array slots keep absence separate from a nullable value.
+Cached property values do not skip evaluation of their receiver or selector.
 
 Shared scope inference honors PHPStan's `polluteScopeWithLoopInitialAssignments` parameter, which defaults to true.
 When disabled, `for` exits include the pre-loop scope; `while` adds that scope only when zero iterations are possible.
@@ -136,8 +189,12 @@ Its actual termination, loop exits, throws, and expression effects remain unchan
 Braces belonging to control statements do not count as standalone blocks.
 
 Dynamic `new $class` expressions report unknown class names even when another possible name exists.
+Invalid named instantiations retain their object types and constructor argument effects independently of legality diagnostics.
+An invalid target expression retains an error value rather than making later statements unreachable.
 
 Dynamic constant fetches such as `Example::{$name}` check each possible name when the selector has a finite set of string values. The checks preserve branch narrowing and report missing or inaccessible constants.
+Their expression value remains `mixed`, even for a literal dynamic name.
+Unresolved named constant fetches retain an error value instead of `never`.
 
 Class-constant checks retain expression guards across branches, ternaries and short-circuit conditions.
 Writes invalidate guards for the affected receiver or selector.
@@ -162,6 +219,8 @@ Static calls and first-class callables through `class-string<stdClass>` report n
 Argument checks preserve declared `mixed` inside generic types and callable signatures.
 Generic callable arguments specialize their own templates before comparison; generic class arguments respect declared covariance and contravariance.
 First-class generic callbacks retain conditional returns until their expected input types are known.
+Return checks resolve template-key array shapes before testing whether a return is required or describing the result.
+Own value templates retain their identity.
 
 Negative type guards preserve excluded values in `mixed` types.
 Object intersections discard duplicate constraints without losing generic arguments or `static` identity.
@@ -171,6 +230,12 @@ Shared analysis retains exact instantiated-class alternatives without marking th
 Conversion to Pun's PHPStan object types preserves per-value reflection overrides through containment and unions.
 Ordinary type traversal preserves these overrides; template inference removes them recursively, matching PHPStan.
 Named-argument checks apply finality to the method's actual declaring class, including inherited methods.
+Trait-alias override checks use the reflected alias name, adapted visibility and method policy.
+Override prototypes exclude interfaces already supplied by a parent class or another interface.
+Remaining interfaces retain declaration order.
+Case-insensitive trait-alias lookups retain written spelling in reflected names and diagnostics.
+Method-call, override and consistent-constructor rules are enabled independently.
+Turning off renamed-parameter reports preserves other enabled method diagnostics and unmatched-ignore errors.
 Short-circuit boolean expressions retain evaluated operand types and their excluded object alternatives.
 Output arguments evaluated only on a short-circuited right operand remain possibly undefined on paths that skip that operand.
 Full type inference preserves explicit `mixed` from native and PHPDoc declarations, built-in return types, assignments and captures.
@@ -182,6 +247,11 @@ Native `unset` checks retain a property's modifiers and hooks beneath a PHPDoc p
 Annotation-only properties do not acquire native modifiers.
 Interface `@phpstan-require-extends` properties participate in native unset checks, preserving annotation-only reflections as non-native.
 Property writes use the reflected writable type, including compatible PHPDoc annotations over native properties.
+
+Array literals retain bounded integer and string key alternatives as optional constant slots.
+Repeated finite keys replace optional-slot values and widen required-slot values.
+Automatic indexes and optional constant unpacks follow PHPStan's builder limits.
+General and union unpacks retain their existing fallback.
 
 `array_rand()` inference preserves possible array keys and returns a non-empty list when the requested count is at least two.
 `rand()`, `mt_rand()` and `random_int()` preserve inferred integer bounds.
@@ -215,23 +285,34 @@ Other filters and `FILTER_THROW_ON_FAILURE` retain declaration-based inference.
 Implicit `never` from an empty value domain does not make later statements unreachable.
 Call termination follows the resolved declaration, separately from a dynamic return type.
 An expression statement whose value is explicit `never` also terminates, matching PHPStan's treatment of forwarded calls.
+From level 4, the rule walk skips statements after termination while retaining labels and independent function and class declarations.
 `exit`, `die`, and `throw` produce PHPStan's nonaccepting `never`, including through inferred arrow-function returns.
 
 From level 2, `analyse/functions/invalid-pure` reports `void.pure` for supported functions and private methods whose bodies provably have no side effects.
+Named constructor calls use their reflected purity and throw declarations, including inherited constructors.
+Dynamic constructor targets, built-in constructor throw extensions, and conditional constructor policies remain incomplete.
 Unknown effect producers remain unchecked. Full pure-function and pure-method validation remains incomplete.
 
 Array writes distinguish definite literal keys from literal alternatives within a general string or integer key.
 A false `isset` probe leaves the array unchanged when its nullable entry might be absent.
 A required nullable entry narrows to `null`.
 Failed offset reads do not satisfy the value cache. Later absence probes refresh presence independently of a cached narrowed value.
-Coalesce scopes distinguish missing offsets from stored null and discard offset-cache facts absent from a continuing branch.
-Closed array alternatives survive these joins; general array-union normalization remains incomplete.
+Coalesce scopes distinguish missing offsets from stored null.
+Continuing branch joins preserve closed-array alternatives and discard offset-cache facts absent from a continuing branch.
+Array unions retain same-key shape alternatives when two required fields have unrelated values, preserving sibling-field narrowing.
+Equal multi-key shapes can still merge across one unrelated field. Singleton shapes with disjoint values remain separate.
+Sequential optional-key joins merge equal shared values while retaining tagged and non-plain empty-array alternatives.
+Offset reads preserve incoming union order, including template constraints.
+Foreach's pollution-off result remains a separate final-value and entry-certainty projection.
+General array-union normalization remains incomplete.
+Expression statements apply unconditional assertion specifications after operand evaluation and scope joins.
+Built-in `assert()` retains its separate truthy-argument behavior.
 Literal-string reads through a finite integer range infer the selected byte union when the intersected range spans at most 128.
 Partially valid ranges include the empty-string result. Other ranges retain PHPStan's inherited string fallback.
 For and while condition formulas use evaluated operand types without evaluating expressions again.
 Do-while preserves its unconditional first body.
 Scope joins exclude values from explicitly absent variable holders without discarding genuine nullable values.
-An empty-iteration path preserves the identity of a mixed-bound template iterator.
+An empty-iteration path preserves template iterator identity, including empty-list intersections for list bounds.
 `foreach` loops over sealed constant lists of up to 16 required entries retain sequential array mutation state, including local `continue` edges.
 Nested replay applies PHPStan's product limit of eight once an outer replay has more than one entry.
 References, `break`, `return`, optional entries, shape unions, associative iterators, and non-direct targets retain general loop inference.

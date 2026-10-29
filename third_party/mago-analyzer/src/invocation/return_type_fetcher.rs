@@ -5,6 +5,7 @@ use mago_codex::ttype::get_mixed;
 use mago_codex::ttype::template::TemplateResult;
 use mago_codex::ttype::union::TUnion;
 use mago_word::WordMap;
+use mago_word::word;
 
 use crate::artifacts::AnalysisArtifacts;
 use crate::context::Context;
@@ -12,6 +13,7 @@ use crate::context::block::BlockContext;
 use crate::error::AnalysisError;
 use crate::invocation::Invocation;
 use crate::invocation::resolver::resolve_invocation_type;
+use crate::visibility::is_callable_method_inaccessible;
 
 pub struct InvocationReturnType {
     pub ty: TUnion,
@@ -39,6 +41,16 @@ where
                 || name.as_bytes().eq_ignore_ascii_case(b"call_user_func_array")
     );
     let always_terminates = declared.is_explicit_never() && !forwarded;
+    // Forwarding uses the callback's scope-aware acceptor too, not its inaccessible generic R bound.
+    let declared = if forwarded
+        && parameters.get(&word("$callback")).is_some_and(|callback| {
+            callback.types.iter().any(|atomic| is_callable_method_inaccessible(context, block_context, atomic))
+        })
+    {
+        get_mixed()
+    } else {
+        declared
+    };
     let ty = fetch_invocation_provider_return_type(context, block_context, artifacts, invocation).unwrap_or(declared);
     Ok(InvocationReturnType { ty, always_terminates })
 }

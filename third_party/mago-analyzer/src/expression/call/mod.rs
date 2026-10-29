@@ -6,6 +6,7 @@ use mago_codex::identifier::function_like::FunctionLikeIdentifier;
 use mago_codex::identifier::method::MethodIdentifier;
 use mago_codex::ttype::TType;
 use mago_codex::ttype::add_optional_union_type;
+use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::expander::StaticClassType;
 use mago_codex::ttype::get_mixed;
 use mago_codex::ttype::get_null;
@@ -35,8 +36,10 @@ use crate::invocation::InvocationArgumentsSource;
 use crate::invocation::InvocationTarget;
 use crate::invocation::MethodInvocationKind;
 use crate::invocation::MethodTargetContext;
-use crate::invocation::analyzer::analyze_invocation;
-use crate::invocation::post_process::post_invocation_process;
+use crate::invocation::analyzer::EvaluatedArguments;
+use crate::invocation::analyzer::analyze_invocation_with_arguments;
+use crate::invocation::analyzer::apply_callable_signature;
+use crate::invocation::post_process::post_invocation_metadata;
 use crate::invocation::return_type_fetcher::fetch_invocation_return_type;
 use crate::reconciler::assertion_reconciler;
 use crate::utils::names::display_function_like_identifier;
@@ -45,6 +48,14 @@ pub mod function_call;
 pub mod method_call;
 pub mod pipe;
 pub mod static_method_call;
+
+fn has_explicit_null_return(ty: &TUnion) -> bool {
+    ty.types.iter().any(|atomic| match atomic {
+        TAtomic::Null => true,
+        TAtomic::GenericParameter(parameter) => has_explicit_null_return(&parameter.constraint),
+        _ => false,
+    })
+}
 
 fn record_external_method_call<A>(
     context: &Context<'_, '_, A>,
@@ -121,9 +132,10 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Call<'arena> {
 fn analyze_invocation_targets<'ctx, 'ast, 'arena, A>(
     context: &mut Context<'ctx, 'arena, A>,
     block_context: &mut BlockContext<'ctx>,
+    reflection_scope: &BlockContext<'ctx>,
     artifacts: &mut AnalysisArtifacts,
-    mut template_result: TemplateResult,
-    invocation_targets: Vec<InvocationTarget<'ctx>>,
+    template_result: TemplateResult,
+    mut invocation_targets: Vec<InvocationTarget<'ctx>>,
     invocation_arguments: InvocationArgumentsSource<'ast, 'arena>,
     call_span: Span,
     this_variable: Option<Word>,
@@ -131,6 +143,7 @@ fn analyze_invocation_targets<'ctx, 'ast, 'arena, A>(
     should_add_null: bool,
     object_has_nullsafe_null: bool,
     is_null_safe: bool,
+    has_walk_reflection: bool,
 ) -> Result<(), AnalysisError>
 where
     A: Arena,
@@ -172,12 +185,49 @@ where
         && !should_add_null
         && !object_has_nullsafe_null
         && !is_null_safe;
+    // Signature providers precede the physical walk. Every candidate's parameter
+    // contract participates in closure context; return providers still run below
+    // for each selected callee, after the operands have been evaluated.
+    for target in &mut invocation_targets {
+        if context.external_analysis_session.is_some()
+            && !target.has_effective_signature()
+            && let Some(identifier) = target.get_function_like_identifier().copied()
+            && context.plugin_registry.may_have_callable_signature_provider(&identifier)
+        {
+            let mut invocation = Invocation::new(target.clone(), invocation_arguments, call_span);
+            apply_callable_signature(context, artifacts, &identifier, &mut invocation);
+            *target = invocation.target;
+        }
+    }
+    let mut evaluated_arguments = EvaluatedArguments::for_targets(
+        context,
+        invocation_arguments.argument_count(),
+        invocation_targets.clone(),
+        template_result.clone(),
+        has_walk_reflection,
+    );
+    evaluated_arguments.evaluate(
+        context,
+        block_context,
+        artifacts,
+        invocation_arguments,
+        call_span,
+        class_related_argument_variables.as_ref(),
+    )?;
+    let mut completed_invocations = Vec::with_capacity(invocation_targets.len());
     for target in invocation_targets {
         if let InvocationTarget::FunctionLike { metadata, .. } = &target {
             let name = metadata.name;
             match true {
                 _ if name.as_bytes().eq_ignore_ascii_case(b"mago\\inspect") => {
-                    inspect_arguments(context, block_context, artifacts, &target, &invocation_arguments)?;
+                    inspect_arguments(
+                        context,
+                        block_context,
+                        artifacts,
+                        &target,
+                        &invocation_arguments,
+                        &mut evaluated_arguments,
+                    )?;
                     always_terminates = false;
 
                     resulting_type =
@@ -186,7 +236,14 @@ where
                     continue;
                 }
                 _ if name.as_bytes().eq_ignore_ascii_case(b"mago\\confirm") => {
-                    confirm_argument_type(context, block_context, artifacts, &target, &invocation_arguments)?;
+                    confirm_argument_type(
+                        context,
+                        block_context,
+                        artifacts,
+                        &target,
+                        &invocation_arguments,
+                        &mut evaluated_arguments,
+                    )?;
                     always_terminates = false;
 
                     resulting_type =
@@ -218,8 +275,10 @@ where
 
         let mut invocation: Invocation<'ctx, 'ast, 'arena> = Invocation::new(target, invocation_arguments, call_span);
         let mut argument_types = WordMap::default();
+        let mut template_result = template_result.clone();
+        let mut return_templates = template_result.clone();
 
-        analyze_invocation(
+        analyze_invocation_with_arguments(
             context,
             block_context,
             artifacts,
@@ -228,22 +287,47 @@ where
             class_related_argument_variables.as_ref(),
             &mut template_result,
             &mut argument_types,
+            &mut evaluated_arguments,
         )?;
 
+        let return_parameters = if !has_walk_reflection
+            && invocation.target.get_return_type().is_some_and(|ty| ty.has_template_types() || ty.is_expandable())
+        {
+            let mut parameters = WordMap::default();
+            evaluated_arguments.resolve_return_arguments(
+                context,
+                reflection_scope,
+                artifacts,
+                &invocation,
+                &mut return_templates,
+                &mut parameters,
+            )?;
+            parameters
+        } else {
+            return_templates.clone_from(&template_result);
+            argument_types.clone()
+        };
         let return_type = fetch_invocation_return_type(
             context,
-            block_context,
+            reflection_scope,
             artifacts,
             &invocation,
-            &template_result,
-            &argument_types,
+            &return_templates,
+            &return_parameters,
         )?;
 
         always_terminates &= return_type.always_terminates;
-        all_targets_non_nullable_return &= !return_type.ty.is_nullable();
+        all_targets_non_nullable_return &= !has_explicit_null_return(&return_type.ty);
         resulting_type = Some(add_optional_union_type(return_type.ty, resulting_type.as_ref(), context.codebase));
 
-        post_invocation_process(
+        completed_invocations.push((invocation, template_result, argument_types));
+    }
+
+    // ArgumentsHandler owns one writeback acceptor, not one OUT write per
+    // possible semantic return target. Dynamic method names have no acceptor.
+    evaluated_arguments.apply_writeback(context, block_context, artifacts, invocation_arguments, call_span)?;
+    for (invocation, template_result, argument_types) in completed_invocations {
+        post_invocation_metadata(
             context,
             block_context,
             artifacts,
@@ -273,7 +357,7 @@ where
             resulting_type
         }
     } else {
-        analyze_invocation_arguments_source(context, block_context, artifacts, &invocation_arguments)?;
+        analyze_invocation_arguments_source(context, block_context, artifacts, &invocation_arguments, None)?;
 
         if encountered_mixed_targets {
             get_mixed()
@@ -546,11 +630,18 @@ fn inspect_arguments<'ctx, 'arena, A>(
     artifacts: &mut AnalysisArtifacts,
     target: &InvocationTarget<'ctx>,
     invocation_arguments: &InvocationArgumentsSource<'_, 'arena>,
+    evaluated_arguments: &mut EvaluatedArguments<'ctx>,
 ) -> Result<(), AnalysisError>
 where
     A: Arena,
 {
-    analyze_invocation_arguments_source(context, block_context, artifacts, invocation_arguments)?;
+    analyze_invocation_arguments_source(
+        context,
+        block_context,
+        artifacts,
+        invocation_arguments,
+        Some(evaluated_arguments),
+    )?;
 
     let mut argument_annotations = vec![];
     for (idx, argument) in invocation_arguments.iter_arguments().enumerate() {
@@ -594,11 +685,18 @@ fn confirm_argument_type<'ctx, 'arena, A>(
     artifacts: &mut AnalysisArtifacts,
     target: &InvocationTarget<'ctx>,
     invocation_arguments: &InvocationArgumentsSource<'_, 'arena>,
+    evaluated_arguments: &mut EvaluatedArguments<'ctx>,
 ) -> Result<(), AnalysisError>
 where
     A: Arena,
 {
-    analyze_invocation_arguments_source(context, block_context, artifacts, invocation_arguments)?;
+    analyze_invocation_arguments_source(
+        context,
+        block_context,
+        artifacts,
+        invocation_arguments,
+        Some(evaluated_arguments),
+    )?;
 
     let argument_count = invocation_arguments.argument_count();
 
@@ -742,10 +840,14 @@ fn analyze_invocation_arguments_source<'ctx, 'arena, A>(
     block_context: &mut BlockContext<'ctx>,
     artifacts: &mut AnalysisArtifacts,
     invocation_arguments: &InvocationArgumentsSource<'_, 'arena>,
+    evaluated_arguments: Option<&mut EvaluatedArguments<'ctx>>,
 ) -> Result<(), AnalysisError>
 where
     A: Arena,
 {
+    if evaluated_arguments.as_ref().is_some_and(|arguments| arguments.has_evaluated(invocation_arguments)) {
+        return Ok(());
+    }
     match invocation_arguments {
         InvocationArgumentsSource::ArgumentList(argument_list) => {
             argument_list.analyze(context, block_context, artifacts)?;
@@ -762,5 +864,8 @@ where
         _ => {}
     }
 
+    if let Some(evaluated_arguments) = evaluated_arguments {
+        evaluated_arguments.remember(invocation_arguments, artifacts);
+    }
     Ok(())
 }

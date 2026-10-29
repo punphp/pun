@@ -26,6 +26,10 @@ fn codex_types() -> BTreeMap<&'static str, TUnion> {
     let codebase = CodebaseMetadata::new();
     let mut types = BTreeMap::from([
         ("mixed", get_mixed()),
+        (
+            "explicit-mixed",
+            TUnion::from_atomic(TAtomic::Mixed(TMixed::new().with_is_explicit(true))),
+        ),
         ("error", get_error()),
         ("zero", get_literal_int(0)),
         ("one", get_literal_int(1)),
@@ -169,6 +173,7 @@ fn shared_mixed_subtraction_union_intersection_and_serde_match_phpstan() {
                 };
                 m.subtract(&types[b], &codebase)
             }
+            ["remove", a, b] => types[a].difference(&types[b], &codebase),
             [a] => types[a].clone(),
             _ => unreachable!(),
         };
@@ -181,6 +186,13 @@ fn shared_mixed_subtraction_union_intersection_and_serde_match_phpstan() {
             want["error"].as_bool().unwrap(),
             "{label}"
         );
+        if let Some(explicit) = want["explicit"].as_bool() {
+            assert_eq!(
+                matches!(result.types.as_ref(), [TAtomic::Mixed(mixed)] if mixed.is_explicit()),
+                explicit,
+                "{label}"
+            );
+        }
         let restored: TUnion =
             serde_json::from_value(serde_json::to_value(&result).unwrap()).unwrap();
         assert_eq!(result, restored, "{label}");

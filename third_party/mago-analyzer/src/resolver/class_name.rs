@@ -223,6 +223,34 @@ pub fn resolve_classnames_from_expression<'ctx, 'arena, A>(
 where
     A: Arena,
 {
+    resolve_classnames(context, block_context, artifacts, class_expression, class_is_analyzed, false)
+}
+
+/// `new` retains invalid target values without static-access diagnostics.
+/// PHPStan's `new.nonObject` check is disabled by default, independently of resolution.
+pub(crate) fn resolve_classnames_for_instantiation<'ctx, 'arena, A>(
+    context: &mut Context<'ctx, 'arena, A>,
+    block_context: &mut BlockContext<'ctx>,
+    artifacts: &mut AnalysisArtifacts,
+    class_expression: &Expression<'arena>,
+) -> Result<Vec<ResolvedClassname>, AnalysisError>
+where
+    A: Arena,
+{
+    resolve_classnames(context, block_context, artifacts, class_expression, false, true)
+}
+
+fn resolve_classnames<'ctx, 'arena, A>(
+    context: &mut Context<'ctx, 'arena, A>,
+    block_context: &mut BlockContext<'ctx>,
+    artifacts: &mut AnalysisArtifacts,
+    class_expression: &Expression<'arena>,
+    class_is_analyzed: bool,
+    instantiation: bool,
+) -> Result<Vec<ResolvedClassname>, AnalysisError>
+where
+    A: Arena,
+{
     let mut possible_types = vec![];
     match class_expression.unparenthesized() {
         Expression::Identifier(name_node) => {
@@ -361,6 +389,8 @@ where
             for atomic in expression_type.map(|u| u.types.iter()).unwrap_or_default() {
                 if let Some(resolved_classname) = get_class_name_from_atomic(context.codebase, atomic) {
                     possible_types.push(resolved_classname);
+                } else if instantiation {
+                    possible_types.push(ResolvedClassname::invalid());
                 } else if atomic.is_null() && is_directly_nullsafe {
                     context.collector.report_with_code(
                         IssueCode::PossiblyNullPropertyAccess,

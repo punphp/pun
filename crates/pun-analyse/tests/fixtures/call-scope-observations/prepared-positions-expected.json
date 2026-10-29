@@ -1,0 +1,855 @@
+{
+    "calls": {
+        "570": {
+            "line": 15,
+            "expression": "$sink->foo($born = 1, [$born])",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 570,
+                            "end": 575,
+                            "expression": "$sink",
+                            "type": "PreparedPositionSink"
+                        },
+                        {
+                            "start": 581,
+                            "end": 590,
+                            "expression": "$born = 1",
+                            "type": "1"
+                        },
+                        {
+                            "start": 581,
+                            "end": 586,
+                            "expression": "$born",
+                            "type": "*ERROR*"
+                        },
+                        {
+                            "start": 589,
+                            "end": 590,
+                            "expression": "1",
+                            "type": "1"
+                        },
+                        {
+                            "start": 592,
+                            "end": 599,
+                            "expression": "[$born]",
+                            "type": "array{1}"
+                        },
+                        {
+                            "start": 593,
+                            "end": 598,
+                            "expression": "$born",
+                            "type": "1"
+                        }
+                    ]
+                }
+            ]
+        },
+        "617": {
+            "line": 16,
+            "expression": "$sink->foo($rows['old'] = 2, [$rows])",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 617,
+                            "end": 622,
+                            "expression": "$sink",
+                            "type": "PreparedPositionSink"
+                        },
+                        {
+                            "start": 628,
+                            "end": 644,
+                            "expression": "$rows['old'] = 2",
+                            "type": "2"
+                        },
+                        {
+                            "start": 628,
+                            "end": 640,
+                            "expression": "$rows['old']",
+                            "type": "0"
+                        },
+                        {
+                            "start": 628,
+                            "end": 633,
+                            "expression": "$rows",
+                            "type": "array{old: 0, side: 0}"
+                        },
+                        {
+                            "start": 634,
+                            "end": 639,
+                            "expression": "'old'",
+                            "type": "'old'"
+                        },
+                        {
+                            "start": 643,
+                            "end": 644,
+                            "expression": "2",
+                            "type": "2"
+                        },
+                        {
+                            "start": 646,
+                            "end": 653,
+                            "expression": "[$rows]",
+                            "type": "array{array{old: 0, side: 0}}"
+                        },
+                        {
+                            "start": 647,
+                            "end": 652,
+                            "expression": "$rows",
+                            "type": "array{old: 0, side: 0}"
+                        }
+                    ]
+                }
+            ]
+        },
+        "671": {
+            "line": 17,
+            "expression": "$sink->foo(preparedPositionRoot()[preparedPositionIndex()] = 2)",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 671,
+                            "end": 676,
+                            "expression": "$sink",
+                            "type": "PreparedPositionSink"
+                        },
+                        {
+                            "start": 682,
+                            "end": 733,
+                            "expression": "preparedPositionRoot()[preparedPositionIndex()] = 2",
+                            "type": "2"
+                        },
+                        {
+                            "start": 682,
+                            "end": 729,
+                            "expression": "preparedPositionRoot()[preparedPositionIndex()]",
+                            "type": "0"
+                        },
+                        {
+                            "start": 682,
+                            "end": 704,
+                            "expression": "preparedPositionRoot()",
+                            "type": "array{old: 0}"
+                        },
+                        {
+                            "start": 705,
+                            "end": 728,
+                            "expression": "preparedPositionIndex()",
+                            "type": "string"
+                        },
+                        {
+                            "start": 732,
+                            "end": 733,
+                            "expression": "2",
+                            "type": "2"
+                        }
+                    ]
+                }
+            ]
+        },
+        "751": {
+            "line": 18,
+            "expression": "$sink->foo($sink->child = null, [$sink->child])",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 751,
+                            "end": 756,
+                            "expression": "$sink",
+                            "type": "PreparedPositionSink"
+                        },
+                        {
+                            "start": 762,
+                            "end": 781,
+                            "expression": "$sink->child = null",
+                            "type": "null"
+                        },
+                        {
+                            "start": 762,
+                            "end": 774,
+                            "expression": "$sink->child",
+                            "type": "PreparedPositionSink|null"
+                        },
+                        {
+                            "start": 762,
+                            "end": 767,
+                            "expression": "$sink",
+                            "type": "PreparedPositionSink"
+                        },
+                        {
+                            "start": 777,
+                            "end": 781,
+                            "expression": "null",
+                            "type": "null"
+                        },
+                        {
+                            "start": 783,
+                            "end": 797,
+                            "expression": "[$sink->child]",
+                            "type": "array{null}"
+                        },
+                        {
+                            "start": 784,
+                            "end": 796,
+                            "expression": "$sink->child",
+                            "type": "null"
+                        },
+                        {
+                            "start": 784,
+                            "end": 789,
+                            "expression": "$sink",
+                            "type": "PreparedPositionSink"
+                        }
+                    ]
+                }
+            ]
+        },
+        "836": {
+            "line": 20,
+            "expression": "$sink->foo($sink->$name = null, [$sink->child])",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 836,
+                            "end": 841,
+                            "expression": "$sink",
+                            "type": "PreparedPositionSink"
+                        },
+                        {
+                            "start": 847,
+                            "end": 866,
+                            "expression": "$sink->$name = null",
+                            "type": "null"
+                        },
+                        {
+                            "start": 847,
+                            "end": 859,
+                            "expression": "$sink->$name",
+                            "type": "PreparedPositionSink|null"
+                        },
+                        {
+                            "start": 847,
+                            "end": 852,
+                            "expression": "$sink",
+                            "type": "PreparedPositionSink"
+                        },
+                        {
+                            "start": 854,
+                            "end": 859,
+                            "expression": "$name",
+                            "type": "'child'"
+                        },
+                        {
+                            "start": 862,
+                            "end": 866,
+                            "expression": "null",
+                            "type": "null"
+                        },
+                        {
+                            "start": 868,
+                            "end": 882,
+                            "expression": "[$sink->child]",
+                            "type": "array{null}"
+                        },
+                        {
+                            "start": 869,
+                            "end": 881,
+                            "expression": "$sink->child",
+                            "type": "null"
+                        },
+                        {
+                            "start": 869,
+                            "end": 874,
+                            "expression": "$sink",
+                            "type": "PreparedPositionSink"
+                        }
+                    ]
+                }
+            ]
+        },
+        "900": {
+            "line": 21,
+            "expression": "$sink->foo($sink->{'child'} = null, [$sink->child])",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 900,
+                            "end": 905,
+                            "expression": "$sink",
+                            "type": "PreparedPositionSink"
+                        },
+                        {
+                            "start": 911,
+                            "end": 934,
+                            "expression": "$sink->{'child'} = null",
+                            "type": "null"
+                        },
+                        {
+                            "start": 911,
+                            "end": 927,
+                            "expression": "$sink->{'child'}",
+                            "type": "null"
+                        },
+                        {
+                            "start": 911,
+                            "end": 916,
+                            "expression": "$sink",
+                            "type": "PreparedPositionSink"
+                        },
+                        {
+                            "start": 919,
+                            "end": 926,
+                            "expression": "'child'",
+                            "type": "'child'"
+                        },
+                        {
+                            "start": 930,
+                            "end": 934,
+                            "expression": "null",
+                            "type": "null"
+                        },
+                        {
+                            "start": 936,
+                            "end": 950,
+                            "expression": "[$sink->child]",
+                            "type": "array{null}"
+                        },
+                        {
+                            "start": 937,
+                            "end": 949,
+                            "expression": "$sink->child",
+                            "type": "null"
+                        },
+                        {
+                            "start": 937,
+                            "end": 942,
+                            "expression": "$sink",
+                            "type": "PreparedPositionSink"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1003": {
+            "line": 23,
+            "expression": "$sink->foo($nested['a']['b'] = 2, [$nested])",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 1003,
+                            "end": 1008,
+                            "expression": "$sink",
+                            "type": "PreparedPositionSink"
+                        },
+                        {
+                            "start": 1014,
+                            "end": 1035,
+                            "expression": "$nested['a']['b'] = 2",
+                            "type": "2"
+                        },
+                        {
+                            "start": 1014,
+                            "end": 1031,
+                            "expression": "$nested['a']['b']",
+                            "type": "0"
+                        },
+                        {
+                            "start": 1014,
+                            "end": 1026,
+                            "expression": "$nested['a']",
+                            "type": "array{b: 0}"
+                        },
+                        {
+                            "start": 1014,
+                            "end": 1021,
+                            "expression": "$nested",
+                            "type": "array{a: array{b: 0}}"
+                        },
+                        {
+                            "start": 1022,
+                            "end": 1025,
+                            "expression": "'a'",
+                            "type": "'a'"
+                        },
+                        {
+                            "start": 1027,
+                            "end": 1030,
+                            "expression": "'b'",
+                            "type": "'b'"
+                        },
+                        {
+                            "start": 1034,
+                            "end": 1035,
+                            "expression": "2",
+                            "type": "2"
+                        },
+                        {
+                            "start": 1037,
+                            "end": 1046,
+                            "expression": "[$nested]",
+                            "type": "array{array{a: array{b: 0}}}"
+                        },
+                        {
+                            "start": 1038,
+                            "end": 1045,
+                            "expression": "$nested",
+                            "type": "array{a: array{b: 0}}"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1082": {
+            "line": 25,
+            "expression": "$sink->foo($append[] = 2, [$append])",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 1082,
+                            "end": 1087,
+                            "expression": "$sink",
+                            "type": "PreparedPositionSink"
+                        },
+                        {
+                            "start": 1093,
+                            "end": 1106,
+                            "expression": "$append[] = 2",
+                            "type": "2"
+                        },
+                        {
+                            "start": 1093,
+                            "end": 1102,
+                            "expression": "$append[]",
+                            "type": "*NEVER*"
+                        },
+                        {
+                            "start": 1093,
+                            "end": 1100,
+                            "expression": "$append",
+                            "type": "array{}"
+                        },
+                        {
+                            "start": 1105,
+                            "end": 1106,
+                            "expression": "2",
+                            "type": "2"
+                        },
+                        {
+                            "start": 1108,
+                            "end": 1117,
+                            "expression": "[$append]",
+                            "type": "array{array{}}"
+                        },
+                        {
+                            "start": 1109,
+                            "end": 1116,
+                            "expression": "$append",
+                            "type": "array{}"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1135": {
+            "line": 26,
+            "expression": "$box->slots['slot']?->foo($box->slots['slot'] = null, [$box->slots])",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 1135,
+                            "end": 1154,
+                            "expression": "$box->slots['slot']",
+                            "type": "PreparedPositionSink"
+                        },
+                        {
+                            "start": 1135,
+                            "end": 1146,
+                            "expression": "$box->slots",
+                            "type": "array{slot: PreparedPositionSink|null}"
+                        },
+                        {
+                            "start": 1135,
+                            "end": 1139,
+                            "expression": "$box",
+                            "type": "PreparedPositionBox"
+                        },
+                        {
+                            "start": 1147,
+                            "end": 1153,
+                            "expression": "'slot'",
+                            "type": "'slot'"
+                        },
+                        {
+                            "start": 1161,
+                            "end": 1187,
+                            "expression": "$box->slots['slot'] = null",
+                            "type": "null"
+                        },
+                        {
+                            "start": 1161,
+                            "end": 1180,
+                            "expression": "$box->slots['slot']",
+                            "type": "PreparedPositionSink"
+                        },
+                        {
+                            "start": 1161,
+                            "end": 1172,
+                            "expression": "$box->slots",
+                            "type": "array{slot: PreparedPositionSink}"
+                        },
+                        {
+                            "start": 1161,
+                            "end": 1165,
+                            "expression": "$box",
+                            "type": "PreparedPositionBox"
+                        },
+                        {
+                            "start": 1173,
+                            "end": 1179,
+                            "expression": "'slot'",
+                            "type": "'slot'"
+                        },
+                        {
+                            "start": 1183,
+                            "end": 1187,
+                            "expression": "null",
+                            "type": "null"
+                        },
+                        {
+                            "start": 1189,
+                            "end": 1202,
+                            "expression": "[$box->slots]",
+                            "type": "array{array{slot: null}}"
+                        },
+                        {
+                            "start": 1190,
+                            "end": 1201,
+                            "expression": "$box->slots",
+                            "type": "array{slot: null}"
+                        },
+                        {
+                            "start": 1190,
+                            "end": 1194,
+                            "expression": "$box",
+                            "type": "PreparedPositionBox"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1220": {
+            "line": 27,
+            "expression": "($assigned = $sink)?->foo($assigned, [$assigned])",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 1221,
+                            "end": 1238,
+                            "expression": "$assigned = $sink",
+                            "type": "PreparedPositionSink"
+                        },
+                        {
+                            "start": 1221,
+                            "end": 1230,
+                            "expression": "$assigned",
+                            "type": "PreparedPositionSink"
+                        },
+                        {
+                            "start": 1233,
+                            "end": 1238,
+                            "expression": "$sink",
+                            "type": "PreparedPositionSink"
+                        },
+                        {
+                            "start": 1246,
+                            "end": 1255,
+                            "expression": "$assigned",
+                            "type": "PreparedPositionSink"
+                        },
+                        {
+                            "start": 1257,
+                            "end": 1268,
+                            "expression": "[$assigned]",
+                            "type": "array{PreparedPositionSink}"
+                        },
+                        {
+                            "start": 1258,
+                            "end": 1267,
+                            "expression": "$assigned",
+                            "type": "PreparedPositionSink"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1374": {
+            "line": 32,
+            "expression": "$sink->foo($empty['new'] = 1)",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 1374,
+                            "end": 1379,
+                            "expression": "$sink",
+                            "type": "PreparedPositionSink"
+                        },
+                        {
+                            "start": 1385,
+                            "end": 1402,
+                            "expression": "$empty['new'] = 1",
+                            "type": "1"
+                        },
+                        {
+                            "start": 1385,
+                            "end": 1398,
+                            "expression": "$empty['new']",
+                            "type": "*ERROR*"
+                        },
+                        {
+                            "start": 1385,
+                            "end": 1391,
+                            "expression": "$empty",
+                            "type": "array{}"
+                        },
+                        {
+                            "start": 1392,
+                            "end": 1397,
+                            "expression": "'new'",
+                            "type": "'new'"
+                        },
+                        {
+                            "start": 1401,
+                            "end": 1402,
+                            "expression": "1",
+                            "type": "1"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1420": {
+            "line": 33,
+            "expression": "$sink->foo($empty['second']['leaf'] = 1)",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 1420,
+                            "end": 1425,
+                            "expression": "$sink",
+                            "type": "PreparedPositionSink"
+                        },
+                        {
+                            "start": 1431,
+                            "end": 1459,
+                            "expression": "$empty['second']['leaf'] = 1",
+                            "type": "1"
+                        },
+                        {
+                            "start": 1431,
+                            "end": 1455,
+                            "expression": "$empty['second']['leaf']",
+                            "type": "mixed"
+                        },
+                        {
+                            "start": 1431,
+                            "end": 1447,
+                            "expression": "$empty['second']",
+                            "type": "*ERROR*"
+                        },
+                        {
+                            "start": 1431,
+                            "end": 1437,
+                            "expression": "$empty",
+                            "type": "array{new: 1}"
+                        },
+                        {
+                            "start": 1438,
+                            "end": 1446,
+                            "expression": "'second'",
+                            "type": "'second'"
+                        },
+                        {
+                            "start": 1448,
+                            "end": 1454,
+                            "expression": "'leaf'",
+                            "type": "'leaf'"
+                        },
+                        {
+                            "start": 1458,
+                            "end": 1459,
+                            "expression": "1",
+                            "type": "1"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1638": {
+            "line": 39,
+            "expression": "$sink->foo($sink?->child)",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 1638,
+                            "end": 1643,
+                            "expression": "$sink",
+                            "type": "PreparedPositionSink"
+                        },
+                        {
+                            "start": 1649,
+                            "end": 1662,
+                            "expression": "$sink?->child",
+                            "type": "PreparedPositionSink"
+                        },
+                        {
+                            "start": 1649,
+                            "end": 1654,
+                            "expression": "$sink",
+                            "type": "PreparedPositionSink"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1680": {
+            "line": 40,
+            "expression": "$sink->foo(PreparedPositionStatics::$stored = 1)",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 1680,
+                            "end": 1685,
+                            "expression": "$sink",
+                            "type": "PreparedPositionSink"
+                        },
+                        {
+                            "start": 1691,
+                            "end": 1727,
+                            "expression": "PreparedPositionStatics::$stored = 1",
+                            "type": "1"
+                        },
+                        {
+                            "start": 1691,
+                            "end": 1723,
+                            "expression": "PreparedPositionStatics::$stored",
+                            "type": "int"
+                        },
+                        {
+                            "start": 1726,
+                            "end": 1727,
+                            "expression": "1",
+                            "type": "1"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1838": {
+            "line": 45,
+            "expression": "$sink->foo($sink->{($property = 'child')} = null)",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 1838,
+                            "end": 1843,
+                            "expression": "$sink",
+                            "type": "PreparedPositionSink"
+                        },
+                        {
+                            "start": 1849,
+                            "end": 1886,
+                            "expression": "$sink->{($property = 'child')} = null",
+                            "type": "null"
+                        },
+                        {
+                            "start": 1849,
+                            "end": 1879,
+                            "expression": "$sink->{($property = 'child')}",
+                            "type": "PreparedPositionSink|null"
+                        },
+                        {
+                            "start": 1849,
+                            "end": 1854,
+                            "expression": "$sink",
+                            "type": "PreparedPositionSink"
+                        },
+                        {
+                            "start": 1858,
+                            "end": 1877,
+                            "expression": "$property = 'child'",
+                            "type": "'child'"
+                        },
+                        {
+                            "start": 1858,
+                            "end": 1867,
+                            "expression": "$property",
+                            "type": "*ERROR*"
+                        },
+                        {
+                            "start": 1870,
+                            "end": 1877,
+                            "expression": "'child'",
+                            "type": "'child'"
+                        },
+                        {
+                            "start": 1882,
+                            "end": 1886,
+                            "expression": "null",
+                            "type": "null"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "errors": [],
+    "function_events": {
+        "682": 1,
+        "705": 1
+    }
+}

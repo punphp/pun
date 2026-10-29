@@ -315,7 +315,6 @@ mod tests {
         issues = [
             IssueCode::UnusedProperty,
             IssueCode::InvalidPropertyRead,
-            IssueCode::NoValue,
         ]
     }
 
@@ -345,7 +344,6 @@ mod tests {
         "},
         issues = [
             IssueCode::InvalidPropertyRead,
-            IssueCode::NoValue,
         ]
     }
 
@@ -358,7 +356,6 @@ mod tests {
         "},
         issues = [
             IssueCode::InvalidStaticPropertyAccess,
-            IssueCode::NoValue,
         ]
     }
 

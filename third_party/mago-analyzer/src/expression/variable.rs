@@ -262,7 +262,6 @@ where
     };
 
     if variable_type.possibly_undefined()
-        && block_context.possibly_undefined_variable_ids.contains(&variable_atom)
         && !block_context.flags.inside_isset()
         && !block_context.flags.inside_unset()
     {

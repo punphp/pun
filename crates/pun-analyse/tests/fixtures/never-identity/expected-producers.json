@@ -1283,9 +1283,126 @@
                 "accepts_int": true
             },
             "terminates": false
+        },
+        "2105": {
+            "line": 48,
+            "expression": "\\Closure::getCurrent()",
+            "getType": {
+                "class": "PHPStan\\Type\\NeverType",
+                "type": "*NEVER*",
+                "kind": "implicit",
+                "explicit": false,
+                "accepts_int": true
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\ObjectType",
+                "type": "Closure",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "terminates": false
+        },
+        "2133": {
+            "line": 49,
+            "expression": "$current()",
+            "getType": {
+                "class": "PHPStan\\Type\\ErrorType",
+                "type": "*ERROR*",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": true
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\MixedType",
+                "type": "mixed",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": true
+            },
+            "terminates": false
+        },
+        "2278": {
+            "line": 54,
+            "expression": "\\Closure::getCurrent()",
+            "getType": {
+                "class": "PHPStan\\Type\\NeverType",
+                "type": "*NEVER*",
+                "kind": "implicit",
+                "explicit": false,
+                "accepts_int": true
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\ObjectType",
+                "type": "Closure",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "terminates": false
+        },
+        "2310": {
+            "line": 55,
+            "expression": "$current()",
+            "getType": {
+                "class": "PHPStan\\Type\\ErrorType",
+                "type": "*ERROR*",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": true
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\MixedType",
+                "type": "mixed",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": true
+            },
+            "terminates": false
+        },
+        "2378": {
+            "line": 59,
+            "expression": "\\Closure::getCurrent()",
+            "getType": {
+                "class": "PHPStan\\Type\\NeverType",
+                "type": "*NEVER*",
+                "kind": "implicit",
+                "explicit": false,
+                "accepts_int": true
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\ObjectType",
+                "type": "Closure",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "terminates": false
+        },
+        "2402": {
+            "line": 60,
+            "expression": "$current()",
+            "getType": {
+                "class": "PHPStan\\Type\\ErrorType",
+                "type": "*ERROR*",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": true
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\MixedType",
+                "type": "mixed",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": true
+            },
+            "terminates": false
         }
     },
     "continued": {
+        "after-current-function": 2154,
+        "after-current-global": 2419,
+        "after-current-method": 2335,
         "after-implicit": 1862,
         "after-nested-forwarded": 1778
     }

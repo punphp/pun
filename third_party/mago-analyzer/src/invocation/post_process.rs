@@ -64,6 +64,7 @@ use crate::reconciler::assertion_reconciler::intersect_union_with_union;
 use crate::utils::expression::get_block_expression_id;
 use crate::utils::expression::get_non_nullsafe_expression_id;
 use crate::utils::expression::get_nullsafe_base_expressions;
+use crate::utils::expression::get_root_expression_id;
 use crate::utils::misc::unwrap_expression;
 
 pub fn post_invocation_process<'ctx, 'arena, A>(
@@ -79,7 +80,34 @@ pub fn post_invocation_process<'ctx, 'arena, A>(
 where
     A: Arena,
 {
-    update_by_reference_argument_types(context, block_context, artifacts, invoication, template_result, parameters)?;
+    update_by_reference_argument_types(context, block_context, artifacts, invoication, template_result, parameters, false)?;
+
+    post_invocation_metadata(
+        context,
+        block_context,
+        artifacts,
+        invoication,
+        this_variable,
+        template_result,
+        parameters,
+        apply_assertions,
+    )
+}
+
+/// Callee metadata is resolved independently of the source call's argument effects.
+pub(crate) fn post_invocation_metadata<'ctx, 'arena, A>(
+    context: &mut Context<'ctx, 'arena, A>,
+    block_context: &mut BlockContext<'ctx>,
+    artifacts: &mut AnalysisArtifacts,
+    invoication: &Invocation<'ctx, '_, 'arena>,
+    this_variable: Option<&[u8]>,
+    template_result: &TemplateResult,
+    parameters: &WordMap<TUnion>,
+    apply_assertions: bool,
+) -> Result<(), AnalysisError>
+where
+    A: Arena,
+{
     clear_object_property_narrowings(context, block_context, invoication, this_variable);
 
     if block_context.flags.inside_try() && invoication.target.get_function_like_metadata().is_none() {
@@ -372,13 +400,14 @@ fn record_null_context_assertions<'ctx, 'arena, A>(
     }
 }
 
-fn update_by_reference_argument_types<'ctx, 'arena, A>(
+pub(crate) fn update_by_reference_argument_types<'ctx, 'arena, A>(
     context: &mut Context<'ctx, 'arena, A>,
     block_context: &mut BlockContext<'ctx>,
     artifacts: &mut AnalysisArtifacts,
     invocation: &Invocation<'ctx, '_, 'arena>,
     template_result: &TemplateResult,
     parameters: &WordMap<TUnion>,
+    positional_writeback: bool,
 ) -> Result<(), AnalysisError>
 where
     A: Arena,
@@ -390,19 +419,31 @@ where
             continue;
         }
 
-        let (argument, argument_id) = get_argument_for_parameter(
-            context,
-            block_context,
-            invocation,
-            Some(parameter_offset),
-            parameter_ref.get_name().map(|name| name.0),
-        );
+        let (argument, argument_id) = if positional_writeback {
+            // If ArgumentsNormalizer cannot reorder named operands, PHPStan's
+            // OUT loop retains their written positions, not a per-name binding.
+            let argument = invocation.arguments_source.get_argument(parameter_offset).and_then(|argument| argument.value());
+            let id = argument.and_then(|argument| get_block_expression_id(argument, context, block_context));
+            (argument, id)
+        } else {
+            get_argument_for_parameter(
+                context,
+                block_context,
+                invocation,
+                Some(parameter_offset),
+                parameter_ref.get_name().map(|name| name.0),
+            )
+        };
 
         if let Some(argument) = argument {
             // An input reference cannot create its source. Query the post-argument running scope:
             // another argument may have assigned this variable after its initial read.
+            // Derived reads need not have a separate local-certainty entry: their variable root
+            // owns existence, while assignment below updates the offset and invalidates its parent.
             if block_context.variable_state.non_creating_references.contains(&argument.span())
-                && argument_id.is_some_and(|name| !block_context.variable_certainty(name).is_defined())
+                && get_root_expression_id(argument)
+                    .or(argument_id)
+                    .is_some_and(|name| !block_context.variable_certainty(name).is_defined())
             {
                 continue;
             }

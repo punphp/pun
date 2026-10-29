@@ -941,3 +941,77 @@ This port does not add a representation for multiple retained array conjuncts or
 unknown sealedness. The capture rejects multiple constant-array projections instead of
 silently describing them as a generic array. List inputs use the public `TList` constructor
 after field scanning because explicit-key list PHPDoc syntax is a separate parser boundary.
+
+## Union construction retains void
+
+Both shared union-combination paths preserve `void`, matching PHPStan 2.3.1's
+`TypeCombinator::union`. Only eligible source-call expression results project void to null.
+Raw invocation-target unions, callable-value calls and ordinary value unions cannot make that
+syntax-dependent decision. PHPStan's public type API returns `int|void`, `(callable(): mixed)|void`
+and `void|null` for those unions in either operand order, while `never` is absorbed.
+The existing callable-origin finalization control now retains its extra void member accordingly.
+
+The public `call_scope_observations` result-transport fixture checks named-call null values,
+raw invocation-target unions, callable-value void, all-void and mixed match arms, ternaries,
+coalescing and stored values against fresh pinned-PHAR captures.
+
+Null subtraction also preserves void. `TUnion::remove_null()` follows PHPStan's
+`TypeCombinator::removeNull()` explicit-null gate before subtracting null from the union.
+Without an explicit null alternative, mixed and nullable template bounds remain unchanged.
+The non-null narrowing backend no longer drops void as if it were null. The transport
+fixture distinguishes coalescing pure void, `int|void`, `void|null` and named void-call values.
+
+## Decimal-integer string accessories
+
+`TString` retains PHPStan's positive and inverse decimal-integer-string accessory separately
+from general numericness. Its constructors, literal query, intersections, containment, and
+identity preserve that distinction and the existing literal, casing, and non-empty metadata.
+PHPDoc reference resolution recognizes both accessory names before namespace resolution.
+
+`TInteger::to_string_type()` ports `IntegerType::toString()` and
+`IntegerRangeType::toString()` from PHPStan 2.3.1 at
+`cb3b7e99489b2e3789ee2eec10501cb7a72580ea`. Finite intervals of width at most 128
+expand inclusively without overflow. Other integer ranges retain the decimal accessory and
+are non-falsy exactly when zero is excluded. General numeric strings, noncanonical numeric
+formats, and the inverse accessory do not acquire this guarantee.
+
+`pun-analyse/tests/decimal_string_producers.rs` checks the public analyser, scanner, scalar
+type API, and independent native artifacts against fresh PHPStan captures. Pun converts the
+stored accessory to its existing `Accessory::DecimalIntString` representation.
+
+## Set difference preserves mixed exclusions
+
+The shared `TUnion::difference()` path follows PHPStan 2.3.1's `TypeCombinator::remove()`
+and `MixedType::tryRemove()` at `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`.
+Removing `mixed~U` intersects the source with `U`. Removing an ordinary type from mixed
+delegates to `MixedType::subtract()`, retaining earlier exclusions and explicitness.
+Error types retain their overriding subtraction behavior.
+
+The existing public `mixed_subtraction` matrix adds 65 pinned type-API records, including
+both operand orders, explicit mixed, repeated exclusions, error inputs, and explicitness.
+Existing oracle records remain unchanged. Conditional formal holders use this shared
+operation for their negative guards rather than adding producer-specific mixed handling.
+
+## Callable possibility respects mixed exclusions
+
+`can_atomic_be_callable()` follows PHPStan 2.3.1's `MixedType::isCallable()` for mixed
+values: callability remains possible unless the excluded type contains every callable.
+Bare objects and unknown named classes also remain potentially callable. Known final
+non-invokable classes retain their negative result. Concrete callable signatures still
+resolve before this possibility check.
+
+The public `callable_visibility` regression distinguishes unknown mixed and object
+invocations from an integer invocation and a negative `is_callable()` branch. It also
+retains accessible, inaccessible and escaped callable signatures as independent controls.
+
+## Opaque Closure argument compatibility
+
+`ClosureType::accepts()` accepts bare named `Closure` objects without inventing a signature.
+`CallableType::accepts()` uses their trivial acceptor, whose purity is only maybe: ordinary callable
+targets accept them, while pure-callable targets do not. Named objects with callable intersections
+retain the existing signature-comparison path. This follows PHPStan 2.3.1 at
+`cb3b7e99489b2e3789ee2eec10501cb7a72580ea`.
+
+`failed_method_callables` retains the bare-Closure producer results and compares compatibility,
+known-signature, purity, refined-signature and invokable-object controls with the pinned capture.
+The original native dynamic-literal callback test remains unchanged.

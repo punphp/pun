@@ -21,6 +21,8 @@ pub mod union_comparator;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ComparisonResult {
+    /// Assignment acceptance alone is not proof for intersection or union simplification.
+    pub is_only_accepted: bool,
     pub type_coerced: Option<bool>,
     pub type_coerced_from_nested_mixed: Option<bool>,
     pub type_coerced_from_as_mixed: Option<bool>,
@@ -42,6 +44,7 @@ impl ComparisonResult {
     #[must_use]
     pub fn new() -> Self {
         Self {
+            is_only_accepted: false,
             type_coerced: None,
             type_coerced_from_nested_mixed: None,
             type_coerced_from_as_mixed: None,

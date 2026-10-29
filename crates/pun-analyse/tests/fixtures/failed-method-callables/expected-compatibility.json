@@ -1,0 +1,89 @@
+{
+    "phar_sha256": "85157dba3d95d77ca603d2b7303aa78a538f9e3b56ccad07dd794c53aa96d1ae",
+    "types": [
+        {
+            "start": 186,
+            "end": 205,
+            "expression": "new DynamicCaller()",
+            "full": {
+                "kind": "value",
+                "type": "DynamicCaller"
+            },
+            "native": {
+                "kind": "value",
+                "type": "DynamicCaller"
+            }
+        },
+        {
+            "start": 217,
+            "end": 225,
+            "expression": "'method'",
+            "full": {
+                "kind": "value",
+                "type": "'method'"
+            },
+            "native": {
+                "kind": "value",
+                "type": "'method'"
+            }
+        },
+        {
+            "start": 238,
+            "end": 258,
+            "expression": "$obj->{$method}(...)",
+            "full": {
+                "kind": "bare-closure"
+            },
+            "native": {
+                "kind": "bare-closure"
+            }
+        },
+        {
+            "start": 607,
+            "end": 615,
+            "expression": "'method'",
+            "full": {
+                "kind": "value",
+                "type": "'method'"
+            },
+            "native": {
+                "kind": "value",
+                "type": "'method'"
+            }
+        },
+        {
+            "start": 631,
+            "end": 651,
+            "expression": "$obj->{$method}(...)",
+            "full": {
+                "kind": "bare-closure"
+            },
+            "native": {
+                "kind": "bare-closure"
+            }
+        },
+        {
+            "start": 754,
+            "end": 771,
+            "expression": "$obj->method(...)",
+            "full": {
+                "kind": "signature",
+                "parameters": [],
+                "return": "int"
+            },
+            "native": {
+                "kind": "signature",
+                "parameters": [],
+                "return": "int"
+            }
+        }
+    ],
+    "errors": {
+        "0": [],
+        "5": [],
+        "9": [],
+        "0-bleeding": [],
+        "5-bleeding": [],
+        "9-bleeding": []
+    }
+}

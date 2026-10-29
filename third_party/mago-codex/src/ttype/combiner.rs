@@ -11,7 +11,6 @@ use mago_word::word;
 static ATOM_FALSE: LazyLock<Word> = LazyLock::new(|| word("false"));
 static ATOM_TRUE: LazyLock<Word> = LazyLock::new(|| word("true"));
 static ATOM_BOOL: LazyLock<Word> = LazyLock::new(|| word("bool"));
-static ATOM_VOID: LazyLock<Word> = LazyLock::new(|| word("void"));
 static ATOM_NULL: LazyLock<Word> = LazyLock::new(|| word("null"));
 static ATOM_STRING: LazyLock<Word> = LazyLock::new(|| word("string"));
 static ATOM_FLOAT: LazyLock<Word> = LazyLock::new(|| word("float"));
@@ -157,11 +156,6 @@ pub fn combine_preserving_array_shapes(
 
     combined_types
         .retain(|atomic| !atomic.is_never() && !matches!(atomic, TAtomic::Mixed(mixed) if mixed.is_isset_from_loop()));
-    for atomic in &mut combined_types {
-        if matches!(atomic, TAtomic::Void) {
-            *atomic = TAtomic::Null;
-        }
-    }
 
     combined_types.append(&mut array_types);
     combined_types.sort_unstable();
@@ -188,7 +182,9 @@ pub fn combine(types: Vec<TAtomic>, codebase: &CodebaseMetadata, options: Combin
     types.retain(|atomic| {
         matches!(atomic, TAtomic::Callable(_))
             || !callables.iter().any(|callable| {
-                atomic_comparator::is_contained_by(codebase, atomic, callable, false, &mut ComparisonResult::new())
+                let mut result = ComparisonResult::new();
+                atomic_comparator::is_contained_by(codebase, atomic, callable, false, &mut result)
+                    && !result.is_only_accepted
             })
     });
     if types.len() == 1 {
@@ -313,8 +309,7 @@ pub fn combine(types: Vec<TAtomic>, codebase: &CodebaseMetadata, options: Combin
         return vec![TAtomic::Mixed(TMixed::new())];
     }
 
-    // `never` is the bottom type, absorbed by any other member of the union. Drop it up front so
-    // that it does not make the combination look non-simple, which would turn `void` into `null`.
+    // `never` is the bottom type, absorbed by any other member of the union.
     let callable_collision_count: usize = combination.callable_collisions.values().map(Vec::len).sum();
     if combination.value_types.len() + combination.named_objects.len() + callable_collision_count > 1 {
         combination.value_types.remove(&*ATOM_NEVER);
@@ -330,10 +325,6 @@ pub fn combine(types: Vec<TAtomic>, codebase: &CodebaseMetadata, options: Combin
         }
 
         return combination.value_types.into_values().collect();
-    }
-
-    if combination.value_types.remove(&*ATOM_VOID).is_some() {
-        combination.value_types.insert(*ATOM_NULL, TAtomic::Null);
     }
 
     if combination.value_types.contains_key(&*ATOM_FALSE) && combination.value_types.contains_key(&*ATOM_TRUE) {
@@ -1810,7 +1801,7 @@ mod tests {
         for (extra, expected) in [
             (TAtomic::Never, callables.clone()),
             (TAtomic::Mixed(TMixed::isset_from_loop()), callables.clone()),
-            (TAtomic::Void, [callables.clone(), vec![TAtomic::Null]].concat()),
+            (TAtomic::Void, [callables.clone(), vec![TAtomic::Void]].concat()),
             (TAtomic::Mixed(TMixed::new()), vec![TAtomic::Mixed(TMixed::new())]),
             (TAtomic::Mixed(TMixed::truthy()), vec![TAtomic::Mixed(TMixed::truthy())]),
         ] {

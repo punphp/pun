@@ -29,6 +29,8 @@ pub enum Guard {
     Method(String),
     /// The precondition's source: method_exists's receiver, or is_callable's literal array.
     MethodSource(String, Span),
+    /// A true method_exists call whose selector is not a single written name.
+    MethodExists(String),
     /// `!($this instanceof Foo)`: in a class that is a Foo, the code here is unreachable.
     ThisNotInstanceOf(String),
     /// `PHP_VERSION_ID` compared with an integer: its range here, bounds inclusive (`None` unbounded).
@@ -58,6 +60,7 @@ impl PartialEq for Guard {
             | (Self::Function(a), Self::Function(b))
             | (Self::ClassConstant(a), Self::ClassConstant(b))
             | (Self::Constant(a), Self::Constant(b))
+            | (Self::MethodExists(a), Self::MethodExists(b))
             | (Self::ThisNotInstanceOf(a), Self::ThisNotInstanceOf(b))
             | (Self::Expr(a), Self::Expr(b))
             | (Self::ConstantFetch(a), Self::ConstantFetch(b)) => a == b,
@@ -71,11 +74,11 @@ impl PartialEq for Guard {
 }
 
 fn expression_guard(g: &Guard) -> bool {
-    matches!(g, Guard::Expr(_) | Guard::ConstantFetch(..) | Guard::ExprStrings(..) | Guard::ExprWhen(..))
+    matches!(g, Guard::Expr(_) | Guard::MethodExists(_) | Guard::ConstantFetch(..) | Guard::ExprStrings(..) | Guard::ExprWhen(..))
 }
 
 pub(super) fn definite_expression(g: &Guard) -> bool {
-    matches!(g, Guard::Expr(_) | Guard::ConstantFetch(..))
+    matches!(g, Guard::Expr(_) | Guard::MethodExists(_) | Guard::ConstantFetch(..))
 }
 
 /// Remember existence predicates in a boolean variable, not the source expression's type holder. Merely
@@ -158,6 +161,17 @@ fn truthy_of(
         Expression::Variable(Variable::Direct(v)) => var(v.name),
         Expression::Assignment(a) => truthy(a.rhs, var, resolve, function),
         Expression::Call(Call::Function(call)) => {
+            if let Expression::Identifier(id) = call.function
+                && function(id).trim_start_matches('\\').eq_ignore_ascii_case("method_exists")
+                && call.argument_list.arguments.len() >= 2
+                && constant_string(call.argument_list.arguments.get(1).expect("two arguments").value(), resolve).is_none()
+                && let Some(key) = expression_key(expr, resolve, &|id| {
+                    let name = function(id);
+                    if name.trim_start_matches('\\').eq_ignore_ascii_case("method_exists") { "\\method_exists".into() } else { name }
+                })
+            {
+                return vec![Guard::MethodExists(key)];
+            }
             let Some(guard) = exists_call(call, resolve) else { return Vec::new(); };
             let mut guards = Vec::new();
             if let Guard::Method(key) = &guard {
@@ -674,6 +688,20 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             .contains(&Guard::Function(name.trim_start_matches('\\').to_string()))
     }
 
+    /// MethodCallCheck asks about the original selector expression, not each selected constant name.
+    pub(super) fn in_dynamic_method_exists(&self, receiver: &Expression, selector: &Expression, name: &str) -> bool {
+        let key = |e| expression_key(e, &|id| self.resolved(id), &|id| self.guard_function_name(id));
+        let (Some(receiver), Some(selector)) = (key(receiver), key(selector)) else { return false; };
+        let call = format!("\\method_exists({receiver}, {selector})");
+        self.guards.iter().any(|guard| match guard {
+            Guard::MethodExists(key) => *key == call,
+            Guard::ExprWhen(key, missing) if *key == call => missing.iter().all(|path| {
+                path.iter().any(|(key, values)| *key == selector && !values.iter().any(|value| value == name))
+            }),
+            _ => false,
+        })
+    }
+
     /// Walks `body` with `extra` guards on top of the current ones.
     pub(super) fn with_guards(&mut self, extra: Vec<Guard>, body: impl FnOnce(&mut Self)) {
         let saved = self.guards.clone();
@@ -804,7 +832,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         });
         self.retain_guards(|guard| {
             let key = match guard {
-                Guard::ConstantFetch(key) | Guard::ExprWhen(key, _) => key,
+                Guard::ConstantFetch(key) | Guard::MethodExists(key) | Guard::ExprWhen(key, _) => key,
                 _ => return true,
             };
             !key_contains(key, receiver)
@@ -856,7 +884,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         // filterByTruthyValue($selector === 'NAME') may make that holder definite again.
         for guard in paths.iter().flatten() {
             let key = match guard {
-                Guard::Expr(key) | Guard::ConstantFetch(key) => key,
+                Guard::Expr(key) | Guard::MethodExists(key) | Guard::ConstantFetch(key) => key,
                 _ => continue,
             };
             let missing: Vec<_> = paths.iter().filter(|p| !p.contains(guard)).map(|path| {
@@ -898,7 +926,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         let Some(key) = expression_key(e, &|id| self.resolved(id), &|id| self.guard_function_name(id)) else { return };
         let contains_key = |expr: &str| key_contains(expr, &key);
         let contains = |guard: &Guard| match guard {
-            Guard::Expr(expr) | Guard::ConstantFetch(expr) | Guard::ExprStrings(expr, _) => contains_key(expr),
+            Guard::Expr(expr) | Guard::MethodExists(expr) | Guard::ConstantFetch(expr) | Guard::ExprStrings(expr, _) => contains_key(expr),
             Guard::ExprWhen(expr, missing) => contains_key(expr) || missing.iter().flatten().any(|(key, _)| contains_key(key)),
             _ => false,
         };

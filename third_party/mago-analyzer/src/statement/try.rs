@@ -303,10 +303,14 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Try<'arena> {
             let include_implicit = broad || !throw_scopes.iter().any(|((_, kind), thrown)| {
                 *kind == VariableThrowKind::Declared && thrown.keys().any(matches)
             });
-            for ((_, kind), thrown) in &mut throw_scopes {
+            for ((span, kind), thrown) in &mut throw_scopes {
                 if *kind == VariableThrowKind::Implicit && !include_implicit { continue; }
                 thrown.retain(|exception, scope| {
                     if matches(exception) {
+                        if context.settings.track_variable_flow && context.raw_callback_gather_depth == 0 {
+                            context.variable_flow.catches.entry(catch_clause.span()).or_default()
+                                .insert(crate::variable_flow::ThrowPoint(*span, *kind, *exception));
+                        }
                         catch_entries.push(scope.clone());
                         !catches_all(exception)
                     } else {

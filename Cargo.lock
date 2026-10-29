@@ -1428,6 +1428,7 @@ dependencies = [
  "mago-analyzer",
  "mago-codex",
  "mago-database",
+ "mago-extension",
  "mago-names",
  "mago-php-version",
  "mago-prelude",

@@ -296,6 +296,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Statement<'arena> {
 
         artifacts.record_static_local_types(block_context, context.codebase, context.settings.combiner_options());
 
+        crate::variable_flow::statement(self, context, artifacts);
         Ok(())
     }
 }

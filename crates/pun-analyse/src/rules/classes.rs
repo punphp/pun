@@ -351,6 +351,7 @@ fn check_class(
         params::Call {
             kind: params::CallKind::New,
             subject: &format!("Class {display} constructor"),
+            scope: None,
             void_message: None,
         },
         false,

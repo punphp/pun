@@ -21,8 +21,6 @@ const GAPS: &[(&str, &str, i64, &str)] = &[
     ("var_names", "vars.php", 84, "varTag.variableNotFound"),
     // Mago types an int mixed after an invalid `$i += 'x'`, so NullCoalesceRule cannot tell it is not nullable
     ("types", "offsets.php", 216, "nullCoalesce.variable"),
-    // Mago loses `$this` after `$this?->$this?->$name`, so the nullsafe rule misses this fetch
-    ("dynamic-names", "dynamic-stringable-nullsafe-access.php", 16, "nullsafe.neverNull"),
     // The conservative declaration-effects producer does not follow labels/goto or general branches.
     ("level4-unused", "src/labels.php", 5, "void.pure"),
     // Arithmetic expression effects and branch joins remain unknown, not proven empty.

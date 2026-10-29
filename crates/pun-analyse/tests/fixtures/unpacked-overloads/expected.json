@@ -1,0 +1,1082 @@
+{
+    "default-0": [
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Missing parameter $end (int|TEnd of DateTimeInterface) in call to DatePeriod constructor.",
+            "line": 85,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $recurrences in call to DatePeriod constructor.",
+            "line": 88,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Missing parameter $start (string) in call to DatePeriod constructor.",
+            "line": 90,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $isostr in call to DatePeriod constructor.",
+            "line": 90,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        }
+    ],
+    "default-1": [
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Missing parameter $end (int|TEnd of DateTimeInterface) in call to DatePeriod constructor.",
+            "line": 85,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $recurrences in call to DatePeriod constructor.",
+            "line": 88,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Missing parameter $start (string) in call to DatePeriod constructor.",
+            "line": 90,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $isostr in call to DatePeriod constructor.",
+            "line": 90,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        }
+    ],
+    "default-2": [
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 7,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 12,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 21,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 33,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 2 parameters, 0-1 required.",
+            "line": 47,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 2 parameters, 0-1 required.",
+            "line": 48,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-1 required.",
+            "line": 51,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-1 required.",
+            "line": 52,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 53,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 54,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $args in call to method PDOStatement::fetchAll().",
+            "line": 55,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $args in call to method PDOStatement::fetchAll().",
+            "line": 56,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $args in call to method PDOStatement::fetchAll().",
+            "line": 58,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $args in call to method PDOStatement::fetchAll().",
+            "line": 59,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Argument for parameter $mode has already been passed.",
+            "line": 60,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Argument for parameter $mode has already been passed.",
+            "line": 61,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Missing parameter $end (int|TEnd of DateTimeInterface) in call to DatePeriod constructor.",
+            "line": 85,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $recurrences in call to DatePeriod constructor.",
+            "line": 88,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Missing parameter $start (string) in call to DatePeriod constructor.",
+            "line": 90,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $isostr in call to DatePeriod constructor.",
+            "line": 90,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        }
+    ],
+    "default-5": [
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 7,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 12,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 21,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 33,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 2 parameters, 0-1 required.",
+            "line": 47,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 2 parameters, 0-1 required.",
+            "line": 48,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-1 required.",
+            "line": 51,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-1 required.",
+            "line": 52,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 53,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 54,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $args in call to method PDOStatement::fetchAll().",
+            "line": 55,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $args in call to method PDOStatement::fetchAll().",
+            "line": 56,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $args in call to method PDOStatement::fetchAll().",
+            "line": 58,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $args in call to method PDOStatement::fetchAll().",
+            "line": 59,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Argument for parameter $mode has already been passed.",
+            "line": 60,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Argument for parameter $mode has already been passed.",
+            "line": 61,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter #1 $mode of method PDOStatement::fetchAll() expects int, false given.",
+            "line": 62,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter #2 $args of method PDOStatement::fetchAll() expects (callable(): mixed)|int|string, false given.",
+            "line": 62,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter #1 $mode of method PDOStatement::fetchAll() expects int, false given.",
+            "line": 63,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter #2 $args of method PDOStatement::fetchAll() expects (callable(): mixed)|int|string, false given.",
+            "line": 63,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter #2 $args of method PDOStatement::fetchAll() expects int, string given.",
+            "line": 79,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter #2 $args of method PDOStatement::fetchAll() expects int, string given.",
+            "line": 81,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Missing parameter $end (int|TEnd of DateTimeInterface) in call to DatePeriod constructor.",
+            "line": 85,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $recurrences in call to DatePeriod constructor.",
+            "line": 88,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Missing parameter $start (string) in call to DatePeriod constructor.",
+            "line": 90,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $isostr in call to DatePeriod constructor.",
+            "line": 90,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        }
+    ],
+    "default-7": [
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 7,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 12,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 21,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 33,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 2 parameters, 0-1 required.",
+            "line": 47,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 2 parameters, 0-1 required.",
+            "line": 48,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-1 required.",
+            "line": 51,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-1 required.",
+            "line": 52,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 53,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 54,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $args in call to method PDOStatement::fetchAll().",
+            "line": 55,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $args in call to method PDOStatement::fetchAll().",
+            "line": 56,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $args in call to method PDOStatement::fetchAll().",
+            "line": 58,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $args in call to method PDOStatement::fetchAll().",
+            "line": 59,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Argument for parameter $mode has already been passed.",
+            "line": 60,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Argument for parameter $mode has already been passed.",
+            "line": 61,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter #1 $mode of method PDOStatement::fetchAll() expects int, false given.",
+            "line": 62,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter #2 $args of method PDOStatement::fetchAll() expects (callable(): mixed)|int|string, false given.",
+            "line": 62,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter #1 $mode of method PDOStatement::fetchAll() expects int, false given.",
+            "line": 63,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter #2 $args of method PDOStatement::fetchAll() expects (callable(): mixed)|int|string, false given.",
+            "line": 63,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter #2 $args of method PDOStatement::fetchAll() expects int, string given.",
+            "line": 79,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter #2 $args of method PDOStatement::fetchAll() expects int, string given.",
+            "line": 81,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Missing parameter $end (int|TEnd of DateTimeInterface) in call to DatePeriod constructor.",
+            "line": 85,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $recurrences in call to DatePeriod constructor.",
+            "line": 88,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Missing parameter $start (string) in call to DatePeriod constructor.",
+            "line": 90,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $isostr in call to DatePeriod constructor.",
+            "line": 90,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        }
+    ],
+    "types-only-5": [
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 7,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 12,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 21,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 33,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 2 parameters, 0-1 required.",
+            "line": 47,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 2 parameters, 0-1 required.",
+            "line": 48,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-1 required.",
+            "line": 51,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-1 required.",
+            "line": 52,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 53,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 54,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $args in call to method PDOStatement::fetchAll().",
+            "line": 55,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $args in call to method PDOStatement::fetchAll().",
+            "line": 56,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $args in call to method PDOStatement::fetchAll().",
+            "line": 58,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $args in call to method PDOStatement::fetchAll().",
+            "line": 59,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Argument for parameter $mode has already been passed.",
+            "line": 60,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Argument for parameter $mode has already been passed.",
+            "line": 61,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter #1 $mode of method PDOStatement::fetchAll() expects int, false given.",
+            "line": 62,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter #2 $args of method PDOStatement::fetchAll() expects (callable(): mixed)|int|string, false given.",
+            "line": 62,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter #1 $mode of method PDOStatement::fetchAll() expects int, false given.",
+            "line": 63,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter #2 $args of method PDOStatement::fetchAll() expects (callable(): mixed)|int|string, false given.",
+            "line": 63,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter #2 $args of method PDOStatement::fetchAll() expects int, string given.",
+            "line": 79,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter #2 $args of method PDOStatement::fetchAll() expects int, string given.",
+            "line": 81,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Missing parameter $end (int|TEnd of DateTimeInterface) in call to DatePeriod constructor.",
+            "line": 85,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $recurrences in call to DatePeriod constructor.",
+            "line": 88,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Missing parameter $start (string) in call to DatePeriod constructor.",
+            "line": 90,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $isostr in call to DatePeriod constructor.",
+            "line": 90,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        }
+    ],
+    "references-only-5": [
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 7,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 12,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 21,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 33,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 2 parameters, 0-1 required.",
+            "line": 47,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 2 parameters, 0-1 required.",
+            "line": 48,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-1 required.",
+            "line": 51,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-1 required.",
+            "line": 52,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 53,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 54,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $args in call to method PDOStatement::fetchAll().",
+            "line": 55,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $args in call to method PDOStatement::fetchAll().",
+            "line": 56,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $args in call to method PDOStatement::fetchAll().",
+            "line": 58,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $args in call to method PDOStatement::fetchAll().",
+            "line": 59,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Argument for parameter $mode has already been passed.",
+            "line": 60,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Argument for parameter $mode has already been passed.",
+            "line": 61,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Missing parameter $end (int|TEnd of DateTimeInterface) in call to DatePeriod constructor.",
+            "line": 85,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $recurrences in call to DatePeriod constructor.",
+            "line": 88,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Missing parameter $start (string) in call to DatePeriod constructor.",
+            "line": 90,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $isostr in call to DatePeriod constructor.",
+            "line": 90,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        }
+    ],
+    "neither-5": [
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 7,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 12,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 21,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 33,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 2 parameters, 0-1 required.",
+            "line": 47,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 2 parameters, 0-1 required.",
+            "line": 48,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-1 required.",
+            "line": 51,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-1 required.",
+            "line": 52,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 53,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method PDOStatement::fetchAll() invoked with 3 parameters, 0-2 required.",
+            "line": 54,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $args in call to method PDOStatement::fetchAll().",
+            "line": 55,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $args in call to method PDOStatement::fetchAll().",
+            "line": 56,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $args in call to method PDOStatement::fetchAll().",
+            "line": 58,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $args in call to method PDOStatement::fetchAll().",
+            "line": 59,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Argument for parameter $mode has already been passed.",
+            "line": 60,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Argument for parameter $mode has already been passed.",
+            "line": 61,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Missing parameter $end (int|TEnd of DateTimeInterface) in call to DatePeriod constructor.",
+            "line": 85,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $recurrences in call to DatePeriod constructor.",
+            "line": 88,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Missing parameter $start (string) in call to DatePeriod constructor.",
+            "line": 90,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $isostr in call to DatePeriod constructor.",
+            "line": 90,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        }
+    ]
+}

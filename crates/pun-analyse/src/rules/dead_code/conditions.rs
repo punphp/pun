@@ -340,6 +340,9 @@ pub(super) fn typed(program: &Program) -> Vec<Span> {
         spans: Vec<Span>,
     }
     impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted {
+        fn walk_in_if(&mut self, i: &'ast If<'arena>, _: &mut ()) {
+            self.spans.push(i.condition.span());
+        }
         fn walk_in_conditional(&mut self, t: &'ast Conditional<'arena>, _: &mut ()) {
             self.spans.push(t.condition.span());
         }
@@ -565,12 +568,15 @@ pub(in super::super) fn if_statement(c: &mut Checker, i: &If) {
     if !c.conditions_checked() {
         return;
     }
+    let tip = c.native_types.get(&i.condition.span())
+        .filter(|ty| !ty.is_never() && !ty.is_always_truthy() && !ty.is_always_falsy())
+        .map(|_| "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.");
     c.constant_condition(
         i.condition,
         unparen(i.condition).span(),
         "If condition",
         "if.always",
-        None,
+        tip,
     );
     for (cond, _) in i.body.else_if_clauses() {
         let last = c.last_condition(unparen(cond).span());

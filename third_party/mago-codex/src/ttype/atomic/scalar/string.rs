@@ -33,6 +33,9 @@ pub struct TString {
     pub literal: Option<TStringLiteral>,
     /// Is this string *guaranteed* (by analysis or literal value) to be numeric according to PHP rules?
     pub is_numeric: bool,
+    /// PHPStan's decimal-integer-string accessory, or its inverse. None imposes neither constraint.
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub decimal_integer: Option<bool>,
     /// Is this string *guaranteed* (by analysis or literal value) to be truthy (non-empty and not "0")?
     pub is_truthy: bool,
     /// Is this string *guaranteed* (by analysis or literal value) to be non-empty?
@@ -94,7 +97,7 @@ impl TString {
         let is_non_empty_implied = is_numeric && !is_non_empty;
         is_non_empty |= is_numeric || is_truthy || is_callable;
 
-        Self { literal, is_numeric, is_truthy, is_non_empty, is_non_empty_implied, is_callable, casing }
+        Self { literal, is_numeric, decimal_integer: None, is_truthy, is_non_empty, is_non_empty_implied, is_callable, casing }
     }
 
     /// Creates an instance representing the general `string` type (not known literal, no guaranteed props).
@@ -116,6 +119,12 @@ impl TString {
     #[must_use]
     pub const fn numeric() -> Self {
         Self::new(None, true, false, false, false, TStringCasing::Unspecified)
+    }
+
+    /// AccessoryDecimalIntegerStringType and its inverse, without a separate non-empty accessory.
+    #[must_use]
+    pub const fn decimal_integer(inverse: bool) -> Self {
+        Self { decimal_integer: Some(!inverse), ..Self::new(None, !inverse, false, false, false, TStringCasing::Unspecified) }
     }
 
     /// Creates a lowercase string instance.
@@ -270,6 +279,15 @@ impl TString {
         self.is_numeric
     }
 
+    /// Canonical platform-sized decimal integers, not numeric formats such as `01`, `+1`, or `1e2`.
+    #[must_use]
+    pub fn is_decimal_integer(&self) -> Option<bool> {
+        self.get_known_literal_value().map(|value| {
+            std::str::from_utf8(value).ok().and_then(|s| s.parse::<i64>().ok())
+                .is_some_and(|integer| integer.to_string().as_bytes() == value)
+        }).or(self.decimal_integer)
+    }
+
     /// Checks if the string is guaranteed to be truthy (non-empty and not "0").
     #[inline]
     #[must_use]
@@ -305,7 +323,7 @@ impl TString {
     #[inline]
     #[must_use]
     pub fn is_lowercase(&self) -> bool {
-        self.casing.is_lowercase()
+        self.decimal_integer == Some(true) || self.casing.is_lowercase()
             || self.get_known_literal_value().is_some_and(|value| !value.iter().any(u8::is_ascii_uppercase))
     }
 
@@ -313,7 +331,7 @@ impl TString {
     #[inline]
     #[must_use]
     pub fn is_uppercase(&self) -> bool {
-        self.casing.is_uppercase()
+        self.decimal_integer == Some(true) || self.casing.is_uppercase()
             || self.get_known_literal_value().is_some_and(|value| !value.iter().any(u8::is_ascii_lowercase))
     }
 
@@ -325,6 +343,7 @@ impl TString {
             Some(_) => false,
             _ => {
                 !self.is_numeric
+                    && self.decimal_integer.is_none()
                     && !self.is_truthy
                     && !self.is_non_empty
                     && matches!(self.casing, TStringCasing::Unspecified)
@@ -350,6 +369,9 @@ impl TString {
     /// Returns `None` when a known literal cannot satisfy the other operand.
     #[must_use]
     pub fn intersect(&self, other: &Self) -> Option<Self> {
+        if self.decimal_integer.zip(other.decimal_integer).is_some_and(|(left, right)| left != right) {
+            return None;
+        }
         match (self.get_known_literal_atom(), other.get_known_literal_atom()) {
             (Some(left), Some(right)) => return (left == right).then_some(*self),
             (Some(_), None) => return self.satisfies_guarantees_of(other).then_some(*self),
@@ -365,18 +387,21 @@ impl TString {
             None
         };
 
-        Some(Self::new(
+        let mut intersection = Self::new(
             literal,
             self.is_numeric || other.is_numeric,
             self.is_truthy || other.is_truthy,
             self.has_non_empty_accessory() || other.has_non_empty_accessory(),
             self.is_callable || other.is_callable,
             casing,
-        ))
+        );
+        intersection.decimal_integer = self.decimal_integer.or(other.decimal_integer);
+        Some(intersection)
     }
 
     fn satisfies_guarantees_of(&self, other: &Self) -> bool {
         (!other.is_numeric || self.is_numeric)
+            && other.decimal_integer.is_none_or(|expected| self.is_decimal_integer() == Some(expected))
             && (!other.is_truthy || self.is_truthy)
             && (!other.is_non_empty || self.is_non_empty)
             && (!other.is_callable || self.is_callable)
@@ -393,6 +418,7 @@ impl TString {
         Self {
             literal: if retain_literal { self.literal } else { None },
             is_numeric: true,
+            decimal_integer: self.decimal_integer,
             is_truthy: self.is_truthy,
             is_non_empty: true, // Numeric strings are always non-empty
             is_non_empty_implied: !self.has_non_empty_accessory(),
@@ -410,6 +436,24 @@ impl TType for TString {
             Some(_) => b"literal-",
             None => b"",
         };
+
+        if let Some(decimal) = self.decimal_integer {
+            return concat_word!(
+                if decimal { b"decimal-int-".as_slice() } else { b"non-decimal-int-".as_slice() },
+                b"string",
+                if self.is_literal_origin() { b"&literal-string".as_slice() } else { b"".as_slice() },
+                if !decimal && self.is_numeric { b"&numeric-string".as_slice() } else { b"".as_slice() },
+                if self.is_callable { b"&callable-string".as_slice() } else { b"".as_slice() },
+                if self.is_truthy { b"&non-falsy-string".as_slice() }
+                else if self.has_non_empty_accessory() { b"&non-empty-string".as_slice() } else { b"".as_slice() },
+                match self.casing {
+                    TStringCasing::Unspecified => b"".as_slice(),
+                    TStringCasing::Lowercase => b"&lowercase-string".as_slice(),
+                    TStringCasing::Uppercase => b"&uppercase-string".as_slice(),
+                    TStringCasing::Both => b"&lowercase-string&uppercase-string".as_slice(),
+                }
+            );
+        }
 
         if self.is_callable && literal_infix.is_empty() {
             return word(match self.casing {

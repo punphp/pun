@@ -5,6 +5,7 @@ use mago_codex::ttype::get_mixed;
 use mago_reporting::Annotation;
 use mago_reporting::Issue;
 use mago_span::HasSpan;
+use mago_syntax::cst::{Expression, Variable};
 use mago_syntax::cst::Global;
 use mago_word::Word;
 
@@ -47,6 +48,14 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Global<'arena> {
         }
 
         for variable in &self.variables {
+            // GlobalHandler evaluates a computed name even though importing the binding is not
+            // a value read. Publish that real operand through the ordinary expression walk.
+            match variable {
+                Variable::Nested(variable) => context.arena.alloc(Expression::Variable(variable.variable.clone()))
+                    .analyze(context, block_context, artifacts)?,
+                Variable::Indirect(variable) => variable.expression.analyze(context, block_context, artifacts)?,
+                Variable::Direct(_) => {}
+            }
             let Some(var_id) = get_variable_id(variable) else {
                 continue;
             };

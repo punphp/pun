@@ -459,6 +459,10 @@ fn phpstan_level_fixtures() {
     let data = tests.join("rules/data");
     // PUN_LEVELS_FILTER=Properties/ selects fixture paths; only executed cases can retire a gap.
     let filter = std::env::var("PUN_LEVELS_FILTER").unwrap_or_default();
+    // Half-open case bounds split large fixtures without rewriting their oracle records.
+    let case_start = std::env::var("PUN_LEVELS_CASE_START").map_or(0, |v| v.parse().unwrap());
+    let case_end = std::env::var("PUN_LEVELS_CASE_END").map_or(usize::MAX, |v| v.parse().unwrap());
+    let filtered = !filter.is_empty() || case_start != 0 || case_end != usize::MAX;
     let gaps: BTreeSet<String> = std::fs::read_to_string(root.join("gaps.txt"))
         .unwrap()
         .lines()
@@ -501,7 +505,13 @@ fn phpstan_level_fixtures() {
             .filter(|f| f.to_string_lossy().contains(&filter))
         {
             let test: Value = serde_json::from_str(&std::fs::read_to_string(&f).unwrap()).unwrap();
-            for case in test["cases"].as_array().unwrap() {
+            for case in test["cases"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .skip(case_start)
+                .take(case_end.saturating_sub(case_start))
+            {
                 let paths = |k: &str| -> Vec<PathBuf> {
                     case[k]
                         .as_array()
@@ -580,7 +590,7 @@ fn phpstan_level_fixtures() {
     }
     let fixed: Vec<_> = gaps
         .iter()
-        .filter(|name| filter.is_empty() || tested.contains(*name))
+        .filter(|name| !filtered || tested.contains(*name))
         .filter(|name| !failing.contains(*name))
         .collect();
     let new: Vec<_> = details
@@ -592,7 +602,7 @@ fn phpstan_level_fixtures() {
         .collect();
     let fixed_purity: Vec<_> = purity_gaps
         .iter()
-        .filter(|(case, _, _)| filter.is_empty() || tested.contains(case))
+        .filter(|(case, _, _)| !filtered || tested.contains(case))
         .filter(|gap| !missing_purity.contains(*gap))
         .collect();
     assert!(
@@ -605,4 +615,5 @@ fn phpstan_level_fixtures() {
             .collect::<Vec<_>>()
             .join("\n")
     );
+    eprintln!("checked {} PHPStan level fixture cases", tested.len());
 }

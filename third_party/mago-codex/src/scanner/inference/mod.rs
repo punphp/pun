@@ -139,6 +139,7 @@ pub fn get_platform_constant_type(name: &[u8]) -> Option<TUnion> {
             TAtomic::Scalar(TScalar::String(TString {
                 literal: Some(TStringLiteral::Value(word("/"))),
                 is_numeric: false,
+                decimal_integer: None,
                 is_truthy: true,
                 is_non_empty: true,
                 is_non_empty_implied: false,
@@ -148,6 +149,7 @@ pub fn get_platform_constant_type(name: &[u8]) -> Option<TUnion> {
             TAtomic::Scalar(TScalar::String(TString {
                 literal: Some(TStringLiteral::Value(word("\\"))),
                 is_numeric: false,
+                decimal_integer: None,
                 is_truthy: true,
                 is_non_empty: true,
                 is_non_empty_implied: false,

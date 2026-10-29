@@ -10,7 +10,7 @@ use mago_span::HasSpan;
 use mago_syntax::cst::*;
 use pun_phpstan::types::Tri;
 
-use super::{Checker, declarations, declared, doc, types::flow};
+use super::{Checker, declarations, declared, doc, members, reflection::Lookup, types::flow};
 
 /// CallToFunctionStatementWithoutSideEffectsRule::PHPSTAN_TESTING_FUNCTIONS.
 pub(super) const TESTING_FUNCTIONS: &[&str] = &[
@@ -128,7 +128,16 @@ impl Producer<'_, '_, '_> {
         match s {
             Statement::Noop(_) | Statement::Function(_) => Some(Effects::default()),
             Statement::Block(b) => self.block(b),
-            Statement::Expression(s) => self.expression(s.expression),
+            Statement::Expression(s) => {
+                let mut effects = self.expression(s.expression)?;
+                // ExpressionHandler promotes an explicit-never *statement* to an exit. NewHandler
+                // itself only forwards argument termination: a nested never constructor is different.
+                effects.terminates |= self
+                    .c
+                    .type_of(s.expression)
+                    .is_some_and(|t| t.is_explicit_never());
+                Some(effects)
+            }
             Statement::Return(r) => {
                 let mut effects = match r.value {
                     Some(value) => self.expression(value)?,
@@ -391,9 +400,85 @@ impl Producer<'_, '_, '_> {
                 effects.terminates = true;
                 Some(effects)
             }
+            Expression::Instantiation(new) => self.instantiation(new),
             Expression::Call(Call::Function(call)) => self.call(call),
             _ => None,
         }
+    }
+
+    /// NewHandler's named-class path: argument results and reflected constructor effects, not the
+    /// constructor body's apparent purity. Legality and the stored object/never type are independent.
+    fn instantiation(&mut self, new: &Instantiation) -> Option<Effects> {
+        let Expression::Identifier(id) = new.class else {
+            return None; // Dynamic, relative and anonymous targets need their own reflection producers.
+        };
+        let mut effects = Effects::default();
+        for arg in new
+            .argument_list
+            .iter()
+            .flat_map(|list| list.arguments.iter())
+        {
+            if matches!(arg, Argument::Positional(p) if p.ellipsis.is_some())
+                || matches!(
+                    arg.value(),
+                    Expression::Closure(_) | Expression::ArrowFunction(_)
+                )
+            {
+                return None; // Unpack normalization and escaping callbacks are not modeled here.
+            }
+            effects.merge(self.expression(arg.value())?);
+        }
+        let class = self.c.class_like(&self.c.resolved(id));
+        if matches!(class, Lookup::NotFound) {
+            // Both lists are nonempty even when InstantiationRule also reports class.notFound.
+            effects.impure = true;
+            effects.throws = true;
+            self.arrays.clear();
+        } else if let Some(constructor) = members::method(self.c, class.found()?, b"__construct") {
+            let members::Method::User { declaring, f, .. } = constructor else {
+                // Built-in reflection does not yet carry constructor throw types/extensions.
+                return None;
+            };
+            self.c.file_contents(f.span.file_id)?;
+            let raw = declared::doc_at(self.c, f.span)
+                .map(|(raw, _)| raw)
+                .unwrap_or_default();
+            let (pure, unless_callable, unless_passed) =
+                declared::method_purity(self.c, declaring, b"__construct");
+            if unless_callable
+                || unless_passed
+                || f.parameters.iter().any(|p| p.flags.is_by_reference())
+                || declarations::doc_tags(&raw)
+                    .iter()
+                    .any(|tag| tag == "@param-immediately-invoked-callable")
+            {
+                return None;
+            }
+            // PhpMethodReflection exempts constructors from the void-return-implies-impure rule.
+            effects.impure |= pure != Some(true);
+            if pure != Some(true) {
+                self.arrays.clear();
+            }
+            let tags = doc::tags(&raw);
+            let kind = if tags.iter().any(|(name, _)| name == "@phpstan-throws") {
+                "@phpstan-throws"
+            } else {
+                "@throws"
+            };
+            let throws: Vec<_> = tags.iter().filter(|(name, _)| name == kind).collect();
+            if throws.iter().any(|(_, value)| value.contains(&b'$')) {
+                return None; // Conditional throw types require argument-sensitive reflection.
+            }
+            // No tag produces an implicit point; every non-void tag produces an explicit point,
+            // including never. Do not reduce the list to the union of its types.
+            effects.throws |= throws.is_empty()
+                || !throws.iter().all(|(_, value)| {
+                    value.split(u8::is_ascii_whitespace).find(|s| !s.is_empty())
+                        == Some(b"void".as_slice())
+                });
+        }
+        // A known named class without a constructor adds neither point, even if it is not instantiable.
+        Some(effects)
     }
 
     fn array(&self, e: &Expression) -> bool {

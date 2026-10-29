@@ -1,0 +1,720 @@
+{
+    "calls": {
+        "626": {
+            "line": 17,
+            "expression": "$grid['nest']['sink']?->foo($grid['other'] = 1, [$grid], [$grid['nest']])",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 626,
+                            "end": 647,
+                            "expression": "$grid['nest']['sink']",
+                            "type": "NullsafeDeviceSink"
+                        },
+                        {
+                            "start": 626,
+                            "end": 639,
+                            "expression": "$grid['nest']",
+                            "type": "array{sink: NullsafeDeviceSink}"
+                        },
+                        {
+                            "start": 626,
+                            "end": 631,
+                            "expression": "$grid",
+                            "type": "array{nest: array{sink: NullsafeDeviceSink}, other: 0}"
+                        },
+                        {
+                            "start": 632,
+                            "end": 638,
+                            "expression": "'nest'",
+                            "type": "'nest'"
+                        },
+                        {
+                            "start": 640,
+                            "end": 646,
+                            "expression": "'sink'",
+                            "type": "'sink'"
+                        },
+                        {
+                            "start": 654,
+                            "end": 672,
+                            "expression": "$grid['other'] = 1",
+                            "type": "1"
+                        },
+                        {
+                            "start": 654,
+                            "end": 668,
+                            "expression": "$grid['other']",
+                            "type": "0"
+                        },
+                        {
+                            "start": 654,
+                            "end": 659,
+                            "expression": "$grid",
+                            "type": "array{nest: array{sink: NullsafeDeviceSink}, other: 0}"
+                        },
+                        {
+                            "start": 660,
+                            "end": 667,
+                            "expression": "'other'",
+                            "type": "'other'"
+                        },
+                        {
+                            "start": 671,
+                            "end": 672,
+                            "expression": "1",
+                            "type": "1"
+                        },
+                        {
+                            "start": 674,
+                            "end": 681,
+                            "expression": "[$grid]",
+                            "type": "array{array{nest: array{sink: NullsafeDeviceSink}, other: 1}}"
+                        },
+                        {
+                            "start": 675,
+                            "end": 680,
+                            "expression": "$grid",
+                            "type": "array{nest: array{sink: NullsafeDeviceSink}, other: 0}"
+                        },
+                        {
+                            "start": 683,
+                            "end": 698,
+                            "expression": "[$grid['nest']]",
+                            "type": "array{array{sink: NullsafeDeviceSink}}"
+                        },
+                        {
+                            "start": 684,
+                            "end": 697,
+                            "expression": "$grid['nest']",
+                            "type": "array{sink: NullsafeDeviceSink}"
+                        },
+                        {
+                            "start": 684,
+                            "end": 689,
+                            "expression": "$grid",
+                            "type": "array{nest: array{sink: NullsafeDeviceSink}, other: 0}"
+                        },
+                        {
+                            "start": 690,
+                            "end": 696,
+                            "expression": "'nest'",
+                            "type": "'nest'"
+                        }
+                    ]
+                }
+            ]
+        },
+        "716": {
+            "line": 18,
+            "expression": "$inspect->inspect($grid, $grid['nest'], $grid['nest']['sink'])",
+            "names": [
+                {
+                    "name": "inspect",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 716,
+                            "end": 724,
+                            "expression": "$inspect",
+                            "type": "NullsafeDeviceInspect"
+                        },
+                        {
+                            "start": 734,
+                            "end": 739,
+                            "expression": "$grid",
+                            "type": "array{nest: array{sink: NullsafeDeviceSink|null}, other: 0|1}"
+                        },
+                        {
+                            "start": 741,
+                            "end": 754,
+                            "expression": "$grid['nest']",
+                            "type": "array{sink: NullsafeDeviceSink|null}"
+                        },
+                        {
+                            "start": 741,
+                            "end": 746,
+                            "expression": "$grid",
+                            "type": "array{nest: array{sink: NullsafeDeviceSink|null}, other: 0|1}"
+                        },
+                        {
+                            "start": 747,
+                            "end": 753,
+                            "expression": "'nest'",
+                            "type": "'nest'"
+                        },
+                        {
+                            "start": 756,
+                            "end": 777,
+                            "expression": "$grid['nest']['sink']",
+                            "type": "NullsafeDeviceSink|null"
+                        },
+                        {
+                            "start": 756,
+                            "end": 769,
+                            "expression": "$grid['nest']",
+                            "type": "array{sink: NullsafeDeviceSink|null}"
+                        },
+                        {
+                            "start": 756,
+                            "end": 761,
+                            "expression": "$grid",
+                            "type": "array{nest: array{sink: NullsafeDeviceSink|null}, other: 0|1}"
+                        },
+                        {
+                            "start": 762,
+                            "end": 768,
+                            "expression": "'nest'",
+                            "type": "'nest'"
+                        },
+                        {
+                            "start": 770,
+                            "end": 776,
+                            "expression": "'sink'",
+                            "type": "'sink'"
+                        }
+                    ]
+                }
+            ]
+        },
+        "905": {
+            "line": 22,
+            "expression": "$box->holders['sink']?->foo([$box->holders], $box->holders['sink'] = null, [$box->holders])",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 905,
+                            "end": 926,
+                            "expression": "$box->holders['sink']",
+                            "type": "NullsafeDeviceSink"
+                        },
+                        {
+                            "start": 905,
+                            "end": 918,
+                            "expression": "$box->holders",
+                            "type": "array{sink: NullsafeDeviceSink|null}"
+                        },
+                        {
+                            "start": 905,
+                            "end": 909,
+                            "expression": "$box",
+                            "type": "NullsafeDeviceBox"
+                        },
+                        {
+                            "start": 919,
+                            "end": 925,
+                            "expression": "'sink'",
+                            "type": "'sink'"
+                        },
+                        {
+                            "start": 933,
+                            "end": 948,
+                            "expression": "[$box->holders]",
+                            "type": "array{array{sink: NullsafeDeviceSink}}"
+                        },
+                        {
+                            "start": 934,
+                            "end": 947,
+                            "expression": "$box->holders",
+                            "type": "array{sink: NullsafeDeviceSink}"
+                        },
+                        {
+                            "start": 934,
+                            "end": 938,
+                            "expression": "$box",
+                            "type": "NullsafeDeviceBox"
+                        },
+                        {
+                            "start": 950,
+                            "end": 978,
+                            "expression": "$box->holders['sink'] = null",
+                            "type": "null"
+                        },
+                        {
+                            "start": 950,
+                            "end": 971,
+                            "expression": "$box->holders['sink']",
+                            "type": "NullsafeDeviceSink"
+                        },
+                        {
+                            "start": 950,
+                            "end": 963,
+                            "expression": "$box->holders",
+                            "type": "array{sink: NullsafeDeviceSink}"
+                        },
+                        {
+                            "start": 950,
+                            "end": 954,
+                            "expression": "$box",
+                            "type": "NullsafeDeviceBox"
+                        },
+                        {
+                            "start": 964,
+                            "end": 970,
+                            "expression": "'sink'",
+                            "type": "'sink'"
+                        },
+                        {
+                            "start": 974,
+                            "end": 978,
+                            "expression": "null",
+                            "type": "null"
+                        },
+                        {
+                            "start": 980,
+                            "end": 995,
+                            "expression": "[$box->holders]",
+                            "type": "array{array{sink: null}}"
+                        },
+                        {
+                            "start": 981,
+                            "end": 994,
+                            "expression": "$box->holders",
+                            "type": "array{sink: null}"
+                        },
+                        {
+                            "start": 981,
+                            "end": 985,
+                            "expression": "$box",
+                            "type": "NullsafeDeviceBox"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1013": {
+            "line": 23,
+            "expression": "$inspect->inspect($box->holders)",
+            "names": [
+                {
+                    "name": "inspect",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 1013,
+                            "end": 1021,
+                            "expression": "$inspect",
+                            "type": "NullsafeDeviceInspect"
+                        },
+                        {
+                            "start": 1031,
+                            "end": 1044,
+                            "expression": "$box->holders",
+                            "type": "array{sink: NullsafeDeviceSink|null}"
+                        },
+                        {
+                            "start": 1031,
+                            "end": 1035,
+                            "expression": "$box",
+                            "type": "NullsafeDeviceBox"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1176": {
+            "line": 27,
+            "expression": "($sink = $maybe)?->foo($sink, [$sink])",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 1177,
+                            "end": 1191,
+                            "expression": "$sink = $maybe",
+                            "type": "NullsafeDeviceSink"
+                        },
+                        {
+                            "start": 1177,
+                            "end": 1182,
+                            "expression": "$sink",
+                            "type": "NullsafeDeviceSink|null"
+                        },
+                        {
+                            "start": 1185,
+                            "end": 1191,
+                            "expression": "$maybe",
+                            "type": "NullsafeDeviceSink|null"
+                        },
+                        {
+                            "start": 1199,
+                            "end": 1204,
+                            "expression": "$sink",
+                            "type": "NullsafeDeviceSink|null"
+                        },
+                        {
+                            "start": 1206,
+                            "end": 1213,
+                            "expression": "[$sink]",
+                            "type": "array{NullsafeDeviceSink|null}"
+                        },
+                        {
+                            "start": 1207,
+                            "end": 1212,
+                            "expression": "$sink",
+                            "type": "NullsafeDeviceSink|null"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1231": {
+            "line": 28,
+            "expression": "($holder = new NullsafeDeviceSink())->child?->foo($holder->child, [$holder->child])",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 1231,
+                            "end": 1274,
+                            "expression": "($holder = new NullsafeDeviceSink())->child",
+                            "type": "NullsafeDeviceSink"
+                        },
+                        {
+                            "start": 1232,
+                            "end": 1266,
+                            "expression": "$holder = new NullsafeDeviceSink()",
+                            "type": "NullsafeDeviceSink"
+                        },
+                        {
+                            "start": 1232,
+                            "end": 1239,
+                            "expression": "$holder",
+                            "type": "NullsafeDeviceSink"
+                        },
+                        {
+                            "start": 1242,
+                            "end": 1266,
+                            "expression": "new NullsafeDeviceSink()",
+                            "type": "NullsafeDeviceSink"
+                        },
+                        {
+                            "start": 1281,
+                            "end": 1295,
+                            "expression": "$holder->child",
+                            "type": "NullsafeDeviceSink|null"
+                        },
+                        {
+                            "start": 1281,
+                            "end": 1288,
+                            "expression": "$holder",
+                            "type": "NullsafeDeviceSink"
+                        },
+                        {
+                            "start": 1297,
+                            "end": 1313,
+                            "expression": "[$holder->child]",
+                            "type": "array{NullsafeDeviceSink|null}"
+                        },
+                        {
+                            "start": 1298,
+                            "end": 1312,
+                            "expression": "$holder->child",
+                            "type": "NullsafeDeviceSink|null"
+                        },
+                        {
+                            "start": 1298,
+                            "end": 1305,
+                            "expression": "$holder",
+                            "type": "NullsafeDeviceSink"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1331": {
+            "line": 29,
+            "expression": "($holders = ['sink' => $maybe])['sink']?->foo([$holders])",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 1331,
+                            "end": 1370,
+                            "expression": "($holders = ['sink' => $maybe])['sink']",
+                            "type": "NullsafeDeviceSink"
+                        },
+                        {
+                            "start": 1332,
+                            "end": 1361,
+                            "expression": "$holders = ['sink' => $maybe]",
+                            "type": "array{sink: NullsafeDeviceSink|null}"
+                        },
+                        {
+                            "start": 1332,
+                            "end": 1340,
+                            "expression": "$holders",
+                            "type": "array{sink: NullsafeDeviceSink|null}"
+                        },
+                        {
+                            "start": 1343,
+                            "end": 1361,
+                            "expression": "['sink' => $maybe]",
+                            "type": "array{sink: NullsafeDeviceSink|null}"
+                        },
+                        {
+                            "start": 1344,
+                            "end": 1350,
+                            "expression": "'sink'",
+                            "type": "'sink'"
+                        },
+                        {
+                            "start": 1354,
+                            "end": 1360,
+                            "expression": "$maybe",
+                            "type": "NullsafeDeviceSink|null"
+                        },
+                        {
+                            "start": 1363,
+                            "end": 1369,
+                            "expression": "'sink'",
+                            "type": "'sink'"
+                        },
+                        {
+                            "start": 1377,
+                            "end": 1387,
+                            "expression": "[$holders]",
+                            "type": "array{array{sink: NullsafeDeviceSink|null}}"
+                        },
+                        {
+                            "start": 1378,
+                            "end": 1386,
+                            "expression": "$holders",
+                            "type": "array{sink: NullsafeDeviceSink|null}"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1405": {
+            "line": 30,
+            "expression": "$inspect->inspect($sink, $holder, $holders)",
+            "names": [
+                {
+                    "name": "inspect",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 1405,
+                            "end": 1413,
+                            "expression": "$inspect",
+                            "type": "NullsafeDeviceInspect"
+                        },
+                        {
+                            "start": 1423,
+                            "end": 1428,
+                            "expression": "$sink",
+                            "type": "NullsafeDeviceSink|null"
+                        },
+                        {
+                            "start": 1430,
+                            "end": 1437,
+                            "expression": "$holder",
+                            "type": "NullsafeDeviceSink"
+                        },
+                        {
+                            "start": 1439,
+                            "end": 1447,
+                            "expression": "$holders",
+                            "type": "array{sink: NullsafeDeviceSink|null}"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1596": {
+            "line": 36,
+            "expression": "$sink?->foo($sink, [$sink])",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 1596,
+                            "end": 1601,
+                            "expression": "$sink",
+                            "type": "NullsafeDeviceSink"
+                        },
+                        {
+                            "start": 1608,
+                            "end": 1613,
+                            "expression": "$sink",
+                            "type": "NullsafeDeviceSink"
+                        },
+                        {
+                            "start": 1615,
+                            "end": 1622,
+                            "expression": "[$sink]",
+                            "type": "array{NullsafeDeviceSink}"
+                        },
+                        {
+                            "start": 1616,
+                            "end": 1621,
+                            "expression": "$sink",
+                            "type": "NullsafeDeviceSink"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1781": {
+            "line": 40,
+            "expression": "$sink?->{$names['method']}([$sink], ...['later' => $sink])",
+            "names": [
+                {
+                    "name": "bar",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 1781,
+                            "end": 1786,
+                            "expression": "$sink",
+                            "type": "NullsafeDeviceSink"
+                        },
+                        {
+                            "start": 1808,
+                            "end": 1815,
+                            "expression": "[$sink]",
+                            "type": "array{NullsafeDeviceSink}"
+                        },
+                        {
+                            "start": 1809,
+                            "end": 1814,
+                            "expression": "$sink",
+                            "type": "NullsafeDeviceSink"
+                        },
+                        {
+                            "start": 1820,
+                            "end": 1838,
+                            "expression": "['later' => $sink]",
+                            "type": "array{later: NullsafeDeviceSink}"
+                        },
+                        {
+                            "start": 1821,
+                            "end": 1828,
+                            "expression": "'later'",
+                            "type": "'later'"
+                        },
+                        {
+                            "start": 1832,
+                            "end": 1837,
+                            "expression": "$sink",
+                            "type": "NullsafeDeviceSink"
+                        }
+                    ]
+                },
+                {
+                    "name": "foo",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 1781,
+                            "end": 1786,
+                            "expression": "$sink",
+                            "type": "NullsafeDeviceSink"
+                        },
+                        {
+                            "start": 1808,
+                            "end": 1815,
+                            "expression": "[$sink]",
+                            "type": "array{NullsafeDeviceSink}"
+                        },
+                        {
+                            "start": 1809,
+                            "end": 1814,
+                            "expression": "$sink",
+                            "type": "NullsafeDeviceSink"
+                        },
+                        {
+                            "start": 1820,
+                            "end": 1838,
+                            "expression": "['later' => $sink]",
+                            "type": "array{later: NullsafeDeviceSink}"
+                        },
+                        {
+                            "start": 1821,
+                            "end": 1828,
+                            "expression": "'later'",
+                            "type": "'later'"
+                        },
+                        {
+                            "start": 1832,
+                            "end": 1837,
+                            "expression": "$sink",
+                            "type": "NullsafeDeviceSink"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1856": {
+            "line": 41,
+            "expression": "$sink?->{($condition ? 'foo' : 'bar')}([$sink])",
+            "names": [
+                {
+                    "name": "bar",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 1856,
+                            "end": 1861,
+                            "expression": "$sink",
+                            "type": "NullsafeDeviceSink"
+                        },
+                        {
+                            "start": 1895,
+                            "end": 1902,
+                            "expression": "[$sink]",
+                            "type": "array{NullsafeDeviceSink}"
+                        },
+                        {
+                            "start": 1896,
+                            "end": 1901,
+                            "expression": "$sink",
+                            "type": "NullsafeDeviceSink"
+                        }
+                    ]
+                },
+                {
+                    "name": "foo",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 1856,
+                            "end": 1861,
+                            "expression": "$sink",
+                            "type": "NullsafeDeviceSink"
+                        },
+                        {
+                            "start": 1895,
+                            "end": 1902,
+                            "expression": "[$sink]",
+                            "type": "array{NullsafeDeviceSink}"
+                        },
+                        {
+                            "start": 1896,
+                            "end": 1901,
+                            "expression": "$sink",
+                            "type": "NullsafeDeviceSink"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "errors": [],
+    "function_events": []
+}

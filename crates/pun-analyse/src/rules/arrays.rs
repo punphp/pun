@@ -400,11 +400,6 @@ fn written(c: &Checker, e: &Expression) -> String {
     let e = unparenthesized(e);
     match e {
         Expression::Literal(Literal::Float(f)) => float_var_export(f.value.0),
-        Expression::Literal(Literal::Integer(i))
-            if i.value.is_some_and(|v| v > i64::MAX as u64) =>
-        {
-            float_var_export(i.value.unwrap() as f64)
-        }
         Expression::UnaryPrefix(u)
             if matches!(
                 u.operator,

@@ -221,6 +221,25 @@ impl BlockContext<'_> {
             });
     }
 
+    /// enterFunctionLike's definite conditional formal, installed after parameter writes.
+    pub(crate) fn add_parameter_condition(&mut self, guard: Word, guard_type: TUnion, target: Word, target_type: TUnion) {
+        self.variable_state.conditional.push(ConditionalVariable {
+            guard,
+            guard_type: Rc::new(guard_type),
+            target,
+            certainty: VariableCertainty::Defined,
+            target_type: Some(Rc::new(target_type)),
+        });
+    }
+
+    /// Anonymous functions require both sides in `use`; arrows retain outer relationships.
+    /// Do not copy absence, extract, or reference state along with these holders.
+    pub(crate) fn capture_variable_conditions(&mut self, outer: &Self, captured: impl Fn(Word) -> bool) {
+        self.variable_state.conditional.extend(outer.variable_state.conditional.iter().filter(|holder| {
+            captured(holder.target) && captured(holder.guard)
+        }).cloned());
+    }
+
     /// Keep the pre-RHS holders only when there is a condition to propagate.
     pub(crate) fn assignment_condition_scope(&self) -> Option<Self> {
         (!self.variable_state.conditional.is_empty()).then(|| self.clone())

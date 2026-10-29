@@ -31,8 +31,11 @@ use mago_syntax::cst::AssignmentOperator;
 use mago_syntax::cst::Binary;
 use mago_syntax::cst::BinaryOperator;
 use mago_syntax::cst::Call;
+use mago_syntax::cst::ClassLikeMemberSelector;
 use mago_syntax::cst::Construct;
 use mago_syntax::cst::Expression;
+use mago_syntax::cst::Literal;
+use mago_syntax::cst::LocalIdentifier;
 use mago_syntax::cst::StringPart;
 use mago_syntax::cst::UnaryPrefix;
 use mago_syntax::cst::UnaryPrefixOperator;
@@ -45,6 +48,7 @@ use mago_word::word;
 use crate::analyzable::Analyzable;
 use crate::artifacts::AnalysisArtifacts;
 use crate::artifacts::CheckpointAction;
+use crate::artifacts::ExpressionResult;
 use crate::code::IssueCode;
 use crate::context::Context;
 use crate::context::block::BlockContext;
@@ -107,6 +111,47 @@ pub fn analyze_assignment<'ctx, 'ast, 'arena, A>(
     artifacts: &mut AnalysisArtifacts,
     assignment_span: Option<Span>,
     target_expression: &'ast Expression<'arena>,
+    assignment_operator: Option<&AssignmentOperator>,
+    source_expression: Option<&'ast Expression<'arena>>,
+    source_type: Option<TUnion>,
+) -> Result<(), AnalysisError>
+where
+    A: Arena,
+{
+    let read_target = assignment_operator.is_some_and(|operator| !matches!(operator, AssignmentOperator::Assign(_)));
+    let operands = analyze_assignment_target(target_expression, context, block_context, artifacts, read_target)?;
+    crate::observations::with_prepared_operands(context, &operands, |context| {
+        analyze_prepared_assignment(
+            context,
+            block_context,
+            artifacts,
+            assignment_span,
+            target_expression,
+            assignment_operator,
+            source_expression,
+            source_type,
+        )
+    })?;
+    if read_target {
+        // PHPStan 2.3.1 AssignHandler::applyWrite updates the scope holder, not the prepared
+        // operand results in storage. Keep the actual completed reads here too:
+        // array_assignment uses these same artifact slots for its write chain.
+        for (span, result) in operands {
+            match result {
+                Some(result) => artifacts.set_expression_result(&span, result),
+                None => artifacts.remove_expression_type(&(span.start.offset, span.end.offset)),
+            }
+        }
+    }
+    Ok(())
+}
+
+fn analyze_prepared_assignment<'ctx, 'ast, 'arena, A>(
+    context: &mut Context<'ctx, 'arena, A>,
+    block_context: &mut BlockContext<'ctx>,
+    artifacts: &mut AnalysisArtifacts,
+    assignment_span: Option<Span>,
+    target_expression: &'ast Expression<'arena>,
     mut assignment_operator: Option<&AssignmentOperator>,
     source_expression: Option<&'ast Expression<'arena>>,
     source_type: Option<TUnion>,
@@ -117,8 +162,6 @@ where
     if let Some(AssignmentOperator::Assign(_)) = assignment_operator {
         assignment_operator = None;
     }
-
-    analyze_assignment_target(target_expression, context, block_context, artifacts)?;
 
     let target_variable_id = get_block_expression_id(target_expression, context, block_context);
     let mut reads: Vec<_> = if assignment_operator.is_none()
@@ -735,33 +778,6 @@ pub fn analyze_assignment_to_variable<'ctx, 'arena, A>(
         );
     }
 
-    if assigned_type.is_never() {
-        let mut issue =
-            Issue::error("Invalid assignment: the right-hand side has type `never` and cannot produce a value.")
-                .with_annotation(
-                    Annotation::primary(variable_span).with_message("Cannot assign a `never` type value here"),
-                );
-
-        if let Some(source_expression) = source_expression
-            && let Expression::Binary(_) = source_expression
-        {
-            issue = issue.with_annotation(
-                Annotation::secondary(source_expression.span()).with_message("This expression has type `never`."),
-            );
-        }
-
-        context.collector.report_with_code(
-            IssueCode::ImpossibleAssignment,
-            issue
-                .with_note(
-                    "An expression with type `never` is guaranteed to exit, throw, or loop indefinitely."
-                )
-                .with_help(
-                    "This assignment is unreachable because the right-hand side never completes. Remove the assignment or refactor the preceding code."
-                )
-        );
-    }
-
     let mut from_docblock = false;
     if let Some((variable_type, variable_type_span)) =
         get_type_from_var_docblock(context, block_context, artifacts, Some(variable_id.as_bytes()), !destructuring)
@@ -780,7 +796,11 @@ pub fn analyze_assignment_to_variable<'ctx, 'arena, A>(
         from_docblock = true;
     }
 
-    if !from_docblock && assigned_type.is_mixed() && !variable_id.as_bytes().starts_with(b"$_") {
+    if !from_docblock
+        && assigned_type.is_mixed()
+        && !assigned_type.is_error()
+        && !variable_id.as_bytes().starts_with(b"$_")
+    {
         let assigned_type_str = assigned_type.get_id();
 
         let mut issue = Issue::warning(format!(
@@ -1324,37 +1344,257 @@ fn analyze_assignment_target<'ctx, 'arena, A>(
     context: &mut Context<'ctx, 'arena, A>,
     block_context: &mut BlockContext<'ctx>,
     artifacts: &mut AnalysisArtifacts,
-) -> Result<(), AnalysisError>
+    read_target: bool,
+) -> Result<Vec<(Span, Option<ExpressionResult>)>, AnalysisError>
 where
     A: Arena,
 {
+    // prepareTarget's raw callback belongs to entry, not the RHS or the write.
+    // A direct write-only variable deliberately has no completed read result.
+    crate::observations::before(expression, context, block_context);
+    let mut operands = Vec::new();
     match expression {
         Expression::Variable(Variable::Nested(nested)) => {
             let name = context.arena.alloc(Expression::Variable(nested.variable.clone()));
-            name.analyze(context, block_context, artifacts)?;
+            prepare_assignment_operand(name, context, block_context, artifacts, &mut operands)?;
         }
         Expression::Variable(Variable::Indirect(indirect)) => {
-            indirect.expression.analyze(context, block_context, artifacts)?;
+            prepare_assignment_operand(indirect.expression, context, block_context, artifacts, &mut operands)?;
         }
         // List_ children are prepared during applyWrite(), not before the RHS.
         Expression::List(_) | Expression::Array(_) => {}
-        Expression::ArrayAccess(array_access) => {
-            analyze_assignment_target(array_access.array, context, block_context, artifacts)?;
-            analyze_assignment_target(array_access.index, context, block_context, artifacts)?;
+        Expression::ArrayAccess(_) | Expression::ArrayAppend(_) => {
+            let mut links = Vec::new();
+            let mut root = expression;
+            loop {
+                match root {
+                    Expression::ArrayAccess(access) => {
+                        links.push((root, access.array, Some(access.index)));
+                        root = access.array;
+                    }
+                    Expression::ArrayAppend(append) => {
+                        links.push((root, append.array, None));
+                        root = append.array;
+                    }
+                    _ => break,
+                }
+            }
+            prepare_assignment_operand(root, context, block_context, artifacts, &mut operands)?;
+            // PHPStan walks the root and dimensions inside-out, composing each
+            // link from those results. Never re-run an index to price the target.
+            for (link, array, index) in links.into_iter().rev() {
+                if link.span() != expression.span() {
+                    crate::observations::before(link, context, block_context);
+                }
+                if let Some(index) = index {
+                    prepare_assignment_operand(index, context, block_context, artifacts, &mut operands)?;
+                }
+                artifacts.remove_expression_type(&(link.span().start.offset, link.span().end.offset));
+                let value = if let Some(index) = index {
+                    let array_type = artifacts.get_rc_expression_type(array).cloned();
+                    let index_type = artifacts.get_rc_expression_type(index).cloned();
+                    array_type.zip(index_type).map(|(array_type, index_type)| {
+                        // prepareTarget composes getOffsetValueType, not the
+                        // writer's promotion of missing offsets into containers.
+                        // array_assignment still owns validation of the write.
+                        // ConstantArrayType projects a slot's value independently
+                        // of optionality. Do not let ordinary-read diagnostics add
+                        // null for absence; genuine nullable values stay unchanged.
+                        // This projection is private, never the written receiver.
+                        let mut value_projection = array_type.as_ref().clone();
+                        let mut possibly_undefined = false;
+                        for atomic in value_projection.types.to_mut() {
+                            match atomic {
+                                TAtomic::Array(TArray::Keyed(array)) => {
+                                    if let Some(items) = &mut array.known_items {
+                                        possibly_undefined |= index_type
+                                            .get_single_array_key()
+                                            .and_then(|key| items.get(&key))
+                                            .is_some_and(|(optional, _)| *optional);
+                                        for (optional, _) in std::sync::Arc::make_mut(items).values_mut() {
+                                            *optional = false;
+                                        }
+                                    }
+                                }
+                                TAtomic::Array(TArray::List(array)) => {
+                                    if let Some(items) = &mut array.known_elements {
+                                        possibly_undefined |= index_type
+                                            .get_single_literal_int_value()
+                                            .and_then(|key| usize::try_from(key).ok())
+                                            .and_then(|key| items.get(&key))
+                                            .is_some_and(|(optional, _)| *optional);
+                                        for (optional, _) in std::sync::Arc::make_mut(items).values_mut() {
+                                            *optional = false;
+                                        }
+                                    }
+                                }
+                                _ => {}
+                            }
+                        }
+                        let mut value = context
+                            .record(|context| {
+                                get_array_target_type_given_index(
+                                    context,
+                                    block_context,
+                                    link.span(),
+                                    array.span(),
+                                    Some(index.span()),
+                                    &value_projection,
+                                    &index_type,
+                                    false,
+                                    get_block_expression_id(array, context, block_context),
+                                    None,
+                                    false,
+                                )
+                            })
+                            .0;
+                        // Coalesce still needs absence independently of the value.
+                        if possibly_undefined {
+                            value.set_possibly_undefined(true, None);
+                        }
+                        value
+                    })
+                } else {
+                    Some(get_never())
+                };
+                if let Some(value) = value {
+                    artifacts.set_expression_type(link, value);
+                    crate::native::after_expression(link, context, block_context, artifacts);
+                }
+                crate::observations::after(link, context, block_context, artifacts);
+                operands.push((link.span(), artifacts.get_expression_result(link)));
+            }
         }
-        Expression::Access(Access::Property(property_access)) => {
-            analyze_assignment_target(property_access.object, context, block_context, artifacts)?;
+        Expression::Access(Access::Property(access)) => {
+            prepare_assignment_property(
+                expression,
+                access.object,
+                &access.property,
+                access.arrow.span(),
+                false,
+                context,
+                block_context,
+                artifacts,
+                &mut operands,
+                read_target,
+            )?;
         }
-        Expression::Access(Access::NullSafeProperty(null_safe_property_access)) => {
-            analyze_assignment_target(null_safe_property_access.object, context, block_context, artifacts)?;
+        Expression::Access(Access::NullSafeProperty(access)) => {
+            prepare_assignment_property(
+                expression,
+                access.object,
+                &access.property,
+                access.question_mark_arrow.span(),
+                true,
+                context,
+                block_context,
+                artifacts,
+                &mut operands,
+                read_target,
+            )?;
         }
         Expression::Access(Access::StaticProperty(static_property_access)) => {
-            analyze_assignment_target(static_property_access.class, context, block_context, artifacts)?;
+            operands.extend(analyze_assignment_target(
+                static_property_access.class,
+                context,
+                block_context,
+                artifacts,
+                true,
+            )?);
         }
         _ => {}
     }
 
+    Ok(operands)
+}
+
+fn prepare_assignment_property<'ctx, 'arena, A: Arena>(
+    expression: &Expression<'arena>,
+    object: &Expression<'arena>,
+    property: &ClassLikeMemberSelector<'arena>,
+    arrow: Span,
+    nullsafe: bool,
+    context: &mut Context<'ctx, 'arena, A>,
+    block_context: &mut BlockContext<'ctx>,
+    artifacts: &mut AnalysisArtifacts,
+    operands: &mut Vec<(Span, Option<ExpressionResult>)>,
+    read_target: bool,
+) -> Result<(), AnalysisError> {
+    prepare_assignment_operand(object, context, block_context, artifacts, operands)?;
+    let mut resolved_property = None;
+    let variable = match property {
+        ClassLikeMemberSelector::Expression(selector) => {
+            prepare_assignment_operand(selector.expression, context, block_context, artifacts, operands)?;
+            // PHPStan normalizes a literal-string name to the named fetch's holder.
+            // A dynamic expression with a constant-string type is not that identity.
+            if matches!(unwrap_expression(selector.expression), Expression::Literal(Literal::String(_)))
+                && let Some(name) = artifacts.get_expression_type(selector.expression)
+                    .and_then(|ty| ty.get_single_literal_string_value())
+            {
+                resolved_property = Some(ClassLikeMemberSelector::Identifier(LocalIdentifier {
+                    span: property.span(),
+                    value: context.arena.alloc_slice_copy(name),
+                }));
+            }
+            None
+        }
+        ClassLikeMemberSelector::Variable(variable) => {
+            let name = context.arena.alloc(Expression::Variable(variable.clone()));
+            crate::observations::before(name, context, block_context);
+            Some(name)
+        }
+        _ => None,
+    };
+    artifacts.remove_expression_type(&(expression.span().start.offset, expression.span().end.offset));
+    // AssignHandler parks a composed pre-write value without counting a plain
+    // assignment target as a property read. Receiver and selector reads above survive.
+    let references = (!read_target).then(|| std::mem::take(&mut artifacts.symbol_references));
+    let (result, completed) = crate::observations::collect_prepared_operands(context, |context| {
+        crate::observations::with_prepared_operands(context, operands, |context| {
+            context
+                .record(|context| {
+                    crate::expression::access::property_access::analyze_property_access(
+                        context,
+                        block_context,
+                        artifacts,
+                        expression.span(),
+                        object,
+                        arrow,
+                        resolved_property.as_ref().unwrap_or(property),
+                        nullsafe,
+                        false,
+                    )
+                })
+                .0
+        })
+    });
+    if let Some(references) = references {
+        artifacts.symbol_references = references;
+    }
+    operands.extend(completed);
+    result?;
+    if let Some(name) = variable {
+        crate::observations::after(name, context, block_context, artifacts);
+        operands.push((name.span(), artifacts.get_expression_result(name)));
+    }
+    crate::native::after_expression(expression, context, block_context, artifacts);
+    crate::observations::after(expression, context, block_context, artifacts);
+    operands.push((expression.span(), artifacts.get_expression_result(expression)));
     Ok(())
+}
+
+fn prepare_assignment_operand<'ctx, 'arena, A: Arena>(
+    expression: &Expression<'arena>,
+    context: &mut Context<'ctx, 'arena, A>,
+    block_context: &mut BlockContext<'ctx>,
+    artifacts: &mut AnalysisArtifacts,
+    operands: &mut Vec<(Span, Option<ExpressionResult>)>,
+) -> Result<(), AnalysisError> {
+    let (result, completed) = crate::observations::collect_prepared_operands(context, |context| {
+        expression.analyze(context, block_context, artifacts)
+    });
+    operands.extend(completed);
+    result
 }
 
 fn handle_assignment_with_boolean_logic<'ctx, 'arena, A>(

@@ -17,6 +17,7 @@ fn oracle() -> Value {
 fn phpstan_types() -> BTreeMap<&'static str, Type> {
     let mut types = BTreeMap::from([
         ("mixed", mixed()),
+        ("explicit-mixed", Type::Mixed { explicit: true }),
         ("error", Type::Error),
         ("zero", Type::ConstInt(0)),
         ("one", Type::ConstInt(1)),

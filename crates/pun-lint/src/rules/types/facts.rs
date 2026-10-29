@@ -218,12 +218,11 @@ impl Facts {
         if let Some(t) = analysis.declared.get(&(start, end)) {
             return Some(t);
         }
+        // PHPStan's native scope retains a call's void return, unlike its effective full value.
         analysis
             .artifacts
             .as_ref()?
-            .expression_types
-            .get(&(start, end))
-            .map(|t| t.as_ref())
+            .get_keep_void_expression_type(&mago_span::Span::dummy(start, end))
     }
 
     /// The declared return type of the built-in function `call` calls (PHP's own signature, not the stub's
@@ -579,9 +578,15 @@ impl Facts {
         if let Some(artifacts) = &artifacts {
             // a member of a class the codebase lacks (vendor/ is not scanned; Rector's PHPStan reads it): Mago types
             // it from the rest of the object's union (`?Unknown` gives `null`), PHPStan from the class
-            // (a class name Mago could not resolve is a reference; `new` of one is `never`)
+            // (unresolved names can remain references or named objects without class metadata).
             let unknown = |t: &TUnion| {
-                (t.types.iter()).any(|t| matches!(t, TAtomic::Reference(_) | TAtomic::Never))
+                t.types.iter().any(|t| match t {
+                    TAtomic::Object(TObject::Named(object)) => {
+                        self.codebase.get_class_like(object.name.as_bytes()).is_none()
+                    }
+                    TAtomic::Reference(_) | TAtomic::Never => true,
+                    _ => false,
+                })
             };
             any_node(Node::Program(program), &mut |n| {
                 let (object, span, method) = match n {

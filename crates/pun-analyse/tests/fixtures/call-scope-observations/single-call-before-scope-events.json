@@ -1,0 +1,62 @@
+{
+    "442": {
+        "end": 444,
+        "expression": "$i",
+        "type": "*ERROR*",
+        "visits": 1
+    },
+    "454": {
+        "end": 478,
+        "expression": "$target->$name(++$i, $i)",
+        "type": "0|array{1}",
+        "visits": 1
+    },
+    "469": {
+        "end": 473,
+        "expression": "++$i",
+        "type": "1",
+        "visits": 1
+    },
+    "471": {
+        "end": 473,
+        "expression": "$i",
+        "type": "0",
+        "visits": 1
+    },
+    "475": {
+        "end": 477,
+        "expression": "$i",
+        "type": "1",
+        "visits": 1
+    },
+    "576": {
+        "end": 578,
+        "expression": "$i",
+        "type": "*ERROR*",
+        "visits": 1
+    },
+    "589": {
+        "end": 613,
+        "expression": "$target->$name(++$i, $i)",
+        "type": "10",
+        "visits": 1
+    },
+    "604": {
+        "end": 608,
+        "expression": "++$i",
+        "type": "11",
+        "visits": 1
+    },
+    "606": {
+        "end": 608,
+        "expression": "$i",
+        "type": "10",
+        "visits": 1
+    },
+    "610": {
+        "end": 612,
+        "expression": "$i",
+        "type": "11",
+        "visits": 1
+    }
+}

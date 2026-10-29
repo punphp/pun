@@ -28,6 +28,7 @@ use crate::{
 pub(crate) struct EnsuredNonNullability<'arena> {
     pub original_type: TUnion,
     pub receiver_type: TUnion,
+    pub scope_authoritative: bool,
     restore: Vec<(Expression<'arena>, Word, Option<Rc<TUnion>>)>,
 }
 
@@ -215,10 +216,10 @@ pub(crate) fn ensure<'ctx, 'arena, A: Arena>(
         .unwrap_or(walk_type);
     // A definitely null receiver is not deviced. removeNull removes only
     // explicit null alternatives, leaving mixed, void and template bounds alone.
-    let mut receiver_type = if !current.is_null() && current.is_nullable() {
-        current.to_non_nullable()
-    } else {
+    let mut receiver_type = if current.is_null() {
         current.clone()
+    } else {
+        current.remove_null()
     };
     if current != receiver_type
         && !matches!(
@@ -228,6 +229,7 @@ pub(crate) fn ensure<'ctx, 'arena, A: Arena>(
     {
         receiver_type.set_possibly_undefined(false, Some(false));
     }
+    let scope_authoritative = current != receiver_type || id.is_some_and(|id| scope.locals.contains_key(&id));
     let mut restore = Vec::new();
     let mut originals = WordMap::default();
     if current != receiver_type
@@ -262,6 +264,7 @@ pub(crate) fn ensure<'ctx, 'arena, A: Arena>(
     EnsuredNonNullability {
         original_type,
         receiver_type,
+        scope_authoritative,
         restore,
     }
 }

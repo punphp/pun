@@ -56,7 +56,8 @@ where
         let subtractable = matches!(assertion, Assertion::IsNotType(_) | Assertion::IsNotIdentical(_))
             && matches!(
                 assertion_type,
-                TAtomic::Null | TAtomic::Scalar(_) | TAtomic::Array(_) | TAtomic::Object(TObject::Any | TObject::Named(_))
+                TAtomic::Null | TAtomic::Scalar(_) | TAtomic::Array(_) | TAtomic::Callable(_)
+                    | TAtomic::Object(TObject::Any | TObject::Named(_))
             );
         if let [TAtomic::Mixed(mixed)] = existing_var_type.types.as_ref()
             && (subtractable || !assertion_type.is_null())

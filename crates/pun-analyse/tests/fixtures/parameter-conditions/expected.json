@@ -1,0 +1,887 @@
+{
+    "entry-0": [
+        [
+            14,
+            "phpstan.dumpType",
+            "Dumped type: ParameterConditions\\Left|ParameterConditions\\Right",
+            null,
+            false
+        ],
+        [
+            16,
+            "phpstan.dumpType",
+            "Dumped type: ParameterConditions\\Left",
+            null,
+            false
+        ],
+        [
+            19,
+            "phpstan.dumpType",
+            "Dumped type: ParameterConditions\\Right",
+            null,
+            false
+        ],
+        [
+            22,
+            "phpstan.dumpType",
+            "Dumped type: ParameterConditions\\Left|ParameterConditions\\Right",
+            null,
+            false
+        ],
+        [
+            32,
+            "phpstan.dumpType",
+            "Dumped type: ParameterConditions\\Left",
+            null,
+            false
+        ],
+        [
+            34,
+            "phpstan.dumpType",
+            "Dumped type: ParameterConditions\\Right",
+            null,
+            false
+        ],
+        [
+            46,
+            "phpstan.dumpType",
+            "Dumped type: ParameterConditions\\Left",
+            null,
+            false
+        ],
+        [
+            49,
+            "phpstan.dumpType",
+            "Dumped type: ParameterConditions\\Left|ParameterConditions\\Right",
+            null,
+            false
+        ],
+        [
+            51,
+            "phpstan.dumpType",
+            "Dumped type: ParameterConditions\\Left|ParameterConditions\\Right",
+            null,
+            false
+        ],
+        [
+            63,
+            "phpstan.dumpType",
+            "Dumped type: ParameterConditions\\Right",
+            null,
+            false
+        ],
+        [
+            70,
+            "phpstan.dumpType",
+            "Dumped type: ParameterConditions\\Left|ParameterConditions\\Right",
+            null,
+            false
+        ],
+        [
+            80,
+            "phpstan.dumpType",
+            "Dumped type: ParameterConditions\\Left|ParameterConditions\\Right",
+            null,
+            false
+        ],
+        [
+            92,
+            "phpstan.dumpType",
+            "Dumped type: int|string",
+            null,
+            false
+        ],
+        [
+            103,
+            "phpstan.dumpType",
+            "Dumped type: ParameterConditions\\Left|ParameterConditions\\Right|null",
+            null,
+            false
+        ],
+        [
+            116,
+            "phpstan.dumpType",
+            "Dumped type: ParameterConditions\\Right",
+            null,
+            false
+        ],
+        [
+            127,
+            "phpstan.dumpType",
+            "Dumped type: ParameterConditions\\Methods",
+            null,
+            false
+        ]
+    ],
+    "entry-9": [
+        [
+            14,
+            "phpstan.dumpType",
+            "Dumped type: ParameterConditions\\Left|ParameterConditions\\Right",
+            null,
+            false
+        ],
+        [
+            16,
+            "phpstan.dumpType",
+            "Dumped type: ParameterConditions\\Left",
+            null,
+            false
+        ],
+        [
+            19,
+            "phpstan.dumpType",
+            "Dumped type: ParameterConditions\\Right",
+            null,
+            false
+        ],
+        [
+            22,
+            "phpstan.dumpType",
+            "Dumped type: ParameterConditions\\Left|ParameterConditions\\Right",
+            null,
+            false
+        ],
+        [
+            29,
+            "void.pure",
+            "Function ParameterConditions\\negated() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            32,
+            "phpstan.dumpType",
+            "Dumped type: ParameterConditions\\Left",
+            null,
+            false
+        ],
+        [
+            34,
+            "phpstan.dumpType",
+            "Dumped type: ParameterConditions\\Right",
+            null,
+            false
+        ],
+        [
+            42,
+            "void.pure",
+            "Function ParameterConditions\\writes() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            46,
+            "phpstan.dumpType",
+            "Dumped type: ParameterConditions\\Left",
+            null,
+            false
+        ],
+        [
+            49,
+            "phpstan.dumpType",
+            "Dumped type: ParameterConditions\\Left|ParameterConditions\\Right",
+            null,
+            false
+        ],
+        [
+            50,
+            "identical.alwaysTrue",
+            "Strict comparison using === between 'foo' and 'foo' will always evaluate to true.",
+            null,
+            true
+        ],
+        [
+            51,
+            "phpstan.dumpType",
+            "Dumped type: ParameterConditions\\Left|ParameterConditions\\Right",
+            null,
+            false
+        ],
+        [
+            59,
+            "void.pure",
+            "Function ParameterConditions\\targetWrite() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            63,
+            "phpstan.dumpType",
+            "Dumped type: ParameterConditions\\Right",
+            null,
+            false
+        ],
+        [
+            68,
+            "parameter.notFound",
+            "Conditional return type references unknown parameter $missing.",
+            null,
+            true
+        ],
+        [
+            70,
+            "phpstan.dumpType",
+            "Dumped type: ParameterConditions\\Left|ParameterConditions\\Right",
+            null,
+            false
+        ],
+        [
+            77,
+            "void.pure",
+            "Function ParameterConditions\\nested() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            80,
+            "phpstan.dumpType",
+            "Dumped type: ParameterConditions\\Left|ParameterConditions\\Right",
+            null,
+            false
+        ],
+        [
+            92,
+            "phpstan.dumpType",
+            "Dumped type: int|string",
+            null,
+            false
+        ],
+        [
+            100,
+            "void.pure",
+            "Function ParameterConditions\\unionSubject() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            103,
+            "phpstan.dumpType",
+            "Dumped type: ParameterConditions\\Left|ParameterConditions\\Right|null",
+            null,
+            false
+        ],
+        [
+            116,
+            "phpstan.dumpType",
+            "Dumped type: ParameterConditions\\Right",
+            null,
+            false
+        ],
+        [
+            127,
+            "phpstan.dumpType",
+            "Dumped type: ParameterConditions\\Methods",
+            null,
+            false
+        ]
+    ],
+    "captures-0": [
+        [
+            16,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left",
+            null,
+            false
+        ],
+        [
+            18,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            23,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left|ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            28,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left",
+            null,
+            false
+        ],
+        [
+            33,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left",
+            null,
+            false
+        ],
+        [
+            37,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left",
+            null,
+            false
+        ],
+        [
+            38,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            40,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left",
+            null,
+            false
+        ],
+        [
+            41,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            43,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left|ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            44,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left|ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            46,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            47,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            50,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            53,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left|ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            64,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left|ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            69,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            75,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ]
+    ],
+    "captures-9": [
+        [
+            12,
+            "void.pure",
+            "Function ParameterCaptures\\captures() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            16,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left",
+            null,
+            false
+        ],
+        [
+            18,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            23,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left|ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            28,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left",
+            null,
+            false
+        ],
+        [
+            33,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left",
+            null,
+            false
+        ],
+        [
+            37,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left",
+            null,
+            false
+        ],
+        [
+            38,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            40,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left",
+            null,
+            false
+        ],
+        [
+            41,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            43,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left|ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            44,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left|ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            46,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            47,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            50,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            53,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left|ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            60,
+            "void.pure",
+            "Function ParameterCaptures\\captureWrites() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            62,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $method.",
+            null,
+            true
+        ],
+        [
+            64,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Left|ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            66,
+            "closure.unusedUse",
+            "Anonymous function has an unused use $value.",
+            null,
+            true
+        ],
+        [
+            69,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ],
+        [
+            75,
+            "phpstan.dumpType",
+            "Dumped type: ParameterCaptures\\Right",
+            null,
+            false
+        ]
+    ],
+    "subtraction-0": [
+        [
+            12,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            14,
+            "phpstan.dumpType",
+            "Dumped type: int",
+            null,
+            false
+        ],
+        [
+            25,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            27,
+            "phpstan.dumpType",
+            "Dumped type: int",
+            null,
+            false
+        ],
+        [
+            35,
+            "phpstan.dumpType",
+            "Dumped type: int",
+            null,
+            false
+        ],
+        [
+            37,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            45,
+            "phpstan.dumpType",
+            "Dumped type: int",
+            null,
+            false
+        ],
+        [
+            47,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            50,
+            "phpstan.dumpType",
+            "Dumped type: int",
+            null,
+            false
+        ],
+        [
+            58,
+            "phpstan.dumpType",
+            "Dumped type: int",
+            null,
+            false
+        ],
+        [
+            69,
+            "phpstan.dumpType",
+            "Dumped type: int",
+            null,
+            false
+        ],
+        [
+            71,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ]
+    ],
+    "subtraction-9": [
+        [
+            9,
+            "void.pure",
+            "Function ParameterSubtraction\\literals() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            12,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            14,
+            "phpstan.dumpType",
+            "Dumped type: int",
+            null,
+            false
+        ],
+        [
+            22,
+            "void.pure",
+            "Function ParameterSubtraction\\ranges() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            25,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            27,
+            "phpstan.dumpType",
+            "Dumped type: int",
+            null,
+            false
+        ],
+        [
+            32,
+            "void.pure",
+            "Function ParameterSubtraction\\booleans() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            35,
+            "phpstan.dumpType",
+            "Dumped type: int",
+            null,
+            false
+        ],
+        [
+            37,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            45,
+            "phpstan.dumpType",
+            "Dumped type: int",
+            null,
+            false
+        ],
+        [
+            47,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            50,
+            "phpstan.dumpType",
+            "Dumped type: int",
+            null,
+            false
+        ],
+        [
+            55,
+            "missingType.parameter",
+            "Function ParameterSubtraction\\untypedInput() has parameter $input with no type specified.",
+            null,
+            true
+        ],
+        [
+            55,
+            "void.pure",
+            "Function ParameterSubtraction\\untypedInput() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            58,
+            "phpstan.dumpType",
+            "Dumped type: int",
+            null,
+            false
+        ],
+        [
+            66,
+            "conditionalType.alwaysFalse",
+            "Condition \"false is true\" in conditional return type is always false.",
+            null,
+            true
+        ],
+        [
+            66,
+            "void.pure",
+            "Function ParameterSubtraction\\impossible() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            68,
+            "if.alwaysFalse",
+            "If condition is always false.",
+            "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.",
+            true
+        ],
+        [
+            69,
+            "phpstan.dumpType",
+            "Dumped type: int",
+            null,
+            false
+        ],
+        [
+            71,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ]
+    ],
+    "native-0": [],
+    "native-types": {
+        "171": {
+            "end": 177,
+            "full": "int|string",
+            "native": "int|string"
+        },
+        "215": {
+            "end": 221,
+            "full": "int",
+            "native": "int|string"
+        },
+        "255": {
+            "end": 261,
+            "full": "string",
+            "native": "int|string"
+        },
+        "284": {
+            "end": 290,
+            "full": "int|string",
+            "native": "int|string"
+        },
+        "391": {
+            "end": 397,
+            "full": "int",
+            "native": "int|string"
+        },
+        "457": {
+            "end": 463,
+            "full": "int",
+            "native": "int|string"
+        },
+        "480": {
+            "end": 486,
+            "full": "string",
+            "native": "int|string"
+        },
+        "506": {
+            "end": 512,
+            "full": "int|string",
+            "native": "int|string"
+        }
+    },
+    "native-9": [
+        [
+            6,
+            "void.pure",
+            "Function ParameterNative\\values() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            8,
+            "expr.resultUnused",
+            "Expression \"$value\" on a separate line does not do anything.",
+            null,
+            true
+        ],
+        [
+            10,
+            "expr.resultUnused",
+            "Expression \"$value\" on a separate line does not do anything.",
+            null,
+            true
+        ],
+        [
+            12,
+            "expr.resultUnused",
+            "Expression \"$value\" on a separate line does not do anything.",
+            null,
+            true
+        ],
+        [
+            14,
+            "expr.resultUnused",
+            "Expression \"$value\" on a separate line does not do anything.",
+            null,
+            true
+        ],
+        [
+            17,
+            "expr.resultUnused",
+            "Expression \"$value\" on a separate line does not do anything.",
+            null,
+            true
+        ],
+        [
+            21,
+            "expr.resultUnused",
+            "Expression \"$value\" on a separate line does not do anything.",
+            null,
+            true
+        ]
+    ],
+    "bug-12875-0": [],
+    "bug-12875-9": []
+}

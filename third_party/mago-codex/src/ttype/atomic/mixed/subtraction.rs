@@ -101,6 +101,15 @@ pub(crate) fn remove(from: &TUnion, excluded: &TUnion, codebase: &CodebaseMetada
                     &mut ComparisonResult::new(),
                 ) {
                     Vec::new()
+                } else if let TAtomic::Mixed(mixed) = remove
+                    && let Some(excluded) = mixed.effective_subtracted_type()
+                {
+                    // TypeCombinator::remove(T, mixed~U) intersects T with U before tryRemove.
+                    intersect_union_types(&TUnion::from_atomic(atomic), &excluded, codebase)
+                        .map_or_else(Vec::new, |remaining| remaining.types.to_vec())
+                } else if let TAtomic::Mixed(mixed) = &atomic {
+                    // MixedType::tryRemove delegates to subtract, retaining existing exclusions.
+                    mixed.subtract(&TUnion::from_atomic(remove.clone()), codebase).types.to_vec()
                 } else if let (
                     TAtomic::Scalar(TScalar::Bool(TBool { value: None })),
                     TAtomic::Scalar(TScalar::Bool(TBool { value: Some(value) })),

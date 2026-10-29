@@ -41,8 +41,10 @@ use mago_codex::ttype::get_arraykey;
 use mago_codex::ttype::get_keyed_array;
 use mago_codex::ttype::get_list;
 use mago_codex::ttype::get_mixed;
+use mago_codex::ttype::get_never;
 use mago_codex::ttype::get_non_accepting_never;
 use mago_codex::ttype::get_void;
+use mago_codex::ttype::intersect_union_types;
 use mago_codex::ttype::union::TUnion;
 use mago_codex::ttype::wrap_atomic;
 use mago_php_version::feature::Feature;
@@ -276,6 +278,7 @@ where
     )?;
 
     if !block_context.scope.is_static()
+        && !block_context.locals.contains_key(&word("$this"))
         && let Some(class_like_metadata) = block_context.scope.get_class_like()
     {
         block_context.locals.insert(
@@ -392,6 +395,7 @@ where
         parent_artifacts.transfer_native_expression_types(&mut artifacts);
         parent_artifacts.transfer_call_terminations(&mut artifacts);
     }
+    parent_artifacts.nullsafe_method_receiver_types.extend(std::mem::take(&mut artifacts.nullsafe_method_receiver_types));
     parent_artifacts.variable_definedness.extend(std::mem::take(&mut artifacts.variable_definedness));
     parent_artifacts.resolved_method_calls.append(&mut artifacts.resolved_method_calls);
     if let Some(editor) = &mut parent_artifacts.editor
@@ -646,6 +650,8 @@ where
             final_parameter_type
         };
 
+        // Arrow parameters shadow captured guards and consequences, just like assignVariable.
+        block_context.invalidate_variable_certainty(parameter_variable_str);
         block_context.locals.insert(parameter_variable_str, Rc::new(final_parameter_type));
 
         if parameter_node.is_promoted_property()
@@ -654,6 +660,38 @@ where
             let property_name = word(parameter_node.variable.name);
             for hook in &hook_list.hooks {
                 analyze_property_hook(hook, property_name, context, block_context, artifacts)?;
+            }
+        }
+    }
+
+    // MutatingScope::enterFunctionLike prepares relationships from effective formal types,
+    // before variadic wrapping, independently of the ordinary union and native holders.
+    if matches!(function_like_metadata.kind, FunctionLikeKind::Function | FunctionLikeKind::Method) {
+        let parameter_types: HashMap<_, _> = function_like_metadata.parameters.iter().map(|parameter| {
+            let ty = parameter.get_type_metadata().map_or_else(get_mixed, |metadata| {
+                expand_type_union(context, block_context, function_like_metadata, &metadata.type_union, true)
+            });
+            (parameter.name.0, ty)
+        }).collect();
+        for parameter in &function_like_metadata.parameters {
+            let ty = &parameter_types[&parameter.name.0];
+            if let [TAtomic::Conditional(conditional)] = ty.types.as_ref()
+                && let [TAtomic::Variable(guard)] = conditional.subject.types.as_ref()
+                && let Some(guard_type) = parameter_types.get(guard)
+            {
+                let guard_type = expand_type_union(context, block_context, function_like_metadata, guard_type, false);
+                let (if_type, else_type) = if conditional.negated {
+                    (&conditional.otherwise, &conditional.then)
+                } else {
+                    (&conditional.then, &conditional.otherwise)
+                };
+                let positive = intersect_union_types(&guard_type, &conditional.target, context.codebase)
+                    .unwrap_or_else(get_never);
+                let negative = guard_type.difference(&conditional.target, context.codebase);
+                let if_type = expand_type_union(context, block_context, function_like_metadata, if_type, false);
+                let else_type = expand_type_union(context, block_context, function_like_metadata, else_type, false);
+                block_context.add_parameter_condition(*guard, positive, parameter.name.0, if_type);
+                block_context.add_parameter_condition(*guard, negative, parameter.name.0, else_type);
             }
         }
     }
@@ -687,7 +725,17 @@ where
 {
     add_symbol_references(&type_metadata.type_union, &block_context.scope, artifacts);
 
-    let mut signature_union = type_metadata.type_union.clone();
+    expand_type_union(context, block_context, function_like_metadata, &type_metadata.type_union, false)
+}
+
+fn expand_type_union<A: Arena>(
+    context: &Context<'_, '_, A>,
+    block_context: &BlockContext<'_>,
+    function_like_metadata: &FunctionLikeMetadata,
+    union: &TUnion,
+    preserve_parameter_dependencies: bool,
+) -> TUnion {
+    let mut signature_union = union.clone();
 
     let calling_class = block_context.scope.get_class_like_name();
 
@@ -706,6 +754,7 @@ where
             } else {
                 false
             },
+            preserve_parameter_dependencies,
             ..Default::default()
         },
     );

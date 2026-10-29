@@ -23,6 +23,7 @@ use mago_codex::ttype::get_never;
 use mago_codex::ttype::union::TUnion;
 use mago_reporting::Annotation;
 use mago_reporting::Issue;
+use mago_reporting::IssueCollection;
 use mago_span::HasSpan;
 use mago_span::Span;
 use mago_syntax::cst::Expression;
@@ -96,11 +97,23 @@ pub fn analyze_and_store_argument_type<'ctx, 'arena, A>(
     referenced_parameter: bool,
     closure_parameter_type: Option<&TUnion>,
     call_context: Option<crate::observations::CallContext>,
+    physical_reference_context: Option<bool>,
+    expression_issues: Option<&mut IssueCollection>,
 ) -> Result<(), AnalysisError>
 where
     A: Arena,
 {
-    if argument_offset != usize::MAX && analyzed_argument_types[argument_offset].is_some() {
+    if argument_offset != usize::MAX
+        && let Some((argument_type, _)) = &analyzed_argument_types[argument_offset]
+    {
+        verify_referenceable_argument(
+            context,
+            invocation_target,
+            argument_expression,
+            argument_offset,
+            referenced_parameter,
+            argument_type,
+        );
         return Ok(());
     }
 
@@ -143,7 +156,7 @@ where
 
     block_context.flags.set_inside_general_use(true);
     block_context.flags.set_inside_call(true);
-    block_context.flags.set_inside_variable_reference(referenced_parameter);
+    block_context.flags.set_inside_variable_reference(physical_reference_context.unwrap_or(referenced_parameter));
 
     // Unpacked/fallback arguments have a callee but no selected parameter.
     let call_context = call_context.or_else(|| {
@@ -153,12 +166,21 @@ where
     if let Some(call_context) = call_context {
         context.observations.calls.push(call_context);
     }
-    let result = argument_expression.analyze(context, block_context, artifacts);
+    let result = if let Some(expression_issues) = expression_issues {
+        let (result, issues) = context.record(|context| argument_expression.analyze(context, block_context, artifacts));
+        expression_issues.extend(issues);
+        result
+    } else {
+        argument_expression.analyze(context, block_context, artifacts)
+    };
     if pushed {
         context.observations.calls.pop();
     }
     result?;
 
+    if referenced_parameter {
+        crate::variable_flow::reference_argument(argument_expression, context);
+    }
     block_context.flags.set_inside_general_use(was_inside_general_use);
     block_context.flags.set_inside_call(was_inside_call);
     block_context.flags.set_inside_variable_reference(was_inside_variable_reference);
@@ -167,8 +189,32 @@ where
     let argument_type =
         artifacts.get_rc_expression_type(argument_expression).cloned().unwrap_or_else(|| Rc::new(get_mixed()));
 
+    verify_referenceable_argument(
+        context,
+        invocation_target,
+        argument_expression,
+        argument_offset,
+        referenced_parameter,
+        &argument_type,
+    );
+
+    if argument_offset != usize::MAX {
+        analyzed_argument_types[argument_offset] = Some((argument_type, argument_expression.span()));
+    }
+
+    Ok(())
+}
+
+fn verify_referenceable_argument<A: Arena>(
+    context: &mut Context<'_, '_, A>,
+    invocation_target: &InvocationTarget<'_>,
+    argument_expression: &Expression<'_>,
+    argument_offset: usize,
+    referenced_parameter: bool,
+    argument_type: &TUnion,
+) {
     if requires_referenceable_argument(invocation_target, referenced_parameter)
-        && !is_argument_referenceable(argument_expression, &argument_type)
+        && !is_argument_referenceable(argument_expression, argument_type)
     {
         let target_kind_str = invocation_target.guess_kind();
         let target_name_str = invocation_target.guess_name(context);
@@ -191,12 +237,6 @@ where
             .with_help("To fix this, assign this value to a variable first, and then pass that variable to the function."),
         );
     }
-
-    if argument_offset != usize::MAX {
-        analyzed_argument_types[argument_offset] = Some((argument_type, argument_expression.span()));
-    }
-
-    Ok(())
 }
 
 /// Verifies an argument's type against the expected parameter type.

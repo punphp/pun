@@ -1,0 +1,609 @@
+{
+    "diagnostics": {
+        "3": [
+            [
+                "inputs.php",
+                6,
+                "assignOp.invalid",
+                "Binary operation \"+=\" between int and 'str' results in an error.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                12,
+                "assignOp.invalid",
+                "Binary operation \"+=\" between int and 'str' results in an error.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                18,
+                "offsetAccess.notFound",
+                "Offset 'b' does not exist on array{a: int}.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                24,
+                "assignOp.invalid",
+                "Binary operation \"+=\" between int and 'str' results in an error.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                30,
+                "assignOp.invalid",
+                "Binary operation \"+=\" between int and 'str' results in an error.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                35,
+                "offsetAccess.nonOffsetAccessible",
+                "Cannot access offset 'b' on int.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                45,
+                "variable.undefined",
+                "Undefined variable: $array",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                60,
+                "assignOp.invalid",
+                "Binary operation \"+=\" between int and string results in an error.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                69,
+                "assignOp.invalid",
+                "Binary operation \"+=\" between int and 'str' results in an error.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                80,
+                "assignOp.invalid",
+                "Binary operation \"+=\" between int and 'str' results in an error.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                86,
+                "assignOp.invalid",
+                "Binary operation \"+=\" between int|null and 'str' results in an error.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                92,
+                "assignOp.invalid",
+                "Binary operation \"+=\" between int and 'str' results in an error.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                99,
+                "phpstan.dumpType",
+                "Dumped type: 'str'|int",
+                null,
+                false
+            ],
+            [
+                "inputs.php",
+                106,
+                "phpstan.dumpType",
+                "Dumped type: 'str'|int",
+                null,
+                false
+            ],
+            [
+                "inputs.php",
+                112,
+                "assignOp.invalid",
+                "Binary operation \"+=\" between int and 'str' results in an error.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                118,
+                "assignOp.invalid",
+                "Binary operation \"+=\" between int and 'str' results in an error.",
+                null,
+                true
+            ],
+            [
+                "offset-access-assignop-nullsafe.php",
+                21,
+                "assignOp.invalid",
+                "Binary operation \"+=\" between int and 'str' results in an error.",
+                null,
+                true
+            ]
+        ],
+        "5": [
+            [
+                "inputs.php",
+                6,
+                "assignOp.invalid",
+                "Binary operation \"+=\" between int and 'str' results in an error.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                12,
+                "assignOp.invalid",
+                "Binary operation \"+=\" between int and 'str' results in an error.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                18,
+                "offsetAccess.notFound",
+                "Offset 'b' does not exist on array{a: int}.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                24,
+                "assignOp.invalid",
+                "Binary operation \"+=\" between int and 'str' results in an error.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                30,
+                "assignOp.invalid",
+                "Binary operation \"+=\" between int and 'str' results in an error.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                35,
+                "offsetAccess.nonOffsetAccessible",
+                "Cannot access offset 'b' on int.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                45,
+                "variable.undefined",
+                "Undefined variable: $array",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                60,
+                "assignOp.invalid",
+                "Binary operation \"+=\" between int and string results in an error.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                69,
+                "assignOp.invalid",
+                "Binary operation \"+=\" between int and 'str' results in an error.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                80,
+                "assignOp.invalid",
+                "Binary operation \"+=\" between int and 'str' results in an error.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                86,
+                "assignOp.invalid",
+                "Binary operation \"+=\" between int|null and 'str' results in an error.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                92,
+                "assignOp.invalid",
+                "Binary operation \"+=\" between int and 'str' results in an error.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                99,
+                "phpstan.dumpType",
+                "Dumped type: 'str'|int",
+                null,
+                false
+            ],
+            [
+                "inputs.php",
+                106,
+                "phpstan.dumpType",
+                "Dumped type: 'str'|int",
+                null,
+                false
+            ],
+            [
+                "inputs.php",
+                112,
+                "assignOp.invalid",
+                "Binary operation \"+=\" between int and 'str' results in an error.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                118,
+                "assignOp.invalid",
+                "Binary operation \"+=\" between int and 'str' results in an error.",
+                null,
+                true
+            ],
+            [
+                "offset-access-assignop-nullsafe.php",
+                21,
+                "assignOp.invalid",
+                "Binary operation \"+=\" between int and 'str' results in an error.",
+                null,
+                true
+            ]
+        ],
+        "9": [
+            [
+                "inputs.php",
+                6,
+                "assignOp.invalid",
+                "Binary operation \"+=\" between int and 'str' results in an error.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                12,
+                "assignOp.invalid",
+                "Binary operation \"+=\" between int and 'str' results in an error.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                12,
+                "offsetAccess.notFound",
+                "Offset 'b' might not exist on array{b?: int}.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                18,
+                "offsetAccess.notFound",
+                "Offset 'b' does not exist on array{a: int}.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                24,
+                "assignOp.invalid",
+                "Binary operation \"+=\" between int and 'str' results in an error.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                30,
+                "assignOp.invalid",
+                "Binary operation \"+=\" between int and 'str' results in an error.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                35,
+                "offsetAccess.nonOffsetAccessible",
+                "Cannot access offset 'b' on int.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                40,
+                "assignOp.invalid",
+                "Binary operation \"+=\" between mixed and 'str' results in an error.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                40,
+                "offsetAccess.nonOffsetAccessible",
+                "Cannot access offset 'b' on mixed.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                45,
+                "variable.undefined",
+                "Undefined variable: $array",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                60,
+                "assignOp.invalid",
+                "Binary operation \"+=\" between int and string results in an error.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                69,
+                "assignOp.invalid",
+                "Binary operation \"+=\" between int and 'str' results in an error.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                80,
+                "assignOp.invalid",
+                "Binary operation \"+=\" between int and 'str' results in an error.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                80,
+                "offsetAccess.notFound",
+                "Offset 0 might not exist on array{0?: int}.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                86,
+                "assignOp.invalid",
+                "Binary operation \"+=\" between int|null and 'str' results in an error.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                86,
+                "offsetAccess.notFound",
+                "Offset 'b' might not exist on array{b?: int|null}.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                92,
+                "assignOp.invalid",
+                "Binary operation \"+=\" between int and 'str' results in an error.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                99,
+                "phpstan.dumpType",
+                "Dumped type: 'str'|int",
+                null,
+                false
+            ],
+            [
+                "inputs.php",
+                106,
+                "phpstan.dumpType",
+                "Dumped type: 'str'|int",
+                null,
+                false
+            ],
+            [
+                "inputs.php",
+                112,
+                "assignOp.invalid",
+                "Binary operation \"+=\" between int and 'str' results in an error.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                118,
+                "assignOp.invalid",
+                "Binary operation \"+=\" between int and 'str' results in an error.",
+                null,
+                true
+            ],
+            [
+                "inputs.php",
+                118,
+                "offsetAccess.notFound",
+                "Offset 0 might not exist on array{}|array{int}.",
+                null,
+                true
+            ],
+            [
+                "offset-access-assignop-nullsafe.php",
+                14,
+                "missingType.return",
+                "Function OffsetAccessAssignOpNullsafe\\doFoo() has no return type specified.",
+                null,
+                true
+            ],
+            [
+                "offset-access-assignop-nullsafe.php",
+                21,
+                "assignOp.invalid",
+                "Binary operation \"+=\" between int and 'str' results in an error.",
+                null,
+                true
+            ]
+        ]
+    },
+    "reads": [
+        [
+            "inputs.php",
+            126,
+            137,
+            "int",
+            false
+        ],
+        [
+            "inputs.php",
+            268,
+            279,
+            "int",
+            false
+        ],
+        [
+            "inputs.php",
+            408,
+            419,
+            "*ERROR*",
+            true
+        ],
+        [
+            "inputs.php",
+            545,
+            556,
+            "int",
+            false
+        ],
+        [
+            "inputs.php",
+            702,
+            718,
+            "int",
+            false
+        ],
+        [
+            "inputs.php",
+            811,
+            822,
+            "*ERROR*",
+            true
+        ],
+        [
+            "inputs.php",
+            918,
+            929,
+            "mixed",
+            false
+        ],
+        [
+            "inputs.php",
+            1011,
+            1022,
+            "mixed",
+            false
+        ],
+        [
+            "inputs.php",
+            1154,
+            1165,
+            "int",
+            false
+        ],
+        [
+            "inputs.php",
+            1376,
+            1389,
+            "int",
+            false
+        ],
+        [
+            "inputs.php",
+            1524,
+            1536,
+            "int",
+            false
+        ],
+        [
+            "inputs.php",
+            1812,
+            1821,
+            "int",
+            false
+        ],
+        [
+            "inputs.php",
+            1971,
+            1982,
+            "int|null",
+            false
+        ],
+        [
+            "inputs.php",
+            2121,
+            2130,
+            "int",
+            false
+        ],
+        [
+            "inputs.php",
+            2274,
+            2285,
+            "int",
+            false
+        ],
+        [
+            "inputs.php",
+            2475,
+            2484,
+            "int",
+            false
+        ],
+        [
+            "inputs.php",
+            2661,
+            2670,
+            "int",
+            false
+        ],
+        [
+            "inputs.php",
+            2837,
+            2846,
+            "int",
+            false
+        ],
+        [
+            "offset-access-assignop-nullsafe.php",
+            299,
+            310,
+            "int",
+            false
+        ]
+    ]
+}

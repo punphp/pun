@@ -38,6 +38,9 @@ pub struct Settings {
     /// Opt-in rule-facing observations; only these calls and expression subtrees retain scopes.
     pub call_scope_observations: Vec<crate::observations::CallScopeRequest>,
 
+    /// Produce PHPStan's immutable local value-flow results during the semantic walk.
+    pub track_variable_flow: bool,
+
     /// PHPStan's for/while entry-scope pollution, independently of undefined-variable reporting.
     pub pollute_scope_with_loop_initial_assignments: bool,
 
@@ -432,6 +435,7 @@ impl Settings {
             call_scope_observations: Vec::new(),
             pollute_scope_with_loop_initial_assignments: true,
             pollute_scope_with_always_iterable_foreach: true,
+            track_variable_flow: false,
             pollute_scope_with_block: true,
             find_unused_expressions: true,
             find_unused_definitions: true,
