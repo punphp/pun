@@ -16,10 +16,28 @@ class Moment
     {
         return $this;
     }
+
+    /**
+     * @return $this
+     */
+    public function add(int $minutes)
+    {
+        return $this;
+    }
 }
 
 final class MomentTest extends TestCase
 {
+    #[DataProvider('added')]
+    public function testAdded($value)
+    {
+    }
+
+    public static function added()
+    {
+        return [[Moment::parse('now')->add(5)], [300]];
+    }
+
     #[DataProvider('moments')]
     public function testMoment($value)
     {
@@ -53,10 +71,28 @@ class Moment
     {
         return $this;
     }
+
+    /**
+     * @return $this
+     */
+    public function add(int $minutes)
+    {
+        return $this;
+    }
 }
 
 final class MomentTest extends TestCase
 {
+    #[DataProvider('added')]
+    public function testAdded(\Probe\Moment|int $value)
+    {
+    }
+
+    public static function added()
+    {
+        return [[Moment::parse('now')->add(5)], [300]];
+    }
+
     #[DataProvider('moments')]
     public function testMoment(\Probe\Moment|\DateTime|int $value)
     {

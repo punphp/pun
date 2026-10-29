@@ -286,17 +286,14 @@ fn member(t: &TAtomic, codebase: &CodebaseMetadata, php_version: u32) -> Option<
     }
 }
 
-/// A `static` of the class the code is in as `$this` (Rector writes `self` for it); a `static` of another class
-/// (`Carbon::now()`, `$class::cases()`) stays, the class it names.
+/// A `static` or `$this` of the class the code is in as `$this` (Rector writes `self` for it); one of another class
+/// (`Carbon::now()`, `$date->addMinutes(5)`, `$class::cases()`) is the class it names.
 pub(crate) fn own_static(t: &TAtomic, class: Option<&str>) -> TAtomic {
     match t {
-        TAtomic::Object(TObject::Named(named))
-            if named.is_static
-                && class.is_some_and(|c| c.as_bytes().eq_ignore_ascii_case(named.name.as_bytes())) =>
-        {
+        TAtomic::Object(TObject::Named(named)) if named.is_static || named.is_this => {
             let mut this = named.clone();
+            this.is_this = class.is_some_and(|c| c.as_bytes().eq_ignore_ascii_case(named.name.as_bytes()));
             this.is_static = false;
-            this.is_this = true;
             TAtomic::Object(TObject::Named(this))
         }
         other => other.clone(),
