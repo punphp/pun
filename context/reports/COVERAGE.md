@@ -6,17 +6,20 @@ The two supported-only `r` modifier lines need the newer engine. Its expectation
 PHP and PCRE2 fixtures, not the orb's PHP 8.5.12 oracle, which links 10.42.
 Combine exports only when their token sources are byte-identical.
 
-The combined call-contract gate passes all 765 analyser public/library tests, 1,315 rule cases and
-2,787 level cases in 288 bounded partitions. It also passes 53 targeted CLI tests and all 432 lint
-tests. Source-owned checks pass all 445 native analyser units and 88 PHPStan tests. The level sweep
-removes two obsolete generic-receiver allowances without changing diagnostic captures. A concrete-trait
-purity control covers the final region while preserving all seven complete PHPStan records.
+The combined isset/initializer gate passes all 769 analyser public/library tests, 1,315 rule cases
+and 2,787 level cases in 520 disjoint bounded partitions. It also passes 56 targeted CLI tests,
+including all forty unchanged format comparisons split across four checkpointable tests. Diagnostic
+captures and gap allowances remain unchanged. The preceding source-owned gate passes all 445 native
+analyser units, 88 PHPStan tests and 432 lint tests.
 
-Source-matched coverage is 43,921/43,921 analyser lines, 39,338/39,338 lint lines and 10,740/10,740
+Source-matched coverage is 44,105/44,105 analyser lines, 39,338/39,338 lint lines and 10,740/10,740
 PHPStan lines after existing exclusions. These counts supersede the older generated table below.
 No new exclusions are added. Every combined source record has the same SHA-256 as the measured source.
-Coverage exports pair each executable with only its build-ID-matched successful profiles. All 131
-frozen-gate exports and the trait-control export are warning-free, with no unmatched profiles.
+Coverage exports pair each executable with its build-ID-matched profiles from the verified gate.
+The CLI children's profiles retain the real Pun executable's coverage. A separate initializer fallback
+probe matches four complete PHPStan JSON records byte for byte. Exact-object exports are warning-free,
+with no unmatched profiles. Completed executables are retired only after preserving their source,
+object, profile and export hashes; cached exports reject changed profiles or source manifests.
 Declaration-only module files contain no executable lines.
 
 The complete lint gate passes 432 tests. Its subsequent integer-fallback cleanup passes all 52
