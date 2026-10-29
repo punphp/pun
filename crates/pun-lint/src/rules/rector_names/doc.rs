@@ -68,10 +68,10 @@ impl Annotation {
     /// `DoctrineAnnotationTagValueNode::__toString()` (the node is always changed): the values in parentheses, or
     /// the empty parentheses as written.
     pub fn values_string(&self) -> String {
-        match (self.values.is_empty(), self.original == "()") {
-            (false, _) => format!("({})", parser::join(&self.values)),
-            (true, true) => "()".to_string(),
-            (true, false) => String::new(),
+        match self.values.is_empty() {
+            false => format!("({})", parser::join(&self.values)),
+            // empty brackets
+            true => ["", "()"][usize::from(self.original == "()")].to_string(),
         }
     }
 }

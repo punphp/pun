@@ -1350,42 +1350,14 @@ impl Static<'_, '_> {
 
     /// `parseStringValue()`.
     fn parse_string_value(&mut self, mut current: String) -> Result<String, Unparsable> {
+        // `parseMultilineOrWhiteSpacedString()` on a `"` that no `"` closes: the lexer reads a string to the next `"` in
+        // the doc, so none follows, and Rector reads past the end and never returns
         if current.starts_with('"') && !current.ends_with('"') {
-            return self.parse_multiline_or_white_spaced_string(current);
+            return Err(Unparsable);
         }
         while self.it.is(&[t::DOUBLE_COLON, t::IDENTIFIER]) {
             current.push_str(self.it.value());
             self.it.next();
-        }
-        Ok(current)
-    }
-
-    /// `parseMultilineOrWhiteSpacedString()`.
-    fn parse_multiline_or_white_spaced_string(
-        &mut self,
-        mut current: String,
-    ) -> Result<String, Unparsable> {
-        while current.starts_with('"') && !current.ends_with('"') {
-            // past the end, Rector never returns
-            (self.it.index < self.it.toks.len())
-                .then_some(())
-                .ok_or(Unparsable)?;
-            if !self.it.is(&[t::PHPDOC_EOL]) {
-                current.push(' ');
-            }
-            let token = self.it.value();
-            if let Some(quote) = token.find('"')
-                && current != token
-            {
-                current.push_str(&token[..=quote]);
-                self.it.next();
-                break;
-            }
-            current.push_str(token);
-            self.it.next();
-        }
-        if current.starts_with('"') && current.ends_with('"') {
-            return Ok(current.replace('"', "").trim().to_string());
         }
         Ok(current)
     }
@@ -1484,10 +1456,8 @@ fn merge(values: &mut Vec<(PhpKey, Val)>, resolved: Resolved) -> Result<(), Unpa
         .count() as i64;
     let (key, value) = match resolved {
         Resolved::Value(value) => (PhpKey::Int(next), value),
-        Resolved::Keyed(Val::Str(key), value) => match php_int_key(&key) {
-            Some(_) => (PhpKey::Int(next), value),
-            None => (PhpKey::Str(key), value),
-        },
+        // (an integer string is a `ConstExprIntegerNode` already, which `matchConstantValue()` gives)
+        Resolved::Keyed(Val::Str(key), value) => (PhpKey::Str(key), value),
         Resolved::Keyed(..) => return Err(Unparsable),
     };
     match values
