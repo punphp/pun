@@ -858,26 +858,36 @@ pub(crate) fn p_comments(ctx: &Context<'_>, comments: &[Span], indent: usize) ->
 /// `pMaybeMultiline($args)` for kept arguments printed at `indent`: joined by `, `, or, when one of them owns a
 /// comment, one a line with its comments, one level deeper, and the `)` on a line of its own.
 pub(crate) fn print_args(ctx: &Context<'_>, list: &ArgumentList<'_>, indent: usize) -> String {
-    let args = list.arguments.as_slice();
-    if !args.iter().any(|a| has_comments(ctx, node_span(a).start)) {
-        return args
+    let spans: Vec<Span> = list.arguments.iter().map(node_span).collect();
+    print_nodes(ctx, &spans, false, indent)
+}
+
+/// `pMaybeMultiline($nodes, $trailingComma)` for the kept nodes at `spans`: [`print_args`], and a `,` after the last
+/// node too on lines of their own when `trailing_comma` (array items).
+pub(crate) fn print_nodes(
+    ctx: &Context<'_>,
+    spans: &[Span],
+    trailing_comma: bool,
+    indent: usize,
+) -> String {
+    if !spans.iter().any(|s| has_comments(ctx, s.start)) {
+        return spans
             .iter()
-            .map(|a| kept_text(ctx, node_span(a), indent))
+            .map(|s| kept_text(ctx, *s, indent))
             .collect::<Vec<_>>()
             .join(", ");
     }
     let inner = indent + 4;
     let nl = format!("\n{}", " ".repeat(inner));
     let mut out = String::new();
-    for (i, a) in args.iter().enumerate() {
-        let start = node_span(a).start;
-        if has_comments(ctx, start) {
+    for (i, span) in spans.iter().enumerate() {
+        if has_comments(ctx, span.start) {
             out.push_str(&nl);
-            out.push_str(&p_comments(ctx, &comment_spans(ctx, start), inner));
+            out.push_str(&p_comments(ctx, &comment_spans(ctx, span.start), inner));
         }
         out.push_str(&nl);
-        out.push_str(&kept_text(ctx, node_span(a), inner));
-        if i + 1 < args.len() {
+        out.push_str(&kept_text(ctx, *span, inner));
+        if trailing_comma || i + 1 < spans.len() {
             out.push(',');
         }
     }
