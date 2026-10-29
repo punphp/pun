@@ -1,11 +1,16 @@
 <?php
 
-// php capture.php /absolute/path/to/phpstan.phar [output.json]
+// php capture.php /absolute/path/to/phpstan.phar [output.json] [methods|requirements]
 // PHPStan 2.3.1, phpstan-src cb3b7e99489b2e3789ee2eec10501cb7a72580ea.
 declare(strict_types=1);
 
 $phar = realpath($argv[1]);
 $root = __DIR__;
+$fixture = $argv[3] ?? 'methods';
+$levels = match ($fixture) {
+    'methods' => [5, 8],
+    'requirements' => [4, 5, 8],
+};
 foreach (['AMP_CURRENT_THREAD_ID', 'AUGMENT_AGENT', 'AI_AGENT', 'CURSOR_TRACE_ID', 'CURSOR_AGENT',
     'GEMINI_CLI', 'CODEX_SANDBOX', 'CODEX_THREAD_ID', 'OPENCODE_CLIENT', 'OPENCODE', 'CLAUDECODE',
     'CLAUDE_CODE', 'REPL_ID'] as $name) {
@@ -13,12 +18,12 @@ foreach (['AMP_CURRENT_THREAD_ID', 'AUGMENT_AGENT', 'AI_AGENT', 'CURSOR_TRACE_ID
 }
 putenv('XDEBUG_MODE=off');
 $expected = [];
-foreach ([5, 8] as $level) {
+foreach ($levels as $level) {
     $reserved = tempnam(sys_get_temp_dir(), 'pun-extended-mixins-');
     $config = "$reserved.neon";
     unlink($reserved);
     file_put_contents($config, "parameters:\n    level: $level\n    phpVersion: 80500\n    paths:\n        - "
-        . json_encode("$root/methods.php", JSON_UNESCAPED_SLASHES) . "\n");
+        . json_encode("$root/$fixture.php", JSON_UNESCAPED_SLASHES) . "\n");
     try {
         $process = proc_open(['php', '-d', 'phpstan.restarted=1', $phar, 'analyse', '--debug',
             '-c', $config, '--error-format=json', '--no-progress'], [1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes);
@@ -45,4 +50,5 @@ foreach ([5, 8] as $level) {
         unlink($config);
     }
 }
-file_put_contents($argv[2] ?? "$root/expected.json", json_encode($expected, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
+file_put_contents($argv[2] ?? "$root/expected" . ($fixture === 'methods' ? '' : "-$fixture") . '.json',
+    json_encode($expected, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");

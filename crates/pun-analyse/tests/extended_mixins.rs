@@ -5,9 +5,9 @@ use std::path::Path;
 use pun_analyse::{Project, run};
 use serde_json::Value;
 
-fn check(level: u8) {
+fn check(file: &str, expected: &str, level: u8) {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/extended-mixins");
-    let mut project = Project::new(vec![root.join("methods.php")], Vec::new());
+    let mut project = Project::new(vec![root.join(format!("{file}.php"))], Vec::new());
     project.level = level;
     project.php_version = 80500;
     let mut got: Vec<_> = run(&project)
@@ -24,8 +24,7 @@ fn check(level: u8) {
             )
         })
         .collect();
-    let oracle: Value =
-        serde_json::from_str(include_str!("fixtures/extended-mixins/expected.json")).unwrap();
+    let oracle: Value = serde_json::from_str(expected).unwrap();
     let mut want: Vec<_> = oracle[level.to_string()]
         .as_array()
         .unwrap()
@@ -43,15 +42,50 @@ fn check(level: u8) {
         .collect();
     got.sort();
     want.sort();
-    assert_eq!(got, want, "level {level}");
+    assert_eq!(got, want, "{file}, level {level}");
 }
 
 #[test]
 fn extended_method_identity_at_level_five() {
-    check(5);
+    check(
+        "methods",
+        include_str!("fixtures/extended-mixins/expected.json"),
+        5,
+    );
 }
 
 #[test]
 fn extended_method_identity_at_level_eight() {
-    check(8);
+    check(
+        "methods",
+        include_str!("fixtures/extended-mixins/expected.json"),
+        8,
+    );
+}
+
+#[test]
+fn required_types_use_extended_method_reflection_at_level_four() {
+    check(
+        "requirements",
+        include_str!("fixtures/extended-mixins/expected-requirements.json"),
+        4,
+    );
+}
+
+#[test]
+fn required_types_use_extended_method_reflection_at_level_five() {
+    check(
+        "requirements",
+        include_str!("fixtures/extended-mixins/expected-requirements.json"),
+        5,
+    );
+}
+
+#[test]
+fn required_types_use_extended_method_reflection_at_level_eight() {
+    check(
+        "requirements",
+        include_str!("fixtures/extended-mixins/expected-requirements.json"),
+        8,
+    );
 }

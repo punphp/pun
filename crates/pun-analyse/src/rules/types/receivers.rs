@@ -12,6 +12,7 @@ use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use pun_phpstan::types::{Accessory, Level, Tri, Type, intersect, is_super_type_of};
 
+use super::super::overriding::Class;
 use super::super::reflection::Lookup;
 use super::super::{Checker, calls, declared, members, method_reflection, params};
 
@@ -155,7 +156,29 @@ impl<'a> Checker<'a, '_> {
         });
         let native = members::method(self, k, name).or_else(|| members::annotation_method(self, k, name));
         if let Some(m) = native.filter(|m| nominal(&m.declaring_name())) {
-            return Ok(Some(method_reflection::Method::leaf(self, t, m)));
+            let mut method = method_reflection::Method::leaf(self, t, m);
+            // Keep the declaring class's supplied arguments in semantic parameter types too, not just their
+            // descriptions. Re-reading a User parameter later would otherwise restore its unbound template.
+            if let members::Method::User { declaring, .. } = &method.declaring
+                && let Type::Object(receiver, actual, _) | Type::Static(receiver, actual) = t
+                && !actual.is_empty()
+            {
+                let class = declared::original_name(declaring);
+                let args = declared::with_classes(self, || {
+                    if receiver.eq_ignore_ascii_case(&class) { actual.clone() }
+                    else { pun_phpstan::symbols::lookup(receiver)
+                        .and_then(|k| pun_phpstan::types::ancestor_args(&k, &class, actual)).unwrap_or_default() }
+                });
+                let names: Vec<_> = declared::class_templates(self, declaring).into_iter().map(|t| t.name).collect();
+                let scope = format!("class {class}");
+                for variant in &mut method.variants.all {
+                    variant.param_types = (0..variant.names.len()).map(|i| {
+                        let ty = super::declared_type(self, variant, i).unwrap_or_else(pun_phpstan::types::mixed);
+                        params::ParamType::Typed(super::properties::with_args(&ty, &scope, &names, &args))
+                    }).collect();
+                }
+            }
+            return Ok(Some(method));
         }
         // MixinMethodsClassReflectionExtension guards each resolved mixin description and method name while
         // asking the type for its extended method, not just a native method on a plain ObjectType.
@@ -174,17 +197,33 @@ impl<'a> Checker<'a, '_> {
                 return Ok(Some(method));
             }
         }
-        // RequireExtendsMethodsClassReflectionExtension applies only to interfaces, not trait require-implements.
-        if k.kind.is_interface() {
-            let interfaces = std::iter::once(k).chain(k.all_parent_interfaces.iter()
-                .filter_map(|n| self.codebase.get_class_like(n.as_bytes()))
-                .filter(|i| nominal(&declared::original_name(i))));
-            if let Some(m) = interfaces.flat_map(|i| &i.require_extends)
-                .filter_map(|n| self.codebase.get_class_like(n.as_bytes()))
-                .find_map(|r| members::method(self, r, name))
-            {
-                return Ok(Some(method_reflection::Method::leaf(self, t, m)));
+        // RequireExtendsMethodsClassReflectionExtension: own full tag types, then recursively each nominal
+        // interface's requirements (not its unrelated mixins). Keep BetterReflection's interface ordering.
+        let mut interfaces = vec![Class::User(k)];
+        let mut seen = HashSet::new();
+        while let Some(interface) = interfaces.pop() {
+            let Class::User(interface) = interface else { continue };
+            if !interface.kind.is_interface() || !seen.insert(interface.name) {
+                continue;
             }
+            // This resolver retains supplied generic arguments and psalm-before-phpstan/declaration order.
+            for required in super::super::require_tags::tag_types(self, interface, super::super::require_tags::EXTENDS) {
+                // Like a mixed mixin, a dummy reflection supplies no real declaration or signature.
+                if matches!(required.resolve_to_bounds(), Type::Mixed { .. } | Type::Error) {
+                    return Err(());
+                }
+                // Keep requirement recursion separate from MixinMethods' in-process type descriptions.
+                let key = declared::with_classes(self, || format!("require-extends {}", required.describe(Level::TypeOnly)));
+                if !active.insert(key.clone()) {
+                    continue;
+                }
+                let method = self.extended_method(&required, name, active);
+                active.remove(&key);
+                if let Some(method) = method? {
+                    return Ok(Some(method));
+                }
+            }
+            interfaces.extend(self.all_interfaces(Class::User(interface)).into_iter().rev());
         }
         Ok(None)
     }
