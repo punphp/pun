@@ -13,7 +13,7 @@ use super::type_node::TypeNode;
 
 /// phpdoc-parser's token types, as far as the printer and the child boundaries tell them apart.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-enum Kind {
+pub(crate) enum Kind {
     /// `TOKEN_OPEN_PHPDOC`: `/**` and one space after it.
     Open,
     /// `TOKEN_CLOSE_PHPDOC`: `*/`.
@@ -337,7 +337,7 @@ impl Printer<'_> {
 }
 
 /// phpdoc-parser's `Lexer` over a doc comment, a run of other characters taken as one token.
-fn lex(text: &str) -> Vec<(Kind, usize, usize)> {
+pub(crate) fn lex(text: &str) -> Vec<(Kind, usize, usize)> {
     let bytes = text.as_bytes();
     let mut tokens = Vec::new();
     let mut i = 3 + usize::from(bytes.get(3) == Some(&b' '));
@@ -382,7 +382,7 @@ fn lex(text: &str) -> Vec<(Kind, usize, usize)> {
 }
 
 /// The tag name a token starts with (`TOKEN_PHPDOC_TAG`, or `TOKEN_DOCTRINE_TAG`), if it starts with one.
-fn tag_name(word: &str) -> Option<&str> {
+pub(crate) fn tag_name(word: &str) -> Option<&str> {
     let b = word.as_bytes();
     if b.first() != Some(&b'@') {
         return None;
@@ -423,7 +423,7 @@ fn skip_ws(tokens: &[(Kind, usize, usize)], i: usize) -> usize {
 }
 
 /// `BetterPhpDocParser::parseWithNode()`'s children, each as its first token and the token after its last.
-fn child_ranges(text: &str, tokens: &[(Kind, usize, usize)]) -> Vec<(usize, usize)> {
+pub(crate) fn child_ranges(text: &str, tokens: &[(Kind, usize, usize)]) -> Vec<(usize, usize)> {
     let ends = |i: usize| matches!(tokens[i].0, Kind::Close | Kind::End);
     let mut pos = skip_ws(tokens, 1);
     if tokens[pos].0 == Kind::Eol {

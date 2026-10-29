@@ -236,7 +236,10 @@ fn run_dirs_full(
 /// Fixtures whose expected half the laravel format also reaches on its own; the rule's text edits must still give
 /// the expected bytes and apply. FixClassCaseSensitivityVarDocblockRector/Fixture/{inline_var,property_var}: Pint's
 /// `fully_qualified_strict_types` fixes the case of an imported class in a `@var` too.
+/// RenameClassRector/FixtureAutoImportNames/auto_import_conflict_name_all_fqcn_same_namespace: it imports the global
+/// `\SomeShort` of a `@return` too.
 const FORMAT_OVERLAP: &[&str] = &[
+    "RenameClassRector/FixtureAutoImportNames/auto_import_conflict_name_all_fqcn_same_namespace.php.inc",
     "FixClassCaseSensitivityVarDocblockRector/Fixture/inline_var.php.inc",
     "FixClassCaseSensitivityVarDocblockRector/Fixture/property_var.php.inc",
 ];

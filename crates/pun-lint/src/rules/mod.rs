@@ -239,6 +239,7 @@ mod prefer_variadic_param;
 mod rector_batch5;
 mod rector_code_quality;
 mod rector_conditions;
+mod rector_names;
 mod rector_stmts;
 mod refactor;
 mod require_assign_set_padding;

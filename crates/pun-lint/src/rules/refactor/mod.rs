@@ -11,6 +11,7 @@ mod add_override_attribute;
 mod remove_function_argument;
 mod remove_function_call;
 mod rename_cast;
+mod rename_class;
 mod rename_class_constant;
 mod rename_constant;
 mod rename_function;
@@ -23,6 +24,7 @@ pub use add_override_attribute::AddOverrideAttribute;
 pub use remove_function_argument::RemoveFunctionArgument;
 pub use remove_function_call::RemoveFunctionCall;
 pub use rename_cast::RenameCast;
+pub use rename_class::RenameClass;
 pub use rename_class_constant::RenameClassConstant;
 pub use rename_constant::RenameConstant;
 pub use rename_function::RenameFunction;
@@ -57,6 +59,7 @@ pub fn all() -> Vec<Box<dyn Rule>> {
         Box::new(ReplaceArrayAccess::default()),
         Box::new(RemoveFunctionCall::default()),
         Box::new(RenameCast::default()),
+        Box::new(RenameClass::default()),
         Box::new(RenameClassConstant::default()),
         Box::new(RenameConstant::default()),
         Box::new(RenameFunction::default()),

@@ -825,7 +825,7 @@ pub(crate) fn rewrite_args(
 
 /// An element of php-parser's `Differ`, on indexes of the old and the new list.
 #[derive(Clone, Copy)]
-enum Elem {
+pub(crate) enum Elem {
     Keep(usize, usize),
     Remove(usize),
     Add(usize),
@@ -834,7 +834,7 @@ enum Elem {
 
 /// php-parser's `Differ::diff` (Myers) from the items `0..n` to the list `new`, where `new[y] == x` means the old item
 /// `x` is kept as the new item `y` (a new item has a key of `n` or above).
-fn diff(n: usize, new: &[usize]) -> Vec<Elem> {
+pub(crate) fn diff(n: usize, new: &[usize]) -> Vec<Elem> {
     let m = new.len();
     let max = (n + m) as isize;
     let at = |k: isize| (k + max + 1) as usize;
@@ -895,7 +895,7 @@ fn diff(n: usize, new: &[usize]) -> Vec<Elem> {
 }
 
 /// `Differ::coalesceReplacements`: a run of removals followed by as many additions is a run of replacements.
-fn coalesce_replacements(diff: Vec<Elem>) -> Vec<Elem> {
+pub(crate) fn coalesce_replacements(diff: Vec<Elem>) -> Vec<Elem> {
     let mut out = Vec::new();
     let mut i = 0;
     while i < diff.len() {

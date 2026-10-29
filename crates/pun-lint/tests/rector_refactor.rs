@@ -11,11 +11,11 @@
 
 mod lint_c;
 
-use lint_c::{run_class, run_class_at, run_class_with};
+use lint_c::{run_class, run_class_at, run_class_with, run_dirs};
 use mago_syntax::cst::Node;
 use pun_lint::rules::{
     AddOverrideAttribute, NoExtraArguments, PreferClassNameConstant, RemoveFunctionArgument,
-    RemoveFunctionCall, RenameCast, RenameClassConstant, RenameConstant, RenameFunction,
+    RemoveFunctionCall, RenameCast, RenameClass, RenameClassConstant, RenameConstant, RenameFunction,
     RenameMethod, ReplaceArrayAccess, ReplaceFunctionWithConstant, ReplaceFunctionWithNew,
     ReplaceFunctionWithStatic, RequireStrictInArray,
 };
@@ -612,4 +612,116 @@ fn string_class_name_skip_patterns() {
     .fix(&path, input)
     .unwrap();
     assert_eq!(fixed.source, expected);
+}
+
+/// RenameClassRector, each upstream config on its own directories: Fixture, Oracle and Pun with
+/// config/configured_rule.php, FixtureAutoImportNames and OracleAutoImportNames with config/auto_import_names.php,
+/// FixtureRenameClassAndMethod with config/complex_rename.php and its RenameMethodRector beside the rule.
+/// FixtureAutoImportNames/SomeShort.php, a class the fixtures name, is Stubs/SomeShort.php. FixtureSkipAfterDefined
+/// and FixtureSkipUsedTracking are left out: they test Rector's `skip()` paths, which pun.toml's own ignores replace.
+/// Fixture/skip_rename_docblock_imported_by_last_group_use and skip_rename_docblock_via_same_namespace_by_last_group_in_namespace
+/// are FixtureUnformattable/: Pint (and so the laravel format) fails on their `use \Company2\{ Bar };`, so they run
+/// without the format step. Fixture/class_annotations_serializer_type
+/// is Oracle/: Rector 2.6.1 keeps `array<OldClass>` in the JMS `Type`, its pattern wanting a `b` after the old name.
+#[test]
+fn rename_class() {
+    let source = "Rector\\Tests\\Renaming\\Rector\\Name\\RenameClassRector\\Source\\";
+    let fixture = "Rector\\Tests\\Renaming\\Rector\\Name\\RenameClassRector\\Fixture\\";
+    let mut options = serde_json::Map::new();
+    for (old, new) in [
+        (format!("{source}OldClass"), format!("{source}NewClass")),
+        (
+            format!("{source}InterfaceAndClass\\SomeBasicDateTime"),
+            format!("{source}InterfaceAndClass\\SomeBasicDateTimeInterface"),
+        ),
+        (format!("{source}OldClassWithTypo"), format!("{source}NewClassWithoutTypo")),
+        ("Countable".into(), "stdClass".into()),
+        ("Twig_Extension_Sandbox".into(), "Twig\\Extension\\SandboxExtension".into()),
+        ("MyNamespace\\MylegacyClass".into(), "MyNewNamespace\\MyNewClass".into()),
+        (format!("{fixture}SingularClass"), format!("{fixture}DuplicatedClass")),
+        (format!("{source}Contract\\FirstInterface"), format!("{source}Contract\\ThirdInterface")),
+        (format!("{source}Contract\\SecondInterface"), format!("{source}Contract\\ThirdInterface")),
+        (
+            "Acme\\Foo\\DoNotUpdateExistingTargetNamespace".into(),
+            "Acme\\Bar\\DoNotUpdateExistingTargetNamespace".into(),
+        ),
+        (format!("{source}SomeNonFinalClass"), format!("{source}SomeFinalClass")),
+        ("Doctrine\\DBAL\\DBALException".into(), "Doctrine\\DBAL\\Exception".into()),
+        ("NotExistsClass".into(), "NewClass".into()),
+        ("foo".into(), "Bar\\Foo".into()),
+        (
+            "Sensio\\Bundle\\FrameworkExtraBundle\\Configuration\\IsGranted".into(),
+            "Symfony\\Component\\Security\\Http\\Attribute\\IsGranted".into(),
+        ),
+        (
+            "Symfony\\Component\\Serializer\\Normalizer\\ObjectNormalizer".into(),
+            "Symfony\\Component\\Serializer\\Normalizer\\NormalizerInterface".into(),
+        ),
+        ("MyNamespace\\AbstractMigration".into(), "MyNamespace\\BaseMigration".into()),
+    ] {
+        options.insert(old, json!(new));
+    }
+    options.insert("remove-unused-imports".into(), json!(true));
+    let options = Value::Object(options);
+    run_dirs(
+        vec![configured(RenameClass::default(), &options)],
+        "RenameClassRector",
+        &["Fixture", "Oracle", "Pun"],
+        80400,
+        &[],
+    );
+    everywhere(|| configured(RenameClass::default(), &options), "RenameClassRector", 80400);
+    let linter = Linter::new(vec![configured(RenameClass::default(), &options)], 80400);
+    let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/rector/RenameClassRector/FixtureUnformattable");
+    for path in std::fs::read_dir(dir).unwrap().map(|e| e.unwrap().path()) {
+        let input = std::fs::read_to_string(&path).unwrap();
+        assert_eq!(linter.fix(&path, &input).unwrap().source, input, "{}", path.display());
+    }
+
+    let auto = json!({
+        format!("{source}OldClass"): format!("{source}NewClass"),
+        format!("{source}FirstNamespace\\SomeServiceClass"): format!("{source}SecondNamespace\\SomeServiceClass"),
+        "Storage": "Illuminate\\Support\\Facades\\Storage",
+        "Queue": "Illuminate\\Support\\Facades\\Queue",
+        "Some\\Storage": "Illuminate\\Support\\Facades\\Storage",
+        "Some2\\Storage": "Foo2\\Storage",
+        "import-names": true,
+        "import-short-classes": true,
+        "remove-unused-imports": true,
+    });
+    run_dirs(
+        vec![configured(RenameClass::default(), &auto)],
+        "RenameClassRector",
+        &["FixtureAutoImportNames", "OracleAutoImportNames"],
+        80400,
+        &[],
+    );
+
+    let complex = json!({
+        format!("{source}OldClassWithMethod"): format!("{source}NewClassWithNewMethod"),
+        "import-names": true,
+        "remove-unused-imports": true,
+    });
+    let method = json!({"items": [{
+        "class": format!("{source}NewClassWithNewMethod"), "old-method": "someMethod", "new-method": "someNewMethod",
+    }]});
+    run_dirs(
+        vec![
+            configured(RenameClass::default(), &complex),
+            configured(RenameMethod::default(), &method),
+        ],
+        "RenameClassRector",
+        &["FixtureRenameClassAndMethod"],
+        80400,
+        &[],
+    );
+
+    rejects(
+        RenameClass::default(),
+        &[
+            (json!([]), "options must be a table"),
+            (json!({"A": 1}), "`A` must be a string"),
+            (json!({"import-names": "yes"}), "`import-names` must be a boolean"),
+        ],
+    );
 }

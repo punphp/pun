@@ -1513,6 +1513,7 @@ dependencies = [
  "mago-span",
  "mago-syntax",
  "mago-syntax-core",
+ "pcre2",
  "punphp-config",
  "punphp-fixers",
  "punphp-format",
