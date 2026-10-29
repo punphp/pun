@@ -504,3 +504,19 @@ Lint types property rules (2026-10-28; `add-property-type-constructor`, `-assign
 - **Known differences, left for later:** Rector skips a JMS-typed property named `$protected` for no reason found in
   its source; Pun types it. A JMS `Type` argument that is a constant expression other than a string or `X::class` is
   not read.
+
+Lint parity on dev-null (2026-10-29; `scripts/lint-vs-rector.py dev-null`, the laravel and dead-code differences):
+
+- **Assistant's call: two of PHPStan's types in pun-lint, not in Mago.** `facts.rs` gives `preg_match()` and
+  `preg_match_all()` the `$flags`/`$matches` of PHPStan's stubs/core.stub (data/phpstan-preg-match.stub), in both
+  codebases (PHPStan's native scope gives a by-reference argument the same out type), so `PREG_UNMATCHED_AS_NULL`
+  groups may be null. `object_type.rs` ports `MixinMethodsClassReflectionExtension` along a method-call chain: a method
+  reached through a `@mixin` returns the mixin as `$this`/`static` (Mago binds the receiver), and a method then
+  missing is `*ERROR*`, so `$relation->whereNotNull('a')->with('b')` is no query builder as in PHPStan without
+  Larastan. `add-tap-closure-type` ports `hasInstanceProperty` for a property PHPStan does not find (`*ERROR*`, no
+  declaration): a `@property` tag or `@mixin` counts only on a class that allows dynamic properties.
+- **Comparison fixes, not rule changes:** `RequestStaticValidateToInjectRector` changes the node in place and
+  returns null, so Rector's JSON never names it; `lint-vs-rector.py` runs it alone to get its files. The bench's
+  rector.php imports rector-laravel's config/config.php, as every rector-laravel set does: without its
+  `ArrayDimFetchContextNodeVisitor`, `ServerVariableToRequestFacadeRector` rewrites `$_SERVER['A'] = ...` into
+  `Request::server('A') = ...`, which PHP rejects.
