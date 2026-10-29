@@ -1,5 +1,4 @@
-//! IssetCheck's virtual markers come from real incoming scopes, not constructor syntax.
-//! Direct constructor helper replay remains outside this bridge's frozen facility boundary.
+//! IssetCheck's virtual markers come from real incoming constructor/helper scopes.
 
 use std::path::Path;
 
@@ -8,19 +7,32 @@ use serde_json::Value;
 
 #[test]
 fn property_initialization_consumers_match_complete_phpstan_records() {
+    check_property_initialization_consumers(
+        "property-initialization-consumers.php",
+        include_str!(
+            "fixtures/property-initialization-bridge/property-initialization-consumers-phpstan.json"
+        ),
+    );
+}
+
+#[test]
+fn called_method_summaries_reach_public_property_consumers() {
+    check_property_initialization_consumers(
+        "called-methods-consumers.php",
+        include_str!(
+            "fixtures/property-initialization-bridge/called-methods-consumers-phpstan.json"
+        ),
+    );
+}
+
+fn check_property_initialization_consumers(file: &str, capture: &str) {
     let root =
         Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/property-initialization-bridge");
-    let expected: Value = serde_json::from_str(include_str!(
-        "fixtures/property-initialization-bridge/property-initialization-consumers-phpstan.json"
-    ))
-    .unwrap();
+    let expected: Value = serde_json::from_str(capture).unwrap();
     let mut failures = Vec::new();
     for (case, records) in expected.as_object().unwrap() {
         let (level, mode) = case.split_once('-').unwrap();
-        let mut project = Project::new(
-            vec![root.join("property-initialization-consumers.php")],
-            Vec::new(),
-        );
+        let mut project = Project::new(vec![root.join(file)], Vec::new());
         project.level = level.parse().unwrap();
         project.php_version = 80500;
         if mode != "default" {

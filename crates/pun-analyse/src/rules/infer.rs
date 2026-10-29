@@ -245,17 +245,18 @@ fn analyse_observed<'arena>(
     settings.track_native_types = true;
     settings.track_variable_flow = variable_writes.is_some();
     settings.call_scope_observations = calls;
-    let retain_constructors = !initializations.is_empty();
+    let retain_methods = !initializations.is_empty();
     settings.property_initialization_observations = initializations.iter().map(|(_, request)| *request).collect();
     let analyzer = Analyzer::new(arena, file, names, codebase, &registry, settings);
     let mut result = AnalysisResult::new(SymbolReferences::new());
     // Only the declarations holding a wanted expression: a method's types come from its own body and the codebase,
     // so the file's other functions and methods would only cost time (most of the rules' time on large classes).
+    // Marker summaries also need real constructor/helper bodies, even without a requested operand in them.
     let program = arena.alloc(Program {
         statements: Prune {
             arena,
             wanted: &wanted,
-            retain_constructors,
+            retain_methods,
         }
         .statements(&program.statements),
         ..program.clone()
@@ -576,11 +577,11 @@ fn observe_direct(v: &DirectVariable<'_>, context: &HookContext<'_, '_>, found: 
 
 /// A copy of a program's statements without the functions, class-likes and methods that hold none of `wanted`. Every
 /// other statement and member stays, so the kept code's scope is unchanged. Virtual initialization requests also
-/// retain constructors: their live exit scopes seed the later instance methods, even without requested operands.
+/// retain method bodies: constructor/helper summaries need their live scopes, even without requested operands.
 struct Prune<'w, 'arena> {
     arena: &'arena LocalArena,
     wanted: &'w [Span],
-    retain_constructors: bool,
+    retain_methods: bool,
 }
 
 impl<'arena> Prune<'_, 'arena> {
@@ -640,9 +641,7 @@ impl<'arena> Prune<'_, 'arena> {
     ) -> Sequence<'arena, ClassLikeMember<'arena>> {
         let kept = members
             .iter()
-            .filter(|m| !matches!(m, ClassLikeMember::Method(_)) || self.holds(m.span())
-                || (self.retain_constructors && matches!(m,
-                    ClassLikeMember::Method(method) if method.name.value.eq_ignore_ascii_case(b"__construct"))))
+            .filter(|m| !matches!(m, ClassLikeMember::Method(_)) || self.retain_methods || self.holds(m.span()))
             .cloned();
         Sequence::from_slice(self.arena.alloc_slice_fill_iter(kept))
     }

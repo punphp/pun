@@ -1,0 +1,452 @@
+[
+    {
+        "start": 246,
+        "end": 258,
+        "line": 10,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\RecursiveConstructor",
+        "method": "__construct",
+        "certainty": "No"
+    },
+    {
+        "start": 304,
+        "end": 316,
+        "line": 12,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\RecursiveConstructor",
+        "method": "__construct",
+        "certainty": "Yes"
+    },
+    {
+        "start": 436,
+        "end": 448,
+        "line": 15,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\RecursiveConstructor",
+        "method": "check",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 561,
+        "end": 573,
+        "line": 20,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\DeadReturn",
+        "method": "__construct",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 732,
+        "end": 744,
+        "line": 25,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\DeadReturn",
+        "method": "check",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 859,
+        "end": 871,
+        "line": 30,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\FalseFinalIf",
+        "method": "__construct",
+        "certainty": "No"
+    },
+    {
+        "start": 1002,
+        "end": 1014,
+        "line": 32,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\FalseFinalIf",
+        "method": "check",
+        "certainty": "No"
+    },
+    {
+        "start": 1128,
+        "end": 1140,
+        "line": 37,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\TrueFinalIf",
+        "method": "__construct",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 1341,
+        "end": 1353,
+        "line": 43,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\TrueFinalIf",
+        "method": "check",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 1481,
+        "end": 1493,
+        "line": 48,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\NestedFinalIf",
+        "method": "__construct",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 1794,
+        "end": 1806,
+        "line": 55,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\NestedFinalIf",
+        "method": "check",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 1921,
+        "end": 1933,
+        "line": 60,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\ThrowFinally",
+        "method": "__construct",
+        "certainty": "Yes"
+    },
+    {
+        "start": 2120,
+        "end": 2132,
+        "line": 65,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\ThrowFinally",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 2253,
+        "end": 2265,
+        "line": 70,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\ReturnNeverOperand",
+        "method": "__construct",
+        "certainty": "No"
+    },
+    {
+        "start": 2400,
+        "end": 2412,
+        "line": 72,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\ReturnNeverOperand",
+        "method": "check",
+        "certainty": "No"
+    },
+    {
+        "start": 2608,
+        "end": 2620,
+        "line": 80,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\AliasOverwrittenByArgument",
+        "method": "__construct",
+        "certainty": "Yes"
+    },
+    {
+        "start": 2753,
+        "end": 2765,
+        "line": 83,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\AliasOverwrittenByArgument",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 2948,
+        "end": 2960,
+        "line": 91,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\NullsafeAlias",
+        "method": "__construct",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 3080,
+        "end": 3092,
+        "line": 94,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\NullsafeAlias",
+        "method": "check",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 3207,
+        "end": 3219,
+        "line": 99,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\StaticHelper",
+        "method": "__construct",
+        "certainty": "No"
+    },
+    {
+        "start": 3323,
+        "end": 3335,
+        "line": 101,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\StaticHelper",
+        "method": "check",
+        "certainty": "No"
+    },
+    {
+        "start": 3459,
+        "end": 3471,
+        "line": 106,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\FinalEmptyBranch",
+        "method": "__construct",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 3632,
+        "end": 3644,
+        "line": 110,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\FinalEmptyBranch",
+        "method": "check",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 3820,
+        "end": 3832,
+        "line": 116,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\LocalHelper",
+        "method": "__construct",
+        "certainty": "Yes"
+    },
+    {
+        "start": 3886,
+        "end": 3898,
+        "line": 117,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\LocalHelper",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 4061,
+        "end": 4073,
+        "line": 125,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\FreshNullsafeScope",
+        "method": "__construct",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 4278,
+        "end": 4290,
+        "line": 129,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\FreshNullsafeScope",
+        "method": "check",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 4422,
+        "end": 4434,
+        "line": 134,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\ThisReturningReceiver",
+        "method": "__construct",
+        "certainty": "Yes"
+    },
+    {
+        "start": 4627,
+        "end": 4639,
+        "line": 138,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\ThisReturningReceiver",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 4771,
+        "end": 4783,
+        "line": 143,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\SelfReturningReceiver",
+        "method": "__construct",
+        "certainty": "No"
+    },
+    {
+        "start": 4951,
+        "end": 4963,
+        "line": 146,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\SelfReturningReceiver",
+        "method": "check",
+        "certainty": "No"
+    },
+    {
+        "start": 5097,
+        "end": 5109,
+        "line": 151,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\StaticReturningReceiver",
+        "method": "__construct",
+        "certainty": "No"
+    },
+    {
+        "start": 5279,
+        "end": 5291,
+        "line": 154,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\StaticReturningReceiver",
+        "method": "check",
+        "certainty": "No"
+    },
+    {
+        "start": 5533,
+        "end": 5545,
+        "line": 164,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\IntersectionReceiver",
+        "method": "__construct",
+        "certainty": "Yes"
+    },
+    {
+        "start": 5572,
+        "end": 5584,
+        "line": 166,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\IntersectionReceiver",
+        "method": "__construct",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 5704,
+        "end": 5716,
+        "line": 169,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\IntersectionReceiver",
+        "method": "check",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 5947,
+        "end": 5959,
+        "line": 178,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\IntersectionStaticReceiver",
+        "method": "__construct",
+        "certainty": "No"
+    },
+    {
+        "start": 5986,
+        "end": 5998,
+        "line": 180,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\IntersectionStaticReceiver",
+        "method": "__construct",
+        "certainty": "No"
+    },
+    {
+        "start": 6172,
+        "end": 6184,
+        "line": 184,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\IntersectionStaticReceiver",
+        "method": "check",
+        "certainty": "No"
+    },
+    {
+        "start": 6313,
+        "end": 6325,
+        "line": 189,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\UnreachableLastAfterReturn",
+        "method": "__construct",
+        "certainty": "No"
+    },
+    {
+        "start": 6478,
+        "end": 6490,
+        "line": 194,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\UnreachableLastAfterReturn",
+        "method": "check",
+        "certainty": "No"
+    },
+    {
+        "start": 6618,
+        "end": 6630,
+        "line": 199,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\UnreachableLastAfterThrow",
+        "method": "__construct",
+        "certainty": "No"
+    },
+    {
+        "start": 6816,
+        "end": 6828,
+        "line": 205,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\UnreachableLastAfterThrow",
+        "method": "check",
+        "certainty": "No"
+    },
+    {
+        "start": 6957,
+        "end": 6969,
+        "line": 210,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\UnreachableBranchLast",
+        "method": "__construct",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 7208,
+        "end": 7220,
+        "line": 217,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsEnds\\UnreachableBranchLast",
+        "method": "check",
+        "certainty": "Maybe"
+    }
+]

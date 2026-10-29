@@ -357,6 +357,24 @@ where
         resolve_method_targets(context, block_context, artifacts, object, selector, is_null_safe, span)?
     };
 
+    // MethodCallHandler: capture the already-evaluated receiver before arguments
+    // can overwrite an alias. Only a same-declaring-class constructor call qualifies.
+    let initializing_method = if !context.settings.property_initialization_observations.is_empty()
+        && matches!(selector, ClassLikeMemberSelector::Identifier(_))
+        && matches!(block_context.scope.get_function_like_identifier(),
+            Some(FunctionLikeIdentifier::Method(_, name)) if name.as_bytes().eq_ignore_ascii_case(b"__construct"))
+        && artifacts.get_expression_type(object).is_some_and(crate::property_initialization::has_this_type)
+    {
+        method_resolution.resolved_methods.first().map(|method| method.method_identifier).filter(|id| {
+            block_context.scope.get_class_like_name().is_some_and(|class| {
+                class.as_bytes().eq_ignore_ascii_case(id.get_class_name().as_bytes())
+            })
+                && method_resolution.resolved_methods.iter().all(|method| method.method_identifier == *id)
+        })
+    } else {
+        None
+    };
+
     // The ensured nullsafe twin still walks its arguments when the original
     // receiver is null. Its handler discards those effects afterwards.
     if receiver.is_none()
@@ -490,6 +508,12 @@ where
     if artifacts.get_expression_type(&span).is_none() {
         let return_type = if method_resolution.has_dynamic_selector { get_mixed() } else { get_error() };
         artifacts.set_resolved_expression_type(&span, return_type);
+    }
+
+    if let Some(id) = initializing_method
+        && let Some(summary) = crate::property_initialization::called_method(context, id)?
+    {
+        crate::property_initialization::merge_initialized(&mut block_context.variable_state.property_initializations, &summary);
     }
 
     Ok(())

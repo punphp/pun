@@ -1,0 +1,42 @@
+[
+    {
+        "start": 163,
+        "end": 175,
+        "line": 6,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsScan\\InheritedFromScan",
+        "method": "__construct",
+        "certainty": "No"
+    },
+    {
+        "start": 229,
+        "end": 241,
+        "line": 7,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsScan\\InheritedFromScan",
+        "method": "check",
+        "certainty": "No"
+    },
+    {
+        "start": 378,
+        "end": 390,
+        "line": 13,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsScan\\TraitFromScan",
+        "method": "__construct",
+        "certainty": "No"
+    },
+    {
+        "start": 444,
+        "end": 456,
+        "line": 14,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodsScan\\TraitFromScan",
+        "method": "check",
+        "certainty": "No"
+    }
+]

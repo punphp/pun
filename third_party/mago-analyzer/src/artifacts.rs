@@ -150,8 +150,10 @@ pub struct AnalysisArtifacts {
     pub call_scope_observations: HashMap<Span, Vec<crate::observations::NamedCallScope>>,
     /// Owned live-before-operand virtual initialization certainties, only for requested spans/names.
     pub property_initialization_observations: HashMap<Span, crate::property_initialization::Markers>,
-    /// Function-local raw return snapshots; not propagated out of nested functions.
+    /// Function-local raw method return snapshots; not propagated out of nested functions.
     pub(crate) constructor_property_returns: HashMap<Span, crate::property_initialization::Markers>,
+    /// Live statement ends for CalledMethodProcessor, separate from raw returns and runtime exits.
+    pub(crate) property_statement_ends: HashMap<Span, Vec<crate::property_initialization::Markers>>,
     /// Runtime abrupt scopes for finally entry/propagation; raw constructor returns stay separate.
     pub(crate) property_abrupt_scopes: HashMap<Span, crate::property_initialization::Markers>,
     /// NullsafeMethodCallExpressionNode's processed receiver, before shallow non-null specification.
@@ -206,6 +208,7 @@ impl AnalysisArtifacts {
             call_scope_observations: HashMap::default(),
             property_initialization_observations: HashMap::default(),
             constructor_property_returns: HashMap::default(),
+            property_statement_ends: HashMap::default(),
             property_abrupt_scopes: HashMap::default(),
             nullsafe_method_receiver_types: HashMap::default(),
             variable_writes: HashMap::default(),

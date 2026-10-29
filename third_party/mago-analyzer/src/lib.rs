@@ -222,7 +222,9 @@ where
             self.external_analysis_session,
             self.additional_symbol_references,
         );
-        if self.settings.call_scope_observations.iter().any(|request| request.call.file_id == self.source_file.id) {
+        if self.settings.call_scope_observations.iter().any(|request| request.call.file_id == self.source_file.id)
+            || !self.settings.property_initialization_observations.is_empty()
+        {
             context.observation_program = Some(self.arena.alloc(program.clone()));
         }
 

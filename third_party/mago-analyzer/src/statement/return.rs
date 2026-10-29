@@ -56,8 +56,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Return<'arena> {
         // finally. These are syntax-walk returns, including discarded false branches.
         // Function-local artifacts keep nested function returns out of this set.
         if !context.settings.property_initialization_observations.is_empty()
-            && let Some(FunctionLikeIdentifier::Method(_, method)) = block_context.scope.get_function_like_identifier()
-            && method.as_bytes().eq_ignore_ascii_case(b"__construct")
+            && matches!(block_context.scope.get_function_like_identifier(), Some(FunctionLikeIdentifier::Method(..)))
         {
             crate::property_initialization::remember(
                 &mut artifacts.constructor_property_returns,

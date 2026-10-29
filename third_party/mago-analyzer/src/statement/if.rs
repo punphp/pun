@@ -527,6 +527,12 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for If<'arena> {
         if_scope.native_branches.reverse();
         block_context.merge_variable_scope_types(&if_scope.variable_branches, context.codebase);
         block_context.native_locals = crate::native::join(&if_scope.native_branches, context.codebase);
+        if context.called_method_properties.processing {
+            if self.body.else_statements().is_none() && !if_scope.else_is_unreachable {
+                if_scope.property_ends.push(block_context.variable_state.property_initializations.clone());
+            }
+            artifacts.property_statement_ends.insert(self.span(), if_scope.property_ends);
+        }
         Ok(())
     }
 }
@@ -644,6 +650,11 @@ where
     if let Some(flow) = discarded_flow {
         artifacts.restore_branch_flow(flow);
         return Ok(());
+    }
+    if context.called_method_properties.processing {
+        if_scope.property_ends.extend(crate::property_initialization::statement_ends(
+            if_statement.body.statements(), &if_block_context, artifacts,
+        ));
     }
 
     for variable_id in &if_block_context.parent_conflicting_clause_variables {
@@ -1012,6 +1023,11 @@ where
         artifacts.restore_branch_flow(flow);
         return Ok(());
     }
+    if context.called_method_properties.processing {
+        if_scope.property_ends.extend(crate::property_initialization::statement_ends(
+            else_if_clause.1, &else_if_block_context, artifacts,
+        ));
+    }
 
     for variable_id in &else_if_block_context.parent_conflicting_clause_variables {
         outer_block_context.remove_variable_from_conflicting_clauses(context, *variable_id, None);
@@ -1265,6 +1281,11 @@ where
 
     if let Some(statements) = else_statements {
         analyze_statements(statements, context, else_block_context, artifacts)?;
+        if context.called_method_properties.processing {
+            if_scope.property_ends.extend(crate::property_initialization::statement_ends(
+                statements, else_block_context, artifacts,
+            ));
+        }
     }
 
     for variable_id in &else_block_context.parent_conflicting_clause_variables {

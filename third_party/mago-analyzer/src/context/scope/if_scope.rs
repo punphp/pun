@@ -18,6 +18,7 @@ use crate::context::scope::control_action::ControlActionSet;
 pub struct IfScope<'ctx> {
     pub variable_branches: Vec<VariableScope>,
     pub(crate) native_branches: Vec<Option<crate::native::Locals>>,
+    pub(crate) property_ends: Vec<crate::property_initialization::Markers>,
     pub else_is_unreachable: bool,
     pub new_variables: Option<WordMap<Rc<TUnion>>>,
     pub new_variables_possibly_in_scope: WordSet,
@@ -49,6 +50,7 @@ impl IfScope<'_> {
         Self {
             variable_branches: Vec::new(),
             native_branches: Vec::new(),
+            property_ends: Vec::new(),
             else_is_unreachable: false,
             new_variables: None,
             new_variables_possibly_in_scope: WordSet::default(),

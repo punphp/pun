@@ -5,9 +5,7 @@ use std::sync::{Arc, Mutex};
 
 use mago_allocator::LocalArena;
 use mago_analyzer::plugin::*;
-use mago_analyzer::property_initialization::{
-    PropertyInitializationCertainty, PropertyInitializationRequest,
-};
+use mago_analyzer::property_initialization::PropertyInitializationRequest;
 use mago_analyzer::settings::Settings;
 use mago_analyzer::{Analyzer, analysis_result::AnalysisResult, artifacts::AnalysisArtifacts};
 use mago_codex::{populator::populate_codebase, scanner::scan_program};
@@ -164,13 +162,6 @@ fn check(source: &[u8], expected: &str) {
                         .property_initialization_observations
                         .get(&request.expression)
                         .and_then(|markers| markers.get(&request.property));
-                    // Deliberate activation boundary, not a PHPStan expectation: direct
-                    // helper replay has its own 50-line contract. Never substitute Mago's
-                    // transitive runtime initializer summary for that missing transfer.
-                    if record["class"] == "DirectHelper" {
-                        assert_eq!(got, Some(&PropertyInitializationCertainty::No));
-                        continue;
-                    }
                     if got.map(|certainty| format!("{certainty:?}"))
                         != record["certainty"].as_str().map(str::to_owned)
                     {

@@ -297,6 +297,9 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Statement<'arena> {
         artifacts.record_static_local_types(block_context, context.codebase, context.settings.combiner_options());
 
         crate::variable_flow::statement(self, context, artifacts);
+        if context.called_method_properties.processing {
+            crate::property_initialization::statement_end(self, block_context, artifacts);
+        }
         Ok(())
     }
 }

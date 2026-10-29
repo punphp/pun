@@ -1,0 +1,592 @@
+[
+    {
+        "start": 145,
+        "end": 157,
+        "line": 8,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\Direct",
+        "method": "__construct",
+        "certainty": "No"
+    },
+    {
+        "start": 203,
+        "end": 215,
+        "line": 10,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\Direct",
+        "method": "__construct",
+        "certainty": "Yes"
+    },
+    {
+        "start": 279,
+        "end": 291,
+        "line": 12,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\Direct",
+        "method": "__construct",
+        "certainty": "Yes"
+    },
+    {
+        "start": 411,
+        "end": 423,
+        "line": 15,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\Direct",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 513,
+        "end": 525,
+        "line": 20,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\NoHelper",
+        "method": "__construct",
+        "certainty": "No"
+    },
+    {
+        "start": 641,
+        "end": 653,
+        "line": 22,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\NoHelper",
+        "method": "check",
+        "certainty": "No"
+    },
+    {
+        "start": 810,
+        "end": 822,
+        "line": 30,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\AliasReceiver",
+        "method": "__construct",
+        "certainty": "Yes"
+    },
+    {
+        "start": 942,
+        "end": 954,
+        "line": 33,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\AliasReceiver",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 1098,
+        "end": 1110,
+        "line": 40,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\OtherReceiver",
+        "method": "__construct",
+        "certainty": "No"
+    },
+    {
+        "start": 1230,
+        "end": 1242,
+        "line": 43,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\OtherReceiver",
+        "method": "check",
+        "certainty": "No"
+    },
+    {
+        "start": 1397,
+        "end": 1409,
+        "line": 51,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\DynamicName",
+        "method": "__construct",
+        "certainty": "No"
+    },
+    {
+        "start": 1529,
+        "end": 1541,
+        "line": 54,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\DynamicName",
+        "method": "check",
+        "certainty": "No"
+    },
+    {
+        "start": 1667,
+        "end": 1679,
+        "line": 59,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\OutsideConstructor",
+        "method": "run",
+        "certainty": "No"
+    },
+    {
+        "start": 1967,
+        "end": 1979,
+        "line": 68,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\InheritedHelper",
+        "method": "__construct",
+        "certainty": "No"
+    },
+    {
+        "start": 2033,
+        "end": 2045,
+        "line": 69,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\InheritedHelper",
+        "method": "check",
+        "certainty": "No"
+    },
+    {
+        "start": 2157,
+        "end": 2169,
+        "line": 74,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\NestedHelper",
+        "method": "__construct",
+        "certainty": "No"
+    },
+    {
+        "start": 2347,
+        "end": 2359,
+        "line": 77,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\NestedHelper",
+        "method": "check",
+        "certainty": "No"
+    },
+    {
+        "start": 2481,
+        "end": 2493,
+        "line": 82,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\RawEarlyReturn",
+        "method": "__construct",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 2662,
+        "end": 2674,
+        "line": 87,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\RawEarlyReturn",
+        "method": "check",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 2793,
+        "end": 2805,
+        "line": 92,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\ThrowBranch",
+        "method": "__construct",
+        "certainty": "Yes"
+    },
+    {
+        "start": 2997,
+        "end": 3009,
+        "line": 97,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\ThrowBranch",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 3120,
+        "end": 3132,
+        "line": 102,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\ThrowEnd",
+        "method": "__construct",
+        "certainty": "No"
+    },
+    {
+        "start": 3279,
+        "end": 3291,
+        "line": 104,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\ThrowEnd",
+        "method": "check",
+        "certainty": "No"
+    },
+    {
+        "start": 3546,
+        "end": 3558,
+        "line": 111,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\DeclaredNever",
+        "method": "check",
+        "certainty": "No"
+    },
+    {
+        "start": 3677,
+        "end": 3689,
+        "line": 116,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\ReturnAssignment",
+        "method": "__construct",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 3811,
+        "end": 3823,
+        "line": 118,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\ReturnAssignment",
+        "method": "check",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 3954,
+        "end": 3966,
+        "line": 123,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\EarlierReturnAssignment",
+        "method": "__construct",
+        "certainty": "No"
+    },
+    {
+        "start": 4143,
+        "end": 4155,
+        "line": 128,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\EarlierReturnAssignment",
+        "method": "check",
+        "certainty": "No"
+    },
+    {
+        "start": 4277,
+        "end": 4289,
+        "line": 133,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\FinalIfReturns",
+        "method": "__construct",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 4475,
+        "end": 4487,
+        "line": 138,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\FinalIfReturns",
+        "method": "check",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 4608,
+        "end": 4620,
+        "line": 143,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\FinalIfThrows",
+        "method": "__construct",
+        "certainty": "Yes"
+    },
+    {
+        "start": 4821,
+        "end": 4833,
+        "line": 148,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\FinalIfThrows",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 4948,
+        "end": 4960,
+        "line": 153,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\FinalElseIf",
+        "method": "__construct",
+        "certainty": "Yes"
+    },
+    {
+        "start": 5217,
+        "end": 5229,
+        "line": 159,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\FinalElseIf",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 5348,
+        "end": 5360,
+        "line": 164,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\FinallyRawReturn",
+        "method": "__construct",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 5524,
+        "end": 5536,
+        "line": 169,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\FinallyRawReturn",
+        "method": "check",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 5710,
+        "end": 5722,
+        "line": 178,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\OnlyMarkers",
+        "method": "__construct",
+        "certainty": "Yes"
+    },
+    {
+        "start": 5739,
+        "end": 5751,
+        "line": 179,
+        "property": "other",
+        "expression": "$this->other",
+        "class": "CalledMethods\\OnlyMarkers",
+        "method": "__construct",
+        "certainty": "No"
+    },
+    {
+        "start": 6000,
+        "end": 6012,
+        "line": 184,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\OnlyMarkers",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 6173,
+        "end": 6185,
+        "line": 192,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\ExistingYes",
+        "method": "__construct",
+        "certainty": "Yes"
+    },
+    {
+        "start": 6330,
+        "end": 6342,
+        "line": 195,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\ExistingYes",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 6525,
+        "end": 6537,
+        "line": 203,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\ExistingMaybe",
+        "method": "__construct",
+        "certainty": "Yes"
+    },
+    {
+        "start": 6657,
+        "end": 6669,
+        "line": 206,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\ExistingMaybe",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 6786,
+        "end": 6798,
+        "line": 211,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\NestedFunction",
+        "method": "__construct",
+        "certainty": "Yes"
+    },
+    {
+        "start": 6970,
+        "end": 6982,
+        "line": 216,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\NestedFunction",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 7095,
+        "end": 7107,
+        "line": 221,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\FinalBlock",
+        "method": "__construct",
+        "certainty": "Yes"
+    },
+    {
+        "start": 7227,
+        "end": 7239,
+        "line": 223,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\FinalBlock",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 7352,
+        "end": 7364,
+        "line": 228,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\FiftyLines",
+        "method": "__construct",
+        "certainty": "Yes"
+    },
+    {
+        "start": 8164,
+        "end": 8176,
+        "line": 280,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\FiftyLines",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 8292,
+        "end": 8304,
+        "line": 285,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\FiftyOneLines",
+        "method": "__construct",
+        "certainty": "No"
+    },
+    {
+        "start": 9118,
+        "end": 9130,
+        "line": 338,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\FiftyOneLines",
+        "method": "check",
+        "certainty": "No"
+    },
+    {
+        "start": 9236,
+        "end": 9248,
+        "line": 343,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "AnonymousClass89eb563ae8353dd895df7d0baa5fbb6f",
+        "method": "__construct",
+        "certainty": "No"
+    },
+    {
+        "start": 9364,
+        "end": 9376,
+        "line": 345,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "AnonymousClass89eb563ae8353dd895df7d0baa5fbb6f",
+        "method": "check",
+        "certainty": "No"
+    },
+    {
+        "start": 9541,
+        "end": 9553,
+        "line": 351,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\NestedClass",
+        "method": "__construct",
+        "certainty": "No"
+    },
+    {
+        "start": 9677,
+        "end": 9689,
+        "line": 353,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\NestedClass",
+        "method": "check",
+        "certainty": "No"
+    },
+    {
+        "start": 9821,
+        "end": 9833,
+        "line": 359,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\AbstractHelper",
+        "method": "__construct",
+        "certainty": "No"
+    },
+    {
+        "start": 9939,
+        "end": 9951,
+        "line": 361,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\AbstractHelper",
+        "method": "check",
+        "certainty": "No"
+    },
+    {
+        "start": 10065,
+        "end": 10077,
+        "line": 366,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\EmptyHelper",
+        "method": "__construct",
+        "certainty": "No"
+    },
+    {
+        "start": 10174,
+        "end": 10186,
+        "line": 368,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethods\\EmptyHelper",
+        "method": "check",
+        "certainty": "No"
+    }
+]

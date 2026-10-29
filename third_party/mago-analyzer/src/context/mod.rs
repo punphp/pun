@@ -78,6 +78,7 @@ where
     pub(super) observation_program: Option<&'arena mago_syntax::cst::Program<'arena>>,
     pub(super) ensured_non_null_types: Vec<WordMap<TUnion>>,
     pub(crate) consume_stored_expression_results: bool,
+    pub(crate) called_method_properties: crate::property_initialization::CalledMethods,
 }
 
 impl<'ctx, 'arena, A> Context<'ctx, 'arena, A>
@@ -121,6 +122,7 @@ where
             observation_program: None,
             ensured_non_null_types: Vec::new(),
             consume_stored_expression_results: false,
+            called_method_properties: crate::property_initialization::CalledMethods::default(),
         }
     }
 
