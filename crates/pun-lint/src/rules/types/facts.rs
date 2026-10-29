@@ -114,6 +114,8 @@ pub fn project_codebase_autoloaded(
     let version = php_version_of(php_version);
     let (prelude, references) = &*PRELUDE;
     let (mut codebase, mut documented) = (prelude.clone(), prelude.clone());
+    stub_preg_match(&mut codebase, version);
+    stub_preg_match(&mut documented, version);
     let mut named = Vec::new();
     for (path, code) in files {
         let kind = if is_vendor_path(path) {
@@ -156,6 +158,37 @@ pub fn project_codebase_autoloaded(
         native: populated(codebase),
         documented: populated(documented),
     })
+}
+
+/// `preg_match()` and `preg_match_all()` with the `$flags` and `$matches` of PHPStan's signatures
+/// (data/phpstan-preg-match.stub), whose conditional `@param-out` types `$matches` from the flags; Mago's prelude has
+/// one type for every flag. The rest stays the prelude's. Both codebases take it: PHPStan's native scope gives a
+/// by-reference argument the same out type (Rector's `isNonTypedFromParam` holds the variable typed). PHPStan's
+/// `PregMatchParameterOutTypeExtension` (an array shape for a pattern it parses) is not ported: the stub's type holds
+/// that shape.
+fn stub_preg_match(codebase: &mut CodebaseMetadata, version: PHPVersion) {
+    const STUB: &str = include_str!("../../../data/phpstan-preg-match.stub");
+    let file = mago_file("phpstan/stubs/core.stub", STUB, FileType::Host);
+    let arena = LocalArena::new();
+    let program = parse_file(&arena, &file);
+    let names = NameResolver::new(&arena).resolve(program);
+    let scanned = scan_program(&arena, &file, program, &names, version);
+    for (key, stub) in scanned.function_likes {
+        let Some(builtin) = codebase.function_likes.get_mut(&key) else {
+            continue;
+        };
+        builtin.template_types = stub.template_types.clone();
+        for parameter in &mut builtin.parameters {
+            let name = parameter.name.0.as_bytes();
+            if name != b"$flags" && name != b"$matches" {
+                continue;
+            }
+            if let Some(from) = stub.parameters.iter().find(|p| p.name.0.as_bytes() == name) {
+                parameter.type_metadata = from.type_metadata.clone();
+                parameter.out_type = from.out_type.clone();
+            }
+        }
+    }
 }
 
 /// The files [`project_codebase_autoloaded`] read from a `vendor/` directory. A file's id is a hash of its path, so
