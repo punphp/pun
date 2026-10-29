@@ -1,0 +1,54 @@
+{
+    "enabled": [
+        {
+            "file": "contracts.php",
+            "line": 8,
+            "identifier": "method.impure",
+            "message": "Impure method BuiltinPurityOverride\\ImpureDate::format() overrides pure method DateTime::format().",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "contracts.php",
+            "line": 8,
+            "identifier": "method.impure",
+            "message": "Impure method BuiltinPurityOverride\\ImpureDate::format() overrides pure method DateTimeInterface::format().",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "contracts.php",
+            "line": 16,
+            "identifier": "method.impure",
+            "message": "Impure method BuiltinPurityOverride\\ImpureInheritedDate::format() overrides pure method DateTime::format().",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "contracts.php",
+            "line": 16,
+            "identifier": "method.impure",
+            "message": "Impure method BuiltinPurityOverride\\ImpureInheritedDate::format() overrides pure method DateTimeInterface::format().",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "contracts.php",
+            "line": 22,
+            "identifier": "method.impure",
+            "message": "Impure method BuiltinPurityOverride\\ImpureImmutableDate::format() overrides pure method DateTimeImmutable::format().",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "contracts.php",
+            "line": 22,
+            "identifier": "method.impure",
+            "message": "Impure method BuiltinPurityOverride\\ImpureImmutableDate::format() overrides pure method DateTimeInterface::format().",
+            "tip": null,
+            "ignorable": true
+        }
+    ],
+    "disabled": [],
+    "no-overrides": []
+}

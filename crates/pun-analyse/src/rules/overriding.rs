@@ -1159,7 +1159,7 @@ fn overriding_method<'a>(c: &Checker<'a, '_>, m: &Method, name: &str, k: &'a Cla
 /// MethodSignatureRule's purity checks (`featureToggles.reportMethodPurityOverride`) against
 /// ParentMethodHelper::collectParentMethods(): the parent class's method, every interface's, and the abstract
 /// methods the class's traits (and theirs, and its parents') declare. ponytail: the rule's return and parameter type
-/// checks are not ported, and a built-in parent's purity (the signature map's `hasSideEffects`) is not consulted.
+/// checks are not ported.
 fn purity_override<'a>(c: &Checker<'a, '_>, m: &Method, name: &str, k: &'a ClassLikeMetadata) -> Vec<Message> {
     let lower = name.to_ascii_lowercase();
     // ponytail: `reportStaticMethodSignatures` stays at its default, off
@@ -1195,10 +1195,21 @@ fn purity_override<'a>(c: &Checker<'a, '_>, m: &Method, name: &str, k: &'a Class
     parents
         .into_iter()
         .filter_map(|found| {
-            let Found::User { declaring, .. } = found else {
-                return None;
+            let (pure, unless_callable, unless_passed) = match found {
+                Found::User { declaring, .. } => declared::method_purity(c, declaring, lower.as_bytes()),
+                Found::Builtin { declaring, .. } => {
+                    // NativeMethodReflection::isPure() negates hasSideEffects(); the export already includes
+                    // its non-constructor void override. Native methods have neither conditional-purity tag.
+                    let pure = symbols::class(&declaring.name)
+                        .and_then(|class| class.methods.get(&lower))
+                        .and_then(|method| match method.side_effects.as_str() {
+                            "No" => Some(true),
+                            "Yes" => Some(false),
+                            _ => None,
+                        });
+                    (pure, false, false)
+                }
             };
-            let (pure, unless_callable, unless_passed) = declared::method_purity(c, declaring, lower.as_bytes());
             let parent = format!("{}::{}()", c.declaring_display(k, found), c.facts(found, k).name);
             let (id, message) = if pure == Some(true) {
                 ("method.impure", format!("Impure method {class}::{name}() overrides pure method {parent}."))

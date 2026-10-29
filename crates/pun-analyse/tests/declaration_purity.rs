@@ -1,4 +1,4 @@
-//! The level-2 unspecified-declaration `void.pure` branch, not the complete Pure*Rule mappings.
+//! Declaration effects and the builtin-parent purity override boundary, not complete Pure*Rule mappings.
 
 use pun_analyse::{Project, analyse_project};
 use serde_json::{Value, json};
@@ -160,5 +160,42 @@ fn constructor_declaration_effects_match_independent_phpstan_records() {
             supported(all_oracle),
             "level {level}: constructor effects"
         );
+    }
+}
+
+#[test]
+fn builtin_purity_overrides_match_complete_phpstan_records_through_project() {
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/builtin-purity-override");
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/builtin-purity-override/expected.json"
+    ))
+    .unwrap();
+    for mode in ["enabled", "disabled", "no-overrides"] {
+        let mut project = Project::new(vec![root.join("contracts.php")], Vec::new());
+        project.php_version = 80500;
+        project.level = 3;
+        project.report_method_purity_override = mode != "disabled";
+        project.method_rules.overriding_method = mode != "no-overrides";
+        let mut actual: Vec<_> = analyse_project(&project)
+            .unwrap()
+            .errors
+            .into_iter()
+            .map(|error| {
+                json!({
+                    "file": std::path::Path::new(&error.file).file_name().unwrap().to_str().unwrap(),
+                    "line": error.line, "identifier": error.identifier, "message": error.message,
+                    "tip": error.tip, "ignorable": error.can_be_ignored,
+                })
+            })
+            .collect();
+        actual.sort_by_key(|error| {
+            (
+                error["file"].as_str().unwrap().to_string(),
+                error["line"].as_i64().unwrap(),
+                error["message"].as_str().unwrap().to_string(),
+            )
+        });
+        assert_eq!(actual, *expected[mode].as_array().unwrap(), "{mode}");
     }
 }
