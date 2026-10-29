@@ -381,7 +381,11 @@ pub(crate) fn resolve(
                         e.identifier.as_deref() == Some("ignore.unmatchedLine")
                     } else {
                         e.identifier.as_deref() == Some("ignore.unmatchedIdentifier")
-                            && e.message.contains(ID)
+                            && e.message
+                                == format!(
+                                    "No error with identifier {ID} is reported on line {}.",
+                                    ignored.line.unwrap()
+                                )
                     }
             }) {
                 errors.remove(i);

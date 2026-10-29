@@ -7,10 +7,18 @@ use pun_analyse::{MethodRules, Project, run};
 use serde_json::Value;
 
 fn check(prefix: &str, mode: &str, filter_join_identifier: bool) {
-    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/named-producer-gates");
+    let fixture = if prefix == "ignore-identity-" {
+        "named-join-ignore-identity"
+    } else {
+        "named-producer-gates"
+    };
+    let root = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures")
+        .join(fixture);
     let files = match prefix {
         "boundaries-" => vec![root.join("boundaries.php")],
         "constructor-" => vec![root.join("constructor-only.php")],
+        "ignore-identity-" => vec![root.join("calls.php")],
         _ => vec![root.join("contracts.php"), root.join("ignored.php")],
     };
     let mut project = Project::new(files, Vec::new());
@@ -42,8 +50,12 @@ fn check(prefix: &str, mode: &str, filter_join_identifier: bool) {
             )
         })
         .collect();
-    let oracle: Value =
-        serde_json::from_str(include_str!("fixtures/named-producer-gates/expected.json")).unwrap();
+    let capture = if prefix == "ignore-identity-" {
+        include_str!("fixtures/named-join-ignore-identity/expected.json")
+    } else {
+        include_str!("fixtures/named-producer-gates/expected.json")
+    };
+    let oracle: Value = serde_json::from_str(capture).unwrap();
     let case = format!("{prefix}{mode}");
     let mut want: Vec<_> = oracle[&case]
         .as_array()
@@ -106,4 +118,19 @@ fn disabled_join_drops_collector_records_without_consuming_unmatched_ignores() {
 #[test]
 fn identifier_filtering_remains_separate_from_rule_registration() {
     check("", "no-join", true);
+}
+
+#[test]
+fn joined_ignores_match_the_complete_identifier_in_either_order() {
+    check("ignore-identity-", "all", false);
+}
+
+#[test]
+fn disabled_join_preserves_exact_and_similar_unmatched_identifiers() {
+    check("ignore-identity-", "no-join", false);
+}
+
+#[test]
+fn identifier_filtering_preserves_exact_and_similar_unmatched_identifiers() {
+    check("ignore-identity-", "no-join", true);
 }
