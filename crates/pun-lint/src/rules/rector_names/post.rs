@@ -232,7 +232,8 @@ impl<'s> Session<'s> {
                     let d = &self.view.docs[i];
                     (d.namespace.clone(), d.class.clone(), d.is_last)
                 }
-                None => (self.namespace_at(span.start), None, true),
+                // a `Nop`'s: `getDocComment()` reads its last doc
+                None => (self.namespace_at(span.start), None, nop_run(&tokens, span.end).0),
             };
             let scope = Scope {
                 namespace: namespace.as_deref(),
@@ -386,8 +387,8 @@ impl<'s> Session<'s> {
                         uses.push(u);
                     }
                 }
-                Item::New { kind, name, .. } => uses.push(new_use_view(*kind, name)),
-                Item::Nop(_) => {}
+                // the names are read before `addImports()` makes any new one
+                Item::New { .. } | Item::Nop(_) => {}
             }
         }
         uses
@@ -599,11 +600,8 @@ impl<'s> Session<'s> {
         }
         // `FullyQualifiedNameClassNameImportSkipVoter`
         let fq_short = last(class).to_string();
+        // (no short name starts with `\\`: the voter's `ltrim()` of one never applies)
         for (short, full) in self.short_names().clone() {
-            let mut short = short;
-            if fq_short != short && short.starts_with('\\') {
-                short = last(&short).trim_start().to_string();
-            }
             if fq_short != short {
                 continue;
             }
@@ -664,11 +662,8 @@ impl<'s> Session<'s> {
 
     /// `ShortNameResolver::resolveShortClassLikeNames()`: the short names of the class-likes of the imports root.
     fn short_class_like_names(&self) -> Vec<String> {
-        let root = match self.view.namespaces {
-            0 => None,
-            1 => Some(self.uses_root()),
-            _ => return Vec::new(),
-        };
+        // (the voters run on a file with one namespace at most, `AddUseStatementGuard`)
+        let root = (self.view.namespaces == 1).then(|| self.uses_root());
         let mut names: Vec<String> = Vec::new();
         for c in &self.view.class_likes {
             if root.is_none_or(|r| c.root == r) && !names.contains(&c.short) {
@@ -740,11 +735,9 @@ impl<'s> Session<'s> {
     /// `DocblockNameImportingPostRector`: the names of the docs of statements and parameters.
     fn import_doc_names(&mut self, options: Options) {
         for d in 0..self.docs.len() {
-            let Some(v) = self.docs[d].view else {
-                continue;
-            };
-            let owners = self.view.docs[v].owners;
-            if !(owners.stmt || owners.param) || !self.docs[d].last {
+            // a doc no node takes is a `Nop`'s, a statement's
+            let owned = self.docs[d].view.is_none_or(|v| self.view.docs[v].owners.stmt || self.view.docs[v].owners.param);
+            if !owned || !self.docs[d].last {
                 continue;
             }
             let Some(doc) = self.docs[d].doc.clone() else {
@@ -1007,8 +1000,10 @@ impl<'s> Session<'s> {
     /// `resolveUsedPhpAndDocNames()` of the root `r`: the names of its code (`use` statements aside) and its docs.
     fn used_names(&mut self, r: usize) -> Vec<String> {
         let root = &self.view.roots[r];
+        // (a namespace's statements include the `Nop` of the comments after its last one)
+        let last = root.stmts.last().map_or(0, |s| s.span.end);
         let region = match &root.header {
-            Some(h) => Span::new(root.inner.start, h.span.end.max(root.inner.end)),
+            Some(h) => Span::new(root.inner.start, h.span.end.max(root.inner.end).max(last)),
             None => Span::new(0, self.source.len()),
         };
         let inside = |s: Span| region.start <= s.start && s.end <= region.end;
@@ -1083,9 +1078,20 @@ impl<'s> Session<'s> {
             if !doc.reprintable() {
                 return None;
             }
-            let view = &self.view.docs[d.view?];
-            let edit = DocTarget::of(source, view.node_start).edit(source, &doc.print());
-            edits.push((edit.span, edit.text));
+            match d.view {
+                Some(v) => {
+                    let edit = DocTarget::of(source, self.view.docs[v].node_start).edit(source, &doc.print());
+                    edits.push((edit.span, edit.text));
+                }
+                // a `Nop` printed anew: its comments, then the empty statement on the next line (its indentation
+                // stripped, `EXTRA_SPACE_BEFORE_NOP_REGEX`); a later round finds it printed already
+                None if doc.print() != source[d.span.start..d.span.end] => {
+                    let end = nop_run(&crate::rules::php_parser::tokens(source), d.span.end).1;
+                    let text = format!("{}{}\n", doc.print(), &source[d.span.end..end]);
+                    edits.push((Span::new(d.span.start, end), text));
+                }
+                None => {}
+            }
         }
         // a class's `implements` without the names it dropped
         for class in &self.view.class_likes {
@@ -1124,6 +1130,7 @@ impl<'s> Session<'s> {
         // the statement lists
         let mut file_count_changed = false;
         let mut segments: Vec<(Span, String)> = Vec::new();
+        let mut fell_back = Vec::new();
         for r in 0..self.view.roots.len() {
             let root = &self.view.roots[r];
             let list = &self.lists[r];
@@ -1165,10 +1172,18 @@ impl<'s> Session<'s> {
                     segments.push((Span::new(pos, end), text));
                 }
                 None => {
-                    let (span, text) = self.fallback(r, &edits)?;
-                    segments.push((span, text));
+                    segments.push(self.fallback(r, &edits));
+                    fell_back.push(r);
                 }
             }
+        }
+        // a braced namespace printed `namespace X;` beside one still braced: Rector writes that mix, which PHP rejects
+        let braced = |r: &usize| self.view.roots[*r].header.as_ref().is_some_and(|h| h.braced);
+        if self.semicolon_namespaces()
+            && fell_back.iter().any(braced)
+            && (0..self.view.roots.len()).any(|r| braced(&r) && !fell_back.contains(&r))
+        {
+            return None;
         }
         // the segments take the place of the edits inside them
         let mut all: Vec<(Span, String)> = segments.clone();
@@ -1256,18 +1271,22 @@ impl<'s> Session<'s> {
             .collect()
     }
 
+    /// `canUseSemicolonNamespaces`: no namespace of the file is without a name.
+    fn semicolon_namespaces(&self) -> bool {
+        !self.view.roots.iter().any(|r| r.is_namespace && r.name.is_none())
+    }
+
     /// `pStmt_Namespace()`, or the file's `"<?php\n" . pStmts()`, where `pArray()` gives up on the list of the root `r`.
-    fn fallback(&self, r: usize, edits: &[(Span, String)]) -> Option<(Span, String)> {
+    fn fallback(&self, r: usize, edits: &[(Span, String)]) -> (Span, String) {
         let root = &self.view.roots[r];
         let list = &self.lists[r];
-        if root.header.as_ref().is_some_and(|h| h.braced) {
-            return None;
-        }
-        let mut text = match &root.name {
-            Some(name) => format!("namespace {name};\n"),
-            None if root.is_namespace => return None,
-            None => "<?php\n".to_string(),
+        // `namespace X;` and the statements, or `namespace X {` and the statements indented
+        let (mut text, level) = match (&root.name, root.is_namespace) {
+            (Some(name), _) if self.semicolon_namespaces() => (format!("namespace {name};\n"), 0),
+            (name, true) => (format!("namespace{} {{", name.as_ref().map_or(String::new(), |n| format!(" {n}"))), 4),
+            (_, false) => ("<?php\n".to_string(), 0),
         };
+        let nl = format!("\n{}", " ".repeat(level));
         for item in &list.items {
             let comments = match item {
                 Item::Old(i) if !list.cleared[*i] => self.comment_texts(r, *i),
@@ -1276,38 +1295,61 @@ impl<'s> Session<'s> {
                 _ => Vec::new(),
             };
             if !comments.is_empty() {
-                let printed: Vec<String> = comments.iter().map(|c| crate::rules::phpunit::annotations::reformatted(c)).collect();
-                text.push('\n');
-                text.push_str(&printed.join("\n"));
+                let printed: Vec<String> = comments
+                    .iter()
+                    .map(|c| crate::rules::phpunit::annotations::reformatted(c).replace('\n', &nl))
+                    .collect();
+                text.push_str(&nl);
+                text.push_str(&printed.join(&nl));
                 if matches!(item, Item::Nop(_)) {
                     continue;
                 }
             }
-            text.push('\n');
+            text.push_str(&nl);
             match item {
                 Item::Old(i) => {
                     let span = root.stmts[*i].span;
-                    // the printer copies the statement at the indentation it had
-                    if indentation(self.source, span.start) != 0 {
-                        return None;
-                    }
                     match (list.reprinted[*i], root.stmts[*i].kind) {
                         (true, StmtKind::Use(k)) => text.push_str(&print_use(&self.current_uses_of(r, k))),
-                        _ => text.push_str(&render(self.source, edits, span.start, span.end)),
+                        // the printer copies the statement, its indentation made the level's
+                        _ => {
+                            let printed = render(self.source, edits, span.start, span.end);
+                            let adjustment = level as isize - indentation(self.source, span.start) as isize;
+                            text.push_str(&differ::token_code(&printed, adjustment));
+                        }
                     }
                 }
                 Item::New { kind, name, .. } => text.push_str(&print_use(&new_use_view(*kind, name))),
                 Item::Nop(_) => {}
             }
         }
+        if level > 0 {
+            text.push_str("\n}");
+        }
         let span = match &root.header {
+            Some(h) if h.braced => h.span,
             // `Parser::fixupNamespaceAttributes()`: a namespace without braces ends with its last statement, before a
             // closing tag
             Some(h) => Span::new(h.span.start, root.stmts.last().map_or(root.inner.start, |s| s.span.end)),
             None => Span::new(0, self.source.len()),
         };
-        Some((span, text))
+        (span, text)
     }
+}
+
+/// The comments that follow the one ending at `end` up to the next code, as one `Nop` holds them: whether none of
+/// them is a doc comment, and where the last of them ends.
+fn nop_run(tokens: &[crate::rules::php_parser::Token], end: usize) -> (bool, usize) {
+    let (mut last_doc, mut run_end) = (true, end);
+    for t in tokens.iter().filter(|t| t.start >= end) {
+        match t.kind {
+            mago_syntax::token::TokenKind::Whitespace => {}
+            mago_syntax::token::TokenKind::DocBlockComment => (last_doc, run_end) = (false, t.end),
+            kind if kind.is_comment() => run_end = t.end,
+            _ => break,
+        }
+    }
+    (last_doc, run_end)
 }
 
 /// `ClassNameImportSkipper::shouldSkipName()`.

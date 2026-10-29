@@ -225,6 +225,25 @@ pub(crate) fn strip_blank_lines(text: &str, scripting: bool) -> String {
     out
 }
 
+/// `TokenStream::getTokenCode()` with the indentation adjustment `indent` on `text`, PHP code that starts a line:
+/// a line break loses `-indent` spaces after it, or gains `indent`, the string literals aside.
+pub(crate) fn token_code(text: &str, indent: isize) -> String {
+    let strings = string_spans(text, true);
+    let spaces = " ".repeat(indent.unsigned_abs());
+    let (from, to) = match indent < 0 {
+        true => (format!("\n{spaces}"), "\n".to_string()),
+        false => ("\n".to_string(), format!("\n{spaces}")),
+    };
+    let mut out = String::new();
+    let mut at = 0;
+    for span in strings.iter().chain(std::iter::once(&Span::new(text.len(), text.len()))) {
+        out.push_str(&text[at..span.start].replace(&from, &to));
+        out.push_str(&text[span.start..span.end]);
+        at = span.end;
+    }
+    out
+}
+
 /// The spans of the string literals (quoted strings, heredocs, nowdocs) of `text`.
 fn string_spans(text: &str, scripting: bool) -> Vec<Span> {
     let shift = usize::from(scripting);

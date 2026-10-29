@@ -237,9 +237,13 @@ fn run_dirs_full(
 /// the expected bytes and apply. FixClassCaseSensitivityVarDocblockRector/Fixture/{inline_var,property_var}: Pint's
 /// `fully_qualified_strict_types` fixes the case of an imported class in a `@var` too.
 /// RenameClassRector/FixtureAutoImportNames/auto_import_conflict_name_all_fqcn_same_namespace: it imports the global
-/// `\SomeShort` of a `@return` too.
+/// `\SomeShort` of a `@return` too. RenameClassRector/Oracle/namespaces_{f2,f3,f5}: Pint's `no_unused_imports` removes
+/// the unused import too.
 const FORMAT_OVERLAP: &[&str] = &[
     "RenameClassRector/FixtureAutoImportNames/auto_import_conflict_name_all_fqcn_same_namespace.php.inc",
+    "RenameClassRector/Oracle/namespaces_f2.php.inc",
+    "RenameClassRector/Oracle/namespaces_f3.php.inc",
+    "RenameClassRector/Oracle/namespaces_f5.php.inc",
     "FixClassCaseSensitivityVarDocblockRector/Fixture/inline_var.php.inc",
     "FixClassCaseSensitivityVarDocblockRector/Fixture/property_var.php.inc",
 ];
