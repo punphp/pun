@@ -795,7 +795,7 @@ pub(crate) fn item_type(shape: &ArrayShape) -> Option<TUnion> {
 }
 
 /// `TypeCombinator::union()` of a constant array's values (`types`, in order): the types that are not constant scalars
-/// keep their order, then come the constant scalars (`null` and literal values), by kind in the order the kinds come.
+/// or arrays keep their order, then come the arrays, then the constant scalars (`null` and literal values), by kind in the order the kinds come.
 pub(crate) fn constant_values_union(types: &[TAtomic]) -> Vec<TAtomic> {
     let kind = |t: &TAtomic| match t {
         TAtomic::Null => Some(0),
@@ -807,7 +807,9 @@ pub(crate) fn constant_values_union(types: &[TAtomic]) -> Vec<TAtomic> {
         }),
         _ => None,
     };
-    let mut out: Vec<TAtomic> = types.iter().filter(|t| kind(t).is_none()).cloned().collect();
+    // the arrays come after the other types
+    let mut out: Vec<TAtomic> = types.iter().filter(|t| kind(t).is_none() && !matches!(t, TAtomic::Array(_))).cloned().collect();
+    out.extend(types.iter().filter(|t| matches!(t, TAtomic::Array(_))).cloned());
     let mut kinds: Vec<u8> = Vec::new();
     for k in types.iter().filter_map(kind) {
         if !kinds.contains(&k) {
