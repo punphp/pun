@@ -439,18 +439,21 @@ fn check_single_method<'arena>(
     }.is_some_and(|t| t.has_nullsafe_null());
     // The direct nullsafe twin keeps a literal-null receiver error. An ordinary chained call instead
     // checks the short-circuited expression, discarding only null introduced by the earlier operator.
-    let ty = ty.map(|t| {
+    // Removing null recombines union members too, so retain the declaring classes' generic variance.
+    let ty = declared::with_classes(c, || ty.map(|t| {
         if nullsafe { non_null(t) }
         else if short_circuit && super::super::assign::contains_nullsafe(object) { t.remove_null() }
         else { t }
-    });
+    }));
     let found = if arguments.is_none() {
         callable_receiver(c, object, name, false)
     } else {
         let mut unknown = Vec::new();
-        let found = ty.and_then(|ty| c.find_in(c.levels(), ty, &|t| {
+        // RuleLevelHelper recombines retained alternatives. Keep declared variance available to union(),
+        // or different specializations of the same user class collapse to an arbitrary native leaf.
+        let found = declared::with_classes(c, || ty.and_then(|ty| c.find_in(c.levels(), ty, &|t| {
             c.can_call_methods(t).yes() && c.has_method(t, name.value).yes()
-        }, Some(&mut unknown)));
+        }, Some(&mut unknown))));
         for class in unknown {
             let method = String::from_utf8_lossy(name.value);
             c.report(name, "class.notFound", format!("Call to method {method}() on an unknown class {class}."), Some(super::super::DISCOVERING_SYMBOLS_TIP));

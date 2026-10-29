@@ -1,6 +1,6 @@
 <?php
 
-// php capture.php /absolute/path/to/phpstan.phar [output.json] [methods|requirements]
+// php capture.php /absolute/path/to/phpstan.phar [output.json] [methods|requirements|generic-boundary]
 // PHPStan 2.3.1, phpstan-src cb3b7e99489b2e3789ee2eec10501cb7a72580ea.
 declare(strict_types=1);
 
@@ -10,7 +10,15 @@ $fixture = $argv[3] ?? 'methods';
 $levels = match ($fixture) {
     'methods' => [5, 8],
     'requirements' => [4, 5, 8],
+    'generic-boundary' => [5, 9],
 };
+$files = ["$root/$fixture.php"];
+$displayRoot = $root;
+if ($fixture === 'generic-boundary') {
+    $displayRoot = dirname($root);
+    $files[] = "$displayRoot/rules/data/Methods/data/bug-7593.php";
+    $files[] = "$displayRoot/rules/data/Methods/data/bug-7600.php";
+}
 foreach (['AMP_CURRENT_THREAD_ID', 'AUGMENT_AGENT', 'AI_AGENT', 'CURSOR_TRACE_ID', 'CURSOR_AGENT',
     'GEMINI_CLI', 'CODEX_SANDBOX', 'CODEX_THREAD_ID', 'OPENCODE_CLIENT', 'OPENCODE', 'CLAUDECODE',
     'CLAUDE_CODE', 'REPL_ID'] as $name) {
@@ -22,8 +30,11 @@ foreach ($levels as $level) {
     $reserved = tempnam(sys_get_temp_dir(), 'pun-extended-mixins-');
     $config = "$reserved.neon";
     unlink($reserved);
-    file_put_contents($config, "parameters:\n    level: $level\n    phpVersion: 80500\n    paths:\n        - "
-        . json_encode("$root/$fixture.php", JSON_UNESCAPED_SLASHES) . "\n");
+    $text = "parameters:\n    level: $level\n    phpVersion: 80500\n    paths:\n";
+    foreach ($files as $file) {
+        $text .= '        - ' . json_encode($file, JSON_UNESCAPED_SLASHES) . "\n";
+    }
+    file_put_contents($config, $text);
     try {
         $process = proc_open(['php', '-d', 'phpstan.restarted=1', $phar, 'analyse', '--debug',
             '-c', $config, '--error-format=json', '--no-progress'], [1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes);
@@ -42,7 +53,7 @@ foreach ($levels as $level) {
         $expected[$level] = [];
         foreach ($result['files'] as $path => $data) {
             foreach ($data['messages'] as $message) {
-                $expected[$level][] = ['file' => str_replace($root, '$ROOT', $path)] + $message;
+                $expected[$level][] = ['file' => str_replace($displayRoot, '$ROOT', $path)] + $message;
             }
         }
         echo "level $level: ", count($expected[$level]), " complete diagnostics\n";

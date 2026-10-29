@@ -223,15 +223,18 @@ pub(super) fn call(
         }
         let name = scope.name;
         let short_circuit = scope.types.get(&object.span()).is_some_and(|t| t.has_nullsafe_null());
-        let ty = c.phpstan_type_in(object, &scope.types).map(|t| {
-            // An earlier nullsafe operator does not erase null returned by the method itself.
-            if nullsafe || (short_circuit && super::assign::contains_nullsafe(object)) {
-                t.remove_null()
-            } else {
-                t
-            }
+        // Both null removal and RuleLevelHelper recombine alternatives using declared generic variance.
+        let ty = declared::with_classes(c, || {
+            let ty = c.phpstan_type_in(object, &scope.types).map(|t| {
+                // An earlier nullsafe operator does not erase null returned by the method itself.
+                if nullsafe || (short_circuit && super::assign::contains_nullsafe(object)) {
+                    t.remove_null()
+                } else {
+                    t
+                }
+            });
+            c.find_type_to_check_of(ty, &|t| matches!(c.reflected_method(t, name.as_bytes()), Ok(Some(_))))
         });
-        let ty = c.find_type_to_check_of(ty, &|t| matches!(c.reflected_method(t, name.as_bytes()), Ok(Some(_))));
         let Some(m) = ty
             .as_ref()
             .and_then(|t| c.reflected_method(t, name.as_bytes()).ok().flatten())

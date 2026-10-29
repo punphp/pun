@@ -1,13 +1,22 @@
 //! Full PHPStan 2.3.1 records for extended method identity, not just method-existence checks.
 
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use pun_analyse::{Project, run};
 use serde_json::Value;
 
 fn check(file: &str, expected: &str, level: u8) {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/extended-mixins");
-    let mut project = Project::new(vec![root.join(format!("{file}.php"))], Vec::new());
+    check_files(
+        &root,
+        vec![root.join(format!("{file}.php"))],
+        expected,
+        level,
+    );
+}
+
+fn check_files(root: &Path, files: Vec<PathBuf>, expected: &str, level: u8) {
+    let mut project = Project::new(files, Vec::new());
     project.level = level;
     project.php_version = 80500;
     let mut got: Vec<_> = run(&project)
@@ -42,7 +51,7 @@ fn check(file: &str, expected: &str, level: u8) {
         .collect();
     got.sort();
     want.sort();
-    assert_eq!(got, want, "{file}, level {level}");
+    assert_eq!(got, want, "level {level}");
 }
 
 #[test]
@@ -88,4 +97,23 @@ fn required_types_use_extended_method_reflection_at_level_eight() {
         include_str!("fixtures/extended-mixins/expected-requirements.json"),
         8,
     );
+}
+
+#[test]
+fn ordinary_generic_unions_do_not_activate_leaf_only_argument_semantics() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures");
+    for level in [5, 9] {
+        check_files(
+            &root,
+            [
+                "rules/data/Methods/data/bug-7593.php",
+                "rules/data/Methods/data/bug-7600.php",
+                "extended-mixins/generic-boundary.php",
+            ]
+            .map(|file| root.join(file))
+            .to_vec(),
+            include_str!("fixtures/extended-mixins/expected-generic-boundary.json"),
+            level,
+        );
+    }
 }
