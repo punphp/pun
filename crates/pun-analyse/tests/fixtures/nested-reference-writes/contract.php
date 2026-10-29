@@ -10,7 +10,7 @@ function identity(int $value): int { return $value; }
 
 function nativeControl(int $value): void {
     $copy = $value; // probe-native
-    identity($copy); // probe
+    identity($copy /* probe-native */); // probe
     $array = [];
     replace($array);
     identity($value); // probe
