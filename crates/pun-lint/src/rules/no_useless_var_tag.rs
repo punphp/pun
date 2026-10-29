@@ -83,12 +83,14 @@ impl Rule for NoUselessVarTag {
 pub(crate) enum Target<'n, 'arena> {
     Hint(Option<&'n Hint<'arena>>),
     Expr(&'n Expression<'arena>),
+    /// A declared type the rule is about to write, already mapped (`mapPhpParserNodePHPStanType`).
+    Mapped(RType),
     Other,
 }
 
 /// The span of an expression, for the facts' types.
 /// `DeadVarTagValueNodeAnalyzer::isDead()`.
-fn is_dead(
+pub(crate) fn is_dead(
     tag: &TypeTag,
     target: &Target<'_, '_>,
     scope: &TypeScope<'_, '_, '_, '_>,
@@ -102,7 +104,8 @@ fn is_dead(
         Target::Hint(Some(hint)) => scope.map_hint(hint),
         // `ExprNodeMapper`: the scope's type of the expression
         Target::Expr(e) => RType::T(expr_type(facts, scope.ancestors(), e, false)),
-        _ => return false,
+        Target::Mapped(t) => t.clone(),
+        Target::Hint(None) | Target::Other => return false,
     };
     if matches!(tag.ty, pun_phpstan::phpdoc::Node::Generic { .. }) {
         return false;

@@ -747,6 +747,14 @@ fn void_method_with_callback_to_will_return_callback() {
 /// Pun/unknown_class: `$x` is assigned a call that returns a class no file declares; PHPStan types it as that class,
 /// and Mago does not, so Pun adds no assert (the argument rule collects its variables alike).
 #[test]
+fn type_will_return_callable_arrow_function() {
+    check(
+        AddWillReturnCallbackParamType,
+        "TypeWillReturnCallableArrowFunctionRector",
+    );
+}
+
+#[test]
 fn add_instanceof_assert_for_nullable_instance() {
     check(
         AddInstanceofAssert,

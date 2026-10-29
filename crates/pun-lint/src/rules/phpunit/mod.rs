@@ -18,6 +18,7 @@ mod add_param_type_depends;
 mod add_return_type_from_mock_object;
 mod add_stub_intersection_type;
 mod add_test_void_return;
+mod add_will_return_callback_param_type;
 pub(crate) mod annotations;
 mod no_assert_contains_only;
 mod no_assert_is_type;
@@ -102,6 +103,7 @@ pub use add_param_type_depends::AddParamTypeDepends;
 pub use add_return_type_from_mock_object::AddReturnTypeFromMockObject;
 pub use add_stub_intersection_type::AddStubIntersectionType;
 pub use add_test_void_return::AddTestVoidReturn;
+pub use add_will_return_callback_param_type::AddWillReturnCallbackParamType;
 pub use no_assert_contains_only::NoAssertContainsOnly;
 pub use no_assert_is_type::NoAssertIsType;
 pub use no_assert_same_type_mismatch::NoAssertSameTypeMismatch;
@@ -266,6 +268,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(PreferYieldDataProvider),
         Box::new(NoStubWithExpectations),
         Box::new(PreferCreateStubArgument),
+        Box::new(AddWillReturnCallbackParamType),
         Box::new(PreferWillReturnCallback),
         Box::new(AddInstanceofAssert),
         Box::new(AddInstanceofAssertForArgument),

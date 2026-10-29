@@ -14,6 +14,12 @@
 //! ternary_unreached.php.inc: Rector types a `return strlen($s)` or `return $x ? 1 : 2` after an `exit` with the
 //! scope before it and writes `int`; Mago's analysis does not reach it, so Pun leaves the method alone.
 //!
+//! TypedPropertyFromStrictSetUpRector/Pun/aliased_var.php.inc: Rector writes a `@var` that names a class that does
+//! not exist where the `@var` names an imported alias (`@var Clock` for `use DateTime as Clock` becomes
+//! `(\PHPUnit\Framework\MockObject\MockObject & \Clock)`, and an alias of `MockObject` becomes `& \Mock`), and
+//! `private int $x = null;` for a `null` default, which PHP rejects. Pun resolves the alias (and leaves an alias of
+//! `MockObject` alone), and leaves a property with a `null` default untyped when its type does not allow `null`.
+//!
 //! AddReturnTypeDeclarationBasedOnParentClassMethodRector/Pun/parent_cycle.php.inc: two classes that extend each
 //! other, which Rector stops on ("Circular reference to class"); Pun leaves both alone.
 
@@ -27,13 +33,14 @@ use pun_lint::rules::{
     AddFluentReturn, AddFunctionVoidReturn, AddMagicMethodTypes, AddMethodVoidReturn,
     AddNeverReturn, AddNullableReturn, AddNumericReturn, AddNumericReturnFromScalar,
     AddPropertyTypeAssigns, AddPropertyTypeBehatContext, AddPropertyTypeConstructor,
-    AddPropertyTypeGetRepository, AddPropertyTypeJmsObject, AddPropertyTypeJmsScalar,
-    AddPropertyTypeSetterGetter, AddReturnTypeFromCast, AddReturnTypeFromConstant,
-    AddReturnTypeFromNativeCall, AddReturnTypeFromNew, AddReturnTypeFromParam,
-    AddReturnTypeFromParent, AddReturnTypeFromProperty, AddReturnTypeFromSymfonySerializer,
-    AddReturnTypeFromTernary, AddReturnTypeFromTypedCall, AddReturnTypeFromYield, AddStringReturn,
-    AddStringReturnFromScalar, AddUnionReturn, NoNullsafeOnNonNull, PreferIdenticalSameType,
-    PreferInstanceof,
+    AddPropertyTypeContainerGet, AddPropertyTypeCreateMock, AddPropertyTypeGetRepository,
+    AddPropertyTypeJmsObject, AddPropertyTypeJmsScalar, AddPropertyTypeSetterGetter,
+    AddPropertyTypeSetup, AddPropertyTypeSetupDocblock, AddReturnTypeFromCast,
+    AddReturnTypeFromConstant, AddReturnTypeFromNativeCall, AddReturnTypeFromNew,
+    AddReturnTypeFromParam, AddReturnTypeFromParent, AddReturnTypeFromProperty,
+    AddReturnTypeFromSymfonySerializer, AddReturnTypeFromTernary, AddReturnTypeFromTypedCall,
+    AddReturnTypeFromYield, AddStringReturn, AddStringReturnFromScalar, AddUnionReturn,
+    NoNullsafeOnNonNull, PreferIdenticalSameType, PreferInstanceof,
 };
 
 fn check(rule: impl Rule + 'static, class: &str) {
@@ -452,6 +459,50 @@ fn typed_property_from_get_repository_set_up() {
     run_class_stubs(
         vec![Box::new(AddPropertyTypeGetRepository)],
         "TypedPropertyFromGetRepositorySetUpRector",
+        70400,
+        &["phpunit-stubs"],
+    );
+}
+
+#[test]
+fn typed_property_from_container_get_set_up() {
+    // config/configured_rule.php: TYPED_PROPERTIES
+    run_class_stubs(
+        vec![Box::new(AddPropertyTypeContainerGet)],
+        "TypedPropertyFromContainerGetSetUpRector",
+        70400,
+        &["phpunit-stubs"],
+    );
+}
+
+#[test]
+fn typed_property_from_create_mock_assign() {
+    // config/rule_config.php: TYPED_PROPERTIES
+    run_class_stubs(
+        vec![Box::new(AddPropertyTypeCreateMock)],
+        "TypedPropertyFromCreateMockAssignRector",
+        70400,
+        &["phpunit-stubs"],
+    );
+}
+
+#[test]
+fn typed_property_from_strict_set_up() {
+    // config/configured_rule.php: the rule alone, Rector's default PHP version
+    run_class_stubs(
+        vec![Box::new(AddPropertyTypeSetup)],
+        "TypedPropertyFromStrictSetUpRector",
+        80400,
+        &["phpunit-stubs"],
+    );
+}
+
+#[test]
+fn typed_property_from_docblock_set_up_defined() {
+    // config/rule_config.php: TYPED_PROPERTIES
+    run_class_stubs(
+        vec![Box::new(AddPropertyTypeSetupDocblock)],
+        "TypedPropertyFromDocblockSetUpDefinedRector",
         70400,
         &["phpunit-stubs"],
     );

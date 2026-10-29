@@ -106,7 +106,7 @@ impl Rule for PreferWillReturnCallback {
 }
 
 /// `NodeNameResolver::isName()` for a method selector: an identifier, ASCII case-insensitively.
-fn is_named(selector: &ClassLikeMemberSelector<'_>, name: &str) -> bool {
+pub(super) fn is_named(selector: &ClassLikeMemberSelector<'_>, name: &str) -> bool {
     matches!(selector, ClassLikeMemberSelector::Identifier(id) if id.value.eq_ignore_ascii_case(name.as_bytes()))
 }
 
@@ -151,7 +151,7 @@ fn mocked_method_call<'a>(call: &'a MethodCall<'a>) -> Option<&'a MethodCall<'a>
 
 /// The indices in `ancestors` of the test classes (`Class_` nodes, named or anonymous) whose methods hold the node,
 /// outermost first.
-fn test_classes(ctx: &Context<'_>, ancestors: &[Node<'_, '_>]) -> Vec<usize> {
+pub(super) fn test_classes(ctx: &Context<'_>, ancestors: &[Node<'_, '_>]) -> Vec<usize> {
     (0..ancestors.len())
         .filter(|&at| {
             matches!(ancestors[at], Node::Class(_) | Node::AnonymousClass(_))
@@ -289,7 +289,7 @@ fn is_super_type_of(codebase: &CodebaseMetadata, this: &str, that: &str) -> Opti
 /// `SetUpAssignedMockTypesResolver::resolveFromClass()`: the class each property or variable (by name; `None` for a
 /// name that is not a plain one, which PHP keys as `""`) is assigned a `createMock()` or `getMockBuilder()` of at the
 /// top level of `setUp()`. `None` where Rector fails (a class that is not a name).
-fn setup_assigned_mock_types(
+pub(super) fn setup_assigned_mock_types(
     ctx: &Context<'_>,
     class: &[Node<'_, '_>],
 ) -> Option<Vec<(Option<Vec<u8>>, String)>> {

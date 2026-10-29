@@ -38,8 +38,11 @@ mod add_never_return;
 mod add_property_type_assigns;
 mod add_property_type_behat_context;
 mod add_property_type_constructor;
+mod add_property_type_create_mock;
 mod add_property_type_jms;
 mod add_property_type_setter_getter;
+mod add_property_type_setup;
+mod add_property_type_setup_docblock;
 mod add_return_type_from_cast;
 mod add_return_type_from_constant;
 mod add_return_type_from_native_call;
@@ -96,8 +99,11 @@ pub use add_never_return::AddNeverReturn;
 pub use add_property_type_assigns::AddPropertyTypeAssigns;
 pub use add_property_type_behat_context::AddPropertyTypeBehatContext;
 pub use add_property_type_constructor::AddPropertyTypeConstructor;
+pub use add_property_type_create_mock::AddPropertyTypeCreateMock;
 pub use add_property_type_jms::{AddPropertyTypeJmsObject, AddPropertyTypeJmsScalar};
 pub use add_property_type_setter_getter::AddPropertyTypeSetterGetter;
+pub use add_property_type_setup::AddPropertyTypeSetup;
+pub use add_property_type_setup_docblock::AddPropertyTypeSetupDocblock;
 pub use add_return_type_from_cast::AddReturnTypeFromCast;
 pub use add_return_type_from_constant::AddReturnTypeFromConstant;
 pub use add_return_type_from_native_call::AddReturnTypeFromNativeCall;
@@ -111,7 +117,9 @@ pub use add_return_type_from_typed_call::AddReturnTypeFromTypedCall;
 pub use add_return_type_from_yield::AddReturnTypeFromYield;
 pub use add_scalar_return::{AddNumericReturnFromScalar, AddStringReturnFromScalar};
 pub use add_union_return::{AddNullableReturn, AddUnionReturn};
-pub use doctrine_repository::{AddDoctrineRepositoryReturnType, AddPropertyTypeGetRepository};
+pub use doctrine_repository::{
+    AddDoctrineRepositoryReturnType, AddPropertyTypeContainerGet, AddPropertyTypeGetRepository,
+};
 pub(crate) use never::has_parent_class_method;
 pub use no_nullsafe_on_non_null::NoNullsafeOnNonNull;
 pub use prefer_identical_same_type::PreferIdenticalSameType;
@@ -170,7 +178,11 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(AddPropertyTypeJmsScalar),
         Box::new(AddPropertyTypeJmsObject),
         Box::new(AddPropertyTypeBehatContext),
+        Box::new(AddPropertyTypeContainerGet),
         Box::new(AddPropertyTypeGetRepository),
+        Box::new(AddPropertyTypeCreateMock),
+        Box::new(AddPropertyTypeSetup),
+        Box::new(AddPropertyTypeSetupDocblock),
         Box::new(AddDoctrineRepositoryReturnType),
         // the docblock rules, in Rector's order (src/Config/Level/TypeDeclarationDocblocksLevel.php)
         Box::new(AddVarPhpdocFromDefault),

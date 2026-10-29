@@ -594,8 +594,14 @@ pub const PROJECT_RULES: &[&str] = &[
     "lint/phpunit/add-instanceof-assert-for-argument",
     // reads the mocked class's method on classes in other files
     "lint/phpunit/prefer-will-return-callback",
+    "lint/phpunit/add-will-return-callback-param-type",
     // reads the types of calls to methods of classes in other files
     "lint/phpunit/add-instanceof-assert",
+    // read the test case's parents and the classes the properties' types name in other files
+    "lint/phpunit/add-property-type-container-get",
+    "lint/phpunit/add-property-type-create-mock",
+    "lint/phpunit/add-property-type-setup",
+    "lint/phpunit/add-property-type-setup-docblock",
 ];
 
 /// Every rule, in a fixed order.

@@ -160,8 +160,8 @@ pub(crate) fn is_test_case(facts: &Facts, view: &ClassView<'_, '_>) -> bool {
             })
 }
 
-/// `TrustedClassMethodPropertyTypeInferer::inferProperty`.
-fn infer(
+/// `TrustedClassMethodPropertyTypeInferer::inferProperty`, of the assignments in `constructor` (the method passed in).
+pub(crate) fn infer(
     facts: &Facts,
     view: &ClassView<'_, '_>,
     prop: &Prop<'_, '_>,
