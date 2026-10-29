@@ -743,7 +743,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpunit/require-test-annotation-style" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Mark tests consistently: a `test` prefix or a @test annotation." }
 "refactor/add-override-attribute" = { fix = "unsafe", ported = true, status = "decided", summary = "Add #[Override] to properties that override a parent class's property (PHP 8.5)." }
 "refactor/no-negated-condition" = { fix = "unsafe", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Flip a ternary whose condition is negated: drop the `!` (or use `===` / `==`) and swap the branches." }
-"refactor/prefer-attribute-over-annotation" = { fix = "unsafe", ported = false, status = "decided", summary = "Replace configured PHPDoc annotations (including nested ones) with attributes." }
+"refactor/prefer-attribute-over-annotation" = { fix = "unsafe", ported = true, status = "decided", summary = "Replace configured PHPDoc annotations (including nested ones) with attributes." }
 "refactor/prefer-constant" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Replace function calls that return a constant (php_sapi_name(), pi(), ...) with the constant." }
 "refactor/remove-attribute" = { fix = "safe", ported = true, status = "decided", summary = "Removes configured attributes by their respective FQN." }
 "refactor/remove-function-argument" = { fix = "unsafe", ported = true, status = "decided", summary = "Remove argument by position by function name" }
