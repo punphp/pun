@@ -28,6 +28,7 @@ use mago_codex::ttype::TType;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::scalar::TScalar;
+use mago_span::HasSpan;
 use mago_syntax::cst::{
     Access, Argument, ClassLikeMemberSelector, Closure, Expression, Hint, Node, NodeKind,
 };
@@ -166,27 +167,34 @@ fn refactor_parameter(
 }
 
 /// Whether `value` reads a property (`$a->b`) whose type PHPStan does not take from a declaration on any class of
-/// `$a`'s type: one it does not find (`*ERROR*`) or one of `stdClass` (`mixed`).
+/// `$a`'s type: one it does not find (`*ERROR*`), one of `stdClass` (`mixed`), or one named by an expression that is
+/// not a constant string (an implicit `mixed`, whatever `$a` is).
 fn undeclared_property(facts: &Facts, value: &Expression<'_>) -> bool {
     let Expression::Access(Access::Property(access)) = unparenthesize(value) else {
         return false;
     };
-    let (ClassLikeMemberSelector::Identifier(name), Some(t)) =
-        (&access.property, facts.full_type(node_span(access.object)))
-    else {
-        return false;
+    let name = match &access.property {
+        ClassLikeMemberSelector::Identifier(name) => name.value,
+        ClassLikeMemberSelector::Expression(e) => return !constant_string(facts, e.expression),
+        selector => return !constant_string(facts, selector),
     };
-    let property = [b"$", name.value].concat();
-    t.types.iter().all(|a| match a {
-        TAtomic::Object(TObject::Named(n)) => {
-            declared_property(
-                facts.documented(),
-                n.name.as_bytes(),
-                &property,
-                &mut HashSet::new(),
-            ) == Some(false)
-        }
-        _ => false,
+    let property = [b"$", name].concat();
+    facts.full_type(node_span(access.object)).is_some_and(|t| {
+        t.types.iter().all(|a| match a {
+            TAtomic::Object(TObject::Named(n)) => {
+                let codebase = facts.documented();
+                declared_property(codebase, n.name.as_bytes(), &property, &mut HashSet::new())
+                    == Some(false)
+            }
+            _ => false,
+        })
+    })
+}
+
+/// Whether the type of `name` is made of constant strings, which PHPStan reads the properties of.
+fn constant_string(facts: &Facts, name: &impl HasSpan) -> bool {
+    facts.full_type(node_span(name)).is_some_and(|t| {
+        t.types.iter().all(|a| matches!(a, TAtomic::Scalar(TScalar::String(s)) if s.get_known_literal_value().is_some()))
     })
 }
 
