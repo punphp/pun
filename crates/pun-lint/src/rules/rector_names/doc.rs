@@ -473,13 +473,12 @@ impl Doc {
                 Value::Other(other) => other
                     .clone()
                     .idents_mut(&mut |name, parent| push(name, parent)),
-                // the `IdentifierTypeNode`s of a `DoctrineTagValueNode`'s keys and values
-                Value::Doctrine { args, .. } => args
-                    .iter()
-                    .flat_map(|a| &a.0)
-                    .filter(|p| p.1)
-                    .for_each(|p| push(&p.0, false)),
-                Value::Text(_) | Value::Generic(_) | Value::Invalid(_) => {}
+                value @ (Value::Doctrine { .. }
+                | Value::Text(_)
+                | Value::Generic(_)
+                | Value::Invalid(_)) => doctrine_identifiers(&mut value.clone())
+                    .into_iter()
+                    .for_each(|name| push(name, false)),
             }
         }
         out
@@ -525,16 +524,12 @@ impl Doc {
                     index += 1;
                 });
             }
-            // (the text values have no identifier)
             value => {
-                if let Value::Doctrine { args, .. } = value {
-                    let piece = args
-                        .iter_mut()
-                        .flat_map(|a| &mut a.0)
-                        .filter(|p| p.1)
-                        .nth(ident.index);
-                    piece.expect("a doctrine identifier").0 = name.to_string();
-                }
+                let identifiers = doctrine_identifiers(value);
+                *identifiers
+                    .into_iter()
+                    .nth(ident.index)
+                    .expect("a doctrine identifier") = name.to_string();
             }
         }
     }
@@ -558,41 +553,41 @@ impl Doc {
 
     /// `PhpDocInfo::getByAnnotationClasses()`: the first annotation of the first of `classes` that has one
     /// (`DoctrineAnnotationTagValueNode::hasClassName()`: its identifier without `@`, or the class it resolves to),
-    /// nested ones included, as its child and the path to it ([`Self::values_mut`]).
-    pub fn find_annotation(&self, classes: &[&str]) -> Option<(usize, Vec<(usize, bool)>)> {
+    /// nested ones included, as its child and that class.
+    pub fn find_annotation<'c>(&self, classes: &[&'c str]) -> Option<(usize, &'c str)> {
         for class in classes {
-            let is = |identifier: &str, resolved: &str| {
-                identifier.trim_matches('@') == *class || resolved == *class
-            };
+            let is = |identifier: &str, resolved: &str| has_class_name(identifier, resolved, class);
             for (i, child) in self.children.iter().enumerate() {
                 let Value::Annotation(a) = &child.value else {
                     continue;
                 };
-                if is(&a.identifier, &a.class) {
-                    return Some((i, Vec::new()));
-                }
-                let mut path = Vec::new();
-                if locate(&a.values, &is, &mut path) {
-                    return Some((i, path));
+                if is(&a.identifier, &a.class) || locate(&a.values, &is) {
+                    return Some((i, class));
                 }
             }
         }
         None
     }
 
-    /// The class the annotation at `child` and `path` resolves to, and its values.
-    pub fn values_mut(
+    /// [`Self::find_annotation`]'s annotation: its child, the class it resolves to and its values.
+    pub fn annotation_mut(
         &mut self,
-        child: usize,
-        path: &[(usize, bool)],
-    ) -> (&str, &mut Vec<ArrayItem>) {
-        let Value::Annotation(a) = &mut self.children[child].value else {
-            unreachable!("not an annotation")
-        };
-        match path.is_empty() {
-            true => (&a.class, &mut a.values),
-            false => navigate(&mut a.values, path),
-        }
+        classes: &[&str],
+    ) -> Option<(usize, &str, &mut Vec<ArrayItem>)> {
+        let (child, class) = self.find_annotation(classes)?;
+        let is = |identifier: &str, resolved: &str| has_class_name(identifier, resolved, class);
+        self.children
+            .iter_mut()
+            .enumerate()
+            .find_map(|(i, c)| match &mut c.value {
+                Value::Annotation(a) if i == child => match is(&a.identifier, &a.class) {
+                    true => Some((i, a.class.as_str(), &mut a.values)),
+                    false => {
+                        locate_mut(&mut a.values, &is).map(|(class, values)| (i, class, values))
+                    }
+                },
+                _ => None,
+            })
     }
 
     /// The class names `UnusedImportRemovingPostRector::findNamesInDocBlocks()` reads from the doc:
@@ -1519,7 +1514,10 @@ impl Value {
     fn description_mut(&mut self) -> Option<&mut String> {
         match self {
             Value::Typed(typed) => Some(&mut typed.description),
-            Value::Other(other) => other.description.as_mut(),
+            Value::Other(Other {
+                description: Some(description),
+                ..
+            }) => Some(description),
             _ => None,
         }
     }
@@ -1563,9 +1561,6 @@ fn generic_value(text: &str, tokens: &[parser::Tok], from: usize, to: usize) -> 
             _ => value.push_str(&text[t.start..t.end]),
         }
     }
-    if let Some(t) = tokens.iter().find(|t| t.start < from && t.end > from) {
-        value.insert_str(0, &text[from..t.end]);
-    }
     value
         .trim_matches([' ', '\t'])
         .trim_end_matches('\n')
@@ -1586,7 +1581,7 @@ fn closed_content(value: &str) -> bool {
 /// The identifiers of the annotations nested in `values`, each before its own values.
 fn nested_identifiers(values: &[ArrayItem], f: &mut dyn FnMut(&str)) {
     for item in values {
-        for (_, v) in item_vals(item) {
+        for v in item_vals(item) {
             match v {
                 Val::Curly(items) | Val::List(items) => nested_identifiers(items, f),
                 Val::Annotation(nested) => {
@@ -1620,60 +1615,77 @@ fn nested_identifiers_mut(values: &mut [ArrayItem], f: &mut dyn FnMut(&mut Strin
 }
 
 /// The value of `item`, then its key (`ArrayItemNode`'s properties in order).
-fn item_vals(item: &ArrayItem) -> impl Iterator<Item = (bool, &Val)> {
+fn item_vals(item: &ArrayItem) -> impl Iterator<Item = &Val> {
     let key = match &item.key {
-        Some(Key::Val(key)) => Some((true, key)),
+        Some(Key::Val(key)) => Some(key),
         _ => None,
     };
-    std::iter::once((false, &item.value)).chain(key)
+    std::iter::once(&item.value).chain(key)
 }
 
-/// Whether a nested annotation in `values` is one `is` accepts, the path to it then in `path`.
-fn locate(
-    values: &[ArrayItem],
-    is: &dyn Fn(&str, &str) -> bool,
-    path: &mut Vec<(usize, bool)>,
-) -> bool {
-    for (i, item) in values.iter().enumerate() {
-        for (in_key, v) in item_vals(item) {
-            path.push((i, in_key));
-            let found = match v {
-                Val::Annotation(nested) => {
-                    is(&nested.identifier, &nested.class) || locate(&nested.values, is, path)
-                }
-                Val::Curly(items) | Val::List(items) => locate(items, is, path),
-                _ => false,
-            };
-            if found {
-                return true;
+/// The `IdentifierTypeNode`s of a `DoctrineTagValueNode`'s keys and values (a text value has none).
+fn doctrine_identifiers(value: &mut Value) -> Vec<&mut String> {
+    match value {
+        Value::Doctrine { args, .. } => args
+            .iter_mut()
+            .flat_map(|a| &mut a.0)
+            .filter(|p| p.1)
+            .map(|p| &mut p.0)
+            .collect(),
+        _ => Vec::new(),
+    }
+}
+
+/// `DoctrineAnnotationTagValueNode::hasClassName()`.
+fn has_class_name(identifier: &str, resolved: &str, class: &str) -> bool {
+    identifier.trim_matches('@') == class || resolved == class
+}
+
+/// Whether a nested annotation in `values` is one `is` accepts.
+fn locate(values: &[ArrayItem], is: &dyn Fn(&str, &str) -> bool) -> bool {
+    values.iter().any(|item| {
+        item_vals(item).any(|v| match v {
+            Val::Annotation(nested) => {
+                is(&nested.identifier, &nested.class) || locate(&nested.values, is)
             }
-            path.pop();
-        }
-    }
-    false
+            Val::Curly(items) | Val::List(items) => locate(items, is),
+            _ => false,
+        })
+    })
 }
 
-/// The nested annotation at `path` in `values`: the class it resolves to and its values.
-fn navigate<'a>(
+/// The first nested annotation in `values` that `is` accepts, in [`locate`]'s order: the class it resolves to and its
+/// values.
+fn locate_mut<'a>(
     values: &'a mut [ArrayItem],
-    path: &[(usize, bool)],
-) -> (&'a str, &'a mut Vec<ArrayItem>) {
-    let (i, in_key) = path[0];
-    let item = &mut values[i];
-    let v = match (in_key, &mut item.key) {
-        (true, Some(Key::Val(key))) => key,
-        _ => &mut item.value,
-    };
-    match (v, path.len()) {
-        (Val::Annotation(nested), 1) => (&nested.class, &mut nested.values),
-        (Val::Annotation(nested), _) => navigate(&mut nested.values, &path[1..]),
-        (v, _) => {
-            let (Val::Curly(items) | Val::List(items)) = v else {
-                unreachable!("a path to an annotation")
-            };
-            navigate(items, &path[1..])
+    is: &dyn Fn(&str, &str) -> bool,
+) -> Option<(&'a str, &'a mut Vec<ArrayItem>)> {
+    for ArrayItem { key, value } in values {
+        let key = match key {
+            Some(Key::Val(key)) => Some(key),
+            _ => None,
+        };
+        for v in std::iter::once(value).chain(key) {
+            match v {
+                Val::Annotation(nested) => {
+                    let found = match is(&nested.identifier, &nested.class) {
+                        true => Some((nested.class.as_str(), &mut nested.values)),
+                        false => locate_mut(&mut nested.values, is),
+                    };
+                    if found.is_some() {
+                        return found;
+                    }
+                }
+                Val::Curly(items) | Val::List(items) => {
+                    if let Some(found) = locate_mut(items, is) {
+                        return Some(found);
+                    }
+                }
+                _ => {}
+            }
         }
     }
+    None
 }
 
 /// Every `ArrayItemNode` in `values`, nested ones included.

@@ -593,9 +593,7 @@ impl<'a> DocParser<'a> {
                 it.join_until(&[t::PHPDOC_EOL, t::CLOSE_PHPDOC, t::END])
             );
             text.push_str(&piece);
-            if !it.is(&[t::PHPDOC_EOL, t::CLOSE_PHPDOC]) {
-                break;
-            }
+            // (at a line break or the `*/` a doc ends with: phpdoc-parser's stop at the end never comes)
             if !savepoint {
                 it.push();
                 savepoint = true;
@@ -612,12 +610,10 @@ impl<'a> DocParser<'a> {
             it.drop_save();
             text.push_str(it.newline());
         }
-        if savepoint {
-            it.rollback();
-            text = text
-                .trim_end_matches(|c| it.newline().contains(c))
-                .to_string();
-        }
+        it.rollback();
+        text = text
+            .trim_end_matches(|c| it.newline().contains(c))
+            .to_string();
         text.trim_matches([' ', '\t']).to_string()
     }
 

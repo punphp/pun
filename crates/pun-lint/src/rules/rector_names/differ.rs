@@ -123,11 +123,10 @@ pub(crate) fn statements(
                 let item = old[o];
                 indent = indentation(source, item.start);
                 let nl = format!("\n{}", " ".repeat(indent));
-                let comment_start = if item.comment_start < pos {
-                    item.start
-                } else {
-                    item.comment_start
-                };
+                // comments may be assigned to multiple nodes if they start at the same position: the item's own
+                // start where its comments start before `pos`
+                let comment_start =
+                    [item.comment_start, item.start][usize::from(item.comment_start < pos)];
                 if skip_removed {
                     if have_tag_in_range(source, pos, item.start) {
                         return None;

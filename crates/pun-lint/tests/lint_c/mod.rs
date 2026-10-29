@@ -239,10 +239,14 @@ fn run_dirs_full(
 /// RenameClassRector/FixtureAutoImportNames/auto_import_conflict_name_all_fqcn_same_namespace: it imports the global
 /// `\SomeShort` of a `@return` too. RenameClassRector/Oracle/namespaces_{f2,f3,f5}: Pint's `no_unused_imports` removes
 /// the unused import too. RenameClassRector/OracleAutoImportNames/doc_only_comment: Pint's
-/// `fully_qualified_strict_types` imports the class of the lone `@var` too.
+/// `fully_qualified_strict_types` imports the class of the lone `@var` too. RenameClassRector/OracleAutoImportNames/
+/// doc_on_{only_use,use}: Pint's `fully_qualified_strict_types` imports the `@var` class too (and `no_unused_imports`
+/// removes the unused import).
 const FORMAT_OVERLAP: &[&str] = &[
     "RenameClassRector/FixtureAutoImportNames/auto_import_conflict_name_all_fqcn_same_namespace.php.inc",
     "RenameClassRector/OracleAutoImportNames/doc_only_comment.php.inc",
+    "RenameClassRector/OracleAutoImportNames/doc_on_only_use.php.inc",
+    "RenameClassRector/OracleAutoImportNames/doc_on_use.php.inc",
     "RenameClassRector/Oracle/namespaces_f2.php.inc",
     "RenameClassRector/Oracle/namespaces_f3.php.inc",
     "RenameClassRector/Oracle/namespaces_f5.php.inc",

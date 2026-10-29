@@ -210,6 +210,17 @@ fn from_parsed(
             from_parsed(then, false, all)?,
             from_parsed(otherwise, false, all)?
         )),
+        // `GenericTypeNode::__toString()`'s arguments of a variance: `*` (bivariant), `covariant T`, `contravariant T`
+        Node::Star(star) if all.is_some() && star == "*" => TypeNode::ident("*"),
+        Node::Projection(covariant, inner) if all.is_some() => TypeNode::Raw(format!(
+            "{} {}",
+            if *covariant {
+                "covariant"
+            } else {
+                "contravariant"
+            },
+            from_parsed(inner, false, all)?
+        )),
         // `OffsetAccessTypeNode`: a callable or a nullable base in parentheses (a union is written in them)
         Node::OffsetAccess(base, offset) if all.is_some() => {
             let printed = from_parsed(base, true, all)?;

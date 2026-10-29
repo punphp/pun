@@ -249,10 +249,9 @@ impl RenameClass {
                     ],
                     _ => &[class],
                 };
-                let Some((child, path)) = doc.find_annotation(classes) else {
+                let Some((child, resolved, items)) = doc.annotation_mut(classes) else {
                     continue;
                 };
-                let (resolved, items) = doc.values_mut(child, &path);
                 let embedded = resolved == "Doctrine\\ORM\\Mapping\\Embedded";
                 let mut changed = false;
                 match class {

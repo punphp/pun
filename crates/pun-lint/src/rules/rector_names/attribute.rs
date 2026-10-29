@@ -65,13 +65,6 @@ pub(crate) struct AttributeConfig {
     pub use_value_as_attribute_argument: bool,
 }
 
-/// What a mapper gives.
-enum Mapped {
-    Expr(Expr),
-    /// `DocTagNodeState::REMOVE_ARRAY`.
-    Remove,
-}
-
 /// `AnnotationToAttributeMapper::map()` on the values of an annotation (a PHP array of `ArrayItemNode`s);
 /// `nested` is whether nested annotations become `new` (PHP 8.1).
 fn map_array(items: &[ArrayItem], nested: bool) -> Vec<Item> {
@@ -82,8 +75,8 @@ fn map_array(items: &[ArrayItem], nested: bool) -> Vec<Item> {
 /// `ArrayItemNodeAnnotationToAttributeMapper`.
 fn map_item(item: &ArrayItem, nested: bool) -> Item {
     let value = match map_val(&item.value, nested) {
-        Mapped::Expr(expr) => expr,
-        Mapped::Remove => {
+        Some(expr) => expr,
+        None => {
             return Item {
                 key: None,
                 value: Expr::Str(REMOVE_ARRAY.into(), Quote::Single),
@@ -91,13 +84,8 @@ fn map_item(item: &ArrayItem, nested: bool) -> Item {
         }
     };
     let key = match &item.key {
-        // (a key is never an annotation: the parsers read `@A` before `=` as a string)
-        Some(Key::Val(key)) => {
-            let Mapped::Expr(expr) = map_val(key, nested) else {
-                unreachable!("an annotation key")
-            };
-            Some(expr)
-        }
+        // (a key is never an annotation, which maps to none: the parsers read `@A` before `=` as a string)
+        Some(Key::Val(key)) => map_val(key, nested),
         Some(Key::Int(key)) => Some(Expr::Int(*key)),
         None => {
             // `hasNoParenthesesAnnotation()`: `@Class` without arguments, read again as an annotation
@@ -125,9 +113,10 @@ fn map_item(item: &ArrayItem, nested: bool) -> Item {
     Item { key, value }
 }
 
-/// `AnnotationToAttributeMapper::map()` on a value, its mappers in their order.
-fn map_val(value: &Val, nested: bool) -> Mapped {
-    Mapped::Expr(match value {
+/// `AnnotationToAttributeMapper::map()` on a value, its mappers in their order; `None` for
+/// `DocTagNodeState::REMOVE_ARRAY`.
+fn map_val(value: &Val, nested: bool) -> Option<Expr> {
+    Some(match value {
         Val::List(items) => Expr::Array(map_array(items, nested)),
         // `ClassConstFetchAnnotationToAttributeMapper`
         Val::Str(value) if value.contains("::") && !value.starts_with('"') => {
@@ -172,7 +161,7 @@ fn map_val(value: &Val, nested: bool) -> Mapped {
                 args,
             )
         }
-        Val::Annotation(_) => return Mapped::Remove,
+        Val::Annotation(_) => return None,
         // `StringAnnotationToAttributeMapper`
         Val::Str(value) => {
             let quote = match value.contains('\'') && !value.contains('\n') {
@@ -338,10 +327,19 @@ pub(crate) fn has_remove_array_state(attribute: &Attribute) -> bool {
     })
 }
 
-/// Whether Rector prints the attribute as code PHP does not parse (Pun only): an argument named by a number
-/// (`"1"="a"` gives `1: 'a'`) or a nested annotation whose name is no class name (`array(1)` gives `new array(1)`).
+/// Whether Rector prints the attribute as code PHP does not take (Pun only): an argument named by a number
+/// (`"1"="a"` gives `1: 'a'`), a positional argument after a named one (`foo="a", "b"` before another value gives
+/// `foo: 'a', 'b'`) or a nested annotation whose name is no class name (`array(1)` gives `new array(1)`).
 pub(crate) fn is_invalid(attribute: &Attribute) -> bool {
-    attribute.args.iter().any(invalid_arg)
+    invalid_args(&attribute.args)
+}
+
+fn invalid_args(args: &[Arg]) -> bool {
+    let positional_after_named = args
+        .iter()
+        .skip_while(|a| a.name.is_none())
+        .any(|a| a.name.is_none());
+    positional_after_named || args.iter().any(invalid_arg)
 }
 
 fn invalid_arg(arg: &Arg) -> bool {
@@ -365,7 +363,7 @@ fn invalid_expr(expr: &Expr) -> bool {
                         | Kind::T_STATIC
                 )
             );
-            tokens.len() != 4 || !name || args.iter().any(invalid_arg)
+            tokens.len() != 4 || !name || invalid_args(args)
         }
         Expr::Array(items) => items.iter().any(|i| invalid_expr(&i.value)),
         _ => false,
@@ -722,9 +720,5 @@ fn format_g(value: f64, precision: usize) -> String {
         );
     }
     let fixed = format!("{:.*}", (precision as i32 - 1 - exp) as usize, value);
-    if fixed.contains('.') {
-        trim(&fixed)
-    } else {
-        fixed
-    }
+    fixed.contains('.').then(|| trim(&fixed)).unwrap_or(fixed)
 }
