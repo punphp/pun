@@ -1,0 +1,229 @@
+{
+    "phar_sha256": "85157dba3d95d77ca603d2b7303aa78a538f9e3b56ccad07dd794c53aa96d1ae",
+    "source_sha256": "bf166c08eb4b4362dee834f0d7c4dc9f397481e885534aa0560486b017acc2d4",
+    "errors": {
+        "0": [
+            [
+                14,
+                "array.duplicateKey",
+                "Array has 2 duplicate keys with value 'z' ('z', 'z').",
+                null,
+                true
+            ],
+            [
+                18,
+                "phpstan.dumpType",
+                "Dumped type #1: array{z: 1, a: 2}",
+                null,
+                false
+            ],
+            [
+                18,
+                "phpstan.dumpType",
+                "Dumped type #2: array{m: 3, b: 4}",
+                null,
+                false
+            ],
+            [
+                18,
+                "phpstan.dumpType",
+                "Dumped type #3: array{z: array{new: 3}, a: 2}",
+                null,
+                false
+            ],
+            [
+                19,
+                "phpstan.dumpType",
+                "Dumped type #1: array{a: 2, z: 1}",
+                null,
+                false
+            ],
+            [
+                19,
+                "phpstan.dumpType",
+                "Dumped type #2: array{value: 1}",
+                null,
+                false
+            ],
+            [
+                24,
+                "phpstan.dumpType",
+                "Dumped type: array{...<string, int>}",
+                null,
+                false
+            ],
+            [
+                30,
+                "phpstan.dumpType",
+                "Dumped type: array{...<int, int>}",
+                null,
+                false
+            ]
+        ],
+        "4": [
+            [
+                14,
+                "array.duplicateKey",
+                "Array has 2 duplicate keys with value 'z' ('z', 'z').",
+                null,
+                true
+            ],
+            [
+                18,
+                "phpstan.dumpType",
+                "Dumped type #1: array{z: 1, a: 2}",
+                null,
+                false
+            ],
+            [
+                18,
+                "phpstan.dumpType",
+                "Dumped type #2: array{m: 3, b: 4}",
+                null,
+                false
+            ],
+            [
+                18,
+                "phpstan.dumpType",
+                "Dumped type #3: array{z: array{new: 3}, a: 2}",
+                null,
+                false
+            ],
+            [
+                19,
+                "phpstan.dumpType",
+                "Dumped type #1: array{a: 2, z: 1}",
+                null,
+                false
+            ],
+            [
+                19,
+                "phpstan.dumpType",
+                "Dumped type #2: array{value: 1}",
+                null,
+                false
+            ],
+            [
+                24,
+                "phpstan.dumpType",
+                "Dumped type: array{...<string, int>}",
+                null,
+                false
+            ],
+            [
+                30,
+                "phpstan.dumpType",
+                "Dumped type: array{...<int, int>}",
+                null,
+                false
+            ],
+            [
+                62,
+                "generator.returnType",
+                "Yield can be used only with these return types: Generator, Iterator, Traversable, iterable.",
+                null,
+                true
+            ]
+        ],
+        "5": [
+            [
+                14,
+                "array.duplicateKey",
+                "Array has 2 duplicate keys with value 'z' ('z', 'z').",
+                null,
+                true
+            ],
+            [
+                18,
+                "phpstan.dumpType",
+                "Dumped type #1: array{z: 1, a: 2}",
+                null,
+                false
+            ],
+            [
+                18,
+                "phpstan.dumpType",
+                "Dumped type #2: array{m: 3, b: 4}",
+                null,
+                false
+            ],
+            [
+                18,
+                "phpstan.dumpType",
+                "Dumped type #3: array{z: array{new: 3}, a: 2}",
+                null,
+                false
+            ],
+            [
+                19,
+                "phpstan.dumpType",
+                "Dumped type #1: array{a: 2, z: 1}",
+                null,
+                false
+            ],
+            [
+                19,
+                "phpstan.dumpType",
+                "Dumped type #2: array{value: 1}",
+                null,
+                false
+            ],
+            [
+                24,
+                "phpstan.dumpType",
+                "Dumped type: array{...<string, int>}",
+                null,
+                false
+            ],
+            [
+                30,
+                "phpstan.dumpType",
+                "Dumped type: array{...<int, int>}",
+                null,
+                false
+            ],
+            [
+                47,
+                "argument.parameterRenamedInSubtype",
+                "Call to SentinelDeliveryEdges\\Receiver::named() uses named argument for parameter $value, but SentinelDeliveryEdges\\Child renames it to $renamed.",
+                null,
+                true
+            ],
+            [
+                49,
+                "argument.parameterRenamedInSubtype",
+                "Call to SentinelDeliveryEdges\\Receiver::named() uses named argument for parameter $value, but SentinelDeliveryEdges\\Child renames it to $renamed.",
+                null,
+                true
+            ],
+            [
+                50,
+                "argument.parameterRenamedInSubtype",
+                "Call to SentinelDeliveryEdges\\Receiver::named() uses named argument for parameter $value, but SentinelDeliveryEdges\\Child renames it to $renamed.",
+                null,
+                true
+            ],
+            [
+                52,
+                "argument.parameterRenamedInSubtype",
+                "Call to SentinelDeliveryEdges\\Receiver::named() uses named argument for parameter $value, but SentinelDeliveryEdges\\Child renames it to $renamed.",
+                null,
+                true
+            ],
+            [
+                57,
+                "argument.parameterRenamedInSubtype",
+                "Call to SentinelDeliveryEdges\\Receiver::named() uses named argument for parameter $value, but SentinelDeliveryEdges\\Child renames it to $renamed.",
+                null,
+                true
+            ],
+            [
+                62,
+                "generator.returnType",
+                "Yield can be used only with these return types: Generator, Iterator, Traversable, iterable.",
+                null,
+                true
+            ]
+        ]
+    }
+}
