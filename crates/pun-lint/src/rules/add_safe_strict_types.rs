@@ -69,9 +69,7 @@ impl Rule for AddSafeStrictTypes {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::Program(program) = node else {
-            return;
-        };
+        let Node::Program(program) = node else { return };
         if has_strict_types(&program.statements) || contains_html(node, ancestors) {
             return;
         }
@@ -224,18 +222,15 @@ fn args<'a>(list: &'a ArgumentList<'a>) -> Vec<Arg<'a>> {
 /// The arguments of an attribute or an anonymous class; `None` with a placeholder (no valid code has one there).
 fn partial_args<'a>(list: &'a PartialArgumentList<'a>) -> Option<Vec<Arg<'a>>> {
     (list.arguments.iter())
-        .map(|a| match a {
-            PartialArgument::Positional(p) => Some(Arg {
-                value: p.value,
-                name: None,
-                unpack: p.ellipsis.is_some(),
-            }),
-            PartialArgument::Named(n) => Some(Arg {
-                value: n.value,
-                name: Some(n.name.value),
-                unpack: false,
-            }),
-            _ => None,
+        .map(|a| {
+            Some(Arg {
+                value: a.value()?,
+                name: match a {
+                    PartialArgument::Named(n) => Some(n.name.value),
+                    _ => None,
+                },
+                unpack: matches!(a, PartialArgument::Positional(p) if p.ellipsis.is_some()),
+            })
         })
         .collect()
 }

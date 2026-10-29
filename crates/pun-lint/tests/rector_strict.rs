@@ -1,14 +1,19 @@
-//! Rector's own fixtures for `lint/php-8.5/no-null-array-key` (`ArrayKeyExistsNullToEmptyStringRector`) and
-//! `lint/statements/add-safe-strict-types` (`SafeDeclareStrictTypesRector`), copied
-//! verbatim from rector-src 2.6.1 (`.oracle/rector`, rules-tests/...) into tests/rector/<Rector class>/Fixture.
-//! Oracle/ holds extra inputs with what Rector 2.6.1 (`.oracle/rector-ecosystem`, the rule alone,
-//! `phpVersion(80500)`, or 80400 for the strict types rule) wrote for them. Each must pass as `format(pun lint --fix) == format(expected)` with the
-//! laravel preset, and the text edits must give the expected bytes before format too.
+//! Rector's own fixtures for `lint/php-8.5/no-null-array-key` (`ArrayKeyExistsNullToEmptyStringRector`),
+//! `lint/statements/add-safe-strict-types` (`SafeDeclareStrictTypesRector`) and `lint/classes/add-dynamic-properties`
+//! (`CompleteDynamicPropertiesRector`), copied verbatim from rector-src 2.6.1 (`.oracle/rector`, rules-tests/...) into
+//! tests/rector/<Rector class>/Fixture. Oracle/ holds extra inputs with what Rector 2.6.1 (`.oracle/rector-ecosystem`,
+//! the rule alone, `phpVersion(80500)`, 80400 for the strict types rule, 79999 for the dynamic properties rule) wrote
+//! for them. Each must pass as `format(pun lint --fix) == format(expected)` with the laravel preset, and the text edits
+//! must give the expected bytes before format too.
 //!
 //! ArrayKeyExistsNullToEmptyStringRector/Pun/cast_parentheses.php.inc: Rector prints the new `(string)` cast without
 //! parentheses around an assignment (`(string) $k = $m`, which does not parse) and around a ternary whose condition
 //! is no cast (`(string) $k ? $s : $m . 'a'`, which casts only the condition). Pun writes `(string) ($k = $m)` and
 //! `(string) ($k ? $s : $m . 'a')`, the cast of the whole key that Rector's tree holds.
+//!
+//! CompleteDynamicPropertiesRector/Pun/unreached_closure.php.inc: a closure assigned after a `return`, code Mago's
+//! analysis does not reach, so it gives the closure no type. Rector (PHPStan types unreachable code too) writes
+//! `@var \Closure(): void`; Pun declares the property without a `@var`, as for any value of unknown type.
 
 mod lint_c;
 

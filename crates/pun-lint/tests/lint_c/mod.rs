@@ -78,6 +78,7 @@ fn laravel() -> Pipeline {
 
 /// Run every fixture of tests/rector/<class>/{Fixture,Oracle,Pun} (the directories that exist; Fixture must) through
 /// `rules` at PHP 8.4, Rector's default version in the fixtures' configs, with the classes of <class>/Source known.
+#[allow(dead_code)]
 pub fn run_class(rules: Vec<Box<dyn Rule>>, class: &str) {
     run_class_at(rules, class, 80400);
 }

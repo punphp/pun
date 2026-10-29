@@ -19,17 +19,21 @@
 //! next ones and the old first member each on a new line at the indentation of that place's line (a tab counted as
 //! four spaces).
 
+use mago_codex::ttype::atomic::TAtomic;
+use mago_codex::ttype::atomic::callable::{TCallable, TCallableSignature};
+use mago_codex::ttype::atomic::object::TObject;
+use mago_codex::ttype::union::TUnion;
 use mago_syntax::cst::{
     Access, AssignmentOperator, Class, ClassLikeMember, ClassLikeMemberSelector, Expression,
     MethodBody, Modifier, Node, NodeKind, Property, Variable,
 };
-use pun_phpstan::types::Type;
+use pun_phpstan::types::{Param, Signature, Type, to_phpdoc};
 use pun_problem::{Edit, Fix, Safety, Span};
 
-use super::phpdoc_writer::expr_type;
 use super::phpdoc_writer::type_mapper::{
     create_mixed_passed_or_union_type, generalize_constant_types, is_mixed, map_to_phpdoc,
 };
+use super::phpdoc_writer::{expr_type, phpstan_type};
 use super::rector_batch5::has_attribute;
 use super::types::facts::{Facts, facts};
 use super::types::names::resolve_class_name;
@@ -57,9 +61,7 @@ impl Rule for AddDynamicProperties {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::Class(class) = node else {
-            return;
-        };
+        let Node::Class(class) = node else { return };
         let facts = facts(ctx);
         let name = class_name(ancestors, class);
         if should_skip_class(&facts, ancestors, class, &name) {
@@ -72,9 +74,10 @@ impl Rule for AddDynamicProperties {
         if missing.is_empty() {
             return;
         }
-        let Some(first) = class.members.first() else {
-            return;
-        };
+        let first = class
+            .members
+            .first()
+            .expect("a method defines the properties");
         let at = with_comments_start(
             ctx.source,
             class.left_brace.end.offset as usize,
@@ -122,10 +125,8 @@ fn should_skip_class(
     {
         return true;
     }
+    // (`hasClass()` of the class itself: the codebase has every class the file declares)
     let codebase = &facts.codebase;
-    if codebase.get_class_like(name.as_bytes()).is_none() {
-        return true;
-    }
     if has_attribute(ancestors, &class.attribute_lists, "AllowDynamicProperties") {
         return true;
     }
@@ -225,8 +226,9 @@ fn resolve_fetched_properties(
                     continue;
                 }
             }
-            if let Node::PropertyAccess(_) = node
-                && let Some(property) = resolve_property_name_of_node(facts, &ancestors, node, name)
+            if let Node::PropertyAccess(access) = node
+                && let Some(property) =
+                    resolve_fetch(facts, &ancestors, access.object, &access.property, name)
             {
                 defined.push(Defined {
                     name: property,
@@ -269,10 +271,93 @@ fn value_types(
             return (Type::Object(class.clone(), vec![]), Ty::Object(class));
         }
     }
+    // Mago types each closure it reaches as its signature alone (`resolve_closure_like_type`)
+    let full = facts.full_type(node_span(unparenthesize(expr)));
+    let r#type = match (unparenthesize(expr), full.map(|t| t.types.as_ref())) {
+        (
+            Expression::Closure(_) | Expression::ArrowFunction(_),
+            Some([TAtomic::Callable(TCallable::Signature(sig))]),
+        ) => Some(closure_type(sig)),
+        _ => expr_type(ctx, ancestors, expr),
+    };
     (
-        corrected(facts, expr_type(ctx, ancestors, expr)),
+        corrected(facts, r#type),
         property_type::full_ty(facts, expr),
     )
+}
+
+/// PHPStan's `ClosureType` of a closure or an arrow function, from Mago's signature of it.
+fn closure_type(sig: &TCallableSignature) -> Type {
+    let of = |t: Option<&TUnion>| t.and_then(phpstan_type).unwrap_or_else(mixed);
+    let params = (sig.get_parameters().iter())
+        .map(|p| Param {
+            name: p
+                .get_name()
+                .map_or_else(String::new, |n| n.0.as_str_lossy()[1..].to_string()),
+            ty: of(p.get_type_signature()),
+            optional: p.has_default() || p.is_variadic(),
+            by_ref: p.is_by_reference(),
+            variadic: p.is_variadic(),
+        })
+        .collect();
+    let ret = sig.get_return_type().map_or_else(mixed, closure_return);
+    Type::Closure(Box::new(Signature {
+        params,
+        ret,
+        templates: vec![],
+    }))
+}
+
+/// PHPStan's return type of a closure from Mago's: `void` where it returns nothing (which `phpstan_type` reads as the
+/// value `null`), and for a generator `Generator<K, V, mixed, R>` with `int` keys where Mago reads the keys of `yield`s
+/// without one as `int<0, max>` (PHPStan's `IntegerType` for them) and `R` `void` too.
+fn closure_return(t: &TUnion) -> Type {
+    let is_void = |t: &TUnion| matches!(t.types.as_ref(), [TAtomic::Void]);
+    if is_void(t) {
+        return Type::Void;
+    }
+    match (phpstan_type(t).unwrap_or_else(mixed), t.types.as_ref()) {
+        (Type::Object(class, mut args), [TAtomic::Object(TObject::Named(n))])
+            if class == "Generator" && args.len() == 4 =>
+        {
+            let params = n.type_parameters.as_deref().expect("its four arguments");
+            if args[0] == Type::IntRange(Some(0), None) {
+                args[0] = Type::Int;
+            }
+            if is_void(&params[3]) {
+                args[3] = Type::Void;
+            }
+            Type::Object(class, args)
+        }
+        (r#type, _) => r#type,
+    }
+}
+
+/// PHPStan's `ClosureType::toPhpDocNode()` as phpdoc-parser's printer writes it: `\Closure(int $a, mixed ...$b=): T`,
+/// a union in parentheses with spaced bars, classes by their name without a leading `\`.
+fn closure_doc(sig: &Signature) -> String {
+    let part = |t: &Type| match t {
+        Type::Union(types) | Type::Benevolent(types) => {
+            format!(
+                "({})",
+                types.iter().map(to_phpdoc).collect::<Vec<_>>().join(" | ")
+            )
+        }
+        t => to_phpdoc(t),
+    };
+    let params: Vec<String> = (sig.params.iter())
+        .map(|p| {
+            format!(
+                "{} {}{}${}{}",
+                part(&p.ty),
+                if p.by_ref { "&" } else { "" },
+                if p.variadic { "..." } else { "" },
+                p.name,
+                if p.optional { "=" } else { "" }
+            )
+        })
+        .collect();
+    format!("\\Closure({}): {}", params.join(", "), part(&sig.ret))
 }
 
 fn mixed() -> Type {
@@ -289,19 +374,6 @@ fn should_skip(ancestors: &[Node<'_, '_>], node: Node<'_, '_>) -> bool {
             if resolve_class_name(ancestors, id) == "Illuminate\\Support\\Collection"),
         _ => false,
     }
-}
-
-/// `resolvePropertyName()` of a node of the walk.
-fn resolve_property_name_of_node(
-    facts: &Facts,
-    ancestors: &[Node<'_, '_>],
-    node: Node<'_, '_>,
-    class: &str,
-) -> Option<Vec<u8>> {
-    let Node::PropertyAccess(access) = node else {
-        return None;
-    };
-    resolve_fetch(facts, ancestors, access.object, &access.property, class)
 }
 
 /// `resolvePropertyName()` of an expression: a local property fetch, outside a closure bind, by an identifier.
@@ -339,8 +411,6 @@ fn is_local_property_fetch(facts: &Facts, object: &Expression<'_>, class: &str) 
     if matches!(object, Expression::Variable(Variable::Direct(v)) if v.name == b"$this") {
         return true;
     }
-    use mago_codex::ttype::atomic::TAtomic;
-    use mago_codex::ttype::atomic::object::TObject;
     (facts.full_type(node_span(object))).is_some_and(|t| {
         matches!(t.types.as_ref(), [TAtomic::Object(TObject::Named(n))]
             if n.intersection_types.is_none() && n.name.as_bytes() == class.as_bytes())
@@ -357,11 +427,7 @@ fn is_in_closure_bind(ancestors: &[Node<'_, '_>]) -> bool {
             if resolve_class_name(ancestors, id).eq_ignore_ascii_case("Closure"))
             && matches!(&call.method, ClassLikeMemberSelector::Identifier(m) if m.value.eq_ignore_ascii_case(b"bind"));
         bind && call.argument_list.arguments.first().is_some_and(|a| {
-            let value = match a {
-                mago_syntax::cst::Argument::Positional(p) => p.value,
-                mago_syntax::cst::Argument::Named(n) => n.value,
-            };
-            matches!(unparenthesize(value), Expression::Closure(c)
+            matches!(unparenthesize(super::lint_b_helpers::value(a)), Expression::Closure(c)
                 if ancestors.iter().any(|n| matches!(n, Node::Closure(d) if std::ptr::eq(*d, c))))
         })
     })
@@ -480,7 +546,10 @@ fn create(ctx: &Context<'_>, facts: &Facts, property: &Defined, indent: &str) ->
     if !legal {
         return format!("{visibility} ${name};");
     }
-    let printed = without_leading_backslash_of_unknown(facts, &map_to_phpdoc(&t).to_string());
+    let printed = match &t {
+        Type::Closure(sig) => closure_doc(sig),
+        t => without_leading_backslash_of_unknown(facts, &map_to_phpdoc(t).to_string()),
+    };
     format!("/**\n{indent} * @var {printed}\n{indent} */\n{indent}{visibility} ${name};")
 }
 

@@ -12,9 +12,15 @@
 //!   when it is a parameter declared `mixed` (of an arrow function, then of the functions around it); a call is
 //!   explicit when the function or method it calls declares a native `mixed` return. Property fetches are implicit,
 //!   as PHPStan's native scope gives them after a `!== null` (checked on the oracle).
-//! - `Scope::getParentScope()`, which only a closure's scope has (an arrow function's has none, checked on the
-//!   oracle): a variable is an `ErrorType` in the scope around the closure when that scope is a function's and the
-//!   variable is not its parameter, not `$this` of a method, and not written or read there before the closure.
+//! - `Scope::getParentScope()`, which only a closure's scope has (an arrow function keeps the one around it, checked
+//!   on the oracle): a variable is an `ErrorType` in the scope around the closure when that scope is a function's and
+//!   the variable is not its parameter, not in its `use`, and not written or read there before the closure.
+//! - PHPStan's `ErrorType` of a property fetch Mago types otherwise: a property a class of the object's type does not
+//!   declare (a `__get` does not count), and a static property of a class PHPStan does not
+//!   know or that the class around (`self::`, `static::`) does not declare.
+//!
+//! `shouldSkipValue`'s `InterpolatedString` check is left out: such a string's type is `string`, which skips it first.
+//! A key that is unpacked (`...$keys`) is left alone, where Rector would cast the array.
 //!
 //! `isValidUnionType` of the parameter `NullToStrictStringIntConverter` reads never refuses here: `array_key_exists`'s
 //! `$key` and `$array` are no native union of other types.
@@ -28,7 +34,7 @@ use mago_syntax::cst::{
     FunctionLikeParameterList, Hint, Node, NodeKind, NullSafePropertyAccess, PropertyAccess,
     UnaryPrefixOperator, Variable,
 };
-use pun_phpstan::types::{Tri, Type};
+use pun_phpstan::types::{Tri, Type, sort_types};
 use pun_problem::{Edit, Fix, Safety};
 
 use super::lint_b_helpers::{unpacked, value};
@@ -64,13 +70,11 @@ impl Rule for NoNullArrayKey {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::FunctionCall(call) = node else {
-            return;
-        };
-        if !named(call, "array_key_exists") {
+        let Node::FunctionCall(c) = node else { return };
+        if !named(c, "array_key_exists") {
             return;
         }
-        let args = args(call);
+        let args = args(c);
         if args.len() != 2 {
             return;
         }
@@ -84,16 +88,16 @@ impl Rule for NoNullArrayKey {
         let key = unparenthesize(value(arg));
         let facts = facts(ctx);
         let scope = class_scope(ancestors);
+        let is_trait = ancestors.iter().any(|a| matches!(a, Node::Trait(_)));
         let at = At {
             facts: &facts,
             ancestors,
             scope: scope.as_ref(),
-            is_trait: ancestors.iter().any(|a| matches!(a, Node::Trait(_))),
+            // inside a trait PHPStan does not know `$this`; in code Mago's analysis does not reach (after a `return`)
+            // PHPStan still types each value: both give an implicit `mixed` where Mago gives no type
+            untyped_mixed: is_trait || facts.native_type(node_span(c)).is_none(),
+            is_trait,
         };
-        // the call is in code PHPStan never reaches: no scope
-        if facts.native_type(node_span(call)).is_none() {
-            return;
-        }
         let original = at.get_type(key);
         if original.is_union() && !original.has_null() {
             return;
@@ -120,6 +124,7 @@ struct At<'a, 'ast, 'arena> {
     ancestors: &'a [Node<'ast, 'arena>],
     scope: Option<&'a ClassScope>,
     is_trait: bool,
+    untyped_mixed: bool,
 }
 
 /// A type as `NullToStrictStringIntConverter` reads it: the members of a union Rector builds itself, or PHPStan's.
@@ -208,14 +213,24 @@ impl<'a, 'ast, 'arena> At<'a, 'ast, 'arena> {
                         return Ty::Built([first.members(), second.members()].concat());
                     }
                 }
-                // a nullable condition: the first member of its union
+                // a nullable condition: the first member of its union, in PHPStan's order (`UnionTypeHelper::sortTypes`,
+                // `null` last)
                 if let Ty::Scope(Some(cond)) = self.get_type(c.condition)
                     && is_union(cond)
                     && cond.types.iter().any(|a| matches!(a, TAtomic::Null))
                 {
                     let second = self.get_type(c.r#else);
                     if not_null(&second) {
-                        let first = TUnion::from_atomic(cond.types[0].clone());
+                        let members: Vec<(Type, &TAtomic)> = (cond.types.iter())
+                            .filter_map(|a| {
+                                phpstan_type(&TUnion::from_atomic(a.clone())).map(|t| (t, a))
+                            })
+                            .collect();
+                        let sorted =
+                            sort_types(&members.iter().map(|(t, _)| t.clone()).collect::<Vec<_>>());
+                        let first = (members.iter().find(|(t, _)| sorted.first() == Some(t)))
+                            .map_or(&cond.types[0], |(_, a)| *a);
+                        let first = TUnion::from_atomic(first.clone());
                         return Ty::Built([vec![Some(first)], second.members()].concat());
                     }
                 }
@@ -239,8 +254,7 @@ impl<'a, 'ast, 'arena> At<'a, 'ast, 'arena> {
         Ty::Scope(self.scope_type(expr))
     }
 
-    /// PHPStan's type of `expr`; inside a trait, where PHPStan does not know `$this`, an implicit `mixed` where Mago
-    /// gives none.
+    /// PHPStan's type of `expr`, an implicit `mixed` where Mago gives none in a trait or in code it does not reach.
     fn scope_type(&self, expr: &Expression<'_>) -> Option<&'a TUnion> {
         if matches!(
             expr,
@@ -250,7 +264,7 @@ impl<'a, 'ast, 'arena> At<'a, 'ast, 'arena> {
         }
         self.facts
             .full_type(node_span(expr))
-            .or(self.is_trait.then_some(&*MIXED))
+            .or(self.untyped_mixed.then_some(&*MIXED))
     }
 
     /// `NodeTypeResolver::getNativeType`.
@@ -261,7 +275,9 @@ impl<'a, 'ast, 'arena> At<'a, 'ast, 'arena> {
         ) {
             return Ty::Scope(Some(&*MIXED));
         }
-        Ty::Scope((self.facts.native_type(node_span(expr))).or(self.is_trait.then_some(&*MIXED)))
+        Ty::Scope(
+            (self.facts.native_type(node_span(expr))).or(self.untyped_mixed.then_some(&*MIXED)),
+        )
     }
 
     /// `convertIfNull`, the edit it makes.
@@ -317,18 +333,10 @@ impl<'a, 'ast, 'arena> At<'a, 'ast, 'arena> {
         if native.is_string() {
             return true;
         }
-        if self.is_possible_array_variable_name(&r#type, &native, expr) {
+        if self.is_possible_array_variable_name(&r#type, expr) {
             return true;
         }
         if should_skip_type(&r#type) {
-            return true;
-        }
-        if matches!(
-            expr,
-            Expression::CompositeString(
-                CompositeString::Interpolated(_) | CompositeString::Document(_)
-            )
-        ) {
             return true;
         }
         if self.is_an_error_type(expr, &native) {
@@ -358,22 +366,10 @@ impl<'a, 'ast, 'arena> At<'a, 'ast, 'arena> {
             .is_some()
     }
 
-    /// `isPossibleArrayVariableName`: a `mixed` variable whose native type may be an array, named like a plural.
-    fn is_possible_array_variable_name(
-        &self,
-        passed: &Ty<'_>,
-        native: &Ty<'_>,
-        expr: &Expression<'_>,
-    ) -> bool {
+    /// `isPossibleArrayVariableName`: a `mixed` variable named like a plural. Its check that the native type may be an
+    /// array always holds here: Mago's native type of a value whose type is `mixed` is `mixed` too.
+    fn is_possible_array_variable_name(&self, passed: &Ty<'_>, expr: &Expression<'_>) -> bool {
         if passed.mixed().is_none() {
-            return false;
-        }
-        let maybe_array = native.members().iter().all(|t| {
-            t.as_ref()
-                .and_then(phpstan_type)
-                .is_some_and(|t| t.is_array() == Tri::Maybe)
-        });
-        if !maybe_array {
             return false;
         }
         match expr {
@@ -472,11 +468,11 @@ impl<'a, 'ast, 'arena> At<'a, 'ast, 'arena> {
                         }
                         class
                     }
-                    Expression::Self_(_) | Expression::Static(_) if !self.is_trait => {
-                        match self.scope.and_then(|s| s.name.clone()) {
-                            Some(name) => name,
-                            None => return false,
-                        }
+                    Expression::Self_(_) | Expression::Static(_)
+                        if !self.is_trait
+                            && let Some(name) = self.scope.and_then(|s| s.name.clone()) =>
+                    {
+                        name
                     }
                     _ => return false,
                 };
@@ -545,9 +541,6 @@ impl<'a, 'ast, 'arena> At<'a, 'ast, 'arena> {
         let Some(function) = outer.iter().rev().find(|a| is_function_like(a)) else {
             return false;
         };
-        if v.name == b"$this" {
-            return !matches!(function, Node::Method(_) | Node::Closure(_));
-        }
         if parameters(function)
             .is_some_and(|list| list.parameters.iter().any(|p| p.variable.name == v.name))
         {
@@ -640,9 +633,8 @@ impl<'a, 'ast, 'arena> At<'a, 'ast, 'arena> {
 
     /// Whether the variable `name` read at `at` holds an explicit `mixed`: see the module's documentation.
     fn is_explicit_variable(&self, name: &[u8], at: usize, ancestors: &[Node<'_, '_>]) -> bool {
-        let Some(index) = ancestors.iter().rposition(is_function_like) else {
-            return false;
-        };
+        // outside a function, the file's own statements
+        let index = ancestors.iter().rposition(is_function_like).unwrap_or(0);
         let function = ancestors[index];
         // the last assignment to it before `at`
         let mut last: Option<(usize, &Expression<'_>)> = None;
@@ -667,7 +659,13 @@ impl<'a, 'ast, 'arena> At<'a, 'ast, 'arena> {
             }
         }
         if let Some((_, assigned)) = last {
-            return self.is_explicit(assigned, &ancestors[..=index]);
+            // outside a function its value is read where it is, inside the namespace around it
+            let around = if is_function_like(&function) {
+                &ancestors[..=index]
+            } else {
+                ancestors
+            };
+            return self.is_explicit(assigned, around);
         }
         if let Some(p) = parameters(&function)
             .and_then(|l| l.parameters.iter().find(|p| p.variable.name == name))
