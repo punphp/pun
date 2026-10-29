@@ -2,8 +2,7 @@
 //! operands and the left side of `??` and `??=`. Certainty and `hasExpressionType()` come from Mago's block context (see
 //! [`super::super::infer`]).
 
-use std::collections::{HashMap, HashSet};
-
+use mago_analyzer::property_initialization::{PropertyInitializationCertainty, PropertyInitializationRequest};
 use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::metadata::property::PropertyMetadata;
 use mago_span::{HasSpan, Span};
@@ -19,22 +18,23 @@ const SUPERGLOBALS: [&[u8]; 9] =
 
 /// Isset operands and coalescing left-side chains (level 1): the expressions whose type the check reads,
 /// and the variables and fetches whose certainty it reads.
-pub(in super::super) fn coalesce_types(program: &Program, level: u8) -> (Vec<Span>, Vec<Span>) {
+pub(in super::super) fn coalesce_types(program: &Program, level: u8) -> (Vec<Span>, Vec<Span>, Vec<(Span, PropertyInitializationRequest)>) {
     let mut chains = Chains::default();
     if level >= 1 {
         chains.walk_program(program, &mut ());
     }
-    (chains.typed, chains.watched)
+    (chains.typed, chains.watched, chains.initializations)
 }
 
 #[derive(Default)]
 struct Chains {
     typed: Vec<Span>,
     watched: Vec<Span>,
+    initializations: Vec<(Span, PropertyInitializationRequest)>,
 }
 
 impl Chains {
-    fn chain(&mut self, e: &Expression) {
+    fn chain(&mut self, e: &Expression, assignment: Option<Span>) {
         let e = unparen(e);
         self.typed.push(e.span());
         match e {
@@ -42,15 +42,26 @@ impl Chains {
             Expression::ArrayAccess(a) => {
                 self.watched.push(e.span());
                 self.typed.push(a.index.span());
-                self.chain(a.array);
+                self.chain(a.array, assignment);
             }
             Expression::Access(Access::Property(p)) => {
                 self.watched.push(e.span());
                 self.typed.extend(dynamic_name(&p.property));
-                self.chain(p.object);
+                // IssetabilityDescriptor reads the virtual marker only for literal `$this->name`.
+                // Aliased ThisType writes still create it in the live analyzer, not here.
+                if let ClassLikeMemberSelector::Identifier(name) = &p.property
+                    && matches!(unparen(p.object), Expression::Variable(Variable::Direct(v)) if v.name == b"$this")
+                {
+                    // `??=` visits the assignment, not its read target. Its before-position
+                    // is the rule's incoming scope; never substitute the post-write target type.
+                    self.initializations.push((e.span(), PropertyInitializationRequest {
+                        expression: assignment.unwrap_or_else(|| e.span()), property: mago_word::word(name.value),
+                    }));
+                }
+                self.chain(p.object, assignment);
             }
-            Expression::Access(Access::NullSafeProperty(p)) => self.chain(p.object),
-            Expression::Access(Access::StaticProperty(p)) => self.chain(p.class),
+            Expression::Access(Access::NullSafeProperty(p)) => self.chain(p.object, assignment),
+            Expression::Access(Access::StaticProperty(p)) => self.chain(p.class, assignment),
             _ => {}
         }
     }
@@ -59,19 +70,19 @@ impl Chains {
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Chains {
     fn walk_in_isset_construct(&mut self, i: &'ast IssetConstruct<'arena>, _: &mut ()) {
         for value in &i.values {
-            self.chain(value);
+            self.chain(value, None);
         }
     }
 
     fn walk_in_binary(&mut self, b: &'ast Binary<'arena>, _: &mut ()) {
         if b.operator.is_null_coalesce() {
-            self.chain(b.lhs);
+            self.chain(b.lhs, None);
         }
     }
 
     fn walk_in_assignment(&mut self, a: &'ast Assignment<'arena>, _: &mut ()) {
         if matches!(a.operator, AssignmentOperator::Coalesce(_)) {
-            self.chain(a.lhs);
+            self.chain(a.lhs, Some(a.span()));
         }
     }
 }
@@ -95,153 +106,6 @@ pub(in super::super) fn isset(c: &mut Checker, construct: &IssetConstruct) {
                 c.condition_error(value.span(), line, &identifier, true, message, None);
             }
             None => c.no_condition(value.span(), "isset.expr"),
-        }
-    }
-}
-
-/// The `$this->name` fetches of initialized properties: in a method, after a statement of its body assigns it; in the
-/// constructor, the promoted ones; in the other methods, what the constructor's statements assign or promotes
-/// (rememberConstructorScope(), unless the class serializes itself).
-// ponytail: only a body's own statements assign for certain, and a constructor's calls initialize nothing
-pub(in super::super) fn initialized(program: &Program) -> HashMap<Span, bool> {
-    let mut found = Initialized::default();
-    found.walk_program(program, &mut ());
-    found.spans
-}
-
-#[derive(Default)]
-struct Initialized {
-    /// Each fetch, and whether the constructor's initialization is remembered for it.
-    spans: HashMap<Span, bool>,
-    /// What each enclosing class's constructor initializes.
-    classes: Vec<HashSet<Vec<u8>>>,
-    /// Each enclosing function-like: what is initialized from its start (remembered from the constructor or not),
-    /// and where its statements assign.
-    functions: Vec<(HashSet<Vec<u8>>, bool, Vec<(u32, Vec<u8>)>)>,
-}
-
-/// The name of a `$this->name` fetch.
-fn this_name<'e>(p: &'e PropertyAccess) -> Option<&'e [u8]> {
-    let ClassLikeMemberSelector::Identifier(name) = &p.property else { return None };
-    matches!(p.object, Expression::Variable(Variable::Direct(v)) if v.name == b"$this").then_some(name.value)
-}
-
-fn this_property<'e>(e: &'e Expression) -> Option<&'e [u8]> {
-    let Expression::Access(Access::Property(p)) = unparen(e) else { return None };
-    this_name(p)
-}
-
-/// The properties a statement assigns for certain: its own `$this->name = ...`, a block's, what every branch of an
-/// `if` with an `else` assigns.
-// ponytail: an `if` with a colon-delimited body, loops and early exits are not followed
-fn assigns(s: &Statement) -> HashSet<Vec<u8>> {
-    match s {
-        Statement::Expression(e) => match e.expression {
-            Expression::Assignment(a) if matches!(a.operator, AssignmentOperator::Assign(_)) => {
-                this_property(a.lhs).map(|n| n.to_vec()).into_iter().collect()
-            }
-            _ => HashSet::new(),
-        },
-        Statement::Block(b) => b.statements.iter().flat_map(assigns).collect(),
-        Statement::If(If { body: IfBody::Statement(b), .. }) if b.else_clause.is_some() => {
-            let branches = std::iter::once(b.statement)
-                .chain(b.else_if_clauses.iter().map(|c| c.statement))
-                .chain(b.else_clause.iter().map(|c| c.statement));
-            branches.map(assigns).reduce(|a, b| a.intersection(&b).cloned().collect()).unwrap_or_default()
-        }
-        _ => HashSet::new(),
-    }
-}
-
-/// A body's statements assigning `$this->name`: where they end and the name.
-fn assigned(statements: &[Statement]) -> Vec<(u32, Vec<u8>)> {
-    statements.iter().flat_map(|s| assigns(s).into_iter().map(|n| (s.span().end.offset, n))).collect()
-}
-
-fn constructor<'m, 'arena>(members: &'m [ClassLikeMember<'arena>]) -> Option<&'m Method<'arena>> {
-    members.iter().find_map(|m| match m {
-        ClassLikeMember::Method(m) if m.name.value.eq_ignore_ascii_case(b"__construct") => Some(m),
-        _ => None,
-    })
-}
-
-fn promoted(m: &Method) -> HashSet<Vec<u8>> {
-    m.parameter_list.parameters.iter().filter(|p| p.is_promoted_property()).map(|p| p.variable.name[1..].to_vec()).collect()
-}
-
-fn statements<'m, 'arena>(m: &'m Method<'arena>) -> &'m [Statement<'arena>] {
-    match &m.body {
-        MethodBody::Concrete(b) => b.statements.as_slice(),
-        MethodBody::Abstract(_) => &[],
-    }
-}
-
-impl Initialized {
-    fn enter_class(&mut self, members: &[ClassLikeMember]) {
-        let remembered = match constructor(members) {
-            Some(m) => {
-                let mut names = promoted(m);
-                names.extend(assigned(statements(m)).into_iter().map(|(_, n)| n));
-                names
-            }
-            _ => HashSet::new(),
-        };
-        self.classes.push(remembered);
-    }
-}
-
-impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Initialized {
-    fn walk_in_class(&mut self, k: &'ast Class<'arena>, _: &mut ()) {
-        self.enter_class(k.members.as_slice());
-    }
-
-    fn walk_out_class(&mut self, _: &'ast Class<'arena>, _: &mut ()) {
-        self.classes.pop();
-    }
-
-    fn walk_in_anonymous_class(&mut self, k: &'ast AnonymousClass<'arena>, _: &mut ()) {
-        self.enter_class(k.members.as_slice());
-    }
-
-    fn walk_out_anonymous_class(&mut self, _: &'ast AnonymousClass<'arena>, _: &mut ()) {
-        self.classes.pop();
-    }
-
-    // (a trait's methods are a class's: nothing is known for them)
-    fn walk_in_trait(&mut self, _: &'ast Trait<'arena>, _: &mut ()) {
-        self.classes.push(HashSet::new());
-    }
-
-    fn walk_out_trait(&mut self, _: &'ast Trait<'arena>, _: &mut ()) {
-        self.classes.pop();
-    }
-
-    fn walk_in_method(&mut self, m: &'ast Method<'arena>, _: &mut ()) {
-        let constructor = m.name.value.eq_ignore_ascii_case(b"__construct");
-        let from_start = if constructor { promoted(m) } else { self.classes.last().cloned().unwrap_or_default() };
-        self.functions.push((from_start, !constructor, assigned(statements(m))));
-    }
-
-    fn walk_out_method(&mut self, _: &'ast Method<'arena>, _: &mut ()) {
-        self.functions.pop();
-    }
-
-    fn walk_in_function(&mut self, _: &'ast Function<'arena>, _: &mut ()) {
-        self.functions.push(Default::default());
-    }
-
-    fn walk_out_function(&mut self, _: &'ast Function<'arena>, _: &mut ()) {
-        self.functions.pop();
-    }
-
-    fn walk_in_property_access(&mut self, p: &'ast PropertyAccess<'arena>, _: &mut ()) {
-        let Some((from_start, remembered, assignments)) = self.functions.last() else { return };
-        let Some(name) = this_name(p) else { return };
-        let start = p.span().start.offset;
-        if assignments.iter().any(|(end, n)| *end <= start && n == name) {
-            self.spans.insert(p.span(), false);
-        } else if from_start.contains(name) {
-            self.spans.insert(p.span(), *remembered);
         }
     }
 }
@@ -678,9 +542,7 @@ impl<'a> IssetCheck<'_, 'a, '_> {
                 // isInitializedThisProperty()
                 if let Some(native) = &m.type_declaration_metadata
                     && !m.flags.is_virtual_property()
-                    && let Some(remembered) = self.c.conditions.initialized.get(&e.span())
-                    && let Some(class) = self.c.class_scope().filter(|k| k.name == p.declaring.name)
-                    && !(*remembered && self.serializes(class))
+                    && self.c.property_initializations.get(&e.span()) == Some(&PropertyInitializationCertainty::Yes)
                 {
                     let t = declared::from_tunion(self.c, &native.type_union, p.declaring);
                     let tail = match type_message(&t)? {
@@ -743,13 +605,6 @@ impl<'a> IssetCheck<'_, 'a, '_> {
                 ))
             }
         }
-    }
-
-    /// classHasCustomSerialization(): unserialize() rebuilds its objects without the constructor.
-    fn serializes(&self, k: &ClassLikeMetadata) -> bool {
-        let has = |method: &str| self.c.codebase.method_exists(k.name.as_bytes(), method.as_bytes());
-        ["__sleep", "__serialize", "__unserialize"].iter().any(|m| has(m))
-            || (self.c.codebase.is_instance_of(k.name.as_bytes(), b"Serializable") && has("unserialize"))
     }
 
     /// A natively typed property this fetch may read before its initialization: no default value, not assigned in

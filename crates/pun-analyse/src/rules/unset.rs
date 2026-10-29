@@ -515,6 +515,7 @@ mod tests {
             native_types: Default::default(),
             nullsafe_method_receiver_types: Default::default(),
             variable_writes: Default::default(),
+            property_initializations: Default::default(),
             call_terminations: Default::default(),
             named_call_scopes: Default::default(),
             defined: Default::default(),

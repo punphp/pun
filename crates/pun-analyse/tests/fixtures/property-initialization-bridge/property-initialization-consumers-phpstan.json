@@ -1,0 +1,923 @@
+{
+    "0-default": [
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Cannot unset property PropertyInitializationConsumers\\UnsetPreservesMarker::$value because it might have hooks in a subclass.",
+            "line": 98,
+            "ignorable": true,
+            "identifier": "unset.possiblyHookedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Cannot unset property PropertyInitializationConsumers\\UnsetPreservesMarker::$value because it might have hooks in a subclass.",
+            "line": 100,
+            "ignorable": true,
+            "identifier": "unset.possiblyHookedProperty"
+        }
+    ],
+    "0-on": [
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Cannot unset property PropertyInitializationConsumers\\UnsetPreservesMarker::$value because it might have hooks in a subclass.",
+            "line": 98,
+            "ignorable": true,
+            "identifier": "unset.possiblyHookedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Cannot unset property PropertyInitializationConsumers\\UnsetPreservesMarker::$value because it might have hooks in a subclass.",
+            "line": 100,
+            "ignorable": true,
+            "identifier": "unset.possiblyHookedProperty"
+        }
+    ],
+    "0-off": [
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Cannot unset property PropertyInitializationConsumers\\UnsetPreservesMarker::$value because it might have hooks in a subclass.",
+            "line": 98,
+            "ignorable": true,
+            "identifier": "unset.possiblyHookedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Cannot unset property PropertyInitializationConsumers\\UnsetPreservesMarker::$value because it might have hooks in a subclass.",
+            "line": 100,
+            "ignorable": true,
+            "identifier": "unset.possiblyHookedProperty"
+        }
+    ],
+    "1-default": [
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\ThrowExit::$value in isset() is not nullable nor uninitialized.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\AssignedReturns::$value in isset() is not nullable nor uninitialized.",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\Reordered::$value in isset() is not nullable nor uninitialized.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\Promoted::$value in isset() is not nullable nor uninitialized.",
+            "line": 44,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\Promoted::$value in isset() is not nullable nor uninitialized.",
+            "line": 46,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\AliasAssignment::$value in isset() is not nullable nor uninitialized.",
+            "line": 51,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\AliasAssignment::$value in isset() is not nullable nor uninitialized.",
+            "line": 52,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\LocalScopes::$value in isset() is not nullable nor uninitialized.",
+            "line": 57,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\LocalScopes::$value in isset() is not nullable nor uninitialized.",
+            "line": 66,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\LocalScopes::$value in isset() is not nullable nor uninitialized.",
+            "line": 70,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\LocalScopes::$value in isset() is not nullable nor uninitialized.",
+            "line": 82,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Cannot unset property PropertyInitializationConsumers\\UnsetPreservesMarker::$value because it might have hooks in a subclass.",
+            "line": 98,
+            "ignorable": true,
+            "identifier": "unset.possiblyHookedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\UnsetPreservesMarker::$value in isset() is not nullable nor uninitialized.",
+            "line": 99,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Cannot unset property PropertyInitializationConsumers\\UnsetPreservesMarker::$value because it might have hooks in a subclass.",
+            "line": 100,
+            "ignorable": true,
+            "identifier": "unset.possiblyHookedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\UnsetPreservesMarker::$value in isset() is not nullable nor uninitialized.",
+            "line": 100,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\CustomSerialization::$value in isset() is not nullable nor uninitialized.",
+            "line": 107,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\WakeupOnly::$value in isset() is not nullable nor uninitialized.",
+            "line": 119,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\ParentInitialized::$value in isset() is not nullable nor uninitialized.",
+            "line": 124,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\Coalescing::$value on left side of ?? is not nullable nor uninitialized.",
+            "line": 138,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\Coalescing::$value on left side of ??= is not nullable nor uninitialized.",
+            "line": 139,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        }
+    ],
+    "1-on": [
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\ThrowExit::$value in isset() is not nullable nor uninitialized.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\AssignedReturns::$value in isset() is not nullable nor uninitialized.",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\Reordered::$value in isset() is not nullable nor uninitialized.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\Promoted::$value in isset() is not nullable nor uninitialized.",
+            "line": 44,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\Promoted::$value in isset() is not nullable nor uninitialized.",
+            "line": 46,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\AliasAssignment::$value in isset() is not nullable nor uninitialized.",
+            "line": 51,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\AliasAssignment::$value in isset() is not nullable nor uninitialized.",
+            "line": 52,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\LocalScopes::$value in isset() is not nullable nor uninitialized.",
+            "line": 57,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\LocalScopes::$value in isset() is not nullable nor uninitialized.",
+            "line": 66,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\LocalScopes::$value in isset() is not nullable nor uninitialized.",
+            "line": 70,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\LocalScopes::$value in isset() is not nullable nor uninitialized.",
+            "line": 82,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Cannot unset property PropertyInitializationConsumers\\UnsetPreservesMarker::$value because it might have hooks in a subclass.",
+            "line": 98,
+            "ignorable": true,
+            "identifier": "unset.possiblyHookedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\UnsetPreservesMarker::$value in isset() is not nullable nor uninitialized.",
+            "line": 99,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Cannot unset property PropertyInitializationConsumers\\UnsetPreservesMarker::$value because it might have hooks in a subclass.",
+            "line": 100,
+            "ignorable": true,
+            "identifier": "unset.possiblyHookedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\UnsetPreservesMarker::$value in isset() is not nullable nor uninitialized.",
+            "line": 100,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\CustomSerialization::$value in isset() is not nullable nor uninitialized.",
+            "line": 107,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\WakeupOnly::$value in isset() is not nullable nor uninitialized.",
+            "line": 119,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\ParentInitialized::$value in isset() is not nullable nor uninitialized.",
+            "line": 124,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\ParentInitialized::$value (int) in isset() is not nullable.",
+            "line": 132,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\Coalescing::$value on left side of ?? is not nullable nor uninitialized.",
+            "line": 138,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\Coalescing::$value on left side of ??= is not nullable nor uninitialized.",
+            "line": 139,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        }
+    ],
+    "1-off": [
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\ThrowExit::$value in isset() is not nullable nor uninitialized.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\AssignedReturns::$value in isset() is not nullable nor uninitialized.",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\Reordered::$value in isset() is not nullable nor uninitialized.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\Promoted::$value in isset() is not nullable nor uninitialized.",
+            "line": 44,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\Promoted::$value in isset() is not nullable nor uninitialized.",
+            "line": 46,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\AliasAssignment::$value in isset() is not nullable nor uninitialized.",
+            "line": 51,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\AliasAssignment::$value in isset() is not nullable nor uninitialized.",
+            "line": 52,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\LocalScopes::$value in isset() is not nullable nor uninitialized.",
+            "line": 57,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\LocalScopes::$value in isset() is not nullable nor uninitialized.",
+            "line": 66,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\LocalScopes::$value in isset() is not nullable nor uninitialized.",
+            "line": 70,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\LocalScopes::$value in isset() is not nullable nor uninitialized.",
+            "line": 82,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Cannot unset property PropertyInitializationConsumers\\UnsetPreservesMarker::$value because it might have hooks in a subclass.",
+            "line": 98,
+            "ignorable": true,
+            "identifier": "unset.possiblyHookedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\UnsetPreservesMarker::$value in isset() is not nullable nor uninitialized.",
+            "line": 99,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Cannot unset property PropertyInitializationConsumers\\UnsetPreservesMarker::$value because it might have hooks in a subclass.",
+            "line": 100,
+            "ignorable": true,
+            "identifier": "unset.possiblyHookedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\UnsetPreservesMarker::$value in isset() is not nullable nor uninitialized.",
+            "line": 100,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\CustomSerialization::$value in isset() is not nullable nor uninitialized.",
+            "line": 107,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\WakeupOnly::$value in isset() is not nullable nor uninitialized.",
+            "line": 119,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\ParentInitialized::$value in isset() is not nullable nor uninitialized.",
+            "line": 124,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\Coalescing::$value on left side of ?? is not nullable nor uninitialized.",
+            "line": 138,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\Coalescing::$value on left side of ??= is not nullable nor uninitialized.",
+            "line": 139,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        }
+    ],
+    "4-default": [
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\ThrowExit::$value in isset() is not nullable nor uninitialized.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\AssignedReturns::$value in isset() is not nullable nor uninitialized.",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\Reordered::$value in isset() is not nullable nor uninitialized.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\Promoted::$value in isset() is not nullable nor uninitialized.",
+            "line": 44,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\Promoted::$value in isset() is not nullable nor uninitialized.",
+            "line": 46,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\AliasAssignment::$value in isset() is not nullable nor uninitialized.",
+            "line": 51,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\AliasAssignment::$value in isset() is not nullable nor uninitialized.",
+            "line": 52,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\LocalScopes::$value in isset() is not nullable nor uninitialized.",
+            "line": 57,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\LocalScopes::$value in isset() is not nullable nor uninitialized.",
+            "line": 66,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\LocalScopes::$value in isset() is not nullable nor uninitialized.",
+            "line": 70,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\LocalScopes::$value in isset() is not nullable nor uninitialized.",
+            "line": 82,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Cannot unset property PropertyInitializationConsumers\\UnsetPreservesMarker::$value because it might have hooks in a subclass.",
+            "line": 98,
+            "ignorable": true,
+            "identifier": "unset.possiblyHookedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\UnsetPreservesMarker::$value in isset() is not nullable nor uninitialized.",
+            "line": 99,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Cannot unset property PropertyInitializationConsumers\\UnsetPreservesMarker::$value because it might have hooks in a subclass.",
+            "line": 100,
+            "ignorable": true,
+            "identifier": "unset.possiblyHookedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\UnsetPreservesMarker::$value in isset() is not nullable nor uninitialized.",
+            "line": 100,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\CustomSerialization::$value in isset() is not nullable nor uninitialized.",
+            "line": 107,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\WakeupOnly::$value in isset() is not nullable nor uninitialized.",
+            "line": 119,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\ParentInitialized::$value in isset() is not nullable nor uninitialized.",
+            "line": 124,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\ParentInitialized::$value (int) in isset() is not nullable.",
+            "line": 132,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\Coalescing::$value on left side of ?? is not nullable nor uninitialized.",
+            "line": 138,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\Coalescing::$value on left side of ??= is not nullable nor uninitialized.",
+            "line": 139,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        }
+    ],
+    "4-on": [
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\ThrowExit::$value in isset() is not nullable nor uninitialized.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\AssignedReturns::$value in isset() is not nullable nor uninitialized.",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\Reordered::$value in isset() is not nullable nor uninitialized.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\Promoted::$value in isset() is not nullable nor uninitialized.",
+            "line": 44,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\Promoted::$value in isset() is not nullable nor uninitialized.",
+            "line": 46,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\AliasAssignment::$value in isset() is not nullable nor uninitialized.",
+            "line": 51,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\AliasAssignment::$value in isset() is not nullable nor uninitialized.",
+            "line": 52,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\LocalScopes::$value in isset() is not nullable nor uninitialized.",
+            "line": 57,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\LocalScopes::$value in isset() is not nullable nor uninitialized.",
+            "line": 66,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\LocalScopes::$value in isset() is not nullable nor uninitialized.",
+            "line": 70,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\LocalScopes::$value in isset() is not nullable nor uninitialized.",
+            "line": 82,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Cannot unset property PropertyInitializationConsumers\\UnsetPreservesMarker::$value because it might have hooks in a subclass.",
+            "line": 98,
+            "ignorable": true,
+            "identifier": "unset.possiblyHookedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\UnsetPreservesMarker::$value in isset() is not nullable nor uninitialized.",
+            "line": 99,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Cannot unset property PropertyInitializationConsumers\\UnsetPreservesMarker::$value because it might have hooks in a subclass.",
+            "line": 100,
+            "ignorable": true,
+            "identifier": "unset.possiblyHookedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\UnsetPreservesMarker::$value in isset() is not nullable nor uninitialized.",
+            "line": 100,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\CustomSerialization::$value in isset() is not nullable nor uninitialized.",
+            "line": 107,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\WakeupOnly::$value in isset() is not nullable nor uninitialized.",
+            "line": 119,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\ParentInitialized::$value in isset() is not nullable nor uninitialized.",
+            "line": 124,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\ParentInitialized::$value (int) in isset() is not nullable.",
+            "line": 132,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\Coalescing::$value on left side of ?? is not nullable nor uninitialized.",
+            "line": 138,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\Coalescing::$value on left side of ??= is not nullable nor uninitialized.",
+            "line": 139,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        }
+    ],
+    "4-off": [
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\ThrowExit::$value in isset() is not nullable nor uninitialized.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\AssignedReturns::$value in isset() is not nullable nor uninitialized.",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\Reordered::$value in isset() is not nullable nor uninitialized.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\Promoted::$value in isset() is not nullable nor uninitialized.",
+            "line": 44,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\Promoted::$value in isset() is not nullable nor uninitialized.",
+            "line": 46,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\AliasAssignment::$value in isset() is not nullable nor uninitialized.",
+            "line": 51,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\AliasAssignment::$value in isset() is not nullable nor uninitialized.",
+            "line": 52,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\LocalScopes::$value in isset() is not nullable nor uninitialized.",
+            "line": 57,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\LocalScopes::$value in isset() is not nullable nor uninitialized.",
+            "line": 66,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\LocalScopes::$value in isset() is not nullable nor uninitialized.",
+            "line": 70,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\LocalScopes::$value in isset() is not nullable nor uninitialized.",
+            "line": 82,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Cannot unset property PropertyInitializationConsumers\\UnsetPreservesMarker::$value because it might have hooks in a subclass.",
+            "line": 98,
+            "ignorable": true,
+            "identifier": "unset.possiblyHookedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\UnsetPreservesMarker::$value in isset() is not nullable nor uninitialized.",
+            "line": 99,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Cannot unset property PropertyInitializationConsumers\\UnsetPreservesMarker::$value because it might have hooks in a subclass.",
+            "line": 100,
+            "ignorable": true,
+            "identifier": "unset.possiblyHookedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\UnsetPreservesMarker::$value in isset() is not nullable nor uninitialized.",
+            "line": 100,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\CustomSerialization::$value in isset() is not nullable nor uninitialized.",
+            "line": 107,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\WakeupOnly::$value in isset() is not nullable nor uninitialized.",
+            "line": 119,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\ParentInitialized::$value in isset() is not nullable nor uninitialized.",
+            "line": 124,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\Coalescing::$value on left side of ?? is not nullable nor uninitialized.",
+            "line": 138,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        },
+        {
+            "file": "$ROOT/property-initialization-consumers.php",
+            "message": "Property PropertyInitializationConsumers\\Coalescing::$value on left side of ??= is not nullable nor uninitialized.",
+            "line": 139,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        }
+    ]
+}

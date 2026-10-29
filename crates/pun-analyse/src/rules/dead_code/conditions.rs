@@ -137,8 +137,6 @@ pub(in super::super) struct Facts {
     throws: HashSet<Span>,
     /// The variables holding only `new` objects of named classes, whose classes NewHandler makes final.
     pub(in super::super) exact: HashSet<Span>,
-    /// The `$this->name` fetches of initialized properties (PropertyInitializationExpr).
-    pub(in super::super) initialized: HashMap<Span, bool>,
 }
 
 pub(in super::super) fn facts(c: &Checker, program: &Program) -> Facts {
@@ -151,9 +149,6 @@ pub(in super::super) fn facts(c: &Checker, program: &Program) -> Facts {
     if c.level >= 4 {
         pass.walk_program(program, &mut ());
         pass.facts.exact = super::impure_points::exact_variables(program);
-    }
-    if c.level >= 1 {
-        pass.facts.initialized = super::null_coalesce::initialized(program);
     }
     pass.facts
 }

@@ -804,6 +804,8 @@ pub struct Checker<'a, 'arena> {
     nullsafe_method_receiver_types: HashMap<Span, TUnion>,
     /// PHPStan VariableWritesNode results for completed closure bodies.
     variable_writes: HashMap<Span, mago_analyzer::variable_flow::VariableWritesNode>,
+    /// Requested PropertyInitializationExpr certainties immediately before real IssetCheck operands.
+    property_initializations: HashMap<Span, mago_analyzer::property_initialization::PropertyInitializationCertainty>,
     /// Resolved calls' own termination, independent of their provider-selected result type.
     call_terminations: HashMap<(u32, u32), bool>,
     /// Operand-position answers for each method name, including its expression conversion dependencies.

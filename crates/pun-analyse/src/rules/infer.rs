@@ -9,6 +9,7 @@ use mago_analyzer::Analyzer;
 use mago_analyzer::analysis_result::AnalysisResult;
 use mago_analyzer::observations::CallScopeRequest;
 pub(super) use mago_analyzer::observations::NamedCallScope;
+use mago_analyzer::property_initialization::{PropertyInitializationCertainty, PropertyInitializationRequest};
 use mago_analyzer::plugin::context::InvocationInfo;
 use mago_analyzer::plugin::{
     ExpressionHook, ExpressionHookResult, HookContext, HookResult, Provider, ProviderMeta,
@@ -133,6 +134,7 @@ pub(super) fn infer<'arena>(
     calls: Vec<CallScopeRequest>,
     variables: &mut variables::Observations,
     variable_writes: &mut HashMap<Span, mago_analyzer::variable_flow::VariableWritesNode>,
+    property_initializations: &mut HashMap<Span, PropertyInitializationCertainty>,
 ) -> (HashMap<Span, TUnion>, HashMap<Span, Tri>, Origins, HashMap<(u32, u32), bool>, HashMap<Span, Vec<NamedCallScope>>, HashMap<Span, TUnion>, HashMap<Span, TUnion>, HashMap<Span, TUnion>) {
     let mut wanted = TypedExpressions {
         spans: Vec::new(),
@@ -146,9 +148,9 @@ pub(super) fn infer<'arena>(
     wanted.extend(extra);
     wanted.extend(super::unset::expressions(program).0);
     wanted.extend(dead_code::flow_types(program, level));
-    let (typed, watched) = dead_code::coalesce_types(program, level);
+    let (typed, watched, initializations) = dead_code::coalesce_types(program, level);
     wanted.extend(typed);
-    analyse_observed(arena, file, program, names, codebase, php_version, pollute_scope_with_loop_initial_assignments, pollute_scope_with_always_iterable_foreach, pollute_scope_with_block, wanted, watched, calls, Some(variables), Some(variable_writes))
+    analyse_observed(arena, file, program, names, codebase, php_version, pollute_scope_with_loop_initial_assignments, pollute_scope_with_always_iterable_foreach, pollute_scope_with_block, wanted, watched, calls, Some(variables), Some(variable_writes), initializations, Some(property_initializations))
 }
 
 /// Mago's types of the `wanted` expressions, analysing only the declarations that hold them.
@@ -165,7 +167,7 @@ pub(super) fn analyse<'arena>(
     wanted: Vec<Span>,
     watched: Vec<Span>,
 ) -> (HashMap<Span, TUnion>, HashMap<Span, Tri>, Origins, HashMap<(u32, u32), bool>, HashMap<Span, Vec<NamedCallScope>>, HashMap<Span, TUnion>, HashMap<Span, TUnion>, HashMap<Span, TUnion>) {
-    analyse_observed(arena, file, program, names, codebase, php_version, pollute_scope_with_loop_initial_assignments, pollute_scope_with_always_iterable_foreach, pollute_scope_with_block, wanted, watched, Vec::new(), None, None)
+    analyse_observed(arena, file, program, names, codebase, php_version, pollute_scope_with_loop_initial_assignments, pollute_scope_with_always_iterable_foreach, pollute_scope_with_block, wanted, watched, Vec::new(), None, None, Vec::new(), None)
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -184,6 +186,8 @@ fn analyse_observed<'arena>(
     mut calls: Vec<CallScopeRequest>,
     variables: Option<&mut variables::Observations>,
     variable_writes: Option<&mut HashMap<Span, mago_analyzer::variable_flow::VariableWritesNode>>,
+    initializations: Vec<(Span, PropertyInitializationRequest)>,
+    property_initializations: Option<&mut HashMap<Span, PropertyInitializationCertainty>>,
 ) -> (HashMap<Span, TUnion>, HashMap<Span, Tri>, Origins, HashMap<(u32, u32), bool>, HashMap<Span, Vec<NamedCallScope>>, HashMap<Span, TUnion>, HashMap<Span, TUnion>, HashMap<Span, TUnion>) {
     let mut wanted = wanted;
     wanted.extend(calls.iter().flat_map(|call| call.expressions.iter().copied()));
@@ -241,6 +245,8 @@ fn analyse_observed<'arena>(
     settings.track_native_types = true;
     settings.track_variable_flow = variable_writes.is_some();
     settings.call_scope_observations = calls;
+    let retain_constructors = !initializations.is_empty();
+    settings.property_initialization_observations = initializations.iter().map(|(_, request)| *request).collect();
     let analyzer = Analyzer::new(arena, file, names, codebase, &registry, settings);
     let mut result = AnalysisResult::new(SymbolReferences::new());
     // Only the declarations holding a wanted expression: a method's types come from its own body and the codebase,
@@ -249,6 +255,7 @@ fn analyse_observed<'arena>(
         statements: Prune {
             arena,
             wanted: &wanted,
+            retain_constructors,
         }
         .statements(&program.statements),
         ..program.clone()
@@ -285,6 +292,14 @@ fn analyse_observed<'arena>(
     }
     if let Some(variable_writes) = variable_writes {
         variable_writes.extend(artifacts.variable_writes);
+    }
+    if let Some(property_initializations) = property_initializations {
+        // Route the real before-position to its rule operand (`??=` does not visit the target).
+        // Missing operands stay absent;
+        // neither types nor lexical writes substitute an incoming scope answer.
+        property_initializations.extend(initializations.into_iter().filter_map(|(operand, request)| {
+            Some((operand, *artifacts.property_initialization_observations.get(&request.expression)?.get(&request.property)?))
+        }));
     }
     (types, found.defined, origins, artifacts.call_terminations.into_iter().collect(), artifacts.call_scope_observations.into_iter().collect(), keep_void_types, native_types, artifacts.nullsafe_method_receiver_types.into_iter().collect())
 }
@@ -475,7 +490,13 @@ impl ExpressionHook for Definedness {
             && !(self.ids.contains_key(&expr.span()) && matches!(expr, Expression::Variable(_)))
             && let Some(ty) = context.get_expression_type(expr)
         {
-            self.found.lock().expect("no hook panics while holding the lock").read.insert(expr.span(), ty.clone());
+            // Repeated live loop evaluations contribute alternatives. Keeping only the last
+            // narrowed read can turn a do-while's incoming bool into an always-true condition,
+            // incorrectly hiding the initialized-property check on its normal exit.
+            self.found.lock().expect("no hook panics while holding the lock").read.entry(expr.span())
+                .and_modify(|previous| *previous = mago_codex::ttype::combine_union_types(
+                    previous, ty, context.codebase(), Default::default()))
+                .or_insert_with(|| ty.clone());
         }
         if self.wanted.contains(&expr.span())
             && let Some(ty) = context.get_keep_void_expression_type(expr)
@@ -554,10 +575,12 @@ fn observe_direct(v: &DirectVariable<'_>, context: &HookContext<'_, '_>, found: 
 }
 
 /// A copy of a program's statements without the functions, class-likes and methods that hold none of `wanted`. Every
-/// other statement and member stays, so the kept code's scope is unchanged.
+/// other statement and member stays, so the kept code's scope is unchanged. Virtual initialization requests also
+/// retain constructors: their live exit scopes seed the later instance methods, even without requested operands.
 struct Prune<'w, 'arena> {
     arena: &'arena LocalArena,
     wanted: &'w [Span],
+    retain_constructors: bool,
 }
 
 impl<'arena> Prune<'_, 'arena> {
@@ -617,7 +640,9 @@ impl<'arena> Prune<'_, 'arena> {
     ) -> Sequence<'arena, ClassLikeMember<'arena>> {
         let kept = members
             .iter()
-            .filter(|m| !matches!(m, ClassLikeMember::Method(_)) || self.holds(m.span()))
+            .filter(|m| !matches!(m, ClassLikeMember::Method(_)) || self.holds(m.span())
+                || (self.retain_constructors && matches!(m,
+                    ClassLikeMember::Method(method) if method.name.value.eq_ignore_ascii_case(b"__construct"))))
             .cloned();
         Sequence::from_slice(self.arena.alloc_slice_fill_iter(kept))
     }
