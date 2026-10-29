@@ -41,13 +41,21 @@ pub(crate) fn scalar_type(ty: &TUnion) -> bool {
     })
 }
 
+fn builtin_predicate(function: &FunctionLikeMetadata) -> bool {
+    !function.flags.is_user_defined()
+        && matches!(function.kind, FunctionLikeKind::Function)
+        && matches!(function.name.as_bytes(), b"is_int" | b"is_string" | b"property_exists")
+}
+
 fn supported_function(function: &FunctionLikeMetadata) -> bool {
-    function.flags.is_user_defined()
+    let predicate = builtin_predicate(function);
+    (function.flags.is_user_defined() || predicate)
         && !function.flags.is_by_reference()
         && !function.flags.has_yield()
         && function.assertions.is_empty()
-        && function.if_true_assertions.is_empty()
-        && function.if_false_assertions.is_empty()
+        // These predicates' conditional PHPDoc assertions do not change the native signature
+        // or straight-line continuation. Calls used as conditions remain unsupported.
+        && (predicate || (function.if_true_assertions.is_empty() && function.if_false_assertions.is_empty()))
         && function.globals_accessed.is_empty()
         && function.parameters.iter().all(|parameter| {
             !parameter.flags.is_by_reference()
@@ -83,16 +91,20 @@ pub(crate) fn parameter_types(
 pub(crate) fn function_return_type(function: &FunctionLikeMetadata) -> Option<TUnion> {
     if !matches!(function.kind, FunctionLikeKind::Function)
         || !supported_function(function)
-        || function.parameters.iter().any(|parameter| parameter.type_declaration_metadata.as_ref()
-            .is_some_and(|ty| !scalar_type(&ty.type_union)))
+        || (!builtin_predicate(function)
+            && function.parameters.iter().any(|parameter| parameter.type_declaration_metadata.as_ref()
+                .is_some_and(|ty| !scalar_type(&ty.type_union))))
     {
         return None;
     }
+    // PHPStan's native-promoted resolveReturnType uses the declaration before PHPDoc or
+    // dynamic return extensions. In particular an object return is not its documented shape.
     let ty = function
         .return_type_declaration_metadata
         .as_ref()
         .map_or_else(get_mixed, |ty| ty.type_union.clone());
-    (scalar_type(&ty) || ty.is_void()).then_some(ty)
+    (scalar_type(&ty) || ty.is_void() || matches!(ty.types.as_ref(), [TAtomic::Object(TObject::Any)])
+        || named_object(&ty).is_some()).then_some(ty)
 }
 
 pub(crate) fn before_statement(statement: &Statement<'_>, block: &mut BlockContext<'_>) {
@@ -164,7 +176,7 @@ pub(crate) fn before_expression(expression: &Expression<'_>, block: &mut BlockCo
             && new.argument_list.as_ref().is_none_or(|arguments| arguments.arguments.is_empty()),
         Expression::Call(Call::Method(call)) => call.method.is_identifier() && call.argument_list.arguments.is_empty(),
         Expression::Conditional(conditional) => condition_shape(conditional.condition, true),
-        // The resolved target is checked before arguments in function_call.rs.
+        // Statically named calls evaluate arguments before their own continuation effects.
         Expression::Call(Call::Function(call)) => {
             matches!(call.function, Expression::Identifier(_))
         }

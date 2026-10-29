@@ -1141,3 +1141,161 @@ fn if_certainty_tips_distinguish_documented_and_native_constants() {
     actual.sort();
     assert_eq!(serde_json::to_value(actual).unwrap(), expected);
 }
+
+#[test]
+fn native_call_arguments_returns_and_continuations_match_phpstan() {
+    let oracle: serde_json::Value =
+        serde_json::from_str(include_str!("fixtures/native-calls/expected.json")).unwrap();
+    let mut failures = Vec::new();
+    for (case, code) in [
+        (
+            "certainty",
+            include_bytes!("fixtures/native-calls/certainty.php").as_slice(),
+        ),
+        (
+            "boundaries",
+            include_bytes!("fixtures/native-calls/boundaries.php").as_slice(),
+        ),
+    ] {
+        let (enabled, observed, issues) = analyze_native_calls(code, true);
+        let (disabled, off_observed, off_issues) = analyze_native_calls(code, false);
+        assert_full_artifacts_equal(&enabled, &disabled);
+        assert_eq!(issues, off_issues, "{case}");
+        assert_eq!(observed.visits, off_observed.visits, "{case}");
+        assert!(observed.visits.values().all(|count| *count == 1), "{case}");
+        for (range, expected) in oracle["types"][case].as_object().unwrap() {
+            let (start, end) = range.split_once(':').unwrap();
+            let range = (start.parse().unwrap(), end.parse().unwrap());
+            assert_eq!(observed.visits.get(&range), Some(&1), "{case}: {expected}");
+            let want = expected["available"]
+                .as_bool()
+                .unwrap()
+                .then(|| oracle_mago_id(expected["native"].as_str().unwrap()));
+            let got = observed.native.get(&range).cloned().flatten();
+            if got != want {
+                failures.push(serde_json::json!({"case":case, "expected":expected, "actual":got}));
+            }
+            assert!(disabled.get_native_expression_type(&span(range)).is_none());
+            // Reference writeback may replace the final artifact, not the completed input observation.
+            if let Some(final_type) = enabled.get_native_expression_type(&span(range)) {
+                assert_eq!(Some(native_id(final_type)), got, "{case}: {expected}");
+            }
+        }
+    }
+    assert!(
+        failures.is_empty(),
+        "{}",
+        serde_json::to_string_pretty(&failures).unwrap()
+    );
+}
+
+fn analyze_native_calls(code: &[u8], native: bool) -> (AnalysisArtifacts, Observed, String) {
+    let file = File::ephemeral(
+        Cow::Borrowed(b"native-calls.php"),
+        Cow::Owned(code.to_vec()),
+    );
+    let arena = LocalArena::new();
+    let program = parse_file(&arena, &file);
+    assert!(!program.has_errors());
+    let names = NameResolver::new(&arena).resolve(program);
+    let settings = Settings {
+        track_native_types: native,
+        ..Settings::default()
+    };
+    let mut codebase = mago_prelude::Prelude::build().metadata;
+    codebase.extend(scan_program(
+        &arena,
+        &file,
+        program,
+        &names,
+        settings.version,
+    ));
+    let mut references = SymbolReferences::new();
+    populate_codebase(
+        &mut codebase,
+        &mut references,
+        Default::default(),
+        Default::default(),
+    );
+    let observed = Arc::<Mutex<Observed>>::default();
+    let mut registry = PluginRegistry::new();
+    registry.register_expression_hook(Observer(Arc::clone(&observed)));
+    let mut result = AnalysisResult::new(references);
+    let artifacts = Analyzer::new(&arena, &file, &names, &codebase, &registry, settings)
+        .analyze_with_artifacts(program, &mut result)
+        .unwrap();
+    let found = std::mem::take(&mut *observed.lock().unwrap());
+    (artifacts, found, format!("{:?}", result.issues))
+}
+
+#[test]
+fn argument_hook_effects_do_not_restore_a_pre_call_native_scope() {
+    struct Write;
+    impl Provider for Write {
+        fn meta() -> &'static ProviderMeta {
+            static META: ProviderMeta = ProviderMeta::new(
+                "native-argument-write",
+                "native-argument-write",
+                "semantic argument effect",
+            );
+            &META
+        }
+    }
+    impl ExpressionHook for Write {
+        fn after_expression(
+            &self,
+            expression: &Expression<'_>,
+            context: &mut HookContext<'_, '_>,
+        ) -> HookResult<()> {
+            if matches!(expression, Expression::Literal(mago_syntax::cst::Literal::Integer(value))
+                if value.value == Some(777))
+            {
+                context.set_variable_type(b"$value", mago_codex::ttype::get_string());
+            }
+            Ok(())
+        }
+    }
+    let code = br"<?php
+function target(mixed $first, mixed $second): int { return 1; }
+function example(int $value): void {
+    target(
+        $value, // argument
+        777
+    ); // call
+    $value; // unavailable
+}
+";
+    let mut registry = PluginRegistry::new();
+    registry.register_expression_hook(Write);
+    let (enabled, observed, issues) = analyze(code, true, registry);
+    let mut registry = PluginRegistry::new();
+    registry.register_expression_hook(Write);
+    let (disabled, off_observed, off_issues) = analyze(code, false, registry);
+    assert_full_artifacts_equal(&enabled, &disabled);
+    assert_eq!(issues, off_issues);
+    assert_eq!(observed.visits, off_observed.visits);
+    let argument = code
+        .windows(b"$value, // argument".len())
+        .position(|source| source == b"$value, // argument")
+        .unwrap() as u32;
+    assert_eq!(
+        observed.native[&(argument, argument + 6)].as_deref(),
+        Some("int")
+    );
+    let after = span(marked_ranges(code, "// unavailable")[0].1);
+    assert!(enabled.get_native_expression_type(&after).is_none());
+    assert_eq!(
+        observed.native[&(after.start.offset, after.end.offset)],
+        None
+    );
+    let call = code
+        .windows(b"target(\n".len())
+        .position(|source| source == b"target(\n")
+        .unwrap() as u32;
+    let end = code
+        .windows(b"); // call".len())
+        .position(|source| source == b"); // call")
+        .unwrap() as u32
+        + 1;
+    assert_eq!(observed.native[&(call, end)], None);
+}

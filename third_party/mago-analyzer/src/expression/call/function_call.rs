@@ -11,6 +11,7 @@ use mago_codex::ttype::cast::can_atomic_be_callable;
 use mago_codex::ttype::cast::cast_atomic_to_callable;
 use mago_codex::ttype::expander::contains_parameter_variable;
 use mago_codex::ttype::get_error;
+use mago_codex::ttype::get_mixed;
 use mago_codex::ttype::template::TemplateResult;
 use mago_reporting::Annotation;
 use mago_reporting::Issue;
@@ -76,17 +77,26 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for FunctionCall<'arena> {
 
         let native_return = if block_context.native_locals.is_some()
             && !context.plugin_registry.has_function_assertion_providers()
-            && invocation_targets.len() == 1
-            && matches!(self.function, Expression::Identifier(_))
+            && let Expression::Identifier(identifier) = self.function
         {
-            invocation_targets[0].get_function_like_metadata().and_then(crate::native::function_return_type)
+            let name = context.resolved_names.get(identifier);
+            // PHPStan supplies these diagnostic-only functions even without project declarations.
+            // src/dumpType.php has no native return hint, hence mixed (not full/PHPDoc).
+            if [b"PHPStan\\dumpType".as_slice(), b"PHPStan\\dumpNativeType", b"PHPStan\\dumpPhpDocType"]
+                .iter().any(|diagnostic| name.eq_ignore_ascii_case(diagnostic))
+            {
+                Some(get_mixed())
+            } else if let [target] = invocation_targets.as_slice() {
+                target.get_function_like_metadata().and_then(crate::native::function_return_type)
+            } else {
+                None
+            }
         } else {
             None
         };
-        if native_return.is_none() {
-            block_context.native_locals = None;
-        }
 
+        // PHP evaluates arguments before call effects, in the evolving argument scope. Do not
+        // invalidate their native observations merely because the callee's transfer is unsupported.
         analyze_invocation_targets(
             context,
             block_context,
@@ -103,6 +113,10 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for FunctionCall<'arena> {
             false,
             true,
         )?;
+
+        if native_return.is_none() {
+            block_context.native_locals = None;
+        }
 
         // FuncCallHandler::resolveReturnType() also gives invalid dynamic calls
         // ErrorType. This does not turn an implicit-never callee into termination.
