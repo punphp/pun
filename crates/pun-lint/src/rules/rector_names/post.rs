@@ -522,16 +522,8 @@ impl<'s> Session<'s> {
                 self.set_text(i, alias);
                 continue;
             }
-            if name.contains('\\') {
-                let short = last(&name).to_string();
-                let renamed = uses.iter().flat_map(|u| &u.items).any(|item| {
-                    item.last() == short && item.alias.as_deref().is_some_and(|a| a != short)
-                });
-                if renamed {
-                    self.set_text(i, short);
-                    continue;
-                }
-            }
+            // (its import under another alias: `shouldSkipName()` skipped a name whose short name an import ends with,
+            // unless the import is the name itself, whose alias the line above took)
             let namespace = self.view.names[i].namespace.clone();
             let original_unqualified = self.names[i].original.as_ref().map(|o| !o.contains('\\'));
             let at = At {

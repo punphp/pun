@@ -627,7 +627,8 @@ fn string_class_name_skip_patterns() {
 }
 
 /// RenameClassRector, each upstream config on its own directories: Fixture, Oracle and Pun with
-/// config/configured_rule.php, FixtureAutoImportNames and OracleAutoImportNames with config/auto_import_names.php,
+/// config/configured_rule.php, FixtureAutoImportNames, OracleAutoImportNames and PunAutoImportNames with config/auto_import_names.php,
+/// OracleNoShortClasses with that config and `importShortClasses(false)`,
 /// FixtureRenameClassAndMethod with config/complex_rename.php and its RenameMethodRector beside the rule.
 /// FixtureAutoImportNames/SomeShort.php, a class the fixtures name, is Stubs/SomeShort.php. FixtureSkipAfterDefined
 /// and FixtureSkipUsedTracking are left out: they test Rector's `skip()` paths, which pun.toml's own ignores replace.
@@ -704,7 +705,16 @@ fn rename_class() {
     run_dirs(
         vec![configured(RenameClass::default(), &auto)],
         "RenameClassRector",
-        &["FixtureAutoImportNames", "OracleAutoImportNames"],
+        &["FixtureAutoImportNames", "OracleAutoImportNames", "PunAutoImportNames"],
+        80400,
+        &[],
+    );
+    let mut no_short = auto.clone();
+    no_short["import-short-classes"] = json!(false);
+    run_dirs(
+        vec![configured(RenameClass::default(), &no_short)],
+        "RenameClassRector",
+        &["OracleNoShortClasses"],
         80400,
         &[],
     );

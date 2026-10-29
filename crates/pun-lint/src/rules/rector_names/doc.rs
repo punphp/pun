@@ -463,11 +463,13 @@ impl Doc {
                     index += 1;
                 });
             }
-            Value::Doctrine { args, .. } => {
-                let piece = args.iter_mut().flat_map(|a| &mut a.0).filter(|p| p.1).nth(ident.index);
-                piece.expect("a doctrine identifier").0 = name.to_string();
+            // (the text values have no identifier)
+            value => {
+                if let Value::Doctrine { args, .. } = value {
+                    let piece = args.iter_mut().flat_map(|a| &mut a.0).filter(|p| p.1).nth(ident.index);
+                    piece.expect("a doctrine identifier").0 = name.to_string();
+                }
             }
-            Value::Text(_) | Value::Generic(_) | Value::Invalid(_) => {}
         }
     }
 
@@ -512,9 +514,7 @@ impl Doc {
 
     /// The class the annotation at `child` and `path` resolves to, and its values.
     pub fn values_mut(&mut self, child: usize, path: &[(usize, bool)]) -> (&str, &mut Vec<ArrayItem>) {
-        let Value::Annotation(a) = &mut self.children[child].value else {
-            unreachable!("not an annotation")
-        };
+        let Value::Annotation(a) = &mut self.children[child].value else { unreachable!("not an annotation") };
         match path.is_empty() {
             true => (&a.class, &mut a.values),
             false => navigate(&mut a.values, path),
@@ -838,7 +838,7 @@ fn strings_of(value: &str) -> Vec<(String, String)> {
     for tok in parser::tokenize(value) {
         if let t::SINGLE_QUOTED_STRING | t::DOUBLE_QUOTED_STRING = tok.ty {
             let unescaped = parser::unescape_string(&value[tok.start..tok.end]);
-            let printed = parser::print_string(&unescaped, value.as_bytes()[tok.start]);
+            let printed = parser::print_string(&unescaped, &value[tok.start..tok.end]);
             strings.push((String::from_utf8_lossy(&unescaped).into_owned(), printed));
         }
     }
@@ -924,7 +924,7 @@ fn scan_method(value: &str) -> Option<(usize, Vec<String>, Vec<String>)> {
                 t::EQUAL if depth == 0 => default = true,
                 t::SINGLE_QUOTED_STRING | t::DOUBLE_QUOTED_STRING if default => {
                     let unescaped = parser::unescape_string(&value[tok.start..tok.end]);
-                    quotes.push(parser::print_string(&unescaped, value.as_bytes()[tok.start]));
+                    quotes.push(parser::print_string(&unescaped, &value[tok.start..tok.end]));
                 }
                 _ => {}
             }
@@ -1346,8 +1346,10 @@ fn navigate<'a>(values: &'a mut [ArrayItem], path: &[(usize, bool)]) -> (&'a str
     match (v, path.len()) {
         (Val::Annotation(nested), 1) => (&nested.class, &mut nested.values),
         (Val::Annotation(nested), _) => navigate(&mut nested.values, &path[1..]),
-        (Val::Curly(items) | Val::List(items), _) => navigate(items, &path[1..]),
-        _ => unreachable!("a path to an annotation"),
+        (v, _) => {
+            let (Val::Curly(items) | Val::List(items)) = v else { unreachable!("a path to an annotation") };
+            navigate(items, &path[1..])
+        }
     }
 }
 

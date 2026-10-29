@@ -351,17 +351,11 @@ fn text(id: &Identifier<'_>) -> String {
     String::from_utf8_lossy(id.value()).into_owned()
 }
 
-fn is_special_class_name(name: &str) -> bool {
-    matches!(name.to_ascii_lowercase().as_str(), "self" | "parent" | "static")
-}
-
 impl Walk {
     /// php-parser's `NameContext::getResolvedName()` (`$type` the kind) of the name written `written`.
     fn resolve(&self, written: &str, kind: Kind) -> Option<String> {
-        // don't resolve special class names
-        if kind == Kind::Class && !written.contains('\\') && is_special_class_name(written) {
-            return None;
-        }
+        // (php-parser does not resolve the special class names: Mago reads `self`, `parent` and `static` as their own
+        // nodes, never as a name)
         // fully qualified names are already resolved
         if let Some(fq) = written.strip_prefix('\\') {
             return Some(fq.to_string());
