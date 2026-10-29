@@ -223,29 +223,29 @@ pub(crate) fn constant_values<'ast, 'arena>(
             _ => expr,
         }
     };
-    let elements: Vec<&ArrayElement<'_>> = match crate::syntax::unparenthesize(expr) {
-        Expression::Array(a) => a.elements.iter().collect(),
-        Expression::LegacyArray(a) => a.elements.iter().collect(),
-        _ => {
-            let string_keyed = type_of(facts, expr).is_some_and(|t| {
-                t.types.iter().any(|a| {
-                    matches!(a, TAtomic::Array(TArray::Keyed(k))
-                        if k.known_items.iter().flat_map(|i| i.keys()).any(|key| !key.is_integer()))
-                })
-            });
-            return (!string_keyed || flat.iter().all(|t| *t == flat[0])).then_some(flat);
-        }
+    let elements: Option<Vec<&ArrayElement<'_>>> = match crate::syntax::unparenthesize(expr) {
+        Expression::Array(a) => Some(a.elements.iter().collect()),
+        Expression::LegacyArray(a) => Some(a.elements.iter().collect()),
+        _ => None,
     };
-    let mut out = Vec::new();
-    for element in elements {
-        let value = match element {
-            ArrayElement::KeyValue(e) => e.value,
-            ArrayElement::Value(e) => e.value,
-            _ => return None,
-        };
-        out.extend(type_of(facts, value)?.types.iter().cloned());
+    // the values of a literal in the order written; a spread (`...$a`) takes Mago's order
+    let written: Option<Vec<&Expression<'_>>> = elements.and_then(|elements| {
+        elements.iter().map(|e| match e { ArrayElement::KeyValue(e) => Some(e.value), ArrayElement::Value(e) => Some(e.value), _ => None }).collect()
+    });
+    if let Some(written) = written {
+        let mut out = Vec::new();
+        for value in written {
+            out.extend(type_of(facts, value)?.types.iter().cloned());
+        }
+        return Some(out);
     }
-    Some(out)
+    let string_keyed = type_of(facts, expr).is_some_and(|t| {
+        t.types.iter().any(|a| {
+            matches!(a, TAtomic::Array(TArray::Keyed(k))
+                if k.known_items.iter().flat_map(|i| i.keys()).any(|key| !key.is_integer()))
+        })
+    });
+    (!string_keyed || flat.iter().all(|t| *t == flat[0])).then_some(flat)
 }
 
 /// Whether an array's item type has an array that is not a constant one but a list or non-empty: PHPStan has
@@ -361,9 +361,7 @@ fn member(t: &TAtomic, codebase: &CodebaseMetadata, php_version: u32) -> Option<
                 })
             };
             let kept: Vec<_> = all.iter().filter(narrower).cloned().collect();
-            let Some((first, rest)) = kept.split_first() else {
-                return atomic_declaration(t, codebase, php_version);
-            };
+            let (first, rest) = kept.split_first()?;
             let mut first = first.clone();
             first.intersection_types = (!rest.is_empty())
                 .then(|| Box::new(rest.iter().map(|r| TAtomic::Object(TObject::Named(r.clone()))).collect()));
@@ -436,10 +434,8 @@ pub(crate) fn array_shape_of(
         return Some(ArrayShape::General(Some(TUnion::from_vec(vec![TAtomic::Scalar(TScalar::string())]))));
     }
     if non_empty_call(expr) {
-        return Some(ArrayShape::General(match array_shape(t, false) {
-            Some(ArrayShape::General(Some(item))) => accessory_string(&item),
-            _ => None,
-        }));
+        let item = if let Some(ArrayShape::General(Some(item))) = array_shape(t, false) { accessory_string(&item) } else { None };
+        return Some(ArrayShape::General(item));
     }
     array_shape(t, !native_non_empty || emptiness_checked(ancestors, expr))
 }
@@ -473,20 +469,14 @@ fn emptiness_checked(ancestors: &[Node<'_, '_>], expr: &Expression<'_>) -> bool 
 
 /// `AccessoryNonEmptyArrayTypeCorrector`: the item type of a non-empty array whose items are strings with an accessory
 /// (`non-empty-string`, `lowercase-string`, ...: an `IntersectionType` in PHPStan) is `string`, of others `mixed`.
-/// A literal `''` may be among them (Mago's lowercase of a string that may be empty).
 fn accessory_string(item: &TUnion) -> Option<TUnion> {
-    use mago_codex::ttype::atomic::scalar::string::{TStringCasing, TStringLiteral};
-    let accessory = |a: &TAtomic| match a {
-        TAtomic::Scalar(TScalar::String(s)) => match &s.literal {
-            None => s.is_non_empty || s.is_truthy || s.is_numeric || s.casing != TStringCasing::Unspecified,
-            Some(TStringLiteral::Value(v)) => v.is_empty(),
-            Some(_) => false,
-        },
-        _ => false,
+    use mago_codex::ttype::atomic::scalar::string::TStringCasing;
+    let accessory = |a: &TAtomic| {
+        matches!(a, TAtomic::Scalar(TScalar::String(s)) if s.literal.is_none()
+            && (s.is_non_empty || s.is_truthy || s.is_numeric || s.casing != TStringCasing::Unspecified))
     };
-    (item.types.iter().all(accessory)
-        && item.types.iter().any(|a| matches!(a, TAtomic::Scalar(TScalar::String(s)) if s.literal.is_none())))
-    .then(|| TUnion::from_vec(vec![TAtomic::Scalar(TScalar::string())]))
+    (!item.types.is_empty() && item.types.iter().all(accessory))
+        .then(|| TUnion::from_vec(vec![TAtomic::Scalar(TScalar::string())]))
 }
 
 /// The members of the item type of the array `$this->name` reads, as written in the property's docblock (`@var
@@ -512,10 +502,8 @@ fn declared_items(facts: &Facts, ancestors: &[Node<'_, '_>], expr: &Expression<'
     let item = match text.strip_suffix("[]") {
         Some(item) => item.trim().trim_start_matches('(').trim_end_matches(')'),
         None => {
-            let (head, rest) = text.split_once('<')?;
-            if !["array", "list", "non-empty-array", "non-empty-list"].contains(&head.trim().to_ascii_lowercase().as_str()) {
-                return None;
-            }
+            let lists = ["array", "list", "non-empty-array", "non-empty-list"];
+            let (_, rest) = text.split_once('<').filter(|(head, _)| lists.contains(&head.trim().to_ascii_lowercase().as_str()))?;
             top_level(rest.strip_suffix('>')?, ',').pop()?
         }
     };
@@ -583,8 +571,15 @@ pub(crate) fn item_declaration(
         return Some(declaration);
     }
     let mut ordered: Vec<&str> = Vec::new();
-    // `TypeCombinator::union` puts `null` last
-    for o in order.iter().filter(|o| *o != "null").chain(order.iter().filter(|o| *o == "null")) {
+    // `TypeCombinator::union` puts the arrays after the other types, and `null` last
+    let rank = |o: &String| match o.as_str() {
+        "array" => 1,
+        "null" => 2,
+        _ => 0,
+    };
+    let mut order = order;
+    order.sort_by_key(rank);
+    for o in &order {
         if let Some(n) = names.iter().find(|n| key(n) == *o)
             && !ordered.contains(n)
         {
@@ -608,6 +603,17 @@ fn head_slice<'a>(expr: &'a Expression<'a>) -> Option<&'a Expression<'a>> {
     (named(call, "array_slice") && int(1) == Some(0) && (args.len() == 2 || int(2).is_some_and(|n| n > 0)))
         .then(|| args[0])
 }
+
+/// The function, method or closure around the code, or the file for code outside any.
+fn code_scope<'ast, 'arena>(ancestors: &[Node<'ast, 'arena>]) -> Option<Node<'ast, 'arena>> {
+    ancestors
+        .iter()
+        .rev()
+        .find(|a| matches!(a, Node::Function(_) | Node::Method(_) | Node::Closure(_) | Node::ArrowFunction(_)))
+        .or(ancestors.first())
+        .copied()
+}
+
 /// The value of `expr` where it is a variable: the right-hand side of its last `=` before `expr` in its function.
 fn assigned<'ast, 'arena>(
     ancestors: &[Node<'ast, 'arena>],
@@ -615,14 +621,10 @@ fn assigned<'ast, 'arena>(
 ) -> &'ast Expression<'arena> {
     use mago_syntax::cst::{AssignmentOperator, Variable};
     let Expression::Variable(Variable::Direct(variable)) = crate::syntax::unparenthesize(expr) else { return expr };
-    let Some(scope) = ancestors.iter().rev().find(|a| {
-        matches!(a, Node::Function(_) | Node::Method(_) | Node::Closure(_) | Node::ArrowFunction(_))
-    }) else {
-        return expr;
-    };
+    let Some(scope) = code_scope(ancestors) else { return expr };
     let at = crate::syntax::node_span(expr).start;
     let mut value = expr;
-    traverse(*scope, &mut |node| {
+    traverse(scope, &mut |node| {
         if let Node::Assignment(a) = node
             && matches!(a.operator, AssignmentOperator::Assign(_))
             && crate::syntax::node_span(&node).end <= at
@@ -661,14 +663,10 @@ fn cased_explode<'ast, 'arena>(ancestors: &[Node<'ast, 'arena>], expr: &'ast Exp
         return false;
     }
     let Expression::Variable(Variable::Direct(variable)) = crate::syntax::unparenthesize(haystack) else { return true };
-    let Some(scope) = ancestors.iter().rev().find(|a| {
-        matches!(a, Node::Function(_) | Node::Method(_) | Node::Closure(_) | Node::ArrowFunction(_))
-    }) else {
-        return true;
-    };
+    let Some(scope) = code_scope(ancestors) else { return true };
     let global = !ancestors.iter().any(|a| matches!(a, Node::Namespace(_)));
     let mut proven = false;
-    traverse(*scope, &mut |node| {
+    traverse(scope, &mut |node| {
         if let Node::FunctionCall(c) = node
             && ["str_contains", "str_starts_with", "str_ends_with"].iter().any(|n| named(c, n))
             && (global || matches!(c.function, Expression::Identifier(Identifier::FullyQualified(_))))

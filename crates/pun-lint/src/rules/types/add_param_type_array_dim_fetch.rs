@@ -6,7 +6,7 @@
 //! PHPStan types a closure's parameter from the call it is passed to; Pun skips where that type is a union Mago does
 //! not infer: `debug_backtrace()`'s frames passed alongside, the match groups of `preg_replace_callback()` with a
 //! digits-only group, and items of constant shapes whose literal values differ (a `@template-covariant` value keeps
-//! them apart). An offset Mago has no type for counts only when it is a literal.
+//! them apart). An offset Mago has no type for may be an integer.
 
 use mago_codex::ttype::TType;
 use mago_codex::ttype::atomic::TAtomic;
@@ -16,7 +16,7 @@ use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::union::TUnion;
 use mago_syntax::cst::{
     Argument, AssignmentOperator, BinaryOperator, Call, ClassLikeMemberSelector, Expression, FunctionLikeParameterList,
-    Instantiation, Literal, MethodBody, Modifier, Node, NodeKind, UnaryPrefixOperator, Variable,
+    Instantiation, MethodBody, Modifier, Node, NodeKind, UnaryPrefixOperator, Variable,
 };
 
 use super::class_scope;
@@ -277,18 +277,8 @@ fn is_accessed_array_dim_fetch(
             return Flow::Stop;
         }
         // skip integer in possibly string type as string can be accessed via int
-        let integer = match type_of(facts, access.index) {
-            Some(index) => is_integer(index),
-            // Mago did not type the offset (it gives up on some files): only a literal tells
-            None => match unparenthesize(access.index) {
-                Expression::Literal(Literal::Integer(_)) => true,
-                Expression::Literal(Literal::String(_)) => false,
-                _ => {
-                    accessed = false;
-                    return Flow::Stop;
-                }
-            },
-        };
+        // an offset Mago has no type for (it gives up on some code) may be an integer: then Pun leaves the parameter
+        let integer = type_of(facts, access.index).is_none_or(is_integer);
         if integer && variable.is_none_or(maybe_string) {
             return Flow::Continue;
         }
