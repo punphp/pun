@@ -1047,33 +1047,23 @@ impl<'s> Session<'s> {
             let lower: Vec<String> = names.iter().map(|n| n.to_ascii_lowercase()).collect();
             let mut new_items = Vec::new();
             for (key, item) in list.items.iter().enumerate() {
-                let (kind, items, k): (Kind, Vec<UseItemView>, Option<usize>) = match item {
-                    Item::Old(i) => match root.stmts[*i].kind {
-                        StmtKind::Use(k) if root.uses[k].prefix.is_none() => (
-                            root.uses[k].kind.unwrap(),
-                            root.uses[k]
-                                .items
-                                .iter()
-                                .zip(&list.kept[k])
-                                .filter(|(_, k)| **k)
-                                .map(|(i, _)| i.clone())
-                                .collect(),
-                            Some(k),
-                        ),
-                        _ => {
-                            new_items.push(item.clone());
-                            continue;
-                        }
-                    },
-                    Item::New { kind, name, .. } => (*kind, new_use_view(*kind, name).items, None),
-                    Item::Nop(_) => {
-                        new_items.push(item.clone());
-                        continue;
-                    }
+                // (a new import is used: it came for a name of the code or of a doc that stays)
+                let Item::Old(i) = item else {
+                    new_items.push(item.clone());
+                    continue;
+                };
+                // (a `GroupUse` is no `Use_`)
+                let Some(k) = (match root.stmts[*i].kind {
+                    StmtKind::Use(k) if root.uses[k].prefix.is_none() => Some(k),
+                    _ => None,
+                }) else {
+                    new_items.push(item.clone());
+                    continue;
                 };
                 if names.is_empty() {
                     continue;
                 }
+                let kind = root.uses[k].kind.unwrap();
                 let case_sensitive = kind == Kind::Constant;
                 let list_names = if case_sensitive { &names } else { &lower };
                 let namespace = namespace.as_ref().map(|n| {
@@ -1083,27 +1073,27 @@ impl<'s> Session<'s> {
                         n.to_ascii_lowercase()
                     }
                 });
-                let used: Vec<bool> = items
+                let used: Vec<bool> = root.uses[k]
+                    .items
                     .iter()
-                    .map(|i| is_import_used(i, case_sensitive, list_names, namespace.as_deref()))
+                    .zip(&list.kept[k])
+                    .filter(|(_, k)| **k)
+                    .map(|(i, _)| {
+                        is_import_used(i, case_sensitive, list_names, namespace.as_deref())
+                    })
                     .collect();
-                if let Some(k) = k {
-                    let mut at = 0;
-                    for flag in list.kept[k].iter_mut().filter(|f| **f) {
-                        *flag = used[at];
-                        at += 1;
-                    }
+                let mut at = 0;
+                for flag in list.kept[k].iter_mut().filter(|f| **f) {
+                    *flag = used[at];
+                    at += 1;
                 }
                 if used.iter().any(|u| *u) {
                     new_items.push(item.clone());
                     continue;
                 }
-                let comments = match item {
-                    Item::Old(i) => (root.stmts[*i].comment_start < root.stmts[*i].span.start
-                        && !list.cleared[*i])
-                        .then_some(*i),
-                    Item::New { comments: c, .. } | Item::Nop(c) => *c,
-                };
+                let comments = (root.stmts[*i].comment_start < root.stmts[*i].span.start
+                    && !list.cleared[*i])
+                    .then_some(*i);
                 if key == first_key
                     && let Some(c) = comments
                 {
@@ -1156,8 +1146,16 @@ impl<'s> Session<'s> {
         code.sort_by_key(|c| c.0);
         names.extend(code.into_iter().map(|c| c.1));
         let uses = self.view.uses_root().uses.clone();
+        // (`findNamesInDocBlocks()` traverses the `Namespace_` itself: the docs before `namespace` count)
+        let doc_start = root.header.as_ref().map_or(region.start, |h| {
+            self.view.roots[0]
+                .stmts
+                .iter()
+                .find(|s| s.span.start == h.span.start)
+                .map_or(region.start, |s| s.comment_start)
+        });
         for d in &self.docs {
-            if !inside(d.span) {
+            if !(inside(d.span) || doc_start <= d.span.start && d.span.end <= region.start) {
                 continue;
             }
             let Some(doc) = &d.doc else {

@@ -733,43 +733,19 @@ impl Doc {
     }
 
     /// `RemoveNodesStartAndEndResolver::resolve()`: for each child that went (`array_diff()` by the string of each,
-    /// in their order), the token before its line's first token and the token after it.
+    /// in their order), the token before its first token and the token after it.
+    ///
+    /// (A child that went is a tag that the rule took: one of the same text is taken too, so `array_diff()` drops
+    /// none. Its start is no `PHPDOC_EOL`, and comes after the end of the one before it (or after `/**` for the
+    /// first, where `null < $seekPosition`), so the seek to the start of the line stops where it starts.)
     fn jumps(&self) -> Vec<(usize, usize)> {
         let mut removed = self.removed.clone();
         removed.sort_by_key(|(key, _)| *key);
-        let text = |c: &Child| c.start_end.map(|(start, end)| self.token_text(start, end));
-        let current: Vec<Option<String>> = self.children.iter().map(text).collect();
-        let mut jumps = Vec::new();
-        let mut last_end: Option<usize> = None;
         // it's not there when comment block has empty row "\s\*\n"
-        let starts_ends = removed.iter().filter_map(|(_, c)| Some((c, c.start_end?)));
-        for (child, (start, end)) in starts_ends {
-            if current.contains(&text(child)) {
-                continue;
-            }
-            // change start position to start of the line, so the whole line is removed
-            let mut seek = start as isize;
-            while seek >= 0 && self.tokens[seek as usize].ty != t::HORIZONTAL_WS {
-                if self.tokens[seek as usize].ty == t::PHPDOC_EOL {
-                    break;
-                }
-                // do not collide (`null < $seekPosition` is `false < (bool) $seekPosition`)
-                if last_end.map_or(seek != 0, |e| (e as isize) < seek) {
-                    break;
-                }
-                seek -= 1;
-            }
-            last_end = Some(end);
-            jumps.push(((seek - 1).max(0) as usize, end));
-        }
-        jumps
-    }
-
-    /// The doc's text from the token `start` to the one before `end`.
-    fn token_text(&self, start: usize, end: usize) -> String {
-        self.tokens[start..end]
+        removed
             .iter()
-            .map(|t| &self.text[t.start..t.end])
+            .filter_map(|(_, c)| c.start_end)
+            .map(|(start, end)| (start - 1, end))
             .collect()
     }
 
