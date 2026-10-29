@@ -90,10 +90,11 @@ fn map_item(item: &ArrayItem, nested: bool) -> Item {
         }
     };
     let key = match &item.key {
-        Some(Key::Val(key)) => match map_val(key, nested) {
-            Mapped::Expr(expr) => Some(expr),
-            Mapped::Remove => Some(Expr::Str(REMOVE_ARRAY.into(), Quote::Single)),
-        },
+        // (a key is never an annotation: the parsers read `@A` before `=` as a string)
+        Some(Key::Val(key)) => {
+            let Mapped::Expr(expr) = map_val(key, nested) else { unreachable!("an annotation key") };
+            Some(expr)
+        }
         Some(Key::Int(key)) => Some(Expr::Int(*key)),
         None => {
             // `hasNoParenthesesAnnotation()`: `@Class` without arguments, read again as an annotation
@@ -134,8 +135,8 @@ fn map_val(value: &Val, nested: bool) -> Mapped {
             for item in items {
                 let mut mapped = map_item(item, nested);
                 let key = match &item.key {
+                    // (a curly list's keys are values, never `Key::Int`)
                     Some(Key::Val(Val::Str(key))) if is_numeric(key) => php_int(key),
-                    Some(Key::Int(key)) => *key,
                     _ => {
                         array.push(mapped);
                         continue;
@@ -606,34 +607,28 @@ fn single_quoted(value: &str) -> String {
     out
 }
 
-/// `pScalar_Float()`: `%.16G`, or `%.17G` where that does not give the value back, with `.0` after an integer.
+/// `pScalar_Float()`: `%.16G`, or `%.17G` where that does not give the value back. (Its `.0` after an integer never
+/// comes: a float printed without an exponent is below 1e16, so equals its `(int)`, and the mapper made it an integer.)
 fn print_float(value: f64) -> String {
     let printed = format_g(value, 16);
-    let printed = match printed.parse::<f64>() == Ok(value) {
+    match printed.parse::<f64>() == Ok(value) {
         true => printed,
         false => format_g(value, 17),
-    };
-    match printed.trim_start_matches('-').bytes().all(|c| c.is_ascii_digit()) {
-        true => format!("{printed}.0"),
-        false => printed,
     }
 }
 
-/// C's `%.{precision}G`.
+/// PHP's `sprintf('%.{precision}G')` (`php_gcvt()`): fixed below the precision's exponent, else a mantissa with at
+/// least one decimal and `E`, the sign and the exponent's digits. (A zero is never a float here: it is an integer.)
 fn format_g(value: f64, precision: usize) -> String {
-    if value == 0.0 {
-        return "0".to_string();
-    }
     let exponent = format!("{:.*e}", precision - 1, value);
-    let (mantissa, exp) = exponent.split_once('e').unwrap_or((&exponent, "0"));
-    let exp: i32 = exp.parse().unwrap_or(0);
-    let trim = |s: &str| match s.contains('.') {
-        true => s.trim_end_matches('0').trim_end_matches('.').to_string(),
-        false => s.to_string(),
-    };
+    let (mantissa, exp) = exponent.split_once('e').expect("an exponent");
+    let exp: i32 = exp.parse().expect("digits");
+    let trim = |s: &str| s.trim_end_matches('0').trim_end_matches('.').to_string();
     if exp < -4 || exp >= precision as i32 {
-        let sign = if exp < 0 { '-' } else { '+' };
-        return format!("{}E{sign}{:02}", trim(mantissa), exp.abs());
+        let mantissa = trim(mantissa);
+        let mantissa = if mantissa.contains('.') { mantissa } else { format!("{mantissa}.0") };
+        return format!("{mantissa}E{}{}", if exp < 0 { '-' } else { '+' }, exp.abs());
     }
-    trim(&format!("{:.*}", (precision as i32 - 1 - exp).max(0) as usize, value))
+    let fixed = format!("{:.*}", (precision as i32 - 1 - exp) as usize, value);
+    if fixed.contains('.') { trim(&fixed) } else { fixed }
 }

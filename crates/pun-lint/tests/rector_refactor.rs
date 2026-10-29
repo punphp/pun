@@ -766,7 +766,7 @@ fn rename_class() {
 }
 
 /// AnnotationToAttributeRector, each upstream config on its own directories: Fixture, Oracle and Pun with
-/// config/configured_rule.php (Fixture/Behat/*, Fixture/Doctrine/* and Fixture/Symfony/* in their directories),
+/// config/configured_rule.php (OraclePhp80 with it at PHP 8.0) (Fixture/Behat/*, Fixture/Doctrine/* and Fixture/Symfony/* in their directories),
 /// FixtureMultipleCall with config/multiple_call_configured_rule.php at PHP 8.0, FixturePhp81 and OraclePhp81 with
 /// config/nested_attributes_php81.php at PHP 8.1. The classes Rector's test run autoloads from rector-src's stubs/
 /// are in Stubs/. Fixture/Doctrine/{doctrine_entity,handle_with_api_above,nullable_bool_value} are
@@ -825,6 +825,13 @@ fn annotation_to_attribute() {
         let fixed = pun_lint::rules::facts::with_sources(extra.clone(), || linter.fix(&path, input)).unwrap();
         assert_eq!(fixed.source, expected, "{}", path.display());
     }
+    run_dirs(
+        vec![configured(AnnotationToAttribute::default(), &options)],
+        "AnnotationToAttributeRector",
+        &["OraclePhp80"],
+        80000,
+        &[],
+    );
     let multiple = json!({"items": [{"tag": "Doctrine\\ORM\\Mapping\\Entity"}, {"tag": "Doctrine\\ORM\\Mapping\\ManyToMany"}]});
     run_dirs(
         vec![configured(AnnotationToAttribute::default(), &multiple)],

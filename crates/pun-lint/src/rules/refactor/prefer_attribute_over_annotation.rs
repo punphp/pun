@@ -25,6 +25,7 @@ use crate::rules::rector_names::resolve::{self, Scope, has_class};
 use crate::rules::rector_names::view::{FileView, UseView};
 use crate::rules::rector_stmts::line_indent;
 use crate::rules::types::facts::facts;
+use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
 
 #[derive(Default)]
@@ -35,6 +36,11 @@ pub struct AnnotationToAttribute {
 impl Rule for AnnotationToAttribute {
     fn id(&self) -> &'static str {
         "lint/refactor/prefer-attribute-over-annotation"
+    }
+
+    /// Rector runs the rule once per file; a closure keeps its doc, which a second run would read again.
+    fn once(&self) -> bool {
+        true
     }
 
     fn configure(&mut self, options: &Value) -> Result<(), String> {
@@ -149,7 +155,30 @@ impl AnnotationToAttribute {
             for child in node.children().into_iter().rev() {
                 stack.push((child, path.clone()));
             }
-            if !is_target(node) {
+            // `Closure`, `ArrowFunction`: an expression's comments are not reprinted, so the doc stays as written and
+            // the attributes go before the node (`attrGroups` inline, `' '`)
+            if let Node::Closure(_) | Node::ArrowFunction(_) = node {
+                let start = node_span(&node).start;
+                // php-parser gives the comments to the outermost node that starts after them
+                if ancestors.iter().rev().take_while(|a| node_span(*a).start == start).any(|a| !matches!(a, Node::Expression(_))) {
+                    continue;
+                }
+                let Some(doc_comment) = crate::rules::lint_b_doc::Doc::of(ctx.source, &ancestors, start) else {
+                    continue;
+                };
+                let lists = match node {
+                    Node::Closure(closure) => closure.attribute_lists.last().map(|l| node_span(l).end),
+                    Node::ArrowFunction(arrow) => arrow.attribute_lists.last().map(|l| node_span(l).end),
+                    _ => unreachable!("a closure"),
+                };
+                let Some((_, groups)) = self.convert(ctx, &view, doc_comment.span, &original, &mut renamed)? else {
+                    continue;
+                };
+                let printed = groups.iter().map(ToString::to_string);
+                edits.push(match lists {
+                    Some(end) => Edit::new(Span::new(end, end), printed.map(|g| format!(" {g}")).collect::<String>()),
+                    None => Edit::new(Span::new(start, start), printed.map(|g| format!("{g} ")).collect::<String>()),
+                });
                 continue;
             }
             let Some(annotated) = Annotated::of_last(ctx.source, node, &ancestors) else {
@@ -158,27 +187,9 @@ impl AnnotationToAttribute {
             let Some(doc_comment) = &annotated.doc else {
                 continue;
             };
-            let span = doc_comment.span;
-            let Some(doc_view) = view.docs.iter().find(|d| d.span == span) else {
+            let Some((doc, groups)) = self.convert(ctx, &view, doc_comment.span, &original, &mut renamed)? else {
                 continue;
             };
-            let scope_uses: &[UseView] = &view.uses_root().uses;
-            let scope = Scope {
-                namespace: doc_view.namespace.as_deref(),
-                class: doc_view.class.as_deref(),
-                uses: scope_uses,
-            };
-            let text = &ctx.source[span.start..span.end];
-            let mut doc = Doc::parse(
-                text,
-                &|tag| resolve::resolve_tag(ctx, scope, tag),
-                &|name| resolve::narrow(ctx, scope, name).class_name().map(str::to_string),
-            )?;
-            let mut groups = self.doctrine_annotations(ctx, &mut doc, &original, &mut renamed);
-            groups.extend(self.simple_tags(ctx, &mut doc));
-            if groups.is_empty() {
-                continue;
-            }
             let printed: Vec<String> = groups.iter().map(ToString::to_string).collect();
             let new_doc = doc.print();
             // `TokenStream::getIndent()`: a tab counts as 4 columns, and the printer indents with spaces
@@ -207,6 +218,34 @@ impl AnnotationToAttribute {
         Some(edits)
     }
 
+    /// `refactor()` on the doc comment at `span`: the doc without the tags that went and the attributes, `Some(None)`
+    /// without any, `None` where Pun does not read the doc.
+    #[allow(clippy::type_complexity)]
+    fn convert(
+        &self,
+        ctx: &Context<'_>,
+        view: &FileView,
+        span: Span,
+        original: &[(String, Option<String>)],
+        renamed: &mut [Option<String>],
+    ) -> Option<Option<(Doc, Vec<Attribute>)>> {
+        let doc_view = view.docs.iter().find(|d| d.span == span);
+        let scope_uses: &[UseView] = &view.uses_root().uses;
+        let scope = Scope {
+            namespace: doc_view.and_then(|d| d.namespace.as_deref()),
+            class: doc_view.and_then(|d| d.class.as_deref()),
+            uses: scope_uses,
+        };
+        let mut doc = Doc::parse(
+            &ctx.source[span.start..span.end],
+            &|tag| resolve::resolve_tag(ctx, scope, tag),
+            &|name| resolve::narrow(ctx, scope, name).class_name().map(str::to_string),
+        )?;
+        let mut groups = self.doctrine_annotations(ctx, &mut doc, original, renamed);
+        groups.extend(self.simple_tags(ctx, &mut doc));
+        Some((!groups.is_empty()).then_some((doc, groups)))
+    }
+
     /// `processDoctrineAnnotationClasses()`: the attributes of the doc's Doctrine annotations of a configured class
     /// (the doc loses them), none where one has a nested annotation that stays.
     fn doctrine_annotations(
@@ -230,14 +269,11 @@ impl AnnotationToAttribute {
             if config.use_value_as_attribute_argument || !is_attribute_class(ctx, &config.attribute_class) {
                 continue;
             }
-            matched.push((i, config));
+            matched.push((i, config, annotation.clone()));
         }
         let mut attributes = Vec::new();
         let mut renames = Vec::new();
-        for (i, config) in &matched {
-            let DocValue::Annotation(annotation) = &doc.children[*i].value else {
-                continue;
-            };
+        for (_, config, annotation) in &matched {
             let (name, rename) = attribute::attribute_name(config, &annotation.identifier, uses);
             renames.extend(rename);
             let constructor = constructor_parameters(ctx, &config.attribute_class);
@@ -250,10 +286,7 @@ impl AnnotationToAttribute {
             return Vec::new();
         }
         // the annotations go, last first so the indexes hold; a text after the closing parenthesis stays
-        for (i, _) in matched.iter().rev() {
-            let DocValue::Annotation(annotation) = &doc.children[*i].value else {
-                continue;
-            };
+        for (i, _, annotation) in matched.iter().rev() {
             match attribute::trailing_comment(annotation.original()) {
                 Some(comment) => doc.replace_with_text(*i, comment),
                 None => doc.remove(*i),
@@ -302,14 +335,6 @@ impl AnnotationToAttribute {
         }
         attributes
     }
-}
-
-/// The nodes `AnnotationToAttributeRector` refactors (`Closure` and `ArrowFunction` aside).
-fn is_target(node: Node<'_, '_>) -> bool {
-    matches!(
-        node,
-        Node::Class(_) | Node::Interface(_) | Node::Method(_) | Node::Property(_) | Node::Function(_) | Node::FunctionLikeParameter(_)
-    )
 }
 
 /// `RectorAssert::className()`.
