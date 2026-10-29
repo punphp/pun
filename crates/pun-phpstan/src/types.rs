@@ -3846,6 +3846,85 @@ enum Merge {
     B(Type),
 }
 
+/// TypeCombinator::remove() and ObjectType::tryRemove() for a named-object exclusion.
+fn remove_object_exclusion(from: &Type, removed: &Type) -> Option<Type> {
+    if removed.is_compound() {
+        return None;
+    }
+    if let Type::Union(parts) | Type::Benevolent(parts) = from {
+        return Some(union(
+            parts.iter().map(|part| remove_object_exclusion(part, removed)).collect::<Option<_>>()?,
+        ));
+    }
+    let (object, previous) = match from {
+        Type::SubtractedObject { object, excluded } => {
+            (object.as_ref(), Some(excluded.as_ref()))
+        }
+        from => (from, None),
+    };
+    let Type::Object(class, args, _) = object else { return None };
+    match is_super_type_of(removed, from) {
+        Tri::Yes => return Some(Type::Never(NeverKind::Implicit)),
+        Tri::No => return Some(from.clone()),
+        Tri::Maybe => {}
+    }
+    let removed_object = match removed {
+        Type::SubtractedObject { object, .. } => object.as_ref(),
+        removed => removed,
+    };
+    if let Type::Object(removed_class, _, _) = removed_object {
+        // UnionType::EQUAL_UNION_CLASSES, before ObjectType's ordinary subtraction.
+        let complement = match (class.as_str(), removed_class.as_str()) {
+            ("Throwable", "Exception") => Some("Error"),
+            ("Throwable", "Error") => Some("Exception"),
+            ("DateTimeInterface", "DateTime") => Some("DateTimeImmutable"),
+            ("DateTimeInterface", "DateTimeImmutable") => Some("DateTime"),
+            _ => None,
+        };
+        if let Some(complement) = complement {
+            return Some(Type::Object(complement.into(), vec![], false));
+        }
+    }
+    if !is_super_type_of(from, removed).yes() {
+        return Some(from.clone());
+    }
+    let excluded = match previous {
+        Some(previous) => union(vec![previous.clone(), removed.clone()]),
+        None => removed.clone(),
+    };
+    Some(Type::object_subtracted(
+        Type::Object(class.clone(), args.clone(), false),
+        excluded,
+    ))
+}
+
+/// TypeCombinator::intersectWithSubtractedType(): restoring part of an excluded object retains its difference.
+fn restore_object_exclusion(positive: &Type, excluded: &Type, other: &Type) -> Option<Type> {
+    // Only a definite containment uses remove(); uncertain subtractable types intersect their exclusions.
+    if !is_super_type_of(excluded, other).yes() {
+        return None;
+    }
+    let remaining = remove_object_exclusion(excluded, other)?;
+    let remaining = if remaining.is_never() || !is_super_type_of(&remaining, other).no() {
+        Type::Never(NeverKind::Implicit)
+    } else {
+        remaining
+    };
+    Some(match positive {
+        Type::Mixed { explicit } => Type::mixed_subtracted(*explicit, remaining),
+        _ => Type::object_subtracted(positive.clone(), remaining),
+    })
+}
+
+/// TypeCombinator::intersect()'s positive-object pre-check, followed by unionWithSubtractedType().
+fn intersect_object_exclusion(a: &Type, b: &Type) -> Option<Type> {
+    let Type::SubtractedObject { object, excluded } = a else { return None };
+    if !is_super_type_of(object, b).yes() {
+        return None;
+    }
+    mixed::intersection(&Type::SubtractedMixed { explicit: false, excluded: excluded.clone() }, b)
+}
+
 /// `TypeCombinator::compareTypesInUnion()`
 fn compare_in_union_merge(a: &Type, b: &Type) -> Option<Merge> {
     // ConstantStringType/ConstantIntegerType check their nonconstant parent class before CompoundType.
@@ -3861,18 +3940,28 @@ fn compare_in_union_merge(a: &Type, b: &Type) -> Option<Merge> {
         }
     };
     if let Type::SubtractedMixed { explicit, excluded } = a {
-        return Some(Merge::A(mixed::join(*explicit, excluded, b)));
+        return Some(Merge::A(
+            restore_object_exclusion(&Type::Mixed { explicit: *explicit }, excluded, b)
+                .unwrap_or_else(|| mixed::join(*explicit, excluded, b)),
+        ));
     }
     if let Type::SubtractedMixed { explicit, excluded } = b {
-        return Some(Merge::B(mixed::join(*explicit, excluded, a)));
+        return Some(Merge::B(
+            restore_object_exclusion(&Type::Mixed { explicit: *explicit }, excluded, a)
+                .unwrap_or_else(|| mixed::join(*explicit, excluded, a)),
+        ));
     }
     if let Type::SubtractedObject { object, excluded } = a
-        && let Some(joined) = mixed::join_object(object, excluded, b)
+        && is_super_type_of(object, b).yes()
+        && let Some(joined) = restore_object_exclusion(object, excluded, b)
+            .or_else(|| mixed::join_object(object, excluded, b))
     {
         return Some(Merge::A(joined));
     }
     if let Type::SubtractedObject { object, excluded } = b
-        && let Some(joined) = mixed::join_object(object, excluded, a)
+        && is_super_type_of(object, a).yes()
+        && let Some(joined) = restore_object_exclusion(object, excluded, a)
+            .or_else(|| mixed::join_object(object, excluded, a))
     {
         return Some(Merge::B(joined));
     }
@@ -4349,6 +4438,16 @@ pub fn intersect(types: Vec<Type>) -> Type {
     'outer: while i < types.len() {
         let mut j = i + 1;
         'inner: while j < types.len() {
+            if let Some(t) = intersect_object_exclusion(&types[j], &types[i]) {
+                types[i] = t;
+                types.remove(j);
+                continue;
+            }
+            if let Some(t) = intersect_object_exclusion(&types[i], &types[j]) {
+                types[j] = t;
+                types.remove(i);
+                continue 'outer;
+            }
             if let Some(t) = mixed::intersection(&types[i], &types[j])
                 .or_else(|| mixed::intersection(&types[j], &types[i]))
             {

@@ -367,6 +367,7 @@ fn subtraction_descriptions_follow_runtime_type_not_rendered_delimiters() {
 #[test]
 fn object_exclusions_keep_identity_through_public_queries_and_unions() {
     use pun_phpstan::resolve::resolve_str;
+    use pun_phpstan::types::{Cast, StrictMixed, cast_is_error};
     use serde_json::json;
 
     fn input(spec: &Value) -> Type {
@@ -375,6 +376,21 @@ fn object_exclusions_keep_identity_through_public_queries_and_unions() {
         }
         if let Some(object) = spec.get("object") {
             return Type::object_subtracted(input(object), input(&spec["excluded"]));
+        }
+        if let Some(excluded) = spec.get("mixed") {
+            return Type::mixed_subtracted(
+                spec["explicit"].as_bool().unwrap_or(false),
+                input(excluded),
+            );
+        }
+        if let Some(class) = spec["static"].as_str() {
+            return Type::Static(class.into(), vec![]);
+        }
+        if spec["parent"] == true {
+            return Type::NonexistentParent;
+        }
+        if spec["never"] == true {
+            return Type::Never(NeverKind::Implicit);
         }
         Type::Union(
             spec["union"]
@@ -428,4 +444,38 @@ fn object_exclusions_keep_identity_through_public_queries_and_unions() {
             "{pair}"
         );
     }
+    let observe = |t: &Type, a: &Type, b: &Type| {
+        json!({
+            "descriptions": describe(t), "names": t.object_class_names(),
+            "key": describe(&t.iterable_key_type()), "value": describe(&t.iterable_value_type()),
+            "implicitMixed": t.is_implicit_mixed(),
+            "casts": ([Cast::String, Cast::Number, Cast::Integer, Cast::Float, Cast::Boolean, Cast::BitwiseNot]
+                .map(|cast| cast_is_error(t, cast, StrictMixed::default()))),
+            "relations": ([a, b].map(|other| json!({
+                "equals": [t == other, other == t],
+                "super": [tri(is_super_type_of(t, other)), tri(is_super_type_of(other, t))],
+                "accepts": ([false, true].map(|strict| [tri(accepts(t, other, strict)), tri(accepts(other, t, strict))])),
+            }))),
+        })
+    };
+    let mut failures = Vec::new();
+    for (pair, operations) in oracle["combinators"].as_object().unwrap() {
+        let (a, b) = pair.split_once(':').unwrap();
+        let (a, b) = (&types[a], &types[b]);
+        for (operation, result) in [
+            ("union", union(vec![a.clone(), b.clone()])),
+            ("intersection", intersect(vec![a.clone(), b.clone()])),
+        ] {
+            let actual = observe(&result, a, b);
+            for (field, expected) in operations[operation].as_object().unwrap() {
+                if actual[field] != *expected {
+                    failures.push(format!(
+                        "{pair} {operation} {field}: {}, expected {expected}",
+                        actual[field]
+                    ));
+                }
+            }
+        }
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
 }
