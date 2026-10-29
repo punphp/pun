@@ -1024,6 +1024,12 @@ capability. It remains truthy. Ordinary named `parent` objects retain their sepa
 Generic `object` does not contain the sentinel: `object|parent` retains both members, and
 `object&parent` is bottom. Mixed and never retain their usual containment and combination behavior.
 
+PHPStan's `ObjectShapeType::isSuperTypeOf()` and `accepts()` accept the sentinel for empty
+and optional-only shapes because it has no properties. Any required property rejects it.
+The sentinel does not contain any object shape in reverse. The public union regression checks
+both directions, including a shape with optional and required properties, against the pinned
+type API capture in `crates/pun-phpstan/tests/fixtures/nonexistent-parent/`.
+
 `TClassLikeString::LiteralAny` represents `class-string&literal-string` without a constant value
 or object bound. It differs from both `Any` and value-bearing `Literal`. Literal-origin queries,
 containment, union reduction, intersection, population, and displays preserve that distinction.

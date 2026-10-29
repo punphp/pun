@@ -169,16 +169,30 @@ fn nonexistent_parent_lattice_retains_asymmetric_object_and_bottom_controls() {
         }
     }
     assert!(union_comparator::can_expression_types_be_identical(&codebase, &parent, &parent, false, false));
-    let shape = TUnion::from_atomic(TAtomic::Object(TObject::new_with_properties(false, Default::default())));
-    assert!(!union_comparator::is_contained_by(
-        &codebase,
-        &parent,
-        &shape,
-        false,
-        false,
-        false,
-        &mut ComparisonResult::new(),
-    ));
+    // PHPStan ObjectShapeType accepts the propertyless sentinel only when every
+    // property is optional. The sentinel never accepts an object shape in reverse.
+    for (properties, contained) in [
+        (Default::default(), true),
+        ([(word("foo"), (true, get_int()))].into(), true),
+        ([(word("foo"), (false, get_int()))].into(), false),
+        ([(word("foo"), (true, get_int())), (word("required"), (false, get_string()))].into(), false),
+    ] {
+        let shape = TUnion::from_atomic(TAtomic::Object(TObject::new_with_properties(false, properties)));
+        for (left, right, expected) in [(&parent, &shape, contained), (&shape, &parent, false)] {
+            assert_eq!(
+                union_comparator::is_contained_by(
+                    &codebase,
+                    left,
+                    right,
+                    false,
+                    false,
+                    false,
+                    &mut ComparisonResult::new(),
+                ),
+                expected,
+            );
+        }
+    }
 }
 
 #[test]

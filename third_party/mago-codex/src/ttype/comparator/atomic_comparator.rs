@@ -506,6 +506,11 @@ pub fn is_contained_by(
 
                 true
             }
+            TObject::NonexistentParent
+                if container_object_with_properties.known_properties.values().all(|(optional, _)| *optional) =>
+            {
+                true
+            }
             TObject::NonexistentParent | TObject::HasMethod(_) | TObject::HasProperty(_) => false,
         };
     }
