@@ -40,6 +40,8 @@ test('the value of and() is printed anew', function () {
     expect($a)->toBe(1);
     expect(new $a->b['c'])->toBe(2);
     expect($a)->toBe(1);
+    expect(new $a?->b)->toBe(2);
+    expect($a)->toBe(1);
     expect(new (Foo::$cls))->toBe(2);
     expect($a)->toBe(1);
     expect(new (foo()))->toBe(2);
@@ -135,6 +137,8 @@ test('the value of and() is printed anew', function () {
         ->and(new $cls())->toBe(2)
         ->and($a)->toBe(1)
         ->and(new $a->b['c']())->toBe(2)
+        ->and($a)->toBe(1)
+        ->and(new $a?->b())->toBe(2)
         ->and($a)->toBe(1)
         ->and(new Foo::$cls())->toBe(2)
         ->and($a)->toBe(1)

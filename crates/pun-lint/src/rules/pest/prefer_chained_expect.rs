@@ -320,7 +320,8 @@ fn newlines(current: &mut Chain<'_>) {
 
 /// The value of `->and()`, which `mergeDifferentVariableChains` strips of its `ORIGINAL_NODE`: php-parser prints the
 /// node itself anew (`pExpr_*`) and the nodes under it keep their text. The calls, fetches, `new` and arrays are
-/// printed anew; any other node keeps its text, as it reads the same printed anew when written in the usual way.
+/// printed anew; any other node keeps its text, which is what the printer writes for a variable or a literal written
+/// in the usual way, but not always for an operation, a closure or a string with variables (not ported).
 fn print_value(ctx: &Context<'_>, value: &Expression<'_>, indent: usize) -> String {
     let kept = |e: &Expression<'_>| kept_text(ctx, node_span(unparenthesize(e)), indent);
     let lhs = |e: &Expression<'_>, parens: fn(&Expression<'_>) -> bool| {
