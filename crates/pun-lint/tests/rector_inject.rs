@@ -254,7 +254,7 @@ fn argument_func_call_to_method_call() {
     );
 }
 
-/// Both rules are among every rule, and the CLI scans the project for them (they read parents in other files).
+/// Both rules are among every rule.
 #[test]
 fn registered() {
     let ids: Vec<&str> = pun_lint::rules::all().iter().map(|r| r.id()).collect();
@@ -263,6 +263,5 @@ fn registered() {
         "lint/laravel/prefer-constructor-injection",
     ] {
         assert!(ids.contains(&id), "{id}");
-        assert!(pun_lint::rules::PROJECT_RULES.contains(&id), "{id}");
     }
 }

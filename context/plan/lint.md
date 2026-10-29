@@ -445,8 +445,8 @@ Lint 7 dead-code class-method rules (2026-10-26; `no-empty-method`, `no-unused-p
   `ArrayCallableMethodMatcher`, `ClassMethodManipulator`, `ControllerClassMethodManipulator` and
   `DataProviderMethodsFinder`, ported function by function on Mago's codebase and types. `doesMethodExistInTrait`
   parses the trait's file again (`Facts::source_of`), as Rector's `AstResolver` does. The CLI scans the project for
-  these rules as for the `types` rules (`rules::PROJECT_RULES`), so parents, interfaces and traits in other files
-  count.
+  these rules as for every rule that reads facts (`facts::set_project_scan`), so parents, interfaces and traits in
+  other files count.
 - **Assistant's call: Mago's `mixed` is PHPStan's implicit one.** A call through a fluent `$this` chain keeps its
   method even after a method declared `: mixed`, as the oracle shows. PHPStan's `ArrayMapArgVisitor` stores a list
   where `isInArrayMap` asks for one `Arg`, so that check never matches upstream and is left out (oracle: a private
@@ -471,7 +471,7 @@ Lint 7 rector-laravel attribute rules (2026-10-27; the 31 `*PropertyTo*Attribute
   class view and printer.
 - **Assistant's call: the fixtures see rector-laravel's stubs.** Rector's `isObjectType` reads the class's ancestors
   through reflection, so the tests load rector-laravel's stubs/Illuminate (tests/rector-laravel-stubs) as its test
-  suite does, and the rules join `PROJECT_RULES` so the CLI scans the project for parents.
+  suite does, and the CLI scans the project for parents, as for every rule that reads facts.
 - **Pun leaves alone what Rector breaks:** `new static(...)` in `newCollection()` (Rector writes
   `#[CollectedBy(static::class)]`, which PHP rejects), a tab in the class's or method's indentation (Rector writes its
   own spaces), and an array with an empty item (php-parser does not parse it).

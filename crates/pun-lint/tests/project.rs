@@ -37,6 +37,40 @@ fn a_file_sees_the_project_codebase() {
     );
 }
 
+/// A deferred scan waits for the first rule that reads facts: `no-goto` reads none, so linting with it leaves the
+/// project unscanned, and the property rule then sees `Item` from the scan (the same expected code as above).
+#[test]
+fn a_deferred_scan_runs_when_a_rule_reads_facts() {
+    use pun_lint::rules::NoGoto;
+    use pun_lint::rules::facts::set_project_scan;
+    use std::sync::atomic::{AtomicBool, Ordering};
+    static SCANNED: AtomicBool = AtomicBool::new(false);
+    let _lock = LOCK.lock().unwrap_or_else(|e| e.into_inner());
+    set_project_scan(|| {
+        SCANNED.store(true, Ordering::SeqCst);
+        let files = [
+            ("item.php".to_string(), ITEM.to_string()),
+            ("holder.php".to_string(), HOLDER.to_string()),
+        ];
+        project_codebase(&files, 80400)
+    });
+    let goto = Linter::new(vec![Box::new(NoGoto)], 80400);
+    assert!(
+        goto.check(Path::new("holder.php"), HOLDER)
+            .unwrap()
+            .is_empty()
+    );
+    let scanned_before = SCANNED.load(Ordering::SeqCst);
+    let typed = fix();
+    set_project_codebase(None);
+    assert!(!scanned_before);
+    assert!(SCANNED.load(Ordering::SeqCst));
+    assert_eq!(
+        typed,
+        HOLDER.replace("public function name()", "public function name(): string")
+    );
+}
+
 /// A fix round lints a file changed after the project's codebase was scanned, so Mago's analysis gives `$this` no
 /// type there. PHPStan types it as the class (`ThisType`), so the private method `$this` calls stays used. Expected:
 /// the file unchanged, as Rector 2.6.1 (`RemoveUnusedPrivateMethodRector` and `AppToFacadeRector`) keeps

@@ -4,15 +4,16 @@
 //! each expression of the file. Docblocks are blanked out before Mago reads a file, so that both see only native types,
 //! as PHPStan's native reflection and native scope do.
 //!
-//! The project's codebase is set once by the caller with [`set_project_codebase`]; without one, a file is looked at
-//! with the prelude and its own symbols (and, in tests, the sources given to [`with_sources`]). The codebase of a file
-//! is kept per thread while rules ask about the same source (the fix rounds of one file).
+//! The project's codebase is set once by the caller with [`set_project_codebase`], or built when a rule first asks for
+//! facts with [`set_project_scan`]; without one, a file is looked at with the prelude and its own symbols (and, in
+//! tests, the sources given to [`with_sources`]). The codebase of a file is kept per thread while rules ask about the
+//! same source (the fix rounds of one file).
 
 use std::borrow::Cow;
 use std::cell::{OnceCell, RefCell};
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
-use std::sync::{Arc, LazyLock, RwLock};
+use std::sync::{Arc, LazyLock, Mutex, RwLock};
 
 use mago_allocator::LocalArena;
 use mago_analyzer::Analyzer;
@@ -78,6 +79,20 @@ static PROJECT: RwLock<Option<Arc<ProjectCodebase>>> = RwLock::new(None);
 /// Use `codebase` for every file from now on, or go back to analysing each file on its own with `None`.
 pub fn set_project_codebase(codebase: Option<Arc<ProjectCodebase>>) {
     *PROJECT.write().unwrap_or_else(|e| e.into_inner()) = codebase;
+}
+
+/// A build of the project's codebase that runs when a rule first asks for a file's facts.
+type PendingScan = Box<dyn FnOnce() -> Arc<ProjectCodebase> + Send>;
+
+/// The build [`set_project_scan`] deferred, until a rule asks for facts.
+static PENDING: Mutex<Option<PendingScan>> = Mutex::new(None);
+
+/// Build the project's codebase with `build` when a rule first asks for a file's facts, and use it for every file
+/// from then on, so a run whose rules never read facts never scans the project. The files waiting for it block on a
+/// lock, so `build` must not hand work to the pool those files run on (rayon's global pool: give it a pool of its own
+/// on a thread of its own).
+pub fn set_project_scan(build: impl FnOnce() -> Arc<ProjectCodebase> + Send + 'static) {
+    *PENDING.lock().unwrap_or_else(|e| e.into_inner()) = Some(Box::new(build));
 }
 
 /// The codebase of a project: the prelude with the symbols of `files` (path, code), populated, for
@@ -1030,6 +1045,11 @@ fn remember(id: FileId, path: &str, code: &str) {
 /// The facts of a file: the project's codebase, or the prelude with the file's own symbols.
 fn scan(ctx: &Context<'_>) -> Facts {
     let path = ctx.path.to_string_lossy().into_owned();
+    let mut pending = PENDING.lock().unwrap_or_else(|e| e.into_inner());
+    if let Some(build) = pending.take() {
+        set_project_codebase(Some(build()));
+    }
+    drop(pending);
     let project = PROJECT
         .read()
         .unwrap_or_else(|e| e.into_inner())
