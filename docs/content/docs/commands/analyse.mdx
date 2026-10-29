@@ -148,9 +148,13 @@ Benevolent unions and callable-array intersections retain their literal variable
 Its findings share `analyse/undefined/variable` selection; independent compact-rule selection remains incomplete.
 Nested variable names are checked as reads even when assignment, `isset`, `empty`, coalescing or `unset` permits an undefined outer target.
 From level 1, `isset` checks each operand's incoming variable certainty. Level 4 adds offset and property checks.
-Multiline diagnostics use the `isset` construct's line. Whole-rule parity remains incomplete for some refined offset-key types.
+Multiline diagnostics use the `isset` construct's line. Whole-rule parity remains incomplete.
 Integer-to-string casts retain decimal-integer-string precision, including bounded ranges and independent native types.
 Array offset checks coerce definite decimal-integer strings to integer keys; string offset checks retain the raw key type.
+For `isset` and null coalescing, array keys also convert broad booleans to `0|1` and broad floats to integers.
+Float keys retain their independent invalid-key diagnostics.
+Constant-array checks consider each union-key alternative and integer ranges spanning at most 129 values.
+Only selected fields contribute to nullability; optional fields remain possibly absent.
 Variable-name type errors point to the name expression's line, including multiline names.
 Variable names read from literal array offsets retain branch-dependent definedness after direct offset assignments.
 Writes to the array or another offset invalidate those cached names.
@@ -168,6 +172,9 @@ Equal-key closed shapes can merge nullable nested values without merging alterna
 Per-name filtered observations for dynamic method calls remain incomplete.
 
 For supported native expressions, constant `if` checks distinguish documented types from native types when adding PHPStan's PHPDoc-certainty tip.
+Function type-predicate checks use each argument's evaluated native type to decide that tip.
+Unsupported native transfers remain unavailable and do not imply PHPDoc certainty.
+The remaining-cases tip takes precedence. Global certainty options remain incomplete.
 
 Assignment targets retain their preparation-time reads before the right-hand side and subsequent write.
 Array roots, indexes, property receivers, and selectors keep their effects without a second evaluation during that write.
@@ -227,6 +234,7 @@ Return checks resolve template-key array shapes before testing whether a return 
 Own value templates retain their identity.
 
 Negative type guards preserve excluded values in `mixed` types.
+Object intersections combine their excluded classes. Unions restore only alternatives proven to belong to the excluded type.
 Object intersections discard duplicate constraints without losing generic arguments or `static` identity.
 Union method reflection preserves member order when choosing the declaring class; printed type descriptions remain sorted.
 Generic type comparisons treat differently ordered union and intersection members as equal.
@@ -237,6 +245,9 @@ Named-argument checks apply finality to the method's actual declaring class, inc
 Compound method argument binding composes original signatures before selecting a call variant.
 Union and intersection reflections retain their distinct visibility and named-argument policies.
 Binding uses the selected declaring class's built-in status, including through recursive `@mixin` declarations and supplied template arguments.
+Generic proxy unions preserve every member's named-argument policy, including through nullsafe calls.
+Interface `@phpstan-require-extends` methods use the required type's extended reflection, including mixins and supplied generic arguments.
+Inherited interface requirements retain their lookup order and cycle protection.
 Compound argument-type and by-reference checking remain incomplete.
 Nullsafe chains discard only short-circuit null. A genuinely nullable method result remains nullable for an ordinary chained call.
 Trait-alias override checks use the reflected alias name, adapted visibility and method policy.
@@ -245,6 +256,8 @@ Remaining interfaces retain declaration order.
 Case-insensitive trait-alias lookups retain written spelling in reflected names and diagnostics.
 Method-call, override and consistent-constructor rules are enabled independently.
 Turning off renamed-parameter reports preserves other enabled method diagnostics and unmatched-ignore errors.
+Joined renamed-parameter diagnostics consume only the exact ignored identifier, leaving unmatched identifiers with the same prefix untouched.
+Method-purity override checks include built-in parent and inherited interface methods, using their reflected side effects.
 Short-circuit boolean expressions retain evaluated operand types and their excluded object alternatives.
 Output arguments evaluated only on a short-circuited right operand remain possibly undefined on paths that skip that operand.
 Full type inference preserves explicit `mixed` from native and PHPDoc declarations, built-in return types, assignments and captures.
@@ -300,6 +313,8 @@ From level 4, the rule walk skips statements after termination while retaining l
 From level 2, `analyse/functions/invalid-pure` reports `void.pure` for supported functions and private methods whose bodies provably have no side effects.
 Named constructor calls use their reflected purity and throw declarations, including inherited constructors.
 Dynamic constructor targets, built-in constructor throw extensions, and conditional constructor policies remain incomplete.
+Local `unset` statements preserve operand effects and evaluate an offset's index before its receiver.
+Purity checks support direct locals and single offsets on proven plain arrays. References and nested or property roots remain incomplete.
 Unknown effect producers remain unchecked. Full pure-function and pure-method validation remains incomplete.
 
 Array writes distinguish definite literal keys from literal alternatives within a general string or integer key.

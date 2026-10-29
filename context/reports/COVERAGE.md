@@ -6,16 +6,18 @@ The two supported-only `r` modifier lines need the newer engine. Its expectation
 PHP and PCRE2 fixtures, not the orb's PHP 8.5.12 oracle, which links 10.42.
 Combine exports only when their token sources are byte-identical.
 
-The combined call-contract gate passes all 739 analyser public/library tests, 1,315 rule cases and
-2,787 level cases. It also passes all 444 native analyser tests, 298 codex tests, 80 PHPStan tests and
-53 targeted CLI tests. The level sweep identifies two obsolete CallMethods allowances. After removing
-them, the complete 220-case owner passes without changing diagnostic captures. The original inventory
-failure and its successful replacement remain separate evidence.
+The combined call-contract gate passes all 765 analyser public/library tests, 1,315 rule cases and
+2,787 level cases in 288 bounded partitions. It also passes 53 targeted CLI tests and all 432 lint
+tests. Source-owned checks pass all 445 native analyser units and 88 PHPStan tests. The level sweep
+removes two obsolete generic-receiver allowances without changing diagnostic captures. A concrete-trait
+purity control covers the final region while preserving all seven complete PHPStan records.
 
-Source-matched coverage is 43,569/43,569 analyser lines, 39,338/39,338 lint lines and 10,565/10,565
-PHPStan lines after existing exclusions. No new exclusions are added. Every combined source record
-has the same SHA-256 as the measured source. Coverage exports pair each executable with only its
-build-ID-matched successful profiles. All merge and export stderr logs are empty.
+Source-matched coverage is 43,921/43,921 analyser lines, 39,338/39,338 lint lines and 10,740/10,740
+PHPStan lines after existing exclusions. These counts supersede the older generated table below.
+No new exclusions are added. Every combined source record has the same SHA-256 as the measured source.
+Coverage exports pair each executable with only its build-ID-matched successful profiles. All 131
+frozen-gate exports and the trait-control export are warning-free, with no unmatched profiles.
+Declaration-only module files contain no executable lines.
 
 The complete lint gate passes 432 tests. Its subsequent integer-fallback cleanup passes all 52
 affected tests on combined main and 122 tests in its isolated gate. The cleanup removes unreachable
