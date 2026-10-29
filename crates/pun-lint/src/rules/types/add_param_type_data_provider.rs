@@ -20,7 +20,7 @@ use super::class_scope;
 use super::facts::{Facts, facts};
 use super::names::resolve_written;
 use super::never::is_test_class;
-use super::param::{Flow, add_hint, param_declaration_unsorted, phpstan_union, report, traverse};
+use super::param::{Flow, add_hint, own_static, param_declaration_unsorted, phpstan_union, report, traverse};
 use crate::rules::class_method::{class_info, method_data_providers, type_of};
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -46,9 +46,8 @@ impl Rule for AddParamTypeDataProvider {
         let facts = facts(ctx);
         let mut scoped = ancestors.to_vec();
         scoped.push(node);
-        if !class_scope(&scoped).is_some_and(|scope| is_test_class(&facts, &scope)) {
-            return;
-        }
+        let Some(scope) = class_scope(&scoped).filter(|scope| is_test_class(&facts, scope)) else { return };
+        let own = scope.name;
         let Some(class) = class_info(node, ancestors, &facts) else { return };
         // A `@dataProvider` tag whose name an import makes a class (`use ...\Attributes\DataProvider;`) is a Doctrine
         // annotation to Rector's docblock parser, which `DataProviderNodes` does not read.
@@ -92,7 +91,8 @@ impl Rule for AddParamTypeDataProvider {
                 else {
                     continue;
                 };
-                let types = phpstan_union(&facts.codebase, types);
+                let types: Vec<TAtomic> =
+                    phpstan_union(&facts.codebase, types).iter().map(|t| own_static(t, own.as_deref())).collect();
                 if let Some(declaration) =
                     param_declaration_unsorted(&types, &facts.codebase, ctx.php_version)
                 {
@@ -158,10 +158,14 @@ fn provider_type(facts: &Facts, provider: &Method<'_>, position: usize) -> Optio
                 continue;
             }
             // Rector's `getType()` of an enum case read in the array literal is the enum's `ObjectType`, not the case
-            // (a yielded array's values keep the case), so `TypeCombinator::union` leaves it in place
+            // (a yielded array's values keep the case), so `TypeCombinator::union` leaves it in place; the object of
+            // an enum with one case is that case, which goes after the other types
             let t = type_of(facts, item)?;
+            let one_case = |e: &TEnum| facts.codebase.get_class_like(e.name.as_bytes()).is_some_and(|c| c.enum_cases.len() == 1);
             types.push(TUnion::from_vec(t.types.iter().map(|a| match a {
-                TAtomic::Object(TObject::Enum(e)) => TAtomic::Object(TObject::Enum(TEnum { case: None, ..e.clone() })),
+                TAtomic::Object(TObject::Enum(e)) if !one_case(e) => {
+                    TAtomic::Object(TObject::Enum(TEnum { case: None, ..e.clone() }))
+                }
                 other => other.clone(),
             }).collect()));
         }

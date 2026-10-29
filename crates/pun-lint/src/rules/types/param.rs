@@ -268,16 +268,38 @@ fn single(t: &TAtomic, codebase: &CodebaseMetadata, php_version: u32) -> Option<
     }
 }
 
-/// A type that is not `null` or a constant `bool`, as a declaration: `$this` and `static` (Mago keeps it only inside
-/// its class; a static call of another class is that class) are `self` outside a return type.
+/// A type that is not `null` or a constant `bool`, as a declaration: `$this` is `self` outside a return type; a
+/// `static` that Mago keeps from a static call is the class it names (PHPStan resolves it there).
 fn member(t: &TAtomic, codebase: &CodebaseMetadata, php_version: u32) -> Option<String> {
     match t {
         TAtomic::Object(TObject::Named(named))
-            if (named.is_this || named.is_static) && named.intersection_types.is_none() =>
+            if named.is_this && named.intersection_types.is_none() =>
         {
             Some("self".to_string())
         }
+        TAtomic::Object(TObject::Named(named)) if named.is_static => {
+            let mut plain = named.clone();
+            plain.is_static = false;
+            atomic_declaration(&TAtomic::Object(TObject::Named(plain)), codebase, php_version)
+        }
         _ => atomic_declaration(t, codebase, php_version),
+    }
+}
+
+/// A `static` of the class the code is in as `$this` (Rector writes `self` for it); a `static` of another class
+/// (`Carbon::now()`, `$class::cases()`) stays, the class it names.
+pub(crate) fn own_static(t: &TAtomic, class: Option<&str>) -> TAtomic {
+    match t {
+        TAtomic::Object(TObject::Named(named))
+            if named.is_static
+                && class.is_some_and(|c| c.as_bytes().eq_ignore_ascii_case(named.name.as_bytes())) =>
+        {
+            let mut this = named.clone();
+            this.is_static = false;
+            this.is_this = true;
+            TAtomic::Object(TObject::Named(this))
+        }
+        other => other.clone(),
     }
 }
 

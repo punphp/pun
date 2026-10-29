@@ -13,12 +13,14 @@
 //! A docblock union of scalar types (`list<int|bool>`) is written in Mago's order (`bool|int`), where PHPStan keeps
 //! the written one.
 
+use mago_codex::ttype::union::TUnion;
 use mago_syntax::cst::{Argument, Expression, Node, NodeKind};
 
 use super::facts::facts;
 use super::param::{
-    ArrayShape, add_hint, array_shape_of, doc_order, is_mixed, param_declaration_in, report,
+    ArrayShape, add_hint, array_shape_of, doc_order, is_mixed, own_static, param_declaration_in, report,
 };
+use super::class_scope;
 use crate::rules::lint_b_helpers::value;
 use crate::rules::rector_code_quality::named;
 use crate::syntax::{node_span, unparenthesize};
@@ -70,6 +72,8 @@ impl Rule for AddParamTypeArrayMap {
             if is_mixed(&item) || param.hint.is_some() {
                 continue;
             }
+            let class = class_scope(ancestors).and_then(|scope| scope.name);
+            let item = TUnion::from_vec(item.types.iter().map(|t| own_static(t, class.as_deref())).collect());
             if let Some(declaration) = param_declaration_in(&item, &facts.codebase, ctx.php_version, &order) {
                 edits.push(add_hint(param, &declaration));
             }
