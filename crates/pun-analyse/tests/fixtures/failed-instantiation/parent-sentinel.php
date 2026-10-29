@@ -161,3 +161,115 @@ function classStringControl(string $class): void {
     /*probe*/ acceptObject($value);
     $_ = 'after-class-string';
 }
+
+function staticMethodValue(): void {
+    $value = new parent();
+    $result = /*probe*/ $value::method();
+    $_ = /*probe*/ $result;
+    $_ = 'after-static-method';
+}
+function staticPropertyValue(): void {
+    $value = new parent();
+    $result = /*probe*/ $value::$property;
+    $_ = /*probe*/ $result;
+    $_ = 'after-static-property';
+}
+function constantValue(): void {
+    $value = new parent();
+    $result = /*probe*/ $value::VALUE;
+    $_ = /*probe*/ $result;
+    $_ = 'after-constant';
+}
+function unaryPlus(): void {
+    $value = new parent();
+    $result = /*probe*/ +$value;
+    $_ = /*probe*/ $result;
+    $_ = 'after-unary-plus';
+}
+function unaryMinus(): void {
+    $value = new parent();
+    $result = /*probe*/ -$value;
+    $_ = /*probe*/ $result;
+    $_ = 'after-unary-minus';
+}
+function bitwiseNot(): void {
+    $value = new parent();
+    $result = /*probe*/ ~$value;
+    $_ = /*probe*/ $result;
+    $_ = 'after-bitwise-not';
+}
+
+function unionBooleanCast(bool $ordinary): void {
+    $value = $ordinary ? new Ordinary() : new parent();
+    $_ = /*probe*/ $value;
+    $result = /*probe*/ (bool) $value;
+    $_ = /*probe*/ $result;
+    $_ = 'after-union-bool';
+}
+function unionIntegerCast(bool $ordinary): void {
+    $value = $ordinary ? new Ordinary() : new parent();
+    $_ = /*probe*/ $value;
+    $result = /*probe*/ (int) $value;
+    $_ = /*probe*/ $result;
+    $_ = 'after-union-int';
+}
+function unionFloatCast(bool $ordinary): void {
+    $value = $ordinary ? new Ordinary() : new parent();
+    $_ = /*probe*/ $value;
+    $result = /*probe*/ (float) $value;
+    $_ = /*probe*/ $result;
+    $_ = 'after-union-float';
+}
+function unionStringCast(bool $ordinary): void {
+    $value = $ordinary ? new Ordinary() : new parent();
+    $_ = /*probe*/ $value;
+    $result = /*probe*/ (string) $value;
+    $_ = /*probe*/ $result;
+    $_ = 'after-union-string';
+}
+function unionArrayCast(bool $ordinary): void {
+    $value = $ordinary ? new Ordinary() : new parent();
+    $_ = /*probe*/ $value;
+    $result = /*probe*/ (array) $value;
+    $_ = /*probe*/ $result;
+    $_ = 'after-union-array';
+}
+function unionObjectCast(bool $ordinary): void {
+    $value = $ordinary ? new Ordinary() : new parent();
+    $_ = /*probe*/ $value;
+    $result = /*probe*/ (object) $value;
+    $_ = /*probe*/ $result;
+    $_ = 'after-union-object';
+}
+function unionForeach(bool $array): void {
+    $value = $array ? ['key' => 71, 2 => 73] : new parent();
+    $_ = /*probe*/ $value;
+    foreach ($value as $key => $item) {
+        $_ = /*probe*/ $key;
+        $_ = /*probe*/ $item;
+        $_ = 'after-union-foreach-body';
+    }
+    $_ = 'after-union-foreach';
+    foreach (['key' => 71, 2 => 73] as $key => $item) {
+        $_ = /*probe*/ $key;
+        $_ = /*probe*/ $item;
+        $_ = 'after-array-control-body';
+    }
+    $_ = 'after-array-control';
+}
+
+final class StaticOrdinary {
+    public static int $property = 13;
+    public const int VALUE = 17;
+    public static function method(): int { return 19; }
+}
+function staticAndUnaryControls(): void {
+    $value = new StaticOrdinary();
+    $_ = /*probe*/ $value::method();
+    $_ = /*probe*/ $value::$property;
+    $_ = /*probe*/ $value::VALUE;
+    $_ = /*probe*/ +7;
+    $_ = /*probe*/ -7;
+    $_ = /*probe*/ ~7;
+    $_ = 'after-static-unary-controls';
+}
