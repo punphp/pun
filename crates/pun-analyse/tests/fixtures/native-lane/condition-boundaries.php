@@ -7,13 +7,13 @@ function deadUnsupported(bool $flag): void {
 function liveUnsupported(bool $flag): void {
     $flag; // native
     if ($flag) { $value = 1; } else { $value = [2]; }
-    $value; // unavailable
+    $value; // native
     $value = 99;
-    $value; // unavailable
+    $value; // native
 }
 /** @param true $flag */
 function selectedContinuation(bool $flag): void {
-    $flag ? ($value = 1) : [2]; // unavailable
+    $flag ? ($value = 1) : [2]; // native
     $value; // native
     $flag; // native
 }
@@ -22,7 +22,7 @@ function valueWithoutContinuation(): void {
     /** @var true $flag */
     $flag;
     $flag ? [1] : 2; // native
-    $flag; // unavailable
+    $flag; // native
 }
 function unsupportedElseif(bool $flag, int $value): void {
     if ($flag) { $value = 1; }

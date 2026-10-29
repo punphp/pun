@@ -195,6 +195,7 @@ where
     }
 
     let mut assignment_operation_type = None;
+    let mut assignment_operation_native_type = None;
     if let Some(source_expression) = source_expression {
         let was_inside_general_use = block_context.flags.inside_general_use();
         block_context.flags.set_inside_general_use(true);
@@ -240,6 +241,10 @@ where
                 } else {
                     None
                 };
+                if matches!(assignment_operator, AssignmentOperator::Coalesce(_)) {
+                    assignment_operation_native_type =
+                        artifacts.get_rc_native_expression_type(&binary_expression).cloned();
+                }
 
                 artifacts.finish_expression_type_checkpoint(CheckpointAction::Merge);
             }
@@ -399,6 +404,11 @@ where
 
     if let Some(assignment_span) = assignment_span {
         artifacts.set_rc_expression_type(&assignment_span, source_type);
+        if let Some(native) = assignment_operation_native_type
+            && block_context.native_locals.is_some()
+        {
+            artifacts.set_rc_native_expression_type(&assignment_span, native);
+        }
     }
 
     Ok(())

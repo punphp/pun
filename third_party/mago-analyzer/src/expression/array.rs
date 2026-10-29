@@ -280,6 +280,9 @@ where
 {
     if elements.is_empty() {
         artifacts.set_expression_type(&expression_span, get_empty_keyed_array());
+        if block_context.native_locals.is_some() {
+            artifacts.set_rc_native_expression_type(&expression_span, Rc::new(get_empty_keyed_array()));
+        }
 
         return Ok(());
     }
@@ -670,8 +673,47 @@ where
     };
 
     artifacts.set_expression_type(&expression_span, array_type);
+    if block_context.native_locals.is_some()
+        && let Some(native) = native_literal(elements, artifacts)
+    {
+        artifacts.set_rc_native_expression_type(&expression_span, Rc::new(native));
+    }
 
     Ok(())
+}
+
+// InitializerExprTypeResolver::getArrayType reads each operand in the requested
+// flavour. This bounded constant builder consumes only completed native reads.
+// Unpacking/nonconstant keys remain unavailable, not selected-type substitutes.
+fn native_literal(elements: &[ArrayElement<'_>], artifacts: &AnalysisArtifacts) -> Option<TUnion> {
+    // InitializerExprTypeResolver degrades larger literals before pricing items.
+    if elements.len() > 256 {
+        return None;
+    }
+    let mut items = BTreeMap::new();
+    let mut next = 0i64;
+    for element in elements {
+        let (key, value) = match element {
+            ArrayElement::KeyValue(item) => (
+                artifacts.get_native_expression_type(item.key)?.get_single_array_key()?,
+                item.value,
+            ),
+            ArrayElement::Value(item) => (ArrayKey::Integer(next), item.value),
+            _ => return None,
+        };
+        if let ArrayKey::Integer(index) = key {
+            next = next.max(index.checked_add(1)?);
+        }
+        items.insert(key, (false, artifacts.get_native_expression_type(value)?.clone()));
+    }
+    if items.keys().enumerate().all(|(index, key)| *key == ArrayKey::Integer(index as i64)) {
+        return Some(TUnion::from_atomic(TAtomic::Array(TArray::List(TList::from_known_elements(
+            items.into_iter().enumerate().map(|(index, (_, item))| (index, item)).collect(),
+        )))));
+    }
+    Some(TUnion::from_atomic(TAtomic::Array(TArray::Keyed(
+        TKeyedArray::new().with_known_items(items).with_non_empty(true),
+    ))))
 }
 
 fn handle_variadic_array_element<'arena, A>(

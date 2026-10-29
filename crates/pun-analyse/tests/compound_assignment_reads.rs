@@ -296,11 +296,31 @@ fn completed_target_reads_match_the_real_phpstan_prepare_target_handoff() {
                     result.get_type().is_error()
                 ]));
                 want.push(record.clone());
-                assert!(
-                    result.get_native_type().is_none(),
-                    "unsupported compound native lane must stay unavailable"
+                let native_record = expected["native_reads"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .find(|read| {
+                        read[0] == record[0] && read[1] == record[1] && read[2] == record[2]
+                    })
+                    .unwrap();
+                // Only ??= has a supported native prepare-target transfer. Other
+                // compound operators keep their explicit unavailability boundary.
+                let native_want = if native && native_record[4].as_bool().unwrap() {
+                    native_record[3].clone()
+                } else {
+                    Value::Null
+                };
+                assert_eq!(
+                    json!(result.get_native_type().map(describe)),
+                    native_want,
+                    "{name} {span:?}: native target read"
                 );
-                assert!(result.get_raw_native_type().is_none());
+                assert_eq!(
+                    json!(result.get_raw_native_type().map(describe)),
+                    native_want
+                );
+                assert_eq!(before_write["native"], native_want);
                 println!(
                     "{name} {span:?}: RHS entry {:?}; completed {}; written receiver {:?}",
                     events.reads.get(&span),

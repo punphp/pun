@@ -141,14 +141,27 @@ fn native_id(ty: &TUnion) -> String {
     oracle_mago_id(&ty.get_id().to_string())
 }
 
-// Only adapt the two tools' scalar display syntax, not their inferred types.
+// Only adapt the two tools' display syntax, not their inferred types.
 fn oracle_mago_id(phpstan: &str) -> String {
     let phpstan = if phpstan.starts_with('(') && phpstan.ends_with(')') && phpstan.contains('|') {
         &phpstan[1..phpstan.len() - 1]
     } else {
         phpstan
     };
-    if phpstan.contains('|') {
+    if let Some(shape) = phpstan
+        .strip_prefix("array{")
+        .or_else(|| phpstan.strip_prefix("list{"))
+        .and_then(|shape| shape.strip_suffix('}'))
+    {
+        format!(
+            "array{{{}}}",
+            shape
+                .split(',')
+                .map(|item| oracle_mago_id(item.trim()))
+                .collect::<Vec<_>>()
+                .join(",")
+        )
+    } else if phpstan.contains('|') {
         let mut types: Vec<_> = phpstan.split('|').map(oracle_mago_id).collect();
         types.sort();
         types.join("|")
@@ -387,7 +400,6 @@ fn unsupported_transfers_poison_the_scope_before_children_and_never_recover_by_a
         "try { $value = 2; } finally { $value = 3; }",
         "$alias =& $value; $alias = 2;",
         "$value += 2;",
-        "$array = [2];",
         "$object = new stdClass();",
         "$value = $object->property;",
         "$object->method();",
@@ -476,7 +488,6 @@ fn unsupported_operator_shapes_invalidate_without_changing_the_full_walk() {
         "$flag || $flag",
         "$flag and $flag",
         "$flag or $flag",
-        "$nullable ?? 2",
         "($integer % 2) + 1",
         // Integer-string casts are covered by decimal_string_producers. These casts still
         // deliberately exclude union operands, non-finite literals, and non-scalar syntax.
@@ -531,7 +542,6 @@ fn unsupported_function_scopes_and_named_call_contracts_are_not_widened() {
     for parameters in [
         "int &$value",
         "int ...$value",
-        "array $value",
         "object $value",
         "callable $value",
         "int $value = 1 << 2",

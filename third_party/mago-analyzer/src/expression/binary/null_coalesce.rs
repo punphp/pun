@@ -68,6 +68,10 @@ where
     binary.lhs.analyze(context, block_context, artifacts)?;
     block_context.flags.set_inside_isset(was_inside_isset);
 
+    let native_lhs = artifacts.get_rc_native_expression_type(binary.lhs).cloned();
+    let native_isset = block_context.native_locals.as_ref().and_then(|_| {
+        crate::native::isset(binary.lhs, block_context, artifacts, context.codebase)
+    });
     let lhs_type_option = artifacts.get_rc_expression_type(&binary.lhs);
 
     let Some(lhs_type) = lhs_type_option else {
@@ -156,8 +160,24 @@ where
         .unwrap_or(lhs_type)
         .remove_null();
     restore_offset_holders(&offsets, block_context, &mut lhs_context);
+    if let Some(name) = get_variable_name(binary.lhs)
+        && let Some(locals) = &mut lhs_context.native_locals
+        && let Some(value) = locals.get_mut(&name)
+    {
+        *value = Rc::new(value.to_non_nullable());
+    }
+    if matches!(unwrap_expression(binary.lhs), Expression::ArrayAccess(_))
+        && let Some(id) = get_block_expression_id(binary.lhs, context, block_context)
+        && let Some(value) = &native_lhs
+        && let Some(locals) = &mut lhs_context.native_locals
+    {
+        // applySpecifiedTypes tracks a fetch independently of its array value.
+        locals.insert(id, Rc::new(value.to_non_nullable()));
+    }
+    let native_left_scope = lhs_context.native_locals.clone();
     let lhs_scope = lhs_context.variable_scope();
     let rhs_scope;
+    let native_right_scope;
     let mut result_type: TUnion;
 
     let left_is_set = !left_is_absent
@@ -209,6 +229,29 @@ where
         );
     }
     restore_offset_holders(&offsets, block_context, &mut rhs_context);
+    // The full-selected null pin specifies this fetch in both flavours;
+    // constant-array exclusions do not rewrite the independent native receiver.
+    if required_offset
+        && let Some(id) = get_block_expression_id(binary.lhs, context, block_context)
+        && let Some(value) = &native_lhs
+        && let Some(locals) = &mut rhs_context.native_locals
+    {
+        locals.insert(id, Rc::new(mago_codex::ttype::intersect_union_types(
+            value, &TUnion::from_atomic(TAtomic::Null), context.codebase,
+        ).unwrap_or_else(mago_codex::ttype::get_never)));
+    }
+    if (!left_is_set || is_coalesce_assignment)
+        && lhs_type.has_null()
+        && let Some(name) = get_variable_name(binary.lhs)
+        && let Some(locals) = &mut rhs_context.native_locals
+        && let Some(value) = locals.get_mut(&name)
+    {
+        // A full-selected null constraint applies to the native holder too;
+        // it is not permission to select a different native evaluation edge.
+        *value = Rc::new(mago_codex::ttype::intersect_union_types(
+            value, &TUnion::from_atomic(TAtomic::Null), context.codebase,
+        ).unwrap_or_else(mago_codex::ttype::get_never));
+    }
 
     if (lhs_type.is_null() || left_is_absent) && !is_static_var {
         context.collector.propose_with_code(
@@ -233,6 +276,7 @@ where
         binary.rhs.analyze(context, block_context, artifacts)?;
         result_type = artifacts.get_expression_type(&binary.rhs).cloned().unwrap_or_else(get_mixed); // Fallback if RHS analysis fails
         rhs_scope = block_context.variable_scope();
+        native_right_scope = block_context.native_locals.clone();
     } else if left_is_set {
         context.collector.propose_with_code(
             IssueCode::RedundantNullCoalesce,
@@ -265,6 +309,7 @@ where
         dead_rhs_context.flags.set_has_returned(true);
         binary.rhs.analyze(context, &mut dead_rhs_context, artifacts)?;
         rhs_scope = dead_rhs_context.variable_scope();
+        native_right_scope = dead_rhs_context.native_locals.clone();
     } else {
         *block_context = rhs_context;
         let has_returned = block_context.flags.has_returned();
@@ -272,6 +317,7 @@ where
         binary.rhs.analyze(context, block_context, artifacts)?;
         block_context.flags.set_has_returned(block_context.flags.has_returned() && has_returned);
         rhs_scope = block_context.variable_scope();
+        native_right_scope = block_context.native_locals.clone();
 
         let rhs_type =
             artifacts.get_expression_type(&binary.rhs).map_or_else(|| Cow::Owned(get_mixed()), Cow::Borrowed);
@@ -285,6 +331,11 @@ where
         continuing_scopes.push(rhs_scope);
     }
     block_context.merge_variable_scope_types(&continuing_scopes, context.codebase);
+    let mut native_scopes = vec![native_left_scope];
+    if !artifacts.get_expression_type(binary.rhs).is_some_and(TUnion::is_never) {
+        native_scopes.push(native_right_scope);
+    }
+    block_context.native_locals = crate::native::join(&native_scopes, context.codebase);
 
     // Check if clauses guarantee non-null result from OR assertion
     // If we have assert($x !== null || $y !== null), then $x ?? $y cannot be null
@@ -327,6 +378,19 @@ where
     }
 
     artifacts.set_rc_expression_type(binary, Rc::new(result_type));
+    if let Some(verdict) = native_isset {
+        let right = artifacts.get_native_expression_type(binary.rhs);
+        let native = match verdict {
+            Some(true) => native_lhs.as_ref().map(|left| left.to_non_nullable()),
+            Some(false) => right.cloned(),
+            None => native_lhs.as_ref().zip(right).map(|(left, right)| {
+                combine_union_types(&left.to_non_nullable(), right, context.codebase, context.settings.combiner_options())
+            }),
+        };
+        if let Some(native) = native {
+            artifacts.set_rc_native_expression_type(binary, Rc::new(native));
+        }
+    }
 
     Ok(())
 }

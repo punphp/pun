@@ -16,6 +16,11 @@ try {
             $targetReadResult->getType()->describe(\PHPStan\Type\VerbosityLevel::precise()),
             $targetReadResult->getType() instanceof \PHPStan\Type\ErrorType,
         ];
+        $GLOBALS['compoundNativeReads'][] = [
+            basename($scope->getFile()), $expr->var->getStartFilePos(), $expr->var->getEndFilePos() + 1,
+            $targetReadResult->getNativeType()->describe(\PHPStan\Type\VerbosityLevel::precise()),
+            $expr instanceof \PhpParser\Node\Expr\AssignOp\Coalesce,
+        ];
 PHP;
     $handler = str_replace($needle, "$needle\n$instrument", $handler, $replaced);
     if ($replaced !== 1) throw new RuntimeException('Pinned AssignOpHandler handoff changed');
@@ -25,6 +30,7 @@ PHP;
     $diagnostics = [];
     foreach ([3, 5, 9] as $level) {
         $GLOBALS['compoundReads'] = [];
+        $GLOBALS['compoundNativeReads'] = [];
         file_put_contents("$root/config.neon", "parameters:\n    phpVersion: 80500\n");
         $container = (new PHPStan\DependencyInjection\ContainerFactory(__DIR__))->create(
             "$root/$level", ["phar://$phar/conf/config.level$level.neon", "$root/config.neon"], $files,
@@ -42,6 +48,7 @@ PHP;
         $diagnostics[$level] = $records;
     }
     $GLOBALS['compoundReads'] = [];
+    $GLOBALS['compoundNativeReads'] = [];
     $container->getByType(PHPStan\Analyser\NodeScopeResolver::class)->setAnalysedFiles($files);
     foreach ($files as $file) {
         $result = $container->getByType(PHPStan\Analyser\FileAnalyser::class)->analyseFile(
@@ -53,7 +60,10 @@ PHP;
     $reads = $GLOBALS['compoundReads'];
     sort($reads);
     $reads = array_values(array_unique($reads, SORT_REGULAR));
-    echo json_encode(['diagnostics' => $diagnostics, 'reads' => $reads], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR), "\n";
+    $nativeReads = $GLOBALS['compoundNativeReads'];
+    sort($nativeReads);
+    $nativeReads = array_values(array_unique($nativeReads, SORT_REGULAR));
+    echo json_encode(['diagnostics' => $diagnostics, 'reads' => $reads, 'native_reads' => $nativeReads], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR), "\n";
 } finally {
     $items = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($root, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST);
     foreach ($items as $item) $item->isDir() ? rmdir($item->getPathname()) : unlink($item->getPathname());

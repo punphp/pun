@@ -15,12 +15,12 @@ use mago_codex::ttype::combiner::CombinerOptions;
 use mago_codex::ttype::expander::{TypeExpansionOptions, expand_union};
 use mago_codex::ttype::union::TUnion;
 use mago_codex::ttype::{
-    get_bool, get_false, get_float, get_int, get_int_or_float, get_int_range, get_literal_float,
+    get_bool, get_error, get_false, get_float, get_int, get_int_or_float, get_int_range, get_literal_float,
     get_literal_int, get_literal_string, get_mixed, get_never, get_string, get_string_with_props,
     get_true, wrap_atomic,
 };
 use mago_syntax::cst::{
-    Access, AssignmentOperator, Binary, BinaryOperator, Call, ClassLikeMemberSelector, Expression,
+    Access, AssignmentOperator, Binary, BinaryOperator, Call, ClassLikeMemberSelector, Construct, Expression,
     Literal, Statement, UnaryPrefix, UnaryPrefixOperator, Variable,
 };
 use mago_word::WordMap;
@@ -29,7 +29,9 @@ use mago_word::word;
 use crate::artifacts::AnalysisArtifacts;
 use crate::context::Context;
 use crate::context::block::BlockContext;
+use crate::context::scope::{var_has_root, var_references_dynamic};
 use crate::resolver::property::resolve_declared_property;
+use crate::utils::expression::{get_block_expression_id, get_root_expression_id};
 use crate::utils::php_emulation::string_to_int;
 
 pub(crate) fn scalar_type(ty: &TUnion) -> bool {
@@ -83,7 +85,9 @@ pub(crate) fn parameter_types(
         let mut ty = parameter.type_declaration_metadata.as_ref()
             .map_or_else(get_mixed, |ty| ty.type_union.clone());
         expand_union(codebase, &mut ty, &TypeExpansionOptions::default());
-        (scalar_type(&ty) || named_object(&ty).is_some())
+        (ty.types.iter().all(|atomic| matches!(atomic,
+            TAtomic::Scalar(_) | TAtomic::Null | TAtomic::Mixed(_) | TAtomic::Array(_)))
+            || named_object(&ty).is_some())
             .then(|| (parameter.name.0, Rc::new(ty)))
     }).collect()
 }
@@ -160,18 +164,23 @@ pub(crate) fn before_expression(expression: &Expression<'_>, block: &mut BlockCo
                 || binary.operator.is_multiplicative()
                 || binary.operator.is_comparison()
                 || binary.operator.is_concatenation()
-                || matches!(binary.operator, BinaryOperator::LowXor(_))
+                || matches!(binary.operator, BinaryOperator::LowXor(_) | BinaryOperator::NullCoalesce(_))
         }
         Expression::Assignment(assignment) => {
-            matches!(assignment.operator, AssignmentOperator::Assign(_))
-                && matches!(assignment.lhs, Expression::Variable(Variable::Direct(variable))
+            let mut target = assignment.lhs;
+            if matches!(assignment.operator, AssignmentOperator::Coalesce(_)) {
+                while let Expression::ArrayAccess(access) = target { target = access.array; }
+            }
+            matches!(assignment.operator, AssignmentOperator::Assign(_) | AssignmentOperator::Coalesce(_))
+                && matches!(target, Expression::Variable(Variable::Direct(variable))
                     if variable.name != b"$this" && variable.name != b"$GLOBALS" && !variable.name.starts_with(b"$_")
                         && !block.references_in_scope.contains_key(&word(variable.name))
                         && !block.referenced_counts.contains_key(&word(variable.name))
                         && !block.references_to_external_scope.contains(&word(variable.name)))
         }
         Expression::Access(Access::Property(property)) => property.property.is_identifier(),
-        Expression::ArrayAccess(_) | Expression::Closure(_) | Expression::ArrowFunction(_) => true,
+        Expression::ArrayAccess(_) | Expression::Array(_) | Expression::LegacyArray(_)
+        | Expression::Construct(Construct::Isset(_)) | Expression::Closure(_) | Expression::ArrowFunction(_) => true,
         Expression::Instantiation(new) => matches!(new.class, Expression::Identifier(_))
             && new.argument_list.as_ref().is_none_or(|arguments| arguments.arguments.is_empty()),
         Expression::Call(Call::Method(call)) => call.method.is_identifier() && call.argument_list.arguments.is_empty(),
@@ -202,6 +211,14 @@ pub(crate) fn after_expression<A: Arena>(
         // Closure body observations and capture transfers are supported, not native callable signatures.
         return;
     }
+    if let Expression::Assignment(assignment) = expression
+        && let Some(root) = get_root_expression_id(assignment.lhs)
+        && let Some(locals) = &mut block.native_locals
+    {
+        // A specified offset is a scope fact, not a replacement array value.
+        // Root/key writes invalidate it just as they invalidate selected holders.
+        locals.retain(|name, _| *name == root || (!var_has_root(*name, root) && !var_references_dynamic(*name, root)));
+    }
     let Some(locals) = &block.native_locals else {
         return;
     };
@@ -210,30 +227,43 @@ pub(crate) fn after_expression<A: Arena>(
         Expression::Literal(_) => artifacts.get_rc_expression_type(expression).cloned(),
         Expression::Variable(Variable::Direct(variable)) => {
             locals.get(&word(variable.name)).cloned()
+                .or_else(|| (block.flags.inside_isset() && block.variable_certainty(word(variable.name)).is_absent())
+                    .then(|| Rc::new(get_error())))
         }
         Expression::Parenthesized(parenthesized) => artifacts
             .get_rc_native_expression_type(parenthesized.expression)
             .cloned(),
         // An assignment expression yields its RHS, even when @var changes the target's type.
+        Expression::Assignment(assignment) if matches!(assignment.operator, AssignmentOperator::Coalesce(_)) => {
+            // The synthetic Binary has this same span. Keep its composed value, not the RHS
+            // that the ordinary writer copied. The target's prepared read remains unchanged.
+            let value = artifacts.get_rc_native_expression_type(expression).cloned();
+            if let Some(value) = &value
+                && let Some((name, written)) = crate::expression::array_access::native_write(
+                    assignment.lhs, value, artifacts, locals, context.codebase,
+                )
+                && let Some(locals) = &mut block.native_locals
+            {
+                locals.insert(name, Rc::new(written));
+            } else {
+                block.native_locals = None;
+            }
+            value
+        }
         Expression::Assignment(assignment) => artifacts
             .get_rc_native_expression_type(assignment.rhs)
             .cloned(),
         Expression::UnaryPrefix(unary) => unary_type(unary, artifacts).map(Rc::new),
+        Expression::Binary(binary) if matches!(binary.operator, BinaryOperator::NullCoalesce(_)) => {
+            artifacts.get_rc_native_expression_type(expression).cloned()
+        }
         Expression::Binary(binary) => binary_type(binary, artifacts).map(Rc::new),
         Expression::Access(Access::Property(property)) => {
             property_type(property.object, &property.property, context, block, artifacts).map(Rc::new)
         }
         Expression::ArrayAccess(access) => {
-            let ty = artifacts.get_native_expression_type(access.array);
-            let index = artifacts.get_native_expression_type(access.index);
-            match (ty.map(|ty| ty.types.as_ref()), index) {
-                (Some([TAtomic::Mixed(mixed)]), Some(index))
-                    if index.is_int() || index.is_string() => Some(Rc::new(
-                        wrap_atomic(TAtomic::Mixed(mago_codex::ttype::atomic::mixed::TMixed::new()
-                            .with_is_explicit(mixed.is_explicit()))),
-                    )),
-                _ => None,
-            }
+            get_block_expression_id(expression, context, block).and_then(|id| locals.get(&id).cloned())
+                .or_else(|| crate::expression::array_access::native_value(access, context.codebase, artifacts).map(Rc::new))
         }
         Expression::Call(Call::Method(call)) => {
             method_type(call.object, &call.method, context, block, artifacts).map(Rc::new)
@@ -465,6 +495,10 @@ pub(crate) fn join(branches: &[Option<Locals>], codebase: &CodebaseMetadata) -> 
             merged.insert(*name, value);
         }
     }
+    // Unlike a possibly absent variable's when-defined value, an expression
+    // constraint is authoritative only if every contributing edge specifies it.
+    merged.retain(|name, _| !name.as_bytes().contains(&b'[')
+        || branches.iter().all(|branch| branch.as_ref().is_some_and(|locals| locals.contains_key(name))));
     Some(merged)
 }
 
@@ -1112,6 +1146,60 @@ fn direct_local<'a>(mut expression: &'a Expression<'_>) -> Option<&'a [u8]> {
     } else {
         None
     }
+}
+
+/// IssetabilityResolution::isSet for native variable/offset/leaf values. The
+/// outer Option is availability; the inner Option is PHPStan's maybe verdict.
+pub(crate) fn isset(
+    expression: &Expression<'_>,
+    block: &BlockContext<'_>,
+    artifacts: &AnalysisArtifacts,
+    codebase: &CodebaseMetadata,
+) -> Option<Option<bool>> {
+    isset_fold(expression, block, artifacts, codebase, None)
+}
+
+fn isset_fold(
+    expression: &Expression<'_>,
+    block: &BlockContext<'_>,
+    artifacts: &AnalysisArtifacts,
+    codebase: &CodebaseMetadata,
+    result: Option<bool>,
+) -> Option<Option<bool>> {
+    if let Some(name) = direct_local(expression) {
+        let certainty = block.variable_certainty(word(name));
+        if !certainty.is_defined() && !certainty.is_absent() { return Some(None); }
+        if let Some(result) = result { return Some(Some(result)); }
+        if certainty.is_absent() { return Some(Some(false)); }
+    }
+    if let Expression::ArrayAccess(access) = expression {
+        return crate::expression::array_access::native_offset(
+            artifacts.get_native_expression_type(access.array)?,
+            artifacts.get_native_expression_type(access.index)?,
+            codebase,
+        ).and_then(|(value, exists)| {
+            if exists == Some(false) { return Some(Some(false)); }
+            if exists.is_none() { return Some(None); }
+            // isSet replaces the threaded verdict at each offset, then forwards it
+            // through the root variable's certainty gate. It is not a conjunction
+            // of each link's nullability (not even for a null leaf).
+            let value = artifacts.get_native_expression_type(expression).unwrap_or(&value);
+            match non_null(value) {
+                Some(result) => isset_fold(access.array, block, artifacts, codebase, Some(result)),
+                None => Some(None),
+            }
+        });
+    }
+    // Native/writable property reflection has separate initializedness rules.
+    // Do not infer a verdict from the native value alone.
+    if matches!(expression, Expression::Access(_)) { return None; }
+    Some(result.or(non_null(artifacts.get_native_expression_type(expression)?)))
+}
+
+fn non_null(value: &TUnion) -> Option<bool> {
+    if value.is_null() || value.is_never() { Some(false) }
+    else if value.has_null() || value.has_nullable_mixed() { None }
+    else { Some(true) }
 }
 
 fn comparison_type(binary: &Binary<'_>, left: &TUnion, right: &TUnion) -> Option<TUnion> {

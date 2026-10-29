@@ -60,9 +60,10 @@ impl ExpressionHook for Observer {
     }
 }
 
-// Adapt scalar wrappers and the constant shape printer's key quoting/order only.
+// Adapt scalar wrappers and equivalent generic-array and constant-shape displays.
 fn display(value: &str) -> String {
     let value = value
+        .replace("array<array-key, mixed>", "array")
         .replace("string('", "'")
         .replace("')", "'")
         .replace("int(", "")
@@ -140,13 +141,7 @@ fn readonly_capture_feedback_matches_asymmetric_phpstan_full_and_native_scopes()
             let start = want["start"].as_u64().unwrap() as u32;
             let (end, full, actual_native, _) = &reads[&start];
             assert_eq!(*end as u64, want["end"].as_u64().unwrap(), "{label}");
-            // The existing partial native API rejects array formal scopes and array
-            // expressions. A closure's opaque body cannot poison the parent's lane.
-            let available = native
-                && !label.ends_with("number")
-                && !label.ends_with("shape")
-                && label != "inside-opaque";
-            let want_native = available.then(|| display(want["native"].as_str().unwrap()));
+            let want_native = native.then(|| display(want["native"].as_str().unwrap()));
             let full = display(full);
             let actual_native = actual_native.as_deref().map(display);
             if full != display(want["full"].as_str().unwrap()) || actual_native != want_native {
