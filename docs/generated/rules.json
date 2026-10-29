@@ -10964,7 +10964,7 @@
         "TypedPropertyFromContainerGetSetUp",
         "TypedPropertyFromContainerGetSetUpRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/add-property-type-create-mock",
@@ -10984,7 +10984,7 @@
         "TypedPropertyFromCreateMockAssign",
         "TypedPropertyFromCreateMockAssignRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/add-property-type-setup",
@@ -11004,7 +11004,7 @@
         "TypedPropertyFromStrictSetUp",
         "TypedPropertyFromStrictSetUpRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/add-property-type-setup-docblock",
@@ -11024,7 +11024,7 @@
         "TypedPropertyFromDocblockSetUpDefined",
         "TypedPropertyFromDocblockSetUpDefinedRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/add-return-type-from-mock-object",
@@ -11106,7 +11106,7 @@
         "TypeWillReturnCallableArrowFunction",
         "TypeWillReturnCallableArrowFunctionRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/no-assert-contains-only",

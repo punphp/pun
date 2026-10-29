@@ -10359,7 +10359,7 @@
         "rules": [
           "lint/phpunit/add-property-type-container-get"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10369,7 +10369,7 @@
         "rules": [
           "lint/phpunit/add-property-type-create-mock"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10379,7 +10379,7 @@
         "rules": [
           "lint/phpunit/add-property-type-setup-docblock"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10409,7 +10409,7 @@
         "rules": [
           "lint/phpunit/add-property-type-setup"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13351,7 +13351,7 @@
         "rules": [
           "lint/phpunit/add-will-return-callback-param-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
