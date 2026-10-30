@@ -3461,6 +3461,29 @@ Property-correlated receiver narrowing is also unresolved: a separate probe stil
 `int|string` for a call where PHPStan selects the `int`-returning class. This patch does not
 substitute PHPStan's native type or activate lint dead-tail analysis to cover that difference.
 
+Remembered method specifications also belong to control-flow scopes. Cached Boolean operands
+restore those specifications with their variable state. Boolean and loop joins retain only
+specifications common to both incoming edges, including their assertion clauses. Loop convergence
+compares this state, and loop bodies receive the actual truthy operand scope after reconciliation.
+Otherwise, a join can restore a specification that an impure call already invalidated.
+These transfers follow PHPStan 2.3.1's `BooleanAndHandler::processExpr`,
+`BooleanOrHandler::processExpr`, and `WhileHandler::processStmt`.
+
+`method_specification_edges` compares eleven complete PHPStan records through the public Project
+API. Its controls distinguish mutation inside Boolean operands and loop bodies from
+stable repeated calls and mutations of unrelated receivers. The original scanner regressions
+retain their exported expectations.
+
+Pun's prelude projects canonical builtin `Function.side_effects` into the declaration's optional
+`reflected_side_effects`. Invocation invalidation consumes Yes, No and Maybe independently of
+source PHPDoc purity. Absent reflected metadata leaves Mago's existing source policy unchanged.
+PHPStan's `NativeMethodReflection::hasSideEffects()` and `resources/functionMetadata.php`
+supply the contract, including the known effect of `SplDoublyLinkedList::shift()`.
+`builtin_method_effects` compares eleven complete PHPStan records, preserves possibly impure
+user-method specifications, and checks that reflection metadata does not replace source PHPDoc.
+Both original scanner cases and the queue case retain their existing expectations.
+This patch does not repair the separate `int` versus `int<0, max>` builtin return-range difference.
+
 The fixtures are under `crates/pun-analyse/tests/fixtures/repeated-assertion-expressions`.
 `OUTPUT` selects an existing empty output directory. `RECTOR` selects the pinned installation,
 and `PHPSTAN_PHAR` selects PHPStan 2.3.1. From the repository root, these commands recapture the scopes:

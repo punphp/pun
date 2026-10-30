@@ -1047,3 +1047,18 @@ Codex's cast module resolves callable targets only. Scalar conversions and the a
 producer belong to analyzer consumers. PHPStan converts the sentinel to boolean true and rejects
 its nonboolean scalar and array conversions. `getClassStringType()` yields plain class-string,
 while `toClassConstantType()` adds literal-string provenance. Neither projection carries a name.
+
+## Reflected method effects remain separate from source purity
+
+`FunctionLikeMetadata::reflected_side_effects` carries an optional Yes, No or Maybe reflection
+fact. Normal scanners and generated enum methods leave it absent. Pun's builtin prelude projects
+the canonical PHPStan method metadata into this field before invocation analysis.
+The field does not set source PHPDoc flags or change `declared_purity()`.
+
+Serialized metadata preserves all three values. Older metadata without the field defaults to
+absence, retaining the source declaration's existing policy. The public `builtin_method_effects`
+regression checks scanner defaults, source purity, legacy deserialization and value round trips.
+Its analyser control compares eleven complete PHPStan records, distinguishing known builtin
+effects from possibly impure user methods. The source contract is PHPStan 2.3.1's
+`NativeMethodReflection::hasSideEffects()` and `resources/functionMetadata.php` at
+`cb3b7e99489b2e3789ee2eec10501cb7a72580ea`.

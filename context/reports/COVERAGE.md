@@ -1,5 +1,93 @@
 # Coverage
 
+The current combined integration gate passes all 233 analyser tests across 39 complete targets,
+134 lint consumer tests across eight complete targets, and all 405 original-fixture partitions.
+Every original level case (2,787) and rule case (1,315) is selected exactly once. The original
+scanner/queue regressions now pass unchanged. Two other level-4 cases pass too: their complete
+PHPStan 2.3.1 class recaptures preserve all sixty cases and 156 diagnostic records byte for byte,
+so only the obsolete allowances and their obsolete comment are removed. Both original failing
+logs remain preserved; the corrected partitions pass with the same executable.
+
+All 607 changed executable production lines are covered without exclusions. All 49 final
+exact-object exports are warning-free, with independently verified compressed objects.
+The source-identical cohort union uses 101 warning-free exports and reaches analyse
+44,341/44,342, PHPStan 10,762/10,762 and lint 72,884/73,387 after existing exclusions.
+Raw counts are respectively 44,341/44,360, 10,762/10,767 and 72,892/73,443.
+The only remaining analyser line is the genuinely red bottom-template converter branch at
+`types/convert.rs:643`. Lint still has 503 uncovered lines, including the two unchanged generic-Node
+guards in constructor detection. No failed profiles or shifted old-source counts are reused.
+Whole-source coverage is incomplete. Historical identical-source coverage does not imply fresh
+whole-suite semantic execution against changed dependencies.
+
+Current evidence, inventories, exact objects, profiles, source hashes and complete missing-line
+lists are under `/tmp/pun-config-constructor-effects-main-gate/` and
+`/tmp/pun-config-constructor-effects-fixture-gate/`. `gap-transition.json` records the two-allowance
+test-input change separately from the unchanged production-source freeze. The docs build and
+all nine rendered HTML text contracts pass.
+
+All 57 CLI tests across six complete targets pass against the same frozen production sources.
+Parent and child profiles match seven archived runtime objects, whose decompressed SHA-256
+hashes are independently verified. These CLI profiles do not contribute to the LCOV counts above.
+The inventories, checkpoints and object identities are in `cli-checks.json` and
+`cli-object-identities.json` under the current main-gate evidence directory.
+
+Disk recovery on 2026-10-30 losslessly compresses 5,019 completed raw profiles into adjacent
+`.profraw.zst` files. Every decompressed payload matches its original SHA-256 before the raw copy
+is removed. `/tmp/pun-compressed-profiles-20261030.jsonl` records the original paths, checksums and
+compressed paths; restore a profile with `zstd -d path.profraw.zst -o path.profraw` before replaying
+older export scripts. Seven completed proof directories are retired only after archiving and
+independently verifying all 114,208 file payloads. Their archives and checksum manifests remain
+under `/tmp/pun-proof-archives-20261030/`. Active proof directories and build targets are untouched.
+Of the compressed profiles, 1,328 are inside those proof archives; restore the containing proof
+directory before decompressing its profiles.
+
+Another 1,539 completed LCOV and profile-data exports have verified adjacent `.zst` files,
+recovering 12,750,836,115 bytes. `/tmp/pun-compressed-exports-20261030.jsonl` records their original
+paths, hashes and compressed paths. Restore these exports before replaying older scripts that
+read the original paths. No active target or running export was compressed.
+
+Sixty-five retired signature executables have verified `.zst` siblings, recovering
+7,664,949,427 bytes. Their original hashes and archive paths remain in
+`/tmp/pun-retired-signature-runtimes-20261030.jsonl`. The current completed fixture gate separately
+compresses and verifies all 434 profiles/data files, recovering 2,560,946,097 bytes; its
+`compressed-profiles.jsonl` records every restoration path and hash. Restore these files before
+replaying its LLVM export. Source, LCOV, active targets and all failure evidence remain intact.
+
+Config caller-scope and non-ArrayAccess object-offset integration passes all 91 PHPStan tests
+across 23 complete targets and all 35 config, Larastan, project and initializer tests across four
+complete targets. All 27 exact-object exports are warning-free, with verified archived objects.
+The original 28 raw parent records remain unchanged beside 28 separately captured late-resolution
+records. Fresh main recaptures preserve all 42 config records byte for byte. Private changed
+production coverage is 88/88; all 88 lines are also covered by the current combined-main gate.
+Evidence is under `/tmp/pun-config-offsets-integration-gate/` and
+`/tmp/pun-config-constructor-effects-main-gate/`.
+
+The mixed-offset prerequisite passes all 89 tests in `punphp-phpstan`, including a regression that
+fails on unchanged code with `mixed[0]` instead of `mixed`. Twelve fresh PHPStan 2.3.1 API observations
+recapture byte-identically. All 22 runtime-object exports are warning-free; their profiles and the
+compiler-only profiles match exact preserved objects. Fresh whole-crate coverage is 10,734/10,753
+before exclusions. Source-identical passing cohorts reach 10,748/10,748 after existing exclusions;
+the two uncovered lines in the changed resolver are its existing exclusions, with the constant-expression
+line moved by one. No new exclusions are added. Evidence is under `/tmp/pun-mixed-offset-main-gate/`.
+
+The three public parameter, holder and dispatch deliveries pass all ten combined-main tests.
+Their three warning-free exact-object exports close sixteen old uncovered lines without production
+changes or exclusions. The source-identical union reaches analyse 44,291/44,310 after existing
+exclusions, leaving nineteen lines entirely in `types/convert.rs`; raw coverage is 44,291/44,328.
+Lint reaches 72,701/73,200 after existing exclusions. This is not a new whole-suite semantic run.
+Complete source hashes, inventories, logs, exact objects and profiles are retained under
+`/tmp/pun-public-coverage-main-gate/`; the combined counts are in
+`/tmp/pun-mixed-offset-main-gate/combined-coverage.json`.
+
+The finally/assertion integration passes 118 analyser tests across 21 complete targets and 100 lint
+consumer tests across six complete targets. All 234 changed executable production lines are covered
+without exclusions; 29 exact-object exports are warning-free. The complete original-fixture sweep
+executes all 2,787 level cases and 1,315 rule cases exactly once across 405 partitions. Two partitions
+fail on three original loop cases, producing seven extra diagnostics; their profiles do not contribute
+to passing coverage. The correction is still isolated. This is not a green whole-fixture gate.
+Evidence is under `/tmp/pun-finally-assertion-main-gate/` and
+`/tmp/pun-finally-assertion-fixture-gate/`.
+
 The project replay passes all 21 existing tests across `project` and `larastan`.
 Both exact-object exports are warning-free and cover seven previously missing lines:
 driver.rs:119, scope.rs:411/424/434/444/450 and rules/mod.rs:1085, all under pun-analyse/src/rules.
@@ -198,7 +286,7 @@ Uncovered lines:
 - `crates/pun-cli/src/pint_error.rs:77` `Thrown::of`'s fallback to Laravel Zero's ConsoleException for an untyped error: every error a format, lint or check run can hit today is typed (Finder, annotation, read/write) or already an `Abort`, so the fallback only guards future errors.
 - `crates/pun-cli/src/watch.rs:56` the watch channel's `Disconnected`: the notify watcher holds the sender and lives as long as the loop, so the channel never disconnects while it waits.
 - `crates/pun-phpstan/src/resolve.rs:39` a global type alias whose definition refers to itself: PHPStan's UsefulTypeAliasResolver throws ShouldNotHappenException ("Circular definition for type alias"); Pun resolves `*ERROR*` instead of recursing forever.
-- `crates/pun-phpstan/src/resolve.rs:962` a `true`/`false`/`null`/array constant expression as a type: phpdoc-parser reads only `@var null ::X`-like tag values so, and PHPStan's TypeNodeResolver throws ShouldNotHappenException on them; Pun resolves `*ERROR*` instead of crashing.
+- `crates/pun-phpstan/src/resolve.rs:985` a `true`/`false`/`null`/array constant expression as a type: phpdoc-parser reads only `@var null ::X`-like tag values so, and PHPStan's TypeNodeResolver throws ShouldNotHappenException on them; Pun resolves `*ERROR*` instead of crashing.
 - `crates/pun-cli/src/migrate.rs:557` closest_preset's "nothing to switch" return: every PHPStan level leaves some rules of its closest Pun preset off (level 0: the basic preset's 11-12 non-level-0 rules, with or without bleedingEdge), so a migrated `[analyse]` always has on/off lines.
 - `crates/pun-analyse/src/rules/return_types.rs:77-79` `Provider::meta()` of the built-in return provider: as for the Laravel hook, `PluginRegistry` reads `meta()` only for its own library plugins.
 - `crates/pun-analyse/src/rules/return_types.rs:1275-1277` the same for the benevolent-return provider.

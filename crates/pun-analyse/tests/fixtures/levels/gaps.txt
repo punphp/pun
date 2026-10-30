@@ -58,8 +58,6 @@
 2 PhpDoc/RequireImplementsDefinitionClassRuleTest::testRule
 2 PhpDoc/RequireImplementsDefinitionTraitRuleTest::testRule
 4 DeadCode/NoopRuleTest::testRuleImpurePoints
-# PHPStan remembers `$dt->getTimestamp() === 1000` from assert(), so the while loop never ends; Mago does not.
-4 DeadCode/UnreachableStatementRuleTest::testRule
 # `$y !== 'doBar'` leaves mixed~'doBar', which Mago's types cannot express (a dynamic name may be any member).
 4 DeadCode/UnusedPrivateMethodRuleTest::testBug11802
 4 DeadCode/UnusedPrivatePropertyRuleTest::testBug11802
@@ -406,7 +404,6 @@
 4 Comparison/IfConstantConditionRuleTest::testBug4864
 4 Comparison/IfConstantConditionRuleTest::testBug8926
 4 Comparison/IfConstantConditionRuleTest::testBug10903
-4 Comparison/IfConstantConditionRuleTest::testBug7699
 4 Comparison/IfConstantConditionRuleTest::testBug6211
 4 Comparison/IfConstantConditionRuleTest::testBug8980
 4 Comparison/NumberComparisonOperatorsConstantConditionRuleTest::testBug12167

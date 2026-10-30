@@ -25,6 +25,10 @@ The five [analyse presets](/docs/configuration/presets#analyse-presets) group PH
 
 The enabled rules set the PHPStan level Pun analyses at: the highest level of a core rule that is on, or of a preset type switch. `stubs`, `[[analyse.ignore]]` and the rule options `pun migrate` writes apply as PHPStan's `stubFiles`, `ignoreErrors` and parameters do. An ignore entry nothing matched is an error, with PHPStan's message. Larastan's knowledge and rules are on when composer.lock pins a Laravel that Larastan 3 supports (11.44.2 and later 11.x, 12.4.1 and later 12.x, 13.x).
 
+`Config::collection()` resolves documented config shapes in the caller's namespace, class and template scope, including implicit integer keys and class-constant keys.
+Like Larastan, it caches the first resolved type for each complete config key.
+Generic `ArrayAccess::offsetGet()` return types remain unsupported in PHPDoc offset resolution.
+
 Pun TOML cannot yet express independent overrides of `checkFunctionArgumentTypes`, `checkArgumentsPassedByReference`, or `checkThisOnly`.
 Migration reports these overrides as unsupported rather than changing the analysis level.
 
@@ -43,6 +47,13 @@ Property increment and decrement checks validate the stored new value separately
 Instance calls invalidate narrowed mutable receiver properties for constructors, known side effects, and unresolved methods.
 Possibly impure calls preserve receiver narrowings. Readonly properties and private properties declared outside the callee's class retain their target facts.
 Trait aliases use the reflected lookup name for PHPDoc purity, return types, and constructor classification.
+
+Assertions can narrow repeated zero-argument method calls even when reflection marks them possibly impure.
+Known side effects invalidate call observations that depend on the affected receiver or object arguments.
+Builtin method effects use canonical PHPStan reflection metadata independently of source PHPDoc purity.
+Boolean and loop joins retain only method specifications that hold on both incoming paths.
+Strict equality assertions refine both operands, including impossible comparisons.
+Method calls with arguments and property-correlated receiver selection remain incomplete.
 
 Failed named instance and static method lookups retain PHPStan's error type when no reflected or provider result exists.
 Ordinary method calls retain unknown-class diagnostics and their discovery tips. Dynamic selectors and `method_exists()` assertions retain their separate fallback behavior.
@@ -236,6 +247,11 @@ When disabled, a standalone braced block joins its incoming and final variable t
 Its actual termination, loop exits, throws, and expression effects remain unchanged.
 Braces belonging to control statements do not count as standalone blocks.
 
+Finally entry joins actual branch ends, throw points and abrupt exits.
+Changes from a nonterminating finally block update pending return, break and continue scopes before outer scopes join.
+These ordinary analysis semantics follow PHPStan 2.3.1.
+Pinned Rector uses PHPStan 2.2.7, which differs on pending exits; general lint return-type parity remains incomplete.
+
 Dynamic `new $class` expressions report unknown class names even when another possible name exists.
 Invalid named instantiations retain their object types and constructor argument effects independently of legality diagnostics.
 An invalid target expression retains an error value rather than making later statements unreachable.
@@ -327,6 +343,8 @@ Reversed bounds are swapped only for `rand()`, matching PHPStan.
 
 PHPDoc union lowering preserves literal alternatives and nullable boundaries without recursive stack growth over flat unions.
 Parsing and nested non-union types retain their existing stack limits.
+PHPDoc offset resolution preserves whether `mixed` was explicit, but does not carry its excluded types into the offset value.
+An offset of an error type resolves to implicit `mixed` without the original error reason.
 The PHPStan-compatible PHPDoc resolver preserves decoded quoted array-shape keys as bytes, including through template substitution.
 Shared inference decodes quoted array-shape keys before numeric-key conversion.
 PHPDoc parsing and tag ingestion preserve raw quoted scalar and array-shape bytes, including non-UTF-8 source bytes.
