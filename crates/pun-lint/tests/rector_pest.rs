@@ -734,3 +734,49 @@ fn pest_rules_ignore_nodes_outside_their_targets() {
     }
     assert!(count > 250, "{count}");
 }
+
+/// The plugin's coding-style set registers ChainExpectCallsRector after the matchers, and Rector applies the rules of
+/// one node in that order: two `expect()` calls UseToMatchArrayRector folds into one `toMatchArray()` are not chained
+/// first. Pun's rules keep their registry order where their fixes start at the same statement. The expected code is
+/// Rector's with UseToMatchArrayRector, UseSequenceMatcherRector and ChainExpectCallsRector in the set's order
+/// (`.oracle/rector-ecosystem`).
+#[test]
+fn chaining_comes_after_the_matchers() {
+    let ids = [
+        "lint/pest/prefer-chained-expect",
+        "lint/pest/prefer-sequence",
+        "lint/pest/prefer-to-match-array",
+    ];
+    let rules = (pun_lint::rules::all().into_iter())
+        .filter(|r| ids.contains(&r.id()))
+        .collect();
+    let input = "<?php
+
+it('reads each key', function (): void {
+    $fresh = json_decode('{\"count\":0,\"as_of\":\"now\"}', true);
+    expect($fresh['count'])->toBe(0);
+    expect($fresh['as_of'])->toBe('now');
+});
+
+it('chains what it does not match', function (): void {
+    expect(1)->toBe(1);
+    expect(2)->toBe(2);
+});
+";
+    let expected = "<?php
+
+it('reads each key', function (): void {
+    $fresh = json_decode('{\"count\":0,\"as_of\":\"now\"}', true);
+    expect($fresh)->toMatchArray(['count' => 0, 'as_of' => 'now']);
+});
+
+it('chains what it does not match', function (): void {
+    expect(1)->toBe(1)
+        ->and(2)->toBe(2);
+});
+";
+    let fixed = Linter::new(rules, 80400)
+        .fix(Path::new("tests/OrderTest.php"), input)
+        .unwrap();
+    assert_eq!(fixed.source, expected);
+}

@@ -152,7 +152,6 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(NoRedundantTypeExpectation),
         Box::new(NoRedundantUses),
         Box::new(NoStaticTestClosure),
-        Box::new(PreferChainedExpect::default()),
         Box::new(PreferComparisonMatchers),
         Box::new(PreferDefer),
         Box::new(PreferEachModifier),
@@ -201,6 +200,9 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(PreferToStartWith),
         Box::new(PreferToThrow),
         Box::new(PreferTypeMatchers),
+        // as in the plugin's coding-style set, the chaining comes after the matchers, so that where a matcher and the
+        // chaining both rewrite a statement the matcher's fix applies first, then the chaining of its result
+        Box::new(PreferChainedExpect::default()),
         Box::new(RequireTypeMatcherFirst),
     ]
 }
