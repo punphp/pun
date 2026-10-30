@@ -1,0 +1,156 @@
+{
+    "phar_sha256": "85157dba3d95d77ca603d2b7303aa78a538f9e3b56ccad07dd794c53aa96d1ae",
+    "sources": {
+        "callbacks.php": "6e5570993e99169e5a02ebefa8311519e46406fe17df5936ddf1e7bc0d9fd50a"
+    },
+    "records": {
+        "callbacks.php/0": [
+            [
+                "callbacks.php",
+                17,
+                "phpstan.dumpType",
+                "Dumped type: 'kept'",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                24,
+                "phpstan.dumpType",
+                "Dumped type: 42",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                25,
+                "argument.unknown",
+                "Unknown parameter $unknown in call to function ConverterRemainder\\apply.",
+                null,
+                true
+            ],
+            [
+                "callbacks.php",
+                32,
+                "phpstan.dumpType",
+                "Dumped type: array{z: int, a: string, ...<string, int|string>}",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                33,
+                "phpstan.dumpPhpDocType",
+                "Dumped type: array{z: int, a: string, ...<string, int|string>}",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                40,
+                "argument.unknown",
+                "Unknown parameter $unknown in call to function ConverterRemainder\\apply.",
+                null,
+                true
+            ],
+            [
+                "callbacks.php",
+                41,
+                "phpstan.dumpType",
+                "Dumped type: array{z: string, a: int, ...<string, int|string>}",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                42,
+                "phpstan.dumpPhpDocType",
+                "Dumped type: array{z: string, a: int, ...<string, int|string>}",
+                null,
+                false
+            ]
+        ],
+        "callbacks.php/5": [
+            [
+                "callbacks.php",
+                16,
+                "arguments.count",
+                "Function ConverterRemainder\\apply invoked with 3 parameters, 2 required.",
+                null,
+                true
+            ],
+            [
+                "callbacks.php",
+                17,
+                "phpstan.dumpType",
+                "Dumped type: 'kept'",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                24,
+                "phpstan.dumpType",
+                "Dumped type: 42",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                25,
+                "argument.unknown",
+                "Unknown parameter $unknown in call to function ConverterRemainder\\apply.",
+                null,
+                true
+            ],
+            [
+                "callbacks.php",
+                31,
+                "arguments.count",
+                "Function ConverterRemainder\\apply invoked with 3 parameters, 2 required.",
+                null,
+                true
+            ],
+            [
+                "callbacks.php",
+                32,
+                "phpstan.dumpType",
+                "Dumped type: array{z: int, a: string, ...<string, int|string>}",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                33,
+                "phpstan.dumpPhpDocType",
+                "Dumped type: array{z: int, a: string, ...<string, int|string>}",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                40,
+                "argument.unknown",
+                "Unknown parameter $unknown in call to function ConverterRemainder\\apply.",
+                null,
+                true
+            ],
+            [
+                "callbacks.php",
+                41,
+                "phpstan.dumpType",
+                "Dumped type: array{z: string, a: int, ...<string, int|string>}",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                42,
+                "phpstan.dumpPhpDocType",
+                "Dumped type: array{z: string, a: int, ...<string, int|string>}",
+                null,
+                false
+            ]
+        ]
+    }
+}
