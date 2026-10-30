@@ -62,5 +62,5 @@ function diagnosticChild(int $value): void {
 }
 function unsupportedBuiltin(int $value): void {
     strlen($value = 'text' /* native */) /* unavailable */;
-    $value /* unavailable */;
+    $value /* native */;
 }

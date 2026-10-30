@@ -2,7 +2,7 @@
     "phar_sha256": "85157dba3d95d77ca603d2b7303aa78a538f9e3b56ccad07dd794c53aa96d1ae",
     "sources": {
         "certainty": "3f1f6a418cb3bd1a81df9852602767e7192ed58e551a6afd1f2eb9c182523bca",
-        "boundaries": "25b81fb1303b5f74e93bf056d1299d43cf16155e2c63d64728757681a64ce184"
+        "boundaries": "b5e7fa67d60b8dbfe48156c636d0297af5e450dd35a3ee395fd630efb3fa3f2c"
     },
     "types": {
         "certainty": {
@@ -811,7 +811,7 @@
                 "source": "$value",
                 "full": "'text'",
                 "native": "'text'",
-                "available": false
+                "available": true
             }
         }
     }

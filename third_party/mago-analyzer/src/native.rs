@@ -20,7 +20,7 @@ use mago_codex::ttype::{
     get_true, wrap_atomic,
 };
 use mago_syntax::cst::{
-    Access, AssignmentOperator, Binary, BinaryOperator, Call, ClassLikeMemberSelector, Construct, Expression,
+    Access, ArgumentList, AssignmentOperator, Binary, BinaryOperator, Call, ClassLikeMemberSelector, Construct, Expression,
     Literal, Statement, UnaryPrefix, UnaryPrefixOperator, Variable,
 };
 use mago_word::WordMap;
@@ -63,6 +63,41 @@ fn supported_function(function: &FunctionLikeMetadata) -> bool {
             !parameter.flags.is_by_reference()
                 && !parameter.flags.is_variadic()
                 && parameter.out_type.is_none()
+        })
+}
+
+/// ArgumentsHandler::processArgs writes through references and invalidates object/resource
+/// arguments separately from FuncCallHandler's native return resolver. Bound this continuation
+/// to visited scalar/null arguments and non-reference signatures, including variadic signatures.
+/// A missing native return contract is not evidence that the call mutates these local holders.
+pub(crate) fn function_continuation(
+    function: &FunctionLikeMetadata,
+    arguments: &ArgumentList<'_>,
+    artifacts: &AnalysisArtifacts,
+) -> bool {
+    matches!(function.kind, FunctionLikeKind::Function)
+        && !function.flags.is_by_reference()
+        && !function.flags.has_yield()
+        && function.assertions.is_empty()
+        && function.if_true_assertions.is_empty()
+        && function.if_false_assertions.is_empty()
+        && function.globals_accessed.is_empty()
+        && function.parameters.iter().all(|parameter| {
+            !parameter.flags.is_by_reference()
+                && parameter.out_type.is_none()
+                && parameter.closure_this_type.is_none()
+                && !parameter.type_declaration_metadata.as_ref()
+                    .is_some_and(|ty| ty.type_union.has_callable())
+        })
+        // FuncCallScopeEffectsHelper::applyCallScopeEffects assigns http_response_header
+        // for these builtins without a by-reference parameter. That write is not ported here.
+        && (function.flags.is_user_defined()
+            || !matches!(function.name.as_bytes(), b"fopen" | b"file_get_contents"))
+        && arguments.arguments.iter().all(|argument| {
+            argument.is_positional() && !argument.is_unpacked()
+                && artifacts.get_native_expression_type(argument.value()).is_some_and(|ty| {
+                    ty.types.iter().all(|atomic| matches!(atomic, TAtomic::Scalar(_) | TAtomic::Null))
+                })
         })
 }
 
@@ -284,7 +319,9 @@ pub(crate) fn after_expression<A: Arena>(
         } else {
             artifacts.set_rc_native_expression_type(expression, ty);
         }
-    } else {
+    } else if !matches!(expression, Expression::Call(Call::Function(_)) | Expression::Parenthesized(_)) {
+        // The call analyzer owns its continuation independently of return availability.
+        // Parentheses add no effects; their child already owns any invalidation.
         block.native_locals = None;
     }
 }

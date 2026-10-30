@@ -75,6 +75,15 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for FunctionCall<'arena> {
             matches!(target.get_function_like_identifier(), Some(FunctionLikeIdentifier::Function(name)) if name.as_bytes().eq_ignore_ascii_case(b"extract"))
         });
 
+        let native_function = if block_context.native_locals.is_some()
+            && !context.plugin_registry.has_function_assertion_providers()
+            && matches!(self.function, Expression::Identifier(_))
+            && let [target] = invocation_targets.as_slice()
+        {
+            target.get_function_like_metadata()
+        } else {
+            None
+        };
         let native_return = if block_context.native_locals.is_some()
             && !context.plugin_registry.has_function_assertion_providers()
             && let Expression::Identifier(identifier) = self.function
@@ -86,10 +95,8 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for FunctionCall<'arena> {
                 .iter().any(|diagnostic| name.eq_ignore_ascii_case(diagnostic))
             {
                 Some(get_mixed())
-            } else if let [target] = invocation_targets.as_slice() {
-                target.get_function_like_metadata().and_then(crate::native::function_return_type)
             } else {
-                None
+                native_function.and_then(crate::native::function_return_type)
             }
         } else {
             None
@@ -114,7 +121,13 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for FunctionCall<'arena> {
             true,
         )?;
 
-        if native_return.is_none() {
+        // Read the actual arguments' already-visited native results, after their writes/hooks.
+        // Neither an unavailable result nor a safe continuation manufactures a native return.
+        if native_return.is_none()
+            && !native_function.is_some_and(|function| {
+                crate::native::function_continuation(function, &self.argument_list, artifacts)
+            })
+        {
             block_context.native_locals = None;
         }
 
