@@ -145,6 +145,8 @@ Their source bytes and spans remain unchanged.
 Assignment checks allow references on individual destructuring targets and nested `array(...)` targets inside short-array destructuring.
 Arrays nested directly inside an explicit `list()` remain literal expressions, not destructuring targets.
 Their keys and values are read after the right-hand side and preceding targets, including reference-item values.
+Reference-valued array literals preserve failed reads as `*ERROR*` instead of replacing them with `mixed`.
+Taking a reference preserves the captured root value while invalidating dependent offset observations.
 
 The `compact()` check preserves resolved function-import names and reads variable certainty before evaluating arguments.
 Benevolent unions and callable-array intersections retain their literal variable names.
@@ -189,6 +191,9 @@ Per-name filtered observations for dynamic method calls remain incomplete.
 For supported native expressions, constant `if` checks distinguish documented types from native types when adding PHPStan's PHPDoc-certainty tip.
 Function type-predicate checks use each argument's evaluated native type to decide that tip.
 Native array literals, offsets, `isset` operands and coalescing assignments retain separate evaluated values without replacing documented results or repeating expression evaluation.
+Native constant arrays preserve insertion order through literals, copies and supported nested reads without restoring PHPDoc-only callable constraints.
+Nullable single-class parameters support native nullsafe reads of ordinary scalar properties, including `isset` and coalescing results.
+These reads use the native property declaration; dynamic, magic, hooked and array-valued properties remain unsupported.
 Native local values also survive bounded function calls whose native return remains unavailable.
 These additional continuations require positional scalar or null arguments and reflection without unsupported reference, callable, assertion, or global effects.
 Unpacked arguments remain unsupported.
@@ -285,6 +290,7 @@ Full type inference preserves explicit `mixed` from native and PHPDoc declaratio
 Mixed offset reads keep explicitness but drop receiver truthiness and exclusions.
 Unknown properties and methods remain implicit `mixed`.
 `clone` results retain only object alternatives; cloning `$this` produces `static`.
+Invalid trait `instanceof` diagnostics describe the operand's inferred type, including unions and generic objects.
 Only declared or inherited assertion contracts narrow a caller's arguments; a predicate inferred from a callee's body does not.
 Native `unset` checks retain a property's modifiers and hooks beneath a PHPDoc property annotation.
 Annotation-only properties do not acquire native modifiers.

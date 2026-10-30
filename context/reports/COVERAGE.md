@@ -6,7 +6,18 @@ The two supported-only `r` modifier lines need the newer engine. Its expectation
 PHP and PCRE2 fixtures, not the orb's PHP 8.5.12 oracle, which links 10.42.
 Combine exports only when their token sources are byte-identical.
 
-The native-scope integration gate passes 119 analyser public/library tests across 21 targets,
+The native-boundary gate passes 248 analyser public/library tests across 44 targets, 217 original
+rule cases in 38 partitions, 197 original level cases in fourteen partitions, 54 coverage partitions
+and 445 native analyser units. Four standalone oracle-backed controls also pass, for 803 Rust tests
+across 155 partitions and controls. All 56 targeted CLI tests and forty affected lint tests pass.
+All 64 changed executable production lines are covered without exclusions. The 48 exact-object exports
+are warning-free, with no unmatched profiles. Four fresh PHPStan recaptures are byte-identical.
+The obsolete native-nullsafe availability assertion is corrected from independent oracle evidence.
+The docs build passes on 1,446 pages, with ten rendered contract checks. No gap allowances change.
+Completed proof objects are compressed and SHA-256-verified before redundant uncompressed copies are
+removed. Source, object, profile and export identities remain available after the disk cleanup.
+
+The preceding native-scope integration gate passes 119 analyser public/library tests across 21 targets,
 52 original rule cases and 94 original level cases in 35 frozen-source partitions. All 56 targeted
 CLI tests and forty affected lint tests pass. All-dependency instrumentation passes 445 native analyser
 units and 29 public tests. All 109 changed executable vendor-production lines are covered without exclusions.
@@ -26,7 +37,7 @@ five tests on main without production changes; the original failures remain in t
 All 56 targeted CLI tests, 88 PHPStan tests and 432 lint tests pass. The all-dependency instrumented
 gate passes 445 native analyser units and 23 public/control tests. No gap allowances change.
 
-Source-matched coverage is 44,020/44,020 analyser lines, 39,338/39,338 lint lines and 10,747/10,747
+Source-matched coverage is 44,047/44,047 analyser lines, 39,338/39,338 lint lines and 10,747/10,747
 PHPStan lines after existing exclusions. These counts supersede the older generated table below.
 The live-initialization batch covers all 808 changed executable production lines. No new exclusions are added.
 Every combined source record has the same SHA-256 as the measured source.
