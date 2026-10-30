@@ -1,0 +1,513 @@
+{
+    "parameters.php:0": [
+        {
+            "file": "$ROOT/parameters.php",
+            "message": "Dumped type: list{object, non-empty-string}&callable(): mixed",
+            "line": 20,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/parameters.php",
+            "message": "Dumped type: list{object, non-empty-string}&callable(): mixed",
+            "line": 22,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/parameters.php",
+            "message": "Dumped type: list{object, 'invoke'}&callable(): mixed",
+            "line": 29,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/parameters.php",
+            "message": "Dumped type: 'invoke'",
+            "line": 30,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/parameters.php",
+            "message": "Dumped type: *NEVER*",
+            "line": 39,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/parameters.php",
+            "message": "Dumped type: list{object, non-empty-string}&callable(): mixed",
+            "line": 40,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/parameters.php",
+            "message": "Dumped type: *NEVER*",
+            "line": 42,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/parameters.php",
+            "message": "Dumped type: array{42, 'not callable'}",
+            "line": 50,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/parameters.php",
+            "message": "Dumped type: list{object, non-empty-string}&callable(): mixed",
+            "line": 51,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/parameters.php",
+            "message": "Dumped type: list{1: non-empty-string, 0: object}&callable(): mixed",
+            "line": 57,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/parameters.php",
+            "message": "Dumped type: list{1: 'invoke', 0: object}&callable(): mixed",
+            "line": 59,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        }
+    ],
+    "parameters.php:1": [
+        {
+            "file": "$ROOT/parameters.php",
+            "message": "Dumped type: list{object, non-empty-string}&callable(): mixed",
+            "line": 20,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/parameters.php",
+            "message": "Dumped type: list{object, non-empty-string}&callable(): mixed",
+            "line": 22,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/parameters.php",
+            "message": "Dumped type: list{object, 'invoke'}&callable(): mixed",
+            "line": 29,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/parameters.php",
+            "message": "Dumped type: 'invoke'",
+            "line": 30,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/parameters.php",
+            "message": "Dumped type: *NEVER*",
+            "line": 39,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/parameters.php",
+            "message": "Dumped type: list{object, non-empty-string}&callable(): mixed",
+            "line": 40,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/parameters.php",
+            "message": "Dumped type: *NEVER*",
+            "line": 42,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/parameters.php",
+            "message": "Dumped type: array{42, 'not callable'}",
+            "line": 50,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/parameters.php",
+            "message": "Dumped type: list{object, non-empty-string}&callable(): mixed",
+            "line": 51,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/parameters.php",
+            "message": "Dumped type: list{1: non-empty-string, 0: object}&callable(): mixed",
+            "line": 57,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/parameters.php",
+            "message": "Dumped type: list{1: 'invoke', 0: object}&callable(): mixed",
+            "line": 59,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        }
+    ],
+    "parameters.php:4": [
+        {
+            "file": "$ROOT/parameters.php",
+            "message": "Offset 0 on list{object, non-empty-string}&callable(): mixed in isset() always exists and is not nullable.",
+            "line": 8,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/parameters.php",
+            "message": "Offset 0 on list{object, non-empty-string}&callable(): mixed in isset() always exists and is not nullable.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/parameters.php",
+            "message": "Function CallableArrayDescription\\copies() returns void but does not have any side effects.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "void.pure"
+        },
+        {
+            "file": "$ROOT/parameters.php",
+            "message": "Dumped type: list{object, non-empty-string}&callable(): mixed",
+            "line": 20,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/parameters.php",
+            "message": "Dumped type: list{object, non-empty-string}&callable(): mixed",
+            "line": 22,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/parameters.php",
+            "message": "Function CallableArrayDescription\\narrowed() returns void but does not have any side effects.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "void.pure"
+        },
+        {
+            "file": "$ROOT/parameters.php",
+            "message": "Dumped type: list{object, 'invoke'}&callable(): mixed",
+            "line": 29,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/parameters.php",
+            "message": "Dumped type: 'invoke'",
+            "line": 30,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/parameters.php",
+            "message": "Dumped type: *NEVER*",
+            "line": 39,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/parameters.php",
+            "message": "Dumped type: list{object, non-empty-string}&callable(): mixed",
+            "line": 40,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/parameters.php",
+            "message": "Dumped type: *NEVER*",
+            "line": 42,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/parameters.php",
+            "message": "Function CallableArrayDescription\\replaced() returns void but does not have any side effects.",
+            "line": 46,
+            "ignorable": true,
+            "identifier": "void.pure"
+        },
+        {
+            "file": "$ROOT/parameters.php",
+            "message": "Dumped type: array{42, 'not callable'}",
+            "line": 50,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/parameters.php",
+            "message": "Dumped type: list{object, non-empty-string}&callable(): mixed",
+            "line": 51,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/parameters.php",
+            "message": "Function CallableArrayDescription\\reversed() returns void but does not have any side effects.",
+            "line": 55,
+            "ignorable": true,
+            "identifier": "void.pure"
+        },
+        {
+            "file": "$ROOT/parameters.php",
+            "message": "Dumped type: list{1: non-empty-string, 0: object}&callable(): mixed",
+            "line": 57,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/parameters.php",
+            "message": "Dumped type: list{1: 'invoke', 0: object}&callable(): mixed",
+            "line": 59,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        }
+    ],
+    "controls.php:0": [
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Dumped type: array{CallableArrayDescriptionControls\\Receiver, 'invoke'}",
+            "line": 13,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Dumped type: array{1: 'invoke', 0: CallableArrayDescriptionControls\\Receiver}",
+            "line": 15,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Dumped type: array{1: 'ordinary', 0: 42}",
+            "line": 17,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Dumped type: array{object, non-empty-string}",
+            "line": 23,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Dumped type: array{object, non-empty-string}",
+            "line": 31,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Dumped type: array{object, 'invoke'}",
+            "line": 39,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Dumped type: array{1: non-empty-string}",
+            "line": 42,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Dumped type: array{CallableArrayDescriptionControls\\Receiver, 'missing'}",
+            "line": 49,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        }
+    ],
+    "controls.php:1": [
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Dumped type: array{CallableArrayDescriptionControls\\Receiver, 'invoke'}",
+            "line": 13,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Dumped type: array{1: 'invoke', 0: CallableArrayDescriptionControls\\Receiver}",
+            "line": 15,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Dumped type: array{1: 'ordinary', 0: 42}",
+            "line": 17,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Dumped type: array{object, non-empty-string}",
+            "line": 23,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Dumped type: array{object, non-empty-string}",
+            "line": 31,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Dumped type: array{object, 'invoke'}",
+            "line": 39,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Dumped type: array{1: non-empty-string}",
+            "line": 42,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Dumped type: array{CallableArrayDescriptionControls\\Receiver, 'missing'}",
+            "line": 49,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        }
+    ],
+    "controls.php:4": [
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Function CallableArrayDescriptionControls\\literal() returns void but does not have any side effects.",
+            "line": 10,
+            "ignorable": true,
+            "identifier": "void.pure"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Dumped type: array{CallableArrayDescriptionControls\\Receiver, 'invoke'}",
+            "line": 13,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Dumped type: array{1: 'invoke', 0: CallableArrayDescriptionControls\\Receiver}",
+            "line": 15,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Dumped type: array{1: 'ordinary', 0: 42}",
+            "line": 17,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Dumped type: array{object, non-empty-string}",
+            "line": 23,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Offset 0 on array{object, non-empty-string} in isset() always exists and is not nullable.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Dumped type: array{object, non-empty-string}",
+            "line": 31,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Function CallableArrayDescriptionControls\\narrowedOrdinary() returns void but does not have any side effects.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "void.pure"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Dumped type: array{object, 'invoke'}",
+            "line": 39,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Dumped type: array{1: non-empty-string}",
+            "line": 42,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Function CallableArrayDescriptionControls\\literalReplacement() returns void but does not have any side effects.",
+            "line": 46,
+            "ignorable": true,
+            "identifier": "void.pure"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Dumped type: array{CallableArrayDescriptionControls\\Receiver, 'missing'}",
+            "line": 49,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        }
+    ],
+    "native.php:0": [
+        {
+            "file": "$ROOT/native.php",
+            "message": "Dumped type: array",
+            "line": 8,
+            "ignorable": false,
+            "identifier": "phpstan.dumpNativeType"
+        },
+        {
+            "file": "$ROOT/native.php",
+            "message": "Dumped type: 42",
+            "line": 10,
+            "ignorable": false,
+            "identifier": "phpstan.dumpNativeType"
+        },
+        {
+            "file": "$ROOT/native.php",
+            "message": "Dumped type: mixed",
+            "line": 16,
+            "ignorable": false,
+            "identifier": "phpstan.dumpNativeType"
+        },
+        {
+            "file": "$ROOT/native.php",
+            "message": "Dumped type: array",
+            "line": 22,
+            "ignorable": false,
+            "identifier": "phpstan.dumpNativeType"
+        }
+    ]
+}

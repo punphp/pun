@@ -1190,6 +1190,16 @@ fn restore_metadata(actual: Type, source: &Type, restore_list: bool) -> Type {
             // a concrete inferred value always wins.
             source.clone()
         }
+        (actual @ Type::ConstArray(_), source @ Type::Intersection(parts))
+            if source.is_array().yes() && source.is_callable().yes() =>
+        {
+            // IntersectionType retains the callable conjunct for a constant array too. Restore the
+            // surviving shape's source order first; never replace narrowed values or removed keys.
+            let actual = parts.iter().fold(actual, |actual, source| restore_metadata(actual, source, restore_list));
+            intersect(std::iter::once(actual)
+                .chain(parts.iter().filter(|part| matches!(part, Type::Callable(_))).cloned())
+                .collect())
+        }
         (actual @ Type::Array(..), source @ Type::Intersection(_))
             if source.is_array().yes() && source.is_callable().yes() =>
         {
