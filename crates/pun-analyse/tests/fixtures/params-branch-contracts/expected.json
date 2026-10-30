@@ -1,0 +1,169 @@
+{
+    "version": "2.3.1",
+    "phar_sha256": "85157dba3d95d77ca603d2b7303aa78a538f9e3b56ccad07dd794c53aa96d1ae",
+    "sources": {
+        "named.php": "0e6deae6abca65bb4ec40e92d0c4eb98304e1f079fb6b99944d83c47c9f36417",
+        "constants.php": "fbb46158ea18dfd33ed556f0388305d5f85754ca734e16b530dce54ffd6199c9",
+        "variants.php": "55fa18f9142cf2452d7f3d0b8a79b3aa9011b4c48a7f0399b3876493e541f71d"
+    },
+    "errors": {
+        "named/0": [],
+        "named/4": [],
+        "named/5": [
+            [
+                "named.php",
+                19,
+                "argument.named",
+                "Method ParamsBranchContracts\\Receiver::forbidden() invoked with unpacked array with string key, but it's not allowed because of @no-named-arguments.",
+                null,
+                true
+            ],
+            [
+                "named.php",
+                21,
+                "argument.named",
+                "Method ParamsBranchContracts\\Receiver::forbidden() invoked with unpacked array with possibly string key, but it's not allowed because of @no-named-arguments.",
+                null,
+                true
+            ],
+            [
+                "named.php",
+                22,
+                "argument.named",
+                "Method ParamsBranchContracts\\Receiver::forbidden() invoked with unpacked array with string key, but it's not allowed because of @no-named-arguments.",
+                null,
+                true
+            ],
+            [
+                "named.php",
+                24,
+                "argument.named",
+                "Method ParamsBranchContracts\\Receiver::forbidden() invoked with unpacked array with possibly string key, but it's not allowed because of @no-named-arguments.",
+                null,
+                true
+            ]
+        ],
+        "constants/0": [],
+        "constants/4": [
+            [
+                "constants.php",
+                21,
+                "constant.notFound",
+                "Constant PARAMS_BRANCH_CLASS_CONSTANT not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ],
+            [
+                "constants.php",
+                22,
+                "constant.notFound",
+                "Constant MISSING_PARAMS_BRANCH_CONSTANT not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ]
+        ],
+        "constants/5": [
+            [
+                "constants.php",
+                17,
+                "argument.invalidConstant",
+                "Constant JSON_BIGINT_AS_STRING is not allowed for parameter #2 $flags of function json_encode.",
+                null,
+                true
+            ],
+            [
+                "constants.php",
+                18,
+                "argument.type",
+                "Parameter #2 $flags of function json_encode expects int, true given.",
+                null,
+                true
+            ],
+            [
+                "constants.php",
+                19,
+                "argument.type",
+                "Parameter #2 $flags of function json_encode expects int, false given.",
+                null,
+                true
+            ],
+            [
+                "constants.php",
+                20,
+                "argument.type",
+                "Parameter #2 $flags of function json_encode expects int, null given.",
+                null,
+                true
+            ],
+            [
+                "constants.php",
+                21,
+                "constant.notFound",
+                "Constant PARAMS_BRANCH_CLASS_CONSTANT not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ],
+            [
+                "constants.php",
+                22,
+                "constant.notFound",
+                "Constant MISSING_PARAMS_BRANCH_CONSTANT not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ]
+        ],
+        "variants/0": [],
+        "variants/4": [
+            [
+                "variants.php",
+                19,
+                "arguments.count",
+                "Method SplPriorityQueue<mixed,mixed>::setExtractFlags() invoked with 0 parameters, 1 required.",
+                null,
+                true
+            ],
+            [
+                "variants.php",
+                20,
+                "argument.missing",
+                "Missing parameter $flags (int) in call to method SplPriorityQueue<mixed,mixed>::setExtractFlags().",
+                null,
+                true
+            ],
+            [
+                "variants.php",
+                20,
+                "argument.unknown",
+                "Unknown parameter $unknown in call to method SplPriorityQueue<mixed,mixed>::setExtractFlags().",
+                null,
+                true
+            ]
+        ],
+        "variants/5": [
+            [
+                "variants.php",
+                19,
+                "arguments.count",
+                "Method SplPriorityQueue<mixed,mixed>::setExtractFlags() invoked with 0 parameters, 1 required.",
+                null,
+                true
+            ],
+            [
+                "variants.php",
+                20,
+                "argument.missing",
+                "Missing parameter $flags (int) in call to method SplPriorityQueue<mixed,mixed>::setExtractFlags().",
+                null,
+                true
+            ],
+            [
+                "variants.php",
+                20,
+                "argument.unknown",
+                "Unknown parameter $unknown in call to method SplPriorityQueue<mixed,mixed>::setExtractFlags().",
+                null,
+                true
+            ]
+        ]
+    }
+}
