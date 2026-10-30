@@ -2,7 +2,7 @@
 //! results in [`flow`]).
 
 mod arguments;
-mod callables;
+pub(super) mod callables;
 mod castable;
 mod access;
 mod casts;
@@ -168,9 +168,8 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_> {
     }
     fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
         regex::typed(call, &mut self.spans);
-        if self.level >= 2 {
-            callables::typed(call, &mut self.spans);
-        }
+        // Reference argument scopes need the actual dynamic callee even below CallCallablesRule's level.
+        callables::typed(call, &mut self.spans);
     }
     fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, _: &mut ()) {
         if !self.check_this_only || super::bind_scope::has_inline_closure(&call.argument_list) {

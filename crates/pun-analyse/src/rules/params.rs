@@ -199,6 +199,15 @@ pub fn select(c: &Checker, variants: Variants, counts: &Counts) -> Acceptor {
     select_in(c, variants, counts, None)
 }
 
+/// ArgumentsHandler's count-stable structural metadata selection. Ordinary arguments consume reference,
+/// name and variadic policy before their values are evaluated, so every written argument contributes mixed.
+pub(super) fn select_metadata(c: &Checker, variants: Variants, counts: &Counts) -> Acceptor {
+    let types: Vec<_> = counts.args.iter().enumerate().map(|(i, arg)| {
+        (arg.name.clone().map_or(Key::Int(i as i64), Key::Str), Type::Mixed { explicit: false })
+    }).collect();
+    select_from_types(c, variants, counts, Some(&types))
+}
+
 /// A dynamic method's acceptor is selected using that name's filtered argument types.
 pub(super) fn select_in(c: &Checker, variants: Variants, counts: &Counts, scope: Option<&super::infer::NamedCallScope>) -> Acceptor {
     // selectFromArgs builds an ordered int|string keyed map, not the checker's bound argument list. All constant

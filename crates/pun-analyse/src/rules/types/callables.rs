@@ -6,6 +6,7 @@ use mago_codex::ttype::atomic::{TAtomic, callable::TCallable};
 use mago_codex::ttype::union::TUnion;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
+use pun_phpstan::symbols::ByRef;
 use pun_phpstan::types::{Level, Signature, Type};
 
 use super::super::params::{self, Acceptor, ParamType, Variants};
@@ -30,6 +31,7 @@ pub(super) fn typed_pipe(p: &Pipe, spans: &mut Vec<Span>) {
 fn of_signature(c: &Checker, s: &Signature, source: Span) -> Acceptor {
     // The PHPStan type model describes callable types without ExtendedParameterReflection's binding policy.
     // Retain it from the original signature, combining identical callable types with the same AND as PHPStan.
+    let by_ref = || s.params.iter().map(|p| if p.by_ref { ByRef::CreatesNewVariable } else { ByRef::No }).collect::<Vec<_>>();
     let metadata = c.types.get(&source).into_iter().flat_map(|t| t.types.iter()).filter_map(|a| {
         let signature = match a {
             TAtomic::Callable(TCallable::Signature(s)) => s.clone(),
@@ -38,7 +40,8 @@ fn of_signature(c: &Checker, s: &Signature, source: Span) -> Acceptor {
             _ => return None,
         };
         let converted = c.to_phpstan(&TUnion::from_atomic(a.clone()));
-        if !matches!(converted, Type::Closure(ref t) | Type::Callable(Some(ref t)) if **t == *s) {
+        let converted = match converted { Type::Union(types) => types, ty => vec![ty] };
+        if !converted.iter().any(|ty| matches!(ty, Type::Closure(t) | Type::Callable(Some(t)) if **t == *s)) {
             return None;
         }
         let source = match signature.get_source() {
@@ -47,6 +50,16 @@ fn of_signature(c: &Checker, s: &Signature, source: Span) -> Acceptor {
                 .map(|f| (f, c.codebase.get_class_like(class.as_bytes()))),
             _ => None,
         };
+        // A builtin first-class callable retains its ExtendedParameterReflection's three-state reference policy.
+        // Signature's boolean alone cannot distinguish array_pop's ReadsArgument from sscanf's output variables.
+        let references = source.filter(|(f, class)| class.is_none() && f.flags.is_built_in())
+            .and_then(|(f, _)| c.builtins.functions.get(&f.name.to_string().to_ascii_lowercase()))
+            .and_then(|f| f.variants.iter().find(|v| v.params.len() == s.params.len()
+                && v.params.iter().zip(&s.params).all(|(p, q)| p.name == q.name && p.optional == q.optional
+                    && p.variadic == q.variadic && (p.by_ref != ByRef::No) == q.by_ref
+                    && pun_phpstan::resolve::resolve_str(&p.ty, None) == q.ty)
+                && pun_phpstan::resolve::resolve_str(&v.ret, None) == s.ret))
+            .map(|v| Acceptor::of_builtin(v).by_ref).unwrap_or_else(by_ref);
         let bindings = match source {
             Some((f, class)) => {
                 let bindings = declared::codex_closure_this(c, f, class);
@@ -56,7 +69,7 @@ fn of_signature(c: &Checker, s: &Signature, source: Span) -> Acceptor {
         };
         // Preserve late generic PHPDoc operations erased by Mago's callable expansion. Already instantiated class
         // templates must keep the inferred callable type, not be replaced by their original declaration.
-        let types = source.map(|(f, class)| declared::codex_params(c, f, class).into_iter().map(Some).collect::<Vec<_>>())
+        let mut types = source.map(|(f, class)| declared::codex_params(c, f, class).into_iter().map(Some).collect::<Vec<_>>())
             .unwrap_or_else(|| vec![None; s.params.len()])
             .into_iter().map(|t| t.filter(|t| {
                 let (mut own, mut class) = (false, false);
@@ -67,17 +80,20 @@ fn of_signature(c: &Checker, s: &Signature, source: Span) -> Acceptor {
                 });
                 own && !class
             })).collect::<Vec<_>>();
+        types.resize(s.params.len(), None);
         let named = source.map_or(pun_phpstan::types::Tri::Yes, |(f, class)| params::accepts_named(c, f, class));
-        Some((bindings, types, named))
-    }).reduce(|(mut a, mut types, named), (b, other, other_named)| {
+        Some((bindings, types, named, references))
+    }).reduce(|(mut a, mut types, named, mut references), (b, other, other_named, other_references)| {
         for (a, b) in a.iter_mut().zip(b) { *a &= b; }
         for (t, o) in types.iter_mut().zip(other) { if *t != o { *t = None; } }
+        // PassedByReference::combine(): CreatesNewVariable > ReadsArgument > No.
+        for (a, b) in references.iter_mut().zip(other_references) { if b == ByRef::CreatesNewVariable || *a == ByRef::No { *a = b; } }
         // Identical closure signatures combine their reflections with OR; distinct callable alternatives are ANDed
         // by check() before selecting a signature.
-        (a, types, named.or(other_named))
+        (a, types, named.or(other_named), references)
     });
-    let (bindings, types, named) = metadata.unwrap_or_else(||
-        (vec![false; s.params.len()], vec![None; s.params.len()], pun_phpstan::types::Tri::Yes));
+    let (bindings, types, named, references) = metadata.unwrap_or_else(||
+        (vec![false; s.params.len()], vec![None; s.params.len()], pun_phpstan::types::Tri::Yes, by_ref()));
     Acceptor {
         optional: s.params.iter().map(|p| p.optional || p.variadic).collect(),
         variadic: s.params.iter().any(|p| p.variadic),
@@ -88,11 +104,7 @@ fn of_signature(c: &Checker, s: &Signature, source: Span) -> Acceptor {
         builtin: false,
         accepts_named_arguments: named,
         param_types: s.params.iter().zip(types).map(|(p, t)| ParamType::Typed(t.unwrap_or_else(|| p.ty.clone()))).collect(),
-        by_ref: s
-            .params
-            .iter()
-            .map(|p| if p.by_ref { pun_phpstan::symbols::ByRef::CreatesNewVariable } else { pun_phpstan::symbols::ByRef::No })
-            .collect(),
+        by_ref: references,
         closure_this: bindings,
         class: None,
         callee: None,
@@ -120,7 +132,7 @@ fn inaccessible() -> Acceptor {
 
 /// The acceptors of `getCallableParametersAcceptors()`; `None` when Pun does not know them. `inaccessible` gets
 /// the private or protected method a callable names out of its scope.
-fn acceptors(c: &Checker, t: &Type, source: Span, inaccessible: &mut Option<String>) -> Option<Vec<Acceptor>> {
+pub(in super::super) fn acceptors(c: &Checker, t: &Type, source: Span, inaccessible: &mut Option<String>) -> Option<Vec<Acceptor>> {
     let method = |class: &str, name: &str, inaccessible: &mut Option<String>| -> Option<Vec<Acceptor>> {
         let k = c.class_like(class).found()?;
         let m = members::method(c, k, name.as_bytes())?;

@@ -1,0 +1,499 @@
+{
+    "phar_sha256": "85157dba3d95d77ca603d2b7303aa78a538f9e3b56ccad07dd794c53aa96d1ae",
+    "diagnostics": {
+        "level0": [
+            [
+                "calls.php",
+                12,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "calls.php",
+                19,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "calls.php",
+                32,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "calls.php",
+                46,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "calls.php",
+                48,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "calls.php",
+                6,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "calls.php",
+                61,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "calls.php",
+                62,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "calls.php",
+                62,
+                "variable.undefined",
+                "Undefined variable: $missing",
+                null,
+                true
+            ],
+            [
+                "calls.php",
+                70,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "observations.php",
+                19,
+                "phpstan.dumpType",
+                "Dumped type: 23",
+                null,
+                false
+            ],
+            [
+                "observations.php",
+                20,
+                "phpstan.dumpType",
+                "Dumped type: 'retained'",
+                null,
+                false
+            ]
+        ],
+        "default": [
+            [
+                "calls.php",
+                12,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "calls.php",
+                19,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "calls.php",
+                32,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "calls.php",
+                46,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "calls.php",
+                48,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "calls.php",
+                58,
+                "variable.undefined",
+                "Variable $maybe might not be defined.",
+                null,
+                true
+            ],
+            [
+                "calls.php",
+                6,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "calls.php",
+                61,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "calls.php",
+                62,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "calls.php",
+                62,
+                "variable.undefined",
+                "Undefined variable: $missing",
+                null,
+                true
+            ],
+            [
+                "calls.php",
+                70,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "observations.php",
+                19,
+                "phpstan.dumpType",
+                "Dumped type: 23",
+                null,
+                false
+            ],
+            [
+                "observations.php",
+                20,
+                "phpstan.dumpType",
+                "Dumped type: 'retained'",
+                null,
+                false
+            ]
+        ],
+        "quiet": [
+            [
+                "calls.php",
+                12,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "calls.php",
+                19,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "calls.php",
+                32,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "calls.php",
+                46,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "calls.php",
+                48,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "calls.php",
+                6,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "calls.php",
+                61,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "calls.php",
+                62,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "calls.php",
+                62,
+                "variable.undefined",
+                "Undefined variable: $missing",
+                null,
+                true
+            ],
+            [
+                "calls.php",
+                70,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "observations.php",
+                19,
+                "phpstan.dumpType",
+                "Dumped type: 23",
+                null,
+                false
+            ],
+            [
+                "observations.php",
+                20,
+                "phpstan.dumpType",
+                "Dumped type: 'retained'",
+                null,
+                false
+            ]
+        ],
+        "level5": [
+            [
+                "calls.php",
+                12,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "calls.php",
+                19,
+                "callable.nonCallable",
+                "Trying to invoke 17 but it's not a callable.",
+                null,
+                true
+            ],
+            [
+                "calls.php",
+                19,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "calls.php",
+                32,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "calls.php",
+                46,
+                "expr.resultUnused",
+                "Expression \"$read($values[])\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "calls.php",
+                46,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "calls.php",
+                48,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "calls.php",
+                52,
+                "argument.byRef",
+                "Parameter ...$vars of callable (Closure(string, string): (array|null))|(Closure(string, string, float|int|string|null, float|int|string|null ...): (int|null)) is passed by reference, so it expects variables only.",
+                null,
+                true
+            ],
+            [
+                "calls.php",
+                52,
+                "argument.missing",
+                "Missing parameter $str (string) in call to callable (Closure(string, string): (array|null))|(Closure(string, string, float|int|string|null, float|int|string|null ...): (int|null)).",
+                null,
+                true
+            ],
+            [
+                "calls.php",
+                52,
+                "argument.missing",
+                "Missing parameter $war (float|int|string|null) in call to callable (Closure(string, string): (array|null))|(Closure(string, string, float|int|string|null, float|int|string|null ...): (int|null)).",
+                null,
+                true
+            ],
+            [
+                "calls.php",
+                58,
+                "variable.undefined",
+                "Variable $maybe might not be defined.",
+                null,
+                true
+            ],
+            [
+                "calls.php",
+                6,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "calls.php",
+                61,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "calls.php",
+                62,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "calls.php",
+                62,
+                "variable.undefined",
+                "Undefined variable: $missing",
+                null,
+                true
+            ],
+            [
+                "calls.php",
+                70,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "observations.php",
+                15,
+                "expr.resultUnused",
+                "Expression \"$string($text)\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "observations.php",
+                19,
+                "phpstan.dumpType",
+                "Dumped type: 23",
+                null,
+                false
+            ],
+            [
+                "observations.php",
+                20,
+                "phpstan.dumpType",
+                "Dumped type: 'retained'",
+                null,
+                false
+            ]
+        ]
+    },
+    "observations": [
+        {
+            "start": 136,
+            "line": 5,
+            "selected": "17",
+            "native": "17"
+        },
+        {
+            "start": 175,
+            "line": 7,
+            "selected": "23",
+            "native": "23"
+        },
+        {
+            "start": 233,
+            "line": 9,
+            "selected": "23",
+            "native": "23"
+        },
+        {
+            "start": 326,
+            "line": 12,
+            "selected": "23",
+            "native": "23"
+        },
+        {
+            "start": 394,
+            "line": 15,
+            "selected": "'retained'",
+            "native": "'retained'"
+        },
+        {
+            "start": 471,
+            "line": 18,
+            "selected": "mixed",
+            "native": "mixed"
+        }
+    ]
+}

@@ -406,7 +406,18 @@ fn callee_params(c: &Checker, call: &Callee, n: usize) -> Option<Vec<Param>> {
                         of_builtin(&f.variants, n)
                     })
             }
-            _ => None,
+            _ => {
+                // FuncCallHandler consumes the evaluated callee's callable acceptors at every reporting level.
+                let ty = c.phpstan_type(f.function)?;
+                let all = super::types::callables::acceptors(c, &ty, f.function.span(), &mut None)?;
+                let counts = super::params::count(&f.argument_list);
+                let acceptor = super::params::select_metadata(c, super::params::Variants { all, named: None }, &counts);
+                Some(acceptor.names.into_iter().zip(acceptor.by_ref).zip(acceptor.variadics).map(|((name, by_ref), variadic)| Param {
+                    name: name.into_bytes(),
+                    by_ref: by_ref == ByRef::CreatesNewVariable,
+                    variadic,
+                }).collect())
+            }
         },
         Callee::Method(m) => {
             let ClassLikeMemberSelector::Identifier(name) = &m.method else {
