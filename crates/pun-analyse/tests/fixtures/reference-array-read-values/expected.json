@@ -1,0 +1,584 @@
+{
+    "phar_sha256": "85157dba3d95d77ca603d2b7303aa78a538f9e3b56ccad07dd794c53aa96d1ae",
+    "source_sha256": "611b59b14deacd36d1c1ae2b4dd9e126f67542a480a5bce962e96e630cd62c66",
+    "diagnostics": {
+        "1": [
+            [
+                "values.php",
+                8,
+                "variable.undefined",
+                "Undefined variable: $unknown",
+                null,
+                true
+            ],
+            [
+                "values.php",
+                9,
+                "variable.undefined",
+                "Undefined variable: $legacyUnknown",
+                null,
+                true
+            ],
+            [
+                "values.php",
+                10,
+                "phpstan.dumpType",
+                "Dumped type #1: array{known: 1, unknown: *ERROR*}",
+                null,
+                false
+            ],
+            [
+                "values.php",
+                10,
+                "phpstan.dumpType",
+                "Dumped type #2: array{*ERROR*}",
+                null,
+                false
+            ],
+            [
+                "values.php",
+                17,
+                "variable.undefined",
+                "Undefined variable: $missing",
+                null,
+                true
+            ],
+            [
+                "values.php",
+                18,
+                "phpstan.dumpType",
+                "Dumped type: array{known: 23, unknown: *ERROR*}",
+                null,
+                false
+            ],
+            [
+                "values.php",
+                19,
+                "phpstan.dumpType",
+                "Dumped type: 23",
+                null,
+                false
+            ],
+            [
+                "values.php",
+                20,
+                "phpstan.dumpType",
+                "Dumped type: *ERROR*",
+                null,
+                false
+            ],
+            [
+                "values.php",
+                20,
+                "variable.undefined",
+                "Undefined variable: $missing",
+                null,
+                true
+            ],
+            [
+                "values.php",
+                21,
+                "variable.undefined",
+                "Undefined variable: $legacyMissing",
+                null,
+                true
+            ],
+            [
+                "values.php",
+                22,
+                "phpstan.dumpType",
+                "Dumped type: array{*ERROR*}",
+                null,
+                false
+            ],
+            [
+                "values.php",
+                23,
+                "variable.undefined",
+                "Undefined variable: $plainMissing",
+                null,
+                true
+            ],
+            [
+                "values.php",
+                24,
+                "phpstan.dumpType",
+                "Dumped type: array{*ERROR*}",
+                null,
+                false
+            ],
+            [
+                "values.php",
+                26,
+                "phpstan.dumpType",
+                "Dumped type: array{mixed}",
+                null,
+                false
+            ],
+            [
+                "values.php",
+                28,
+                "phpstan.dumpType",
+                "Dumped type: 23",
+                null,
+                false
+            ],
+            [
+                "values.php",
+                36,
+                "variable.undefined",
+                "Undefined variable: $absent",
+                null,
+                true
+            ],
+            [
+                "values.php",
+                37,
+                "phpstan.dumpType",
+                "Dumped type: array{*ERROR*}",
+                null,
+                false
+            ],
+            [
+                "values.php",
+                38,
+                "phpstan.dumpType",
+                "Dumped type: *ERROR*",
+                null,
+                false
+            ],
+            [
+                "values.php",
+                38,
+                "variable.undefined",
+                "Undefined variable: $absent",
+                null,
+                true
+            ],
+            [
+                "values.php",
+                46,
+                "phpstan.dumpType",
+                "Dumped type: array{41}",
+                null,
+                false
+            ]
+        ],
+        "5": [
+            [
+                "values.php",
+                5,
+                "void.pure",
+                "Function ReferenceArrayReadValues\\referenceInputs() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "values.php",
+                8,
+                "variable.undefined",
+                "Undefined variable: $unknown",
+                null,
+                true
+            ],
+            [
+                "values.php",
+                9,
+                "variable.undefined",
+                "Undefined variable: $legacyUnknown",
+                null,
+                true
+            ],
+            [
+                "values.php",
+                10,
+                "phpstan.dumpType",
+                "Dumped type #1: array{known: 1, unknown: *ERROR*}",
+                null,
+                false
+            ],
+            [
+                "values.php",
+                10,
+                "phpstan.dumpType",
+                "Dumped type #2: array{*ERROR*}",
+                null,
+                false
+            ],
+            [
+                "values.php",
+                15,
+                "expr.resultUnused",
+                "Expression \"$nativeControl\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "values.php",
+                17,
+                "variable.undefined",
+                "Undefined variable: $missing",
+                null,
+                true
+            ],
+            [
+                "values.php",
+                18,
+                "phpstan.dumpType",
+                "Dumped type: array{known: 23, unknown: *ERROR*}",
+                null,
+                false
+            ],
+            [
+                "values.php",
+                19,
+                "phpstan.dumpType",
+                "Dumped type: 23",
+                null,
+                false
+            ],
+            [
+                "values.php",
+                20,
+                "phpstan.dumpType",
+                "Dumped type: *ERROR*",
+                null,
+                false
+            ],
+            [
+                "values.php",
+                20,
+                "variable.undefined",
+                "Undefined variable: $missing",
+                null,
+                true
+            ],
+            [
+                "values.php",
+                21,
+                "variable.undefined",
+                "Undefined variable: $legacyMissing",
+                null,
+                true
+            ],
+            [
+                "values.php",
+                22,
+                "phpstan.dumpType",
+                "Dumped type: array{*ERROR*}",
+                null,
+                false
+            ],
+            [
+                "values.php",
+                23,
+                "variable.undefined",
+                "Undefined variable: $plainMissing",
+                null,
+                true
+            ],
+            [
+                "values.php",
+                24,
+                "phpstan.dumpType",
+                "Dumped type: array{*ERROR*}",
+                null,
+                false
+            ],
+            [
+                "values.php",
+                26,
+                "phpstan.dumpType",
+                "Dumped type: array{mixed}",
+                null,
+                false
+            ],
+            [
+                "values.php",
+                28,
+                "phpstan.dumpType",
+                "Dumped type: 23",
+                null,
+                false
+            ],
+            [
+                "values.php",
+                36,
+                "variable.undefined",
+                "Undefined variable: $absent",
+                null,
+                true
+            ],
+            [
+                "values.php",
+                37,
+                "phpstan.dumpType",
+                "Dumped type: array{*ERROR*}",
+                null,
+                false
+            ],
+            [
+                "values.php",
+                38,
+                "phpstan.dumpType",
+                "Dumped type: *ERROR*",
+                null,
+                false
+            ],
+            [
+                "values.php",
+                38,
+                "variable.undefined",
+                "Undefined variable: $absent",
+                null,
+                true
+            ],
+            [
+                "values.php",
+                46,
+                "phpstan.dumpType",
+                "Dumped type: array{41}",
+                null,
+                false
+            ],
+            [
+                "values.php",
+                50,
+                "void.pure",
+                "Function ReferenceArrayReadValues\\referenceEscape() returns void but does not have any side effects.",
+                null,
+                true
+            ]
+        ]
+    },
+    "observations": [
+        {
+            "start": 108,
+            "end": 152,
+            "line": 8,
+            "certainty": null,
+            "native_required": false,
+            "selected": "array{known: 1, unknown: *ERROR*}",
+            "native": "array{known: 1, unknown: *ERROR*}"
+        },
+        {
+            "start": 121,
+            "end": 127,
+            "line": 8,
+            "certainty": "defined",
+            "native_required": false,
+            "selected": "1",
+            "native": "1"
+        },
+        {
+            "start": 143,
+            "end": 151,
+            "line": 8,
+            "certainty": "absent",
+            "native_required": false,
+            "selected": "*ERROR*",
+            "native": "*ERROR*"
+        },
+        {
+            "start": 185,
+            "end": 207,
+            "line": 9,
+            "certainty": null,
+            "native_required": false,
+            "selected": "array{*ERROR*}",
+            "native": "array{*ERROR*}"
+        },
+        {
+            "start": 192,
+            "end": 206,
+            "line": 9,
+            "certainty": "absent",
+            "native_required": false,
+            "selected": "*ERROR*",
+            "native": "*ERROR*"
+        },
+        {
+            "start": 354,
+            "end": 368,
+            "line": 15,
+            "certainty": "defined",
+            "native_required": true,
+            "selected": "int",
+            "native": "int"
+        },
+        {
+            "start": 418,
+            "end": 462,
+            "line": 17,
+            "certainty": null,
+            "native_required": false,
+            "selected": "array{known: 23, unknown: *ERROR*}",
+            "native": "array{known: 23, unknown: *ERROR*}"
+        },
+        {
+            "start": 431,
+            "end": 437,
+            "line": 17,
+            "certainty": "defined",
+            "native_required": false,
+            "selected": "23",
+            "native": "23"
+        },
+        {
+            "start": 453,
+            "end": 461,
+            "line": 17,
+            "certainty": "absent",
+            "native_required": false,
+            "selected": "*ERROR*",
+            "native": "*ERROR*"
+        },
+        {
+            "start": 534,
+            "end": 540,
+            "line": 19,
+            "certainty": "defined",
+            "native_required": false,
+            "selected": "23",
+            "native": "23"
+        },
+        {
+            "start": 576,
+            "end": 584,
+            "line": 20,
+            "certainty": "absent",
+            "native_required": false,
+            "selected": "*ERROR*",
+            "native": "*ERROR*"
+        },
+        {
+            "start": 612,
+            "end": 634,
+            "line": 21,
+            "certainty": null,
+            "native_required": false,
+            "selected": "array{*ERROR*}",
+            "native": "array{*ERROR*}"
+        },
+        {
+            "start": 619,
+            "end": 633,
+            "line": 21,
+            "certainty": "absent",
+            "native_required": false,
+            "selected": "*ERROR*",
+            "native": "*ERROR*"
+        },
+        {
+            "start": 701,
+            "end": 716,
+            "line": 23,
+            "certainty": null,
+            "native_required": false,
+            "selected": "array{*ERROR*}",
+            "native": "array{*ERROR*}"
+        },
+        {
+            "start": 782,
+            "end": 798,
+            "line": 25,
+            "certainty": null,
+            "native_required": false,
+            "selected": "array{mixed}",
+            "native": "array{mixed}"
+        },
+        {
+            "start": 784,
+            "end": 797,
+            "line": 25,
+            "certainty": "defined",
+            "native_required": false,
+            "selected": "mixed",
+            "native": "mixed"
+        },
+        {
+            "start": 892,
+            "end": 898,
+            "line": 28,
+            "certainty": "defined",
+            "native_required": false,
+            "selected": "23",
+            "native": "23"
+        },
+        {
+            "start": 1025,
+            "end": 1035,
+            "line": 36,
+            "certainty": null,
+            "native_required": false,
+            "selected": "array{*ERROR*}",
+            "native": "array{*ERROR*}"
+        },
+        {
+            "start": 1027,
+            "end": 1034,
+            "line": 36,
+            "certainty": "absent",
+            "native_required": false,
+            "selected": "*ERROR*",
+            "native": "*ERROR*"
+        },
+        {
+            "start": 1107,
+            "end": 1114,
+            "line": 38,
+            "certainty": "absent",
+            "native_required": false,
+            "selected": "*ERROR*",
+            "native": "*ERROR*"
+        },
+        {
+            "start": 1231,
+            "end": 1250,
+            "line": 45,
+            "certainty": null,
+            "native_required": false,
+            "selected": "array{41}",
+            "native": "array{41}"
+        },
+        {
+            "start": 1233,
+            "end": 1249,
+            "line": 45,
+            "certainty": null,
+            "native_required": false,
+            "selected": "41",
+            "native": "41"
+        },
+        {
+            "start": 1389,
+            "end": 1398,
+            "line": 53,
+            "certainty": null,
+            "native_required": false,
+            "selected": "array{47}",
+            "native": "array{47}"
+        },
+        {
+            "start": 1391,
+            "end": 1397,
+            "line": 53,
+            "certainty": "defined",
+            "native_required": false,
+            "selected": "47",
+            "native": "47"
+        }
+    ],
+    "reference_operands": {
+        "121": 127,
+        "143": 151,
+        "192": 206,
+        "431": 437,
+        "453": 461,
+        "619": 633,
+        "784": 797,
+        "1027": 1034,
+        "1233": 1249,
+        "1391": 1397
+    }
+}

@@ -6,7 +6,18 @@ The two supported-only `r` modifier lines need the newer engine. Its expectation
 PHP and PCRE2 fixtures, not the orb's PHP 8.5.12 oracle, which links 10.42.
 Combine exports only when their token sources are byte-identical.
 
-The native-scope integration gate passes 119 analyser public/library tests across 21 targets,
+The native-boundary gate passes 248 analyser public/library tests across 44 targets, 217 original
+rule cases in 38 partitions, 197 original level cases in fourteen partitions, 54 coverage partitions
+and 445 native analyser units. Four standalone oracle-backed controls also pass, for 803 Rust tests
+across 155 partitions and controls. All 56 targeted CLI tests and forty affected lint tests pass.
+All 64 changed executable production lines are covered without exclusions. The 48 exact-object exports
+are warning-free, with no unmatched profiles. Four fresh PHPStan recaptures are byte-identical.
+The obsolete native-nullsafe availability assertion is corrected from independent oracle evidence.
+The docs build passes on 1,446 pages, with ten rendered contract checks. No gap allowances change.
+Completed proof objects are compressed and SHA-256-verified before redundant uncompressed copies are
+removed. Source, object, profile and export identities remain available after the disk cleanup.
+
+The preceding native-scope integration gate passes 119 analyser public/library tests across 21 targets,
 52 original rule cases and 94 original level cases in 35 frozen-source partitions. All 56 targeted
 CLI tests and forty affected lint tests pass. All-dependency instrumentation passes 445 native analyser
 units and 29 public tests. All 109 changed executable vendor-production lines are covered without exclusions.
@@ -26,7 +37,7 @@ five tests on main without production changes; the original failures remain in t
 All 56 targeted CLI tests, 88 PHPStan tests and 432 lint tests pass. The all-dependency instrumented
 gate passes 445 native analyser units and 23 public/control tests. No gap allowances change.
 
-Source-matched coverage is 44,020/44,020 analyser lines, 39,338/39,338 lint lines and 10,747/10,747
+Source-matched coverage is 44,047/44,047 analyser lines, 39,338/39,338 lint lines and 10,747/10,747
 PHPStan lines after existing exclusions. These counts supersede the older generated table below.
 The live-initialization batch covers all 808 changed executable production lines. No new exclusions are added.
 Every combined source record has the same SHA-256 as the measured source.
@@ -107,7 +118,7 @@ Uncovered lines:
 - `crates/pun-analyse/src/laravel/mod.rs:506-513` `Provider::meta()` of the model-attribute hook: Mago's `Provider` trait requires it, but `PluginRegistry` reads `meta()` only for its own library plugins, never for a registered expression hook, and the hook struct is private.
 - `crates/pun-analyse/src/rules/infer.rs:363-366` `Provider::meta()` of the definedness hook: as for the model-attribute hook's above, `PluginRegistry` never reads it for a registered expression hook.
 - `crates/pun-analyse/src/mago.rs:74` the upstream-panic fallback that skips only the failing file. The former debug-panic.php (`int&mixed`) no longer triggers it, and signed integer division overflow is now fixed in the maintained analyzer. The containment guard remains for unexpected upstream failures.
-- `crates/pun-analyse/src/rules/types/convert.rs:838` a symbolic class-constant array key (`array{Foo::BAR: int}`): canonical expansion resolves known literal keys before conversion. Unknown or nonliteral keys can remain symbolic inside Mago, but no public input is known to carry one into this converter. The fallback returns `Error`. This is the existing exclusion shifted by type conversion handling, not a newly excluded branch.
+- `crates/pun-analyse/src/rules/types/convert.rs:882` a symbolic class-constant array key (`array{Foo::BAR: int}`): canonical expansion resolves known literal keys before conversion. Unknown or nonliteral keys can remain symbolic inside Mago, but no public input is known to carry one into this converter. The fallback returns `Error`. This is the existing exclusion shifted by type conversion handling, not a newly excluded branch.
 - `crates/pun-phpstan/src/symbols.rs:167-169` `Visitor::expecting()` of the symbols.json map reader: serde calls it only to word the error for malformed input, and symbols.json is compiled in (every map in it is an object or `[]`).
 - `crates/pun-lint/src/rules/laravel/prefer_nullsafe.rs:49` the non-target node guard: `Linter` dispatches this rule only for MethodCall and PropertyAccess, as its `targets()` requires.
 - `crates/pun-lint/src/rules/laravel/prefer_env_helper.rs:34` the non-target node guard: `Linter` dispatches only ArrayAccess for this rule.

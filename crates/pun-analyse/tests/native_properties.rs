@@ -149,7 +149,6 @@ fn unsupported_native_receivers_members_and_reference_writes_stay_unavailable() 
     for expression in [
         "$this->$selector",
         "$this->$selector()",
-        "$this?->prop",
         "$this->magic",
         "$this->annotated",
         "$this->missing",

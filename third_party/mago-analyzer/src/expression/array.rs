@@ -450,6 +450,14 @@ where
             }
         };
 
+        // ArrayHandler reads each value before its separate by-reference escape flow.
+        // Taking an array element reference is not a variable-creating assignment.
+        if let Expression::UnaryPrefix(UnaryPrefix { operator: UnaryPrefixOperator::Reference(_), operand }) =
+            unwrap_expression(value)
+        {
+            block_context.variable_state.non_creating_references.insert(operand.span());
+        }
+
         let was_inside_general_use = block_context.flags.inside_general_use();
         block_context.flags.set_inside_general_use(true);
         value.analyze(context, block_context, artifacts)?;
@@ -499,9 +507,9 @@ where
             if let Some(variable_id) = variable_id {
                 if let Some(existing_type) = block_context.locals.remove(&variable_id) {
                     block_context.remove_descendants(context, variable_id, &existing_type, None);
+                    // Escape invalidates dependent paths, not the root's captured value.
+                    block_context.locals.insert(variable_id, existing_type);
                 }
-
-                block_context.locals.insert(variable_id, Rc::new(get_mixed()));
             }
         }
 
