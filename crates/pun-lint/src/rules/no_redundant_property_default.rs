@@ -5,18 +5,21 @@
 //! A typed, non-static property without hooks, private or of a final class, loses its default value when the
 //! constructor always assigns it: a statement of the constructor's own body assigns it (not through an array key,
 //! and not from its own value), or both branches of an `if`/`else` there do, or a method the constructor calls as a
-//! statement assigns it in its own body. The constructor (or such a method) must not return early. Methods marked
+//! statement assigns it in its own body. The constructor, or a method it calls directly on `$this`, must not return
+//! early. Methods marked
 //! `@required` or `@inject` (or with Symfony's `#[Required]`, Nette's `#[Inject]`) initialize too, and so do `setUp()`
 //! and `setUpBeforeClass()` of a PHPUnit test case.
 //!
 //! Rector knows a test case and the methods a call reaches by their types. Pun counts a class as a test case when it
-//! extends `PHPUnit\Framework\TestCase` itself, and follows calls on `$this`, `self` and `static` to the class's own
-//! methods; it does not look into a parent class (lint.md Build 8).
+//! extends `PHPUnit\Framework\TestCase` itself, and follows calls on `$this`, `self`, `static` and the class's own
+//! name (including imports) to its own methods; it does not resolve peer receivers or look into a parent class.
 
 use mago_syntax::cst::*;
 use pun_problem::{Edit, Fix, Safety, Span};
 
-use super::rector_batch5::{doc_comment, has_attribute, member_from, method, resolve_class_name};
+use super::rector_batch5::{
+    doc_comment, has_attribute, member_from, method, resolve_class_name, scope_statements,
+};
 use crate::syntax::{node_span, same_code, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -91,7 +94,7 @@ impl Rule for NoRedundantPropertyDefault {
                     continue;
                 };
                 let name = &item.variable.name[1..];
-                if !scope.is_assigned(name) || assigned_via_array_key(node, name) {
+                if !scope.is_assigned(name) || assigned_via_array_key(node, name, &path) {
                     continue;
                 }
                 let start = node_span(&item.variable).end;
@@ -192,15 +195,48 @@ fn is_this(expr: &Expression<'_>) -> bool {
     matches!(unparenthesize(expr), Expression::Variable(Variable::Direct(v)) if v.name == b"$this")
 }
 
-/// `$this->name`, `self::$name` or `static::$name`.
-fn is_fetch(expr: &Expression<'_>, name: &[u8]) -> bool {
+/// Calls resolve the declaring class through reflection, while local fetches compare the documented object type's
+/// class name exactly. Neither a dynamic class expression nor a different named class identifies the local class.
+fn local_static_class(class: &Expression<'_>, path: &[Node<'_, '_>], reflected: bool) -> bool {
+    let id = match unparenthesize(class) {
+        Expression::Self_(_) | Expression::Static(_) => return true,
+        Expression::Identifier(id) => id,
+        _ => return false,
+    };
+    let Some(Node::Class(class)) = path.last() else {
+        return false;
+    };
+    let namespace = scope_statements(path).0;
+    let qualify = |name: &str| match &namespace {
+        Some(namespace) => format!("{namespace}\\{name}"),
+        None => name.to_string(),
+    };
+    let own = qualify(&String::from_utf8_lossy(class.name.value));
+    let written = id.value();
+    let resolved = if written
+        .get(..10)
+        .is_some_and(|prefix| prefix.eq_ignore_ascii_case(b"namespace\\"))
+    {
+        qualify(&String::from_utf8_lossy(&written[10..]))
+    } else {
+        resolve_class_name(path, id)
+    };
+    if reflected {
+        resolved.eq_ignore_ascii_case(&own)
+    } else {
+        resolved == own
+    }
+}
+
+/// `$this->name`, `self::$name`, `static::$name` or the enclosing class's named static fetch.
+fn is_fetch(expr: &Expression<'_>, name: &[u8], path: &[Node<'_, '_>]) -> bool {
     match unparenthesize(expr) {
         Expression::Access(Access::Property(a)) => {
             is_this(a.object)
                 && matches!(&a.property, ClassLikeMemberSelector::Identifier(id) if id.value == name)
         }
         Expression::Access(Access::StaticProperty(a)) => {
-            matches!(a.class, Expression::Self_(_) | Expression::Static(_))
+            local_static_class(a.class, path, false)
                 && matches!(&a.property, Variable::Direct(v) if &v.name[1..] == name)
         }
         _ => false,
@@ -208,7 +244,11 @@ fn is_fetch(expr: &Expression<'_>, name: &[u8]) -> bool {
 }
 
 /// `PropertyAssignMatcher::matchPropertyAssignExpr`: an assignment to `$this->name` or `$this->name[...]`.
-fn assigns<'a>(expr: &'a Expression<'a>, name: &[u8]) -> Option<&'a Assignment<'a>> {
+fn assigns<'a>(
+    expr: &'a Expression<'a>,
+    name: &[u8],
+    path: &[Node<'_, '_>],
+) -> Option<&'a Assignment<'a>> {
     let Expression::Assignment(a) = unparenthesize(expr) else {
         return None;
     };
@@ -220,7 +260,7 @@ fn assigns<'a>(expr: &'a Expression<'a>, name: &[u8]) -> Option<&'a Assignment<'
         Expression::ArrayAppend(append) => append.array,
         lhs => lhs,
     };
-    is_fetch(target, name).then_some(a)
+    is_fetch(target, name, path).then_some(a)
 }
 
 struct Scope<'s, 'p, 'a> {
@@ -354,12 +394,12 @@ impl<'a> Scope<'_, '_, 'a> {
     /// The traversal of `isPropertyAssigned`, in php-parser's order: `in_loop` inside a loop or `switch` body.
     fn walk(&self, node: Node<'a, 'a>, name: &[u8], first: &[Span], in_loop: bool) -> Found {
         if let Node::If(r#if) = node
-            && if_else_assign(r#if, name)
+            && if_else_assign(r#if, name, self.path)
         {
             return Found::Stop(!in_loop);
         }
         if let Node::Assignment(a) = node
-            && let Some(a) = assigns_node(a, name)
+            && let Some(a) = assigns_node(a, name, self.path)
         {
             // Is the property's own value merged into the assignment?
             if uses_fetch(self.source, Node::Expression(a.rhs), a.lhs) {
@@ -381,7 +421,17 @@ impl<'a> Scope<'_, '_, 'a> {
         let mut found = Found::Continue;
         node.visit_children(|child| {
             if matches!(found, Found::Continue) {
-                found = self.walk(child, name, first, in_loop);
+                if matches!(child, Node::Class(_) | Node::AnonymousClass(_)) {
+                    let mut path = self.path.to_vec();
+                    path.push(child);
+                    let scope = Scope {
+                        path: &path,
+                        ..*self
+                    };
+                    found = scope.walk(child, name, first, in_loop);
+                } else {
+                    found = self.walk(child, name, first, in_loop);
+                }
             }
         });
         found
@@ -399,7 +449,7 @@ impl<'a> Scope<'_, '_, 'a> {
                 Expression::Call(Call::Method(call)) => (&call.method, is_this(call.object)),
                 Expression::Call(Call::StaticMethod(call)) => (
                     &call.method,
-                    matches!(call.class, Expression::Self_(_) | Expression::Static(_)),
+                    local_static_class(call.class, self.path, true),
                 ),
                 _ => return false,
             };
@@ -410,14 +460,18 @@ impl<'a> Scope<'_, '_, 'a> {
                 first_level(m).any(|s| {
                     matches!(s, Statement::Expression(e)
                         if matches!(unparenthesize(e.expression), Expression::Assignment(a)
-                            if matches!(a.operator, AssignmentOperator::Assign(_)) && is_fetch(a.lhs, name)))
+                            if matches!(a.operator, AssignmentOperator::Assign(_)) && is_fetch(a.lhs, name, self.path)))
                 })
             })
         })
     }
 }
 
-fn assigns_node<'a>(a: &'a Assignment<'a>, name: &[u8]) -> Option<&'a Assignment<'a>> {
+fn assigns_node<'a>(
+    a: &'a Assignment<'a>,
+    name: &[u8],
+    path: &[Node<'_, '_>],
+) -> Option<&'a Assignment<'a>> {
     if !matches!(a.operator, AssignmentOperator::Assign(_)) {
         return None;
     }
@@ -426,12 +480,12 @@ fn assigns_node<'a>(a: &'a Assignment<'a>, name: &[u8]) -> Option<&'a Assignment
         Expression::ArrayAppend(append) => append.array,
         lhs => lhs,
     };
-    is_fetch(target, name).then_some(a)
+    is_fetch(target, name, path).then_some(a)
 }
 
 /// `isIfElseAssign`: an `if` with an `else` and no `elseif` whose branches both assign the property in a list of
 /// expression statements only.
-fn if_else_assign(r#if: &If<'_>, name: &[u8]) -> bool {
+fn if_else_assign(r#if: &If<'_>, name: &[u8], path: &[Node<'_, '_>]) -> bool {
     let (stmts, else_stmts): (Vec<&Statement>, Vec<&Statement>) = match &r#if.body {
         IfBody::Statement(body) => {
             let Some(else_clause) = &body.else_clause else {
@@ -458,7 +512,7 @@ fn if_else_assign(r#if: &If<'_>, name: &[u8]) -> bool {
             )
         }
     };
-    assigned_in(&stmts, name) && assigned_in(&else_stmts, name)
+    assigned_in(&stmts, name, path) && assigned_in(&else_stmts, name, path)
 }
 
 fn body_statements<'a>(statement: &'a Statement<'a>) -> Vec<&'a Statement<'a>> {
@@ -469,12 +523,12 @@ fn body_statements<'a>(statement: &'a Statement<'a>) -> Vec<&'a Statement<'a>> {
 }
 
 /// `isAssignedInStmts`.
-fn assigned_in(stmts: &[&Statement<'_>], name: &[u8]) -> bool {
+fn assigned_in(stmts: &[&Statement<'_>], name: &[u8], path: &[Node<'_, '_>]) -> bool {
     let mut assigned = false;
     for statement in stmts {
         match statement {
             Statement::Expression(e) => {
-                if assigns(e.expression, name).is_some() {
+                if assigns(e.expression, name, path).is_some() {
                     assigned = true;
                 }
             }
@@ -499,7 +553,7 @@ fn uses_fetch(source: &str, node: Node<'_, '_>, target: &Expression<'_>) -> bool
 }
 
 /// `isAssignedViaArrayDimFetch`: an assignment anywhere in the class to `$this->name[...]`, at any depth of keys.
-fn assigned_via_array_key(node: Node<'_, '_>, name: &[u8]) -> bool {
+fn assigned_via_array_key(node: Node<'_, '_>, name: &[u8], path: &[Node<'_, '_>]) -> bool {
     if let Node::Assignment(a) = node
         && matches!(a.operator, AssignmentOperator::Assign(_))
     {
@@ -513,11 +567,21 @@ fn assigned_via_array_key(node: Node<'_, '_>, name: &[u8]) -> bool {
             }
             dim = true;
         }
-        if dim && is_fetch(target, name) {
+        if dim && is_fetch(target, name, path) {
             return true;
         }
     }
     let mut found = false;
-    node.visit_children(|child| found = found || assigned_via_array_key(child, name));
+    node.visit_children(|child| {
+        if !found {
+            if matches!(child, Node::Class(_) | Node::AnonymousClass(_)) {
+                let mut path = path.to_vec();
+                path.push(child);
+                found = assigned_via_array_key(child, name, &path);
+            } else {
+                found = assigned_via_array_key(child, name, path);
+            }
+        }
+    });
     found
 }
