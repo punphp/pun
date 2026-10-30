@@ -1,0 +1,150 @@
+{
+    "phar_sha256": "85157dba3d95d77ca603d2b7303aa78a538f9e3b56ccad07dd794c53aa96d1ae",
+    "type_resolver": "phar://phpstan.phar/src/PhpDoc/TypeNodeResolver.php",
+    "errors": [
+        [
+            "Calls.php",
+            11,
+            "larastan.configCollection",
+            "Config key 'offsets.5' is not an array.",
+            null,
+            true
+        ],
+        [
+            "Calls.php",
+            13,
+            "larastan.configCollection",
+            "Config key 'offsets.7' is not an array.",
+            null,
+            true
+        ],
+        [
+            "Calls.php",
+            14,
+            "larastan.configCollection",
+            "Config key 'offsets.named' is not an array.",
+            null,
+            true
+        ],
+        [
+            "Calls.php",
+            16,
+            "larastan.configCollection",
+            "Config key 'offsets.nested.1' is not an array.",
+            null,
+            true
+        ],
+        [
+            "Calls.php",
+            18,
+            "larastan.configCollection",
+            "Config key 'offsets.nested.5' is not an array.",
+            null,
+            true
+        ],
+        [
+            "Calls.php",
+            19,
+            "larastan.configCollection",
+            "Config key 'offsets.optional.0' is not an array.",
+            null,
+            true
+        ],
+        [
+            "Calls.php",
+            21,
+            "larastan.configCollection",
+            "Config key 'offsets.constants.0' is not an array.",
+            null,
+            true
+        ],
+        [
+            "Calls.php",
+            23,
+            "larastan.configCollection",
+            "Config key 'offsets.constants.2' is not an array.",
+            null,
+            true
+        ],
+        [
+            "Calls.php",
+            24,
+            "larastan.configCollection",
+            "Config key 'offsets.namedConstant.0' is not an array.",
+            null,
+            true
+        ],
+        [
+            "Calls.php",
+            25,
+            "larastan.configCollection",
+            "Config key 'offsets.namedConstant.Y-m-d\\TH:i:sP' is not an array.",
+            null,
+            true
+        ],
+        [
+            "Calls.php",
+            26,
+            "larastan.configCollection",
+            "Config key 'offsets.optionalInteger.4' is not an array.",
+            null,
+            true
+        ],
+        [
+            "Calls.php",
+            27,
+            "larastan.configCollection",
+            "Config key 'offsets.optionalInteger.5' is not an array.",
+            null,
+            true
+        ],
+        [
+            "Calls.php",
+            29,
+            "larastan.configCollection",
+            "Config key 'offsets.optionalInteger.tail' is not an array.",
+            null,
+            true
+        ],
+        [
+            "Calls.php",
+            30,
+            "larastan.configCollection",
+            "Config key 'offsets.negativeInteger.-3' is not an array.",
+            null,
+            true
+        ],
+        [
+            "Calls.php",
+            32,
+            "larastan.configCollection",
+            "Config key 'offsets.negativeInteger.1' is not an array.",
+            null,
+            true
+        ],
+        [
+            "Calls.php",
+            34,
+            "larastan.configCollection",
+            "Config key 'offsets.quotedInteger.6' is not an array.",
+            null,
+            true
+        ],
+        [
+            "Calls.php",
+            35,
+            "larastan.configCollection",
+            "Config key 'offsets.duplicate.0' is not an array.",
+            null,
+            true
+        ],
+        [
+            "Calls.php",
+            9,
+            "larastan.configCollection",
+            "Config key 'offsets.0' is not an array.",
+            null,
+            true
+        ]
+    ]
+}

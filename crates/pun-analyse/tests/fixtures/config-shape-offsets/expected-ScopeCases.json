@@ -1,0 +1,110 @@
+{
+    "phar_sha256": "85157dba3d95d77ca603d2b7303aa78a538f9e3b56ccad07dd794c53aa96d1ae",
+    "type_resolver": "phar://phpstan.phar/src/PhpDoc/TypeNodeResolver.php",
+    "errors": [
+        [
+            "ScopeCases.php (in context of class ConfigShapeOffsets\\UsesConfig)",
+            57,
+            "larastan.configCollection",
+            "Config key 'scopes.traitKeys.1' is not an array.",
+            null,
+            true
+        ],
+        [
+            "ScopeCases.php",
+            15,
+            "method.templateTypeNotInParameter",
+            "Template type TKey of function ConfigShapeOffsets\\sourceNames() is not referenced in a parameter.",
+            null,
+            true
+        ],
+        [
+            "ScopeCases.php",
+            17,
+            "larastan.configCollection",
+            "Config key 'scopes.aliases.0' is not an array.",
+            null,
+            true
+        ],
+        [
+            "ScopeCases.php",
+            19,
+            "larastan.configCollection",
+            "Config key 'scopes.aliases.2' is not an array.",
+            null,
+            true
+        ],
+        [
+            "ScopeCases.php",
+            20,
+            "larastan.configCollection",
+            "Config key 'scopes.functionKey.0' is not an array.",
+            null,
+            true
+        ],
+        [
+            "ScopeCases.php",
+            23,
+            "larastan.configCollection",
+            "Config key 'scopes.unsealed.extra' is not an array.",
+            null,
+            true
+        ],
+        [
+            "ScopeCases.php",
+            25,
+            "larastan.configCollection",
+            "Config key 'scopes.valueOnly.anything' is not an array.",
+            null,
+            true
+        ],
+        [
+            "ScopeCases.php",
+            39,
+            "method.templateTypeNotInParameter",
+            "Template type TMethod of method ConfigShapeOffsets\\ScopedKeys::sourceNames() is not referenced in a parameter.",
+            null,
+            true
+        ],
+        [
+            "ScopeCases.php",
+            41,
+            "larastan.configCollection",
+            "Config key 'scopes.classKeys.0' is not an array.",
+            null,
+            true
+        ],
+        [
+            "ScopeCases.php",
+            43,
+            "larastan.configCollection",
+            "Config key 'scopes.lateKeys.0' is not an array.",
+            null,
+            true
+        ],
+        [
+            "ScopeCases.php",
+            44,
+            "larastan.configCollection",
+            "Config key 'scopes.parentKeys.2' is not an array.",
+            null,
+            true
+        ],
+        [
+            "ScopeCases.php",
+            46,
+            "larastan.configCollection",
+            "Config key 'scopes.methodKey.1' is not an array.",
+            null,
+            true
+        ],
+        [
+            "ScopeCases.php",
+            48,
+            "larastan.configCollection",
+            "Config key 'scopes.classKey.3' is not an array.",
+            null,
+            true
+        ]
+    ]
+}

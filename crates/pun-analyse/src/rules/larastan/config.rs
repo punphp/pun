@@ -4,7 +4,7 @@
 use mago_span::HasSpan;
 use mago_syntax::cst::*;
 
-use super::super::Checker;
+use super::super::{Checker, FunctionScopeKind, declared};
 use crate::larastan::config::{IsArray, union_is_array};
 
 const CONFIG: &[u8] = b"Illuminate\\Support\\Facades\\Config";
@@ -43,7 +43,26 @@ pub(super) fn check<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMethodCall
             .unwrap_or_default()
     });
     // `$returnTypes + $configTypes`: the default's type takes the first key
-    let mut types = larastan.configs.types(&keys).unwrap_or_default();
+    let class = c.class_scope();
+    let mut scope = declared::scope_at(c, call.span(), class);
+    let function = c.functions.last().and_then(|function| match function.kind {
+        FunctionScopeKind::Function => {
+            let name = scope.names.namespace_name().map_or_else(
+                || function.name.clone(),
+                |namespace| format!("{}\\{}", String::from_utf8_lossy(namespace), function.name),
+            );
+            c.codebase.get_function(name.as_bytes())
+        }
+        FunctionScopeKind::Method { .. } => class.and_then(|class| {
+            c.codebase
+                .get_method(class.name.as_bytes(), function.name.as_bytes())
+        }),
+    });
+    if let Some(function) = function {
+        scope = declared::value_scope(c, function, class);
+    }
+    let mut types =
+        declared::with_classes(c, || larastan.configs.types(&keys, &scope)).unwrap_or_default();
     if let Some(default) = args.get(1) {
         let default = c
             .type_of(default.value())

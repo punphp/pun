@@ -7,6 +7,7 @@
 
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
+use std::sync::{Arc, Mutex};
 
 use mago_allocator::LocalArena;
 use mago_codex::metadata::CodebaseMetadata;
@@ -21,7 +22,9 @@ use mago_span::HasSpan;
 use mago_syntax::cst::*;
 use mago_syntax::parser::parse_file;
 use mago_syntax::walker::MutWalker;
-use pun_phpstan::phpdoc::{self, Node, ShapeKey};
+use pun_phpstan::phpdoc::{self, ConstExpr, Node, ShapeKey};
+use pun_phpstan::resolve::{Scope, resolve_in, resolve_late};
+use pun_phpstan::types::{LateArrayShape, Type, is_numeric, mixed};
 
 use crate::codebase::read;
 
@@ -61,6 +64,8 @@ enum Value {
 pub(crate) struct Configs {
     /// Each file and its first `return` (`None`: a parse error or no `return`), by path.
     files: BTreeMap<PathBuf, Option<Returned>>,
+    /// ConfigParser::parsedConfigs: the first resolved type, by complete config key, not caller.
+    parsed: Arc<Mutex<BTreeMap<String, IsArray>>>,
 }
 
 impl Configs {
@@ -86,14 +91,20 @@ impl Configs {
                     (p, returned)
                 })
                 .collect(),
+            parsed: Default::default(),
         }
     }
 
     /// `ConfigParser::getTypes()` for the keys: `None` when a key's file is missing (no types at all), else the
     /// keys' types (a key whose value is not found has none).
-    pub(crate) fn types(&self, keys: &[String]) -> Option<Vec<IsArray>> {
+    pub(crate) fn types(&self, keys: &[String], scope: &dyn Scope) -> Option<Vec<IsArray>> {
         let mut types = Vec::new();
+        let mut parsed = self.parsed.lock().unwrap();
         for key in keys {
+            if let Some(ty) = parsed.get(key) {
+                types.push(*ty);
+                continue;
+            }
             let mut parts = key.split('.');
             let file = parts.next().unwrap_or_default();
             let parts: Vec<&str> = parts.collect();
@@ -104,7 +115,15 @@ impl Configs {
                 .filter(|(p, _)| p.to_string_lossy().ends_with(&suffix))
                 .find_map(|(_, r)| r.as_ref())?;
             types.extend(match returned {
-                Returned::Doc(node) => Some(doc_type(node, &parts)),
+                Returned::Doc(node) => {
+                    let ty = doc_type(node, &parts, scope);
+                    parsed.insert(key.clone(), ty);
+                    Some(ty)
+                }
+                Returned::Array(_) if parts.is_empty() => {
+                    parsed.insert(key.clone(), IsArray::Maybe);
+                    Some(IsArray::Maybe)
+                }
                 Returned::Array(items) => lookup(items, &parts),
                 Returned::Other => None,
             });
@@ -115,9 +134,6 @@ impl Configs {
 
 /// The value at `parts`, as getTypes() walks the items (a part not found keeps the value found so far).
 fn lookup(items: &[Item], parts: &[&str]) -> Option<IsArray> {
-    if parts.is_empty() {
-        return Some(IsArray::Maybe);
-    }
     let mut items = items;
     let mut found = None;
     for part in parts {
@@ -139,63 +155,70 @@ fn lookup(items: &[Item], parts: &[&str]) -> Option<IsArray> {
     }
 }
 
-/// The `@return` type's offset at `parts`, through array shapes and `array<K, V>`.
-fn doc_type(node: &Node, parts: &[&str]) -> IsArray {
-    let mut node = node;
+/// ConfigParser::getTypes(): resolve in the caller's scope, then read each offset of the return type.
+fn doc_type(node: &Node, parts: &[&str], scope: &dyn Scope) -> IsArray {
+    let mut ty = doc_shape(node, scope);
     for part in parts {
-        node = match node {
-            Node::ArrayShape { items, .. } => match items.iter().find(|i| match &i.key {
-                Some(ShapeKey::Int(k) | ShapeKey::Ident(k)) => k == part,
-                Some(ShapeKey::Str(k)) => k == part.as_bytes(),
-                Some(ShapeKey::Fetch(_, _)) | None => false,
-            }) {
-                Some(i) => &i.value,
-                None => return IsArray::Maybe,
-            },
-            Node::Generic { base, args } if is_array_name(base) && !args.is_empty() => &args[args.len() - 1],
-            Node::Array(item) => item,
-            _ => return IsArray::Maybe,
+        let offset = if is_numeric(part) {
+            Type::ConstInt(pun_tokens::php_compat::intval(part))
+        } else {
+            Type::ConstString(part.as_bytes().to_vec())
         };
+        ty = resolve_late(&Type::OffsetAccess(Box::new(ty), Box::new(offset)));
     }
-    doc_is_array(node)
+    if ty.is_array().no() {
+        IsArray::No
+    } else {
+        IsArray::Maybe
+    }
 }
 
-fn is_array_name(name: &str) -> bool {
-    matches!(
-        name.to_ascii_lowercase().as_str(),
-        "array" | "list" | "non-empty-array" | "non-empty-list"
-    )
-}
-
-fn doc_is_array(node: &Node) -> IsArray {
-    let no = match node {
-        Node::Ident(name) => matches!(
-            name.to_ascii_lowercase().as_str(),
-            "string"
-                | "non-empty-string"
-                | "non-falsy-string"
-                | "numeric-string"
-                | "lowercase-string"
-                | "class-string"
-                | "int"
-                | "integer"
-                | "positive-int"
-                | "negative-int"
-                | "float"
-                | "double"
-                | "bool"
-                | "boolean"
-                | "true"
-                | "false"
-                | "null"
-                | "scalar"
-        ),
-        Node::Const(_) => true,
-        Node::Nullable(n) => doc_is_array(n) == IsArray::No,
-        Node::Union(nodes) => nodes.iter().all(|n| doc_is_array(n) == IsArray::No),
-        _ => false,
+/// TypeNodeResolver::resolveArrayShapeNode(): LateArrayShape owns implicit indices, optional/duplicate
+/// slots and invalid-key ErrorTypes. Constants and all other type syntax use the shared scoped resolver.
+fn doc_shape(node: &Node, scope: &dyn Scope) -> Type {
+    let Node::ArrayShape {
+        kind,
+        items,
+        sealed,
+        unsealed,
+    } = node
+    else {
+        return resolve_in(node, scope);
     };
-    if no { IsArray::No } else { IsArray::Maybe }
+    LateArrayShape {
+        items: items
+            .iter()
+            .map(|item| {
+                let key = item.key.as_ref().map(|key| match key {
+                    ShapeKey::Ident(name) => scope
+                        .template(name)
+                        .unwrap_or_else(|| Type::ConstString(name.as_bytes().to_vec())),
+                    ShapeKey::Str(value) => Type::ConstString(value.clone()),
+                    ShapeKey::Int(value) => {
+                        resolve_in(&Node::Const(ConstExpr::Int(value.clone())), scope)
+                    }
+                    ShapeKey::Fetch(class, name) => resolve_in(
+                        &Node::Const(ConstExpr::Fetch(class.clone(), name.clone())),
+                        scope,
+                    ),
+                });
+                (key, doc_shape(&item.value, scope), item.optional)
+            })
+            .collect(),
+        unsealed: (!sealed).then(|| {
+            unsealed.as_ref().map_or_else(
+                || (None, mixed()),
+                |(key, value)| {
+                    (
+                        key.as_ref().map(|key| resolve_in(key, scope)),
+                        doc_shape(value, scope),
+                    )
+                },
+            )
+        }),
+        kind: kind.clone(),
+    }
+    .create()
 }
 
 /// ConfigParser::parseConfigFile() and what getTypes() reads of it.

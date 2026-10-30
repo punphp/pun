@@ -1,0 +1,14 @@
+{
+    "phar_sha256": "85157dba3d95d77ca603d2b7303aa78a538f9e3b56ccad07dd794c53aa96d1ae",
+    "type_resolver": "phar://phpstan.phar/src/PhpDoc/TypeNodeResolver.php",
+    "errors": [
+        [
+            "CallerZero.php",
+            13,
+            "larastan.configCollection",
+            "Config key 'scoped.0' is not an array.",
+            null,
+            true
+        ]
+    ]
+}
