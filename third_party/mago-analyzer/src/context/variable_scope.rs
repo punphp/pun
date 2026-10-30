@@ -58,6 +58,7 @@ struct ConditionalVariable {
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct VariableState {
     pub after_extract_call: bool,
+    /// Explicit No holders from refinements and joins, not invalidations such as unset().
     pub absent: WordSet,
     /// An impossible isset edge is still analyzed for diagnostics, but is not a continuing scope.
     pub impossible: bool,

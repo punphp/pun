@@ -1,0 +1,929 @@
+{
+    "phar_sha256": "85157dba3d95d77ca603d2b7303aa78a538f9e3b56ccad07dd794c53aa96d1ae",
+    "fixtures": {
+        "global.php": {
+            "source_sha256": "50b9dd3a17f441a6adf3511da17fd088598276ea19f97229e1ad83fc7e206eb1",
+            "diagnostics": {
+                "1": [
+                    [
+                        "global.php",
+                        5,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        "global.php",
+                        5,
+                        "variable.undefined",
+                        "Variable $value might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "global.php",
+                        6,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        "global.php",
+                        6,
+                        "variable.undefined",
+                        "Variable $value might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "global.php",
+                        8,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        "global.php",
+                        8,
+                        "variable.undefined",
+                        "Variable $value might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "global.php",
+                        10,
+                        "phpstan.dumpType",
+                        "Dumped type: 23",
+                        null,
+                        false
+                    ],
+                    [
+                        "global.php",
+                        15,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        "global.php",
+                        15,
+                        "variable.undefined",
+                        "Undefined variable: $local",
+                        null,
+                        true
+                    ],
+                    [
+                        "global.php",
+                        22,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        "global.php",
+                        22,
+                        "variable.undefined",
+                        "Undefined variable: $local",
+                        null,
+                        true
+                    ],
+                    [
+                        "global.php",
+                        24,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        "global.php",
+                        24,
+                        "variable.undefined",
+                        "Variable $local might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "global.php",
+                        31,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        "global.php",
+                        31,
+                        "variable.undefined",
+                        "Undefined variable: $local",
+                        null,
+                        true
+                    ],
+                    [
+                        "global.php",
+                        35,
+                        "phpstan.dumpType",
+                        "Dumped type: 83",
+                        null,
+                        false
+                    ],
+                    [
+                        "global.php",
+                        35,
+                        "variable.undefined",
+                        "Variable $maybe might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "global.php",
+                        43,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        "global.php",
+                        43,
+                        "variable.undefined",
+                        "Variable $local might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "global.php",
+                        45,
+                        "phpstan.dumpType",
+                        "Dumped type: 103",
+                        null,
+                        false
+                    ],
+                    [
+                        "global.php",
+                        49,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        "global.php",
+                        49,
+                        "variable.undefined",
+                        "Undefined variable: $isolated",
+                        null,
+                        true
+                    ],
+                    [
+                        "global.php",
+                        57,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        "global.php",
+                        57,
+                        "variable.undefined",
+                        "Variable $local might not be defined.",
+                        null,
+                        true
+                    ]
+                ],
+                "4": [
+                    [
+                        "global.php",
+                        5,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        "global.php",
+                        5,
+                        "variable.undefined",
+                        "Variable $value might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "global.php",
+                        6,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        "global.php",
+                        6,
+                        "variable.undefined",
+                        "Variable $value might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "global.php",
+                        8,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        "global.php",
+                        8,
+                        "variable.undefined",
+                        "Variable $value might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "global.php",
+                        10,
+                        "phpstan.dumpType",
+                        "Dumped type: 23",
+                        null,
+                        false
+                    ],
+                    [
+                        "global.php",
+                        15,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        "global.php",
+                        15,
+                        "variable.undefined",
+                        "Undefined variable: $local",
+                        null,
+                        true
+                    ],
+                    [
+                        "global.php",
+                        22,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        "global.php",
+                        22,
+                        "variable.undefined",
+                        "Undefined variable: $local",
+                        null,
+                        true
+                    ],
+                    [
+                        "global.php",
+                        24,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        "global.php",
+                        24,
+                        "variable.undefined",
+                        "Variable $local might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "global.php",
+                        27,
+                        "void.pure",
+                        "Function localScope() returns void but does not have any side effects.",
+                        null,
+                        true
+                    ],
+                    [
+                        "global.php",
+                        31,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        "global.php",
+                        31,
+                        "variable.undefined",
+                        "Undefined variable: $local",
+                        null,
+                        true
+                    ],
+                    [
+                        "global.php",
+                        35,
+                        "phpstan.dumpType",
+                        "Dumped type: 83",
+                        null,
+                        false
+                    ],
+                    [
+                        "global.php",
+                        35,
+                        "variable.undefined",
+                        "Variable $maybe might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "global.php",
+                        43,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        "global.php",
+                        43,
+                        "variable.undefined",
+                        "Variable $local might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "global.php",
+                        45,
+                        "phpstan.dumpType",
+                        "Dumped type: 103",
+                        null,
+                        false
+                    ],
+                    [
+                        "global.php",
+                        49,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        "global.php",
+                        49,
+                        "variable.undefined",
+                        "Undefined variable: $isolated",
+                        null,
+                        true
+                    ],
+                    [
+                        "global.php",
+                        57,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        "global.php",
+                        57,
+                        "variable.undefined",
+                        "Variable $local might not be defined.",
+                        null,
+                        true
+                    ]
+                ]
+            },
+            "observations": [
+                {
+                    "start": 53,
+                    "end": 59,
+                    "line": 5,
+                    "native_supported": false,
+                    "certainty": "possible",
+                    "selected": "mixed",
+                    "native": "mixed"
+                },
+                {
+                    "start": 91,
+                    "end": 97,
+                    "line": 6,
+                    "native_supported": false,
+                    "certainty": "possible",
+                    "selected": "mixed",
+                    "native": "mixed"
+                },
+                {
+                    "start": 144,
+                    "end": 150,
+                    "line": 8,
+                    "native_supported": false,
+                    "certainty": "possible",
+                    "selected": "mixed",
+                    "native": "mixed"
+                },
+                {
+                    "start": 195,
+                    "end": 201,
+                    "line": 10,
+                    "native_supported": false,
+                    "certainty": "defined",
+                    "selected": "23",
+                    "native": "23"
+                },
+                {
+                    "start": 305,
+                    "end": 311,
+                    "line": 15,
+                    "native_supported": false,
+                    "certainty": "absent",
+                    "selected": "*ERROR*",
+                    "native": "*ERROR*"
+                },
+                {
+                    "start": 434,
+                    "end": 440,
+                    "line": 22,
+                    "native_supported": false,
+                    "certainty": "absent",
+                    "selected": "*ERROR*",
+                    "native": "*ERROR*"
+                },
+                {
+                    "start": 497,
+                    "end": 503,
+                    "line": 24,
+                    "native_supported": false,
+                    "certainty": "possible",
+                    "selected": "mixed",
+                    "native": "mixed"
+                },
+                {
+                    "start": 618,
+                    "end": 624,
+                    "line": 31,
+                    "native_supported": false,
+                    "certainty": "absent",
+                    "selected": "*ERROR*",
+                    "native": "*ERROR*"
+                },
+                {
+                    "start": 704,
+                    "end": 710,
+                    "line": 35,
+                    "native_supported": false,
+                    "certainty": "possible",
+                    "selected": "83",
+                    "native": "83"
+                },
+                {
+                    "start": 847,
+                    "end": 853,
+                    "line": 43,
+                    "native_supported": false,
+                    "certainty": "possible",
+                    "selected": "mixed",
+                    "native": "mixed"
+                },
+                {
+                    "start": 907,
+                    "end": 913,
+                    "line": 45,
+                    "native_supported": false,
+                    "certainty": "defined",
+                    "selected": "103",
+                    "native": "103"
+                },
+                {
+                    "start": 1037,
+                    "end": 1046,
+                    "line": 49,
+                    "native_supported": false,
+                    "certainty": "absent",
+                    "selected": "*ERROR*",
+                    "native": "*ERROR*"
+                },
+                {
+                    "start": 1202,
+                    "end": 1208,
+                    "line": 57,
+                    "native_supported": false,
+                    "certainty": "possible",
+                    "selected": "mixed",
+                    "native": "mixed"
+                }
+            ]
+        },
+        "values.php": {
+            "source_sha256": "cc74e428d0e95c48e832b6c693c2fca084162e07c3552f2d36afba531de7e7aa",
+            "diagnostics": {
+                "1": [
+                    [
+                        "values.php",
+                        6,
+                        "variable.undefined",
+                        "Variable $conditional might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "values.php",
+                        12,
+                        "variable.undefined",
+                        "Variable $branch might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "values.php",
+                        20,
+                        "variable.undefined",
+                        "Variable $conditional might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "values.php",
+                        29,
+                        "unset.variable",
+                        "Call to function unset() contains undefined variable $absent.",
+                        null,
+                        true
+                    ],
+                    [
+                        "values.php",
+                        33,
+                        "variable.undefined",
+                        "Variable $maybe might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "values.php",
+                        34,
+                        "isset.variable",
+                        "Variable $known in isset() always exists and is not nullable.",
+                        null,
+                        true
+                    ],
+                    [
+                        "values.php",
+                        35,
+                        "variable.undefined",
+                        "Undefined variable: $known",
+                        null,
+                        true
+                    ]
+                ],
+                "4": [
+                    [
+                        "values.php",
+                        6,
+                        "expr.resultUnused",
+                        "Expression \"$conditional\" on a separate line does not do anything.",
+                        null,
+                        true
+                    ],
+                    [
+                        "values.php",
+                        6,
+                        "variable.undefined",
+                        "Variable $conditional might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "values.php",
+                        12,
+                        "expr.resultUnused",
+                        "Expression \"$branch\" on a separate line does not do anything.",
+                        null,
+                        true
+                    ],
+                    [
+                        "values.php",
+                        12,
+                        "variable.undefined",
+                        "Variable $branch might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "values.php",
+                        20,
+                        "expr.resultUnused",
+                        "Expression \"$conditional\" on a separate line does not do anything.",
+                        null,
+                        true
+                    ],
+                    [
+                        "values.php",
+                        20,
+                        "variable.undefined",
+                        "Variable $conditional might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "values.php",
+                        22,
+                        "expr.resultUnused",
+                        "Expression \"$known\" on a separate line does not do anything.",
+                        null,
+                        true
+                    ],
+                    [
+                        "values.php",
+                        25,
+                        "void.pure",
+                        "Function absentRefinement() returns void but does not have any side effects.",
+                        null,
+                        true
+                    ],
+                    [
+                        "values.php",
+                        28,
+                        "expr.resultUnused",
+                        "Expression \"$known\" on a separate line does not do anything.",
+                        null,
+                        true
+                    ],
+                    [
+                        "values.php",
+                        29,
+                        "unset.variable",
+                        "Call to function unset() contains undefined variable $absent.",
+                        null,
+                        true
+                    ],
+                    [
+                        "values.php",
+                        33,
+                        "expr.resultUnused",
+                        "Expression \"$maybe\" on a separate line does not do anything.",
+                        null,
+                        true
+                    ],
+                    [
+                        "values.php",
+                        33,
+                        "variable.undefined",
+                        "Variable $maybe might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "values.php",
+                        34,
+                        "isset.variable",
+                        "Variable $known in isset() always exists and is not nullable.",
+                        null,
+                        true
+                    ],
+                    [
+                        "values.php",
+                        35,
+                        "expr.resultUnused",
+                        "Expression \"$known\" on a separate line does not do anything.",
+                        null,
+                        true
+                    ],
+                    [
+                        "values.php",
+                        35,
+                        "variable.undefined",
+                        "Undefined variable: $known",
+                        null,
+                        true
+                    ]
+                ]
+            },
+            "observations": [
+                {
+                    "start": 50,
+                    "end": 62,
+                    "line": 6,
+                    "native_supported": false,
+                    "certainty": "possible",
+                    "selected": "mixed",
+                    "native": "mixed"
+                },
+                {
+                    "start": 130,
+                    "end": 137,
+                    "line": 12,
+                    "native_supported": false,
+                    "certainty": "possible",
+                    "selected": "mixed",
+                    "native": "mixed"
+                },
+                {
+                    "start": 289,
+                    "end": 301,
+                    "line": 20,
+                    "native_supported": false,
+                    "certainty": "possible",
+                    "selected": "mixed",
+                    "native": "mixed"
+                },
+                {
+                    "start": 336,
+                    "end": 342,
+                    "line": 22,
+                    "native_supported": false,
+                    "certainty": "defined",
+                    "selected": "103",
+                    "native": "103"
+                },
+                {
+                    "start": 425,
+                    "end": 431,
+                    "line": 28,
+                    "native_supported": true,
+                    "certainty": "defined",
+                    "selected": "17",
+                    "native": "17"
+                },
+                {
+                    "start": 519,
+                    "end": 525,
+                    "line": 33,
+                    "native_supported": false,
+                    "certainty": "possible",
+                    "selected": "19",
+                    "native": "19"
+                },
+                {
+                    "start": 572,
+                    "end": 578,
+                    "line": 35,
+                    "native_supported": false,
+                    "certainty": "absent",
+                    "selected": "*ERROR*",
+                    "native": "*ERROR*"
+                }
+            ]
+        },
+        "branches.php": {
+            "source_sha256": "e2b3745784a6ec83dafaf55888200e48c54c2990388e0e487a0a066bb5ef2630",
+            "diagnostics": {
+                "1": [
+                    [
+                        "branches.php",
+                        6,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        "branches.php",
+                        6,
+                        "variable.undefined",
+                        "Variable $conditional might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "branches.php",
+                        12,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        "branches.php",
+                        12,
+                        "variable.undefined",
+                        "Variable $branch might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "branches.php",
+                        20,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        "branches.php",
+                        20,
+                        "variable.undefined",
+                        "Variable $conditional might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "branches.php",
+                        22,
+                        "phpstan.dumpType",
+                        "Dumped type: 103",
+                        null,
+                        false
+                    ],
+                    [
+                        "branches.php",
+                        30,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        "branches.php",
+                        30,
+                        "variable.undefined",
+                        "Variable $conditional might not be defined.",
+                        null,
+                        true
+                    ]
+                ],
+                "4": [
+                    [
+                        "branches.php",
+                        6,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        "branches.php",
+                        6,
+                        "variable.undefined",
+                        "Variable $conditional might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "branches.php",
+                        12,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        "branches.php",
+                        12,
+                        "variable.undefined",
+                        "Variable $branch might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "branches.php",
+                        20,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        "branches.php",
+                        20,
+                        "variable.undefined",
+                        "Variable $conditional might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "branches.php",
+                        22,
+                        "phpstan.dumpType",
+                        "Dumped type: 103",
+                        null,
+                        false
+                    ],
+                    [
+                        "branches.php",
+                        30,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        "branches.php",
+                        30,
+                        "variable.undefined",
+                        "Variable $conditional might not be defined.",
+                        null,
+                        true
+                    ]
+                ]
+            },
+            "observations": []
+        }
+    }
+}

@@ -23,7 +23,7 @@ use crate::analyzable::Analyzable;
 use crate::artifacts::AnalysisArtifacts;
 use crate::code::IssueCode;
 use crate::context::Context;
-use crate::context::block::BlockContext;
+use crate::context::block::{BlockContext, VariableCertainty};
 use crate::error::AnalysisError;
 use crate::expression::assignment;
 use crate::expression::unary::cast_type_to_string;
@@ -301,10 +301,12 @@ where
 
     // VariableHandler reads ErrorType when the asking scope knows the variable does not exist.
     // Preserve isset probing and the reference-creation transfer above; unset consumes the failed read.
-    if !block_context.flags.inside_isset() && block_context.variable_certainty(variable_atom).is_absent() {
-        Rc::new(get_error())
-    } else {
-        variable_type
+    match block_context.variable_certainty(variable_atom) {
+        VariableCertainty::Absent if !block_context.flags.inside_isset() => Rc::new(get_error()),
+        // MutatingScope::getVariableType returns mixed for Maybe in a scope where any
+        // variable can exist, even when a conditional holder has a when-defined value.
+        VariableCertainty::Possible if block_context.can_any_variable_exist() => Rc::new(get_mixed()),
+        _ => variable_type,
     }
 }
 

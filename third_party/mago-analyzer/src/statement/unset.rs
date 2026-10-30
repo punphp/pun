@@ -71,9 +71,10 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
                 block_context.possibly_assigned_variable_ids.insert(*value_id);
                 block_context.references_possibly_from_confusing_scope.remove(value_id);
                 if matches!(value, Expression::Variable(_)) {
+                    // MutatingScope::unsetExpression invalidates the holder. No holder falls
+                    // back to Maybe at global scope or after extract(), and No elsewhere.
                     block_context.invalidate_variable_certainty(*value_id);
                     block_context.variables_possibly_in_scope.remove(value_id);
-                    block_context.variable_state.absent.insert(*value_id);
                 }
             }
 
