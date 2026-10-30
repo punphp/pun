@@ -1,0 +1,273 @@
+[
+    {
+        "id": "callable-values-2",
+        "group": "callable-values",
+        "level": 2,
+        "paths": [
+            "callable-values.php"
+        ],
+        "scan": [],
+        "names": false,
+        "general": [],
+        "messages": [
+            {
+                "file": "$ROOT/callable-values.php",
+                "message": "Parameter #1 $value of callable on the right side of pipe operator is passed by reference.",
+                "line": 63,
+                "ignorable": true,
+                "identifier": "pipe.byRef"
+            },
+            {
+                "file": "$ROOT/callable-values.php",
+                "message": "Binary operation \"|>\" between int and DispatchCallables\\NotCallable results in an error.",
+                "line": 64,
+                "ignorable": true,
+                "identifier": "binaryOp.invalid"
+            },
+            {
+                "file": "$ROOT/callable-values.php",
+                "message": "Trying to invoke DispatchCallables\\NotCallable but it's not a callable.",
+                "line": 64,
+                "ignorable": true,
+                "identifier": "callable.nonCallable"
+            }
+        ]
+    },
+    {
+        "id": "callable-values-5",
+        "group": "callable-values",
+        "level": 5,
+        "paths": [
+            "callable-values.php"
+        ],
+        "scan": [],
+        "names": false,
+        "general": [],
+        "messages": [
+            {
+                "file": "$ROOT/callable-values.php",
+                "message": "Parameter #1 $value of callable DispatchCallables\\Reference is passed by reference, so it expects variables only.",
+                "line": 63,
+                "ignorable": true,
+                "identifier": "argument.byRef"
+            },
+            {
+                "file": "$ROOT/callable-values.php",
+                "message": "Parameter #1 $value of callable on the right side of pipe operator is passed by reference.",
+                "line": 63,
+                "ignorable": true,
+                "identifier": "pipe.byRef"
+            },
+            {
+                "file": "$ROOT/callable-values.php",
+                "message": "Binary operation \"|>\" between int and DispatchCallables\\NotCallable results in an error.",
+                "line": 64,
+                "ignorable": true,
+                "identifier": "binaryOp.invalid"
+            },
+            {
+                "file": "$ROOT/callable-values.php",
+                "message": "Trying to invoke DispatchCallables\\NotCallable but it's not a callable.",
+                "line": 64,
+                "ignorable": true,
+                "identifier": "callable.nonCallable"
+            }
+        ]
+    },
+    {
+        "id": "guards-0",
+        "group": "guards",
+        "level": 0,
+        "paths": [
+            "guards.php"
+        ],
+        "scan": [],
+        "names": false,
+        "general": [],
+        "messages": [
+            {
+                "file": "$ROOT/guards.php",
+                "message": "Call to an undefined method DispatchGuards\\Subject::differentMissing().",
+                "line": 27,
+                "ignorable": true,
+                "identifier": "method.notFound"
+            }
+        ]
+    },
+    {
+        "id": "guards-5",
+        "group": "guards",
+        "level": 5,
+        "paths": [
+            "guards.php"
+        ],
+        "scan": [],
+        "names": false,
+        "general": [],
+        "messages": [
+            {
+                "file": "$ROOT/guards.php",
+                "message": "Instanceof between $this(DispatchGuards\\Subject) and DispatchGuards\\First will always evaluate to true.",
+                "line": 19,
+                "ignorable": true,
+                "identifier": "instanceof.alwaysTrue"
+            },
+            {
+                "file": "$ROOT/guards.php",
+                "message": "Instanceof between $this(DispatchGuards\\Subject) and DispatchGuards\\First will always evaluate to true.",
+                "line": 19,
+                "ignorable": true,
+                "identifier": "instanceof.alwaysTrue"
+            },
+            {
+                "file": "$ROOT/guards.php",
+                "message": "Result of || is always false.",
+                "line": 19,
+                "ignorable": true,
+                "identifier": "booleanOr.alwaysFalse"
+            },
+            {
+                "file": "$ROOT/guards.php",
+                "message": "Instanceof between $this(DispatchGuards\\Subject) and DispatchGuards\\First will always evaluate to true.",
+                "line": 26,
+                "ignorable": true,
+                "identifier": "instanceof.alwaysTrue"
+            },
+            {
+                "file": "$ROOT/guards.php",
+                "message": "Call to an undefined method DispatchGuards\\Subject::differentMissing().",
+                "line": 27,
+                "ignorable": true,
+                "identifier": "method.notFound"
+            },
+            {
+                "file": "$ROOT/guards.php",
+                "message": "Constant DISPATCH_ONE not found.",
+                "line": 38,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "constant.notFound"
+            }
+        ]
+    },
+    {
+        "id": "anonymous-values-0",
+        "group": "anonymous-values",
+        "level": 0,
+        "paths": [
+            "anonymous-values.php"
+        ],
+        "scan": [],
+        "names": false,
+        "general": [],
+        "messages": []
+    },
+    {
+        "id": "anonymous-values-5",
+        "group": "anonymous-values",
+        "level": 5,
+        "paths": [
+            "anonymous-values.php"
+        ],
+        "scan": [],
+        "names": false,
+        "general": [],
+        "messages": [
+            {
+                "file": "$ROOT/anonymous-values.php",
+                "message": "Constant MISSING_ATTRIBUTE_VALUE not found.",
+                "line": 20,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "constant.notFound"
+            },
+            {
+                "file": "$ROOT/anonymous-values.php",
+                "message": "Parameter #1 $value of attribute class DispatchAnonymous\\Marker constructor expects int, string given.",
+                "line": 22,
+                "ignorable": true,
+                "identifier": "argument.type"
+            }
+        ]
+    },
+    {
+        "id": "nullsafe-0",
+        "group": "nullsafe",
+        "level": 5,
+        "paths": [
+            "nullsafe.php"
+        ],
+        "scan": [],
+        "names": false,
+        "general": [],
+        "messages": []
+    },
+    {
+        "id": "nullsafe-1",
+        "group": "nullsafe",
+        "level": 5,
+        "paths": [
+            "nullsafe.php"
+        ],
+        "scan": [],
+        "names": true,
+        "general": [],
+        "messages": [
+            {
+                "file": "$ROOT/nullsafe.php",
+                "message": "Method name for DispatchNullsafe\\Target must be a string, but int was given.",
+                "line": 18,
+                "ignorable": true,
+                "identifier": "method.nameNotString"
+            }
+        ]
+    },
+    {
+        "id": "nullsafe-unregistered",
+        "group": "nullsafe",
+        "level": 5,
+        "paths": [
+            "nullsafe.php"
+        ],
+        "scan": [],
+        "names": true,
+        "calls": false,
+        "general": [],
+        "messages": []
+    },
+    {
+        "id": "retained-scanned",
+        "group": "retained",
+        "level": 5,
+        "paths": [
+            "host.php"
+        ],
+        "scan": [
+            "retained.php"
+        ],
+        "names": false,
+        "general": [],
+        "messages": []
+    },
+    {
+        "id": "retained-analysed",
+        "group": "retained",
+        "level": 5,
+        "paths": [
+            "host.php",
+            "retained.php"
+        ],
+        "scan": [],
+        "names": false,
+        "general": [],
+        "messages": [
+            {
+                "file": "$ROOT/retained.php (in context of class DispatchRetention\\Host)",
+                "message": "Method DispatchRetention\\Host::contract() should return int but returns string.",
+                "line": 13,
+                "ignorable": true,
+                "identifier": "return.type"
+            }
+        ]
+    }
+]
