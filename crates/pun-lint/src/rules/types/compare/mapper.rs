@@ -675,13 +675,21 @@ fn from_atomic(a: &TAtomic) -> Type {
         TAtomic::Callable(_) => Type::Callable(None),
         TAtomic::Object(TObject::Named(n)) => {
             let name = text(n.name.as_bytes());
-            if n.is_this {
+            let object = if n.is_this {
                 Type::This(name)
             } else if n.is_static {
                 Type::Static(name, vec![])
             } else {
                 Type::Object(name, vec![], false)
-            }
+            };
+            let Some(intersections) = &n.intersection_types else {
+                return object;
+            };
+            intersect(
+                std::iter::once(object)
+                    .chain(intersections.iter().map(from_atomic))
+                    .collect(),
+            )
         }
         TAtomic::Object(TObject::Enum(e)) => match &e.case {
             Some(case) => Type::EnumCase(text(e.name.as_bytes()), text(case.as_bytes())),
