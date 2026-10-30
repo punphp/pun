@@ -1,5 +1,23 @@
 # Coverage
 
+The combined lint/analyser delivery covers all 255 changed executable production lines without exclusions.
+Its runner passes 209 tests across all 36 targets, seven additional pipe tests, all 76 targeted CLI tests,
+57 config tests and eighty additional lint owner/neighbor tests. Fifty exact-object exports are warning-free.
+Source-identical coverage cohorts reach analyse 43,911/44,209, PHPStan 10,747/10,747 and lint
+72,593/73,211 after existing exclusions. These are the current figures, not the older table below.
+Whole-crate coverage is incomplete. No new exclusions conceal the remaining lines.
+
+The complete independent lint measurement at bd8a29649 passes all 628 public and three existing library tests.
+Without exclusions, it covers 72,599/73,267 executable lines, leaving 668 lines across 77 files.
+All 575 production-source SHA-256 values match combined main at 963ed30a6. This permits source-location
+reuse, not a claim that those tests used main's changed dependencies. Its thirty exact-object exports are
+warning-free; all runtime, compiler and inventory profiles are identified separately, with none unmatched.
+LCOV, source manifests, exact objects and test outcomes are retained in the checksum-verified
+`/home/user/workspace/quality-bd8-lint-proof.tar.zst` archive. Main's merged proof is retained under
+`/tmp/pun-merged-delivery/`. The deleted 98d97e46 LCOV is not reused: forty production files changed afterward.
+The two bounded audits cover all 946 conditional-rule lines and 678 return-rule lines, but do not establish
+whole-crate coverage. The new property-type audit owns 168 remaining lines independently.
+
 Token coverage combines the full suite on system PCRE2 10.42 with
 `preg_caseless_restrict_matches_upstream` on statically linked PCRE2 10.46 (`PCRE2_SYS_STATIC=1`).
 The two supported-only `r` modifier lines need the newer engine. Its expectations come from pinned

@@ -56,6 +56,8 @@ Dynamic callable result inference remains incomplete.
 
 First-class built-in function callables retain every positional overload, including each overload's parameter names, reference flags, and effective return type.
 Creating the callable does not select an overload as though it had been invoked with no arguments.
+Dynamic callable arguments retain their reference policies below level 2, including the distinction between reading an existing variable and creating an output variable.
+Callable-array refinements preserve callable constraints and surviving key order without restoring removed offsets.
 
 First-class instance method callables with dynamic names retain a bare `Closure` type, without a reflected signature.
 The receiver and name expressions still evaluate once, in that order.
@@ -158,6 +160,9 @@ Nested variable names are checked as reads even when assignment, `isset`, `empty
 From level 1, `isset` checks each operand's incoming variable certainty. Level 4 adds offset and property checks.
 Multiline diagnostics use the `isset` construct's line. Whole-rule parity remains incomplete.
 The analyser API honors `checkAdvancedIsset` independently of the level without changing other rules' levels.
+For `isset` and null-coalescing checks, the API also honors `treatPhpDocTypesAsCertain`, which defaults to true.
+When false, these checks use available native operand observations without falling back to PHPDoc types.
+Property reflection and unnecessary-coalescing checks retain their separate full-type contracts.
 For single-class receivers, property checks resolve singleton dynamic names and retain supplied or inherited generic arguments.
 Property nullability checks use a set hook's writable parameter type when present.
 Literal `$this->property` checks read PHPStan's virtual initialization markers from the incoming scope, including before `??=` writes.
