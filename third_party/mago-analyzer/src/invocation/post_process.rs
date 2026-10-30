@@ -55,6 +55,7 @@ use crate::formula::get_formula;
 use crate::formula::negate_or_synthesize;
 use crate::invocation::Invocation;
 use crate::invocation::InvocationArgumentsSource;
+use crate::invocation::InvocationTarget;
 use crate::invocation::arguments::is_argument_mutated_by_reference;
 use crate::invocation::arguments::is_argument_referenceable;
 use crate::invocation::arguments::is_array_multisort;
@@ -356,6 +357,10 @@ fn record_null_context_assertions<'ctx, 'arena, A>(
         true,
     );
 
+    block_context
+        .stable_method_calls
+        .extend(type_assertions.keys().filter(|variable| variable.as_bytes().ends_with(b"()")).copied());
+
     let range = (invocation.span.start.offset, invocation.span.end.offset);
     // AssertFunctionTypeSpecifyingExtension asks its argument for truthy specifications
     // in every context. Declared unconditional @assert tags, unlike this extension,
@@ -574,24 +579,17 @@ fn record_by_reference_mutation_in_loop(artifacts: &mut AnalysisArtifacts, varia
     }
 }
 
-/// Clears narrowed property types after an invocation.
-///
-/// When an object is passed to a method or function, its properties could be modified,
-/// and objects reachable through that argument could also be affected. We conservatively
-/// remove all narrowed property types for all local object variables when any argument
-/// is an object type. We also clear any clauses that reference property accesses to prevent
-/// stale narrowing from influencing subsequent assertion resolution.
-fn clear_object_property_narrowings<'ctx, 'arena, A>(
-    context: &Context<'ctx, 'arena, A>,
-    block_context: &mut BlockContext<'ctx>,
-    invocation: &Invocation<'ctx, '_, 'arena>,
-    receiver_variable: Option<&[u8]>,
-) where
+/// PHPStan's MethodCallHandler distinguishes known side effects from possible impurity.
+/// The same distinction owns receiver invalidation and whether a call can be specified.
+pub(crate) fn method_has_side_effects<A>(
+    context: &Context<'_, '_, A>,
+    target: &InvocationTarget<'_>,
+) -> bool
+where
     A: Arena,
 {
-    let metadata = invocation.target.get_function_like_metadata();
-    let suspends_fiber = metadata.is_some_and(|metadata| metadata.flags.suspends_fiber());
-    let method_context = invocation.target.get_method_context();
+    let metadata = target.get_function_like_metadata();
+    let method_context = target.get_method_context();
     let invalidating_class = method_context.and_then(|method| {
         let declaring = method.declaring_method_id?;
         Some(method.class_like_metadata.appearing_method_ids.get(&method.requested_name)
@@ -611,13 +609,8 @@ fn clear_object_property_narrowings<'ctx, 'arena, A>(
                     && class.declaring_method_ids.get(alias) == Some(&declaring)
             })
     });
-    // MethodCallHandler invalidates the receiver only for a constructor, known side effects,
-    // or an unresolved method. A merely possibly impure method keeps its property observations.
-    let invalidated_receiver = receiver_variable.filter(|_| metadata.is_none_or(|metadata| {
+    metadata.is_none_or(|metadata| {
         let Some(method) = &metadata.method_metadata else { return false };
-        if method.is_static {
-            return false;
-        }
         let returns = if aliased_source {
             &metadata.return_type_declaration_metadata
         } else {
@@ -632,28 +625,47 @@ fn clear_object_property_narrowings<'ctx, 'arena, A>(
                 }),
                 |pure| !pure,
             )
-    })).map(Word::new);
-    let preserves_stable_method_results = metadata
-        .is_some_and(|metadata| (metadata.flags.is_pure() || metadata.flags.is_mutation_free()) && !suspends_fiber)
-        && invalidated_receiver.is_none();
+    })
+}
+
+/// Clears observations dependent on receivers or arguments that may have changed.
+fn clear_object_property_narrowings<'ctx, 'arena, A>(
+    context: &Context<'ctx, 'arena, A>,
+    block_context: &mut BlockContext<'ctx>,
+    invocation: &Invocation<'ctx, '_, 'arena>,
+    receiver_variable: Option<&[u8]>,
+) where
+    A: Arena,
+{
+    let metadata = invocation.target.get_function_like_metadata();
+    let suspends_fiber = metadata.is_some_and(|metadata| metadata.flags.suspends_fiber());
+    let invalidating_class = invocation.target.get_method_context().and_then(|method| {
+        let declaring = method.declaring_method_id?;
+        Some(method.class_like_metadata.appearing_method_ids.get(&method.requested_name)
+            .unwrap_or(&declaring).get_class_name())
+    });
+    let invalidated_method_receiver = receiver_variable
+        .filter(|_| method_has_side_effects(context, &invocation.target))
+        .map(Word::new);
+    // PHPStan 2.3.1 keeps property fetches for static methods, not their method-call results.
+    let invalidated_receiver = invalidated_method_receiver
+        .filter(|_| metadata.and_then(|metadata| metadata.method_metadata.as_ref()).is_none_or(|method| !method.is_static));
     let preserves_property_narrowings = metadata.is_some_and(|metadata| {
         (metadata.flags.is_pure() || metadata.flags.is_mutation_free() || metadata.flags.is_external_mutation_free())
             && !suspends_fiber
     }) && invalidated_receiver.is_none();
 
-    if !preserves_stable_method_results {
-        block_context.stable_method_call_assertions.clear();
-        block_context.stable_method_calls.clear();
-        if preserves_property_narrowings {
-            let references_method_call =
-                |clause: &Rc<Clause>| clause.possibilities.keys().copied().any(references_method_call_key);
-            block_context.invalidate_expression_holders(|key, _| references_method_call_key(key));
-            block_context.locals.retain(|key, _| !references_method_call_key(*key));
-            block_context.clauses.retain(|clause| !references_method_call(clause));
-            block_context.reconciled_expression_clauses.retain(|clause| !references_method_call(clause));
-            block_context.retain_valid_class_type_relations();
-        }
-    }
+    let invalidates_method_call = |key: Word| {
+        references_method_call_key(key)
+            && (suspends_fiber || invalidated_method_receiver.is_some_and(|receiver| is_descendant_of_any(key, &[receiver])))
+    };
+    block_context.stable_method_call_assertions.retain(|key, _| !invalidates_method_call(*key));
+    block_context.stable_method_calls.retain(|key| !invalidates_method_call(*key));
+    block_context.invalidate_expression_holders(|key, _| invalidates_method_call(key));
+    block_context.locals.retain(|key, _| !invalidates_method_call(*key));
+    let retains_method_clause = |clause: &Rc<Clause>| !clause.possibilities.keys().copied().any(invalidates_method_call);
+    block_context.clauses.retain(retains_method_clause);
+    block_context.reconciled_expression_clauses.retain(retains_method_clause);
 
     if preserves_property_narrowings {
         return;
@@ -679,18 +691,13 @@ fn clear_object_property_narrowings<'ctx, 'arena, A>(
     }
 
     block_context.invalidate_expression_holders(|key, guard| {
-        references_method_call_key(key)
-            || (clears_this && ((guard && key.as_bytes() == b"$this")
+        (clears_this && ((guard && key.as_bytes() == b"$this")
                 || (key.as_bytes().starts_with(b"$this->") && (guard || !preserved.contains(&key)))))
             || is_superglobal_index_key(key)
             || is_superglobal_name(key.as_bytes())
     });
     let mut resource_ids = WordSet::default();
     block_context.locals.retain(|var_id, current_type| {
-        if references_method_call_key(*var_id) {
-            return false;
-        }
-
         if suspends_fiber
             && current_type
                 .types
@@ -727,14 +734,13 @@ fn clear_object_property_narrowings<'ctx, 'arena, A>(
 
     let retains_clause = |clause: &Rc<Clause>| {
         !clause.possibilities.keys().copied().any(|var_id| {
-            references_method_call_key(var_id)
-                || (!clause.wedge
-                    && (resource_ids.contains(&var_id)
-                        || (clears_this
-                            && var_id.as_bytes().starts_with(b"$this->")
-                            && !preserved.contains(&var_id))
-                        || is_superglobal_index_key(var_id)
-                        || is_superglobal_name(var_id.as_bytes())))
+            !clause.wedge
+                && (resource_ids.contains(&var_id)
+                    || (clears_this
+                        && var_id.as_bytes().starts_with(b"$this->")
+                        && !preserved.contains(&var_id))
+                    || is_superglobal_index_key(var_id)
+                    || is_superglobal_name(var_id.as_bytes()))
         })
     };
     block_context.clauses.retain(retains_clause);
@@ -833,6 +839,8 @@ fn clear_object_property_narrowings<'ctx, 'arena, A>(
         is_descendant_of_any(var_id, &escaped_roots)
     };
 
+    block_context.stable_method_calls.retain(|key| !should_wipe(*key, false));
+    block_context.stable_method_call_assertions.retain(|key, _| !should_wipe(*key, false));
     block_context.invalidate_expression_holders(should_wipe);
     block_context.locals.retain(|var_id, _| !should_wipe(*var_id, false));
 

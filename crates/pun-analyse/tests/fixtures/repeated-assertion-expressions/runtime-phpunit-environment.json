@@ -1,0 +1,30 @@
+{
+    "php": "8.5.12",
+    "test_case_source": "crates/pun-lint/tests/phpunit-stubs/Framework/TestCase.php",
+    "test_case_sha256": "7db46751837a4e3e943f0ca26a6c3e63205ebbf3b445151f96f8e054dbd5ce02",
+    "parent": "PHPUnit\\Framework\\Assert",
+    "assert_source": "crates/pun-lint/tests/phpunit-stubs/Framework/Assert.php",
+    "assert_sha256": "51c189b24f11f5ff291d2d66f9e2549599072037991cf4e0fb28352d25d2362e",
+    "methods": {
+        "assertTrue": {
+            "declaring_class": "PHPUnit\\Framework\\Assert",
+            "return": "void",
+            "assertions": 1
+        },
+        "assertNotNull": {
+            "declaring_class": "PHPUnit\\Framework\\Assert",
+            "return": "void",
+            "assertions": 1
+        },
+        "assertNull": {
+            "declaring_class": "PHPUnit\\Framework\\Assert",
+            "return": "void",
+            "assertions": 1
+        },
+        "fail": {
+            "declaring_class": "PHPUnit\\Framework\\Assert",
+            "return": "never",
+            "assertions": 0
+        }
+    }
+}

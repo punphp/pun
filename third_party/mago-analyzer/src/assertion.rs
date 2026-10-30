@@ -2095,27 +2095,24 @@ where
         return vec![];
     };
 
-    if other_value_type.is_single() {
-        let other_value_atomic = other_value_type.get_single().clone();
+    // has_typed_value_comparison selected this single atomic type.
+    let other_value_atomic = other_value_type.get_single().clone();
+    let orred_types = if is_identity {
+        vec![Assertion::IsIdentical(other_value_atomic)]
+    } else {
+        vec![Assertion::IsEqual(other_value_atomic)]
+    };
 
-        let orred_types = if is_identity {
-            vec![Assertion::IsIdentical(other_value_atomic)]
-        } else {
-            vec![Assertion::IsEqual(other_value_atomic)]
-        };
+    if_types.insert(var_name, vec![orred_types]);
 
-        if_types.insert(var_name, vec![orred_types]);
-    } else if let Some(other_value_var_name) = other_value_var_name
+    // Strict equality specifies both operands, including an impossible comparison.
+    if is_identity
+        && let Some(other_value_var_name) = other_value_var_name
         && let Some(var_type) = var_type
         && !var_type.is_mixed()
         && var_type.is_single()
     {
-        let orred_types = if is_identity {
-            vec![Assertion::IsIdentical(var_type.get_single().clone())]
-        } else {
-            vec![Assertion::IsEqual(var_type.get_single().clone())]
-        };
-
+        let orred_types = vec![Assertion::IsIdentical(var_type.get_single().clone())];
         if_types.insert(other_value_var_name, vec![orred_types]);
     }
 

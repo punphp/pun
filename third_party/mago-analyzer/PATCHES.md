@@ -3413,3 +3413,66 @@ This patch does not enable the setting in a lint producer or activate a rule. Th
 partial native-expression API still returns unavailable after unsupported try transfer. The
 separate PHPStan 2.2.7 versus 2.3.1 pending-exit differences above remain a version boundary,
 not permission to synthesize types or claim general Rector finally parity.
+
+## Repeated method specifications from assertions
+
+PHPStan remembers a zero-argument method expression unless its method has known side effects.
+Possible impurity alone does not prevent a specification. An impure invocation invalidates the
+affected receiver or object arguments, not every remembered method expression.
+`method_has_side_effects` now supplies the existing declared-effect decision to invocation
+invalidation and method-result reconciliation. Static effects prevent result specifications
+and invalidate dependent method expressions. PHPStan 2.3.1's `keepPropertyFetches` argument
+preserves instance property observations for static calls, unlike PHPStan 2.2.7. This patch
+retains the existing 2.3.1 property behavior. Unconditional assertions register method-expression
+keys, as conditional assertions already do.
+
+Strict equality specifies both operands. The typed-value assertion producer now retains both
+specifications when both operands have a single non-mixed atomic type. This matters when an
+assertion makes a parameter a string, then compares it with an integer-returning method.
+Refining only the parameter leaves the repeated method expression at `int`. Refining both
+operands lets the existing reconciler derive `never`. No rule supplies that value.
+
+The pinned lint reference is Rector 2.6.1 with PHPStan 2.2.7:
+
+- `TypeSpecifier::specifyTypesFromAsserts` recursively specifies a Boolean assertion argument.
+- `TypeSpecifier::createForExpr` rejects known side effects, but retains possibly impure calls
+  with the default `rememberPossiblyImpureFunctionValues` setting.
+- `ExprHandler\MethodCallHandler::processExpr` invalidates a receiver for known side effects.
+- `ScopeOps::invalidateExpressionEntries` removes observations dependent on that receiver.
+- `ExprHandler\Helper\EqualityTypeSpecifyingHelper::specifyTypesForIdentical` specifies both
+  operands, including both operands of an impossible comparison.
+
+`repeated_assertion_expressions` compares every marked full-type observation with an original-AST
+Rector capture: 31 records, including four dead-tail records. Its default-analysis control uses
+a separate 27-record PHPStan 2.3.1 capture. Both native settings retain the same full types and
+once-only visits. Method-call native observations remain
+unavailable in the partial native lane. The captures retain PHPStan's native types separately.
+The bootstrap selects the harness's PHPUnit 13.2.6 declarations before Rector loads its reduced
+fallback TestCase. `runtime-phpunit-environment.json` records the selected sources and assertion
+metadata. Assertion PHPDoc and `fail(): never` remain intact.
+
+The static-mutation control distinguishes method-call invalidation from preserved instance
+property fetches. `receiver_invalidation` retains the separate 2.3.1 property expectations.
+The live `repeated_assertion_refinement` lint regression checks the complete output of
+`MergeWithCallableAndWillReturnRector`, including its absent callback return declaration.
+The existing lint Facts settings, analyser defaults, native producer, and rule mappings do not change.
+Expressions with method arguments remain outside this memoization path.
+Property-correlated receiver narrowing is also unresolved: a separate probe still produces
+`int|string` for a call where PHPStan selects the `int`-returning class. This patch does not
+substitute PHPStan's native type or activate lint dead-tail analysis to cover that difference.
+
+The fixtures are under `crates/pun-analyse/tests/fixtures/repeated-assertion-expressions`.
+`OUTPUT` selects an existing empty output directory. `RECTOR` selects the pinned installation,
+and `PHPSTAN_PHAR` selects PHPStan 2.3.1. From the repository root, these commands recapture the scopes:
+
+```sh
+	: > "$OUTPUT/rector-types.jsonl"
+	REPEATED_ASSERTION_CAPTURE="$OUTPUT/rector-types.jsonl" \
+	REPEATED_ASSERTION_ENVIRONMENT="$OUTPUT/runtime-phpunit-environment.json" \
+	REPEATED_ASSERTION_CACHE="$OUTPUT/rector-cache" \
+	php "$RECTOR/vendor/bin/rector" process --clear-cache --no-progress-bar --output-format=json \
+		--config crates/pun-analyse/tests/fixtures/repeated-assertion-expressions/rector.php \
+		crates/pun-analyse/tests/fixtures/repeated-assertion-expressions/input.php
+	php crates/pun-analyse/tests/fixtures/repeated-assertion-expressions/phpstan-capture.php \
+		"$PHPSTAN_PHAR" > "$OUTPUT/phpstan-types.jsonl"
+```
