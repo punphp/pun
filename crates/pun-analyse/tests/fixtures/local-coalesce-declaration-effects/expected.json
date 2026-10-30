@@ -1,0 +1,729 @@
+{
+    "0": [],
+    "1": [
+        [
+            "effects.php",
+            21,
+            "nullCoalesce.variable",
+            "Variable $value on left side of ??= is never defined.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            22,
+            "nullCoalesce.variable",
+            "Variable $value on left side of ??= always exists and is always null.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            26,
+            "nullCoalesce.variable",
+            "Variable $value on left side of ??= always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            27,
+            "nullCoalesce.variable",
+            "Variable $value on left side of ??= always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            47,
+            "nullCoalesce.variable",
+            "Variable $shape on left side of ??= always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            48,
+            "nullCoalesce.variable",
+            "Variable $shape on left side of ??= always exists and is always null.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            54,
+            "nullCoalesce.variable",
+            "Variable $value on left side of ??= always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            56,
+            "nullCoalesce.variable",
+            "Variable $_GET on left side of ??= always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            106,
+            "nullCoalesce.variable",
+            "Variable $value on left side of ??= always exists and is always null.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            109,
+            "nullCoalesce.variable",
+            "Variable $value on left side of ??= always exists and is not nullable.",
+            null,
+            true
+        ]
+    ],
+    "2": [
+        [
+            "effects.php",
+            20,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\nullableVariable() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            21,
+            "nullCoalesce.variable",
+            "Variable $value on left side of ??= is never defined.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            21,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\absentVariable() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            22,
+            "nullCoalesce.variable",
+            "Variable $value on left side of ??= always exists and is always null.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            22,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\nullVariable() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            23,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\pureRhs() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            26,
+            "nullCoalesce.variable",
+            "Variable $value on left side of ??= always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            27,
+            "nullCoalesce.variable",
+            "Variable $value on left side of ??= always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            27,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\skippedPureRhs() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            31,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\requiredKey() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            33,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\nullableKey() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            35,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\optionalKey() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            37,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\dynamicKey() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            39,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\assignedKey() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            41,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\effectfulKey() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            43,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\offsetPureRhs() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            46,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\literalOffset() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            47,
+            "nullCoalesce.variable",
+            "Variable $shape on left side of ??= always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            47,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\arrayContinuation() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            48,
+            "nullCoalesce.variable",
+            "Variable $shape on left side of ??= always exists and is always null.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            48,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\nullArrayContinuation() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            50,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\ordinaryAssignment() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            52,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\compoundAddition() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            54,
+            "nullCoalesce.variable",
+            "Variable $value on left side of ??= always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            55,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\localReference() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            56,
+            "nullCoalesce.variable",
+            "Variable $_GET on left side of ??= always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            64,
+            "void.pure",
+            "Method LocalCoalesceDeclarationEffects\\Holder::local() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            95,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\rhsKeepsOtherArray() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            104,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\caughtNull() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            106,
+            "nullCoalesce.variable",
+            "Variable $value on left side of ??= always exists and is always null.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            109,
+            "nullCoalesce.variable",
+            "Variable $value on left side of ??= always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            111,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\caughtTargetTermination() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            115,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\unconditionalReturn() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            117,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\rhsReplacesContainerOnly() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            131,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\offsetRhsAssignsOtherLocal() returns void but does not have any side effects.",
+            null,
+            true
+        ]
+    ],
+    "4": [
+        [
+            "effects.php",
+            20,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\nullableVariable() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            21,
+            "nullCoalesce.variable",
+            "Variable $value on left side of ??= is never defined.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            21,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\absentVariable() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            22,
+            "nullCoalesce.variable",
+            "Variable $value on left side of ??= always exists and is always null.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            22,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\nullVariable() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            23,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\pureRhs() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            26,
+            "nullCoalesce.variable",
+            "Variable $value on left side of ??= always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            27,
+            "nullCoalesce.variable",
+            "Variable $value on left side of ??= always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            27,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\skippedPureRhs() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            31,
+            "nullCoalesce.offset",
+            "Offset 'required' on array{required: int} on left side of ??= always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            31,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\requiredKey() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            33,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\nullableKey() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            35,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\optionalKey() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            37,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\dynamicKey() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            39,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\assignedKey() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            41,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\effectfulKey() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            43,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\offsetPureRhs() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            46,
+            "nullCoalesce.offset",
+            "Offset 'key' on array{} on left side of ??= does not exist.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            46,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\literalOffset() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            47,
+            "nullCoalesce.variable",
+            "Variable $shape on left side of ??= always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            47,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\arrayContinuation() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            48,
+            "nullCoalesce.variable",
+            "Variable $shape on left side of ??= always exists and is always null.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            48,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\nullArrayContinuation() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            50,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\ordinaryAssignment() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            52,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\compoundAddition() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            54,
+            "nullCoalesce.variable",
+            "Variable $value on left side of ??= always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            55,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\localReference() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            56,
+            "nullCoalesce.variable",
+            "Variable $_GET on left side of ??= always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            64,
+            "void.pure",
+            "Method LocalCoalesceDeclarationEffects\\Holder::local() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            82,
+            "nullCoalesce.offset",
+            "Offset 'key' on array{} on left side of ??= does not exist.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            87,
+            "nullCoalesce.offset",
+            "Offset 'key' on array{} on left side of ??= does not exist.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            95,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\rhsKeepsOtherArray() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            104,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\caughtNull() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            106,
+            "deadCode.unreachable",
+            "Unreachable statement - code above always terminates.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            106,
+            "nullCoalesce.variable",
+            "Variable $value on left side of ??= always exists and is always null.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            109,
+            "nullCoalesce.variable",
+            "Variable $value on left side of ??= always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            111,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\caughtTargetTermination() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            113,
+            "nullCoalesce.offset",
+            "Offset never on array{} on left side of ??= does not exist.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            115,
+            "deadCode.unreachable",
+            "Unreachable statement - code above always terminates.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            115,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\unconditionalReturn() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            117,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\rhsReplacesContainerOnly() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            119,
+            "nullCoalesce.offset",
+            "Offset 'key' on array{} on left side of ??= does not exist.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            123,
+            "nullCoalesce.offset",
+            "Offset bool on array{} on left side of ??= does not exist.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            131,
+            "void.pure",
+            "Function LocalCoalesceDeclarationEffects\\offsetRhsAssignsOtherLocal() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            133,
+            "nullCoalesce.offset",
+            "Offset 'key' on array{} on left side of ??= does not exist.",
+            null,
+            true
+        ]
+    ]
+}

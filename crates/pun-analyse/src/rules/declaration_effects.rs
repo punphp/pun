@@ -344,6 +344,53 @@ impl Producer<'_, '_, '_> {
             }),
             Expression::Array(a) => self.elements(a.elements.iter(), false, false),
             Expression::LegacyArray(a) => self.elements(a.elements.iter(), false, false),
+            Expression::Assignment(a) if matches!(a.operator, AssignmentOperator::Coalesce(_)) => {
+                // AssignOpHandler prepares the read target BEFORE evaluating the value. Only a
+                // direct local or a single plain-array dimension has a complete producer here.
+                let lhs_array =
+                    self.array(a.lhs) || self.c.type_of(a.lhs).is_some_and(|t| t.is_array());
+                let lhs_null = self.c.type_of(a.lhs).is_some_and(|t| t.is_null());
+                let mut effects = match a.lhs {
+                    Expression::Variable(Variable::Direct(_)) => self.expression(a.lhs)?,
+                    Expression::ArrayAccess(offset) => {
+                        let Expression::Variable(Variable::Direct(v)) = offset.array else {
+                            return None;
+                        };
+                        if self.referenced
+                            || (!self.array(offset.array)
+                                && !self.c.type_of(offset.array).is_some_and(|t| t.is_array()))
+                        {
+                            return None;
+                        }
+                        let mut read = self.expression(offset.array)?;
+                        self.arrays.insert(v.name.to_vec());
+                        let dimension = self.expression(offset.index)?;
+                        if self.referenced || !self.array(offset.array) {
+                            return None; // The dimension may replace or escape the prepared container.
+                        }
+                        // AssignHandler::prepareTarget forwards dimension throw points, but neither
+                        // its impure points nor its termination flag (unlike ArrayDimFetchHandler).
+                        read.throws |= dimension.throws;
+                        read
+                    }
+                    _ => return None,
+                };
+                let before = self.arrays.clone();
+                // PHPStan retains the RHS's points even for a surely non-null target. Its exit is
+                // unconditional only when the prepared read is definitely null.
+                let mut value = self.expression(a.rhs)?;
+                let array = self.array(a.rhs);
+                value.terminates &= lhs_null;
+                effects.merge(value);
+                self.arrays.retain(|name| before.contains(name));
+                if let Expression::Variable(Variable::Direct(v)) = a.lhs {
+                    self.arrays.remove(v.name);
+                    if !self.referenced && (lhs_array || (lhs_null && array)) {
+                        self.arrays.insert(v.name.to_vec());
+                    }
+                }
+                Some(effects)
+            }
             Expression::Assignment(a) => {
                 // Concat may call __toString(); division/modulo have additional throw producers.
                 if !matches!(
