@@ -49,10 +49,9 @@ function documentedNonnullable(?Box $box): void
 function widenedFullScopeBoundary(Box $box): void
 {
     $box; // observe
-    // PHPStan clamps the incompatible PHPDoc; the selected parameter scope does not yet.
-    $box?->value; // unavailable
-    isset($box?->value); // unavailable
-    $box?->value ?? 0; // unavailable
+    $box?->value; // observe
+    isset($box?->value); // observe
+    $box?->value ?? 0; // observe
 }
 
 function knownNull(null $box): void

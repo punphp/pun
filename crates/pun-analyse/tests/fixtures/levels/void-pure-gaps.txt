@@ -41,7 +41,6 @@
 4 Exceptions/HelperFinally::testRule | Exceptions/data/helper-finally.php:131
 # Coalescing assignments, their conditional reads, isset/empty and unset need their own producers.
 4 Variables/NullCoalesceRuleTest::testBug15021 | Variables/data/bug-15021.php:6
-4 Variables/NullCoalesceRuleTest::testBug4337 | Variables/data/bug-4337.php:72
 4 Variables/NullCoalesceRuleTest::testNullCoalesceAssignRightSideScope | Variables/data/null-coalesce-assign-right-side-scope.php:33
 4 Variables/NullCoalesceRuleTest::testNullCoalesceAssignRightSideScope | Variables/data/null-coalesce-assign-right-side-scope.php:39
 4 Variables/NullCoalesceRuleTest::testNullCoalesceAssignRightSideScope | Variables/data/null-coalesce-assign-right-side-scope.php:44
