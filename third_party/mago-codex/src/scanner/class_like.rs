@@ -1603,6 +1603,7 @@ fn create_enum_method(
         globals_accessed: WordSet::default(),
         has_docblock: false,
         explicit_docblock_flags: MetadataFlags::empty(),
+        reflected_side_effects: None,
         flags: MetadataFlags::POPULATED,
         version_constraint: crate::metadata::version_constraint::VersionConstraint::unconstrained(),
     }

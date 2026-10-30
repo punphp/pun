@@ -1,0 +1,90 @@
+[
+    [
+        "input.php",
+        8,
+        "phpstan.dumpType",
+        "Dumped type: true",
+        null,
+        false
+    ],
+    [
+        "input.php",
+        10,
+        "phpstan.dumpType",
+        "Dumped type: bool",
+        null,
+        false
+    ],
+    [
+        "input.php",
+        18,
+        "phpstan.dumpType",
+        "Dumped type: bool",
+        null,
+        false
+    ],
+    [
+        "input.php",
+        26,
+        "phpstan.dumpType",
+        "Dumped type: true",
+        null,
+        false
+    ],
+    [
+        "input.php",
+        34,
+        "phpstan.dumpType",
+        "Dumped type: true",
+        null,
+        false
+    ],
+    [
+        "input.php",
+        41,
+        "method.resultUnused",
+        "Call to method DateTimeImmutable::getTimezone() on a separate line has no effect.",
+        null,
+        true
+    ],
+    [
+        "input.php",
+        42,
+        "phpstan.dumpType",
+        "Dumped type: 100",
+        null,
+        false
+    ],
+    [
+        "input.php",
+        50,
+        "phpstan.dumpType",
+        "Dumped type: int",
+        null,
+        false
+    ],
+    [
+        "input.php",
+        75,
+        "phpstan.dumpType",
+        "Dumped type: true",
+        null,
+        false
+    ],
+    [
+        "input.php",
+        79,
+        "phpstan.dumpType",
+        "Dumped type: bool",
+        null,
+        false
+    ],
+    [
+        "input.php",
+        93,
+        "phpstan.dumpType",
+        "Dumped type: bool",
+        null,
+        false
+    ]
+]

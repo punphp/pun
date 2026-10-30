@@ -68,6 +68,15 @@ pub enum FunctionLikeKind {
     ArrowFunction,
 }
 
+/// A runtime reflection fact, independent of source PHPDoc purity annotations.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+pub enum ReflectedSideEffects {
+    Yes,
+    No,
+    Maybe,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct FunctionLikeMetadata {
@@ -168,6 +177,10 @@ pub struct FunctionLikeMetadata {
     #[cfg_attr(feature = "serde", serde(default))]
     pub(crate) explicit_docblock_flags: MetadataFlags,
 
+    /// None leaves the source declaration's effect policy unchanged.
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub reflected_side_effects: Option<ReflectedSideEffects>,
+
     /// PHP version range in which this function-like is available, derived
     /// from `Mago\AvailableSince` / `Mago\AvailableUntil` attributes during
     /// scanning.
@@ -237,6 +250,7 @@ impl FunctionLikeMetadata {
             globals_accessed: WordSet::default(),
             has_docblock: false,
             explicit_docblock_flags: MetadataFlags::empty(),
+            reflected_side_effects: None,
             issues: vec![],
             version_constraint: VersionConstraint::unconstrained(),
         }

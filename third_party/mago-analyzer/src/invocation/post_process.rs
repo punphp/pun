@@ -14,6 +14,7 @@ use mago_algebra::find_satisfying_assignments;
 use mago_algebra::saturate_clauses;
 use mago_codex::assertion::Assertion;
 use mago_codex::identifier::function_like::FunctionLikeIdentifier;
+use mago_codex::metadata::function_like::ReflectedSideEffects;
 use mago_codex::ttype::TType;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::array::TArray;
@@ -620,12 +621,15 @@ where
         }.as_ref().map(|ty| &ty.type_union);
         let constructor = method_context.map_or(method.is_constructor, |method| method.requested_name.as_bytes() == b"__construct");
         constructor
-            || returns.is_some_and(TUnion::is_void)
-            || metadata.declared_purity().filter(|_| !aliased_source).map_or_else(
-                || returns.is_some_and(|ty| {
-                    matches!(ty.types.as_ref(), [atomic] if atomic.is_this())
-                }),
-                |pure| !pure,
+            || metadata.reflected_side_effects.map_or_else(
+                || returns.is_some_and(TUnion::is_void)
+                    || metadata.declared_purity().filter(|_| !aliased_source).map_or_else(
+                        || returns.is_some_and(|ty| {
+                            matches!(ty.types.as_ref(), [atomic] if atomic.is_this())
+                        }),
+                        |pure| !pure,
+                    ),
+                |effects| effects == ReflectedSideEffects::Yes,
             )
     })
 }
