@@ -175,7 +175,10 @@ pub fn assignment(c: &mut Checker, a: &Assignment) {
         _ => None,
     };
     invalid_assign_var(c, a.span(), a.lhs, referenced);
-    if let AssignmentOperator::Assign(_) = a.operator {
+    if matches!(
+        a.operator,
+        AssignmentOperator::Assign(_) | AssignmentOperator::Coalesce(_)
+    ) {
         mark_assigned(c, a.lhs, ListRole::Target);
         if let Some(r) = referenced {
             c.assign.assigned.insert(unparenthesized(r).span());

@@ -1,0 +1,61 @@
+{
+    "phar_sha256": "85157dba3d95d77ca603d2b7303aa78a538f9e3b56ccad07dd794c53aa96d1ae",
+    "records": [
+        [
+            "input.php",
+            6,
+            "offsetAccess.noDim",
+            "Cannot use [] for reading.",
+            null,
+            false
+        ],
+        [
+            "input.php",
+            9,
+            "offsetAccess.noDim",
+            "Cannot use [] for reading.",
+            null,
+            false
+        ],
+        [
+            "input.php",
+            12,
+            "offsetAccess.noDim",
+            "Cannot use [] for reading.",
+            null,
+            false
+        ],
+        [
+            "input.php",
+            12,
+            "offsetAccess.noDim",
+            "Cannot use [] for reading.",
+            null,
+            false
+        ],
+        [
+            "input.php",
+            18,
+            "offsetAccess.noDim",
+            "Cannot use [] for reading.",
+            null,
+            false
+        ],
+        [
+            "input.php",
+            21,
+            "offsetAccess.noDim",
+            "Cannot use [] for reading.",
+            null,
+            false
+        ],
+        [
+            "input.php",
+            21,
+            "assign.invalidExpr",
+            "Expression on left side of assignment is not assignable.",
+            null,
+            false
+        ]
+    ]
+}
