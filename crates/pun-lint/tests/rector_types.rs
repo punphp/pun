@@ -268,6 +268,36 @@ fn return_type_from_strict_typed_call() {
 }
 
 #[test]
+fn return_type_from_strict_typed_call_never_is_not_propagated() {
+    // Rector 2.6.1's NeverTypeMapper returns no declaration, even at PHP versions that support `never`.
+    // Fresh captures at 7.4, 8.0, 8.1 and 8.4 are identical: only the int-returning control changes.
+    let fixture =
+        include_str!("rector/ReturnTypeFromStrictTypedCallRector/Oracle/contract_never.php.inc");
+    let (input, expected) = fixture.split_once("-----\n").unwrap();
+    for version in [80100, 80400] {
+        let linter = pun_lint::Linter::new(vec![Box::new(AddReturnTypeFromTypedCall)], version);
+        let path = std::path::Path::new("contract_never.php");
+        let problems = linter.check(path, input).unwrap();
+        assert_eq!(problems.len(), 1, "PHP {version}: {problems:?}");
+        let problem = &problems[0];
+        assert_eq!(problem.rule, "lint/types/add-return-type-from-typed-call");
+        assert_eq!(problem.path, path);
+        assert_eq!(&input[problem.span.start..problem.span.end], "numbered");
+        let fix = problem.fix.as_ref().unwrap();
+        assert_eq!(fix.safety, pun_problem::Safety::Unsafe);
+        assert_eq!(fix.edits.len(), 1);
+        let edit = &fix.edits[0];
+        let at = input.find("numbered()").unwrap() + "numbered()".len();
+        assert_eq!(edit.span, pun_problem::Span::new(at, at));
+        assert_eq!(edit.text, ": int");
+        let fixed = linter.fix(path, input).unwrap();
+        assert_eq!(fixed.source, expected, "PHP {version}");
+        assert_eq!(fixed.applied, problems);
+        assert!(linter.check(path, expected).unwrap().is_empty());
+    }
+}
+
+#[test]
 fn add_return_type_declaration_from_yields() {
     check(
         AddReturnTypeFromYield,
