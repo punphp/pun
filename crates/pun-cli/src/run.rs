@@ -270,11 +270,13 @@ pub(crate) fn format(a: FormatArgs, stage: Stage, lint: LintOpts) -> Result<u8> 
             for r in &mut natives {
                 configure(&cfg, r.as_mut())?;
             }
-            if natives.iter().any(|r| {
-                r.id().starts_with("lint/types/")
-                    || pun_lint::rules::PROJECT_RULES.contains(&r.id())
-            }) {
-                project_codebase(&cfg)?;
+            if !natives.is_empty() {
+                // the lint files are the project's when no path or git selection narrows them
+                let project = match (&selected, a.paths.is_empty()) {
+                    (None, true) => lint_set.clone(),
+                    _ => pun_workspace::files(&cfg, Some(pun_workspace::Command::Lint), &[])?,
+                };
+                project_codebase(&cfg, project);
             }
             natives
         }
@@ -439,33 +441,66 @@ pub(crate) fn format(a: FormatArgs, stage: Stage, lint: LintOpts) -> Result<u8> 
     Ok(if crashed { 2 } else { u8::from(failed) })
 }
 
-/// The `types` rules look classes up in the project's other files, as Rector's PHPStan reflection does: scan every
-/// file `pun lint` would check (not only the ones named on the command line) into the codebase they share, with the
-/// classes they name that Composer autoloads (the generated classmap, then psr-4 and psr-0 from composer.json and
+/// The rules that read facts look classes up in the project's other files, as Rector's PHPStan reflection does: scan
+/// every file `pun lint` would check (not only the ones named on the command line) into the codebase they share, with
+/// the classes they name that Composer autoloads (the generated classmap, then psr-4 and psr-0 from composer.json and
 /// vendor/composer/installed.json as pun-analyse finds them), so a parent class from a package is known as in
 /// Rector's PHPStan.
-/// ponytail: `files` entries aren't scanned; PHPStan finds them through the runtime autoloader.
-fn project_codebase(cfg: &Config) -> Result<()> {
+/// Composer's `files` entries (vendor/composer/autoload_files.php, the helper functions such as Laravel's `collect()`)
+/// are scanned too, as PHPStan finds them through the runtime autoloader.
+/// `files` are the files `pun lint` would check. The scan waits for the first rule that reads facts
+/// (`facts::set_project_scan`), so rules that read none never scan.
+fn project_codebase(cfg: &Config, files: Vec<PathBuf>) {
+    let cfg = cfg.clone();
+    pun_lint::rules::facts::set_project_scan(move || {
+        // A rule asks on a worker of rayon's global pool, whose other workers wait for the scan: it runs on a thread
+        // and a pool of its own, sized as the global one.
+        let threads = rayon::current_num_threads();
+        let pool = rayon::ThreadPoolBuilder::new().num_threads(threads).build();
+        let pool = pool.expect("the project scan's thread pool");
+        std::thread::scope(|s| {
+            s.spawn(|| pool.install(|| scan_project(&cfg, &files)))
+                .join()
+        })
+        .unwrap_or_else(|panic| std::panic::resume_unwind(panic))
+    });
+}
+
+/// The project's codebase, [`project_codebase`] of `files`.
+fn scan_project(cfg: &Config, files: &[PathBuf]) -> Arc<pun_lint::rules::facts::ProjectCodebase> {
     use pun_lint::rules::facts;
     use pun_phpstan::{Array, Key, Value};
-    let files = pun_workspace::files(cfg, Some(pun_workspace::Command::Lint), &[])?;
-    let sources: Vec<(String, String)> = (files.par_iter())
-        .filter_map(|f| {
-            let rel = f.strip_prefix(&cfg.root).unwrap_or(f);
-            Some((
-                rel.to_string_lossy().into_owned(),
-                std::fs::read_to_string(f).ok()?,
-            ))
-        })
-        .collect();
-    let mut extensions = Array::new();
-    extensions.push(Value::Str("php".into()));
-    let mut params = Array::new();
-    params.set(Key::Str("fileExtensions".into()), Value::Array(extensions));
-    let project = pun_analyse::Project::from_config(&cfg.root, &params);
-    // the runtime autoloader Rector loads looks in Composer's generated classmap first
-    let classmap = composer_classmap(&cfg.root);
+    let read = || -> Vec<(String, String)> {
+        (files.par_iter())
+            .filter_map(|f| {
+                let rel = f.strip_prefix(&cfg.root).unwrap_or(f);
+                Some((
+                    rel.to_string_lossy().into_owned(),
+                    std::fs::read_to_string(f).ok()?,
+                ))
+            })
+            .collect()
+    };
+    let autoloaded = || {
+        let mut extensions = Array::new();
+        extensions.push(Value::Str("php".into()));
+        let mut params = Array::new();
+        params.set(Key::Str("fileExtensions".into()), Value::Array(extensions));
+        let project = pun_analyse::Project::from_config(&cfg.root, &params);
+        // the runtime autoloader Rector loads looks in Composer's generated classmap first
+        (project, composer_classmap(&cfg.root))
+    };
+    let (sources, (project, classmap)) = rayon::join(read, autoloaded);
+    let mut sources = sources;
+    for path in composer_files(&cfg.root) {
+        if let Ok(code) = std::fs::read_to_string(&path) {
+            sources.push((path.to_string_lossy().into_owned(), code));
+        }
+    }
+    // and `vendor/autoload.php` requires Composer's own ClassLoader, which no autoload map lists
+    let class_loader = cfg.root.join("vendor/composer/ClassLoader.php");
     let mut by_class: HashMap<&[u8], &Path> = HashMap::new();
+    by_class.insert(b"composer\\autoload\\classloader", &class_loader);
     for (class, path) in &classmap {
         by_class.insert(class, path);
     }
@@ -489,18 +524,36 @@ fn project_codebase(cfg: &Config) -> Result<()> {
             std::fs::read_to_string(path).ok()?,
         ))
     };
-    let codebase =
-        facts::project_codebase_autoloaded(&sources, cfg.php_version().to_id(), &autoload);
-    facts::set_project_codebase(Some(codebase));
-    Ok(())
+    facts::project_codebase_autoloaded(&sources, cfg.php_version().to_id(), &autoload)
 }
 
 /// The classes of `vendor/composer/autoload_classmap.php` (Composer's `classmap` entries, and every class when the
 /// autoloader is optimized), ASCII-lowercased, and their files.
 fn composer_classmap(root: &Path) -> Vec<(Vec<u8>, PathBuf)> {
+    (composer_map(root, "autoload_classmap.php").into_iter())
+        .map(|(class, path)| {
+            let class = class.replace("\\\\", "\\").to_ascii_lowercase();
+            (class.into_bytes(), path)
+        })
+        .collect()
+}
+
+/// The files of `vendor/composer/autoload_files.php` that packages declare (Composer's `files` entries), in the order
+/// Composer loads them. The project's own are among the files `pun lint` checks.
+fn composer_files(root: &Path) -> Vec<PathBuf> {
+    let vendor = root.join("vendor");
+    (composer_map(root, "autoload_files.php").into_iter())
+        .map(|(_, path)| path)
+        .filter(|path| path.starts_with(&vendor))
+        .collect()
+}
+
+/// The `'key' => $vendorDir . '/path',` lines of one of Composer's generated `vendor/composer/<file>` arrays, with
+/// each path under the project or its vendor directory.
+fn composer_map(root: &Path, file: &str) -> Vec<(String, PathBuf)> {
     let vendor = root.join("vendor");
     // lossy: a class name need not be UTF-8 (symfony/cache names one `\xA9`)
-    let code = std::fs::read(vendor.join("composer/autoload_classmap.php")).unwrap_or_default();
+    let code = std::fs::read(vendor.join("composer").join(file)).unwrap_or_default();
     (String::from_utf8_lossy(&code).lines())
         .filter_map(|line| {
             // `'App\\Model' => $baseDir . '/app/Model.php',`
@@ -512,8 +565,7 @@ fn composer_classmap(root: &Path) -> Vec<(Vec<u8>, PathBuf)> {
             } else {
                 root
             };
-            let class = class.replace("\\\\", "\\").to_ascii_lowercase();
-            Some((class.into_bytes(), base.join(path)))
+            Some((class.to_string(), base.join(path)))
         })
         .collect()
 }

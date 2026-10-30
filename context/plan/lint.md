@@ -445,8 +445,8 @@ Lint 7 dead-code class-method rules (2026-10-26; `no-empty-method`, `no-unused-p
   `ArrayCallableMethodMatcher`, `ClassMethodManipulator`, `ControllerClassMethodManipulator` and
   `DataProviderMethodsFinder`, ported function by function on Mago's codebase and types. `doesMethodExistInTrait`
   parses the trait's file again (`Facts::source_of`), as Rector's `AstResolver` does. The CLI scans the project for
-  these rules as for the `types` rules (`rules::PROJECT_RULES`), so parents, interfaces and traits in other files
-  count.
+  these rules as for every rule that reads facts (`facts::set_project_scan`), so parents, interfaces and traits in
+  other files count.
 - **Assistant's call: only the fluent-call fallback treats `mixed` as implicit.** Rector 2.6.1 on PHPStan 2.2.7 keeps
   calls through a fluent `$this` chain after a method declared `: mixed` or documented `@return mixed`.
   Explicit-mixed variables, documented receivers of another class, and nullsafe roots do not enter this fallback
@@ -464,3 +464,64 @@ Lint 7 dead-code class-method rules (2026-10-26; `no-empty-method`, `no-unused-p
   different (PHPStan prints its own order), and intersections compare in declared order; a default or argument that is a
   non-empty array or a class constant is not read by `no-redundant-default-argument` and
   `no-useless-constructor`, which then keep the code; a parent's `@method` tag is not read.
+
+Lint 7 rector-laravel attribute rules (2026-10-27; the 31 `*PropertyTo*AttributeRector` rules and
+`ScopeNamedClassMethodToScopeAttributedClassMethodRector`, all 32 ported):
+
+- **Assistant's call: one port of the shared steps.** rector-laravel has no base class for these rules; each copies
+  the same `refactor()`. `rules/laravel/property_attribute.rs` ports those steps once (`isObjectType` on the class,
+  `hasPhpAttribute`, `getProperty`, the visibility and value checks, the attribute group added and the property
+  removed as php-parser's format-preserving printer writes them, the whole class printed anew when its body empties),
+  and `property_rules.rs` makes 29 rules thin `Config`s of it. `CollectedBy`, `Table` and the scope rule reuse the
+  class view and printer.
+- **Assistant's call: the fixtures see rector-laravel's stubs.** Rector's `isObjectType` reads the class's ancestors
+  through reflection, so the tests load rector-laravel's stubs/Illuminate (tests/rector-laravel-stubs) as its test
+  suite does, and the CLI scans the project for parents, as for every rule that reads facts.
+- **Pun leaves alone what Rector breaks:** `new static(...)` in `newCollection()` (Rector writes
+  `#[CollectedBy(static::class)]`, which PHP rejects), a tab in the class's or method's indentation (Rector writes its
+  own spaces), and an array with an empty item (php-parser does not parse it).
+
+Lint types property rules (2026-10-28; `add-property-type-constructor`, `-assigns`, `-setter-getter`, `-jms-scalar`,
+`-jms-object`, `-behat-context`, `-get-repository`, `add-doctrine-repository-return-type`, `no-nullsafe-on-non-null`,
+`prefer-identical-same-type`, `prefer-instanceof`):
+
+- **Assistant's call: one port of what the property rules share.** `rules/types/property_type.rs` holds PHPStan's types
+  as these rules combine them (a local port of `TypeFactory::createMixedPassedOrUnionType` and `uniquateTypes`, to
+  merge with pun-ty-return's), `StaticTypeMapper` for `TypeKind::PROPERTY`, `PropertyTypeChangeGuard`,
+  `PropertyTypeOverrideGuard`, `AssignToPropertyTypeInferer` and the `@var` edits. `ConstructorAssignDetector` is
+  `no_redundant_property_default::is_property_assigned`; its `isLocalPropertyFetchName` now counts `self::$x` and
+  `static::$x` too, as upstream's does.
+- **Assistant's call: two PHPStan extensions where Mago's types differ.** `parse_url($url, $component)` with a constant
+  component is `string|false|null` (Mago orders it `false|null|non-empty-string`), and a variable `method_exists()`
+  narrowed (Mago's bare `has-method<...>`) is its parameter's declared type intersected with
+  `class-string|(object&hasMethod)`: `object|string` untyped, `object` for `object`. Where Pun does not know the type
+  before the narrowing (the parameter is assigned in the method) the property stays (`Pun/method_exists_reassigned`).
+- **Pun leaves alone what Rector breaks or cannot print:** `is_a()` with one argument (Rector crashes) or a spread,
+  an anonymous class (`instanceof \AnonymousClass<hash>`), `!$a ?: $b` where Rector drops the parentheses; a multi-line
+  string constant in a public property's new `@var` (Rector prints its accessory types); a JMS `Type` written with a
+  leading `\` (Rector prints `\\Foo`, which does not parse); `lowercase-string` and `uppercase-string` JMS types (Rector
+  crashes and leaves the file; Pun leaves the class).
+- **Matched the oracle where it surprises:** a Behat `@var` naming an aliased import keeps the alias (`?\Moment`, as
+  `AliasedObjectType` prints), `@var self` is the class, and a class need not exist; a Behat `@var` over several lines
+  or with a spaced generic (`Collection<int, Item>`) still types the property and keeps the doc; upstream ships no
+  Behat fixtures, so `TypedStaticPropertyInBehatContextRector` has Oracle cases only; JMS `true` and `false` give `bool`;
+  a JMS `float` with `@var string The price` drops the doc, description and all (`removeVarTag`).
+- **Known differences, left for later:** Rector skips a JMS-typed property named `$protected` for no reason found in
+  its source; Pun types it. A JMS `Type` argument that is a constant expression other than a string or `X::class` is
+  not read.
+
+Lint parity on dev-null (2026-10-29; `scripts/lint-vs-rector.py dev-null`, the laravel and dead-code differences):
+
+- **Assistant's call: two of PHPStan's types in pun-lint, not in Mago.** `facts.rs` gives `preg_match()` and
+  `preg_match_all()` the `$flags`/`$matches` of PHPStan's stubs/core.stub (data/phpstan-preg-match.stub), in both
+  codebases (PHPStan's native scope gives a by-reference argument the same out type), so `PREG_UNMATCHED_AS_NULL`
+  groups may be null. `object_type.rs` ports `MixinMethodsClassReflectionExtension` along a method-call chain: a method
+  reached through a `@mixin` returns the mixin as `$this`/`static` (Mago binds the receiver), and a method then
+  missing is `*ERROR*`, so `$relation->whereNotNull('a')->with('b')` is no query builder as in PHPStan without
+  Larastan. `add-tap-closure-type` ports `hasInstanceProperty` for a property PHPStan does not find (`*ERROR*`, no
+  declaration): a `@property` tag or `@mixin` counts only on a class that allows dynamic properties.
+- **Comparison fixes, not rule changes:** `RequestStaticValidateToInjectRector` changes the node in place and
+  returns null, so Rector's JSON never names it; `lint-vs-rector.py` runs it alone to get its files. The bench's
+  rector.php imports rector-laravel's config/config.php, as every rector-laravel set does: without its
+  `ArrayDimFetchContextNodeVisitor`, `ServerVariableToRequestFacadeRector` rewrites `$_SERVER['A'] = ...` into
+  `Request::server('A') = ...`, which PHP rejects.

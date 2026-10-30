@@ -13,6 +13,7 @@ name = "pun_lint"
 [dependencies]
 pun-problem.workspace = true
 pun-tokens.workspace = true
+pun-phpstan.workspace = true
 mago-allocator.workspace = true
 mago-database.workspace = true
 mago-span.workspace = true
@@ -25,7 +26,9 @@ mago-phpdoc-syntax.workspace = true
 regex.workspace = true
 mago-php-version.workspace = true
 mago-prelude.workspace = true
+pcre2.workspace = true
 serde_json.workspace = true
+rayon.workspace = true
 
 [dev-dependencies]
 pun-config.workspace = true

@@ -2,6 +2,9 @@
 //! (`stmts`, with the `Nop` it adds for trailing comments), what Rector's format-preserving printer does when it
 //! removes, replaces or empties a statement, and the expression checks several Rector rules share.
 
+use std::cell::RefCell;
+use std::rc::Rc;
+
 use mago_database::file::FileId;
 use mago_span::HasSpan;
 use mago_syntax::cst::*;
@@ -21,8 +24,26 @@ pub(crate) struct Token {
     pub end: usize,
 }
 
+thread_local! {
+    /// The tokens of the source lexed last on this thread: the rules ask for a file's tokens at many of its nodes.
+    static LEXED: RefCell<Option<(String, Rc<Vec<Token>>)>> = const { RefCell::new(None) };
+}
+
 /// Every token of `source`, read from the start of the file (inline HTML first, as PHP does).
-pub(crate) fn tokens(source: &str) -> Vec<Token> {
+pub(crate) fn tokens(source: &str) -> Rc<Vec<Token>> {
+    let cached = LEXED.with_borrow(|l| {
+        (l.as_ref())
+            .filter(|(lexed, _)| lexed == source)
+            .map(|(_, tokens)| Rc::clone(tokens))
+    });
+    cached.unwrap_or_else(|| {
+        let tokens = Rc::new(lex(source));
+        LEXED.set(Some((source.to_string(), Rc::clone(&tokens))));
+        tokens
+    })
+}
+
+fn lex(source: &str) -> Vec<Token> {
     let mut lexer = Lexer::new(
         Input::new(FileId::zero(), source.as_bytes()),
         LexerSettings::default(),
@@ -558,7 +579,7 @@ pub(crate) fn precedence(op: &BinaryOperator<'_>) -> u8 {
 
 /// The precedence of an expression as an operand: a binary operator's, 4 for `?:`, the pipe, assignments, `yield`,
 /// `throw` and arrow functions, which all bind looser than `??`, and above every binary operator for the rest.
-fn operand_precedence(expr: &Expression<'_>) -> u8 {
+pub(crate) fn operand_precedence(expr: &Expression<'_>) -> u8 {
     match expr {
         Expression::Binary(b) => precedence(&b.operator),
         Expression::Conditional(_)

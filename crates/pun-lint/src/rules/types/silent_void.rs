@@ -22,7 +22,15 @@ pub(crate) fn has_silent_void<'s>(
     place: &Place<'_, '_, '_>,
     statements: impl IntoIterator<Item = &'s Statement<'s>>,
 ) -> bool {
-    !always_returns_or_exits(place, statements)
+    !always_returns_or_exits(place, false, statements)
+}
+
+/// `hasSilentVoid($functionLike, false)`: the `never` of a statement read with docblocks (`getType()`).
+pub(crate) fn has_silent_void_documented<'s>(
+    place: &Place<'_, '_, '_>,
+    statements: impl IntoIterator<Item = &'s Statement<'s>>,
+) -> bool {
+    !always_returns_or_exits(place, true, statements)
 }
 
 /// The statements a statement body holds, as php-parser lists them: a block's statements, or the statement alone.
@@ -36,6 +44,7 @@ fn body<'s>(statement: &'s Statement<'s>) -> Vec<&'s Statement<'s>> {
 /// `hasStmtsAlwaysReturnOrExit`.
 fn always_returns_or_exits<'s>(
     place: &Place<'_, '_, '_>,
+    documented: bool,
     statements: impl IntoIterator<Item = &'s Statement<'s>>,
 ) -> bool {
     statements.into_iter().any(|statement| match statement {
@@ -46,48 +55,51 @@ fn always_returns_or_exits<'s>(
                     | Expression::Yield(_)
                     | Expression::Construct(Construct::Exit(_) | Construct::Die(_))
             ) || is_native_never(place.facts, place.ancestors, place.scope, e.expression)
+                || (documented
+                    && (place
+                        .facts
+                        .full_type(crate::syntax::node_span(e.expression)))
+                    .is_some_and(|t| t.is_never()))
         }
         Statement::Return(r) => r.value.is_some(),
-        Statement::Switch(switch) => switch_always_returns(place, switch),
+        Statement::Switch(switch) => switch_always_returns(place, documented, switch),
         Statement::Try(r#try) => {
-            let finally = r#try
-                .finally_clause
-                .as_ref()
-                .is_some_and(|f| always_returns_or_exits(place, f.block.statements.iter()));
-            if !always_returns_or_exits(place, r#try.block.statements.iter()) {
+            let finally = r#try.finally_clause.as_ref().is_some_and(|f| {
+                always_returns_or_exits(place, documented, f.block.statements.iter())
+            });
+            if !always_returns_or_exits(place, documented, r#try.block.statements.iter()) {
                 return finally;
             }
-            r#try
-                .catch_clauses
-                .iter()
-                .all(|c| finally || always_returns_or_exits(place, c.block.statements.iter()))
+            r#try.catch_clauses.iter().all(|c| {
+                finally || always_returns_or_exits(place, documented, c.block.statements.iter())
+            })
         }
-        Statement::If(r#if) => if_always_returns(place, &r#if.body),
+        Statement::If(r#if) => if_always_returns(place, documented, &r#if.body),
         Statement::While(r#while) => while_always_returns(r#while),
-        Statement::DoWhile(r#do) => do_always_returns(place, r#do),
+        Statement::DoWhile(r#do) => do_always_returns(place, documented, r#do),
         _ => false,
     })
 }
 
 /// `isIfReturn`: every branch, with an `else`, always returns or exits.
-fn if_always_returns(place: &Place<'_, '_, '_>, body: &IfBody<'_>) -> bool {
+fn if_always_returns(place: &Place<'_, '_, '_>, documented: bool, body: &IfBody<'_>) -> bool {
     match body {
         IfBody::Statement(b) => {
             b.else_if_clauses
                 .iter()
-                .all(|c| always_returns_or_exits(place, self::body(c.statement)))
+                .all(|c| always_returns_or_exits(place, documented, self::body(c.statement)))
                 && b.else_clause.as_ref().is_some_and(|e| {
-                    always_returns_or_exits(place, self::body(b.statement))
-                        && always_returns_or_exits(place, self::body(e.statement))
+                    always_returns_or_exits(place, documented, self::body(b.statement))
+                        && always_returns_or_exits(place, documented, self::body(e.statement))
                 })
         }
         IfBody::ColonDelimited(b) => {
             b.else_if_clauses
                 .iter()
-                .all(|c| always_returns_or_exits(place, c.statements.iter()))
+                .all(|c| always_returns_or_exits(place, documented, c.statements.iter()))
                 && b.else_clause.as_ref().is_some_and(|e| {
-                    always_returns_or_exits(place, b.statements.iter())
-                        && always_returns_or_exits(place, e.statements.iter())
+                    always_returns_or_exits(place, documented, b.statements.iter())
+                        && always_returns_or_exits(place, documented, e.statements.iter())
                 })
         }
     }
@@ -95,7 +107,11 @@ fn if_always_returns(place: &Place<'_, '_, '_>, body: &IfBody<'_>) -> bool {
 
 /// `isSwitchWithAlwaysReturnOrExit`: a `default` with statements, and every case with statements always returns or
 /// exits.
-fn switch_always_returns(place: &Place<'_, '_, '_>, switch: &mago_syntax::cst::Switch<'_>) -> bool {
+fn switch_always_returns(
+    place: &Place<'_, '_, '_>,
+    documented: bool,
+    switch: &mago_syntax::cst::Switch<'_>,
+) -> bool {
     let cases = match &switch.body {
         SwitchBody::BraceDelimited(b) => &b.cases,
         SwitchBody::ColonDelimited(b) => &b.cases,
@@ -115,8 +131,12 @@ fn switch_always_returns(place: &Place<'_, '_, '_>, switch: &mago_syntax::cst::S
     let returning = cases
         .iter()
         .filter(|c| match c {
-            SwitchCase::Expression(c) => always_returns_or_exits(place, c.statements.iter()),
-            SwitchCase::Default(c) => always_returns_or_exits(place, c.statements.iter()),
+            SwitchCase::Expression(c) => {
+                always_returns_or_exits(place, documented, c.statements.iter())
+            }
+            SwitchCase::Default(c) => {
+                always_returns_or_exits(place, documented, c.statements.iter())
+            }
         })
         .count();
     filled == returning
@@ -137,9 +157,11 @@ fn while_always_returns(r#while: &While<'_>) -> bool {
 }
 
 /// `isDoOrWhileWithAlwaysReturnOrExit` for a `do`-`while`.
-fn do_always_returns(place: &Place<'_, '_, '_>, r#do: &DoWhile<'_>) -> bool {
+fn do_always_returns(place: &Place<'_, '_, '_>, documented: bool, r#do: &DoWhile<'_>) -> bool {
     let statements = body(r#do.statement);
-    if !is_true(r#do.condition) && !always_returns_or_exits(place, statements.iter().copied()) {
+    if !is_true(r#do.condition)
+        && !always_returns_or_exits(place, documented, statements.iter().copied())
+    {
         return false;
     }
     !has_loop_control(&statements)

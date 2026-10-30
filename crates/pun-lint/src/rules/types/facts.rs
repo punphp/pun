@@ -4,15 +4,16 @@
 //! each expression of the file. Docblocks are blanked out before Mago reads a file, so that both see only native types,
 //! as PHPStan's native reflection and native scope do.
 //!
-//! The project's codebase is set once by the caller with [`set_project_codebase`]; without one, a file is looked at
-//! with the prelude and its own symbols (and, in tests, the sources given to [`with_sources`]). The codebase of a file
-//! is kept per thread while rules ask about the same source (the fix rounds of one file).
+//! The project's codebase is set once by the caller with [`set_project_codebase`], or built when a rule first asks for
+//! facts with [`set_project_scan`]; without one, a file is looked at with the prelude and its own symbols (and, in
+//! tests, the sources given to [`with_sources`]). The codebase of a file is kept per thread while rules ask about the
+//! same source (the fix rounds of one file).
 
 use std::borrow::Cow;
 use std::cell::{OnceCell, RefCell};
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
-use std::sync::{Arc, LazyLock, RwLock};
+use std::sync::{Arc, LazyLock, Mutex, RwLock};
 
 use mago_allocator::LocalArena;
 use mago_analyzer::Analyzer;
@@ -22,7 +23,7 @@ use mago_analyzer::plugin::{PluginRegistry, create_registry_with_plugins};
 use mago_analyzer::settings::Settings;
 use mago_codex::metadata::CodebaseMetadata;
 use mago_codex::metadata::flags::MetadataFlags;
-use mago_codex::populator::populate_codebase;
+use mago_codex::populator::populate_codebase_parallel;
 use mago_codex::reference::SymbolReferences;
 use mago_codex::scanner::scan_program;
 use mago_codex::signature_builder::build_file_signature;
@@ -45,6 +46,7 @@ use mago_syntax::cst::{
 };
 use mago_syntax::parser::parse_file;
 use pun_problem::Span;
+use rayon::prelude::*;
 
 use crate::Context;
 
@@ -82,6 +84,20 @@ pub fn set_project_codebase(codebase: Option<Arc<ProjectCodebase>>) {
     *PROJECT.write().unwrap_or_else(|e| e.into_inner()) = codebase;
 }
 
+/// A build of the project's codebase that runs when a rule first asks for a file's facts.
+type PendingScan = Box<dyn FnOnce() -> Arc<ProjectCodebase> + Send>;
+
+/// The build [`set_project_scan`] deferred, until a rule asks for facts.
+static PENDING: Mutex<Option<PendingScan>> = Mutex::new(None);
+
+/// Build the project's codebase with `build` when a rule first asks for a file's facts, and use it for every file
+/// from then on, so a run whose rules never read facts never scans the project. The files waiting for it block on a
+/// lock, so `build` must not hand work to the pool those files run on (rayon's global pool: give it a pool of its own
+/// on a thread of its own).
+pub fn set_project_scan(build: impl FnOnce() -> Arc<ProjectCodebase> + Send + 'static) {
+    *PENDING.lock().unwrap_or_else(|e| e.into_inner()) = Some(Box::new(build));
+}
+
 /// The codebase of a project: the prelude with the symbols of `files` (path, code), populated, for
 /// [`set_project_codebase`]. `php_version` is a `PHP_VERSION_ID`.
 pub fn project_codebase(files: &[(String, String)], php_version: u32) -> Arc<ProjectCodebase> {
@@ -90,46 +106,53 @@ pub fn project_codebase(files: &[(String, String)], php_version: u32) -> Arc<Pro
 
 /// [`project_codebase`] with the classes Composer autoloads, as PHPStan's PSR locators find them on demand: each
 /// class a scanned file names that the codebase lacks is looked up with `autoload` (an ASCII-lowercased class name
-/// to its file's path and code), and that file is scanned too. Files whose path has a `/vendor/` directory count as
-/// vendor code for [`is_vendor_file`].
+/// to its file's path and code), and that file is scanned too. Files whose path has a `/vendor/` directory (Composer's
+/// `files` entries among `files`, and autoloaded classes) count as vendor code for [`is_vendor_file`], and a function
+/// PHP itself declares keeps its own signature there: PHPStan reads a polyfilled function natively.
 pub fn project_codebase_autoloaded(
     files: &[(String, String)],
     php_version: u32,
-    autoload: &dyn Fn(&[u8]) -> Option<(String, String)>,
+    autoload: &(dyn Fn(&[u8]) -> Option<(String, String)> + Sync),
 ) -> Arc<ProjectCodebase> {
     let version = php_version_of(php_version);
-    let (prelude, references) = &*PRELUDE;
-    let (mut codebase, mut documented) = (prelude.clone(), prelude.clone());
+    let stubbed = || {
+        let mut codebase = PRELUDE.0.clone();
+        stub_preg_match(&mut codebase, version);
+        codebase
+    };
+    let kind = |path: &str| match is_vendor_path(path) {
+        true => FileType::Vendored,
+        false => FileType::Host,
+    };
+    // the prelude is built while the files are scanned
+    let ((mut codebase, mut documented), scans) = rayon::join(
+        || rayon::join(stubbed, stubbed),
+        || {
+            (files.par_iter())
+                .map(|(path, code)| Scanned::new(path, code, kind(path), version))
+                .collect::<Vec<_>>()
+        },
+    );
+    let mut prefetched = prefetch(&scans, version, autoload);
     let mut named = Vec::new();
-    for (path, code) in files {
-        let file = mago_file(path, &without_docblocks(code), FileType::Host);
-        remember_source(file.id, code);
-        named.extend(scan_into(&mut codebase, &file, version));
-        scan_into(
-            &mut documented,
-            &mago_file(path, code, FileType::Host),
-            version,
-        );
+    for ((path, code), scanned) in files.iter().zip(scans) {
+        named.extend(scanned.add(path, code, &mut codebase, &mut documented));
     }
     let mut asked: HashSet<Vec<u8>> = HashSet::new();
     while let Some(name) = named.pop() {
         if !asked.insert(name.clone()) || codebase.get_class_like(&name).is_some() {
             continue;
         }
-        if let Some((path, code)) = autoload(&name) {
-            let file = mago_file(&path, &without_docblocks(&code), FileType::Vendored);
-            remember_source(file.id, &code);
-            if path.contains("/vendor/") {
-                (VENDOR.write().unwrap_or_else(|e| e.into_inner())).insert(file.id);
-            }
-            named.extend(scan_into(&mut codebase, &file, version));
-            let file = mago_file(&path, &code, FileType::Vendored);
-            scan_into(&mut documented, &file, version);
+        let loaded = (prefetched.found.remove(&name)).unwrap_or_else(|| autoload(&name));
+        if let Some((path, code)) = loaded {
+            let scanned = (prefetched.scans.remove(&path))
+                .unwrap_or_else(|| Scanned::new(&path, &code, FileType::Vendored, version));
+            named.extend(scanned.add(&path, &code, &mut codebase, &mut documented));
         }
     }
     let populated = |mut codebase: CodebaseMetadata| {
-        let mut references = references.clone();
-        populate_codebase(
+        let mut references = PRELUDE.1.clone();
+        populate_codebase_parallel(
             &mut codebase,
             &mut references,
             Default::default(),
@@ -137,10 +160,169 @@ pub fn project_codebase_autoloaded(
         );
         Arc::new(codebase)
     };
-    Arc::new(ProjectCodebase {
-        native: populated(codebase),
-        documented: populated(documented),
-    })
+    let (native, documented) = rayon::join(|| populated(codebase), || populated(documented));
+    Arc::new(ProjectCodebase { native, documented })
+}
+
+/// A file's symbols as [`scan_symbols`] finds them: with its docblocks blanked out, and as written.
+struct Scanned {
+    id: FileId,
+    native: CodebaseMetadata,
+    documented: CodebaseMetadata,
+    names: Vec<Vec<u8>>,
+}
+
+impl Scanned {
+    fn new(path: &str, code: &str, kind: FileType, version: PHPVersion) -> Self {
+        let file = mago_file(path, &without_docblocks(code), kind);
+        let (native, names) = scan_symbols(&file, version);
+        let (documented, _) = scan_symbols(&mago_file(path, code, kind), version);
+        Self {
+            id: file.id,
+            native,
+            documented,
+            names,
+        }
+    }
+
+    /// Add the symbols to the two codebases, remember the file, and return the names it resolves.
+    fn add(
+        self,
+        path: &str,
+        code: &str,
+        native: &mut CodebaseMetadata,
+        documented: &mut CodebaseMetadata,
+    ) -> Vec<Vec<u8>> {
+        remember(self.id, path, code);
+        remember_phar(self.id, path);
+        native.extend(self.native);
+        documented.extend(self.documented);
+        self.names
+    }
+}
+
+/// The files the autoload walk of [`project_codebase_autoloaded`] is likely to scan, read and scanned in parallel
+/// ahead of it: the walk merges them one at a time in its own order, and reads and scans a file itself when the
+/// guess missed it.
+#[derive(Default)]
+struct Prefetched {
+    /// What `autoload` gave for a class name.
+    found: HashMap<Vec<u8>, Option<(String, String)>>,
+    /// The scan of an autoloaded file, by path.
+    scans: HashMap<String, Scanned>,
+}
+
+/// What [`prefetch`] knows while it runs: the classes the scanned files declare, the class names and paths it
+/// has looked up, and what it found.
+#[derive(Default)]
+struct Prefetching {
+    declared: HashSet<Vec<u8>>,
+    seen: HashSet<Vec<u8>>,
+    paths: HashSet<String>,
+    found: Prefetched,
+}
+
+impl Prefetching {
+    /// The class names `scans` resolve that neither a file scanned so far (counting `scans`) nor PHP declares and
+    /// that weren't looked up yet.
+    fn unknown<'a>(&mut self, scans: impl Iterator<Item = &'a Scanned> + Clone) -> Vec<Vec<u8>> {
+        for s in scans.clone() {
+            (self.declared).extend(s.native.class_likes.keys().map(|k| k.as_bytes().to_vec()));
+        }
+        (scans.flat_map(|s| &s.names))
+            .filter(|n| !self.declared.contains(*n) && PRELUDE.0.get_class_like(n).is_none())
+            .filter(|n| self.seen.insert(n.to_vec()))
+            .cloned()
+            .collect()
+    }
+}
+
+/// [`Prefetched`] for the walk that starts from `scans`: each class a scanned file names that no file scanned so far
+/// declares and PHP doesn't is looked up, and each file found is scanned, as soon as the file naming it is.
+fn prefetch(
+    scans: &[Scanned],
+    version: PHPVersion,
+    autoload: &(dyn Fn(&[u8]) -> Option<(String, String)> + Sync),
+) -> Prefetched {
+    let state = Mutex::new(Prefetching::default());
+    let names = (state.lock().unwrap_or_else(|e| e.into_inner())).unknown(scans.iter());
+    let look_up = |name: Vec<u8>| Lookup {
+        name,
+        state: &state,
+        version,
+        autoload,
+    };
+    rayon::scope(|scope| {
+        for name in names {
+            let lookup = look_up(name);
+            scope.spawn(move |scope| lookup.run(scope));
+        }
+    });
+    (state.into_inner().unwrap_or_else(|e| e.into_inner())).found
+}
+
+/// One class name for [`prefetch`] to look up.
+struct Lookup<'a> {
+    name: Vec<u8>,
+    state: &'a Mutex<Prefetching>,
+    version: PHPVersion,
+    autoload: &'a (dyn Fn(&[u8]) -> Option<(String, String)> + Sync),
+}
+
+impl<'a> Lookup<'a> {
+    /// Look the name up, scan the file found unless another name found it first, and look up the names it adds.
+    fn run(self, scope: &rayon::Scope<'a>) {
+        let file = (self.autoload)(&self.name);
+        let lock = || self.state.lock().unwrap_or_else(|e| e.into_inner());
+        let new = match &file {
+            Some((path, code)) if lock().paths.insert(path.clone()) => {
+                Some((path.clone(), code.clone()))
+            }
+            _ => None,
+        };
+        lock().found.found.insert(self.name, file);
+        let Some((path, code)) = new else {
+            return;
+        };
+        let scanned = Scanned::new(&path, &code, FileType::Vendored, self.version);
+        let mut state = lock();
+        let names = state.unknown(std::iter::once(&scanned));
+        state.found.scans.insert(path, scanned);
+        drop(state);
+        for name in names {
+            let lookup = Lookup { name, ..self };
+            scope.spawn(move |scope| lookup.run(scope));
+        }
+    }
+}
+
+/// `preg_match()` and `preg_match_all()` with the `$flags` and `$matches` of PHPStan's signatures
+/// (data/phpstan-preg-match.stub), whose conditional `@param-out` types `$matches` from the flags; Mago's prelude has
+/// one type for every flag. The rest stays the prelude's. Both codebases take it: PHPStan's native scope gives a
+/// by-reference argument the same out type (Rector's `isNonTypedFromParam` holds the variable typed). PHPStan's
+/// `PregMatchParameterOutTypeExtension` (an array shape for a pattern it parses) is not ported: the stub's type holds
+/// that shape.
+fn stub_preg_match(codebase: &mut CodebaseMetadata, version: PHPVersion) {
+    const STUB: &str = include_str!("../../../data/phpstan-preg-match.stub");
+    let file = mago_file("phpstan/stubs/core.stub", STUB, FileType::Host);
+    let arena = LocalArena::new();
+    let program = parse_file(&arena, &file);
+    let names = NameResolver::new(&arena).resolve(program);
+    let scanned = scan_program(&arena, &file, program, &names, version);
+    for (key, stub) in scanned.function_likes {
+        let builtin = codebase.function_likes.get_mut(&key).expect("a built-in function");
+        builtin.template_types = stub.template_types.clone();
+        for parameter in &mut builtin.parameters {
+            let name = parameter.name.0.as_bytes();
+            if name != b"$flags" && name != b"$matches" {
+                continue;
+            }
+            if let Some(from) = stub.parameters.iter().find(|p| p.name.0.as_bytes() == name) {
+                parameter.type_metadata = from.type_metadata.clone();
+                parameter.out_type = from.out_type.clone();
+            }
+        }
+    }
 }
 
 /// The files [`project_codebase_autoloaded`] read from a `vendor/` directory. A file's id is a hash of its path, so
@@ -150,6 +332,21 @@ static VENDOR: LazyLock<RwLock<HashSet<FileId>>> = LazyLock::new(Default::defaul
 /// Whether `file` is vendor code of the project's codebase (Rector: its path contains `/vendor/`).
 pub(crate) fn is_vendor_file(file: FileId) -> bool {
     (VENDOR.read().unwrap_or_else(|e| e.into_inner())).contains(&file)
+}
+
+/// The files [`project_codebase_autoloaded`] read from a path with `phpstan.phar` in it, which Rector's
+/// `RemoveExtraParametersRector` takes for PHPStan's own (its built-in stubs).
+static PHPSTAN_PHAR: LazyLock<RwLock<HashSet<FileId>>> = LazyLock::new(Default::default);
+
+fn remember_phar(file: FileId, path: &str) {
+    if path.contains("phpstan.phar") {
+        (PHPSTAN_PHAR.write().unwrap_or_else(|e| e.into_inner())).insert(file);
+    }
+}
+
+/// Whether `file`'s path has `phpstan.phar` in it.
+pub(crate) fn is_phpstan_phar_file(file: FileId) -> bool {
+    (PHPSTAN_PHAR.read().unwrap_or_else(|e| e.into_inner())).contains(&file)
 }
 
 /// The sources of the files the codebases were built from, docblocks kept, by file id, for the rules that read
@@ -223,6 +420,13 @@ impl Facts {
             .artifacts
             .as_ref()?
             .get_keep_void_expression_type(&mago_span::Span::dummy(start, end))
+    }
+
+    /// Whether PHPStan leaves the value at `span` untyped in its full scope as in its native one: inside a trait, a
+    /// value that comes from `$this`.
+    pub fn is_untyped(&self, span: Span) -> bool {
+        let analysis = self.artifacts.get_or_init(|| self.analyse());
+        analysis.untyped.contains(&(span.start as u32, span.end as u32))
     }
 
     /// The declared return type of the built-in function `call` calls (PHP's own signature, not the stub's
@@ -468,16 +672,36 @@ impl Facts {
                     if let Node::Method(_) = m
                         && own(m.span())
                     {
-                        let mut writes: Vec<(&[u8], u32, bool)> = Vec::new();
+                        let mut assignments = Vec::new();
                         any_node(m, &mut |a| {
-                            if let Node::Assignment(a) = a
-                                && let Expression::Variable(Variable::Direct(v)) = a.lhs
-                            {
-                                let this =
-                                    a.operator.is_assign() && own(a.span()) && from_this(a.rhs);
-                                writes.push((v.name, a.span().end.offset, this));
+                            if let Node::Assignment(a) = a {
+                                assignments.push(a);
                             }
                         });
+                        let mut writes: Vec<(&[u8], u32, bool)> = Vec::new();
+                        for a in assignments {
+                            // the variables written: one, or those a destructuring (`[$a, $b] = ...`) lists
+                            let mut targets: Vec<&[u8]> = Vec::new();
+                            any_node(Node::Expression(a.lhs), &mut |t| {
+                                if let Node::DirectVariable(v) = t {
+                                    targets.push(v.name);
+                                }
+                            });
+                            if !matches!(a.lhs, Expression::Variable(Variable::Direct(_)) | Expression::Array(_) | Expression::List(_)) {
+                                continue;
+                            }
+                            // a value passed on from a variable such a value reached last (`$files = [$files]`) is
+                            // untyped; one a call makes of it (`array_keys($files)`) is not
+                            let mut reads_this = false;
+                            for v in passed_on(a.rhs) {
+                                let last = (writes.iter())
+                                    .filter(|(name, end, _)| *name == v.name && *end <= v.span.start.offset)
+                                    .max_by_key(|(_, end, _)| *end);
+                                reads_this |= matches!(last, Some((_, _, true)));
+                            }
+                            let this = a.operator.is_assign() && own(a.span()) && (from_this(a.rhs) || reads_this);
+                            writes.extend(targets.into_iter().map(|t| (t, a.span().end.offset, this)));
+                        }
                         if !writes.iter().any(|w| w.2) {
                             return;
                         }
@@ -845,6 +1069,23 @@ fn mixed_math(operator: &BinaryOperator<'_>, left: Operand, right: Operand) -> O
 
 /// Whether PHPStan, inside a trait, leaves the value of `expr` untyped: `$this`, or a property, method call, offset or clone
 /// of it; a constant of `self` or `static`.
+
+/// The variables whose value `e` is or holds as it is: `e` itself, an offset of it, the branches of a ternary or `??`,
+/// the values of an array literal, through parentheses.
+fn passed_on<'a>(e: &'a Expression<'a>) -> Vec<&'a mago_syntax::cst::DirectVariable<'a>> {
+    match e {
+        Expression::Variable(Variable::Direct(v)) => vec![v],
+        Expression::Parenthesized(p) => passed_on(p.expression),
+        Expression::ArrayAccess(a) => passed_on(a.array),
+        Expression::Conditional(c) => c.then.into_iter().chain([c.r#else]).flat_map(passed_on).collect(),
+        Expression::Binary(b) if matches!(b.operator, BinaryOperator::NullCoalesce(_)) => {
+            [b.lhs, b.rhs].into_iter().flat_map(passed_on).collect()
+        }
+        Expression::Array(a) => a.elements.iter().filter_map(|e| e.get_value()).flat_map(passed_on).collect(),
+        Expression::LegacyArray(a) => a.elements.iter().filter_map(|e| e.get_value()).flat_map(passed_on).collect(),
+        _ => Vec::new(),
+    }
+}
 fn from_this(expr: &Expression<'_>) -> bool {
     match expr {
         Expression::Variable(Variable::Direct(v)) => v.name == b"$this",
@@ -902,6 +1143,11 @@ pub(crate) fn without_docblocks(code: &str) -> String {
 
 /// The facts of the file `ctx` is about.
 pub(crate) fn facts(ctx: &Context<'_>) -> Rc<Facts> {
+    let mut pending = PENDING.lock().unwrap_or_else(|e| e.into_inner());
+    if let Some(build) = pending.take() {
+        set_project_codebase(Some(build()));
+    }
+    drop(pending);
     let project = PROJECT
         .read()
         .unwrap_or_else(|e| e.into_inner())
@@ -943,9 +1189,9 @@ fn mago_file(path: &str, code: &str, file_type: FileType) -> File {
     )
 }
 
-/// The symbols of `file`, added to `codebase`, and the names the file resolves, ASCII-lowercased. Mago trips debug
-/// assertions on some code; a scan that panics adds none.
-fn scan_into(codebase: &mut CodebaseMetadata, file: &File, version: PHPVersion) -> Vec<Vec<u8>> {
+/// The symbols of `file`, and the names the file resolves, ASCII-lowercased. Mago trips debug
+/// assertions on some code; a scan that panics has none.
+fn scan_symbols(file: &File, version: PHPVersion) -> (CodebaseMetadata, Vec<Vec<u8>>) {
     let arena = LocalArena::new();
     let program = parse_file(&arena, file);
     let names = NameResolver::new(&arena).resolve(program);
@@ -954,11 +1200,15 @@ fn scan_into(codebase: &mut CodebaseMetadata, file: &File, version: PHPVersion) 
     }))
     .unwrap_or_default();
     mark_anonymous_classes_final(&mut scanned);
-    codebase.extend(scanned);
-    names
-        .iter()
+    if file.file_type == FileType::Vendored {
+        (scanned.function_likes).retain(|(class, name), _| {
+            !class.as_bytes().is_empty() || PRELUDE.0.get_function(name.as_bytes()).is_none()
+        });
+    }
+    let names = (names.iter())
         .map(|(_, _, name, _)| name.to_ascii_lowercase())
-        .collect()
+        .collect();
+    (scanned, names)
 }
 
 // PHPStan's ClassReflection::isFinalByKeyword treats anonymous classes as final, including their
@@ -969,6 +1219,28 @@ fn mark_anonymous_classes_final(scanned: &mut CodebaseMetadata) {
         if class.kind.is_class() && class.name_span.is_none() {
             class.flags |= MetadataFlags::FINAL;
         }
+    }
+}
+
+/// Whether `path` has a `vendor/` directory (Rector: its path contains `/vendor/`).
+fn is_vendor_path(path: &str) -> bool {
+    path.contains("/vendor/")
+}
+
+/// The paths of the files the codebases were built from, by file id (PHPStan's `ClassReflection::getFileName()`).
+static PATHS: LazyLock<RwLock<HashMap<FileId, Arc<str>>>> = LazyLock::new(Default::default);
+
+/// The path of the file `file` of the codebase.
+pub(crate) fn path_of(file: FileId) -> Option<Arc<str>> {
+    (PATHS.read().unwrap_or_else(|e| e.into_inner())).get(&file).cloned()
+}
+
+/// [`remember_source`] for the file `id` at `path`, which counts as vendor code when [`is_vendor_path`] says so.
+fn remember(id: FileId, path: &str, code: &str) {
+    remember_source(id, code);
+    (PATHS.write().unwrap_or_else(|e| e.into_inner())).insert(id, Arc::from(path));
+    if is_vendor_path(path) {
+        (VENDOR.write().unwrap_or_else(|e| e.into_inner())).insert(id);
     }
 }
 
@@ -1026,4 +1298,16 @@ pub(crate) fn is_builtin_class(class: &[u8]) -> bool {
 /// Whether `function` is one of PHP's own functions (PHPStan: `FunctionReflection::isBuiltin()`).
 pub(crate) fn is_builtin_function(function: &[u8]) -> bool {
     PRELUDE.0.get_function(function).is_some()
+}
+
+/// Whether `class::method` (a built-in class, the method's name in any case) declares only a tentative return type,
+/// which PHPStan's native reflection reads as an implicit `mixed`.
+pub(crate) fn is_tentative(class: &[u8], method: &[u8]) -> bool {
+    let key = [
+        class.to_ascii_lowercase(),
+        b"::".to_vec(),
+        method.to_ascii_lowercase(),
+    ]
+    .concat();
+    TENTATIVE.contains(key.as_slice())
 }

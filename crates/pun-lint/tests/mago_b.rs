@@ -146,6 +146,9 @@ mago! {
     no_side_effects_with_declarations "style" "no-side-effects-with-declarations";
     require_naming_convention "style" "require-naming-convention";
     require_phpdoc "style" "require-phpdoc";
+    no_controller_middleware "laravel" "no-controller-middleware";
+    prefer_view_array "laravel" "prefer-view-array";
+    prefer_test_attribute "phpunit" "prefer-test-attribute";
 }
 
 #[test]

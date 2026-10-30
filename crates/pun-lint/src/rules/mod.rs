@@ -1,6 +1,8 @@
 //! The ported rules. Each file is one Pun rule, ported function by function from its upstream source.
 
 mod add_csv_escape_argument;
+mod add_dynamic_properties;
+mod add_safe_strict_types;
 mod mago_helpers;
 mod mago_restricted;
 mod mago_calls;
@@ -27,9 +29,11 @@ mod require_parent_visibility;
 mod add_datetime_property_type;
 mod no_dead_catch;
 mod prefer_class_keyword;
+mod prefer_class_name_constant;
 mod no_unused_constructor_param;
 mod no_null_default_argument;
-mod add_param_type_sprintf;
+mod class_dependency;
+pub(crate) mod add_param_type_sprintf;
 mod class_method;
 mod laravel;
 mod pest;
@@ -44,6 +48,10 @@ mod lint_b_security;
 mod lint_b_serialize;
 mod mago_const_value;
 mod mago_usage;
+mod no_always_false_condition;
+mod no_always_true_if;
+mod no_always_true_instanceof;
+mod no_always_true_instanceof_assert;
 mod no_and_assignment;
 mod no_and_true;
 mod no_array_accumulation_in_loop;
@@ -57,6 +65,8 @@ mod no_cast_in_concat;
 mod no_compact;
 mod no_concat_assign_new_item;
 mod no_condition_exact_return;
+mod no_constant_condition;
+mod no_constant_via_variable;
 mod no_dead_php_version_check;
 mod no_debug_calls;
 mod no_double_negation;
@@ -64,6 +74,8 @@ mod no_double_self_assignment;
 mod no_duplicate_array_key;
 mod no_duplicate_case_body;
 mod no_duplicate_match_arm;
+mod no_dynamic_member;
+mod no_extra_arguments;
 mod no_dynamic_name;
 mod no_else_after_return;
 mod no_empty;
@@ -102,6 +114,7 @@ mod no_nested_ternary;
 mod no_null_debug_info;
 mod no_null_property_init;
 mod no_null_tag_value;
+mod no_null_array_key;
 mod no_out_of_range_chr;
 mod no_overwritten_assignment;
 mod no_parameter_shadowing;
@@ -112,9 +125,12 @@ mod no_protected_property_in_final;
 mod no_redundant_condition;
 mod no_redundant_default_argument;
 mod no_redundant_final_const;
+mod no_invalid_var_tag;
+mod no_phpdoc_class_case_mismatch;
+mod no_redundant_foreach_guard;
 mod no_redundant_null_check;
 mod no_redundant_promoted_assign;
-mod no_redundant_property_default;
+pub(crate) mod no_redundant_property_default;
 mod no_redundant_readonly_property;
 mod no_redundant_write_visibility;
 mod no_request_variable;
@@ -129,6 +145,7 @@ mod no_static_constructor_call;
 mod no_swapped_explode_arguments;
 mod no_tainted_data;
 mod no_tautology_ternary;
+mod no_typed_property_instanceof;
 mod no_underscore_class;
 mod no_unreachable_code;
 mod no_unreachable_loop;
@@ -144,12 +161,16 @@ mod no_unused_private_method_param;
 mod no_unused_private_property;
 mod no_unused_public_method_param;
 mod no_unused_static;
+mod no_unused_test_method_param;
 mod no_useless_array_values;
 mod no_useless_block;
+mod no_useless_cast;
 mod no_useless_catch;
 mod no_useless_condition;
 mod no_useless_constructor;
 mod no_useless_continue;
+mod no_useless_filter_var;
+mod no_useless_math;
 mod no_useless_override;
 mod no_useless_readonly;
 mod no_useless_ternary;
@@ -158,6 +179,9 @@ mod no_variable_variable;
 mod no_void_on_magic_method;
 mod no_void_reference_return;
 mod php_parser;
+mod phpstan_describe;
+mod phpdoc_tag;
+pub(crate) mod phpdoc_writer;
 mod prefer_absolute_include;
 mod prefer_array_all;
 mod prefer_array_any;
@@ -184,6 +208,16 @@ mod prefer_func_num_args;
 mod prefer_in_array;
 mod prefer_in_array_over_foreach;
 mod prefer_in_array_over_search;
+mod prefer_inline_array_return;
+mod no_useless_var_tag;
+mod no_useless_param_tag;
+mod no_useless_return_tag;
+mod no_invalid_return_tag;
+mod no_unused_return_type;
+mod no_useless_phpdoc_type;
+mod no_redundant_nullable_check;
+mod no_unused_assignment;
+mod prefer_instance_method;
 mod prefer_instanceof_stringable;
 mod prefer_min_max;
 mod prefer_new_self;
@@ -192,7 +226,9 @@ mod prefer_null_coalesce;
 mod prefer_ord_first_byte;
 mod prefer_php_version_id;
 mod prefer_property_default;
+mod prefer_property_exists;
 mod prefer_property_over_local_getter;
+mod prefer_returned_condition;
 mod prefer_round_mode_enum;
 mod prefer_self_over_static;
 mod prefer_serialize_method;
@@ -203,16 +239,23 @@ mod prefer_variadic_param;
 mod rector_batch5;
 mod rector_code_quality;
 mod rector_conditions;
+mod rector_names;
 mod rector_stmts;
+mod refactor;
 mod require_assign_set_padding;
 mod require_attribute_argument_order;
 mod require_is_a_allow_string;
 mod require_named_argument_order;
 mod require_preg_quote_delimiter;
+mod require_consistent_return;
+mod require_previous_exception;
 mod require_statement_padding;
-mod require_strict_function_call;
 mod require_strict_array_search;
+mod require_array_filter_callback;
+mod require_strict_in_array;
+mod require_strict_function_call;
 mod side_effect;
+mod stmt_splice;
 mod syntax_types;
 mod types;
 mod used_variable;
@@ -244,15 +287,20 @@ pub use require_naming_convention::RequireNamingConvention;
 pub use require_phpdoc::RequirePhpdoc;
 pub use no_unused_promoted_property::NoUnusedPromotedProperty;
 pub use require_parent_visibility::RequireParentVisibility;
-pub use add_datetime_property_type::AddDatetimePropertyType;
 pub use no_dead_catch::NoDeadCatch;
 pub use prefer_class_keyword::PreferClassKeyword;
+pub use prefer_class_name_constant::PreferClassNameConstant;
 pub use no_unused_constructor_param::NoUnusedConstructorParam;
 pub use no_null_default_argument::{NoNullDefaultArgument, NoNullDefaultNamedArgument};
-pub use add_param_type_sprintf::AddParamTypeSprintf;
-pub use laravel::*;
 pub use pest::*;
 pub use phpunit::*;
+pub use no_always_false_condition::NoAlwaysFalseCondition;
+pub use no_always_true_if::NoAlwaysTrueIf;
+pub use no_always_true_instanceof::NoAlwaysTrueInstanceof;
+pub use no_always_true_instanceof_assert::NoAlwaysTrueInstanceofAssert;
+pub use add_datetime_property_type::AddDatetimePropertyType;
+pub use add_param_type_sprintf::AddParamTypeSprintf;
+pub use laravel::*;
 pub use no_and_assignment::NoAndAssignment;
 pub use no_and_true::NoAndTrue;
 pub use no_array_accumulation_in_loop::NoArrayAccumulationInLoop;
@@ -266,6 +314,8 @@ pub use no_cast_in_concat::NoCastInConcat;
 pub use no_compact::NoCompact;
 pub use no_concat_assign_new_item::NoConcatAssignNewItem;
 pub use no_condition_exact_return::NoConditionExactReturn;
+pub use no_constant_condition::NoConstantCondition;
+pub use no_constant_via_variable::NoConstantViaVariable;
 pub use no_dead_php_version_check::NoDeadPhpVersionCheck;
 pub use no_debug_calls::NoDebugCalls;
 pub use no_double_negation::NoDoubleNegation;
@@ -273,7 +323,12 @@ pub use no_double_self_assignment::NoDoubleSelfAssignment;
 pub use no_duplicate_array_key::NoDuplicateArrayKey;
 pub use no_duplicate_case_body::NoDuplicateCaseBody;
 pub use no_duplicate_match_arm::NoDuplicateMatchArm;
+pub use no_dynamic_member::{
+    NoDynamicMethodCall, NoDynamicMethodCallable, NoDynamicProperty, NoDynamicStaticCall,
+    NoDynamicStaticCallable, NoDynamicStaticProperty,
+};
 pub use no_dynamic_name::NoDynamicName;
+pub use no_extra_arguments::NoExtraArguments;
 pub use no_else_after_return::NoElseAfterReturn;
 pub use no_empty::NoEmpty;
 pub use no_empty_block::NoEmptyBlock;
@@ -311,6 +366,9 @@ pub use no_nested_ternary::NoNestedTernary;
 pub use no_null_debug_info::NoNullDebugInfo;
 pub use no_null_property_init::NoNullPropertyInit;
 pub use no_null_tag_value::NoNullTagValue;
+pub use add_dynamic_properties::AddDynamicProperties;
+pub use add_safe_strict_types::AddSafeStrictTypes;
+pub use no_null_array_key::NoNullArrayKey;
 pub use no_out_of_range_chr::NoOutOfRangeChr;
 pub use no_overwritten_assignment::NoOverwrittenAssignment;
 pub use no_parameter_shadowing::NoParameterShadowing;
@@ -321,6 +379,9 @@ pub use no_protected_property_in_final::NoProtectedPropertyInFinal;
 pub use no_redundant_condition::NoRedundantCondition;
 pub use no_redundant_default_argument::NoRedundantDefaultArgument;
 pub use no_redundant_final_const::NoRedundantFinalConst;
+pub use no_invalid_var_tag::NoInvalidVarTag;
+pub use no_phpdoc_class_case_mismatch::NoPhpdocClassCaseMismatch;
+pub use no_redundant_foreach_guard::NoRedundantForeachGuard;
 pub use no_redundant_null_check::NoRedundantNullCheck;
 pub use no_redundant_promoted_assign::NoRedundantPromotedAssign;
 pub use no_redundant_property_default::NoRedundantPropertyDefault;
@@ -338,6 +399,7 @@ pub use no_static_constructor_call::NoStaticConstructorCall;
 pub use no_swapped_explode_arguments::NoSwappedExplodeArguments;
 pub use no_tainted_data::NoTaintedData;
 pub use no_tautology_ternary::NoTautologyTernary;
+pub use no_typed_property_instanceof::NoTypedPropertyInstanceof;
 pub use no_underscore_class::NoUnderscoreClass;
 pub use no_unreachable_code::NoUnreachableCode;
 pub use no_unreachable_loop::NoUnreachableLoop;
@@ -353,12 +415,16 @@ pub use no_unused_private_method_param::NoUnusedPrivateMethodParam;
 pub use no_unused_private_property::NoUnusedPrivateProperty;
 pub use no_unused_public_method_param::NoUnusedPublicMethodParam;
 pub use no_unused_static::NoUnusedStatic;
+pub use no_unused_test_method_param::NoUnusedTestMethodParam;
 pub use no_useless_array_values::NoUselessArrayValues;
 pub use no_useless_block::NoUselessBlock;
+pub use no_useless_cast::NoUselessCast;
 pub use no_useless_catch::NoUselessCatch;
 pub use no_useless_condition::NoUselessCondition;
 pub use no_useless_constructor::NoUselessConstructor;
 pub use no_useless_continue::NoUselessContinue;
+pub use no_useless_filter_var::NoUselessFilterVar;
+pub use no_useless_math::NoUselessMath;
 pub use no_useless_override::NoUselessOverride;
 pub use no_useless_readonly::NoUselessReadonly;
 pub use no_useless_ternary::NoUselessTernary;
@@ -392,6 +458,16 @@ pub use prefer_func_num_args::PreferFuncNumArgs;
 pub use prefer_in_array::PreferInArray;
 pub use prefer_in_array_over_foreach::PreferInArrayOverForeach;
 pub use prefer_in_array_over_search::PreferInArrayOverSearch;
+pub use prefer_inline_array_return::PreferInlineArrayReturn;
+pub use no_useless_var_tag::NoUselessVarTag;
+pub use no_useless_param_tag::NoUselessParamTag;
+pub use no_useless_return_tag::NoUselessReturnTag;
+pub use no_invalid_return_tag::NoInvalidReturnTag;
+pub use no_unused_return_type::NoUnusedReturnType;
+pub use no_useless_phpdoc_type::NoUselessPhpdocType;
+pub use no_redundant_nullable_check::NoRedundantNullableCheck;
+pub use no_unused_assignment::NoUnusedAssignment;
+pub use prefer_instance_method::PreferInstanceMethod;
 pub use prefer_instanceof_stringable::PreferInstanceofStringable;
 pub use prefer_min_max::PreferMinMax;
 pub use prefer_new_self::PreferNewSelf;
@@ -400,7 +476,9 @@ pub use prefer_null_coalesce::PreferNullCoalesce;
 pub use prefer_ord_first_byte::PreferOrdFirstByte;
 pub use prefer_php_version_id::PreferPhpVersionId;
 pub use prefer_property_default::PreferPropertyDefault;
+pub use prefer_property_exists::PreferPropertyExists;
 pub use prefer_property_over_local_getter::PreferPropertyOverLocalGetter;
+pub use prefer_returned_condition::PreferReturnedCondition;
 pub use prefer_round_mode_enum::PreferRoundModeEnum;
 pub use prefer_self_over_static::PreferSelfOverStatic;
 pub use prefer_serialize_method::PreferSerializeMethod;
@@ -413,22 +491,17 @@ pub use require_attribute_argument_order::RequireAttributeArgumentOrder;
 pub use require_is_a_allow_string::RequireIsAAllowString;
 pub use require_named_argument_order::RequireNamedArgumentOrder;
 pub use require_preg_quote_delimiter::RequirePregQuoteDelimiter;
+pub use require_consistent_return::RequireConsistentReturn;
+pub use require_previous_exception::RequirePreviousException;
 pub use require_statement_padding::RequireStatementPadding;
-pub use require_strict_function_call::RequireStrictFunctionCall;
 pub use require_strict_array_search::RequireStrictArraySearch;
+pub use require_array_filter_callback::RequireArrayFilterCallback;
+pub use require_strict_in_array::RequireStrictInArray;
+pub use refactor::*;
+pub use require_strict_function_call::RequireStrictFunctionCall;
 pub use types::*;
 
 use crate::Rule;
-
-/// The rules outside `lint/types/` that read classes declared in other files (parents, interfaces, traits), for
-/// which the CLI scans the project as it does for the types rules.
-pub const PROJECT_RULES: &[&str] = &[
-    "lint/dead-code/no-empty-method",
-    "lint/dead-code/no-unused-private-method",
-    "lint/dead-code/no-useless-constructor",
-    "lint/dead-code/no-useless-override",
-    "lint/dead-code/no-redundant-default-argument",
-];
 
 /// Every rule, in a fixed order.
 pub fn all() -> Vec<Box<dyn Rule>> {
@@ -436,6 +509,7 @@ pub fn all() -> Vec<Box<dyn Rule>> {
     rules.extend(types::all());
     rules.extend(pest::all());
     rules.extend(phpunit::all());
+    rules.extend(refactor::all());
     rules.extend(ungrouped());
     rules
 }
@@ -528,6 +602,9 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(PreferRoundModeEnum),
         Box::new(NoFinfoBufferContext),
         Box::new(NoNullDebugInfo),
+        Box::new(NoNullArrayKey),
+        Box::new(AddSafeStrictTypes),
+        Box::new(AddDynamicProperties),
         Box::new(NoOutOfRangeChr),
         Box::new(PreferOrdFirstByte),
         Box::new(PreferArrayFirstLast),
@@ -649,5 +726,43 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(NoUselessConstructor),
         Box::new(NoUselessOverride),
         Box::new(NoRedundantDefaultArgument),
+        Box::new(NoDynamicMethodCall),
+        Box::new(NoDynamicMethodCallable),
+        Box::new(NoDynamicProperty),
+        Box::new(NoDynamicStaticCall),
+        Box::new(NoDynamicStaticCallable),
+        Box::new(NoDynamicStaticProperty),
+        Box::new(PreferClassNameConstant::default()),
+        Box::new(RequireStrictInArray),
+        Box::new(NoExtraArguments),
+        Box::new(RequireArrayFilterCallback),
+        Box::new(NoConstantCondition),
+        Box::new(PreferInstanceMethod),
+        Box::new(NoUnusedTestMethodParam),
+        Box::new(RequirePreviousException),
+        Box::new(NoUselessFilterVar),
+        Box::new(NoUselessMath),
+        Box::new(NoUselessCast),
+        Box::new(NoAlwaysTrueInstanceof),
+        Box::new(NoTypedPropertyInstanceof),
+        Box::new(NoRedundantForeachGuard),
+        Box::new(NoAlwaysFalseCondition),
+        Box::new(NoAlwaysTrueIf),
+        Box::new(NoAlwaysTrueInstanceofAssert),
+        Box::new(NoConstantViaVariable),
+        Box::new(RequireConsistentReturn),
+        Box::new(NoPhpdocClassCaseMismatch),
+        Box::new(PreferPropertyExists),
+        Box::new(PreferReturnedCondition),
+        Box::new(NoInvalidVarTag),
+        Box::new(PreferInlineArrayReturn),
+        Box::new(NoUselessVarTag),
+        Box::new(NoUselessParamTag),
+        Box::new(NoUselessReturnTag),
+        Box::new(NoInvalidReturnTag),
+        Box::new(NoUselessPhpdocType),
+        Box::new(NoUnusedReturnType::default()),
+        Box::new(NoRedundantNullableCheck),
+        Box::new(NoUnusedAssignment),
     ]
 }

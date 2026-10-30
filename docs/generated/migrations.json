@@ -5971,7 +5971,7 @@
         "rules": [
           "lint/types/add-param-type-array-any-all"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -5981,7 +5981,7 @@
         "rules": [
           "lint/types/add-param-type-array-function"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -5991,7 +5991,7 @@
         "rules": [
           "lint/types/add-param-type-arrow-dim-fetch"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6029,7 +6029,7 @@
         "rules": [
           "lint/types/add-param-type-array-map"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6039,7 +6039,7 @@
         "rules": [
           "lint/types/add-param-type-array-reduce"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6049,7 +6049,7 @@
         "rules": [
           "lint/types/add-param-type-iterable-method-call"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6059,7 +6059,7 @@
         "rules": [
           "lint/types/add-param-type-variable-call"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6107,7 +6107,7 @@
         "rules": [
           "lint/types/add-param-type-method-call"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/types/add-param-type-method-call\"] (Rector's treatClassesAsFinal() feature flag).",
         "unsupported": false
       },
       {
@@ -6141,7 +6141,7 @@
         "rules": [
           "lint/refactor/add-override-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6159,7 +6159,7 @@
         "rules": [
           "lint/types/add-param-phpdoc-from-callable-call"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6169,7 +6169,7 @@
         "rules": [
           "lint/types/add-param-phpdoc-from-reference-assign"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6187,7 +6187,7 @@
         "rules": [
           "lint/types/add-param-phpdoc-from-dim-fetch"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6205,7 +6205,7 @@
         "rules": [
           "lint/types/add-param-type-dim-fetch-key"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6225,7 +6225,7 @@
         "rules": [
           "lint/types/add-param-type-data-provider"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6243,7 +6243,7 @@
         "rules": [
           "lint/types/add-param-type-property"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6253,7 +6253,7 @@
         "rules": [
           "lint/types/add-param-type-spl-fixed-array"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6303,7 +6303,7 @@
         "rules": [
           "lint/types/add-return-phpdoc-dim-assigned-object"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6313,7 +6313,7 @@
         "rules": [
           "lint/types/add-return-phpdoc-common-object"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6331,7 +6331,7 @@
         "rules": [
           "lint/types/add-return-phpdoc-json-array"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6341,7 +6341,7 @@
         "rules": [
           "lint/types/add-return-phpdoc-scalar-array"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6367,7 +6367,7 @@
         "rules": [
           "lint/types/add-return-type-from-parent"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6377,7 +6377,7 @@
         "rules": [
           "lint/types/add-return-type-from-yield"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6423,7 +6423,7 @@
         "rules": [
           "lint/types/add-var-phpdoc-from-dim-fetch"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6461,7 +6461,7 @@
         "rules": [
           "lint/refactor/prefer-attribute-over-annotation"
         ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased). Planned: not ported yet.",
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
@@ -6487,7 +6487,7 @@
         "rules": [
           "lint/refactor/replace-array-access"
         ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased). Planned: not ported yet.",
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
@@ -6515,7 +6515,7 @@
         "rules": [
           "lint/php-8.5/no-null-array-key"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6785,7 +6785,7 @@
         "rules": [
           "lint/types/add-doctrine-repository-return-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6813,7 +6813,7 @@
         "rules": [
           "lint/types/add-param-phpdoc-from-local-calls"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6855,7 +6855,7 @@
         "rules": [
           "lint/types/no-nullsafe-on-non-null"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6973,7 +6973,7 @@
         "rules": [
           "lint/classes/add-dynamic-properties"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -7131,7 +7131,7 @@
         "rules": [
           "lint/types/add-getter-return-phpdoc"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -7149,7 +7149,7 @@
         "rules": [
           "lint/types/add-return-phpdoc-direct-array"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -7159,7 +7159,7 @@
         "rules": [
           "lint/types/add-var-phpdoc-from-getter"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -7169,7 +7169,7 @@
         "rules": [
           "lint/types/add-var-phpdoc-from-default"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -7179,7 +7179,7 @@
         "rules": [
           "lint/types/add-var-phpdoc-from-constructor-param"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -7287,7 +7287,7 @@
         "rules": [
           "lint/complexity/require-consistent-return"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -7339,7 +7339,7 @@
         "rules": [
           "lint/complexity/no-phpdoc-class-case-mismatch"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -7439,7 +7439,7 @@
         "rules": [
           "lint/refactor/replace-function-with-constant"
         ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased). Planned: not ported yet.",
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
@@ -7457,7 +7457,7 @@
         "rules": [
           "lint/refactor/replace-function-with-new"
         ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased). Planned: not ported yet.",
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
@@ -7467,7 +7467,7 @@
         "rules": [
           "lint/refactor/replace-function-with-static"
         ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased). Planned: not ported yet.",
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
@@ -7559,7 +7559,7 @@
         "rules": [
           "lint/complexity/prefer-inline-array-return"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -7587,7 +7587,7 @@
         "rules": [
           "lint/types/prefer-instanceof"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -7631,7 +7631,7 @@
         "rules": [
           "lint/complexity/prefer-property-exists"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -7707,7 +7707,7 @@
         "rules": [
           "lint/complexity/prefer-instance-method"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -7877,7 +7877,7 @@
         "rules": [
           "lint/types/prefer-narrow-param-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -7887,7 +7887,7 @@
         "rules": [
           "lint/types/prefer-generic-collection-phpdoc"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -7905,7 +7905,7 @@
         "rules": [
           "lint/types/prefer-specific-return-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -7915,7 +7915,7 @@
         "rules": [
           "lint/dead-code/no-unused-return-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8123,7 +8123,7 @@
         "rules": [
           "lint/types/add-property-type-jms-object"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8161,7 +8161,7 @@
         "rules": [
           "lint/types/add-param-type-parent-call"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8229,7 +8229,7 @@
         "rules": [
           "lint/types/add-private-method-array-return-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8287,7 +8287,7 @@
         "rules": [
           "lint/types/add-property-type-setter-getter"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8329,7 +8329,7 @@
         "rules": [
           "lint/dead-code/no-useless-cast"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8339,7 +8339,7 @@
         "rules": [
           "lint/dead-code/no-always-false-condition"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8375,7 +8375,7 @@
         "rules": [
           "lint/dead-code/no-always-true-if"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8463,7 +8463,7 @@
         "rules": [
           "lint/complexity/no-constant-condition"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8483,7 +8483,7 @@
         "rules": [
           "lint/dead-code/no-always-true-instanceof"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8493,7 +8493,7 @@
         "rules": [
           "lint/dead-code/no-always-true-instanceof-assert"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8541,7 +8541,7 @@
         "rules": [
           "lint/dead-code/no-useless-math"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8619,7 +8619,7 @@
         "rules": [
           "lint/functions/no-extra-arguments"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8629,7 +8629,7 @@
         "rules": [
           "lint/dead-code/no-useless-filter-var"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8659,7 +8659,7 @@
         "rules": [
           "lint/refactor/remove-function-call"
         ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased). Planned: not ported yet.",
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
@@ -8669,7 +8669,7 @@
         "rules": [
           "lint/refactor/remove-function-argument"
         ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased). Planned: not ported yet.",
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
@@ -8723,7 +8723,7 @@
         "rules": [
           "lint/dead-code/no-invalid-var-tag"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8847,7 +8847,7 @@
         "rules": [
           "lint/dead-code/no-invalid-return-tag"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8875,7 +8875,7 @@
         "rules": [
           "lint/dead-code/no-unused-test-method-param"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8893,7 +8893,7 @@
         "rules": [
           "lint/dead-code/no-typed-property-instanceof"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8951,7 +8951,7 @@
         "rules": [
           "lint/dead-code/no-redundant-foreach-guard"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -9021,7 +9021,7 @@
         "rules": [
           "lint/dead-code/no-unused-assignment"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -9067,7 +9067,7 @@
         "rules": [
           "lint/phpdoc/no-useless-param"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -9097,7 +9097,7 @@
         "rules": [
           "lint/phpdoc/no-useless-return"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -9117,7 +9117,7 @@
         "rules": [
           "lint/dead-code/no-useless-phpdoc-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -9127,7 +9127,7 @@
         "rules": [
           "lint/phpdoc/no-useless-var"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -9171,7 +9171,7 @@
         "rules": [
           "lint/refactor/rename-cast"
         ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased). Planned: not ported yet.",
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
@@ -9181,7 +9181,7 @@
         "rules": [
           "lint/refactor/rename-class"
         ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased). Planned: not ported yet.",
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
@@ -9191,7 +9191,7 @@
         "rules": [
           "lint/refactor/rename-class-constant"
         ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased). Planned: not ported yet.",
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
@@ -9201,7 +9201,7 @@
         "rules": [
           "lint/refactor/rename-constant"
         ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased). Planned: not ported yet.",
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
@@ -9235,7 +9235,7 @@
         "rules": [
           "lint/refactor/rename-function"
         ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased). Planned: not ported yet.",
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
@@ -9245,7 +9245,7 @@
         "rules": [
           "lint/refactor/rename-method"
         ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased). Planned: not ported yet.",
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
@@ -9447,7 +9447,7 @@
         "rules": [
           "lint/types/add-nullable-return-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -9457,7 +9457,7 @@
         "rules": [
           "lint/types/add-return-type-from-get-repository"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -9527,7 +9527,7 @@
         "rules": [
           "lint/types/add-return-type-from-native-call"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -9537,7 +9537,7 @@
         "rules": [
           "lint/types/add-return-type-from-new-array"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -9557,7 +9557,7 @@
         "rules": [
           "lint/types/add-return-type-from-ternary"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -9567,7 +9567,7 @@
         "rules": [
           "lint/types/add-return-type-from-typed-call"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -9587,7 +9587,7 @@
         "rules": [
           "lint/types/add-return-type-from-symfony-serializer"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -9597,7 +9597,7 @@
         "rules": [
           "lint/types/add-union-return-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -9617,7 +9617,7 @@
         "rules": [
           "lint/statements/add-safe-strict-types"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -9635,7 +9635,7 @@
         "rules": [
           "lint/types/add-property-type-jms-scalar"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -9845,7 +9845,7 @@
         "rules": [
           "lint/complexity/no-redundant-nullable-check"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -9855,7 +9855,7 @@
         "rules": [
           "lint/control-flow/prefer-returned-condition"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10051,7 +10051,7 @@
         "rules": [
           "lint/refactor/replace-static-with-method"
         ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased). Planned: not ported yet.",
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
@@ -10109,7 +10109,7 @@
         "rules": [
           "lint/types/add-param-type-array-dim-fetch"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10129,7 +10129,7 @@
         "rules": [
           "lint/functions/require-strict-in-array"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10147,7 +10147,7 @@
         "rules": [
           "lint/style/prefer-class-name-constant"
         ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased). Planned: not ported yet.",
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
@@ -10331,7 +10331,7 @@
         "rules": [
           "lint/complexity/require-previous-exception"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10349,7 +10349,7 @@
         "rules": [
           "lint/types/add-property-type-assigns"
         ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased). Planned: not ported yet.",
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
@@ -10359,7 +10359,7 @@
         "rules": [
           "lint/phpunit/add-property-type-container-get"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10369,7 +10369,7 @@
         "rules": [
           "lint/phpunit/add-property-type-create-mock"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10379,7 +10379,7 @@
         "rules": [
           "lint/phpunit/add-property-type-setup-docblock"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10389,7 +10389,7 @@
         "rules": [
           "lint/types/add-property-type-get-repository"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10399,7 +10399,7 @@
         "rules": [
           "lint/types/add-property-type-constructor"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10409,7 +10409,7 @@
         "rules": [
           "lint/phpunit/add-property-type-setup"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10419,7 +10419,7 @@
         "rules": [
           "lint/types/add-property-type-behat-context"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10501,7 +10501,7 @@
         "rules": [
           "lint/types/prefer-identical-same-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10537,7 +10537,7 @@
         "rules": [
           "lint/complexity/no-constant-via-variable"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10633,7 +10633,7 @@
         "rules": [
           "lint/laravel/add-factory-extends-phpdoc"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10643,7 +10643,7 @@
         "rules": [
           "lint/laravel/add-relation-generics"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10661,7 +10661,7 @@
         "rules": [
           "lint/laravel/add-has-factory-trait"
         ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased). Planned: not ported yet.",
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
@@ -10695,7 +10695,7 @@
         "rules": [
           "lint/laravel/prefer-aliases-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10715,7 +10715,7 @@
         "rules": [
           "lint/laravel/prefer-environment-check"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10735,7 +10735,7 @@
         "rules": [
           "lint/laravel/prefer-appends-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10755,7 +10755,7 @@
         "rules": [
           "lint/laravel/prefer-constructor-injection"
         ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased). Planned: not ported yet.",
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
@@ -10781,7 +10781,7 @@
         "rules": [
           "lint/laravel/prefer-status-assertion-method"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10791,7 +10791,7 @@
         "rules": [
           "lint/laravel/prefer-typed-assert-closure"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10801,7 +10801,7 @@
         "rules": [
           "lint/laravel/no-negated-contains"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10811,7 +10811,7 @@
         "rules": [
           "lint/laravel/no-negated-filter"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10821,7 +10821,7 @@
         "rules": [
           "lint/laravel/prefer-backoff-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10831,7 +10831,7 @@
         "rules": [
           "lint/laravel/no-app-array-access"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10877,7 +10877,7 @@
         "rules": [
           "lint/laravel/prefer-collected-by-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10887,7 +10887,7 @@
         "rules": [
           "lint/laravel/prefer-collects-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10897,7 +10897,7 @@
         "rules": [
           "lint/laravel/prefer-command-hidden-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10915,7 +10915,7 @@
         "rules": [
           "lint/laravel/prefer-connection-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10925,7 +10925,7 @@
         "rules": [
           "lint/laravel/prefer-closure-only-bind"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10935,7 +10935,7 @@
         "rules": [
           "lint/laravel/prefer-collection-all"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10961,7 +10961,7 @@
         "rules": [
           "lint/laravel/prefer-date-format-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10979,7 +10979,7 @@
         "rules": [
           "lint/laravel/prefer-delay-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10989,7 +10989,7 @@
         "rules": [
           "lint/laravel/prefer-delete-when-missing-models-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10999,7 +10999,7 @@
         "rules": [
           "lint/laravel/prefer-description-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11017,7 +11017,7 @@
         "rules": [
           "lint/laravel/prefer-dispatch-helper"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11027,7 +11027,7 @@
         "rules": [
           "lint/laravel/prefer-query-builder-call"
         ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased). Planned: not ported yet.",
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
@@ -11037,7 +11037,7 @@
         "rules": [
           "lint/laravel/prefer-latest-oldest"
         ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased). Planned: not ported yet.",
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
@@ -11047,7 +11047,7 @@
         "rules": [
           "lint/laravel/add-relation-query-closure-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11057,7 +11057,7 @@
         "rules": [
           "lint/laravel/add-query-closure-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11085,7 +11085,7 @@
         "rules": [
           "lint/laravel/prefer-error-bag-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11119,7 +11119,7 @@
         "rules": [
           "lint/laravel/prefer-fail-on-timeout-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11129,7 +11129,7 @@
         "rules": [
           "lint/laravel/prefer-fillable-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11139,7 +11139,7 @@
         "rules": [
           "lint/laravel/prefer-guarded-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11149,7 +11149,7 @@
         "rules": [
           "lint/laravel/prefer-help-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11169,7 +11169,7 @@
         "rules": [
           "lint/laravel/prefer-hidden-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11179,7 +11179,7 @@
         "rules": [
           "lint/laravel/prefer-job-connection-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11231,7 +11231,7 @@
         "rules": [
           "lint/laravel/prefer-protected-model-methods"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11241,7 +11241,7 @@
         "rules": [
           "lint/laravel/prefer-max-exceptions-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11305,7 +11305,7 @@
         "rules": [
           "lint/laravel/prefer-preserve-keys-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11323,7 +11323,7 @@
         "rules": [
           "lint/laravel/prefer-queue-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11385,7 +11385,7 @@
         "rules": [
           "lint/laravel/no-useless-value-call"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11395,7 +11395,7 @@
         "rules": [
           "lint/laravel/no-useless-with-call"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11445,7 +11445,7 @@
         "rules": [
           "lint/laravel/prefer-class-container-key"
         ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased). Planned: not ported yet.",
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
@@ -11473,7 +11473,7 @@
         "rules": [
           "lint/laravel/prefer-request-validate"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11501,7 +11501,7 @@
         "rules": [
           "lint/laravel/no-negated-when"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11519,7 +11519,7 @@
         "rules": [
           "lint/laravel-12/prefer-scope-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11549,7 +11549,7 @@
         "rules": [
           "lint/laravel/prefer-signature-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11569,7 +11569,7 @@
         "rules": [
           "lint/laravel/prefer-stop-on-first-failure-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11589,7 +11589,7 @@
         "rules": [
           "lint/laravel/prefer-table-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11619,7 +11619,7 @@
         "rules": [
           "lint/laravel/prefer-timeout-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11629,7 +11629,7 @@
         "rules": [
           "lint/laravel/prefer-touches-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11639,7 +11639,7 @@
         "rules": [
           "lint/laravel/prefer-tries-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11649,7 +11649,7 @@
         "rules": [
           "lint/laravel/add-tap-closure-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11659,7 +11659,7 @@
         "rules": [
           "lint/laravel/no-collection-aliases"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11677,7 +11677,7 @@
         "rules": [
           "lint/laravel/prefer-unique-for-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11703,7 +11703,7 @@
         "rules": [
           "lint/laravel/prefer-validation-rule-array"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11713,7 +11713,7 @@
         "rules": [
           "lint/laravel/prefer-visible-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11739,7 +11739,7 @@
         "rules": [
           "lint/laravel/prefer-without-incrementing-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11749,7 +11749,7 @@
         "rules": [
           "lint/laravel/prefer-without-timestamps-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12373,7 +12373,7 @@
         "rules": [
           "lint/phpunit/add-instanceof-assert-for-argument"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12383,7 +12383,7 @@
         "rules": [
           "lint/phpunit/add-instanceof-assert"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12773,7 +12773,7 @@
         "rules": [
           "lint/phpunit/prefer-create-stub-argument"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12851,7 +12851,7 @@
         "rules": [
           "lint/phpunit/no-entity-mock"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12963,7 +12963,7 @@
         "rules": [
           "lint/phpunit/no-stub-with-expectations"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13351,7 +13351,7 @@
         "rules": [
           "lint/phpunit/add-will-return-callback-param-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13381,7 +13381,7 @@
         "rules": [
           "lint/phpunit/prefer-will-return-callback"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13417,7 +13417,7 @@
         "rules": [
           "lint/phpunit/prefer-yield-data-provider"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -15885,7 +15885,7 @@
         "rules": [
           "lint/functions/require-array-filter-callback"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -19665,7 +19665,7 @@
         "rules": [
           "lint/style/no-dynamic-method-call"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -21811,7 +21811,7 @@
         "rules": [
           "lint/style/no-dynamic-property"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -23431,7 +23431,7 @@
         "rules": [
           "lint/style/no-dynamic-static-call"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -23661,7 +23661,7 @@
         "rules": [
           "lint/style/no-dynamic-static-property"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -24965,7 +24965,7 @@
         "rules": [
           "lint/complexity/no-constant-condition"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {
@@ -25261,7 +25261,7 @@
         "rules": [
           "lint/laravel/no-controller-middleware"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {
@@ -25359,7 +25359,7 @@
         "rules": [
           "lint/dead-code/no-unused-assignment"
         ],
-        "note": "Merged with no-redundant-variable. Options: same. Planned: not ported yet.",
+        "note": "Merged with no-redundant-variable. Options: same.",
         "unsupported": false
       },
       {
@@ -25827,7 +25827,7 @@
         "rules": [
           "lint/dead-code/no-useless-math"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {
@@ -25897,7 +25897,7 @@
         "rules": [
           "lint/dead-code/no-unused-assignment"
         ],
-        "note": "Merged with no-dead-store. Options: same. Planned: not ported yet.",
+        "note": "Merged with no-dead-store. Options: same.",
         "unsupported": false
       },
       {
@@ -26297,7 +26297,7 @@
         "rules": [
           "lint/phpunit/prefer-test-attribute"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {
@@ -26307,7 +26307,7 @@
         "rules": [
           "lint/laravel/prefer-view-array"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {

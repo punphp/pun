@@ -37,6 +37,11 @@
 //! (`ConstructClassMethodToSetUpTestCaseRector`, classes that extend each other) make Rector fail on the file; Pun
 //! leaves it alone.
 //!
+//! TypeWillReturnCallableArrowFunctionRector/Pun/intersection_order: the mocked method is declared, with other types, by
+//! two classes of the receiver's intersection type; Rector reads the first as written, and Mago keeps an intersection's
+//! members in an order of its own, so Pun leaves the callback alone. Pun/setup_fails: `setUp()` mocks a class
+//! expression without a name (`('A' . 'B')::class`), which makes Rector fail on the file; Pun leaves it alone.
+//!
 //! Pun/missing11 (`NamedArgumentForDataProviderRector`): a data provider whose arrays have empty items, which
 //! php-parser does not parse; Pun leaves it alone.
 
@@ -681,5 +686,91 @@ fn scalar_argument_to_expected_param_type() {
     check(
         RequireExactTestArgumentType,
         "ScalarArgumentToExpectedParamTypeRector",
+    );
+}
+
+/// Pun/rector_fails: a statement with a call on the mock but no `->method('literal')`, or a `createMock()` assigned to
+/// another spelling of the mock's variable, makes Rector fail on the file; Pun leaves the method alone.
+/// Pun/leading_backslash: a class string with a leading `\`, which Rector prints as `new \\X()`; Pun writes `new \X()`.
+#[test]
+fn entity_document_create_mock_to_direct_new() {
+    check(NoEntityMock, "EntityDocumentCreateMockToDirectNewRector");
+}
+
+/// Pun/declined_types: `@return` types Pun does not read as PHPStan does (shapes, literals, integer ranges, callables,
+/// intersections, a blank before `<`, unions PHPStan merges); Pun leaves those providers alone.
+/// Pun/low_precedence: an item whose operator binds looser than `yield` (`and`, `or`) gets parentheses, where Rector
+/// writes `yield $a and $b`, which yields `$a` only.
+/// Pun/declined_docs: more docs Pun leaves alone where Rector changes them: a `@phpstan-return` tag, a type with `&`,
+/// a `(...)[]`, a key PHPStan reads as another (`float`, a union, a nested array's), a union nested in a union's
+/// generic. Pun/anonymous_self: `self` in an anonymous class,
+/// which Rector prints as `\AnonymousClass<hash>`. Pun/tabs: a provider indented with tabs, which Rector keeps.
+/// Pun/unread_doc and Pun/unread_parent_doc: a `@dataProvider` doc (of the class's or a parent's method) with an
+/// `@_tag`, which Pun's doc reader does not follow; Pun leaves the class alone. Pun/missing_element: an array with an
+/// empty element makes Rector fail on the file; Pun leaves the provider alone.
+#[test]
+fn yield_data_provider() {
+    check(PreferYieldDataProvider, "YieldDataProviderRector");
+}
+
+/// Pun/rounds: a variable assigned `createStub()` twice; Rector changes the last call only (its collection keeps the
+/// last), and Pun's next fix round then finds the first alone and changes it too (lint.md's known difference: rounds).
+#[test]
+fn mock_object_arg_create_stub_to_create_mock() {
+    check(
+        NoStubWithExpectations,
+        "MockObjectArgCreateStubToCreateMockRector",
+    );
+}
+
+/// Oracle/ ran with tests/phpunit-stubs autoloaded before Rector's own stubs-rector/ `TestCase` (which has only
+/// `createMock()`), as a project with PHPUnit installed has it, so inherited `TestCase` methods resolve.
+#[test]
+fn create_stub_over_create_mock_arg() {
+    check(
+        PreferCreateStubArgument,
+        "CreateStubOverCreateMockArgRector",
+    );
+}
+
+/// Oracle/ ran with tests/phpunit-stubs autoloaded before Rector's stubs-rector/. Pun/declined: what Pun does not
+/// print as php-parser does, which Rector changes: a comment before the argument (Rector drops it), a `?>` in the
+/// closure, a value in parentheses that stays (Rector writes `return ();`), a closure that moves right, a closure
+/// printed anew with a comment or a line break in its parameters, and a tab indent across lines or before the `}` of
+/// a closure printed anew (Rector writes spaces). Pun/intersection_order: two classes of the receiver's intersection
+/// declare the method, one returning `void`; Rector reads the first as written, and Mago keeps an intersection's
+/// members in an order of its own, so Pun leaves the call alone. Pun/rector_fails: `setUp()` mocks a class written as an
+/// expression without a name (`$this->make()::class`), which makes Rector fail on the file; Pun leaves it alone.
+#[test]
+fn void_method_with_callback_to_will_return_callback() {
+    check(
+        PreferWillReturnCallback,
+        "VoidMethodWithCallbackToWillReturnCallbackRector",
+    );
+}
+
+/// Pun/unknown_class: `$x` is assigned a call that returns a class no file declares; PHPStan types it as that class,
+/// and Mago does not, so Pun adds no assert (the argument rule collects its variables alike).
+#[test]
+fn type_will_return_callable_arrow_function() {
+    check(
+        AddWillReturnCallbackParamType,
+        "TypeWillReturnCallableArrowFunctionRector",
+    );
+}
+
+#[test]
+fn add_instanceof_assert_for_nullable_instance() {
+    check(
+        AddInstanceofAssert,
+        "AddInstanceofAssertForNullableInstanceRector",
+    );
+}
+
+#[test]
+fn add_instanceof_assert_for_nullable_argument() {
+    check(
+        AddInstanceofAssertForArgument,
+        "AddInstanceofAssertForNullableArgumentRector",
     );
 }

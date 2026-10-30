@@ -157,7 +157,7 @@ fn matches_mask(
 
 /// `ParamTypeAddGuard::isLegal`: the variable is not assigned with `=`, not in an `if` condition and not in a
 /// ternary, anywhere in the body.
-fn is_legal(body: Node<'_, '_>, name: &[u8]) -> bool {
+pub(crate) fn is_legal(body: Node<'_, '_>, name: &[u8]) -> bool {
     fn has_variable(node: Node<'_, '_>, name: &[u8]) -> bool {
         super::side_effect::any_node(
             node,

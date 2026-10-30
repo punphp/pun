@@ -2,13 +2,16 @@
 //! `expect()` statements become one chain, the matchers of the same value added to it on lines of their own and
 //! another value joined with `->and($value)` (unless `merge-different-variables` is off).
 
-use mago_syntax::cst::{Expression, MethodCall, Node, NodeKind, PropertyAccess};
-use pun_problem::Safety;
+use mago_syntax::cst::{
+    Access, ArgumentList, ArrayElement, Call, ClassLikeConstantSelector, ClassLikeMemberSelector,
+    Expression, Literal, MethodCall, Node, NodeKind, PropertyAccess, TokenSeparatedSequence,
+};
+use pun_problem::{Safety, Span};
 
 use super::{
     Item, Link, STATEMENT_LISTS, chain_links, expect_argument, has_comments, identifier,
-    is_expect_chain, kept_text, method_call, print_args, print_member, report, rewrite_list,
-    statement_expression, statement_list,
+    is_expect_chain, kept_text, method_call, print_args, print_member, print_nodes, report,
+    rewrite_list, statement_expression, statement_list,
 };
 use crate::syntax::{node_span, same_expression, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -315,6 +318,162 @@ fn newlines(current: &mut Chain<'_>) {
     }
 }
 
+/// The value of `->and()`, which `mergeDifferentVariableChains` strips of its `ORIGINAL_NODE`: php-parser prints the
+/// node itself anew (`pExpr_*`) and the nodes under it keep their text. The calls, fetches, `new` and arrays are
+/// printed anew; any other node keeps its text, which is what the printer writes for a variable or a literal written
+/// in the usual way, but not always for an operation, a closure or a string with variables (not ported).
+fn print_value(ctx: &Context<'_>, value: &Expression<'_>, indent: usize) -> String {
+    let kept = |e: &Expression<'_>| kept_text(ctx, node_span(unparenthesize(e)), indent);
+    let lhs = |e: &Expression<'_>, parens: fn(&Expression<'_>) -> bool| {
+        let e = unparenthesize(e);
+        if parens(e) {
+            format!("({})", kept(e))
+        } else {
+            kept(e)
+        }
+    };
+    let args = |list: &ArgumentList<'_>| print_args(ctx, list, indent);
+    let constant = |c: &ClassLikeConstantSelector<'_>| match c {
+        ClassLikeConstantSelector::Expression(e) => format!("{{{}}}", kept(e.expression)),
+        _ => kept_text(ctx, node_span(c), indent),
+    };
+    match unparenthesize(value) {
+        // pExpr_FuncCall
+        Expression::Call(Call::Function(c)) => format!(
+            "{}({})",
+            lhs(c.function, call_lhs_requires_parens),
+            args(&c.argument_list)
+        ),
+        // pExpr_MethodCall, pExpr_NullsafeMethodCall
+        Expression::Call(Call::Method(c)) => format!(
+            "{}->{}({})",
+            lhs(c.object, dereference_lhs_requires_parens),
+            print_member(ctx, &c.method, indent),
+            args(&c.argument_list)
+        ),
+        Expression::Call(Call::NullSafeMethod(c)) => format!(
+            "{}?->{}({})",
+            lhs(c.object, dereference_lhs_requires_parens),
+            print_member(ctx, &c.method, indent),
+            args(&c.argument_list)
+        ),
+        // pExpr_StaticCall: a variable name without braces
+        Expression::Call(Call::StaticMethod(c)) => format!(
+            "{}::{}({})",
+            lhs(c.class, static_dereference_lhs_requires_parens),
+            match &c.method {
+                ClassLikeMemberSelector::Variable(v) => kept_text(ctx, node_span(v), indent),
+                method => print_member(ctx, method, indent),
+            },
+            args(&c.argument_list)
+        ),
+        // pExpr_PropertyFetch, pExpr_NullsafePropertyFetch, pExpr_StaticPropertyFetch, pExpr_ClassConstFetch
+        Expression::Access(Access::Property(a)) => format!(
+            "{}->{}",
+            lhs(a.object, dereference_lhs_requires_parens),
+            print_member(ctx, &a.property, indent)
+        ),
+        Expression::Access(Access::NullSafeProperty(a)) => format!(
+            "{}?->{}",
+            lhs(a.object, dereference_lhs_requires_parens),
+            print_member(ctx, &a.property, indent)
+        ),
+        Expression::Access(Access::StaticProperty(a)) => format!(
+            "{}::{}",
+            lhs(a.class, static_dereference_lhs_requires_parens),
+            kept_text(ctx, node_span(&a.property), indent)
+        ),
+        Expression::Access(Access::ClassConstant(a)) => format!(
+            "{}::{}",
+            lhs(a.class, static_dereference_lhs_requires_parens),
+            constant(&a.constant)
+        ),
+        // pExpr_ArrayDimFetch
+        Expression::ArrayAccess(a) => format!(
+            "{}[{}]",
+            lhs(a.array, dereference_lhs_requires_parens),
+            kept(a.index)
+        ),
+        // pExpr_New, pNewOperand
+        Expression::Instantiation(n) => format!(
+            "new {}({})",
+            lhs(n.class, new_operand_requires_parens),
+            n.argument_list.as_ref().map(args).unwrap_or_default()
+        ),
+        // pExpr_Array: `pMaybeMultiline($node->items, true)` in the syntax it was written in
+        Expression::Array(a) => format!(
+            "[{}]",
+            print_nodes(ctx, &element_spans(&a.elements), true, indent)
+        ),
+        Expression::LegacyArray(a) => format!(
+            "array({})",
+            print_nodes(ctx, &element_spans(&a.elements), true, indent)
+        ),
+        other => kept(other),
+    }
+}
+
+fn element_spans(elements: &TokenSeparatedSequence<'_, ArrayElement<'_>>) -> Vec<Span> {
+    elements.iter().map(node_span).collect()
+}
+
+/// php-parser's names: an identifier, `static`, `self` and `parent`.
+fn is_name_node(e: &Expression<'_>) -> bool {
+    matches!(
+        e,
+        Expression::Identifier(_)
+            | Expression::Static(_)
+            | Expression::Self_(_)
+            | Expression::Parent(_)
+    )
+}
+
+/// `callLhsRequiresParens` (a `new` too: the printer's PHP version predates `new Foo()->bar()`).
+fn call_lhs_requires_parens(e: &Expression<'_>) -> bool {
+    !(is_name_node(e)
+        || matches!(
+            e,
+            Expression::Variable(_)
+                | Expression::ArrayAccess(_)
+                | Expression::Call(_)
+                | Expression::Array(_)
+                | Expression::LegacyArray(_)
+        ))
+}
+
+/// `dereferenceLhsRequiresParens`: [`static_dereference_lhs_requires_parens`] but for a constant.
+fn dereference_lhs_requires_parens(e: &Expression<'_>) -> bool {
+    static_dereference_lhs_requires_parens(e) && !matches!(e, Expression::ConstantAccess(_))
+}
+
+/// `staticDereferenceLhsRequiresParens`.
+fn static_dereference_lhs_requires_parens(e: &Expression<'_>) -> bool {
+    !(is_name_node(e)
+        || matches!(
+            e,
+            Expression::Variable(_)
+                | Expression::ArrayAccess(_)
+                | Expression::Access(_)
+                | Expression::Call(_)
+                | Expression::Array(_)
+                | Expression::LegacyArray(_)
+                | Expression::Literal(Literal::String(_))
+        ))
+}
+
+/// `newOperandRequiresParens`.
+fn new_operand_requires_parens(e: &Expression<'_>) -> bool {
+    match unparenthesize(e) {
+        e if is_name_node(e) => false,
+        Expression::Variable(_) => false,
+        Expression::ArrayAccess(a) => new_operand_requires_parens(a.array),
+        Expression::Access(Access::Property(a)) => new_operand_requires_parens(a.object),
+        Expression::Access(Access::NullSafeProperty(a)) => new_operand_requires_parens(a.object),
+        Expression::Access(Access::StaticProperty(a)) => new_operand_requires_parens(a.class),
+        _ => true,
+    }
+}
+
 /// An old method call named `and` (`isName`, any case).
 fn is_old_and(call: &MethodCall<'_>) -> bool {
     super::is_name(&call.method, "and")
@@ -348,7 +507,7 @@ fn print(ctx: &Context<'_>, chain: &Chain<'_>, indent: usize) -> String {
             var,
             *newline,
             "and".to_string(),
-            kept_text(ctx, node_span(unparenthesize(value)), indent),
+            print_value(ctx, value, indent),
         ),
         Chain::Property { var, fetch } => format!(
             "{}->{}",

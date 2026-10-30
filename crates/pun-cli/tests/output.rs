@@ -1370,10 +1370,10 @@ fn run_errors_exit_2() {
     // An unported rule names pun.toml, the rule and the way out.
     std::fs::write(
         dir.join("pun.toml"),
-        "[format]\npreset = \"empty\"\n[lint.rules]\n\"laravel/prefer-aliases-attribute\" = \"error\"\n",
+        "[format]\npreset = \"empty\"\n[lint.rules]\n\"style/prefer-class-constant\" = \"error\"\n",
     )
     .unwrap();
-    let line = "✖ pun.toml  rule not supported by Pun yet: `lint/laravel/prefer-aliases-attribute`";
+    let line = "✖ pun.toml  rule not supported by Pun yet: `lint/style/prefer-class-constant`";
     let hint = "  remove it from pun.toml to run the other rules\n";
     assert_eq!(
         pun(&["check", "--color=never"]),

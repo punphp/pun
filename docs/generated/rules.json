@@ -3340,7 +3340,7 @@
         "CompleteDynamicPropertiesRector",
         "Rector\\CodeQuality\\Rector\\Class_\\CompleteDynamicPropertiesRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/classes/add-stringable",
@@ -3874,7 +3874,7 @@
         "RemoveDeadIfBlockRector",
         "constant-condition"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/complexity/no-constant-via-variable",
@@ -3894,7 +3894,7 @@
         "VariableConstFetchToClassConstFetch",
         "VariableConstFetchToClassConstFetchRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/complexity/no-double-negation",
@@ -4226,7 +4226,7 @@
         "FixClassCaseSensitivityVarDocblockRector",
         "Rector\\CodeQuality\\Rector\\Property\\FixClassCaseSensitivityVarDocblockRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/complexity/no-redundant-isset",
@@ -4304,7 +4304,7 @@
         "SimplifyIfNullableReturn",
         "SimplifyIfNullableReturnRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/complexity/no-redundant-nullsafe",
@@ -4701,7 +4701,7 @@
         "InlineArrayReturnAssignRector",
         "Rector\\CodeQuality\\Rector\\ClassMethod\\InlineArrayReturnAssignRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/complexity/prefer-instance-method",
@@ -4721,7 +4721,7 @@
         "LocallyCalledStaticMethodToNonStaticRector",
         "Rector\\CodeQuality\\Rector\\ClassMethod\\LocallyCalledStaticMethodToNonStaticRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/complexity/prefer-min-max",
@@ -4837,7 +4837,7 @@
         "IssetOnPropertyObjectToPropertyExistsRector",
         "Rector\\CodeQuality\\Rector\\Isset_\\IssetOnPropertyObjectToPropertyExistsRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/complexity/prefer-simple-condition",
@@ -4897,7 +4897,7 @@
         "ExplicitReturnNullRector",
         "Rector\\CodeQuality\\Rector\\ClassMethod\\ExplicitReturnNullRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/complexity/require-is-a-allow-string",
@@ -4957,7 +4957,7 @@
         "ThrowWithPreviousException",
         "ThrowWithPreviousExceptionRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/control-flow/no-assign-in-condition",
@@ -5271,7 +5271,7 @@
         "SimplifyIfReturnBool",
         "SimplifyIfReturnBoolRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/control-flow/prefer-yield-from",
@@ -5310,7 +5310,7 @@
         "ReduceAlwaysFalseIfOr",
         "ReduceAlwaysFalseIfOrRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-always-true-if",
@@ -5330,7 +5330,7 @@
         "RemoveAlwaysTrueIfCondition",
         "RemoveAlwaysTrueIfConditionRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-always-true-instanceof",
@@ -5350,7 +5350,7 @@
         "RemoveDeadInstanceOf",
         "RemoveDeadInstanceOfRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-always-true-instanceof-assert",
@@ -5370,7 +5370,7 @@
         "RemoveDeadInstanceOfAssert",
         "RemoveDeadInstanceOfAssertRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-and-true",
@@ -5712,7 +5712,7 @@
         "RemoveReturnTagIncompatibleWithNativeType",
         "RemoveReturnTagIncompatibleWithNativeTypeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-invalid-var-tag",
@@ -5732,7 +5732,7 @@
         "RemoveNonExistingVarAnnotation",
         "RemoveNonExistingVarAnnotationRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-mirror-assignment",
@@ -5912,7 +5912,7 @@
         "RemoveUnusedNonEmptyArrayBeforeForeach",
         "RemoveUnusedNonEmptyArrayBeforeForeachRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-redundant-promoted-assign",
@@ -6031,7 +6031,7 @@
         "RemoveTypedPropertyDeadInstanceOf",
         "RemoveTypedPropertyDeadInstanceOfRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-unreachable-code",
@@ -6074,7 +6074,7 @@
         "no-dead-store",
         "no-redundant-variable"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-unused-constructor-param",
@@ -6292,7 +6292,7 @@
         "NarrowWideUnionReturnTypeRector",
         "Rector\\DeadCode\\Rector\\FunctionLike\\NarrowWideUnionReturnTypeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-unused-static",
@@ -6330,7 +6330,7 @@
         "RemoveTestsOverriddenPrivateMethodParameter",
         "RemoveTestsOverriddenPrivateMethodParameterRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-useless-cast",
@@ -6350,7 +6350,7 @@
         "RecastingRemovalRector",
         "Rector\\DeadCode\\Rector\\Cast\\RecastingRemovalRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-useless-catch",
@@ -6452,7 +6452,7 @@
         "RemoveFilterVarOnExactType",
         "RemoveFilterVarOnExactTypeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-useless-math",
@@ -6474,7 +6474,7 @@
         "RemoveDeadZeroAndOneOperationRector",
         "no-redundant-math"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-useless-override",
@@ -6516,7 +6516,7 @@
         "RemoveUselessUnionReturnDocblock",
         "RemoveUselessUnionReturnDocblockRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-useless-ternary",
@@ -6614,7 +6614,7 @@
         "RemoveExtraParameters",
         "RemoveExtraParametersRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/functions/no-missing-format-argument",
@@ -6771,7 +6771,7 @@
         "PHPStan\\Rules\\Functions\\ArrayFilterStrictRule",
         "arrayFilter.strict"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/functions/require-assert-description",
@@ -6848,7 +6848,7 @@
         "StrictInArray",
         "StrictInArrayRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/imports/no-unused",
@@ -6888,7 +6888,7 @@
         "ScopeNamedClassMethodToScopeAttributedClassMethod",
         "ScopeNamedClassMethodToScopeAttributedClassMethodRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/add-factory-extends-phpdoc",
@@ -6907,7 +6907,7 @@
         "AddExtendsAnnotationToModelFactoriesRector",
         "RectorLaravel\\Rector\\Class_\\AddExtendsAnnotationToModelFactoriesRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/add-has-factory-trait",
@@ -6926,7 +6926,7 @@
         "AddHasFactoryToModelsRector",
         "RectorLaravel\\Rector\\Class_\\AddHasFactoryToModelsRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/add-query-closure-type",
@@ -6947,7 +6947,7 @@
         "EloquentWhereTypeHintClosureParameterRector",
         "RectorLaravel\\Rector\\MethodCall\\EloquentWhereTypeHintClosureParameterRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/add-relation-generics",
@@ -6968,7 +6968,7 @@
         "AddGenericReturnTypeToRelationsRector",
         "RectorLaravel\\Rector\\ClassMethod\\AddGenericReturnTypeToRelationsRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/add-relation-query-closure-type",
@@ -6989,7 +6989,7 @@
         "EloquentWhereRelationTypeHintingParameterRector",
         "RectorLaravel\\Rector\\MethodCall\\EloquentWhereRelationTypeHintingParameterRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/add-tap-closure-type",
@@ -7010,7 +7010,7 @@
         "TypeHintTappableCall",
         "TypeHintTappableCallRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/no-app-array-access",
@@ -7031,7 +7031,7 @@
         "CallOnAppArrayAccessToStandaloneAssignRector",
         "RectorLaravel\\Rector\\Assign\\CallOnAppArrayAccessToStandaloneAssignRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/no-collection-aliases",
@@ -7052,7 +7052,7 @@
         "UnaliasCollectionMethods",
         "UnaliasCollectionMethodsRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/no-controller-middleware",
@@ -7068,7 +7068,7 @@
       "upstream": [
         "middleware-in-routes"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/no-implicit-model-query",
@@ -7129,7 +7129,7 @@
         "AvoidNegatedCollectionContainsOrDoesntContainRector",
         "RectorLaravel\\Rector\\BooleanNot\\AvoidNegatedCollectionContainsOrDoesntContainRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/no-negated-filter",
@@ -7150,7 +7150,7 @@
         "AvoidNegatedCollectionFilterOrRejectRector",
         "RectorLaravel\\Rector\\MethodCall\\AvoidNegatedCollectionFilterOrRejectRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/no-negated-when",
@@ -7171,7 +7171,7 @@
         "ReverseConditionableMethodCall",
         "ReverseConditionableMethodCallRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/no-request-all",
@@ -7210,7 +7210,7 @@
         "RemoveRedundantValueCalls",
         "RemoveRedundantValueCallsRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/no-useless-with-call",
@@ -7231,7 +7231,7 @@
         "RemoveRedundantWithCalls",
         "RemoveRedundantWithCallsRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-abort-if",
@@ -7269,7 +7269,7 @@
         "AliasesPropertyToAliasesAttributeRector",
         "RectorLaravel\\Rector\\Class_\\AliasesPropertyToAliasesAttributeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-anonymous-migration",
@@ -7311,7 +7311,7 @@
         "AppendsPropertyToAppendsAttributeRector",
         "RectorLaravel\\Rector\\Class_\\AppendsPropertyToAppendsAttributeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-array-validation-rules",
@@ -7370,7 +7370,7 @@
         "BackoffPropertyToBackoffAttributeRector",
         "RectorLaravel\\Rector\\Class_\\BackoffPropertyToBackoffAttributeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-casts-method",
@@ -7407,7 +7407,7 @@
         "ReplaceServiceContainerCallArg",
         "ReplaceServiceContainerCallArgRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-closure-only-bind",
@@ -7426,7 +7426,7 @@
         "ContainerBindConcreteWithClosureOnlyRector",
         "RectorLaravel\\Rector\\MethodCall\\ContainerBindConcreteWithClosureOnlyRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-collected-by-attribute",
@@ -7445,7 +7445,7 @@
         "CollectedByPropertyToCollectedByAttributeRector",
         "RectorLaravel\\Rector\\Class_\\CollectedByPropertyToCollectedByAttributeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-collection-all",
@@ -7466,7 +7466,7 @@
         "ConvertEnumerableToArrayToAllRector",
         "RectorLaravel\\Rector\\MethodCall\\ConvertEnumerableToArrayToAllRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-collects-attribute",
@@ -7485,7 +7485,7 @@
         "CollectsPropertyToCollectsAttributeRector",
         "RectorLaravel\\Rector\\Class_\\CollectsPropertyToCollectsAttributeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-command-hidden-attribute",
@@ -7504,7 +7504,7 @@
         "CommandHiddenPropertyToHiddenAttributeRector",
         "RectorLaravel\\Rector\\Class_\\CommandHiddenPropertyToHiddenAttributeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-connection-attribute",
@@ -7523,7 +7523,7 @@
         "ConnectionPropertyToConnectionAttributeRector",
         "RectorLaravel\\Rector\\Class_\\ConnectionPropertyToConnectionAttributeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-constructor-injection",
@@ -7542,7 +7542,7 @@
         "ArgumentFuncCallToMethodCallRector",
         "RectorLaravel\\Rector\\FuncCall\\ArgumentFuncCallToMethodCallRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-date-facade",
@@ -7582,7 +7582,7 @@
         "DateFormatPropertyToDateFormatAttributeRector",
         "RectorLaravel\\Rector\\Class_\\DateFormatPropertyToDateFormatAttributeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-dedicated-status-assertion",
@@ -7641,7 +7641,7 @@
         "DelayPropertyToDelayAttributeRector",
         "RectorLaravel\\Rector\\Class_\\DelayPropertyToDelayAttributeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-delete-when-missing-models-attribute",
@@ -7660,7 +7660,7 @@
         "DeleteWhenMissingModelsPropertyToDeleteWhenMissingModelsAttributeRector",
         "RectorLaravel\\Rector\\Class_\\DeleteWhenMissingModelsPropertyToDeleteWhenMissingModelsAttributeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-description-attribute",
@@ -7679,7 +7679,7 @@
         "DescriptionPropertyToDescriptionAttributeRector",
         "RectorLaravel\\Rector\\Class_\\DescriptionPropertyToDescriptionAttributeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-dispatch-helper",
@@ -7700,7 +7700,7 @@
         "DispatchToHelperFunctionsRector",
         "RectorLaravel\\Rector\\StaticCall\\DispatchToHelperFunctionsRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-env-helper",
@@ -7742,7 +7742,7 @@
         "AppEnvironmentComparisonToParameterRector",
         "RectorLaravel\\Rector\\Expr\\AppEnvironmentComparisonToParameterRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-error-bag-attribute",
@@ -7761,7 +7761,7 @@
         "ErrorBagPropertyToErrorBagAttributeRector",
         "RectorLaravel\\Rector\\Class_\\ErrorBagPropertyToErrorBagAttributeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-exception-class-string",
@@ -7841,7 +7841,7 @@
         "FailOnTimeoutPropertyToFailOnTimeoutAttributeRector",
         "RectorLaravel\\Rector\\Class_\\FailOnTimeoutPropertyToFailOnTimeoutAttributeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-fake-helper",
@@ -7879,7 +7879,7 @@
         "FillablePropertyToFillableAttributeRector",
         "RectorLaravel\\Rector\\Class_\\FillablePropertyToFillableAttributeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-guarded-attribute",
@@ -7898,7 +7898,7 @@
         "GuardedPropertyToGuardedAttributeRector",
         "RectorLaravel\\Rector\\Class_\\GuardedPropertyToGuardedAttributeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-help-attribute",
@@ -7917,7 +7917,7 @@
         "HelpPropertyToHelpAttributeRector",
         "RectorLaravel\\Rector\\Class_\\HelpPropertyToHelpAttributeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-hidden-attribute",
@@ -7936,7 +7936,7 @@
         "HiddenPropertyToHiddenAttributeRector",
         "RectorLaravel\\Rector\\Class_\\HiddenPropertyToHiddenAttributeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-job-connection-attribute",
@@ -7955,7 +7955,7 @@
         "JobConnectionPropertyToJobConnectionAttributeRector",
         "RectorLaravel\\Rector\\Class_\\JobConnectionPropertyToJobConnectionAttributeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-latest-oldest",
@@ -7976,7 +7976,7 @@
         "EloquentOrderByToLatestOrOldestRector",
         "RectorLaravel\\Rector\\MethodCall\\EloquentOrderByToLatestOrOldestRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-max-exceptions-attribute",
@@ -7995,7 +7995,7 @@
         "MaxExceptionsPropertyToMaxExceptionsAttributeRector",
         "RectorLaravel\\Rector\\Class_\\MaxExceptionsPropertyToMaxExceptionsAttributeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-nullsafe",
@@ -8035,7 +8035,7 @@
         "PreserveKeysPropertyToPreserveKeysAttributeRector",
         "RectorLaravel\\Rector\\Class_\\PreserveKeysPropertyToPreserveKeysAttributeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-protected-model-methods",
@@ -8056,7 +8056,7 @@
         "MakeModelAttributesAndScopesProtectedRector",
         "RectorLaravel\\Rector\\ClassMethod\\MakeModelAttributesAndScopesProtectedRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-query-builder-call",
@@ -8077,7 +8077,7 @@
         "EloquentMagicMethodToQueryBuilderRector",
         "RectorLaravel\\Rector\\StaticCall\\EloquentMagicMethodToQueryBuilderRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-queue-attribute",
@@ -8096,7 +8096,7 @@
         "QueuePropertyToQueueAttributeRector",
         "RectorLaravel\\Rector\\Class_\\QueuePropertyToQueueAttributeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-report-if",
@@ -8176,7 +8176,7 @@
         "RequestStaticValidateToInject",
         "RequestStaticValidateToInjectRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-resolve-helper",
@@ -8237,7 +8237,7 @@
         "SignaturePropertyToSignatureAttribute",
         "SignaturePropertyToSignatureAttributeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-sleep-facade",
@@ -8279,7 +8279,7 @@
         "AssertStatusToAssertMethodRector",
         "RectorLaravel\\Rector\\MethodCall\\AssertStatusToAssertMethodRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-stop-on-first-failure-attribute",
@@ -8298,7 +8298,7 @@
         "StopOnFirstFailurePropertyToStopOnFirstFailureAttribute",
         "StopOnFirstFailurePropertyToStopOnFirstFailureAttributeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-str-starts-with",
@@ -8338,7 +8338,7 @@
         "TablePropertyToTableAttribute",
         "TablePropertyToTableAttributeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-throw-if",
@@ -8376,7 +8376,7 @@
         "TimeoutPropertyToTimeoutAttribute",
         "TimeoutPropertyToTimeoutAttributeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-to-route-helper",
@@ -8437,7 +8437,7 @@
         "TouchesPropertyToTouchesAttribute",
         "TouchesPropertyToTouchesAttributeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-travel-to",
@@ -8477,7 +8477,7 @@
         "TriesPropertyToTriesAttribute",
         "TriesPropertyToTriesAttributeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-typed-assert-closure",
@@ -8498,7 +8498,7 @@
         "AssertWithClassStringToTypeHintedClosureRector",
         "RectorLaravel\\Rector\\StaticCall\\AssertWithClassStringToTypeHintedClosureRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-unique-for-attribute",
@@ -8517,7 +8517,7 @@
         "UniqueForPropertyToUniqueForAttribute",
         "UniqueForPropertyToUniqueForAttributeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-validation-rule-array",
@@ -8538,7 +8538,7 @@
         "ValidationRuleArrayStringValueToArray",
         "ValidationRuleArrayStringValueToArrayRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-view-array",
@@ -8554,7 +8554,7 @@
       "upstream": [
         "prefer-view-array"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-visible-attribute",
@@ -8573,7 +8573,7 @@
         "VisiblePropertyToVisibleAttribute",
         "VisiblePropertyToVisibleAttributeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-without-incrementing-attribute",
@@ -8592,7 +8592,7 @@
         "WithoutIncrementingPropertyToWithoutIncrementingAttribute",
         "WithoutIncrementingPropertyToWithoutIncrementingAttributeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-without-timestamps-attribute",
@@ -8611,7 +8611,7 @@
         "WithoutTimestampsPropertyToWithoutTimestampsAttribute",
         "WithoutTimestampsPropertyToWithoutTimestampsAttributeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/require-final-controller",
@@ -10349,7 +10349,7 @@
         "ArrayKeyExistsNullToEmptyStringRector",
         "Rector\\Php85\\Rector\\FuncCall\\ArrayKeyExistsNullToEmptyStringRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/php-8.5/no-null-debug-info",
@@ -10622,7 +10622,7 @@
         "RemoveUselessParamTag",
         "RemoveUselessParamTagRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpdoc/no-useless-readonly",
@@ -10662,7 +10662,7 @@
         "RemoveUselessReturnTag",
         "RemoveUselessReturnTagRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpdoc/no-useless-var",
@@ -10682,7 +10682,7 @@
         "RemoveUselessVarTag",
         "RemoveUselessVarTagRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpdoc/no-void-on-magic-method",
@@ -10841,7 +10841,7 @@
         "AddInstanceofAssertForNullableInstanceRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\ClassMethod\\AddInstanceofAssertForNullableInstanceRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/add-instanceof-assert-for-argument",
@@ -10862,7 +10862,7 @@
         "AddInstanceofAssertForNullableArgumentRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\ClassMethod\\AddInstanceofAssertForNullableArgumentRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/add-mock-intersection-param",
@@ -10964,7 +10964,7 @@
         "TypedPropertyFromContainerGetSetUp",
         "TypedPropertyFromContainerGetSetUpRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/add-property-type-create-mock",
@@ -10984,7 +10984,7 @@
         "TypedPropertyFromCreateMockAssign",
         "TypedPropertyFromCreateMockAssignRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/add-property-type-setup",
@@ -11004,7 +11004,7 @@
         "TypedPropertyFromStrictSetUp",
         "TypedPropertyFromStrictSetUpRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/add-property-type-setup-docblock",
@@ -11024,7 +11024,7 @@
         "TypedPropertyFromDocblockSetUpDefined",
         "TypedPropertyFromDocblockSetUpDefinedRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/add-return-type-from-mock-object",
@@ -11106,7 +11106,7 @@
         "TypeWillReturnCallableArrowFunction",
         "TypeWillReturnCallableArrowFunctionRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/no-assert-contains-only",
@@ -11289,7 +11289,7 @@
         "EntityDocumentCreateMockToDirectNewRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\ClassMethod\\EntityDocumentCreateMockToDirectNewRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/no-expected-exception-annotation",
@@ -11474,7 +11474,7 @@
         "MockObjectArgCreateStubToCreateMockRector",
         "Rector\\PHPUnit\\PHPUnit110\\Rector\\ClassMethod\\MockObjectArgCreateStubToCreateMockRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/no-test-constructor",
@@ -11905,7 +11905,7 @@
         "CreateStubOverCreateMockArgRector",
         "Rector\\PHPUnit\\PHPUnit120\\Rector\\CallLike\\CreateStubOverCreateMockArgRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-create-stub-expression",
@@ -12493,7 +12493,7 @@
       "upstream": [
         "prefer-test-attribute"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-test-prefix",
@@ -12594,7 +12594,7 @@
         "VoidMethodWithCallbackToWillReturnCallback",
         "VoidMethodWithCallbackToWillReturnCallbackRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-with-is-instance-of",
@@ -12636,7 +12636,7 @@
         "YieldDataProvider",
         "YieldDataProviderRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/require-assertion-style",
@@ -12968,7 +12968,7 @@
       "id": "lint/refactor/add-override-attribute",
       "command": "lint",
       "group": "refactor",
-      "summary": "Add #[Override] to methods and properties that override a parent member.",
+      "summary": "Add #[Override] to properties that override a parent class's property (PHP 8.5).",
       "enabled": [],
       "fix": "unsafe",
       "ecosystem": "core",
@@ -12980,7 +12980,7 @@
         "AddOverrideAttributeToOverriddenPropertiesRector",
         "Rector\\Php85\\Rector\\Property\\AddOverrideAttributeToOverriddenPropertiesRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/refactor/no-negated-condition",
@@ -13016,7 +13016,7 @@
         "AnnotationToAttributeRector",
         "Rector\\Php80\\Rector\\Class_\\AnnotationToAttributeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/refactor/prefer-constant",
@@ -13070,7 +13070,7 @@
         "RemoveFuncCallArg",
         "RemoveFuncCallArgRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/refactor/remove-function-call",
@@ -13088,7 +13088,7 @@
         "RemoveFuncCall",
         "RemoveFuncCallRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/refactor/remove-phpdoc-annotation",
@@ -13123,7 +13123,7 @@
         "RenameCast",
         "RenameCastRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/refactor/rename-class",
@@ -13141,7 +13141,7 @@
         "RenameClass",
         "RenameClassRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/refactor/rename-class-constant",
@@ -13159,7 +13159,7 @@
         "RenameClassConstFetch",
         "RenameClassConstFetchRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/refactor/rename-constant",
@@ -13177,7 +13177,7 @@
         "RenameConstant",
         "RenameConstantRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/refactor/rename-function",
@@ -13195,7 +13195,7 @@
         "RenameFunction",
         "RenameFunctionRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/refactor/rename-method",
@@ -13213,7 +13213,7 @@
         "RenameMethod",
         "RenameMethodRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/refactor/rename-phpdoc-tag",
@@ -13248,7 +13248,7 @@
         "ArrayDimFetchToMethodCallRector",
         "Rector\\Transform\\Rector\\ArrayDimFetch\\ArrayDimFetchToMethodCallRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/refactor/replace-function-with-constant",
@@ -13266,7 +13266,7 @@
         "FuncCallToConstFetchRector",
         "Rector\\Transform\\Rector\\FuncCall\\FuncCallToConstFetchRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/refactor/replace-function-with-new",
@@ -13284,7 +13284,7 @@
         "FuncCallToNewRector",
         "Rector\\Transform\\Rector\\FuncCall\\FuncCallToNewRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/refactor/replace-function-with-static",
@@ -13302,7 +13302,7 @@
         "FuncCallToStaticCallRector",
         "Rector\\Transform\\Rector\\FuncCall\\FuncCallToStaticCallRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/refactor/replace-static-with-method",
@@ -13320,7 +13320,7 @@
         "StaticCallToMethodCall",
         "StaticCallToMethodCallRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/security/add-sensitive-parameter",
@@ -13577,7 +13577,7 @@
         "SafeDeclareStrictTypes",
         "SafeDeclareStrictTypesRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/statements/no-empty",
@@ -13953,7 +13953,7 @@
         "VariableMethodCallRule",
         "method.dynamicName"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/style/no-dynamic-method-callable",
@@ -13973,7 +13973,7 @@
         "PHPStan\\Rules\\VariableVariables\\VariableMethodCallableRule",
         "VariableMethodCallableRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/style/no-dynamic-name",
@@ -14012,7 +14012,7 @@
         "VariablePropertyFetchRule",
         "property.dynamicName"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/style/no-dynamic-static-call",
@@ -14033,7 +14033,7 @@
         "VariableStaticMethodCallRule",
         "staticMethod.dynamicName"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/style/no-dynamic-static-callable",
@@ -14053,7 +14053,7 @@
         "PHPStan\\Rules\\VariableVariables\\VariableStaticMethodCallableRule",
         "VariableStaticMethodCallableRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/style/no-dynamic-static-property",
@@ -14074,7 +14074,7 @@
         "VariableStaticPropertyFetchRule",
         "staticProperty.dynamicName"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/style/no-empty",
@@ -14703,7 +14703,7 @@
         "StringClassNameToClassConstant",
         "StringClassNameToClassConstantRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/style/prefer-compound-assignment",
@@ -15677,7 +15677,7 @@
         "ChildDoctrineRepositoryClassTypeRector",
         "Rector\\TypeDeclaration\\Rector\\Class_\\ChildDoctrineRepositoryClassTypeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-fluent-return-type",
@@ -15737,7 +15737,7 @@
         "DocblockGetterReturnArrayFromPropertyDocblockVarRector",
         "Rector\\TypeDeclarationDocblocks\\Rector\\ClassMethod\\DocblockGetterReturnArrayFromPropertyDocblockVarRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-magic-method-return-type",
@@ -15817,7 +15817,7 @@
         "ReturnNullableType",
         "ReturnNullableTypeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-numeric-return-type",
@@ -15877,7 +15877,7 @@
         "AddParamArrayDocblockBasedOnCallableNativeFuncCallRector",
         "Rector\\TypeDeclaration\\Rector\\ClassMethod\\AddParamArrayDocblockBasedOnCallableNativeFuncCallRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-param-phpdoc-from-dim-fetch",
@@ -15897,7 +15897,7 @@
         "AddParamArrayDocblockFromDimFetchAccessRector",
         "Rector\\TypeDeclarationDocblocks\\Rector\\ClassMethod\\AddParamArrayDocblockFromDimFetchAccessRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-param-phpdoc-from-local-calls",
@@ -15917,7 +15917,7 @@
         "ClassMethodArrayDocblockParamFromLocalCallsRector",
         "Rector\\TypeDeclarationDocblocks\\Rector\\Class_\\ClassMethodArrayDocblockParamFromLocalCallsRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-param-phpdoc-from-reference-assign",
@@ -15937,7 +15937,7 @@
         "AddParamArrayDocblockFromAssignsParamToParamReferenceRector",
         "Rector\\TypeDeclarationDocblocks\\Rector\\ClassMethod\\AddParamArrayDocblockFromAssignsParamToParamReferenceRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-param-type-array-any-all",
@@ -15957,7 +15957,7 @@
         "AddArrayAnyAllClosureParamTypeRector",
         "Rector\\TypeDeclaration\\Rector\\FuncCall\\AddArrayAnyAllClosureParamTypeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-param-type-array-dim-fetch",
@@ -15977,7 +15977,7 @@
         "StrictArrayParamDimFetch",
         "StrictArrayParamDimFetchRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-param-type-array-function",
@@ -15997,7 +15997,7 @@
         "AddArrayFunctionClosureParamTypeRector",
         "Rector\\TypeDeclaration\\Rector\\FuncCall\\AddArrayFunctionClosureParamTypeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-param-type-array-map",
@@ -16017,7 +16017,7 @@
         "AddClosureParamTypeForArrayMapRector",
         "Rector\\TypeDeclaration\\Rector\\FunctionLike\\AddClosureParamTypeForArrayMapRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-param-type-array-reduce",
@@ -16037,7 +16037,7 @@
         "AddClosureParamTypeForArrayReduceRector",
         "Rector\\TypeDeclaration\\Rector\\FunctionLike\\AddClosureParamTypeForArrayReduceRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-param-type-arrow-dim-fetch",
@@ -16057,7 +16057,7 @@
         "AddArrowFunctionParamArrayWhereDimFetchRector",
         "Rector\\TypeDeclaration\\Rector\\FuncCall\\AddArrowFunctionParamArrayWhereDimFetchRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-param-type-data-provider",
@@ -16077,7 +16077,7 @@
         "AddParamTypeBasedOnPHPUnitDataProviderRector",
         "Rector\\TypeDeclaration\\Rector\\ClassMethod\\AddParamTypeBasedOnPHPUnitDataProviderRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-param-type-dim-fetch-key",
@@ -16097,7 +16097,7 @@
         "AddParamFromDimFetchKeyUseRector",
         "Rector\\TypeDeclaration\\Rector\\ClassMethod\\AddParamFromDimFetchKeyUseRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-param-type-iterable-method-call",
@@ -16117,7 +16117,7 @@
         "AddClosureParamTypeFromIterableMethodCallRector",
         "Rector\\TypeDeclaration\\Rector\\FunctionLike\\AddClosureParamTypeFromIterableMethodCallRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-param-type-method-call",
@@ -16137,7 +16137,7 @@
         "AddMethodCallBasedStrictParamTypeRector",
         "Rector\\TypeDeclaration\\Rector\\ClassMethod\\AddMethodCallBasedStrictParamTypeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-param-type-parent-call",
@@ -16157,7 +16157,7 @@
         "ParamTypeByParentCallTypeRector",
         "Rector\\TypeDeclaration\\Rector\\ClassMethod\\ParamTypeByParentCallTypeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-param-type-property",
@@ -16177,7 +16177,7 @@
         "AddParamTypeFromPropertyTypeRector",
         "Rector\\TypeDeclaration\\Rector\\ClassMethod\\AddParamTypeFromPropertyTypeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-param-type-spl-fixed-array",
@@ -16197,7 +16197,7 @@
         "AddParamTypeSplFixedArrayRector",
         "Rector\\TypeDeclaration\\Rector\\FunctionLike\\AddParamTypeSplFixedArrayRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-param-type-sprintf",
@@ -16237,7 +16237,7 @@
         "AddClosureParamTypeFromVariableCallRector",
         "Rector\\TypeDeclaration\\Rector\\FunctionLike\\AddClosureParamTypeFromVariableCallRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-private-method-array-return-type",
@@ -16257,7 +16257,7 @@
         "PrivateMethodReturnTypeFromStrictNewArrayRector",
         "Rector\\TypeDeclaration\\Rector\\ClassMethod\\PrivateMethodReturnTypeFromStrictNewArrayRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-property-type-assigns",
@@ -16277,7 +16277,7 @@
         "TypedPropertyFromAssigns",
         "TypedPropertyFromAssignsRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-property-type-behat-context",
@@ -16297,7 +16297,7 @@
         "TypedStaticPropertyInBehatContext",
         "TypedStaticPropertyInBehatContextRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-property-type-constructor",
@@ -16317,7 +16317,7 @@
         "TypedPropertyFromStrictConstructor",
         "TypedPropertyFromStrictConstructorRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-property-type-get-repository",
@@ -16337,7 +16337,7 @@
         "TypedPropertyFromGetRepositorySetUp",
         "TypedPropertyFromGetRepositorySetUpRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-property-type-jms-object",
@@ -16357,7 +16357,7 @@
         "ObjectTypedPropertyFromJMSSerializerAttributeTypeRector",
         "Rector\\TypeDeclaration\\Rector\\Class_\\ObjectTypedPropertyFromJMSSerializerAttributeTypeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-property-type-jms-scalar",
@@ -16377,7 +16377,7 @@
         "ScalarTypedPropertyFromJMSSerializerAttributeType",
         "ScalarTypedPropertyFromJMSSerializerAttributeTypeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-property-type-setter-getter",
@@ -16397,7 +16397,7 @@
         "PropertyTypeFromStrictSetterGetterRector",
         "Rector\\TypeDeclaration\\Rector\\Class_\\PropertyTypeFromStrictSetterGetterRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-return-phpdoc-common-object",
@@ -16417,7 +16417,7 @@
         "AddReturnDocblockForCommonObjectDenominatorRector",
         "Rector\\TypeDeclarationDocblocks\\Rector\\ClassMethod\\AddReturnDocblockForCommonObjectDenominatorRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-return-phpdoc-dim-assigned-object",
@@ -16437,7 +16437,7 @@
         "AddReturnDocblockForArrayDimAssignedObjectRector",
         "Rector\\TypeDeclarationDocblocks\\Rector\\ClassMethod\\AddReturnDocblockForArrayDimAssignedObjectRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-return-phpdoc-direct-array",
@@ -16457,7 +16457,7 @@
         "DocblockReturnArrayFromDirectArrayInstanceRector",
         "Rector\\TypeDeclarationDocblocks\\Rector\\ClassMethod\\DocblockReturnArrayFromDirectArrayInstanceRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-return-phpdoc-json-array",
@@ -16477,7 +16477,7 @@
         "AddReturnDocblockForJsonArrayRector",
         "Rector\\TypeDeclarationDocblocks\\Rector\\ClassMethod\\AddReturnDocblockForJsonArrayRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-return-phpdoc-scalar-array",
@@ -16497,7 +16497,7 @@
         "AddReturnDocblockForScalarArrayFromAssignsRector",
         "Rector\\TypeDeclaration\\Rector\\ClassMethod\\AddReturnDocblockForScalarArrayFromAssignsRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-return-type-from-cast",
@@ -16557,7 +16557,7 @@
         "ReturnTypeFromGetRepositoryDocblock",
         "ReturnTypeFromGetRepositoryDocblockRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-return-type-from-native-call",
@@ -16577,7 +16577,7 @@
         "ReturnTypeFromStrictNativeCall",
         "ReturnTypeFromStrictNativeCallRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-return-type-from-new",
@@ -16617,7 +16617,7 @@
         "ReturnTypeFromStrictNewArray",
         "ReturnTypeFromStrictNewArrayRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-return-type-from-param",
@@ -16657,7 +16657,7 @@
         "AddReturnTypeDeclarationBasedOnParentClassMethodRector",
         "Rector\\TypeDeclaration\\Rector\\ClassMethod\\AddReturnTypeDeclarationBasedOnParentClassMethodRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-return-type-from-property",
@@ -16697,7 +16697,7 @@
         "ReturnTypeFromSymfonySerializer",
         "ReturnTypeFromSymfonySerializerRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-return-type-from-ternary",
@@ -16717,7 +16717,7 @@
         "ReturnTypeFromStrictTernary",
         "ReturnTypeFromStrictTernaryRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-return-type-from-try-catch",
@@ -16757,7 +16757,7 @@
         "ReturnTypeFromStrictTypedCall",
         "ReturnTypeFromStrictTypedCallRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-return-type-from-yield",
@@ -16777,7 +16777,7 @@
         "AddReturnTypeDeclarationFromYieldsRector",
         "Rector\\TypeDeclaration\\Rector\\FunctionLike\\AddReturnTypeDeclarationFromYieldsRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-string-return-type",
@@ -16837,7 +16837,7 @@
         "ReturnUnionType",
         "ReturnUnionTypeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-var-phpdoc-from-constructor-param",
@@ -16857,7 +16857,7 @@
         "DocblockVarFromParamDocblockInConstructorRector",
         "Rector\\TypeDeclarationDocblocks\\Rector\\Class_\\DocblockVarFromParamDocblockInConstructorRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-var-phpdoc-from-default",
@@ -16877,7 +16877,7 @@
         "DocblockVarArrayFromPropertyDefaultsRector",
         "Rector\\TypeDeclarationDocblocks\\Rector\\Class_\\DocblockVarArrayFromPropertyDefaultsRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-var-phpdoc-from-dim-fetch",
@@ -16897,7 +16897,7 @@
         "AddVarArrayDocblockFromDimFetchAssignRector",
         "Rector\\TypeDeclarationDocblocks\\Rector\\Class_\\AddVarArrayDocblockFromDimFetchAssignRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-var-phpdoc-from-getter",
@@ -16917,7 +16917,7 @@
         "DocblockVarArrayFromGetterReturnRector",
         "Rector\\TypeDeclarationDocblocks\\Rector\\Class_\\DocblockVarArrayFromGetterReturnRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-void-return-type",
@@ -16977,7 +16977,7 @@
         "CleanupUnneededNullsafeOperatorRector",
         "Rector\\CodeQuality\\Rector\\NullsafeMethodCall\\CleanupUnneededNullsafeOperatorRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/prefer-generic-collection-phpdoc",
@@ -16997,7 +16997,7 @@
         "NarrowArrayCollectionUnionReturnDocblockRector",
         "Rector\\TypeDeclarationDocblocks\\Rector\\ClassMethod\\NarrowArrayCollectionUnionReturnDocblockRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/prefer-identical-same-type",
@@ -17017,7 +17017,7 @@
         "UseIdenticalOverEqualWithSameType",
         "UseIdenticalOverEqualWithSameTypeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/prefer-instanceof",
@@ -17037,7 +17037,7 @@
         "InlineIsAInstanceOfRector",
         "Rector\\CodeQuality\\Rector\\FuncCall\\InlineIsAInstanceOfRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/prefer-narrow-param-type",
@@ -17057,7 +17057,7 @@
         "NarrowArrayAnyAllNullableParamTypeRector",
         "Rector\\TypeDeclaration\\Rector\\FuncCall\\NarrowArrayAnyAllNullableParamTypeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/prefer-specific-return-type",
@@ -17077,7 +17077,7 @@
         "NarrowObjectReturnTypeRector",
         "Rector\\TypeDeclaration\\Rector\\ClassMethod\\NarrowObjectReturnTypeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/require-strict-param",

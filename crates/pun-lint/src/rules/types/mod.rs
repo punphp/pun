@@ -4,10 +4,26 @@
 //! A rule that adds a return type writes `: type` right after the `)` of the parameters (or of a closure's `use`), where
 //! php-parser's format-preserving printer inserts a new `returnType` node.
 
+pub(crate) mod compare;
 pub mod facts;
-mod names;
+pub(crate) mod names;
 
 mod add_array_return;
+mod add_return_phpdoc_direct_array;
+mod add_getter_return_phpdoc;
+mod add_param_phpdoc_from_callable_call;
+mod add_param_phpdoc_from_dim_fetch;
+mod add_param_phpdoc_from_local_calls;
+mod add_param_phpdoc_from_reference_assign;
+mod add_return_phpdoc_common_object;
+mod add_return_phpdoc_dim_assigned_object;
+mod add_return_phpdoc_json_array;
+mod add_return_phpdoc_scalar_array;
+mod add_var_phpdoc_from_constructor_param;
+mod add_var_phpdoc_from_default;
+mod add_var_phpdoc_from_dim_fetch;
+mod add_var_phpdoc_from_getter;
+mod prefer_generic_collection_phpdoc;
 mod add_bool_return;
 mod add_bool_return_from_const;
 mod add_closure_never_return;
@@ -18,21 +34,75 @@ mod add_function_void_return;
 mod add_magic_method_types;
 mod add_method_void_return;
 mod add_native_scalar_return;
+mod add_param_type_array_any_all;
+mod add_param_type_array_dim_fetch;
+mod add_param_type_array_function;
+mod add_param_type_array_map;
+mod add_param_type_array_reduce;
+mod add_param_type_arrow_dim_fetch;
+mod add_param_type_data_provider;
+mod add_param_type_dim_fetch_key;
+mod add_param_type_iterable_method_call;
+mod add_param_type_method_call;
+mod add_param_type_parent_call;
+mod add_param_type_property;
+mod add_param_type_spl_fixed_array;
+mod add_param_type_variable_call;
 mod add_never_return;
+mod add_property_type_assigns;
+mod add_property_type_behat_context;
+mod add_property_type_constructor;
+mod add_property_type_create_mock;
+mod add_property_type_jms;
+mod add_property_type_setter_getter;
+mod add_property_type_setup;
+mod add_property_type_setup_docblock;
 mod add_return_type_from_cast;
 mod add_return_type_from_constant;
+mod add_return_type_from_get_repository;
+mod add_return_type_from_native_call;
 mod add_return_type_from_new;
+mod add_return_type_from_new_array;
 mod add_return_type_from_param;
+mod add_return_type_from_parent;
 mod add_return_type_from_property;
+mod add_return_type_from_symfony_serializer;
 mod add_return_type_from_ternary;
+mod add_return_type_from_typed_call;
+mod add_return_type_from_yield;
 mod add_scalar_return;
 mod add_union_return;
 pub(crate) mod declare;
+mod doctrine_repository;
+pub(crate) mod docblock;
 mod native;
 mod never;
+pub(crate) mod no_nullsafe_on_non_null;
+mod prefer_identical_same_type;
+mod prefer_instanceof;
+mod prefer_specific_return_type;
+pub(crate) mod property_type;
+pub(crate) mod rector_type;
+mod param;
 pub(crate) mod silent_void;
+mod type_factory;
 
 pub use add_array_return::AddArrayReturn;
+pub use add_return_phpdoc_direct_array::AddReturnPhpdocDirectArray;
+pub use add_getter_return_phpdoc::AddGetterReturnPhpdoc;
+pub use add_param_phpdoc_from_callable_call::AddParamPhpdocFromCallableCall;
+pub use add_param_phpdoc_from_dim_fetch::AddParamPhpdocFromDimFetch;
+pub use add_param_phpdoc_from_local_calls::AddParamPhpdocFromLocalCalls;
+pub use add_param_phpdoc_from_reference_assign::AddParamPhpdocFromReferenceAssign;
+pub use add_return_phpdoc_common_object::AddReturnPhpdocCommonObject;
+pub use add_return_phpdoc_dim_assigned_object::AddReturnPhpdocDimAssignedObject;
+pub use add_return_phpdoc_json_array::AddReturnPhpdocJsonArray;
+pub use add_return_phpdoc_scalar_array::AddReturnPhpdocScalarArray;
+pub use add_var_phpdoc_from_constructor_param::AddVarPhpdocFromConstructorParam;
+pub use add_var_phpdoc_from_default::AddVarPhpdocFromDefault;
+pub use add_var_phpdoc_from_dim_fetch::AddVarPhpdocFromDimFetch;
+pub use add_var_phpdoc_from_getter::AddVarPhpdocFromGetter;
+pub use prefer_generic_collection_phpdoc::PreferGenericCollectionPhpdoc;
 pub use add_bool_return::AddBoolReturn;
 pub use add_bool_return_from_const::AddBoolReturnFromConst;
 pub use add_closure_never_return::AddClosureNeverReturn;
@@ -44,15 +114,51 @@ pub use add_magic_method_types::AddMagicMethodTypes;
 pub use add_method_void_return::AddMethodVoidReturn;
 pub use add_native_scalar_return::{AddNumericReturn, AddStringReturn};
 pub use add_never_return::AddNeverReturn;
+pub use add_property_type_assigns::AddPropertyTypeAssigns;
+pub use add_property_type_behat_context::AddPropertyTypeBehatContext;
+pub use add_property_type_constructor::AddPropertyTypeConstructor;
+pub use add_property_type_create_mock::AddPropertyTypeCreateMock;
+pub use add_property_type_jms::{AddPropertyTypeJmsObject, AddPropertyTypeJmsScalar};
+pub use add_property_type_setter_getter::AddPropertyTypeSetterGetter;
+pub use add_property_type_setup::AddPropertyTypeSetup;
+pub use add_property_type_setup_docblock::AddPropertyTypeSetupDocblock;
+pub use add_param_type_array_any_all::{AddParamTypeArrayAnyAll, PreferNarrowParamType};
+pub use add_param_type_array_dim_fetch::AddParamTypeArrayDimFetch;
+pub use add_param_type_array_function::AddParamTypeArrayFunction;
+pub use add_param_type_array_map::AddParamTypeArrayMap;
+pub use add_param_type_array_reduce::AddParamTypeArrayReduce;
+pub use add_param_type_arrow_dim_fetch::AddParamTypeArrowDimFetch;
+pub use add_param_type_data_provider::AddParamTypeDataProvider;
+pub use add_param_type_dim_fetch_key::AddParamTypeDimFetchKey;
+pub use add_param_type_iterable_method_call::AddParamTypeIterableMethodCall;
+pub use add_param_type_method_call::AddParamTypeMethodCall;
+pub use add_param_type_parent_call::AddParamTypeParentCall;
+pub use add_param_type_property::AddParamTypeProperty;
+pub use add_param_type_spl_fixed_array::AddParamTypeSplFixedArray;
+pub use add_param_type_variable_call::AddParamTypeVariableCall;
 pub use add_return_type_from_cast::AddReturnTypeFromCast;
 pub use add_return_type_from_constant::AddReturnTypeFromConstant;
+pub use add_return_type_from_get_repository::AddReturnTypeFromGetRepository;
+pub use add_return_type_from_native_call::AddReturnTypeFromNativeCall;
 pub use add_return_type_from_new::AddReturnTypeFromNew;
+pub use add_return_type_from_new_array::{AddPrivateMethodArrayReturnType, AddReturnTypeFromNewArray};
 pub use add_return_type_from_param::AddReturnTypeFromParam;
+pub use add_return_type_from_parent::AddReturnTypeFromParent;
 pub use add_return_type_from_property::AddReturnTypeFromProperty;
+pub use add_return_type_from_symfony_serializer::AddReturnTypeFromSymfonySerializer;
 pub use add_return_type_from_ternary::AddReturnTypeFromTernary;
+pub use add_return_type_from_typed_call::AddReturnTypeFromTypedCall;
+pub use add_return_type_from_yield::AddReturnTypeFromYield;
 pub use add_scalar_return::{AddNumericReturnFromScalar, AddStringReturnFromScalar};
 pub use add_union_return::{AddNullableReturn, AddUnionReturn};
+pub use doctrine_repository::{
+    AddDoctrineRepositoryReturnType, AddPropertyTypeContainerGet, AddPropertyTypeGetRepository,
+};
 pub(crate) use never::has_parent_class_method;
+pub use no_nullsafe_on_non_null::NoNullsafeOnNonNull;
+pub use prefer_identical_same_type::PreferIdenticalSameType;
+pub use prefer_instanceof::PreferInstanceof;
+pub use prefer_specific_return_type::PreferSpecificReturnType;
 
 use mago_syntax::cst::{
     Block, Expression, Extends, Identifier, MethodBody, Modifier, Node, Return, Sequence, Statement,
@@ -64,35 +170,91 @@ use crate::{Report, Rule};
 use facts::Facts;
 use names::resolve_class_name;
 
-/// The group's ported rules, in a fixed order. `AddReturnTypeFromTernary`, `AddNullableReturn` and `AddUnionReturn` pass Rector's fixtures but
-/// not the corpus yet: Rector's `TypeFactory::uniquateTypes` unwraps constant arrays into one `array<key, item>` per
-/// item and hashes arrays by key and item type, so `[]` against `[$a, $b]`, or two classes, make a union it skips (or
-/// writes) where Pun's grouping by kind does not; they stay out of `all()` until that is ported.
+/// The group's ported rules, in a fixed order.
 pub(crate) fn all() -> Vec<Box<dyn Rule>> {
     // Rector's order (src/Config/Level/TypeDeclarationLevel.php): on one function the first rule that adds a return
-    // type wins.
+    // type wins. `AddReturnTypeDeclarationBasedOnParentClassMethodRector` visits the class, before its methods.
     vec![
+        Box::new(AddReturnTypeFromParent),
         Box::new(AddClosureVoidReturn),
         Box::new(AddFunctionVoidReturn),
         Box::new(AddArrowFunctionReturn),
         Box::new(AddBoolReturnFromConst),
+        Box::new(AddPrivateMethodArrayReturnType),
+        Box::new(AddReturnTypeFromNewArray),
         Box::new(AddReturnTypeFromConstant),
         Box::new(AddStringReturnFromScalar),
         Box::new(AddNumericReturnFromScalar),
         Box::new(AddBoolReturn),
         Box::new(AddStringReturn),
         Box::new(AddNumericReturn),
+        Box::new(AddReturnTypeFromTernary),
         Box::new(AddArrayReturn),
         Box::new(AddReturnTypeFromNew),
         Box::new(AddReturnTypeFromCast),
+        Box::new(AddReturnTypeFromSymfonySerializer),
         Box::new(AddMethodVoidReturn),
         Box::new(AddReturnTypeFromProperty),
+        Box::new(AddNullableReturn),
+        Box::new(AddReturnTypeFromYield),
+        Box::new(AddReturnTypeFromNativeCall),
+        Box::new(AddReturnTypeFromTypedCall),
         Box::new(AddMagicMethodTypes),
+        Box::new(PreferSpecificReturnType),
+        Box::new(AddUnionReturn),
         Box::new(AddClosureNeverReturn),
         Box::new(AddClosureReturn),
         Box::new(AddReturnTypeFromParam),
         Box::new(AddFluentReturn),
         Box::new(AddNeverReturn),
+        Box::new(PreferInstanceof),
+        Box::new(PreferIdenticalSameType),
+        Box::new(NoNullsafeOnNonNull),
+        Box::new(AddPropertyTypeConstructor),
+        Box::new(AddPropertyTypeAssigns::default()),
+        Box::new(AddPropertyTypeSetterGetter),
+        Box::new(AddPropertyTypeJmsScalar),
+        Box::new(AddPropertyTypeJmsObject),
+        Box::new(AddPropertyTypeBehatContext),
+        Box::new(AddPropertyTypeContainerGet),
+        Box::new(AddPropertyTypeGetRepository),
+        Box::new(AddPropertyTypeCreateMock),
+        Box::new(AddPropertyTypeSetup),
+        Box::new(AddPropertyTypeSetupDocblock),
+        Box::new(AddDoctrineRepositoryReturnType),
+        Box::new(AddReturnTypeFromGetRepository),
+        // the docblock rules, in Rector's order (src/Config/Level/TypeDeclarationDocblocksLevel.php)
+        Box::new(AddVarPhpdocFromDefault),
+        Box::new(AddParamPhpdocFromDimFetch),
+        Box::new(AddParamPhpdocFromLocalCalls),
+        Box::new(AddParamPhpdocFromReferenceAssign),
+        Box::new(AddParamPhpdocFromCallableCall),
+        Box::new(AddReturnPhpdocCommonObject),
+        Box::new(AddReturnPhpdocScalarArray),
+        Box::new(AddReturnPhpdocDirectArray),
+        Box::new(AddReturnPhpdocDimAssignedObject),
+        Box::new(AddReturnPhpdocJsonArray),
+        Box::new(AddVarPhpdocFromConstructorParam),
+        Box::new(AddVarPhpdocFromGetter),
+        Box::new(AddVarPhpdocFromDimFetch),
+        Box::new(AddGetterReturnPhpdoc),
+        Box::new(PreferGenericCollectionPhpdoc),
+        // The parameter rules, in Rector's order too.
+        Box::new(AddParamTypeSplFixedArray),
+        Box::new(AddParamTypeDataProvider),
+        Box::new(AddParamTypeMethodCall::default()),
+        Box::new(AddParamTypeParentCall),
+        Box::new(AddParamTypeArrayMap),
+        Box::new(AddParamTypeArrayReduce),
+        Box::new(AddParamTypeArrowDimFetch),
+        Box::new(AddParamTypeProperty),
+        Box::new(AddParamTypeVariableCall),
+        Box::new(AddParamTypeArrayDimFetch),
+        Box::new(AddParamTypeDimFetchKey),
+        Box::new(AddParamTypeArrayFunction),
+        Box::new(AddParamTypeIterableMethodCall),
+        Box::new(PreferNarrowParamType),
+        Box::new(AddParamTypeArrayAnyAll),
     ]
 }
 

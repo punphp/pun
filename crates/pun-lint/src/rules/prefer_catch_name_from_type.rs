@@ -245,7 +245,7 @@ fn new_variable_name(type_name: &str) -> String {
 }
 
 /// `PropertyNaming::fqnToVariableName` of `new ObjectType($class)`.
-fn fqn_to_variable_name(class: &str) -> String {
+pub(crate) fn fqn_to_variable_name(class: &str) -> String {
     let short = class.rsplit('\\').next().unwrap_or(class);
     let name = remove_interface_suffix_prefix(short, "interface");
     let name = remove_interface_suffix_prefix(&name, "abstract");

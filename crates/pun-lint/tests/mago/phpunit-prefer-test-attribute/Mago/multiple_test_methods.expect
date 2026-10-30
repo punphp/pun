@@ -1,0 +1,2 @@
+43 50 Use `#[Test]` attribute instead of `test` prefix on method `testOne`.
+82 89 Use `#[Test]` attribute instead of `test` prefix on method `testTwo`.

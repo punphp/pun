@@ -257,7 +257,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "arrays/no-implicit-array-creation" = { fix = "none", intent = "suspicious", sets = ["code-quality"], status = "decided", summary = "Disallows implicit array creation: appending to or writing an offset of an undefined or `null` variable." }
 "arrays/prefer-array-append" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use `$array[] =` instead of `array_push()` in a statement." }
 "arrays/prefer-array-spread" = { fix = "unsafe", sets = ["modernize"], ported = true, origin = "mago", status = "decided", summary = "Detects calls to `array_merge()` and suggests using the array spread operator (`...`) in an array literal instead." }
-"classes/add-dynamic-properties" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Add missing dynamic properties" }
+"classes/add-dynamic-properties" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Add missing dynamic properties" }
 "classes/add-stringable" = { fix = "safe", sets = ["modernize"], ported = true, status = "decided", summary = "A class that implements the `__toString()` method must explicitly implement the `Stringable` interface." }
 "classes/no-explicit-constructor-call" = { fix = "none", intent = "suspicious", sets = ["code-quality"], ported = true, status = "decided", summary = "Disallows calling `__construct()` on an existing object outside a constructor." }
 "classes/no-null-property-default" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Properties MUST not be explicitly initialised with `null` except when they have a type declaration (PHP 7.4)." }
@@ -284,8 +284,8 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "complexity/no-boolean-literal-compare" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Simplify bool value compare to true or false" }
 "complexity/no-compact" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change `compact()` call to own array" }
 "complexity/no-concat-assign-new-item" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change concat assign on a new array item to plain assign, as the new item is always null" }
-"complexity/no-constant-condition" = { fix = "safe", sets = ["dead-code"], status = "decided", summary = "Detects `if` statements where the condition is a constant that always" }
-"complexity/no-constant-via-variable" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Change variable class constant fetch to direct class constant fetch when class or constant target is final" }
+"complexity/no-constant-condition" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Detects `if` statements where the condition is a constant that always" }
+"complexity/no-constant-via-variable" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change variable class constant fetch to direct class constant fetch when class or constant target is final" }
 "complexity/no-double-negation" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace the Double not operator (!!) by type-casting to boolean" }
 "complexity/no-duplicate-match-arm" = { fix = "none", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects `match` arms that produce the same result as an earlier arm." }
 "complexity/no-else-clause" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Flags `if` statements that include an `else` or `elseif` branch." }
@@ -304,11 +304,11 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "complexity/no-negated-boolean-literal" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace negated boolean literals (!false, !true) with their simplified equivalents (true, false)" }
 "complexity/no-negated-comparison" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace negated comparisons such as `!($a === $b)` with the inverse operator." }
 "complexity/no-negated-group" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Simplify negated conditions with de Morgan theorem" }
-"complexity/no-phpdoc-class-case-mismatch" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Fix a misspelled class name casing in a @var docblock to match the real class name" }
+"complexity/no-phpdoc-class-case-mismatch" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Fix a misspelled class name casing in a @var docblock to match the real class name" }
 "complexity/no-redundant-isset" = { fix = "safe", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects redundant arguments in `isset()` calls where a nested access already implies the parent checks." }
 "complexity/no-redundant-literal-return" = { fix = "safe", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects redundant literal guard patterns where an if statement checks if a variable equals a literal and returns that same literal, followed by returning the variable." }
 "complexity/no-redundant-null-check" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Return the value directly instead of checking it for null first." }
-"complexity/no-redundant-nullable-check" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Direct return on if nullable check before return" }
+"complexity/no-redundant-nullable-check" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Direct return on if nullable check before return" }
 "complexity/no-redundant-nullsafe" = { fix = "safe", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", note = "merges Mago no-redundant-nullsafe (null already checked) and Rector CleanupUnneededNullsafeOperator (type is non-null)", summary = "Flags the use of the nullsafe operator (`?->`) in contexts where its null-checking behavior is redundant." }
 "complexity/no-redundant-write-visibility" = { fix = "none", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects redundant write visibility modifiers on properties." }
 "complexity/no-single-case-switch" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change `switch` with only 1 check to `if`" }
@@ -328,20 +328,20 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "complexity/prefer-in-array" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use in_array() instead of repeated `||`/`&&` comparisons, array_search() checks and foreach loops." }
 "complexity/prefer-in-array-over-foreach" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace a foreach that returns a boolean on a match with `in_array()`." }
 "complexity/prefer-in-array-over-search" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Simplify `array_search()` compared with `false` to `in_array()`" }
-"complexity/prefer-inline-array-return" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Inline just in time array dim fetch assigns to direct return" }
-"complexity/prefer-instance-method" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Change static method and local-only calls to non-static" }
+"complexity/prefer-inline-array-return" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Inline just in time array dim fetch assigns to direct return" }
+"complexity/prefer-instance-method" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change static method and local-only calls to non-static" }
 "complexity/prefer-min-max" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change ternary number compare to `max()` call" }
 "complexity/prefer-named-literal-argument" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Name literal arguments (true, false, null, numbers) in calls." }
 "complexity/prefer-not-in-array" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use `! in_array()` instead of repeated `!==`/`!=` comparisons of one value joined by `&&`." }
 "complexity/prefer-null-coalesce" = { fix = "safe", sets = ["code-quality"], gated_by = "php-version", ported = true, status = "decided", summary = "Use `??` instead of isset()/array_key_exists() ternaries, if/return chains and foreach lookups." }
 "complexity/prefer-property-default" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Move property default from constructor to property default" }
-"complexity/prefer-property-exists" = { fix = "safe", sets = ["code-quality"], gated_by = "php-version", ported = false, status = "decided", summary = "Use property_exists() instead of array_key_exists() or isset() on object properties." }
+"complexity/prefer-property-exists" = { fix = "safe", sets = ["code-quality"], gated_by = "php-version", ported = true, status = "decided", summary = "Use property_exists() instead of array_key_exists() or isset() on object properties." }
 "complexity/prefer-simple-condition" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Simplify a negated comparison or a comparison with a boolean" }
 "complexity/require-attribute-argument-order" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Sort named arguments in PHP 8 attributes to match their declaration order" }
-"complexity/require-consistent-return" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Add explicit return null to method/function that returns a value, but missed main return" }
+"complexity/require-consistent-return" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Add explicit return null to method/function that returns a value, but missed main return" }
 "complexity/require-is-a-allow-string" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Complete missing 3rd argument in case is_a() function in case of strings" }
 "complexity/require-named-argument-order" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Order named arguments as the parameters are declared." }
-"complexity/require-previous-exception" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "When throwing into a catch block, checks that the previous exception is passed to the new throw clause" }
+"complexity/require-previous-exception" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "When throwing into a catch block, checks that the previous exception is passed to the new throw clause" }
 "control-flow/no-assign-in-condition" = { fix = "none", intent = "correctness", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects assignments in conditions which can lead to unexpected behavior and make the code harder" }
 "control-flow/no-else-after-return" = { fix = "safe", sets = ["early-return"], ported = true, status = "decided", summary = "Drop the else after a branch that always returns, throws or exits, and move its body after the if." }
 "control-flow/no-empty-catch" = { fix = "none", intent = "correctness", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Report an empty `catch` block, which swallows the exception." }
@@ -357,12 +357,12 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "control-flow/prefer-bool-return" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Simplify `if` control structures that return the boolean result of their condition." }
 "control-flow/prefer-combined-isset" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Using `isset($var) &&` multiple times should be done in one call." }
 "control-flow/prefer-combined-unset" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Calling `unset` on multiple items should be done in one call." }
-"control-flow/prefer-returned-condition" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Shortens if return false/true to direct return" }
+"control-flow/prefer-returned-condition" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Shortens if return false/true to direct return" }
 "control-flow/prefer-yield-from" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "If the function explicitly returns an array, and has the return type `iterable`, then `yield from` must be used instead of `return`." }
-"dead-code/no-always-false-condition" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Reduce always false in a `if (a || b)` condition" }
-"dead-code/no-always-true-if" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove if condition that is always true" }
-"dead-code/no-always-true-instanceof" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove instanceof checks and assert(instanceof) calls that are always true for the known type." }
-"dead-code/no-always-true-instanceof-assert" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove assert() with instanceof check on a value whose type is already known" }
+"dead-code/no-always-false-condition" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Reduce always false in a `if (a || b)` condition" }
+"dead-code/no-always-true-if" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove if condition that is always true" }
+"dead-code/no-always-true-instanceof" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove instanceof checks and assert(instanceof) calls that are always true for the known type." }
+"dead-code/no-always-true-instanceof-assert" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove assert() with instanceof check on a value whose type is already known" }
 "dead-code/no-and-true" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove `and true` that has no added value" }
 "dead-code/no-bool-ternary" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Remove unnecessary ternary expressions" }
 "dead-code/no-cast-in-concat" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove (string) casting when it comes to concat, that does this by default" }
@@ -379,8 +379,8 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/no-future-php-version-check" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Unwrap `if` checks on a PHP version that the configured PHP version always meets." }
 "dead-code/no-identical-branches" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove if/else if they have same content" }
 "dead-code/no-implode-ternary" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Drop an empty-array ternary around `implode()`" }
-"dead-code/no-invalid-return-tag" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove @return docblock that contradicts the declared native return type" }
-"dead-code/no-invalid-var-tag" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Removes non-existing @var annotations above the code" }
+"dead-code/no-invalid-return-tag" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove @return docblock that contradicts the declared native return type" }
+"dead-code/no-invalid-var-tag" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Removes non-existing @var annotations above the code" }
 "dead-code/no-mirror-assignment" = { fix = "safe", intent = "correctness", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove `$value = $value` assignments." }
 "dead-code/no-null-default-argument" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove default null argument, where null is already a default param value" }
 "dead-code/no-null-default-named-argument" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove named null argument, where null is already a default param value" }
@@ -389,15 +389,15 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/no-parent-call-without-parent" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unused parent call with no parent class" }
 "dead-code/no-redundant-condition" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Merge an if into the if before it when both check the same condition." }
 "dead-code/no-redundant-default-argument" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove arguments that equal the parameter default value." }
-"dead-code/no-redundant-foreach-guard" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove unused if check to non-empty array before foreach of the array" }
+"dead-code/no-redundant-foreach-guard" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unused if check to non-empty array before foreach of the array" }
 "dead-code/no-redundant-promoted-assign" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove useless re-assign from property promotion" }
 "dead-code/no-redundant-property-default" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove redundant default value from property that is always assigned in the constructor" }
 "dead-code/no-return-in-constructor" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove useless return Expr in __construct()" }
 "dead-code/no-self-assignment" = { fix = "safe", intent = "correctness", sets = ["dead-code"], ported = true, origin = "mago", status = "decided", summary = "Detects and removes self-assignments where a variable or property is assigned to itself." }
 "dead-code/no-tautology-ternary" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use the value a ternary always gives when it compares the two values it chooses between." }
-"dead-code/no-typed-property-instanceof" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove dead instanceof check on type hinted property" }
+"dead-code/no-typed-property-instanceof" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove dead instanceof check on type hinted property" }
 "dead-code/no-unreachable-code" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unreachable statements" }
-"dead-code/no-unused-assignment" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove assignments whose value is never read, including stores overwritten before use." }
+"dead-code/no-unused-assignment" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove assignments whose value is never read, including stores overwritten before use." }
 "dead-code/no-unused-constructor-param" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unused parameter in constructor" }
 "dead-code/no-unused-expression" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove dead code statements" }
 "dead-code/no-unused-foreach-key" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unused key in foreach" }
@@ -408,23 +408,23 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/no-unused-private-property" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unused private properties" }
 "dead-code/no-unused-promoted-property" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unused promoted property" }
 "dead-code/no-unused-public-method-param" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unused parameter in public method on final class without extends and interface" }
-"dead-code/no-unused-return-type" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Narrow overly wide union return type declaration if possible" }
+"dead-code/no-unused-return-type" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Narrow overly wide union return type declaration if possible" }
 "dead-code/no-unused-static" = { fix = "none", intent = "correctness", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Flags `static $x;` declarations whose name is never read or written" }
-"dead-code/no-unused-test-method-param" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove parameter of private test class method, that is overridden by direct assign before its first use" }
-"dead-code/no-useless-cast" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove casts to the type the value already has, including (string) inside concatenation." }
+"dead-code/no-unused-test-method-param" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove parameter of private test class method, that is overridden by direct assign before its first use" }
+"dead-code/no-useless-cast" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove casts to the type the value already has, including (string) inside concatenation." }
 "dead-code/no-useless-catch" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove dead try/catch" }
 "dead-code/no-useless-condition" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove if conditions whose branches return the same value." }
 "dead-code/no-useless-constructor" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove constructor that only delegates call to parent class with same values" }
 "dead-code/no-useless-continue" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove `continue` as the last statement of a loop." }
-"dead-code/no-useless-filter-var" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Removes filter_var() calls with exact type" }
-"dead-code/no-useless-math" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove arithmetic that does not change the value (`+ 0`, `* 1`, ...)." }
+"dead-code/no-useless-filter-var" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Removes filter_var() calls with exact type" }
+"dead-code/no-useless-math" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove arithmetic that does not change the value (`+ 0`, `* 1`, ...)." }
 "dead-code/no-useless-override" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove methods and constructors that only call the parent with the same arguments." }
-"dead-code/no-useless-phpdoc-type" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove PHPDoc types that add nothing over the native type (`@var null`, unions wider than the native return type)." }
+"dead-code/no-useless-phpdoc-type" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove PHPDoc types that add nothing over the native type (`@var null`, unions wider than the native return type)." }
 "dead-code/no-useless-ternary" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Simplify ternaries whose result does not depend on the condition, or that equal a boolean expression." }
 "dead-code/no-useless-variable" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove useless variable assigns" }
 "functions/no-assign-in-argument" = { fix = "none", intent = "correctness", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects assignments in function call arguments which can lead to unexpected behavior and make" }
 "functions/no-call-user-func-method" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Refactor `call_user_func()` on known class method to a method call" }
-"functions/no-extra-arguments" = { fix = "safe", sets = ["code-quality"], gated_by = "php-version", ported = false, status = "decided", summary = "Remove extra parameters" }
+"functions/no-extra-arguments" = { fix = "safe", sets = ["code-quality"], gated_by = "php-version", ported = true, status = "decided", summary = "Remove extra parameters" }
 "functions/no-missing-format-argument" = { fix = "none", intent = "correctness", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects `sprintf`-style format calls where the number of placeholders" }
 "functions/no-required-after-optional" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Report or fix optional parameters declared before required ones." }
 "functions/no-swapped-explode-arguments" = { fix = "none", intent = "correctness", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects `explode` calls whose arguments appear to be swapped." }
@@ -432,100 +432,100 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "functions/no-unused-closure-use" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Lambda must not import variables it doesn't use." }
 "functions/no-unused-closure-variable" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unused variable in use() of closure" }
 "functions/no-void-reference-return" = { fix = "none", sets = ["modernize"], ported = true, origin = "mago", status = "decided", summary = "Detects functions, methods, closures, arrow functions, and set property hooks that return by reference from a void function." }
-"functions/require-array-filter-callback" = { fix = "none", intent = "suspicious", sets = ["code-quality"], status = "decided", summary = "Requires a callback for `array_filter()`: without one it drops every falsy value, not only `null`." }
+"functions/require-array-filter-callback" = { fix = "none", intent = "suspicious", sets = ["code-quality"], ported = true, status = "decided", summary = "Requires a callback for `array_filter()`: without one it drops every falsy value, not only `null`." }
 "functions/require-assert-description" = { fix = "none", intent = "correctness", ported = true, origin = "mago", status = "decided", summary = "Detects assert functions that do not have a description." }
 "functions/require-strict-array-search" = { fix = "mixed", intent = "suspicious", sets = ["coding-style"], ported = true, status = "decided", summary = "Makes array_search search for identical elements" }
 "functions/require-strict-function-call" = { fix = "none", intent = "suspicious", sets = ["coding-style"], ported = true, status = "decided", summary = "Requires the strict flag of `in_array()`, `array_search()`, `array_keys()` with a search value and `base64_decode()`." }
-"functions/require-strict-in-array" = { fix = "mixed", intent = "suspicious", sets = ["coding-style"], ported = false, status = "decided", summary = "Set in_array strict to true when defined on similar type" }
+"functions/require-strict-in-array" = { fix = "mixed", intent = "suspicious", sets = ["coding-style"], ported = true, status = "decided", summary = "Set in_array strict to true when defined on similar type" }
 "imports/no-unused" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Unused `use` statements must be removed." }
-"laravel-12/prefer-scope-attribute" = { fix = "unsafe", gated_by = "laravel-version", ported = false, status = "decided", summary = "Changes model scope methods to use the scope attribute" }
-"laravel/add-factory-extends-phpdoc" = { fix = "unsafe", gated_by = "laravel-version", ported = false, status = "decided", summary = "Adds the @extends annotation to Factories." }
-"laravel/add-has-factory-trait" = { fix = "unsafe", ported = false, status = "decided", summary = "Adds the HasFactory trait to Models." }
-"laravel/add-query-closure-type" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Type-hint the closure parameter of Eloquent where()/whereHas() and similar query methods." }
-"laravel/add-relation-generics" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add generic return type to relations in child of Illuminate\\Database\\Eloquent\\Model" }
-"laravel/add-relation-query-closure-type" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add type hinting to where relation has methods e.g. `whereHas`, `orWhereHas`, `whereDoesntHave`, `orWhereDoesntHave`, `whereHasMorph`, `orWhereHasMorph`, `whereDoesntHaveMorph`, `orWhereDoesntHaveMorph`" }
-"laravel/add-tap-closure-type" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Automatically type hints your tappable closures" }
-"laravel/no-app-array-access" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Replace magical call on $this->app[\"something\"] to standalone type assign variable" }
-"laravel/no-collection-aliases" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Use the base collection methods instead of their aliases." }
-"laravel/no-controller-middleware" = { fix = "none", ported = false, origin = "mago", status = "decided", summary = "This rule warns against applying middlewares in controllers." }
+"laravel-12/prefer-scope-attribute" = { fix = "unsafe", gated_by = "laravel-version", ported = true, status = "decided", summary = "Changes model scope methods to use the scope attribute" }
+"laravel/add-factory-extends-phpdoc" = { fix = "unsafe", gated_by = "laravel-version", ported = true, status = "decided", summary = "Adds the @extends annotation to Factories." }
+"laravel/add-has-factory-trait" = { fix = "unsafe", ported = true, status = "decided", summary = "Adds the HasFactory trait to Models." }
+"laravel/add-query-closure-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Type-hint the closure parameter of Eloquent where()/whereHas() and similar query methods." }
+"laravel/add-relation-generics" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add generic return type to relations in child of Illuminate\\Database\\Eloquent\\Model" }
+"laravel/add-relation-query-closure-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add type hinting to where relation has methods e.g. `whereHas`, `orWhereHas`, `whereDoesntHave`, `orWhereDoesntHave`, `whereHasMorph`, `orWhereHasMorph`, `whereDoesntHaveMorph`, `orWhereDoesntHaveMorph`" }
+"laravel/add-tap-closure-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Automatically type hints your tappable closures" }
+"laravel/no-app-array-access" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace magical call on $this->app[\"something\"] to standalone type assign variable" }
+"laravel/no-collection-aliases" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use the base collection methods instead of their aliases." }
+"laravel/no-controller-middleware" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "This rule warns against applying middlewares in controllers." }
 "laravel/no-implicit-model-query" = { fix = "unsafe", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Start Eloquent queries with Model::query() instead of static magic calls." }
 "laravel/no-negated-blank-filled" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Swap the use of NotBooleans used with filled() and blank() to the correct helper." }
-"laravel/no-negated-contains" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Convert negated calls to `contains` to `doesntContain`, or vice versa." }
-"laravel/no-negated-filter" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Avoid negated conditionals in `filter()` by using `reject()`, or vice versa." }
-"laravel/no-negated-when" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Reverse conditionable method calls" }
+"laravel/no-negated-contains" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Convert negated calls to `contains` to `doesntContain`, or vice versa." }
+"laravel/no-negated-filter" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Avoid negated conditionals in `filter()` by using `reject()`, or vice versa." }
+"laravel/no-negated-when" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Reverse conditionable method calls" }
 "laravel/no-request-all" = { fix = "none", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects the use of `$request->all()` or `Request::all()` in Laravel applications." }
-"laravel/no-useless-value-call" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Removes redundant value helper calls" }
-"laravel/no-useless-with-call" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Removes redundant with helper calls" }
+"laravel/no-useless-value-call" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Removes redundant value helper calls" }
+"laravel/no-useless-with-call" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Removes redundant with helper calls" }
 "laravel/prefer-abort-if" = { fix = "unsafe", ported = true, status = "decided", summary = "Change if abort to abort_if" }
-"laravel/prefer-aliases-attribute" = { fix = "unsafe", ported = false, status = "decided", summary = "Changes the aliases property to use the Aliases attribute" }
+"laravel/prefer-aliases-attribute" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes the aliases property to use the Aliases attribute" }
 "laravel/prefer-anonymous-migration" = { fix = "none", sets = ["code-quality"], ported = true, status = "decided", summary = "Prefer using anonymous classes for Laravel migrations instead of named classes." }
-"laravel/prefer-appends-attribute" = { fix = "unsafe", ported = false, status = "decided", summary = "Changes model appends property to use the appends attribute" }
+"laravel/prefer-appends-attribute" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes model appends property to use the appends attribute" }
 "laravel/prefer-array-validation-rules" = { fix = "safe", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Use array syntax for validation rules instead of 'a|b' strings." }
 "laravel/prefer-back-helper" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace `redirect()->back()` and `Redirect::back()` with `back()`" }
-"laravel/prefer-backoff-attribute" = { fix = "unsafe", ported = false, status = "decided", summary = "Changes the backoff property to use the Backoff attribute" }
+"laravel/prefer-backoff-attribute" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes the backoff property to use the Backoff attribute" }
 "laravel/prefer-casts-method" = { fix = "safe", sets = ["coding-style"], origin = "mago", ported = true, status = "decided", summary = "Detects the `$casts` property on an Eloquent model. Laravel 11 introduced the `casts()`" }
-"laravel/prefer-class-container-key" = { fix = "unsafe", ported = false, status = "decided", summary = "Changes the string or class const used for a service container make call" }
-"laravel/prefer-closure-only-bind" = { fix = "safe", ported = false, status = "decided", summary = "Drop the specified abstract class from the bind method and replace it with a closure that returns the abstract class." }
-"laravel/prefer-collected-by-attribute" = { fix = "unsafe", ported = false, status = "decided", summary = "Changes model newCollection method to use the CollectedBy attribute" }
-"laravel/prefer-collection-all" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Convert `toArray()` to `all()` when the collection does not contain any Arrayable objects." }
-"laravel/prefer-collects-attribute" = { fix = "unsafe", ported = false, status = "decided", summary = "Changes the collects property to use the Collects attribute" }
-"laravel/prefer-command-hidden-attribute" = { fix = "unsafe", ported = false, status = "decided", summary = "Changes the hidden property to use the Hidden attribute on console commands" }
-"laravel/prefer-connection-attribute" = { fix = "unsafe", ported = false, status = "decided", summary = "Changes model connection property to use the Connection attribute" }
-"laravel/prefer-constructor-injection" = { fix = "unsafe", ported = false, status = "decided", summary = "Move help facade-like function calls to constructor injection" }
+"laravel/prefer-class-container-key" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes the string or class const used for a service container make call" }
+"laravel/prefer-closure-only-bind" = { fix = "safe", ported = true, status = "decided", summary = "Drop the specified abstract class from the bind method and replace it with a closure that returns the abstract class." }
+"laravel/prefer-collected-by-attribute" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes model newCollection method to use the CollectedBy attribute" }
+"laravel/prefer-collection-all" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Convert `toArray()` to `all()` when the collection does not contain any Arrayable objects." }
+"laravel/prefer-collects-attribute" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes the collects property to use the Collects attribute" }
+"laravel/prefer-command-hidden-attribute" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes the hidden property to use the Hidden attribute on console commands" }
+"laravel/prefer-connection-attribute" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes model connection property to use the Connection attribute" }
+"laravel/prefer-constructor-injection" = { fix = "unsafe", ported = true, status = "decided", summary = "Move help facade-like function calls to constructor injection" }
 "laravel/prefer-date-facade" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Refactor Carbon static method calls to use the Date facade instead." }
-"laravel/prefer-date-format-attribute" = { fix = "unsafe", ported = false, status = "decided", summary = "Changes model dateFormat property to use the DateFormat attribute" }
+"laravel/prefer-date-format-attribute" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes model dateFormat property to use the DateFormat attribute" }
 "laravel/prefer-dedicated-status-assertion" = { fix = "safe", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Use assertOk(), assertNotFound() and similar instead of assertStatus(200)." }
 "laravel/prefer-default-argument" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Apply default instead of null coalesce" }
-"laravel/prefer-delay-attribute" = { fix = "unsafe", ported = false, status = "decided", summary = "Changes the delay property to use the Delay attribute" }
-"laravel/prefer-delete-when-missing-models-attribute" = { fix = "unsafe", ported = false, status = "decided", summary = "Changes the deleteWhenMissingModels property to use the DeleteWhenMissingModels attribute" }
-"laravel/prefer-description-attribute" = { fix = "unsafe", ported = false, status = "decided", summary = "Changes the description property to use the Description attribute" }
-"laravel/prefer-dispatch-helper" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Use the event or dispatch helpers instead of the static dispatch method." }
+"laravel/prefer-delay-attribute" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes the delay property to use the Delay attribute" }
+"laravel/prefer-delete-when-missing-models-attribute" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes the deleteWhenMissingModels property to use the DeleteWhenMissingModels attribute" }
+"laravel/prefer-description-attribute" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes the description property to use the Description attribute" }
+"laravel/prefer-dispatch-helper" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use the event or dispatch helpers instead of the static dispatch method." }
 "laravel/prefer-env-helper" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change env variable to env static call" }
-"laravel/prefer-environment-check" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Replace app environment comparison with parameter or method call" }
-"laravel/prefer-error-bag-attribute" = { fix = "unsafe", ported = false, status = "decided", summary = "Changes the errorBag property to use the ErrorBag attribute" }
+"laravel/prefer-environment-check" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace app environment comparison with parameter or method call" }
+"laravel/prefer-error-bag-attribute" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes the errorBag property to use the ErrorBag attribute" }
 "laravel/prefer-exception-class-string" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "changes use of a new throw instance to class string" }
 "laravel/prefer-explicit-json-call" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change method calls from $this->json to $this->postJson, $this->putJson, etc." }
 "laravel/prefer-facade-over-app" = { fix = "unsafe", ported = true, status = "decided", summary = "Change app() func calls to facade calls" }
-"laravel/prefer-fail-on-timeout-attribute" = { fix = "unsafe", ported = false, status = "decided", summary = "Changes the failOnTimeout property to use the FailOnTimeout attribute" }
+"laravel/prefer-fail-on-timeout-attribute" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes the failOnTimeout property to use the FailOnTimeout attribute" }
 "laravel/prefer-fake-helper" = { fix = "unsafe", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Use the fake() helper instead of $this->faker." }
-"laravel/prefer-fillable-attribute" = { fix = "unsafe", ported = false, status = "decided", summary = "Changes model fillable property to use the fillable attribute" }
-"laravel/prefer-guarded-attribute" = { fix = "unsafe", ported = false, status = "decided", summary = "Changes model guarded property to use the guarded attribute" }
-"laravel/prefer-help-attribute" = { fix = "unsafe", ported = false, status = "decided", summary = "Changes the help property to use the Help attribute" }
-"laravel/prefer-hidden-attribute" = { fix = "unsafe", ported = false, status = "decided", summary = "Changes model hidden property to use the hidden attribute" }
-"laravel/prefer-job-connection-attribute" = { fix = "unsafe", ported = false, status = "decided", summary = "Changes the connection property to use the Connection attribute on queue jobs" }
-"laravel/prefer-latest-oldest" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Changes orderBy() to latest() or oldest()" }
-"laravel/prefer-max-exceptions-attribute" = { fix = "unsafe", ported = false, status = "decided", summary = "Changes the maxExceptions property to use the MaxExceptions attribute" }
+"laravel/prefer-fillable-attribute" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes model fillable property to use the fillable attribute" }
+"laravel/prefer-guarded-attribute" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes model guarded property to use the guarded attribute" }
+"laravel/prefer-help-attribute" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes the help property to use the Help attribute" }
+"laravel/prefer-hidden-attribute" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes model hidden property to use the hidden attribute" }
+"laravel/prefer-job-connection-attribute" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes the connection property to use the Connection attribute on queue jobs" }
+"laravel/prefer-latest-oldest" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Changes orderBy() to latest() or oldest()" }
+"laravel/prefer-max-exceptions-attribute" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes the maxExceptions property to use the MaxExceptions attribute" }
 "laravel/prefer-nullsafe" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Convert simple calls to optional helper to use the nullsafe operator" }
-"laravel/prefer-preserve-keys-attribute" = { fix = "unsafe", ported = false, status = "decided", summary = "Changes the preserveKeys property to use the PreserveKeys attribute" }
-"laravel/prefer-protected-model-methods" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Makes Model attributes and scopes protected" }
-"laravel/prefer-query-builder-call" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "The EloquentMagicMethodToQueryBuilderRule is designed to automatically transform certain magic method calls on Eloquent Models into corresponding Query Builder method calls." }
-"laravel/prefer-queue-attribute" = { fix = "unsafe", ported = false, status = "decided", summary = "Changes the queue property to use the Queue attribute" }
+"laravel/prefer-preserve-keys-attribute" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes the preserveKeys property to use the PreserveKeys attribute" }
+"laravel/prefer-protected-model-methods" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Makes Model attributes and scopes protected" }
+"laravel/prefer-query-builder-call" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "The EloquentMagicMethodToQueryBuilderRule is designed to automatically transform certain magic method calls on Eloquent Models into corresponding Query Builder method calls." }
+"laravel/prefer-queue-attribute" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes the queue property to use the Queue attribute" }
 "laravel/prefer-report-if" = { fix = "unsafe", ported = true, status = "decided", summary = "Change if report to report_if" }
 "laravel/prefer-request-facade" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use the Request facade instead of $_GET, $_POST and $_SERVER." }
 "laravel/prefer-request-server" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change server variable to Request facade's server method" }
-"laravel/prefer-request-validate" = { fix = "unsafe", ported = false, status = "decided", summary = "Change static validate() method to $request->validate()" }
+"laravel/prefer-request-validate" = { fix = "unsafe", ported = true, status = "decided", summary = "Change static validate() method to $request->validate()" }
 "laravel/prefer-resolve-helper" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Convert app() to resolve() where applicable." }
 "laravel/prefer-session-facade" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change PHP session usage to Session Facade methods" }
-"laravel/prefer-signature-attribute" = { fix = "unsafe", ported = false, status = "decided", summary = "Changes the signature property to use the Signature attribute" }
+"laravel/prefer-signature-attribute" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes the signature property to use the Signature attribute" }
 "laravel/prefer-sleep-facade" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use Sleep::sleep() and Sleep::usleep() instead of the sleep() and usleep() function." }
-"laravel/prefer-status-assertion-method" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Replace `(new \\Illuminate\\Testing\\TestResponse)->assertStatus(200)` with `(new \\Illuminate\\Testing\\TestResponse)->assertOk()`" }
-"laravel/prefer-stop-on-first-failure-attribute" = { fix = "unsafe", ported = false, status = "decided", summary = "Changes the stopOnFirstFailure property to use the StopOnFirstFailure attribute" }
+"laravel/prefer-status-assertion-method" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace `(new \\Illuminate\\Testing\\TestResponse)->assertStatus(200)` with `(new \\Illuminate\\Testing\\TestResponse)->assertOk()`" }
+"laravel/prefer-stop-on-first-failure-attribute" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes the stopOnFirstFailure property to use the StopOnFirstFailure attribute" }
 "laravel/prefer-str-starts-with" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use Str::startsWith() or Str::endsWith() instead of substr() === $str" }
-"laravel/prefer-table-attribute" = { fix = "unsafe", ported = false, status = "decided", summary = "Changes model table-related properties to use the Table attribute" }
+"laravel/prefer-table-attribute" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes model table-related properties to use the Table attribute" }
 "laravel/prefer-throw-if" = { fix = "unsafe", ported = true, status = "decided", summary = "Change if throw to throw_if" }
-"laravel/prefer-timeout-attribute" = { fix = "unsafe", ported = false, status = "decided", summary = "Changes the timeout property to use the Timeout attribute" }
+"laravel/prefer-timeout-attribute" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes the timeout property to use the Timeout attribute" }
 "laravel/prefer-to-route-helper" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace `redirect()->route(\"home\")` and `Redirect::route(\"home\")` with `to_route(\"home\")`" }
 "laravel/prefer-today" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use today() instead of now()->startOfDay()" }
-"laravel/prefer-touches-attribute" = { fix = "unsafe", ported = false, status = "decided", summary = "Changes model touches property to use the touches attribute" }
+"laravel/prefer-touches-attribute" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes model touches property to use the touches attribute" }
 "laravel/prefer-travel-to" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use the `$this->travelTo()` method in Laravel's `TestCase` class instead of the `Carbon::setTestNow()` method." }
-"laravel/prefer-tries-attribute" = { fix = "unsafe", ported = false, status = "decided", summary = "Changes the tries property to use the Tries attribute" }
-"laravel/prefer-typed-assert-closure" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Changes assert calls to use a type hinted closure." }
-"laravel/prefer-unique-for-attribute" = { fix = "unsafe", ported = false, status = "decided", summary = "Changes the uniqueFor property to use the UniqueFor attribute" }
-"laravel/prefer-validation-rule-array" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Convert string validation rules into arrays for Laravel's Validator." }
-"laravel/prefer-view-array" = { fix = "none", ported = false, origin = "mago", status = "decided", summary = "Prefer passing data to views using the array parameter in the `view()` function," }
-"laravel/prefer-visible-attribute" = { fix = "unsafe", ported = false, status = "decided", summary = "Changes model visible property to use the Visible attribute" }
-"laravel/prefer-without-incrementing-attribute" = { fix = "unsafe", ported = false, status = "decided", summary = "Changes model incrementing = false property to use the WithoutIncrementing attribute" }
-"laravel/prefer-without-timestamps-attribute" = { fix = "unsafe", ported = false, status = "decided", summary = "Changes model timestamps = false property to use the WithoutTimestamps attribute" }
+"laravel/prefer-tries-attribute" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes the tries property to use the Tries attribute" }
+"laravel/prefer-typed-assert-closure" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Changes assert calls to use a type hinted closure." }
+"laravel/prefer-unique-for-attribute" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes the uniqueFor property to use the UniqueFor attribute" }
+"laravel/prefer-validation-rule-array" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Convert string validation rules into arrays for Laravel's Validator." }
+"laravel/prefer-view-array" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Prefer passing data to views using the array parameter in the `view()` function," }
+"laravel/prefer-visible-attribute" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes model visible property to use the Visible attribute" }
+"laravel/prefer-without-incrementing-attribute" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes model incrementing = false property to use the WithoutIncrementing attribute" }
+"laravel/prefer-without-timestamps-attribute" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes model timestamps = false property to use the WithoutTimestamps attribute" }
 "laravel/require-final-controller" = { fix = "unsafe", ported = true, origin = "mago", status = "decided", summary = "Enforces that controller classes are declared as `final`." }
 "laravel/require-phpdoc-types-only" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Keeps only type annotations in PHPDoc." }
 "operators/no-and-or-keywords" = { fix = "unsafe", intent = "suspicious", sets = ["code-quality"], ported = true, status = "decided", summary = "Use `&&` and `||` logical operators instead of `and` and `or`." }
@@ -610,7 +610,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "php-8.4/prefer-array-find-key" = { fix = "safe", sets = ["modernize"], ported = true, status = "decided", summary = "Replace foreach with assignment and break with array_find_key" }
 "php-8.4/prefer-round-mode-enum" = { fix = "safe", sets = ["modernize"], gated_by = "php-version", ported = true, status = "decided", summary = "Replace rounding mode constant to RoundMode enum in `round()`" }
 "php-8.5/no-finfo-buffer-context" = { fix = "safe", sets = ["modernize"], gated_by = "php-version", ported = true, status = "decided", summary = "Remove argument by position by function name" }
-"php-8.5/no-null-array-key" = { fix = "safe", sets = ["modernize"], gated_by = "php-version", ported = false, status = "decided", summary = "Replace null key in array_key_exists with empty string" }
+"php-8.5/no-null-array-key" = { fix = "safe", sets = ["modernize"], gated_by = "php-version", ported = true, status = "decided", summary = "Replace null key in array_key_exists with empty string" }
 "php-8.5/no-null-debug-info" = { fix = "safe", sets = ["modernize"], gated_by = "php-version", ported = true, status = "decided", summary = "Replaces `null` return value with empty array in `__debugInfo` methods" }
 "php-8.5/no-out-of-range-chr" = { fix = "safe", sets = ["modernize"], gated_by = "php-version", ported = true, status = "decided", summary = "Wrap chr() argument with % 256 to avoid deprecated out-of-range integers" }
 "php-8.5/prefer-array-first-last" = { fix = "safe", sets = ["modernize"], gated_by = "php-version", ported = true, status = "decided", summary = "Make use of array_first() and array_last()" }
@@ -624,10 +624,10 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpdoc/no-package" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "`@package` and `@subpackage` annotations must be removed from PHPDoc." }
 "phpdoc/no-superfluous-tags" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Removes `@param`, `@return` and `@var` tags that don't provide any useful information." }
 "phpdoc/no-useless-inheritdoc" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Classy that does not inherit must not have `@inheritdoc` tags." }
-"phpdoc/no-useless-param" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove @param docblock with same type as parameter type" }
+"phpdoc/no-useless-param" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove @param docblock with same type as parameter type" }
 "phpdoc/no-useless-readonly" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove useless `@readonly` annotation on native readonly type" }
-"phpdoc/no-useless-return" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove @return docblock with same type as defined in PHP" }
-"phpdoc/no-useless-var" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove unused `@var` annotation for properties and class constants" }
+"phpdoc/no-useless-return" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove @return docblock with same type as defined in PHP" }
+"phpdoc/no-useless-var" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unused `@var` annotation for properties and class constants" }
 "phpdoc/no-void-on-magic-method" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove useless @return void docblock from magic methods __construct, __destruct, and __clone" }
 "phpdoc/require-no-named-arguments" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "There must be `@no-named-arguments` tag in PHPDoc of a class/enum/interface/trait." }
 "phpunit/add-allow-mock-objects-attribute" = { fix = "safe", ported = true, status = "decided", summary = "Add #[AllowMockObjectsWithoutExpectations] to PHPUnit test classes whose mocks have no expectations." }
@@ -635,20 +635,20 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpunit/add-data-provider-allow-mock-objects" = { fix = "safe", ported = true, status = "decided", summary = "Add #[AllowMockObjectsWithoutExpectations] attribute to PHPUnit test classes that have methods with data providers and mock objects without expectations" }
 "phpunit/add-data-provider-iterator-return-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add Iterator type on known PHPUnit data providers" }
 "phpunit/add-depended-test-return-type" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Add return type declaration to a test method that returns type" }
-"phpunit/add-instanceof-assert" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Add an assertInstanceOf() before a nullable object is used in a PHPUnit test." }
-"phpunit/add-instanceof-assert-for-argument" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Add explicit instance assert between above nullable object pass" }
+"phpunit/add-instanceof-assert" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Add an assertInstanceOf() before a nullable object is used in a PHPUnit test." }
+"phpunit/add-instanceof-assert-for-argument" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Add explicit instance assert between above nullable object pass" }
 "phpunit/add-mock-intersection-param" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Add a MockObject intersection @param docblock with the mocked class, based on the mock passed in the private method call" }
 "phpunit/add-mock-intersection-type" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Add `MockObject&Foo` / `Stub&Foo` intersection types to PHPDoc of mock and stub properties, params and returns." }
 "phpunit/add-mock-object-type" = { fix = "safe", ported = true, status = "decided", summary = "Change param type of a private test method to MockObject, when expects() is called on it" }
 "phpunit/add-param-type-depends" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Add param type declaration based on @depends test method return type" }
-"phpunit/add-property-type-container-get" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add strict typed property to a private test case property based on its @var object type, when assigned via container fetch in setUp()" }
-"phpunit/add-property-type-create-mock" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add \"PHPUnit\\Framework\\MockObject\\MockObject\" typed property from assigned mock to clearly separate from real objects" }
-"phpunit/add-property-type-setup" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add strict typed property based on setUp() strict typed assigns in TestCase" }
-"phpunit/add-property-type-setup-docblock" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add property type in PHPUnit test from docblock, if defined in setUp() method" }
+"phpunit/add-property-type-container-get" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add strict typed property to a private test case property based on its @var object type, when assigned via container fetch in setUp()" }
+"phpunit/add-property-type-create-mock" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add \"PHPUnit\\Framework\\MockObject\\MockObject\" typed property from assigned mock to clearly separate from real objects" }
+"phpunit/add-property-type-setup" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add strict typed property based on setUp() strict typed assigns in TestCase" }
+"phpunit/add-property-type-setup-docblock" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add property type in PHPUnit test from docblock, if defined in setUp() method" }
 "phpunit/add-return-type-from-mock-object" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add known property and return MockObject types" }
 "phpunit/add-stub-intersection-type" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Add a Stub intersection @var docblock with the stubbed class to a native Stub property" }
 "phpunit/add-test-void-return" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add void to PHPUnit test methods" }
-"phpunit/add-will-return-callback-param-type" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Decorate callbacks and arrow functions in willReturnCallback() with known param/return types based on reflection method" }
+"phpunit/add-will-return-callback-param-type" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Decorate callbacks and arrow functions in willReturnCallback() with known param/return types based on reflection method" }
 "phpunit/no-assert-contains-only" = { fix = "safe", ported = true, status = "decided", summary = "Replaces `Assert::assertContainsOnly()` calls with type-specific `Assert::assertContainsOnly*()` calls" }
 "phpunit/no-assert-internal-type" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace assertInternalType() with the dedicated assertIs*() assertion." }
 "phpunit/no-assert-is-type" = { fix = "safe", ported = true, status = "decided", summary = "Replaces `Assert::isType()` calls with type-specific `Assert::is*()` calls" }
@@ -657,7 +657,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpunit/no-bare-mock-assign" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Add explicit instance assert between above nullable object pass" }
 "phpunit/no-bare-mock-builder" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Remove getMockBuilder() to createMock()" }
 "phpunit/no-empty-test" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Remove empty test methods" }
-"phpunit/no-entity-mock" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Move from entity mock, to direct use of class instance and setters" }
+"phpunit/no-entity-mock" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Move from entity mock, to direct use of class instance and setters" }
 "phpunit/no-expected-exception-annotation" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace @expectedException annotations with expectException() calls." }
 "phpunit/no-expects-any" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Remove `expect($this->any())` from mocks as it has no added value" }
 "phpunit/no-final-constructor-override" = { fix = "safe", ported = true, status = "decided", summary = "Remove override final construct test case" }
@@ -666,7 +666,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpunit/no-mock-intersection-property" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Make properties in tests with intersection mock object either object type or mock type" }
 "phpunit/no-negated-assertion" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Turns not-operator comparisons to their method name alternatives in PHPUnit TestCase" }
 "phpunit/no-setup-override-attribute" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Remove override attribute, if setUp()/tearDown() references parent call to improve readability" }
-"phpunit/no-stub-with-expectations" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Change createStub() to createMock(), when the created variable is passed to a method that requires MockObject type" }
+"phpunit/no-stub-with-expectations" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change createStub() to createMock(), when the created variable is passed to a method that requires MockObject type" }
 "phpunit/no-test-constructor" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace or remove __construct() in PHPUnit test cases; use setUp()." }
 "phpunit/no-unused-mock" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Remove standalone method calls with no effect" }
 "phpunit/no-unused-mock-property" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Remove never used property mock, only to set expectations" }
@@ -687,7 +687,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpunit/prefer-covers-attribute" = { fix = "safe", ported = true, status = "decided", summary = "Change covers annotations with value to attribute" }
 "phpunit/prefer-create-mock" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace getMock*() with createMock()." }
 "phpunit/prefer-create-stub" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use createStub() instead of createMock() when no expectations are set." }
-"phpunit/prefer-create-stub-argument" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Use createStub() over createMock() when used as argument or array value and does not add any mock requirements" }
+"phpunit/prefer-create-stub-argument" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use createStub() over createMock() when used as argument or array value and does not add any mock requirements" }
 "phpunit/prefer-create-stub-expression" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace createMock() assigned to variable that is only used as arg with no expectations, to createStub()" }
 "phpunit/prefer-create-stub-in-coalesce" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use createStub() over createMock() when used as argument/array item coalesce ?? fallback" }
 "phpunit/prefer-data-provider" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace testWith annotation to data provider." }
@@ -716,14 +716,14 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpunit/prefer-specific-will-method" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Changes $mock->will() call to more specific method" }
 "phpunit/prefer-standalone-asserts-over-callback" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replaces identical compare in $this->callable() sole return to standalone PHPUnit asserts that show more detailed failure messages" }
 "phpunit/prefer-stub-var" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Update the @var docblock of a property changed to a Stub native type, from MockObject to Stub" }
-"phpunit/prefer-test-attribute" = { fix = "safe", sets = ["code-quality"], ported = false, origin = "mago", status = "decided", summary = "Suggests using PHPUnit's `#[Test]` attribute instead of the `test` method name prefix." }
+"phpunit/prefer-test-attribute" = { fix = "safe", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Suggests using PHPUnit's `#[Test]` attribute instead of the `test` method name prefix." }
 "phpunit/prefer-test-prefix" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace @test with prefixed function" }
 "phpunit/prefer-test-with-attribute" = { fix = "safe", ported = true, status = "decided", summary = "Change @testWith() annotation to #[TestWith] attribute" }
 "phpunit/prefer-this-call" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Changes PHPUnit calls from self::assert*() to $this->assert*()" }
 "phpunit/prefer-ticket-attribute" = { fix = "safe", ported = true, status = "decided", summary = "Change annotations with value to attribute" }
-"phpunit/prefer-will-return-callback" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Merge ->with($this->callback()) and ->willReturn() into willReturnCallback()." }
+"phpunit/prefer-will-return-callback" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Merge ->with($this->callback()) and ->willReturn() into willReturnCallback()." }
 "phpunit/prefer-with-is-instance-of" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replaces use of with, callable and instance assert to simple isInstanceOf() method" }
-"phpunit/prefer-yield-data-provider" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Turns array return to yield in data providers" }
+"phpunit/prefer-yield-data-provider" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Turns array return to yield in data providers" }
 "phpunit/require-assertion-style" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Calls to `PHPUnit\\Framework\\TestCase` static methods (like assertions) must all be of the same type, either `$this->`, `self::` or `static::`." }
 "phpunit/require-covers" = { fix = "safe", ported = true, status = "decided", summary = "Adds a default `@coversNothing` annotation to PHPUnit test classes that have no `@covers*` annotation." }
 "phpunit/require-data-provider-naming" = { fix = "unsafe", ported = true, status = "decided", summary = "Data provider names must match the name of the test." }
@@ -741,26 +741,26 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpunit/require-strict-types-in-tests" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Add `declare(strict_types=1)` to PHPUnit test class file" }
 "phpunit/require-string-assert-argument" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Cast 2nd argument in assertStringContainsString() to a string if not yet" }
 "phpunit/require-test-annotation-style" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Mark tests consistently: a `test` prefix or a @test annotation." }
-"refactor/add-override-attribute" = { fix = "unsafe", ported = false, status = "decided", summary = "Add #[Override] to methods and properties that override a parent member." }
+"refactor/add-override-attribute" = { fix = "unsafe", ported = true, status = "decided", summary = "Add #[Override] to properties that override a parent class's property (PHP 8.5)." }
 "refactor/no-negated-condition" = { fix = "unsafe", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Flip a ternary whose condition is negated: drop the `!` (or use `===` / `==`) and swap the branches." }
-"refactor/prefer-attribute-over-annotation" = { fix = "unsafe", ported = false, status = "decided", summary = "Replace configured PHPDoc annotations (including nested ones) with attributes." }
+"refactor/prefer-attribute-over-annotation" = { fix = "unsafe", ported = true, status = "decided", summary = "Replace configured PHPDoc annotations (including nested ones) with attributes." }
 "refactor/prefer-constant" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Replace function calls that return a constant (php_sapi_name(), pi(), ...) with the constant." }
 "refactor/remove-attribute" = { fix = "safe", ported = true, status = "decided", summary = "Removes configured attributes by their respective FQN." }
-"refactor/remove-function-argument" = { fix = "unsafe", ported = false, status = "decided", summary = "Remove argument by position by function name" }
-"refactor/remove-function-call" = { fix = "unsafe", ported = false, status = "decided", summary = "Remove defined function calls" }
+"refactor/remove-function-argument" = { fix = "unsafe", ported = true, status = "decided", summary = "Remove argument by position by function name" }
+"refactor/remove-function-call" = { fix = "unsafe", ported = true, status = "decided", summary = "Remove defined function calls" }
 "refactor/remove-phpdoc-annotation" = { fix = "safe", ported = true, status = "decided", summary = "Removes configured annotations from PHPDoc." }
-"refactor/rename-cast" = { fix = "unsafe", ported = false, status = "decided", summary = "Renames casts" }
-"refactor/rename-class" = { fix = "unsafe", gated_by = "laravel-version", ported = false, status = "decided", summary = "Replace defined classes by new ones" }
-"refactor/rename-class-constant" = { fix = "unsafe", ported = false, status = "decided", summary = "Replace defined class constants in their calls" }
-"refactor/rename-constant" = { fix = "unsafe", ported = false, status = "decided", summary = "Replace constant by new ones" }
-"refactor/rename-function" = { fix = "unsafe", gated_by = "laravel-version", ported = false, status = "decided", summary = "Turn defined function call new one" }
-"refactor/rename-method" = { fix = "unsafe", gated_by = "laravel-version", ported = false, status = "decided", summary = "Turn method names to new ones" }
+"refactor/rename-cast" = { fix = "unsafe", ported = true, status = "decided", summary = "Renames casts" }
+"refactor/rename-class" = { fix = "unsafe", gated_by = "laravel-version", ported = true, status = "decided", summary = "Replace defined classes by new ones" }
+"refactor/rename-class-constant" = { fix = "unsafe", ported = true, status = "decided", summary = "Replace defined class constants in their calls" }
+"refactor/rename-constant" = { fix = "unsafe", ported = true, status = "decided", summary = "Replace constant by new ones" }
+"refactor/rename-function" = { fix = "unsafe", gated_by = "laravel-version", ported = true, status = "decided", summary = "Turn defined function call new one" }
+"refactor/rename-method" = { fix = "unsafe", gated_by = "laravel-version", ported = true, status = "decided", summary = "Turn method names to new ones" }
 "refactor/rename-phpdoc-tag" = { fix = "safe", ported = true, status = "decided", summary = "Renames PHPDoc tags." }
-"refactor/replace-array-access" = { fix = "unsafe", ported = false, status = "decided", summary = "Change array dim fetch to method call" }
-"refactor/replace-function-with-constant" = { fix = "unsafe", ported = false, status = "decided", summary = "Changes use of function calls to use constants" }
-"refactor/replace-function-with-new" = { fix = "unsafe", ported = false, status = "decided", summary = "Change configured function calls to new Instance" }
-"refactor/replace-function-with-static" = { fix = "unsafe", ported = false, status = "decided", summary = "Turn defined function call to static method call" }
-"refactor/replace-static-with-method" = { fix = "unsafe", ported = false, status = "decided", summary = "Change static call to service method via constructor injection" }
+"refactor/replace-array-access" = { fix = "unsafe", ported = true, status = "decided", summary = "Change array dim fetch to method call" }
+"refactor/replace-function-with-constant" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes use of function calls to use constants" }
+"refactor/replace-function-with-new" = { fix = "unsafe", ported = true, status = "decided", summary = "Change configured function calls to new Instance" }
+"refactor/replace-function-with-static" = { fix = "unsafe", ported = true, status = "decided", summary = "Turn defined function call to static method call" }
+"refactor/replace-static-with-method" = { fix = "unsafe", ported = true, status = "decided", summary = "Change static call to service method via constructor injection" }
 "security/add-sensitive-parameter" = { fix = "safe", intent = "suspicious", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Requires that parameters that are likely to contain sensitive information (e.g., passwords) are marked with the `#[SensitiveParameter]` attribute." }
 "security/no-debug-calls" = { fix = "unsafe", intent = "suspicious", sets = ["coding-style"], ported = true, status = "decided", summary = "Remove or report debug calls left in code: dd(), dump(), var_dump(), ray(), and ->dd()/->dump() in Pest expectations." }
 "security/no-eval" = { fix = "none", intent = "suspicious", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects unsafe uses of the `eval` construct." }
@@ -774,7 +774,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "security/no-restricted-instantiation" = { fix = "none", intent = "suspicious", ported = true, origin = "mago", status = "decided", summary = "Flags direct instantiation of specific types that are disallowed via rule configuration." }
 "security/no-tainted-data" = { fix = "none", intent = "suspicious", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects user (tainted) data being passed directly to sink functions or constructs (such as `echo`, `print`, or user-defined \"log\" functions)." }
 "security/require-preg-quote-delimiter" = { fix = "none", intent = "suspicious", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "This rule requires that when using `preg_quote()`, the second `$delimiter` argument is always provided." }
-"statements/add-safe-strict-types" = { fix = "mixed", intent = "suspicious", sets = ["code-quality"], ported = false, status = "decided", summary = "Add `declare(strict_types=1)` if missing and only if the file is type-safe (no scalar type coercions)." }
+"statements/add-safe-strict-types" = { fix = "mixed", intent = "suspicious", sets = ["code-quality"], ported = true, status = "decided", summary = "Add `declare(strict_types=1)` if missing and only if the file is type-safe (no scalar type coercions)." }
 "statements/no-empty" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove useless (semicolon) statements." }
 "statements/require-strict-types" = { fix = "mixed", intent = "suspicious", sets = ["code-quality"], ported = true, status = "decided", summary = "Force a strict types mode in all files.", note = "fix is safe where Rector SafeDeclareStrictTypes proves no scalar coercion, unsafe otherwise" }
 "strings/no-non-printable-character" = { fix = "unsafe", intent = "suspicious", sets = ["code-quality"], ported = true, status = "decided", summary = "Remove Zero-width space (ZWSP), Non-breaking space (NBSP) and other invisible unicode symbols." }
@@ -794,13 +794,13 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "style/no-array-push" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Converts simple usages of `array_push($x, $y);` to `$x[] = $y;`." }
 "style/no-assign-in-ternary-branch" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Assign outcome of ternary condition to variable, where applicable" }
 "style/no-call-user-func" = { fix = "unsafe", sets = ["code-quality", "coding-style"], ported = true, status = "decided", summary = "Call callables directly instead of through call_user_func()." }
-"style/no-dynamic-method-call" = { fix = "none", sets = ["coding-style"], ported = false, status = "decided", summary = "Disallows calling a method by a variable name (`$object->$method()`)." }
-"style/no-dynamic-method-callable" = { fix = "none", sets = ["coding-style"], ported = false, status = "decided", summary = "Disallows a first-class callable of a method with a variable name (`$object->$method(...)`)." }
+"style/no-dynamic-method-call" = { fix = "none", sets = ["coding-style"], ported = true, status = "decided", summary = "Disallows calling a method by a variable name (`$object->$method()`)." }
+"style/no-dynamic-method-callable" = { fix = "none", sets = ["coding-style"], ported = true, status = "decided", summary = "Disallows a first-class callable of a method with a variable name (`$object->$method(...)`)." }
 "style/no-dynamic-name" = { fix = "none", sets = ["coding-style"], origin = "mago", ported = true, status = "decided", summary = "Discourages usage of PHP's variable variables feature." }
-"style/no-dynamic-property" = { fix = "none", sets = ["coding-style"], ported = false, status = "decided", summary = "Disallows accessing a property by a variable name (`$object->$property`)." }
-"style/no-dynamic-static-call" = { fix = "none", sets = ["coding-style"], ported = false, status = "decided", summary = "Disallows calling a static method by a variable name (`Foo::$method()`)." }
-"style/no-dynamic-static-callable" = { fix = "none", sets = ["coding-style"], ported = false, status = "decided", summary = "Disallows a first-class callable of a static method with a variable name (`Foo::$method(...)`)." }
-"style/no-dynamic-static-property" = { fix = "none", sets = ["coding-style"], ported = false, status = "decided", summary = "Disallows accessing a static property by a variable name (`Foo::$$property`)." }
+"style/no-dynamic-property" = { fix = "none", sets = ["coding-style"], ported = true, status = "decided", summary = "Disallows accessing a property by a variable name (`$object->$property`)." }
+"style/no-dynamic-static-call" = { fix = "none", sets = ["coding-style"], ported = true, status = "decided", summary = "Disallows calling a static method by a variable name (`Foo::$method()`)." }
+"style/no-dynamic-static-callable" = { fix = "none", sets = ["coding-style"], ported = true, status = "decided", summary = "Disallows a first-class callable of a static method with a variable name (`Foo::$method(...)`)." }
+"style/no-dynamic-static-property" = { fix = "none", sets = ["coding-style"], ported = true, status = "decided", summary = "Disallows accessing a static property by a variable name (`Foo::$$property`)." }
 "style/no-empty" = { fix = "unsafe", intent = "suspicious", sets = ["code-quality"], ported = true, status = "decided", summary = "Detects the use of the `empty()` construct.", note = "fix (Rector DisallowedEmptyRuleFixer) is unsafe; report-only from strict-rules empty.notAllowed and Mago no-empty" }
 "style/no-ereg" = { fix = "unsafe", sets = ["modernize"], ported = true, status = "decided", summary = "Replace deprecated `ereg` regular expression functions with `preg`." }
 "style/no-escaped-quotes" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Prefer quote that are not inside the string" }
@@ -833,7 +833,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "style/prefer-class-constant" = { fix = "unsafe", sets = ["modernize", "coding-style"], ported = false, status = "decided", summary = "Use `Foo::class` instead of class-name strings." }
 "style/prefer-class-keyword" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Use `class` keyword for class name resolution in string instead of hardcoded string reference" }
 "style/prefer-class-keyword-on-object" = { fix = "unsafe", sets = ["modernize"], ported = true, status = "decided", summary = "Replace `get_class` calls on object variables with class keyword syntax." }
-"style/prefer-class-name-constant" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Replace string class names by `<class>::class` constant" }
+"style/prefer-class-name-constant" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Replace string class names by `<class>::class` constant" }
 "style/prefer-compound-assignment" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Shorthand notation for operators should be used if possible." }
 "style/prefer-create-from-timestamp" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Suggests `DateTimeImmutable::createFromTimestamp()` when a Unix timestamp is converted" }
 "style/prefer-date-time-immutable" = { fix = "unsafe", intent = "suspicious", ported = true, status = "decided", summary = "Class `DateTimeImmutable` should be used instead of `DateTime`." }
@@ -885,77 +885,77 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/add-closure-return-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add return type to closures based on known return values" }
 "types/add-closure-void-return" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add closure return type void if there is no return" }
 "types/add-datetime-property-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Set DateTime to DateTimeInterface for DateTime property with DateTimeInterface docblock" }
-"types/add-doctrine-repository-return-type" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add return type to classes that extend Doctrine\\ORM\\EntityRepository based on return Doctrine method names" }
+"types/add-doctrine-repository-return-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add return type to classes that extend Doctrine\\ORM\\EntityRepository based on return Doctrine method names" }
 "types/add-fluent-return-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add return type from strict return $this" }
 "types/add-function-void-return" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add function return type void if there is no return" }
-"types/add-getter-return-phpdoc" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add @return array docblock to a getter method based on @var of the property" }
+"types/add-getter-return-phpdoc" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add @return array docblock to a getter method based on @var of the property" }
 "types/add-magic-method-return-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add known magic methods parameter and return type declarations" }
 "types/add-method-void-return" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add return type void to function like without any return" }
 "types/add-never-return-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add a `never` return type to functions, methods and closures that never return." }
-"types/add-nullable-return-type" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add basic ? nullable type to class methods and functions, as of PHP 7.1" }
+"types/add-nullable-return-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add basic ? nullable type to class methods and functions, as of PHP 7.1" }
 "types/add-numeric-return-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add int/float return type based on strict typed returns" }
 "types/add-numeric-return-type-from-scalar" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add int/float return type based on strict scalar returns type" }
-"types/add-param-phpdoc-from-callable-call" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add param array docblock based on callable native function call" }
-"types/add-param-phpdoc-from-dim-fetch" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add @param docblock array type, based on array dim fetch access" }
-"types/add-param-phpdoc-from-local-calls" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add @param array docblock to a class method based on local call types" }
-"types/add-param-phpdoc-from-reference-assign" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add @param docblock array type, based on type to assigned parameter reference" }
-"types/add-param-type-array-any-all" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add a type to an untyped array_any()/array_all() closure param, based on the array item type" }
-"types/add-param-type-array-dim-fetch" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add array type based on array dim fetch use" }
-"types/add-param-type-array-function" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add array_filter()/array_map() function closure param type, based on passed iterable" }
-"types/add-param-type-array-map" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Applies type hints to array_map closures" }
-"types/add-param-type-array-reduce" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Applies type hints to array_map closures" }
-"types/add-param-type-arrow-dim-fetch" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add closure and arrow function param array type, if dim fetch is used inside" }
-"types/add-param-type-data-provider" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Adds param type declaration based on PHPUnit provider return type declaration" }
-"types/add-param-type-dim-fetch-key" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add method param type based on use in array dim fetch of known keys" }
-"types/add-param-type-iterable-method-call" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Applies type hints to closures on Iterable method calls where key/value types are documented" }
-"types/add-param-type-method-call" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Change private method param type to strict type, based on passed strict types" }
-"types/add-param-type-parent-call" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Change param type based on parent param type" }
-"types/add-param-type-property" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add param type declaration based on property type" }
-"types/add-param-type-spl-fixed-array" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add exact fixed array type in known cases" }
+"types/add-param-phpdoc-from-callable-call" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add param array docblock based on callable native function call" }
+"types/add-param-phpdoc-from-dim-fetch" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add @param docblock array type, based on array dim fetch access" }
+"types/add-param-phpdoc-from-local-calls" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add @param array docblock to a class method based on local call types" }
+"types/add-param-phpdoc-from-reference-assign" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add @param docblock array type, based on type to assigned parameter reference" }
+"types/add-param-type-array-any-all" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add a type to an untyped array_any()/array_all() closure param, based on the array item type" }
+"types/add-param-type-array-dim-fetch" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add array type based on array dim fetch use" }
+"types/add-param-type-array-function" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add array_filter()/array_map() function closure param type, based on passed iterable" }
+"types/add-param-type-array-map" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Applies type hints to array_map closures" }
+"types/add-param-type-array-reduce" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Applies type hints to array_map closures" }
+"types/add-param-type-arrow-dim-fetch" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add closure and arrow function param array type, if dim fetch is used inside" }
+"types/add-param-type-data-provider" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Adds param type declaration based on PHPUnit provider return type declaration" }
+"types/add-param-type-dim-fetch-key" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add method param type based on use in array dim fetch of known keys" }
+"types/add-param-type-iterable-method-call" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Applies type hints to closures on Iterable method calls where key/value types are documented" }
+"types/add-param-type-method-call" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Change private method param type to strict type, based on passed strict types" }
+"types/add-param-type-parent-call" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Change param type based on parent param type" }
+"types/add-param-type-property" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add param type declaration based on property type" }
+"types/add-param-type-spl-fixed-array" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add exact fixed array type in known cases" }
 "types/add-param-type-sprintf" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add string type to parameters used in sprintf calls" }
-"types/add-param-type-variable-call" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add closure param object type based on the argument the assigned closure variable is called with" }
-"types/add-private-method-array-return-type" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add strict return array type to private methods based on created empty array and returned" }
-"types/add-property-type-assigns" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add typed property from assigned types" }
-"types/add-property-type-behat-context" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add known property types to Behat context static properties" }
-"types/add-property-type-constructor" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add typed properties based only on strict constructor types" }
-"types/add-property-type-get-repository" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add strict typed property to a private test case property based on its @var object type, when assigned via entity manager getRepository() fetch in setUp()" }
-"types/add-property-type-jms-object" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add object typed property from JMS Serializer Type attribute" }
-"types/add-property-type-jms-scalar" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add scalar typed property from JMS Serializer Type attribute" }
-"types/add-property-type-setter-getter" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add property type based on strict setter and getter method" }
-"types/add-return-phpdoc-common-object" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add @return docblock array of objects, that have common denominator interface/parent class" }
-"types/add-return-phpdoc-dim-assigned-object" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add @return docblock array of objects, that are dim assigned to returned variable" }
-"types/add-return-phpdoc-direct-array" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add simple @return array docblock based on direct single level direct return of []" }
-"types/add-return-phpdoc-json-array" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add @return docblock for array based on return of json_decode() return array" }
-"types/add-return-phpdoc-scalar-array" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add @return docblock for scalar array from strict array assignments" }
+"types/add-param-type-variable-call" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add closure param object type based on the argument the assigned closure variable is called with" }
+"types/add-private-method-array-return-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add strict return array type to private methods based on created empty array and returned" }
+"types/add-property-type-assigns" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add typed property from assigned types" }
+"types/add-property-type-behat-context" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add known property types to Behat context static properties" }
+"types/add-property-type-constructor" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add typed properties based only on strict constructor types" }
+"types/add-property-type-get-repository" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add strict typed property to a private test case property based on its @var object type, when assigned via entity manager getRepository() fetch in setUp()" }
+"types/add-property-type-jms-object" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add object typed property from JMS Serializer Type attribute" }
+"types/add-property-type-jms-scalar" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add scalar typed property from JMS Serializer Type attribute" }
+"types/add-property-type-setter-getter" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add property type based on strict setter and getter method" }
+"types/add-return-phpdoc-common-object" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add @return docblock array of objects, that have common denominator interface/parent class" }
+"types/add-return-phpdoc-dim-assigned-object" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add @return docblock array of objects, that are dim assigned to returned variable" }
+"types/add-return-phpdoc-direct-array" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add simple @return array docblock based on direct single level direct return of []" }
+"types/add-return-phpdoc-json-array" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add @return docblock for array based on return of json_decode() return array" }
+"types/add-return-phpdoc-scalar-array" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add @return docblock for scalar array from strict array assignments" }
 "types/add-return-type-from-cast" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add return type to function like with return cast" }
 "types/add-return-type-from-constant" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add strict type declaration based on returned constants" }
-"types/add-return-type-from-get-repository" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add repository return type declaration based on @return docblock, when a method returns entity manager getRepository() fetch" }
-"types/add-return-type-from-native-call" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add strict return type based native function or native method" }
+"types/add-return-type-from-get-repository" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add repository return type declaration based on @return docblock, when a method returns entity manager getRepository() fetch" }
+"types/add-return-type-from-native-call" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add strict return type based native function or native method" }
 "types/add-return-type-from-new" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add return type to function like with return new" }
-"types/add-return-type-from-new-array" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add strict return array type based on created empty array and returned" }
+"types/add-return-type-from-new-array" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add strict return array type based on created empty array and returned" }
 "types/add-return-type-from-param" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add return type based on strict parameter type" }
-"types/add-return-type-from-parent" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add missing return type declaration based on parent class method" }
+"types/add-return-type-from-parent" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add missing return type declaration based on parent class method" }
 "types/add-return-type-from-property" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add return method return type based on strict typed property" }
-"types/add-return-type-from-symfony-serializer" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add return type from symfony serializer" }
-"types/add-return-type-from-ternary" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add method return type based on strict ternary values" }
+"types/add-return-type-from-symfony-serializer" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add return type from symfony serializer" }
+"types/add-return-type-from-ternary" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add method return type based on strict ternary values" }
 "types/add-return-type-from-try-catch" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add known type declarations based on first-level try/catch return values" }
-"types/add-return-type-from-typed-call" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add return type from strict return type of call" }
-"types/add-return-type-from-yield" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add return type declarations from yields" }
+"types/add-return-type-from-typed-call" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add return type from strict return type of call" }
+"types/add-return-type-from-yield" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add return type declarations from yields" }
 "types/add-string-return-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add string return type based on returned strict string values" }
 "types/add-string-return-type-from-scalar" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add string return type based on returned string scalar values" }
-"types/add-union-return-type" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add union return type" }
-"types/add-var-phpdoc-from-constructor-param" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add @var array docblock to a property based on @param of constructor assign" }
-"types/add-var-phpdoc-from-default" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add @var array docblock to array property based on iterable default value" }
-"types/add-var-phpdoc-from-dim-fetch" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add @var array property docblock from dim fetches on property fetch assignment" }
-"types/add-var-phpdoc-from-getter" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add @var array property docblock from its getter @return" }
+"types/add-union-return-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add union return type" }
+"types/add-var-phpdoc-from-constructor-param" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add @var array docblock to a property based on @param of constructor assign" }
+"types/add-var-phpdoc-from-default" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add @var array docblock to array property based on iterable default value" }
+"types/add-var-phpdoc-from-dim-fetch" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add @var array property docblock from dim fetches on property fetch assignment" }
+"types/add-var-phpdoc-from-getter" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add @var array property docblock from its getter @return" }
 "types/add-void-return-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add a `void` return type to functions, methods, closures and tests that never return a value." }
 "types/no-loose-comparison" = { fix = "mixed", intent = "suspicious", sets = ["code-quality"], ported = true, status = "decided", summary = "Comparisons should be strict.", note = "fix is safe where analysis proves both operands have the same type (Rector UseIdenticalOverEqualWithSameType), unsafe otherwise (CS-Fixer strict_comparison)" }
-"types/no-nullsafe-on-non-null" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Cleanup unneeded nullsafe operator" }
-"types/prefer-generic-collection-phpdoc" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Change @return \"Type[]|ArrayCollection\" union docblock to a generic \"ArrayCollection<int, Type>\"" }
-"types/prefer-identical-same-type" = { fix = "mixed", intent = "suspicious", sets = ["code-quality"], ported = false, status = "decided", summary = "Use ===/!== over ==/!=, if values have the same type" }
-"types/prefer-instanceof" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Use instanceof instead of is_a(), null checks or truthiness checks on nullable objects." }
-"types/prefer-narrow-param-type" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Narrow an already nullable array_any()/array_all()/array_find()/array_find_key() closure param to the non-nullable array item type" }
-"types/prefer-specific-return-type" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Narrows return type from generic `object` or parent class to specific class in final classes/methods" }
+"types/no-nullsafe-on-non-null" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Cleanup unneeded nullsafe operator" }
+"types/prefer-generic-collection-phpdoc" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Change @return \"Type[]|ArrayCollection\" union docblock to a generic \"ArrayCollection<int, Type>\"" }
+"types/prefer-identical-same-type" = { fix = "mixed", intent = "suspicious", sets = ["code-quality"], ported = true, status = "decided", summary = "Use ===/!== over ==/!=, if values have the same type" }
+"types/prefer-instanceof" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use instanceof instead of is_a(), null checks or truthiness checks on nullable objects." }
+"types/prefer-narrow-param-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Narrow an already nullable array_any()/array_all()/array_find()/array_find_key() closure param to the non-nullable array item type" }
+"types/prefer-specific-return-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Narrows return type from generic `object` or parent class to specific class in final classes/methods" }
 "types/require-strict-param" = { fix = "mixed", intent = "suspicious", sets = ["coding-style"], ported = true, status = "decided", summary = "Functions should be used with `$strict` param set to `true`.", note = "fix is safe where the haystack type is known (Rector StrictInArray/StrictArraySearch), unsafe otherwise (CS-Fixer strict_param)" }
 
 [rules.analyse]
@@ -1846,6 +1846,9 @@ b-mode = { upstream = "b_mode", type = "bool" }
 [options."lint/style/require-ordered-traits"]
 case-sensitive = { upstream = "case_sensitive", type = "bool" }
 
+[options."lint/types/add-param-type-method-call"]
+treat-classes-as-final = { upstream = "treatClassesAsFinal", type = "bool" }
+
 [options."lint/types/add-void-return-type"]
 fix-lambda = { upstream = "fix_lambda", type = "bool" }
 
@@ -2190,7 +2193,7 @@ AddClosureVoidReturnTypeWhereNoReturn = { class = "Rector\\TypeDeclaration\\Rect
 AddEscapeArgument = { class = "Rector\\Php84\\Rector\\FuncCall\\AddEscapeArgumentRector", pun = "lint/php-8.4/add-csv-escape-argument", sets = ["php84"], options = "none", status = "decided" }
 AddFunctionVoidReturnTypeWhereNoReturn = { class = "Rector\\TypeDeclaration\\Rector\\Function_\\AddFunctionVoidReturnTypeWhereNoReturnRector", pun = "lint/types/add-function-void-return", sets = ["type-declaration"], options = "none", status = "decided" }
 AddInterfaceByTrait = { class = "Rector\\Transform\\Rector\\Class_\\AddInterfaceByTraitRector", unsupported = "deprecated upstream (2.7.0, main)", status = "decided" }
-AddMethodCallBasedStrictParamType = { class = "Rector\\TypeDeclaration\\Rector\\ClassMethod\\AddMethodCallBasedStrictParamTypeRector", pun = "lint/types/add-param-type-method-call", sets = ["type-declaration"], options = "none", status = "decided" }
+AddMethodCallBasedStrictParamType = { class = "Rector\\TypeDeclaration\\Rector\\ClassMethod\\AddMethodCallBasedStrictParamTypeRector", pun = "lint/types/add-param-type-method-call", sets = ["type-declaration"], options = "renamed for TOML: [options.\"lint/types/add-param-type-method-call\"] (Rector's treatClassesAsFinal() feature flag)", status = "decided" }
 AddNameToBooleanArgument = { class = "Rector\\CodeQuality\\Rector\\CallLike\\AddNameToBooleanArgumentRector", unsupported = "only in sets outside the eight prepared sets: named-args", sets = ["named-args"], status = "decided" }
 AddNameToNullArgument = { class = "Rector\\CodeQuality\\Rector\\CallLike\\AddNameToNullArgumentRector", unsupported = "only in sets outside the eight prepared sets: named-args", sets = ["named-args"], status = "decided" }
 AddOverrideAttributeToOverriddenMethods = { class = "Rector\\Php83\\Rector\\ClassMethod\\AddOverrideAttributeToOverriddenMethodsRector", unsupported = "only in php52..php83 upgrade sets (below the PHP 8.4 floor)", sets = ["php-polyfills", "php83"], status = "decided" }

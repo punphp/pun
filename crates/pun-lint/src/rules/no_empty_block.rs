@@ -280,7 +280,7 @@ fn variables(node: Node<'_, '_>) -> Vec<Vec<u8>> {
 }
 
 /// `ConditionInverter::createInvertedCondition`, printed.
-fn inverted_condition(source: &str, condition: &Expression<'_>) -> String {
+pub(crate) fn inverted_condition(source: &str, condition: &Expression<'_>) -> String {
     let text = |e: &Expression| {
         let s = node_span(e);
         &source[s.start..s.end]

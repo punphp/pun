@@ -3,10 +3,11 @@
 //! of them are removed (`PhpDocInfo::removeByType()`, `removeByName()`, a `NODE_REMOVE` traversal).
 
 use mago_syntax::cst::Node;
+use mago_syntax::token::TokenKind;
 use pun_problem::{Edit, Span};
 
 use super::rector_batch5::doc_comment;
-use super::rector_stmts::previous_token_end;
+use super::rector_stmts::{previous_token_end, tokens};
 use crate::syntax::node_span;
 
 /// phpdoc-parser's token types, as far as the printer tells them apart.
@@ -46,8 +47,37 @@ impl<'s> Doc<'s> {
             .map(|a| node_span(a).start)
             .find(|&s| s < start)
             .unwrap_or(0);
-        let span = doc_comment(source, previous_token_end(source, outer, start), start)?;
+        Self::at(
+            source,
+            doc_comment(source, previous_token_end(source, outer, start), start)?,
+        )
+    }
+
+    /// [`Doc::of`] as php-parser's `getDocComment()` reads it: the last doc comment among the node's comments, which
+    /// other comments may follow.
+    pub fn last_of(source: &'s str, ancestors: &[Node<'_, '_>], start: usize) -> Option<Self> {
+        let outer = ancestors
+            .iter()
+            .rev()
+            .map(|a| node_span(a).start)
+            .find(|&s| s < start)
+            .unwrap_or(0);
+        let doc = tokens(source, previous_token_end(source, outer, start), start)
+            .into_iter()
+            .rfind(|t| t.kind == TokenKind::DocBlockComment)?;
+        Self::at(source, Span::new(doc.start, doc.end))
+    }
+
+    fn at(source: &'s str, span: Span) -> Option<Self> {
         let text = &source[span.start..span.end];
+        // PHP's lexer makes a doc comment of `/**` and white space only; `/***/` is a plain comment.
+        if !text
+            .as_bytes()
+            .get(3)
+            .is_some_and(|b| matches!(b, b' ' | b'\t' | b'\r' | b'\n'))
+        {
+            return None;
+        }
         let tokens = lex(text);
         let children = children(text, &tokens);
         Some(Doc {
@@ -81,6 +111,16 @@ impl<'s> Doc<'s> {
             return Edit::new(Span::new(self.span.start, node_start), "");
         }
         Edit::new(self.span, printed)
+    }
+
+    /// [`Doc::remove`] for a doc [`Doc::last_of`] read from `source`: a doc with nothing left goes with the white space
+    /// after it, and the comments between it and the node stay.
+    pub fn remove_last(&self, source: &str, removed: &[bool]) -> Edit {
+        let after = &source[self.span.end..];
+        self.remove(
+            removed,
+            self.span.end + after.len() - after.trim_start().len(),
+        )
     }
 
     /// The doc comment's text.
@@ -161,8 +201,11 @@ impl<'s> Doc<'s> {
             output.push_str("\n * ");
             output.push_str(appended);
         }
-        let last = self.children.last().map_or(current, |c| c.1);
-        output.push_str(&tokens(last, self.tokens.len(), true));
+        // `printEnd()`: a doc without children has no last token position, so it ends on a new line.
+        match self.children.last() {
+            Some(c) => output.push_str(&tokens(c.1, self.tokens.len(), true)),
+            None => output.push_str("\n */"),
+        }
         if !output.starts_with("/**") {
             output.insert_str(0, "/**");
         }

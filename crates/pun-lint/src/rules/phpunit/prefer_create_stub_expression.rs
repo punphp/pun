@@ -15,7 +15,7 @@ use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::union::TUnion;
 use mago_syntax::cst::{
-    Argument, Call, Expression, MethodBody, Node, NodeKind, Statement, Variable,
+    Argument, Call, Expression, Method, MethodBody, Node, NodeKind, Statement, Variable,
 };
 use pun_problem::{Edit, Safety};
 
@@ -54,17 +54,7 @@ impl Rule for PreferCreateStubExpression {
         let MethodBody::Concrete(block) = &method.body else {
             return;
         };
-        // isTestClassMethod
-        let is_test = is_public(method)
-            && (method.name.value.starts_with(b"test")
-                || has_attribute(
-                    ancestors,
-                    &method.attribute_lists,
-                    "PHPUnit\\Framework\\Attributes\\Test",
-                )
-                || Doc::of(ctx.source, ancestors, node_span(method).start).is_some_and(|doc| {
-                    named_tags(ctx, ancestors, &doc, "test").is_some_and(|t| !t.is_empty())
-                }));
+        let is_test = is_test_class_method(ctx, ancestors, method);
         // Mago keeps a `;` alone as a statement, php-parser drops it
         let statements: Vec<&Statement<'_>> = block
             .statements
@@ -91,7 +81,7 @@ impl Rule for PreferCreateStubExpression {
             if !call.is_name(&["createMock"]) || call.args().is_empty() {
                 continue;
             }
-            if is_used_for_mocking(ctx, ancestors, &roots, &variable.name[1..]) {
+            if is_used_for_mocking(ctx, ancestors, &roots, &variable.name[1..], false) {
                 continue;
             }
             out.push(report(
@@ -104,12 +94,32 @@ impl Rule for PreferCreateStubExpression {
     }
 }
 
-/// `MockObjectExprDetector::isUsedForMocking` for the variable `name` of the method whose statements are `roots`.
-fn is_used_for_mocking(
+/// `TestsNodeAnalyzer::isTestClassMethod()`: public, and named `test…`, or with a `#[Test]` attribute or a `@test` tag.
+pub(super) fn is_test_class_method(
+    ctx: &Context<'_>,
+    ancestors: &[Node<'_, '_>],
+    method: &Method<'_>,
+) -> bool {
+    is_public(method)
+        && (method.name.value.starts_with(b"test")
+            || has_attribute(
+                ancestors,
+                &method.attribute_lists,
+                "PHPUnit\\Framework\\Attributes\\Test",
+            )
+            || Doc::of(ctx.source, ancestors, node_span(method).start).is_some_and(|doc| {
+                named_tags(ctx, ancestors, &doc, "test").is_some_and(|t| !t.is_empty())
+            }))
+}
+
+/// `MockObjectExprDetector::isUsedForMocking` for the variable `name` of the method whose statements are `roots`;
+/// `documented` reads a parameter's type with its docblock, as PHPStan does, instead of its native declaration alone.
+pub(super) fn is_used_for_mocking(
     ctx: &Context<'_>,
     ancestors: &[Node<'_, '_>],
     roots: &[Node<'_, '_>],
     name: &[u8],
+    documented: bool,
 ) -> bool {
     let is_name = |expr: &Expression<'_>| matches!(unparenthesize(expr), Expression::Variable(Variable::Direct(v)) if v.name[1..].eq_ignore_ascii_case(name));
     let mut related_variables = 0;
@@ -140,7 +150,7 @@ fn is_used_for_mocking(
             if !is_name(value) {
                 continue;
             }
-            if passes_mock_object(ctx, ancestors, call.object, call, index, arg) {
+            if passes_mock_object(ctx, ancestors, call, index, arg, documented) {
                 return true;
             }
         }
@@ -153,13 +163,13 @@ fn is_used_for_mocking(
 fn passes_mock_object(
     ctx: &Context<'_>,
     ancestors: &[Node<'_, '_>],
-    receiver: &Expression<'_>,
     call: &mago_syntax::cst::MethodCall<'_>,
     index: usize,
     arg: &Argument<'_>,
+    documented: bool,
 ) -> bool {
     // resolveMethodReflectionFromMethodCall
-    let class = match unparenthesize(receiver) {
+    let class = match unparenthesize(call.object) {
         Expression::Variable(Variable::Direct(v)) if v.name == b"$this" => own_class(ancestors),
         other => object_class(ctx, other),
     };
@@ -169,19 +179,28 @@ fn passes_mock_object(
         return false;
     };
     let facts = facts(ctx);
-    let Some(metadata) = facts
-        .codebase
-        .get_declaring_method(class.as_bytes(), method.value)
-    else {
+    let codebase = if documented {
+        facts.documented()
+    } else {
+        &facts.codebase
+    };
+    let Some(metadata) = codebase.get_declaring_method(class.as_bytes(), method.value) else {
         return false;
     };
-    // Pun reads native declarations only: a parameter without one may have a `@param MockObject`, so it counts as one
     let mock_object =
         |parameter: &mago_codex::metadata::parameter::FunctionLikeParameterMetadata| {
+            if documented {
+                return parameter
+                    .type_metadata
+                    .as_ref()
+                    .is_some_and(|t| is_super_type_of_mock_object(codebase, &t.type_union));
+            }
+            // Pun reads native declarations only: a parameter without one may have a `@param MockObject`, so it
+            // counts as one
             parameter
                 .type_declaration_metadata
                 .as_ref()
-                .is_none_or(|t| is_super_type_of_mock_object(&facts.codebase, &t.type_union))
+                .is_none_or(|t| is_super_type_of_mock_object(codebase, &t.type_union))
         };
     if let Argument::Named(named) = arg
         && metadata
@@ -195,7 +214,7 @@ fn passes_mock_object(
 }
 
 /// `(new ObjectType(MockObject))->isSuperTypeOf($type)->yes()`.
-fn is_super_type_of_mock_object(codebase: &CodebaseMetadata, t: &TUnion) -> bool {
+pub(super) fn is_super_type_of_mock_object(codebase: &CodebaseMetadata, t: &TUnion) -> bool {
     !t.types.is_empty() && t.types.iter().all(|a| is_mock_object(codebase, a))
 }
 

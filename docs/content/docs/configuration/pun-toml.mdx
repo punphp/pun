@@ -172,6 +172,15 @@ takes one table per Mago code, each with `enabled` and that rule's options:
 As in Mago, its method, property and variable checks are off until enabled.
 Mago's Drupal integration, which exempts `hook_` functions in `*.api.php` files, is not supported.
 
+The `refactor` codemods ported from Rector do nothing until configured. They take the Rector rule's configuration:
+a map keeps its keys (`"refactor/rename-function" = { view = "Laravel\\Templating\\render" }`), and a list of
+value objects goes under `items`, with each object's properties in kebab-case
+(`"refactor/remove-function-argument" = { items = [{ function = "ldap_first_attribute", argument-position = 2 }] }`).
+Names are checked as Rector checks them, so `"1f" is not a valid function name` is a config error.
+`"refactor/rename-class"` also takes Rector's import settings beside its map of old to new class names:
+`import-names` (`importNames()`, off), `import-short-classes` (`importShortClasses()`, on) and
+`remove-unused-imports` (`removeUnusedImports()`, off).
+
 `pun migrate` translates names and values. The [rule reference](/docs/rules) lists options for each rule.
 
 ## Removed keys

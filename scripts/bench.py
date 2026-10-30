@@ -173,6 +173,7 @@ ANALYSE_EXCLUDE = {"laravel-framework": ["src/Illuminate/Testing/ParallelRunner.
 LINT = {
     "pinkary": ["app", "bootstrap/app.php", "config", "database", "public", "tests"],
     "laravel-framework": ["config", "src", "tests", "types"],
+    "dev-null": ["app", "bootstrap/app.php", "config", "database", "public", "routes", "tests"],
 }
 MODES = {
     "analyse": (["phpstan-cold", "phpstan-warm", "pun", "mago"], ANALYSE),
@@ -250,17 +251,60 @@ def write_configs(mode: str, name: str, work: Path, rector_rules: list[str]) -> 
         (work / "pun-bench-analyse.toml").write_text(
             '[analyse]\npreset = "basic"\npaths = [' + ", ".join(f'"{p}"' for p in paths) + f"]\nexclude = [{exclude}]\n")
     else:
-        paths = ", ".join(f"__DIR__.'/{p}'" for p in LINT[name])
-        rules = ", ".join(f"\\{c}::class" for c in rector_rules)
         # Every native lint rule, at `error`.
         (work / "pun-bench-lint.toml").write_text(
             "[lint.rules]\n" + "".join(f'"{i.removeprefix("lint/")}" = "error"\n' for i in native_rules()))
-        (work / "pun-bench-rector.php").write_text(
-            "<?php\n\nreturn Rector\\Config\\RectorConfig::configure()\n"
-            f"    ->withPaths([{paths}])\n    ->withRules([{rules}])\n    ->withPhpVersion(80400)\n"
+        # The pinned Rector needs the project's classes, loaded after its own: Composer prepends its loader, which
+        # would let the project's rector-laravel shadow the pinned one.
+        (work / "pun-bench-autoload.php").write_text(
+            "<?php\n\n$loader = require __DIR__.'/vendor/autoload.php';\n$loader->unregister();\n"
+            "$loader->register(false);\n")
+        (work / "pun-bench-rector.php").write_text(rector_config(name, rector_rules))
+
+
+# The configurable Rector classes whose Pun rule's default options are a Rector configuration, key for key: they run
+# with that configuration (Rector's own defaults), as Pun runs its rule without options.
+CONFIGURED = {
+    "Pest\\Rector\\Rules\\ChainExpectCallsRector": "['merge_different_variables' => true]",
+    "Rector\\CodeQuality\\Rector\\FunctionLike\\SimplifyUselessVariableRector": "['only_direct_assign' => false]",
+    "Rector\\Php55\\Rector\\String_\\StringClassNameToClassConstantRector": "[]",
+    "Rector\\TypeDeclaration\\Rector\\Property\\TypedPropertyFromAssignsRector": "['inline_public' => false]",
+    "RectorLaravel\\Rector\\Class_\\AddHasFactoryToModelsRector": "[]",
+    "RectorLaravel\\Rector\\MethodCall\\EloquentOrderByToLatestOrOldestRector":
+        "['allowed_patterns' => ['*_at', '*_date', '*_on']]",
+    "RectorLaravel\\Rector\\PropertyFetch\\OptionalToNullsafeOperatorRector": "['exclude_methods' => []]",
+    "RectorLaravel\\Rector\\StaticCall\\EloquentMagicMethodToQueryBuilderRector": "['exclude_methods' => []]",
+}
+
+
+def rector_config(name: str, rector_rules: list[str]) -> str:
+    """A rector.php that runs `rector_rules` on the paths of `name`'s rector.php."""
+    paths = ", ".join(f"__DIR__.'/{p}'" for p in LINT[name])
+    rules = ", ".join(f"\\{c}::class" for c in rector_rules)
+    # rector-laravel's node visitors (ArrayDimFetchContextNodeVisitor, which ServerVariableToRequestFacadeRector
+    # and RequestVariablesToRequestFacadeRector read): every rector-laravel set imports this file, and without it
+    # those rules rewrite assignments to superglobals into calls, which PHP rejects.
+    laravel = RECTOR.parent.parent / "driftingly/rector-laravel/config/config.php"
+    sets = f"    ->withSets(['{laravel}'])\n" if laravel.exists() else ""
+    configured = "".join(f"\\{c}::class => {CONFIGURED[c]}, " for c in rector_rules if c in CONFIGURED)
+    return ("<?php\n\n$config = Rector\\Config\\RectorConfig::configure()\n"
+            f"    ->withPaths([{paths}])\n"
+            f"{sets}"
+            # Only the classes the Rector that runs has (a project without Pest's plugin lacks its rules), and none
+            # that needs a configuration: unconfigured, Rector fails on every file, and Pun's port does nothing. The
+            # CONFIGURED ones are registered after, with their configuration.
+            f"    ->withRules(array_values(array_filter([{rules}], fn ($c) => class_exists($c)\n"
+            "        && ! is_subclass_of($c, \\Rector\\Contract\\Rector\\ConfigurableRectorInterface::class))))\n"
+            "    ->withPhpVersion(80400)\n"
             # Rector's 120 s per batch of files times out on a busy machine, and a timed-out batch's files go
             # unprocessed.
-            "    ->withParallel(timeoutSeconds: 900);\n")
+            "    ->withParallel(timeoutSeconds: 900);\n"
+            f"foreach ([{configured}] as $class => $configuration) {{\n"
+            "    if (class_exists($class)) {\n"
+            "        $config->withConfiguredRule($class, $configuration);\n"
+            "    }\n"
+            "}\n\n"
+            "return $config;\n")
 
 
 def native_rules() -> list[str]:
@@ -314,7 +358,8 @@ def count_of(tool: str, data) -> int:
     if tool.startswith("phpstan"):
         return data["totals"]["errors"] + data["totals"]["file_errors"]
     if tool.startswith("rector"):
-        return data["totals"]["changed_files"]
+        # Rector 2.8 lists the changed files but leaves totals.changed_files at 0.
+        return max(data["totals"]["changed_files"], len(data.get("changed_files", [])))
     if tool == "mago":
         return len(data["issues"] if isinstance(data, dict) else data)
     # `pun analyse --format=json` is PHPStan's json; `pun lint --format=json` lists the files with problems.
@@ -376,7 +421,8 @@ def bench_mode(mode: str) -> None:
         commands = {
             "phpstan-cold": phpstan + ["pun-bench-cold.neon"],
             "phpstan-warm": phpstan + ["pun-bench-warm.neon"],
-            "rector-ported": ["php", str(RECTOR)] + rector + ["pun-bench-rector.php"],
+            "rector-ported": ["php", str(RECTOR)] + rector + ["pun-bench-rector.php", "--autoload-file",
+                                                           "pun-bench-autoload.php"],
             # The project's own Rector install: its rector.php loads sets (Pest's, for one) from its vendor/.
             "rector-full": ["php", "vendor/bin/rector"] + rector + ["rector.php"],
             "pun": [pun, "analyse", "--config", "pun-bench-analyse.toml", "--format=json"] if mode == "analyse"

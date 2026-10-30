@@ -10,6 +10,7 @@ mod add_allow_mock_objects_attribute;
 mod add_data_provider_allow_mock_objects;
 mod add_data_provider_iterator_return_type;
 mod add_depended_test_return_type;
+mod add_instanceof_assert;
 mod add_mock_intersection_param;
 mod add_mock_intersection_type;
 mod add_mock_object_type;
@@ -17,7 +18,8 @@ mod add_param_type_depends;
 mod add_return_type_from_mock_object;
 mod add_stub_intersection_type;
 mod add_test_void_return;
-mod annotations;
+mod add_will_return_callback_param_type;
+pub(crate) mod annotations;
 mod no_assert_contains_only;
 mod no_assert_is_type;
 mod no_assert_same_type_mismatch;
@@ -25,6 +27,7 @@ mod no_at_matcher;
 mod no_bare_mock_assign;
 mod no_bare_mock_builder;
 mod no_empty_test;
+mod no_entity_mock;
 mod no_expects_any;
 mod no_final_constructor_override;
 mod no_flipped_assertion;
@@ -32,11 +35,12 @@ mod no_float_delta_parameter;
 mod no_mock_intersection_property;
 mod no_negated_assertion;
 mod no_setup_override_attribute;
+mod no_stub_with_expectations;
 mod no_test_constructor;
 mod no_unused_mock;
 mod no_unused_mock_property;
 mod no_value_object_mock;
-mod phpdoc_type;
+pub(crate) mod phpdoc_type;
 mod prefer_assert;
 mod prefer_assert_array_has_key;
 mod prefer_assert_count;
@@ -49,6 +53,7 @@ mod prefer_attribute_over_annotation;
 mod prefer_comparison_assertion;
 mod prefer_covers_attribute;
 mod prefer_create_stub;
+mod prefer_create_stub_argument;
 mod prefer_create_stub_expression;
 mod prefer_create_stub_in_coalesce;
 mod prefer_data_provider;
@@ -70,23 +75,27 @@ mod prefer_specific_true_false_assertion;
 mod prefer_specific_will_method;
 mod prefer_standalone_asserts_over_callback;
 mod prefer_stub_var;
+mod prefer_test_attribute;
 mod prefer_test_prefix;
 mod prefer_test_with_attribute;
 mod prefer_this_call;
 mod prefer_ticket_attribute;
+mod prefer_will_return_callback;
 mod prefer_with_is_instance_of;
+mod prefer_yield_data_provider;
 mod ptype;
 mod require_data_provider_newlines;
 mod require_exact_test_argument_type;
 mod require_final_test_case;
 mod require_mock_expects;
-mod require_strict_types_in_tests;
+pub(crate) mod require_strict_types_in_tests;
 mod require_string_assert_argument;
 
 pub use add_allow_mock_objects_attribute::AddAllowMockObjectsAttribute;
 pub use add_data_provider_allow_mock_objects::AddDataProviderAllowMockObjects;
 pub use add_data_provider_iterator_return_type::AddDataProviderIteratorReturnType;
 pub use add_depended_test_return_type::AddDependedTestReturnType;
+pub use add_instanceof_assert::{AddInstanceofAssert, AddInstanceofAssertForArgument};
 pub use add_mock_intersection_param::AddMockIntersectionParam;
 pub use add_mock_intersection_type::AddMockIntersectionType;
 pub use add_mock_object_type::AddMockObjectType;
@@ -94,6 +103,7 @@ pub use add_param_type_depends::AddParamTypeDepends;
 pub use add_return_type_from_mock_object::AddReturnTypeFromMockObject;
 pub use add_stub_intersection_type::AddStubIntersectionType;
 pub use add_test_void_return::AddTestVoidReturn;
+pub use add_will_return_callback_param_type::AddWillReturnCallbackParamType;
 pub use no_assert_contains_only::NoAssertContainsOnly;
 pub use no_assert_is_type::NoAssertIsType;
 pub use no_assert_same_type_mismatch::NoAssertSameTypeMismatch;
@@ -101,6 +111,7 @@ pub use no_at_matcher::NoAtMatcher;
 pub use no_bare_mock_assign::NoBareMockAssign;
 pub use no_bare_mock_builder::NoBareMockBuilder;
 pub use no_empty_test::NoEmptyTest;
+pub use no_entity_mock::NoEntityMock;
 pub use no_expects_any::NoExpectsAny;
 pub use no_final_constructor_override::NoFinalConstructorOverride;
 pub use no_flipped_assertion::NoFlippedAssertion;
@@ -108,6 +119,7 @@ pub use no_float_delta_parameter::NoFloatDeltaParameter;
 pub use no_mock_intersection_property::NoMockIntersectionProperty;
 pub use no_negated_assertion::NoNegatedAssertion;
 pub use no_setup_override_attribute::NoSetupOverrideAttribute;
+pub use no_stub_with_expectations::NoStubWithExpectations;
 pub use no_test_constructor::NoTestConstructor;
 pub use no_unused_mock::NoUnusedMock;
 pub use no_unused_mock_property::NoUnusedMockProperty;
@@ -124,6 +136,7 @@ pub use prefer_attribute_over_annotation::PreferAttributeOverAnnotation;
 pub use prefer_comparison_assertion::PreferComparisonAssertion;
 pub use prefer_covers_attribute::PreferCoversAttribute;
 pub use prefer_create_stub::PreferCreateStub;
+pub use prefer_create_stub_argument::PreferCreateStubArgument;
 pub use prefer_create_stub_expression::PreferCreateStubExpression;
 pub use prefer_create_stub_in_coalesce::PreferCreateStubInCoalesce;
 pub use prefer_data_provider::PreferDataProvider;
@@ -145,11 +158,15 @@ pub use prefer_specific_true_false_assertion::PreferSpecificTrueFalseAssertion;
 pub use prefer_specific_will_method::PreferSpecificWillMethod;
 pub use prefer_standalone_asserts_over_callback::PreferStandaloneAssertsOverCallback;
 pub use prefer_stub_var::PreferStubVar;
+pub use prefer_test_attribute::PreferTestAttribute;
 pub use prefer_test_prefix::PreferTestPrefix;
 pub use prefer_test_with_attribute::PreferTestWithAttribute;
+pub(crate) use prefer_test_with_attribute::print_float;
 pub use prefer_this_call::PreferThisCall;
 pub use prefer_ticket_attribute::PreferTicketAttribute;
+pub use prefer_will_return_callback::PreferWillReturnCallback;
 pub use prefer_with_is_instance_of::PreferWithIsInstanceOf;
+pub use prefer_yield_data_provider::PreferYieldDataProvider;
 pub use require_data_provider_newlines::RequireDataProviderNewlines;
 pub use require_exact_test_argument_type::RequireExactTestArgumentType;
 pub use require_final_test_case::RequireFinalTestCase;
@@ -247,6 +264,15 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(AddParamTypeDepends),
         Box::new(PreferLocalOverSetupProperty),
         Box::new(RequireExactTestArgumentType),
+        Box::new(PreferTestAttribute),
+        Box::new(NoEntityMock),
+        Box::new(PreferYieldDataProvider),
+        Box::new(NoStubWithExpectations),
+        Box::new(PreferCreateStubArgument),
+        Box::new(AddWillReturnCallbackParamType),
+        Box::new(PreferWillReturnCallback),
+        Box::new(AddInstanceofAssert),
+        Box::new(AddInstanceofAssertForArgument),
     ]
 }
 
@@ -799,7 +825,7 @@ pub(crate) fn rewrite_args(
 
 /// An element of php-parser's `Differ`, on indexes of the old and the new list.
 #[derive(Clone, Copy)]
-enum Elem {
+pub(crate) enum Elem {
     Keep(usize, usize),
     Remove(usize),
     Add(usize),
@@ -808,7 +834,7 @@ enum Elem {
 
 /// php-parser's `Differ::diff` (Myers) from the items `0..n` to the list `new`, where `new[y] == x` means the old item
 /// `x` is kept as the new item `y` (a new item has a key of `n` or above).
-fn diff(n: usize, new: &[usize]) -> Vec<Elem> {
+pub(crate) fn diff(n: usize, new: &[usize]) -> Vec<Elem> {
     let m = new.len();
     let max = (n + m) as isize;
     let at = |k: isize| (k + max + 1) as usize;
@@ -869,7 +895,7 @@ fn diff(n: usize, new: &[usize]) -> Vec<Elem> {
 }
 
 /// `Differ::coalesceReplacements`: a run of removals followed by as many additions is a run of replacements.
-fn coalesce_replacements(diff: Vec<Elem>) -> Vec<Elem> {
+pub(crate) fn coalesce_replacements(diff: Vec<Elem>) -> Vec<Elem> {
     let mut out = Vec::new();
     let mut i = 0;
     while i < diff.len() {

@@ -10,14 +10,15 @@ use pun_problem::{Edit, Fix, Level, Safety, Span};
 #[test]
 fn check_reports_each_problem_once_with_rule_path_span_and_fix() {
     let linter = Linter::new(rules::all(), 80400);
-    let code = "<?php\n$a = $a + 1;\n";
+    // strict types declared, so statements/add-safe-strict-types has nothing to add
+    let code = "<?php\ndeclare(strict_types=1);\n$a = $a + 1;\n";
     let problems = linter.check(Path::new("src/a.php"), code).unwrap();
     assert_eq!(problems.len(), 1);
 
     let compound = &problems[0];
     assert_eq!(compound.rule, "lint/style/prefer-compound-assignment");
     assert_eq!(compound.path, PathBuf::from("src/a.php"));
-    assert_eq!(compound.span, Span::new(6, 17)); // `$a = $a + 1`
+    assert_eq!(compound.span, Span::new(31, 42)); // `$a = $a + 1`
     assert_eq!(compound.level, Level::Error);
     assert_eq!(
         compound.message,
@@ -26,7 +27,7 @@ fn check_reports_each_problem_once_with_rule_path_span_and_fix() {
     assert_eq!(compound.help, None);
     let fix = compound.fix.as_ref().unwrap();
     assert_eq!(fix.safety, Safety::Unsafe);
-    assert_eq!(fix.edits, vec![Edit::new(Span::new(8, 16), " += ")]);
+    assert_eq!(fix.edits, vec![Edit::new(Span::new(33, 41), " += ")]);
 }
 
 #[test]
@@ -60,8 +61,9 @@ fn fix_counts_rounds_and_keeps_problems_without_a_fix() {
 #[test]
 fn nothing_to_fix_is_zero_rounds() {
     let linter = Linter::new(rules::all(), 80400);
-    let fixed = linter.fix(Path::new("a.php"), "<?php\n$a += 1;\n").unwrap();
-    assert_eq!(fixed.source, "<?php\n$a += 1;\n");
+    let code = "<?php\ndeclare(strict_types=1);\n$a += 1;\n";
+    let fixed = linter.fix(Path::new("a.php"), code).unwrap();
+    assert_eq!(fixed.source, code);
     assert_eq!(fixed.rounds, 0);
     assert!(fixed.applied.is_empty() && fixed.remaining.is_empty());
 }

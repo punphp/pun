@@ -4,19 +4,43 @@
 //! holds the cases where Pun keeps the meaning but not Rector's bytes, its expected output derived by hand. Each one
 //! must pass as `format(pun lint --fix) == format(expected)` with format being the laravel preset, and the text edits
 //! must give the expected bytes before format too.
+//!
+//! ReturnTypeFromSymfonySerializerRector/Pun/serializer_broken.php.inc holds the class arguments where Rector writes a
+//! return type that does not parse or names no class: `'\App\Holder'` (Rector: `\\App\Holder`), `Holder::CLASS`
+//! (`\App\Holder::CLASS`), `Holder::{$c}` (`\App\Holder::c`) and `self::class` in an anonymous class (Rector's
+//! internal `\AnonymousClass<hash>`). Pun writes `\App\Holder` for the first two and leaves the other two alone.
+//!
+//! ReturnTypeFromStrictNativeCallRector/Pun/unreachable_call.php.inc and ReturnTypeFromStrictTernaryRector/Pun/
+//! ternary_unreached.php.inc: Rector types a `return strlen($s)` or `return $x ? 1 : 2` after an `exit` with the
+//! scope before it and writes `int`; Mago's analysis does not reach it, so Pun leaves the method alone.
+//!
+//! TypedPropertyFromStrictSetUpRector/Pun/aliased_var.php.inc: Rector writes a `@var` that names a class that does
+//! not exist where the `@var` names an imported alias (`@var Clock` for `use DateTime as Clock` becomes
+//! `(\PHPUnit\Framework\MockObject\MockObject & \Clock)`, and an alias of `MockObject` becomes `& \Mock`), and
+//! `private int $x = null;` for a `null` default, which PHP rejects. Pun resolves the alias (and leaves an alias of
+//! `MockObject` alone), and leaves a property with a `null` default untyped when its type does not allow `null`.
+//!
+//! AddReturnTypeDeclarationBasedOnParentClassMethodRector/Pun/parent_cycle.php.inc: two classes that extend each
+//! other, which Rector stops on ("Circular reference to class"); Pun leaves both alone.
 
 mod lint_c;
 
-use lint_c::{run_class, run_class_at};
+use lint_c::{run_class, run_class_at, run_class_stubs, run_oracle_class};
 use pun_lint::Rule;
 use pun_lint::rules::{
     AddArrayReturn, AddArrowFunctionReturn, AddBoolReturn, AddBoolReturnFromConst,
-    AddClosureNeverReturn, AddClosureReturn, AddClosureVoidReturn, AddFluentReturn,
-    AddFunctionVoidReturn, AddMagicMethodTypes, AddMethodVoidReturn, AddNeverReturn,
-    AddNullableReturn, AddNumericReturn, AddNumericReturnFromScalar, AddReturnTypeFromCast,
-    AddReturnTypeFromConstant, AddReturnTypeFromNew, AddReturnTypeFromParam,
-    AddReturnTypeFromProperty, AddReturnTypeFromTernary, AddStringReturn,
-    AddStringReturnFromScalar, AddUnionReturn,
+    AddClosureNeverReturn, AddClosureReturn, AddClosureVoidReturn, AddDoctrineRepositoryReturnType,
+    AddFluentReturn, AddFunctionVoidReturn, AddMagicMethodTypes, AddMethodVoidReturn,
+    AddNeverReturn, AddNullableReturn, AddNumericReturn, AddNumericReturnFromScalar,
+    AddPropertyTypeAssigns, AddPropertyTypeBehatContext, AddPropertyTypeConstructor,
+    AddPropertyTypeContainerGet, AddPropertyTypeCreateMock, AddPropertyTypeGetRepository,
+    AddPropertyTypeJmsObject, AddPropertyTypeJmsScalar, AddPropertyTypeSetterGetter,
+    AddPropertyTypeSetup, AddPropertyTypeSetupDocblock, AddReturnTypeFromCast,
+    AddReturnTypeFromConstant, AddReturnTypeFromNativeCall, AddReturnTypeFromNew,
+    AddReturnTypeFromParam, AddReturnTypeFromParent, AddReturnTypeFromProperty,
+    AddReturnTypeFromSymfonySerializer, AddReturnTypeFromTernary, AddReturnTypeFromTypedCall,
+    AddReturnTypeFromYield, AddStringReturn, AddStringReturnFromScalar, AddUnionReturn,
+    NoNullsafeOnNonNull, PreferIdenticalSameType, PreferInstanceof,
 };
 
 fn check(rule: impl Rule + 'static, class: &str) {
@@ -219,6 +243,57 @@ fn return_union_type() {
 }
 
 #[test]
+fn return_type_from_strict_native_call() {
+    run_class_at(
+        vec![Box::new(AddReturnTypeFromNativeCall)],
+        "ReturnTypeFromStrictNativeCallRector",
+        80200,
+    );
+}
+
+#[test]
+fn return_type_from_strict_typed_call() {
+    for (dir, version) in [
+        ("ReturnTypeFromStrictTypedCallRector", 70400),
+        ("ReturnTypeFromStrictTypedCallRectorPhp80", 80000),
+    ] {
+        // rector-src runs these with PHPUnit installed (Fixture/return_in_test_method.php.inc)
+        run_class_stubs(
+            vec![Box::new(AddReturnTypeFromTypedCall)],
+            dir,
+            version,
+            &["phpunit-stubs"],
+        );
+    }
+}
+
+#[test]
+fn add_return_type_declaration_from_yields() {
+    check(
+        AddReturnTypeFromYield,
+        "AddReturnTypeDeclarationFromYieldsRector",
+    );
+}
+
+#[test]
+fn add_return_type_declaration_based_on_parent_class_method() {
+    run_class_at(
+        vec![Box::new(AddReturnTypeFromParent)],
+        "AddReturnTypeDeclarationBasedOnParentClassMethodRector",
+        80000,
+    );
+}
+
+#[test]
+fn return_type_from_symfony_serializer() {
+    run_class_at(
+        vec![Box::new(AddReturnTypeFromSymfonySerializer)],
+        "ReturnTypeFromSymfonySerializerRector",
+        70000,
+    );
+}
+
+#[test]
 fn closure_return_type_intersection_below_dnf() {
     // Oracle/closure_dnf.php.inc below PHP 8.2: .oracle/rector-bin (ClosureReturnTypeRector alone) leaves the closure
     // alone at 8.1 (no DNF types) and at 8.0 (no intersection types).
@@ -263,4 +338,183 @@ fn left_alone_at_other_versions() {
         let fixed = linter.fix(std::path::Path::new("f.php"), input).unwrap();
         assert_eq!(fixed.source, input, "PHP {version}");
     }
+}
+
+#[test]
+fn inline_is_a_instance_of() {
+    check(PreferInstanceof, "InlineIsAInstanceOfRector");
+}
+
+#[test]
+fn use_identical_over_equal_with_same_type() {
+    check(
+        PreferIdenticalSameType,
+        "UseIdenticalOverEqualWithSameTypeRector",
+    );
+}
+
+#[test]
+fn cleanup_unneeded_nullsafe_operator() {
+    check(NoNullsafeOnNonNull, "CleanupUnneededNullsafeOperatorRector");
+}
+
+#[test]
+fn typed_property_from_strict_constructor() {
+    // INTERSECTION_TYPES, as the fixtures' config sets
+    run_class_stubs(
+        vec![Box::new(AddPropertyTypeConstructor)],
+        "TypedPropertyFromStrictConstructorRector",
+        80100,
+        &["doctrine-stubs"],
+    );
+}
+
+#[test]
+fn typed_property_from_assigns() {
+    // config/configured_rule.php: TYPED_PROPERTIES
+    run_class_stubs(
+        vec![Box::new(AddPropertyTypeAssigns::default())],
+        "TypedPropertyFromAssignsRector",
+        70400,
+        &["php-parser-stubs", "phpunit-stubs"],
+    );
+}
+
+#[test]
+fn typed_property_from_assigns_complex_types() {
+    // config/complex_types.php: INTERSECTION_TYPES
+    run_class_stubs(
+        vec![Box::new(AddPropertyTypeAssigns::default())],
+        "TypedPropertyFromAssignsRectorComplexTypes",
+        80100,
+        &["phpunit-stubs"],
+    );
+}
+
+#[test]
+fn typed_property_from_assigns_php82() {
+    // config/configured_rule_php82.php: NULL_FALSE_TRUE_STANDALONE_TYPE
+    run_class_at(
+        vec![Box::new(AddPropertyTypeAssigns::default())],
+        "TypedPropertyFromAssignsRectorPhp82",
+        80200,
+    );
+}
+
+#[test]
+fn typed_property_from_assigns_inline_public() {
+    // config/inline_public_configured_rule.php: inline_public, INTERSECTION_TYPES
+    let mut rule = AddPropertyTypeAssigns::default();
+    rule.configure(&serde_json::json!({"inline-public": true}))
+        .unwrap();
+    run_class_at(
+        vec![Box::new(rule)],
+        "TypedPropertyFromAssignsRectorInlinePublic",
+        80100,
+    );
+}
+
+#[test]
+fn property_type_from_strict_setter_getter() {
+    // config/configured_rule.php: the rule alone, Rector's default PHP version
+    run_class(
+        vec![Box::new(AddPropertyTypeSetterGetter)],
+        "PropertyTypeFromStrictSetterGetterRector",
+    );
+}
+
+#[test]
+fn scalar_typed_property_from_jms_serializer_attribute_type() {
+    // config/configured_rule.php: ATTRIBUTES
+    run_class_at(
+        vec![Box::new(AddPropertyTypeJmsScalar)],
+        "ScalarTypedPropertyFromJMSSerializerAttributeTypeRector",
+        80000,
+    );
+}
+
+#[test]
+fn object_typed_property_from_jms_serializer_attribute_type() {
+    // config/configured_rule.php: ATTRIBUTES
+    run_class_at(
+        vec![Box::new(AddPropertyTypeJmsObject)],
+        "ObjectTypedPropertyFromJMSSerializerAttributeTypeRector",
+        80000,
+    );
+}
+
+#[test]
+fn typed_static_property_in_behat_context() {
+    // No upstream fixtures: Oracle/ only, Rector run at PHP 8.0 with Source/ autoloaded.
+    run_oracle_class(
+        vec![Box::new(AddPropertyTypeBehatContext)],
+        "TypedStaticPropertyInBehatContextRector",
+        80000,
+    );
+}
+
+#[test]
+fn typed_property_from_get_repository_set_up() {
+    // config/configured_rule.php: TYPED_PROPERTIES
+    run_class_stubs(
+        vec![Box::new(AddPropertyTypeGetRepository)],
+        "TypedPropertyFromGetRepositorySetUpRector",
+        70400,
+        &["phpunit-stubs"],
+    );
+}
+
+#[test]
+fn typed_property_from_container_get_set_up() {
+    // config/configured_rule.php: TYPED_PROPERTIES
+    run_class_stubs(
+        vec![Box::new(AddPropertyTypeContainerGet)],
+        "TypedPropertyFromContainerGetSetUpRector",
+        70400,
+        &["phpunit-stubs"],
+    );
+}
+
+#[test]
+fn typed_property_from_create_mock_assign() {
+    // config/rule_config.php: TYPED_PROPERTIES
+    run_class_stubs(
+        vec![Box::new(AddPropertyTypeCreateMock)],
+        "TypedPropertyFromCreateMockAssignRector",
+        70400,
+        &["phpunit-stubs"],
+    );
+}
+
+#[test]
+fn typed_property_from_strict_set_up() {
+    // config/configured_rule.php: the rule alone, Rector's default PHP version
+    run_class_stubs(
+        vec![Box::new(AddPropertyTypeSetup)],
+        "TypedPropertyFromStrictSetUpRector",
+        80400,
+        &["phpunit-stubs"],
+    );
+}
+
+#[test]
+fn typed_property_from_docblock_set_up_defined() {
+    // config/rule_config.php: TYPED_PROPERTIES
+    run_class_stubs(
+        vec![Box::new(AddPropertyTypeSetupDocblock)],
+        "TypedPropertyFromDocblockSetUpDefinedRector",
+        70400,
+        &["phpunit-stubs"],
+    );
+}
+
+#[test]
+fn child_doctrine_repository_class_type() {
+    // config/configured_rule.php: the rule alone, Rector's default PHP version
+    run_class_stubs(
+        vec![Box::new(AddDoctrineRepositoryReturnType)],
+        "ChildDoctrineRepositoryClassTypeRector",
+        80400,
+        &["doctrine-stubs"],
+    );
 }

@@ -126,7 +126,9 @@ pub use prefer_type_matchers::PreferTypeMatchers;
 pub use require_type_matcher_first::RequireTypeMatcherFirst;
 
 use mago_codex::ttype::atomic::TAtomic;
+use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::scalar::TScalar;
+use mago_codex::ttype::union::TUnion;
 use mago_syntax::cst::{
     Access, Argument, ArgumentList, ArrowFunction, Call, ClassLikeMemberSelector, Closure,
     Expression, FunctionCall, Identifier, Keyword, MethodCall, Node, NodeKind, PropertyAccess,
@@ -135,7 +137,7 @@ use mago_syntax::cst::{
 use pun_problem::{Edit, Fix, Safety, Span};
 
 use super::rector_code_quality::{is_constant, text};
-use super::types::facts::facts;
+use super::types::facts::{Facts, facts};
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -150,7 +152,6 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(NoRedundantTypeExpectation),
         Box::new(NoRedundantUses),
         Box::new(NoStaticTestClosure),
-        Box::new(PreferChainedExpect::default()),
         Box::new(PreferComparisonMatchers),
         Box::new(PreferDefer),
         Box::new(PreferEachModifier),
@@ -199,6 +200,9 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(PreferToStartWith),
         Box::new(PreferToThrow),
         Box::new(PreferTypeMatchers),
+        // as in the plugin's coding-style set, the chaining comes after the matchers, so that where a matcher and the
+        // chaining both rewrite a statement the matcher's fix applies first, then the chaining of its result
+        Box::new(PreferChainedExpect::default()),
         Box::new(RequireTypeMatcherFirst),
     ]
 }
@@ -591,12 +595,54 @@ pub(crate) enum Is {
 /// type is `mixed`, which may be anything.
 pub(crate) fn type_is(ctx: &Context<'_>, expr: &Expression<'_>, kind: Is) -> Trinary {
     let facts = facts(ctx);
-    let Some(union) = facts.full_type(node_span(unparenthesize(expr))) else {
+    let declared = union_call_type(&facts, expr);
+    let Some(union) = declared
+        .as_ref()
+        .or_else(|| facts.full_type(node_span(unparenthesize(expr))))
+    else {
         return Trinary::Maybe;
     };
     (union.types.iter().map(|t| atomic_is(t, kind)))
         .reduce(|a, b| if a == b { a } else { Trinary::Maybe })
         .unwrap_or(Trinary::Maybe)
+}
+
+/// PHPStan's type of a method call on a union where Mago's differs: `UnionType::getUnresolvedMethodPrototype()` reads
+/// the method of the members whose `hasMethod()` is yes, and a class that only declares `__call` has not the method,
+/// so `(User|Collection)->getAuthPassword()` is `User::getAuthPassword()`'s `string`, where Mago joins it with
+/// `__call`'s return. The declared return types of those members, docblocks read; `None` where Mago's type stands (no
+/// such mixed union) or Pun does not know (a member that is not a known class, a return type with a template or
+/// `static`).
+fn union_call_type(facts: &Facts, expr: &Expression<'_>) -> Option<TUnion> {
+    let Expression::Call(Call::Method(call)) = unparenthesize(expr) else {
+        return None;
+    };
+    let ClassLikeMemberSelector::Identifier(name) = &call.method else {
+        return None;
+    };
+    let receiver = facts.full_type(node_span(unparenthesize(call.object)))?;
+    let codebase = facts.documented();
+    let (mut declared, mut magic) = (Vec::new(), false);
+    for atomic in receiver.types.iter() {
+        let TAtomic::Object(TObject::Named(object)) = atomic else {
+            return None;
+        };
+        let class = object.name.as_bytes();
+        codebase.get_class_like(class)?;
+        if codebase.method_exists(class, name.value) {
+            let method = codebase.get_declaring_method(class, name.value)?;
+            let returns = (method.return_type_metadata.as_ref())
+                .or(method.return_type_declaration_metadata.as_ref())?;
+            let t = &returns.type_union;
+            if t.has_template_types() || t.has_template_or_static() {
+                return None;
+            }
+            declared.extend(t.types.iter().cloned());
+        } else {
+            magic |= codebase.method_exists(class, b"__call");
+        }
+    }
+    (magic && !declared.is_empty()).then(|| TUnion::from_vec(declared))
 }
 
 fn atomic_is(atomic: &TAtomic, kind: Is) -> Trinary {
@@ -748,7 +794,7 @@ pub(crate) fn shift(ctx: &Context<'_>, span: Span, delta: isize) -> String {
     };
     let mut out = String::with_capacity(text.len());
     let mut at = span.start;
-    for t in super::php_parser::tokens(ctx.source) {
+    for &t in super::php_parser::tokens(ctx.source).iter() {
         if t.end <= span.start || t.start >= span.end {
             continue;
         }
@@ -858,26 +904,36 @@ pub(crate) fn p_comments(ctx: &Context<'_>, comments: &[Span], indent: usize) ->
 /// `pMaybeMultiline($args)` for kept arguments printed at `indent`: joined by `, `, or, when one of them owns a
 /// comment, one a line with its comments, one level deeper, and the `)` on a line of its own.
 pub(crate) fn print_args(ctx: &Context<'_>, list: &ArgumentList<'_>, indent: usize) -> String {
-    let args = list.arguments.as_slice();
-    if !args.iter().any(|a| has_comments(ctx, node_span(a).start)) {
-        return args
+    let spans: Vec<Span> = list.arguments.iter().map(node_span).collect();
+    print_nodes(ctx, &spans, false, indent)
+}
+
+/// `pMaybeMultiline($nodes, $trailingComma)` for the kept nodes at `spans`: [`print_args`], and a `,` after the last
+/// node too on lines of their own when `trailing_comma` (array items).
+pub(crate) fn print_nodes(
+    ctx: &Context<'_>,
+    spans: &[Span],
+    trailing_comma: bool,
+    indent: usize,
+) -> String {
+    if !spans.iter().any(|s| has_comments(ctx, s.start)) {
+        return spans
             .iter()
-            .map(|a| kept_text(ctx, node_span(a), indent))
+            .map(|s| kept_text(ctx, *s, indent))
             .collect::<Vec<_>>()
             .join(", ");
     }
     let inner = indent + 4;
     let nl = format!("\n{}", " ".repeat(inner));
     let mut out = String::new();
-    for (i, a) in args.iter().enumerate() {
-        let start = node_span(a).start;
-        if has_comments(ctx, start) {
+    for (i, span) in spans.iter().enumerate() {
+        if has_comments(ctx, span.start) {
             out.push_str(&nl);
-            out.push_str(&p_comments(ctx, &comment_spans(ctx, start), inner));
+            out.push_str(&p_comments(ctx, &comment_spans(ctx, span.start), inner));
         }
         out.push_str(&nl);
-        out.push_str(&kept_text(ctx, node_span(a), inner));
-        if i + 1 < args.len() {
+        out.push_str(&kept_text(ctx, *span, inner));
+        if trailing_comma || i + 1 < spans.len() {
             out.push(',');
         }
     }

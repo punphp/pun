@@ -38,6 +38,17 @@ pub(crate) struct ClassInfo<'ast, 'arena> {
     pub extends: Option<String>,
 }
 
+/// The class `node` is, when it is a class or an anonymous class; `ancestors` lead to it.
+pub(crate) fn class_info<'ast, 'arena>(
+    node: Node<'ast, 'arena>,
+    ancestors: &[Node<'ast, 'arena>],
+    facts: &Facts,
+) -> Option<ClassInfo<'ast, 'arena>> {
+    let mut info = None;
+    with_class_info(node, ancestors, facts, |c| info = Some(c));
+    info
+}
+
 /// Visit the class `node` is; the rule's targets select classes or anonymous classes, and `ancestors` lead to it.
 pub(crate) fn with_class_info<'ast, 'arena>(
     node: Node<'ast, 'arena>,
@@ -361,6 +372,36 @@ fn scope_of(
     }
 }
 
+/// The class PHPStan's `ThisType` names when `object` is `$this` in a method that has one: the class of the
+/// innermost class scope, unless a static method or static closure leaves `$this` undefined. Mago gives `$this` no
+/// type where a fix round changed the file after the project's codebase was scanned, as the codebase's spans no
+/// longer match the file's.
+fn this_class(
+    facts: &Facts,
+    ancestors: &[Node<'_, '_>],
+    class: &ClassInfo<'_, '_>,
+    path: &[Node<'_, '_>],
+    object: &Expression<'_>,
+) -> Option<String> {
+    let Expression::Variable(Variable::Direct(var)) = unparenthesize(object) else {
+        return None;
+    };
+    if var.name != b"$this" {
+        return None;
+    }
+    let scope = path
+        .iter()
+        .rposition(|n| matches!(n, Node::AnonymousClass(_)))
+        .map_or(path, |i| &path[i + 1..]);
+    let undefined = scope.iter().any(|n| match n {
+        Node::Method(m) => m.modifiers.contains_static(),
+        Node::Closure(c) => c.r#static.is_some(),
+        Node::ArrowFunction(f) => f.r#static.is_some(),
+        _ => false,
+    });
+    (!undefined).then(|| scope_of(facts, ancestors, class, path).0)
+}
+
 /// What `CallCollectionAnalyzer::isExists` reads of a caller's type.
 struct CallerType {
     /// `getObjectClassNames()`.
@@ -487,12 +528,14 @@ fn is_call_of(
     method: &[u8],
 ) -> bool {
     let (selector, caller, root, self_static) = match site {
-        CallSite::Object(object, selector) => (
-            *selector,
-            CallerType::of(type_of(facts, object)),
-            Some(*object),
-            false,
-        ),
+        CallSite::Object(object, selector) => {
+            let t = type_of(facts, object);
+            let caller = match this_class(facts, ancestors, class, path, object) {
+                Some(name) if t.is_none() => CallerType::named(name),
+                _ => CallerType::of(t),
+            };
+            (*selector, caller, Some(*object), false)
+        }
         CallSite::Static(class_expr, selector) => {
             let (caller, self_static) = static_caller(facts, ancestors, class, path, class_expr);
             (*selector, caller, None, self_static)
@@ -588,6 +631,19 @@ fn is_array_call_of(
         }) => c.eq_ignore_ascii_case(&class.name) && m.eq_ignore_ascii_case(method),
         None => false,
     }
+}
+
+/// Whether `ArrayCallableMethodMatcher::match` matches the array at all (a method of any class, or a dynamic one),
+/// asked while looking at the method `method`.
+pub(crate) fn is_array_callable(
+    facts: &Facts,
+    ancestors: &[Node<'_, '_>],
+    class: &ClassInfo<'_, '_>,
+    elements: &TokenSeparatedSequence<'_, ArrayElement<'_>>,
+    path: &[Node<'_, '_>],
+    method: &[u8],
+) -> bool {
+    match_array_callable(facts, ancestors, class, elements, path, method).is_some()
 }
 
 /// What `ArrayCallableMethodMatcher::match` returns.
@@ -901,6 +957,20 @@ pub(crate) fn data_provider_methods(
     ancestors: &[Node<'_, '_>],
     class: &ClassInfo<'_, '_>,
 ) -> Vec<Vec<u8>> {
+    (0..class.members.len())
+        .flat_map(|index| method_data_providers(source, ancestors, class, index, true))
+        .collect()
+}
+
+/// `DataProviderMethodsFinder::findDataProviderNodes(...)->getClassMethods()`, as names: the methods of the class
+/// that the `@dataProvider` tags (with `doc_tags`), then the `DataProvider` attributes, of member `index` name.
+pub(crate) fn method_data_providers(
+    source: &str,
+    ancestors: &[Node<'_, '_>],
+    class: &ClassInfo<'_, '_>,
+    index: usize,
+    doc_tags: bool,
+) -> Vec<Vec<u8>> {
     let method_names: Vec<&[u8]> = class
         .members
         .iter()
@@ -926,11 +996,8 @@ pub(crate) fn data_provider_methods(
             out.push(found.to_vec());
         }
     };
-    for (index, member) in class.members.iter().enumerate() {
-        let ClassLikeMember::Method(method) = member else {
-            continue;
-        };
-        if let Some(doc) = member_doc(source, class, index) {
+    if let Some(ClassLikeMember::Method(method)) = class.members.get(index) {
+        if let Some(doc) = member_doc(source, class, index).filter(|_| doc_tags) {
             for line in doc.lines() {
                 let line = line.trim_start();
                 let line = line.strip_prefix("/**").unwrap_or(line);

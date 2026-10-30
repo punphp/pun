@@ -20,6 +20,13 @@ const PHPSTAN: &[&str] = &[
     "lint/style/no-short-ternary",
     "lint/style/no-variable-variable",
     "lint/classes/no-explicit-constructor-call",
+    "lint/style/no-dynamic-method-call",
+    "lint/style/no-dynamic-method-callable",
+    "lint/style/no-dynamic-property",
+    "lint/style/no-dynamic-static-call",
+    "lint/style/no-dynamic-static-callable",
+    "lint/style/no-dynamic-static-property",
+    "lint/functions/require-array-filter-callback",
 ];
 
 fn line_col(source: &str, offset: usize) -> (usize, usize) {
@@ -114,6 +121,69 @@ fn version_gates() {
         .check(Path::new("a.php"), code)
         .unwrap();
     assert_eq!(found.len(), 1);
+}
+
+#[test]
+fn dynamic_call_on_anonymous_class() {
+    // PHPStan 2.3.1 with phpstan-strict-rules 2.0.12 (noVariableVariables only), run on this code as f.php in its
+    // directory: an anonymous class is `class@anonymous/<path>:<line>`, the path as PHPStan was given it.
+    let code = "<?php\n\nfunction f($m) {\n    $x = new class { };\n    $x->$m();\n}\n";
+    let found = Linter::new(vec![Box::new(rules::NoDynamicMethodCall)], 80400)
+        .check(Path::new("f.php"), code)
+        .unwrap();
+    let messages: Vec<&str> = found.iter().map(|p| p.message.as_str()).collect();
+    assert_eq!(messages, ["Variable method call on class@anonymous/f.php:4."]);
+}
+
+/// A rule called on every node, not only the kinds of its `targets()`.
+struct Everywhere(Box<dyn pun_lint::Rule>);
+
+impl pun_lint::Rule for Everywhere {
+    fn id(&self) -> &'static str {
+        self.0.id()
+    }
+
+    fn visit<'ast, 'arena>(
+        &self,
+        node: mago_syntax::cst::Node<'ast, 'arena>,
+        ancestors: &[mago_syntax::cst::Node<'ast, 'arena>],
+        ctx: &pun_lint::Context<'_>,
+        out: &mut Vec<pun_lint::Report>,
+    ) {
+        self.0.visit(node, ancestors, ctx, out);
+    }
+}
+
+#[test]
+fn phpstan_rules_ignore_nodes_outside_their_targets() {
+    // `targets()` only spares the engine work: called on every node, each rule reports what it reports on its own.
+    let ids = [
+        "lint/style/no-dynamic-method-call",
+        "lint/style/no-dynamic-method-callable",
+        "lint/style/no-dynamic-property",
+        "lint/style/no-dynamic-static-call",
+        "lint/style/no-dynamic-static-callable",
+        "lint/style/no-dynamic-static-property",
+        "lint/functions/require-array-filter-callback",
+    ];
+    for id in ids {
+        let rule = || rules::all().into_iter().find(|r| r.id() == id).unwrap();
+        let targeted = Linter::new(vec![rule()], 80400);
+        let everywhere = Linter::new(vec![Box::new(Everywhere(rule()))], 80400);
+        let dir = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/lint_b_report")
+            .join(id.trim_start_matches("lint/"));
+        for path in std::fs::read_dir(dir).unwrap().map(|e| e.unwrap().path()) {
+            let content = std::fs::read_to_string(&path).unwrap();
+            let input = &content[..content.rfind("-----\n").unwrap()];
+            assert_eq!(
+                everywhere.check(&path, input).unwrap(),
+                targeted.check(&path, input).unwrap(),
+                "{}",
+                path.display()
+            );
+        }
+    }
 }
 
 #[test]

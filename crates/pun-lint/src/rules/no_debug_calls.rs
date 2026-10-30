@@ -9,7 +9,7 @@
 use mago_syntax::cst::{Access, Call, ClassLikeMemberSelector, Expression, Node, NodeKind};
 use pun_problem::{Edit, Fix, Safety, Span};
 
-use super::lint_b_names::{function_call_matches, function_call_matches_any};
+use super::lint_b_names::function_call_matches_any;
 use super::rector_code_quality::call_to;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -100,10 +100,7 @@ impl Rule for NoDebugCalls {
                 {
                     return;
                 }
-                if DEBUG_FUNCTIONS
-                    .iter()
-                    .any(|f| function_call_matches(ancestors, call, f))
-                {
+                if function_call_matches_any(ancestors, call, &DEBUG_FUNCTIONS).is_some() {
                     out.push(Report {
                         span: node_span(call),
                         message: "Do not commit debug functions.".to_string(),

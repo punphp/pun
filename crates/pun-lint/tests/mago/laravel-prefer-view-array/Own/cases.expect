@@ -1,0 +1,4 @@
+85 115 Use array parameter in `view()` instead of chaining `with()`.
+121 151 Use array parameter in `view()` instead of chaining `with()`.
+157 188 Use array parameter in `view()` instead of chaining `with()`.
+300 323 Use array parameter in `view()` instead of chaining `with()`.

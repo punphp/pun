@@ -61,7 +61,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe 
 
 Add an assertInstanceOf() before a nullable object is used in a PHPUnit test.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Runs when phpunit is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Runs when phpunit is installed.
 
 </Card>
 <Card title="lint/phpunit/add-instanceof-assert-for-argument">
@@ -70,7 +70,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Add explicit instance assert between above nullable object pass
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Runs when phpunit is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Runs when phpunit is installed.
 
 </Card>
 <Card title="lint/phpunit/add-mock-intersection-param">
@@ -115,7 +115,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe 
 
 Add strict typed property to a private test case property based on its @var object type, when assigned via container fetch in setUp()
 
-Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change behaviour). Runs when phpunit is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change behaviour). Runs when phpunit is installed.
 
 </Card>
 <Card title="lint/phpunit/add-property-type-create-mock">
@@ -124,7 +124,7 @@ Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change be
 
 Add "PHPUnit\Framework\MockObject\MockObject" typed property from assigned mock to clearly separate from real objects
 
-Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change behaviour). Runs when phpunit is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change behaviour). Runs when phpunit is installed.
 
 </Card>
 <Card title="lint/phpunit/add-property-type-setup">
@@ -133,7 +133,7 @@ Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change be
 
 Add strict typed property based on setUp() strict typed assigns in TestCase
 
-Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change behaviour). Runs when phpunit is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change behaviour). Runs when phpunit is installed.
 
 </Card>
 <Card title="lint/phpunit/add-property-type-setup-docblock">
@@ -142,7 +142,7 @@ Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change be
 
 Add property type in PHPUnit test from docblock, if defined in setUp() method
 
-Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change behaviour). Runs when phpunit is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change behaviour). Runs when phpunit is installed.
 
 </Card>
 <Card title="lint/phpunit/add-return-type-from-mock-object">
@@ -178,7 +178,7 @@ Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change be
 
 Decorate callbacks and arrow functions in willReturnCallback() with known param/return types based on reflection method
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Runs when phpunit is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Runs when phpunit is installed.
 
 </Card>
 <Card title="lint/phpunit/no-assert-contains-only">
@@ -259,7 +259,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Move from entity mock, to direct use of class instance and setters
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Runs when phpunit is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Runs when phpunit is installed.
 
 </Card>
 <Card title="lint/phpunit/no-expected-exception-annotation">
@@ -340,7 +340,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Change createStub() to createMock(), when the created variable is passed to a method that requires MockObject type
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Runs when phpunit is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Runs when phpunit is installed.
 
 </Card>
 <Card title="lint/phpunit/no-test-constructor">
@@ -529,7 +529,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Use createStub() over createMock() when used as argument or array value and does not add any mock requirements
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Runs when phpunit is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Runs when phpunit is installed.
 
 </Card>
 <Card title="lint/phpunit/prefer-create-stub-expression">
@@ -790,7 +790,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Suggests using PHPUnit's `#[Test]` attribute instead of the `test` method name prefix.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Runs when phpunit is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Runs when phpunit is installed.
 
 </Card>
 <Card title="lint/phpunit/prefer-test-prefix">
@@ -835,7 +835,7 @@ Not in any preset or set. Enable it by name or group. Fix: safe (keeps behaviour
 
 Merge ->with($this->callback()) and ->willReturn() into willReturnCallback().
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Runs when phpunit is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Runs when phpunit is installed.
 
 </Card>
 <Card title="lint/phpunit/prefer-with-is-instance-of">
@@ -853,7 +853,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Turns array return to yield in data providers
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Runs when phpunit is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Runs when phpunit is installed.
 
 </Card>
 <Card title="lint/phpunit/require-assertion-style">

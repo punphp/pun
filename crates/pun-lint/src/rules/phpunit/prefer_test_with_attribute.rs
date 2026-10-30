@@ -181,7 +181,7 @@ fn print_value(value: &Value) -> Option<String> {
 
 /// php-parser's `pScalar_Float`: `%.16G`, or `%.17G` when that does not read back as the same float, with `.0` after a
 /// whole number.
-pub(super) fn print_float(value: f64) -> String {
+pub(crate) fn print_float(value: f64) -> String {
     let mut printed = php_g(value, 16);
     if printed.parse::<f64>().ok() != Some(value) {
         printed = php_g(value, 17);

@@ -8,8 +8,9 @@ use mago_syntax::cst::{Expression, Node, NodeKind};
 
 use super::declare::{return_declaration, union_order};
 use super::facts::facts;
-use super::native::{Kind, native_type, returned_kinds};
+use super::native::native_type;
 use super::silent_void::Place;
+use super::type_factory::{infer_returns, is_union_without_null, without_covered_objects};
 use super::{
     SCALAR_TYPES, add_return_type, class_scope, has_only_return_with_expr, returns_scoped, untyped,
 };
@@ -48,10 +49,8 @@ impl Rule for AddReturnTypeFromTernary {
             scope: scope.as_ref(),
         };
         let returns = returns_scoped(f.body);
-        // shouldSkip: the returns, `null` aside, are one type
-        if let Some(kinds) = returned_kinds(&place, f.body, &returns)
-            && kinds.iter().filter(|k| **k != Kind::Null).count() > 1
-        {
+        // shouldSkip: the inferred return type without `null` is a union
+        if is_union_without_null(&infer_returns(&place, f.body, &returns)) {
             return;
         }
         let [r] = returns.as_slice() else {
@@ -70,7 +69,7 @@ impl Rule for AddReturnTypeFromTernary {
             return;
         }
         if let Some(r#type) = return_declaration(
-            union_order(t.types.as_ref()),
+            without_covered_objects(union_order(t.types.as_ref()), &facts.codebase),
             &facts.codebase,
             ctx.php_version,
             &[],

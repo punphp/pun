@@ -1,0 +1,15 @@
+157 172 Use `#[Test]` attribute instead of `test` prefix on method `testInInterface`.
+229 240 Use `#[Test]` attribute instead of `test` prefix on method `Test_tabbed`.
+300 308 Use `#[Test]` attribute instead of `test` prefix on method `testEnum`.
+436 452 Use `#[Test]` attribute instead of `test` prefix on method `testWithProvider`.
+655 673 Use `#[Test]` attribute instead of `test` prefix on method `testUnimportedTest`.
+706 710 Use `#[Test]` attribute instead of `test` prefix on method `Test`.
+743 748 Use `#[Test]` attribute instead of `test` prefix on method `test_`.
+781 786 Use `#[Test]` attribute instead of `test` prefix on method `testX`.
+935 947 Use `#[Test]` attribute instead of `test` prefix on method `test__double`.
+983 996 Use `#[Test]` attribute instead of `test` prefix on method `testProtected`.
+1033 1043 Use `#[Test]` attribute instead of `test` prefix on method `testSpaces`.
+1156 1169 Use `#[Test]` attribute instead of `test` prefix on method `testAnonymous`.
+1234 1239 Use `#[Test]` attribute instead of `test` prefix on method `Test_`.
+1272 1277 Use `#[Test]` attribute instead of `test` prefix on method `TestX`.
+1310 1323 Use `#[Test]` attribute instead of `test` prefix on method `testTestTwice`.

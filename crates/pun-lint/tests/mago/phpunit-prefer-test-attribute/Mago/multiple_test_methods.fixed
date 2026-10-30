@@ -1,0 +1,8 @@
+<?php
+
+class FooTest {
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function one(): void {}
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function two(): void {}
+}

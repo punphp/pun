@@ -373,7 +373,7 @@ pub(crate) fn method_without_params(source: &str, method: &Method<'_>) -> String
 }
 
 /// The statements of the namespace that holds the node `ancestors` leads to, or of the file without one.
-fn scope_statements<'a>(ancestors: &[Node<'a, 'a>]) -> (Option<String>, Vec<&'a Statement<'a>>) {
+pub(crate) fn scope_statements<'a>(ancestors: &[Node<'a, 'a>]) -> (Option<String>, Vec<&'a Statement<'a>>) {
     for node in ancestors.iter().rev() {
         if let Node::Namespace(ns) = node {
             let name = ns
@@ -460,7 +460,7 @@ pub(crate) fn imported_function(ancestors: &[Node<'_, '_>], local: &[u8]) -> Opt
 
 /// The function (`function`) or constant a `use function` / `use const` import of the scope gives `local`: function
 /// names compare without case, constant names with it.
-fn imported_member(ancestors: &[Node<'_, '_>], local: &[u8], function: bool) -> Option<String> {
+pub(crate) fn imported_member(ancestors: &[Node<'_, '_>], local: &[u8], function: bool) -> Option<String> {
     let wanted = |t: &UseType<'_>| {
         if function {
             t.is_function()
