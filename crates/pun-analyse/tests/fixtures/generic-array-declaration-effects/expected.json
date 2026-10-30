@@ -1,0 +1,228 @@
+{
+    "arrays": {
+        "0": [],
+        "4": [
+            [
+                "arrays.php",
+                9,
+                "void.pure",
+                "Function GenericArrayDeclarationEffects\\remove() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "arrays.php",
+                18,
+                "void.pure",
+                "Function GenericArrayDeclarationEffects\\read() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "arrays.php",
+                27,
+                "void.pure",
+                "Function GenericArrayDeclarationEffects\\coalesceOffset() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "arrays.php",
+                37,
+                "void.pure",
+                "Function GenericArrayDeclarationEffects\\coalesceRoot() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "arrays.php",
+                39,
+                "nullCoalesce.variable",
+                "Variable $value on left side of ??= always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "arrays.php",
+                47,
+                "void.pure",
+                "Function GenericArrayDeclarationEffects\\arrayUnion() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "arrays.php",
+                57,
+                "void.pure",
+                "Function GenericArrayDeclarationEffects\\dependent() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "arrays.php",
+                67,
+                "void.pure",
+                "Function GenericArrayDeclarationEffects\\templateUnion() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "arrays.php",
+                76,
+                "void.pure",
+                "Function GenericArrayDeclarationEffects\\dictionary() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "arrays.php",
+                85,
+                "void.pure",
+                "Function GenericArrayDeclarationEffects\\vector() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "arrays.php",
+                94,
+                "void.pure",
+                "Function GenericArrayDeclarationEffects\\objectValue() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "arrays.php",
+                103,
+                "void.pure",
+                "Function GenericArrayDeclarationEffects\\documentedOnly() returns void but does not have any side effects.",
+                null,
+                true
+            ]
+        ],
+        "10": [
+            [
+                "arrays.php",
+                9,
+                "void.pure",
+                "Function GenericArrayDeclarationEffects\\remove() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "arrays.php",
+                18,
+                "void.pure",
+                "Function GenericArrayDeclarationEffects\\read() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "arrays.php",
+                27,
+                "void.pure",
+                "Function GenericArrayDeclarationEffects\\coalesceOffset() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "arrays.php",
+                37,
+                "void.pure",
+                "Function GenericArrayDeclarationEffects\\coalesceRoot() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "arrays.php",
+                39,
+                "nullCoalesce.variable",
+                "Variable $value on left side of ??= always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "arrays.php",
+                47,
+                "void.pure",
+                "Function GenericArrayDeclarationEffects\\arrayUnion() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "arrays.php",
+                57,
+                "void.pure",
+                "Function GenericArrayDeclarationEffects\\dependent() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "arrays.php",
+                67,
+                "void.pure",
+                "Function GenericArrayDeclarationEffects\\templateUnion() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "arrays.php",
+                76,
+                "void.pure",
+                "Function GenericArrayDeclarationEffects\\dictionary() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "arrays.php",
+                85,
+                "void.pure",
+                "Function GenericArrayDeclarationEffects\\vector() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "arrays.php",
+                94,
+                "void.pure",
+                "Function GenericArrayDeclarationEffects\\objectValue() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "arrays.php",
+                103,
+                "void.pure",
+                "Function GenericArrayDeclarationEffects\\documentedOnly() returns void but does not have any side effects.",
+                null,
+                true
+            ]
+        ]
+    },
+    "object-bounds": {
+        "0": [],
+        "4": [
+            [
+                "object-bounds.php",
+                47,
+                "nullCoalesce.variable",
+                "Variable $value on left side of ??= always exists and is not nullable.",
+                null,
+                true
+            ]
+        ],
+        "10": [
+            [
+                "object-bounds.php",
+                47,
+                "nullCoalesce.variable",
+                "Variable $value on left side of ??= always exists and is not nullable.",
+                null,
+                true
+            ]
+        ]
+    },
+    "mixed-bounds": {
+        "0": [],
+        "4": []
+    }
+}

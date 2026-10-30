@@ -347,8 +347,12 @@ impl Producer<'_, '_, '_> {
             Expression::Assignment(a) if matches!(a.operator, AssignmentOperator::Coalesce(_)) => {
                 // AssignOpHandler prepares the read target BEFORE evaluating the value. Only a
                 // direct local or a single plain-array dimension has a complete producer here.
-                let lhs_array =
-                    self.array(a.lhs) || self.c.type_of(a.lhs).is_some_and(|t| t.is_array());
+                // PHPStan's isArray()->yes() includes template bounds; Mago's raw query does not.
+                let lhs_array = self.array(a.lhs)
+                    || self
+                        .c
+                        .phpstan_type(a.lhs)
+                        .is_some_and(|t| t.is_array() == Tri::Yes);
                 let lhs_null = self.c.type_of(a.lhs).is_some_and(|t| t.is_null());
                 let mut effects = match a.lhs {
                     Expression::Variable(Variable::Direct(_)) => self.expression(a.lhs)?,
@@ -358,7 +362,10 @@ impl Producer<'_, '_, '_> {
                         };
                         if self.referenced
                             || (!self.array(offset.array)
-                                && !self.c.type_of(offset.array).is_some_and(|t| t.is_array()))
+                                && !self
+                                    .c
+                                    .phpstan_type(offset.array)
+                                    .is_some_and(|t| t.is_array() == Tri::Yes))
                         {
                             return None;
                         }
@@ -450,7 +457,12 @@ impl Producer<'_, '_, '_> {
                 // ArrayDimFetchHandler evaluates the dimension first. Plain arrays never invoke
                 // offsetGet; unlike writes, a read can also use an already-observed array type.
                 let mut effects = self.expression(a.index)?;
-                if !self.array(a.array) && !self.c.type_of(a.array).is_some_and(|t| t.is_array()) {
+                if !self.array(a.array)
+                    && !self
+                        .c
+                        .phpstan_type(a.array)
+                        .is_some_and(|t| t.is_array() == Tri::Yes)
+                {
                     return None;
                 }
                 effects.merge(self.expression(a.array)?);
@@ -567,7 +579,10 @@ impl Producer<'_, '_, '_> {
                 let mut effects = self.expression(a.index)?;
                 if self.referenced
                     || (!self.array(a.array)
-                        && !self.c.type_of(a.array).is_some_and(|t| t.is_array()))
+                        && !self
+                            .c
+                            .phpstan_type(a.array)
+                            .is_some_and(|t| t.is_array() == Tri::Yes))
                 {
                     return None; // Unknown/ArrayAccess containers need offsetGet AND offsetUnset points.
                 }
