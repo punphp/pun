@@ -303,16 +303,14 @@ fn find_on<'a>(c: &Checker<'a, '_>, f: &Fetch, holder: Type, native_only: bool, 
         declared::property_of(c, declaring, meta, &f.name[1..])
     };
     let mut display = c.display(declaring);
-    let overlay_args = if magic && shadowed.is_some() {
-        match &holder {
-            Type::Object(_, args, _) | Type::Static(_, args) => Some(args.clone()),
-            Type::This(_) => Some(declared::class_templates(c, class).into_iter().map(|t| Type::Template(Box::new(t))).collect()),
-            _ => None,
-        }
-    } else {
-        None
+    // ObjectType's CalledOnTypeUnresolvedPropertyPrototypeReflection resolves the declaring ancestor's
+    // active template map for native and annotation properties alike, not just annotation overlays.
+    let receiver_args = match &holder {
+        Type::Object(_, args, _) | Type::Static(_, args) => Some(args.clone()),
+        Type::This(_) => Some(declared::class_templates(c, class).into_iter().map(|t| Type::Template(Box::new(t))).collect()),
+        _ => None,
     };
-    let ty = if let Some(args) = overlay_args {
+    let ty = if let Some(args) = receiver_args {
         let scope = c.reflected_name(declaring.name.as_bytes());
         let args = if class.name == declaring.name {
             args
@@ -331,13 +329,7 @@ fn find_on<'a>(c: &Checker<'a, '_>, f: &Fetch, holder: Type, native_only: bool, 
         let names = templates.iter().map(|t| t.name.clone()).collect::<Vec<_>>();
         with_args(&ty, &format!("class {scope}"), &names, &args)
     } else {
-        match &holder {
-            Type::Object(_, args, _) if !args.is_empty() => {
-                let names: Vec<String> = declaring.get_template_type_names().iter().map(|n| n.to_string()).collect();
-                with_args(&ty, &format!("class {}", c.reflected_name(declaring.name.as_bytes())), &names, args)
-            }
-            _ => ty,
-        }
+        ty
     };
     // an enum's `name` and `value` (EnumPropertyReflection) are neither writable nor readonly properties
     let enum_ = declaring.kind == mago_codex::symbol::SymbolKind::Enum;

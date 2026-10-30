@@ -1,0 +1,276 @@
+{
+    "cases.php:0": [],
+    "cases.php:4": [
+        {
+            "file": "$ROOT/cases.php",
+            "message": "Property GenericPropertyDescription\\Box<T>::$defaulted (int) does not accept string.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/cases.php",
+            "message": "Property GenericPropertyDescription\\Box<mixed>::$defaulted (int) does not accept string.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/cases.php",
+            "message": "Property GenericPropertyDescription\\Box<int>::$defaulted (int) does not accept string.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/cases.php",
+            "message": "Property GenericPropertyDescription\\Box<int>::$value (int) does not accept string.",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/cases.php",
+            "message": "Property GenericPropertyDescription\\Defaulted<string>::$marker (int) does not accept string.",
+            "line": 41,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/cases.php",
+            "message": "Property GenericPropertyDescription\\Defaulted<string>::$value (string) does not accept int.",
+            "line": 42,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/cases.php",
+            "message": "Property GenericPropertyDescription\\PairBox<int,string>::$marker (int) does not accept string.",
+            "line": 72,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/cases.php",
+            "message": "Property GenericPropertyDescription\\PairBox<int,string>::$left (int) does not accept string.",
+            "line": 73,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/cases.php",
+            "message": "Property GenericPropertyDescription\\PairBox<int,string>::$right (string) does not accept int.",
+            "line": 74,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/cases.php",
+            "message": "Property GenericPropertyDescription\\PairBox<int,string>::$marker (int) does not accept string.",
+            "line": 81,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/cases.php",
+            "message": "Property GenericPropertyDescription\\PairBox<int,string>::$left (int) does not accept string.",
+            "line": 82,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/cases.php",
+            "message": "Property GenericPropertyDescription\\PairBox<int,string>::$right (string) does not accept int.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/cases.php",
+            "message": "Property GenericPropertyDescription\\Box<T of int|string>::$defaulted (int) does not accept string.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/cases.php",
+            "message": "Property GenericPropertyDescription\\Box<T of int|string>::$value (T of int|string) does not accept false.",
+            "line": 93,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/cases.php",
+            "message": "Property GenericPropertyDescription\\Plain::$defaulted (int) does not accept string.",
+            "line": 103,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/cases.php",
+            "message": "Property GenericPropertyDescription\\Bounded<int>::$marker (string) does not accept int.",
+            "line": 116,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/cases.php",
+            "message": "Property GenericPropertyDescription\\Bounded<int>::$value (int) does not accept string.",
+            "line": 117,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/cases.php",
+            "message": "Property GenericPropertyDescription\\Defaulted<string>::$marker (int) does not accept string.",
+            "line": 124,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/cases.php",
+            "message": "Property GenericPropertyDescription\\Defaulted<string>::$value (string) does not accept int.",
+            "line": 125,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        }
+    ],
+    "cases.php:5": [
+        {
+            "file": "$ROOT/cases.php",
+            "message": "Property GenericPropertyDescription\\Box<T>::$defaulted (int) does not accept string.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/cases.php",
+            "message": "Property GenericPropertyDescription\\Box<mixed>::$defaulted (int) does not accept string.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/cases.php",
+            "message": "Property GenericPropertyDescription\\Box<int>::$defaulted (int) does not accept string.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/cases.php",
+            "message": "Property GenericPropertyDescription\\Box<int>::$value (int) does not accept string.",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/cases.php",
+            "message": "Property GenericPropertyDescription\\Defaulted<string>::$marker (int) does not accept string.",
+            "line": 41,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/cases.php",
+            "message": "Property GenericPropertyDescription\\Defaulted<string>::$value (string) does not accept int.",
+            "line": 42,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/cases.php",
+            "message": "Property GenericPropertyDescription\\PairBox<int,string>::$marker (int) does not accept string.",
+            "line": 72,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/cases.php",
+            "message": "Property GenericPropertyDescription\\PairBox<int,string>::$left (int) does not accept string.",
+            "line": 73,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/cases.php",
+            "message": "Property GenericPropertyDescription\\PairBox<int,string>::$right (string) does not accept int.",
+            "line": 74,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/cases.php",
+            "message": "Property GenericPropertyDescription\\PairBox<int,string>::$marker (int) does not accept string.",
+            "line": 81,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/cases.php",
+            "message": "Property GenericPropertyDescription\\PairBox<int,string>::$left (int) does not accept string.",
+            "line": 82,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/cases.php",
+            "message": "Property GenericPropertyDescription\\PairBox<int,string>::$right (string) does not accept int.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/cases.php",
+            "message": "Property GenericPropertyDescription\\Box<T of int|string>::$defaulted (int) does not accept string.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/cases.php",
+            "message": "Property GenericPropertyDescription\\Box<T of int|string>::$value (T of int|string) does not accept false.",
+            "line": 93,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/cases.php",
+            "message": "Property GenericPropertyDescription\\Plain::$defaulted (int) does not accept string.",
+            "line": 103,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/cases.php",
+            "message": "Property GenericPropertyDescription\\Bounded<int>::$marker (string) does not accept int.",
+            "line": 116,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/cases.php",
+            "message": "Property GenericPropertyDescription\\Bounded<int>::$value (int) does not accept string.",
+            "line": 117,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/cases.php",
+            "message": "Property GenericPropertyDescription\\Defaulted<string>::$marker (int) does not accept string.",
+            "line": 124,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/cases.php",
+            "message": "Property GenericPropertyDescription\\Defaulted<string>::$value (string) does not accept int.",
+            "line": 125,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        }
+    ],
+    "quiet.php:0": [],
+    "quiet.php:4": [],
+    "quiet.php:5": []
+}
