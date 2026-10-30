@@ -794,7 +794,7 @@ pub(crate) fn shift(ctx: &Context<'_>, span: Span, delta: isize) -> String {
     };
     let mut out = String::with_capacity(text.len());
     let mut at = span.start;
-    for t in super::php_parser::tokens(ctx.source) {
+    for &t in super::php_parser::tokens(ctx.source).iter() {
         if t.end <= span.start || t.start >= span.end {
             continue;
         }

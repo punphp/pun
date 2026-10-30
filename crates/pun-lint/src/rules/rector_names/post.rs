@@ -1409,7 +1409,7 @@ impl<'s> Session<'s> {
             _ => stmt.span.start,
         };
         crate::rules::php_parser::tokens(self.source)
-            .into_iter()
+            .iter()
             .filter(|t| t.kind.is_comment() && t.start >= stmt.comment_start && t.end <= end)
             .map(|t| {
                 let span = Span::new(t.start, t.end);
