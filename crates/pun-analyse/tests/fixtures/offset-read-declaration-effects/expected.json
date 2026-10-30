@@ -1,0 +1,80 @@
+{
+    "values": {
+        "0": [],
+        "4": [
+            [
+                "values.php",
+                9,
+                "void.pure",
+                "Function OffsetReadDeclarationValues\\unionRead() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "values.php",
+                18,
+                "void.pure",
+                "Function OffsetReadDeclarationValues\\nullableTemplate() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "values.php",
+                24,
+                "void.pure",
+                "Function OffsetReadDeclarationValues\\nullableRead() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "values.php",
+                30,
+                "void.pure",
+                "Function OffsetReadDeclarationValues\\repeatedRead() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "values.php",
+                59,
+                "void.pure",
+                "Function OffsetReadDeclarationValues\\replacedByString() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "values.php",
+                66,
+                "void.pure",
+                "Function OffsetReadDeclarationValues\\keyReplacesObject() returns void but does not have any side effects.",
+                null,
+                true
+            ]
+        ]
+    },
+    "objects": {
+        "0": [],
+        "4": [
+            [
+                "objects.php",
+                18,
+                "void.pure",
+                "Function OffsetReadDeclarationObjects\\closedRead() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "objects.php",
+                39,
+                "void.pure",
+                "Function OffsetReadDeclarationObjects\\closedUnion() returns void but does not have any side effects.",
+                null,
+                true
+            ]
+        ]
+    },
+    "unknown": {
+        "0": [],
+        "4": []
+    }
+}

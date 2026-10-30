@@ -8,7 +8,7 @@ use std::collections::HashSet;
 
 use mago_span::HasSpan;
 use mago_syntax::cst::*;
-use pun_phpstan::types::Tri;
+use pun_phpstan::types::{Tri, Type, is_super_type_of};
 
 use super::{Checker, declarations, declared, doc, members, reflection::Lookup, types::flow};
 
@@ -454,14 +454,19 @@ impl Producer<'_, '_, '_> {
             }
             Expression::UnaryPostfix(u) => self.target(u.operand, false),
             Expression::ArrayAccess(a) => {
-                // ArrayDimFetchHandler evaluates the dimension first. Plain arrays never invoke
-                // offsetGet; unlike writes, a read can also use an already-observed array type.
+                // ArrayDimFetchHandler::composeResult gates offsetGet on the full receiver type:
+                // a non-array can also be definitely outside ArrayAccess. Price the dimension first.
                 let mut effects = self.expression(a.index)?;
                 if !self.array(a.array)
-                    && !self
-                        .c
-                        .phpstan_type(a.array)
-                        .is_some_and(|t| t.is_array() == Tri::Yes)
+                    && !self.c.phpstan_type(a.array).is_some_and(|ty| {
+                        ty.is_array() == Tri::Yes
+                            || declared::with_classes(self.c, || {
+                                is_super_type_of(
+                                    &Type::Object("ArrayAccess".into(), vec![], false),
+                                    &ty,
+                                ) == Tri::No
+                            })
+                    })
                 {
                     return None;
                 }
