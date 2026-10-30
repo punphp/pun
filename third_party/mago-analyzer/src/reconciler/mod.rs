@@ -232,8 +232,10 @@ pub fn reconcile_keyed_types<'ctx, A>(
             .map(Rc::new)
         });
 
-        // IssetHandler's non-true narrowing unsets a non-nullable direct variable. A nullable
-        // value can instead be null, so its existing definition certainty must survive.
+        // IssetHandler's non-true narrowing unsets a non-nullable direct variable. Where any
+        // variable can exist, that means no holder, not an explicit No refinement. Preserve
+        // genuine absence and local diagnostic-only No edges. Nullable values can instead be null.
+        let mut invalidate_isset_holder = false;
         if has_inverted_isset
             && key_str.starts_with(b"$")
             && borrow_path_parts(key_str).len() == 1
@@ -242,8 +244,13 @@ pub fn reconcile_keyed_types<'ctx, A>(
                 part.iter().all(|assertion| matches!(assertion, Assertion::IsNotIsset))
             })
         {
-            block_context.variable_state.impossible |= block_context.variable_certainty(*key).is_defined();
-            block_context.variable_state.absent.insert(*key);
+            let certainty = block_context.variable_certainty(*key);
+            block_context.variable_state.impossible |= certainty.is_defined();
+            if block_context.can_any_variable_exist() && !certainty.is_absent() {
+                invalidate_isset_holder = true;
+            } else {
+                block_context.variable_state.absent.insert(*key);
+            }
         }
 
         let mut result_type = before_adjustment.as_deref().map(Cow::Borrowed);
@@ -489,7 +496,11 @@ pub fn reconcile_keyed_types<'ctx, A>(
             }
         }
 
-        if !has_object_array_access {
+        if invalidate_isset_holder {
+            block_context.remove_variable(key_str, true, context);
+            block_context.invalidate_variable_certainty(*key);
+            block_context.variables_possibly_in_scope.remove(key);
+        } else if !has_object_array_access {
             block_context.locals.insert(*key, Rc::new(result_type));
         }
 

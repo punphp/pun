@@ -1,0 +1,1267 @@
+{
+    "phar_sha256": "85157dba3d95d77ca603d2b7303aa78a538f9e3b56ccad07dd794c53aa96d1ae",
+    "fixtures": {
+        "scopes.php": {
+            "source_sha256": "f870ab49d608850c192cd5d030cc9141b194a61559d1e6eb7943141a33e4e6a7",
+            "diagnostics": {
+                "1": [
+                    [
+                        "scopes.php",
+                        4,
+                        "isset.variable",
+                        "Variable $refined in isset() always exists and is not nullable.",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        5,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        "scopes.php",
+                        5,
+                        "variable.undefined",
+                        "Variable $refined might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        6,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        "scopes.php",
+                        6,
+                        "variable.undefined",
+                        "Variable $refined might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        8,
+                        "phpstan.dumpType",
+                        "Dumped type: 53",
+                        null,
+                        false
+                    ],
+                    [
+                        "scopes.php",
+                        12,
+                        "phpstan.dumpType",
+                        "Dumped type: null",
+                        null,
+                        false
+                    ],
+                    [
+                        "scopes.php",
+                        19,
+                        "isset.variable",
+                        "Variable $known in isset() always exists and is not nullable.",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        20,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        "scopes.php",
+                        20,
+                        "variable.undefined",
+                        "Variable $known might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        22,
+                        "phpstan.dumpType",
+                        "Dumped type: 103",
+                        null,
+                        false
+                    ],
+                    [
+                        "scopes.php",
+                        28,
+                        "isset.variable",
+                        "Variable $known in isset() always exists and is not nullable.",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        29,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        "scopes.php",
+                        29,
+                        "variable.undefined",
+                        "Undefined variable: $known",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        31,
+                        "phpstan.dumpType",
+                        "Dumped type: 71",
+                        null,
+                        false
+                    ],
+                    [
+                        "scopes.php",
+                        37,
+                        "isset.variable",
+                        "Variable $known in isset() always exists and is not nullable.",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        38,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        "scopes.php",
+                        38,
+                        "variable.undefined",
+                        "Undefined variable: $known",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        40,
+                        "phpstan.dumpType",
+                        "Dumped type: 61",
+                        null,
+                        false
+                    ],
+                    [
+                        "scopes.php",
+                        46,
+                        "isset.variable",
+                        "Variable $known in isset() always exists and is not nullable.",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        47,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        "scopes.php",
+                        47,
+                        "variable.undefined",
+                        "Variable $known might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        49,
+                        "phpstan.dumpType",
+                        "Dumped type: 109",
+                        null,
+                        false
+                    ],
+                    [
+                        "scopes.php",
+                        52,
+                        "isset.variable",
+                        "Variable $inner in isset() always exists and is not nullable.",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        53,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        "scopes.php",
+                        53,
+                        "variable.undefined",
+                        "Undefined variable: $inner",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        67,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        "scopes.php",
+                        67,
+                        "variable.undefined",
+                        "Undefined variable: $onlyWhenTrue",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        68,
+                        "isset.variable",
+                        "Variable $onlyWhenTrue in isset() is never defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        69,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        "scopes.php",
+                        69,
+                        "variable.undefined",
+                        "Undefined variable: $onlyWhenTrue",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        77,
+                        "isset.variable",
+                        "Variable $missing in isset() is never defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        78,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        "scopes.php",
+                        78,
+                        "variable.undefined",
+                        "Undefined variable: $missing",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        80,
+                        "isset.variable",
+                        "Variable $missing in isset() is never defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        81,
+                        "isset.variable",
+                        "Variable $missing in isset() is never defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        82,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        "scopes.php",
+                        82,
+                        "variable.undefined",
+                        "Undefined variable: $missing",
+                        null,
+                        true
+                    ]
+                ],
+                "4": [
+                    [
+                        "scopes.php",
+                        4,
+                        "isset.variable",
+                        "Variable $refined in isset() always exists and is not nullable.",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        5,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        "scopes.php",
+                        5,
+                        "variable.undefined",
+                        "Variable $refined might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        6,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        "scopes.php",
+                        6,
+                        "variable.undefined",
+                        "Variable $refined might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        8,
+                        "phpstan.dumpType",
+                        "Dumped type: 53",
+                        null,
+                        false
+                    ],
+                    [
+                        "scopes.php",
+                        12,
+                        "phpstan.dumpType",
+                        "Dumped type: null",
+                        null,
+                        false
+                    ],
+                    [
+                        "scopes.php",
+                        19,
+                        "isset.variable",
+                        "Variable $known in isset() always exists and is not nullable.",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        20,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        "scopes.php",
+                        20,
+                        "variable.undefined",
+                        "Variable $known might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        22,
+                        "phpstan.dumpType",
+                        "Dumped type: 103",
+                        null,
+                        false
+                    ],
+                    [
+                        "scopes.php",
+                        28,
+                        "isset.variable",
+                        "Variable $known in isset() always exists and is not nullable.",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        29,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        "scopes.php",
+                        29,
+                        "variable.undefined",
+                        "Undefined variable: $known",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        31,
+                        "phpstan.dumpType",
+                        "Dumped type: 71",
+                        null,
+                        false
+                    ],
+                    [
+                        "scopes.php",
+                        37,
+                        "isset.variable",
+                        "Variable $known in isset() always exists and is not nullable.",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        38,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        "scopes.php",
+                        38,
+                        "variable.undefined",
+                        "Undefined variable: $known",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        40,
+                        "phpstan.dumpType",
+                        "Dumped type: 61",
+                        null,
+                        false
+                    ],
+                    [
+                        "scopes.php",
+                        46,
+                        "isset.variable",
+                        "Variable $known in isset() always exists and is not nullable.",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        47,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        "scopes.php",
+                        47,
+                        "variable.undefined",
+                        "Variable $known might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        49,
+                        "phpstan.dumpType",
+                        "Dumped type: 109",
+                        null,
+                        false
+                    ],
+                    [
+                        "scopes.php",
+                        52,
+                        "isset.variable",
+                        "Variable $inner in isset() always exists and is not nullable.",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        53,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        "scopes.php",
+                        53,
+                        "variable.undefined",
+                        "Undefined variable: $inner",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        67,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        "scopes.php",
+                        67,
+                        "variable.undefined",
+                        "Undefined variable: $onlyWhenTrue",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        68,
+                        "isset.variable",
+                        "Variable $onlyWhenTrue in isset() is never defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        69,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        "scopes.php",
+                        69,
+                        "variable.undefined",
+                        "Undefined variable: $onlyWhenTrue",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        77,
+                        "isset.variable",
+                        "Variable $missing in isset() is never defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        78,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        "scopes.php",
+                        78,
+                        "variable.undefined",
+                        "Undefined variable: $missing",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        80,
+                        "isset.variable",
+                        "Variable $missing in isset() is never defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        81,
+                        "isset.variable",
+                        "Variable $missing in isset() is never defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "scopes.php",
+                        82,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        "scopes.php",
+                        82,
+                        "variable.undefined",
+                        "Undefined variable: $missing",
+                        null,
+                        true
+                    ]
+                ]
+            },
+            "observations": [
+                {
+                    "start": 68,
+                    "end": 76,
+                    "line": 5,
+                    "native_supported": false,
+                    "certainty": "possible",
+                    "selected": "mixed",
+                    "native": "mixed"
+                },
+                {
+                    "start": 112,
+                    "end": 120,
+                    "line": 6,
+                    "native_supported": false,
+                    "certainty": "possible",
+                    "selected": "mixed",
+                    "native": "mixed"
+                },
+                {
+                    "start": 154,
+                    "end": 162,
+                    "line": 8,
+                    "native_supported": false,
+                    "certainty": "defined",
+                    "selected": "53",
+                    "native": "53"
+                },
+                {
+                    "start": 260,
+                    "end": 269,
+                    "line": 12,
+                    "native_supported": false,
+                    "certainty": "defined",
+                    "selected": "null",
+                    "native": "null"
+                },
+                {
+                    "start": 432,
+                    "end": 438,
+                    "line": 20,
+                    "native_supported": false,
+                    "certainty": "possible",
+                    "selected": "mixed",
+                    "native": "mixed"
+                },
+                {
+                    "start": 480,
+                    "end": 486,
+                    "line": 22,
+                    "native_supported": false,
+                    "certainty": "defined",
+                    "selected": "103",
+                    "native": "103"
+                },
+                {
+                    "start": 611,
+                    "end": 617,
+                    "line": 29,
+                    "native_supported": false,
+                    "certainty": "absent",
+                    "selected": "*ERROR*",
+                    "native": "*ERROR*"
+                },
+                {
+                    "start": 659,
+                    "end": 665,
+                    "line": 31,
+                    "native_supported": false,
+                    "certainty": "defined",
+                    "selected": "71",
+                    "native": "71"
+                },
+                {
+                    "start": 813,
+                    "end": 819,
+                    "line": 38,
+                    "native_supported": false,
+                    "certainty": "absent",
+                    "selected": "*ERROR*",
+                    "native": "*ERROR*"
+                },
+                {
+                    "start": 861,
+                    "end": 867,
+                    "line": 40,
+                    "native_supported": false,
+                    "certainty": "defined",
+                    "selected": "61",
+                    "native": "61"
+                },
+                {
+                    "start": 1028,
+                    "end": 1034,
+                    "line": 47,
+                    "native_supported": false,
+                    "certainty": "possible",
+                    "selected": "mixed",
+                    "native": "mixed"
+                },
+                {
+                    "start": 1076,
+                    "end": 1082,
+                    "line": 49,
+                    "native_supported": false,
+                    "certainty": "defined",
+                    "selected": "109",
+                    "native": "109"
+                },
+                {
+                    "start": 1212,
+                    "end": 1218,
+                    "line": 53,
+                    "native_supported": false,
+                    "certainty": "absent",
+                    "selected": "*ERROR*",
+                    "native": "*ERROR*"
+                },
+                {
+                    "start": 1461,
+                    "end": 1474,
+                    "line": 67,
+                    "native_supported": true,
+                    "certainty": "absent",
+                    "selected": "*ERROR*",
+                    "native": "127"
+                },
+                {
+                    "start": 1562,
+                    "end": 1575,
+                    "line": 69,
+                    "native_supported": false,
+                    "certainty": "absent",
+                    "selected": "*ERROR*",
+                    "native": "127"
+                },
+                {
+                    "start": 1734,
+                    "end": 1742,
+                    "line": 78,
+                    "native_supported": false,
+                    "certainty": "absent",
+                    "selected": "*ERROR*",
+                    "native": "*ERROR*"
+                },
+                {
+                    "start": 1851,
+                    "end": 1859,
+                    "line": 82,
+                    "native_supported": false,
+                    "certainty": "absent",
+                    "selected": "*ERROR*",
+                    "native": "*ERROR*"
+                }
+            ]
+        },
+        "transfers.php": {
+            "source_sha256": "374b5e96db966f7511786c95af82a00f2bc47430863a6d3c9ee4b902354c8c55",
+            "diagnostics": {
+                "1": [
+                    [
+                        "transfers.php",
+                        5,
+                        "isset.variable",
+                        "Variable $alias in isset() always exists and is not nullable.",
+                        null,
+                        true
+                    ],
+                    [
+                        "transfers.php",
+                        6,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        "transfers.php",
+                        6,
+                        "variable.undefined",
+                        "Variable $alias might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "transfers.php",
+                        7,
+                        "phpstan.dumpType",
+                        "Dumped type: 17",
+                        null,
+                        false
+                    ],
+                    [
+                        "transfers.php",
+                        9,
+                        "phpstan.dumpType",
+                        "Dumped type: 23",
+                        null,
+                        false
+                    ],
+                    [
+                        "transfers.php",
+                        11,
+                        "phpstan.dumpType",
+                        "Dumped type: 17",
+                        null,
+                        false
+                    ],
+                    [
+                        "transfers.php",
+                        12,
+                        "phpstan.dumpType",
+                        "Dumped type: 17",
+                        null,
+                        false
+                    ],
+                    [
+                        "transfers.php",
+                        16,
+                        "phpstan.dumpType",
+                        "Dumped type: array{key: null}",
+                        null,
+                        false
+                    ],
+                    [
+                        "transfers.php",
+                        24,
+                        "isset.variable",
+                        "Variable $known in isset() always exists and is not nullable.",
+                        null,
+                        true
+                    ],
+                    [
+                        "transfers.php",
+                        25,
+                        "phpstan.dumpType",
+                        "Dumped type: int",
+                        null,
+                        false
+                    ],
+                    [
+                        "transfers.php",
+                        27,
+                        "phpstan.dumpType",
+                        "Dumped type: int",
+                        null,
+                        false
+                    ],
+                    [
+                        "transfers.php",
+                        36,
+                        "isset.variable",
+                        "Variable $target in isset() always exists and is not nullable.",
+                        null,
+                        true
+                    ],
+                    [
+                        "transfers.php",
+                        37,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        "transfers.php",
+                        37,
+                        "variable.undefined",
+                        "Variable $target might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "transfers.php",
+                        38,
+                        "phpstan.dumpType",
+                        "Dumped type: 37",
+                        null,
+                        false
+                    ],
+                    [
+                        "transfers.php",
+                        40,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        "transfers.php",
+                        40,
+                        "variable.undefined",
+                        "Variable $target might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "transfers.php",
+                        41,
+                        "phpstan.dumpType",
+                        "Dumped type: 41",
+                        null,
+                        false
+                    ],
+                    [
+                        "transfers.php",
+                        43,
+                        "phpstan.dumpType",
+                        "Dumped type: 37",
+                        null,
+                        false
+                    ],
+                    [
+                        "transfers.php",
+                        44,
+                        "phpstan.dumpType",
+                        "Dumped type: 37",
+                        null,
+                        false
+                    ]
+                ],
+                "4": [
+                    [
+                        "transfers.php",
+                        5,
+                        "isset.variable",
+                        "Variable $alias in isset() always exists and is not nullable.",
+                        null,
+                        true
+                    ],
+                    [
+                        "transfers.php",
+                        6,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        "transfers.php",
+                        6,
+                        "variable.undefined",
+                        "Variable $alias might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "transfers.php",
+                        7,
+                        "phpstan.dumpType",
+                        "Dumped type: 17",
+                        null,
+                        false
+                    ],
+                    [
+                        "transfers.php",
+                        9,
+                        "phpstan.dumpType",
+                        "Dumped type: 23",
+                        null,
+                        false
+                    ],
+                    [
+                        "transfers.php",
+                        11,
+                        "phpstan.dumpType",
+                        "Dumped type: 17",
+                        null,
+                        false
+                    ],
+                    [
+                        "transfers.php",
+                        12,
+                        "phpstan.dumpType",
+                        "Dumped type: 17",
+                        null,
+                        false
+                    ],
+                    [
+                        "transfers.php",
+                        15,
+                        "isset.offset",
+                        "Offset 'key' on array{key: null} in isset() always exists and is always null.",
+                        null,
+                        true
+                    ],
+                    [
+                        "transfers.php",
+                        16,
+                        "phpstan.dumpType",
+                        "Dumped type: array{key: null}",
+                        null,
+                        false
+                    ],
+                    [
+                        "transfers.php",
+                        21,
+                        "expr.resultUnused",
+                        "Expression \"$unrelated\" on a separate line does not do anything.",
+                        null,
+                        true
+                    ],
+                    [
+                        "transfers.php",
+                        23,
+                        "expr.resultUnused",
+                        "Expression \"$known\" on a separate line does not do anything.",
+                        null,
+                        true
+                    ],
+                    [
+                        "transfers.php",
+                        24,
+                        "isset.variable",
+                        "Variable $known in isset() always exists and is not nullable.",
+                        null,
+                        true
+                    ],
+                    [
+                        "transfers.php",
+                        25,
+                        "phpstan.dumpType",
+                        "Dumped type: int",
+                        null,
+                        false
+                    ],
+                    [
+                        "transfers.php",
+                        27,
+                        "phpstan.dumpType",
+                        "Dumped type: int",
+                        null,
+                        false
+                    ],
+                    [
+                        "transfers.php",
+                        36,
+                        "isset.variable",
+                        "Variable $target in isset() always exists and is not nullable.",
+                        null,
+                        true
+                    ],
+                    [
+                        "transfers.php",
+                        37,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        "transfers.php",
+                        37,
+                        "variable.undefined",
+                        "Variable $target might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "transfers.php",
+                        38,
+                        "phpstan.dumpType",
+                        "Dumped type: 37",
+                        null,
+                        false
+                    ],
+                    [
+                        "transfers.php",
+                        40,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        "transfers.php",
+                        40,
+                        "variable.undefined",
+                        "Variable $target might not be defined.",
+                        null,
+                        true
+                    ],
+                    [
+                        "transfers.php",
+                        41,
+                        "phpstan.dumpType",
+                        "Dumped type: 41",
+                        null,
+                        false
+                    ],
+                    [
+                        "transfers.php",
+                        43,
+                        "phpstan.dumpType",
+                        "Dumped type: 37",
+                        null,
+                        false
+                    ],
+                    [
+                        "transfers.php",
+                        44,
+                        "phpstan.dumpType",
+                        "Dumped type: 37",
+                        null,
+                        false
+                    ]
+                ]
+            },
+            "observations": [
+                {
+                    "start": 84,
+                    "end": 90,
+                    "line": 6,
+                    "native_supported": false,
+                    "certainty": "possible",
+                    "selected": "mixed",
+                    "native": "mixed"
+                },
+                {
+                    "start": 126,
+                    "end": 133,
+                    "line": 7,
+                    "native_supported": false,
+                    "certainty": "defined",
+                    "selected": "17",
+                    "native": "17"
+                },
+                {
+                    "start": 186,
+                    "end": 192,
+                    "line": 9,
+                    "native_supported": false,
+                    "certainty": "defined",
+                    "selected": "23",
+                    "native": "23"
+                },
+                {
+                    "start": 226,
+                    "end": 232,
+                    "line": 11,
+                    "native_supported": false,
+                    "certainty": "defined",
+                    "selected": "17",
+                    "native": "17"
+                },
+                {
+                    "start": 264,
+                    "end": 271,
+                    "line": 12,
+                    "native_supported": false,
+                    "certainty": "defined",
+                    "selected": "17",
+                    "native": "17"
+                },
+                {
+                    "start": 436,
+                    "end": 446,
+                    "line": 21,
+                    "native_supported": true,
+                    "certainty": "defined",
+                    "selected": "int",
+                    "native": "int"
+                },
+                {
+                    "start": 487,
+                    "end": 493,
+                    "line": 23,
+                    "native_supported": true,
+                    "certainty": "defined",
+                    "selected": "31",
+                    "native": "31"
+                },
+                {
+                    "start": 565,
+                    "end": 575,
+                    "line": 25,
+                    "native_supported": false,
+                    "certainty": "defined",
+                    "selected": "int",
+                    "native": "int"
+                },
+                {
+                    "start": 617,
+                    "end": 627,
+                    "line": 27,
+                    "native_supported": false,
+                    "certainty": "defined",
+                    "selected": "int",
+                    "native": "int"
+                },
+                {
+                    "start": 853,
+                    "end": 860,
+                    "line": 37,
+                    "native_supported": false,
+                    "certainty": "possible",
+                    "selected": "mixed",
+                    "native": "mixed"
+                },
+                {
+                    "start": 900,
+                    "end": 906,
+                    "line": 38,
+                    "native_supported": false,
+                    "certainty": "defined",
+                    "selected": "37",
+                    "native": "37"
+                },
+                {
+                    "start": 967,
+                    "end": 974,
+                    "line": 40,
+                    "native_supported": false,
+                    "certainty": "possible",
+                    "selected": "mixed",
+                    "native": "mixed"
+                },
+                {
+                    "start": 1014,
+                    "end": 1020,
+                    "line": 41,
+                    "native_supported": false,
+                    "certainty": "defined",
+                    "selected": "41",
+                    "native": "41"
+                },
+                {
+                    "start": 1062,
+                    "end": 1069,
+                    "line": 43,
+                    "native_supported": false,
+                    "certainty": "defined",
+                    "selected": "37",
+                    "native": "37"
+                },
+                {
+                    "start": 1105,
+                    "end": 1111,
+                    "line": 44,
+                    "native_supported": false,
+                    "certainty": "defined",
+                    "selected": "37",
+                    "native": "37"
+                }
+            ]
+        }
+    }
+}
