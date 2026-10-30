@@ -86,6 +86,24 @@ impl VariableScope {
         self
     }
 
+    pub(crate) fn locals(&self) -> &WordMap<Rc<TUnion>> {
+        &self.locals
+    }
+
+    /// MutatingScope::processFinallyScopeVariableTypeHolders copies changed/new
+    /// holders, not every assignment and not the union of before and after.
+    pub(crate) fn apply_finally(&mut self, after: &Self, before: &Self) {
+        for (name, value) in &after.locals {
+            if before.locals.get(name).is_some_and(|original| original.types == value.types) {
+                continue;
+            }
+            self.locals.insert(*name, Rc::clone(value));
+            self.possible.insert(*name);
+            self.state.absent.remove(name);
+        }
+        self.state.conditional.retain(|holder| after.state.conditional.contains(holder));
+    }
+
     fn certainty(&self, name: Word) -> VariableCertainty {
         certainty(&self.locals, &self.possible, &self.state, self.otherwise, name)
     }

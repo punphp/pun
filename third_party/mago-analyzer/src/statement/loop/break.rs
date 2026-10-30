@@ -125,7 +125,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Break<'arena> {
                 loop_scope.final_actions.insert(ControlAction::Break);
                 if let Some(entry) = loop_scope.entry_scope.as_ref().or(loop_scope.foreach_entry_scope.as_ref()) {
                     loop_scope.break_scopes.push(block_context.variable_scope().loop_exit_scope(entry).at_property_exit(self.span()));
-                } else if !context.settings.property_initialization_observations.is_empty() {
+                } else {
                     loop_scope.break_scopes.push(block_context.variable_scope().at_property_exit(self.span()));
                 }
                 crate::context::scope::loop_scope::merge_exit_locals(
@@ -191,21 +191,6 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Break<'arena> {
                 }
             }
 
-            if let Some(finally_scope) = block_context.finally_scope.clone() {
-                let mut finally_scope = (*finally_scope).borrow_mut();
-                for (var_id, var_type) in &block_context.locals {
-                    if let Some(finally_type) = finally_scope.locals.get_mut(var_id) {
-                        *finally_type = Rc::new(combine_union_types(
-                            finally_type,
-                            var_type,
-                            context.codebase,
-                            CombinerOptions::default(),
-                        ));
-                    } else {
-                        finally_scope.locals.insert(*var_id, Rc::clone(var_type));
-                    }
-                }
-            }
         }
 
         if target_is_switch {
@@ -217,6 +202,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Break<'arena> {
                 && let Some(case_scope) = artifacts.case_scopes.get_mut(case_scope_index)
             {
                 case_scope.record_break(&block_context.locals, context.codebase);
+                case_scope.break_scopes.push(block_context.variable_scope().at_property_exit(self.span()));
                 crate::property_initialization::remember(&mut case_scope.property_breaks, self.span(), &block_context.variable_state.property_initializations);
             }
         } else if !has_loop_scope {
@@ -228,6 +214,9 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Break<'arena> {
             );
         }
 
+        if !block_context.flags.has_returned() && let Some(finally_scope) = &block_context.finally_scope {
+            finally_scope.borrow_mut().remember(self.span(), Some(target_index), block_context.variable_scope());
+        }
         if !context.settings.property_initialization_observations.is_empty() {
             crate::property_initialization::remember(&mut artifacts.property_abrupt_scopes, self.span(), &block_context.variable_state.property_initializations);
         }

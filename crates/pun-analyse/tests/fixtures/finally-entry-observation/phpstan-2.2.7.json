@@ -1,0 +1,238 @@
+{
+    "phar_sha256": "2600c853b6c6fafe38811c18bc99a2439cbee101c533bc5a7b8ae8dd0928f1b1",
+    "input_sha256": "a2d6294682c5a7116ff801157d6362ec2172cbe34282020c053839f26a11071e",
+    "records": {
+        "after-inner": {
+            "start": 294,
+            "end": 300,
+            "expression": "$value",
+            "full": "8",
+            "native": "8"
+        },
+        "after-shared-finally": {
+            "start": 393,
+            "end": 399,
+            "expression": "$value",
+            "full": "8",
+            "native": "8"
+        },
+        "catch-return-finally": {
+            "start": 2825,
+            "end": 2831,
+            "expression": "$value",
+            "full": "61|62",
+            "native": "61|62"
+        },
+        "catch-return-tail": {
+            "start": 2875,
+            "end": 2881,
+            "expression": "$value",
+            "full": "61",
+            "native": "61"
+        },
+        "earlier-switch-break-tail": {
+            "start": 6358,
+            "end": 6364,
+            "expression": "$value",
+            "full": "124|126|127",
+            "native": "124|126|127"
+        },
+        "foreach-continue-tail": {
+            "start": 5272,
+            "end": 5278,
+            "expression": "$value",
+            "full": "109|110",
+            "native": "109|110"
+        },
+        "inner-break-finally": {
+            "start": 1662,
+            "end": 1668,
+            "expression": "$value",
+            "full": "43",
+            "native": "43"
+        },
+        "inner-return-finally": {
+            "start": 1168,
+            "end": 1174,
+            "expression": "$value",
+            "full": "22",
+            "native": "22"
+        },
+        "matching-catch": {
+            "start": 598,
+            "end": 604,
+            "expression": "$value",
+            "full": "5",
+            "native": "5"
+        },
+        "matching-finally": {
+            "start": 656,
+            "end": 662,
+            "expression": "$value",
+            "full": "5",
+            "native": "5"
+        },
+        "matching-tail": {
+            "start": 702,
+            "end": 708,
+            "expression": "$value",
+            "full": "5",
+            "native": "5"
+        },
+        "mixed-break-tail": {
+            "start": 5024,
+            "end": 5030,
+            "expression": "$value",
+            "full": "105|106|107",
+            "native": "105|106|107"
+        },
+        "nested-no-finally": {
+            "start": 3547,
+            "end": 3553,
+            "expression": "$value",
+            "full": "81|82",
+            "native": "81|82"
+        },
+        "never-finally": {
+            "start": 2483,
+            "end": 2489,
+            "expression": "$value",
+            "full": "51|52",
+            "native": "51|52"
+        },
+        "never-tail": {
+            "start": 2526,
+            "end": 2532,
+            "expression": "$value",
+            "full": "52",
+            "native": "52"
+        },
+        "new-finally-local": {
+            "start": 4698,
+            "end": 4706,
+            "expression": "$created",
+            "full": "103",
+            "native": "103"
+        },
+        "normal-and-break-new-local": {
+            "start": 5647,
+            "end": 5655,
+            "expression": "$created",
+            "full": "114",
+            "native": "114"
+        },
+        "normal-and-break-tail": {
+            "start": 5602,
+            "end": 5608,
+            "expression": "$value",
+            "full": "112|113",
+            "native": "112|113"
+        },
+        "optional-loop-tail": {
+            "start": 5917,
+            "end": 5923,
+            "expression": "$value",
+            "full": "120|121|122",
+            "native": "120|121|122"
+        },
+        "outer-break-finally": {
+            "start": 1856,
+            "end": 1862,
+            "expression": "$value",
+            "full": "45",
+            "native": "45"
+        },
+        "outer-break-tail": {
+            "start": 1955,
+            "end": 1961,
+            "expression": "$value",
+            "full": "45|46",
+            "native": "45|46"
+        },
+        "outer-continue-finally": {
+            "start": 2146,
+            "end": 2152,
+            "expression": "$value",
+            "full": "48",
+            "native": "48"
+        },
+        "outer-continue-tail": {
+            "start": 2248,
+            "end": 2254,
+            "expression": "$value",
+            "full": "48|49",
+            "native": "48|49"
+        },
+        "outer-return-finally": {
+            "start": 1267,
+            "end": 1273,
+            "expression": "$value",
+            "full": "22|23",
+            "native": "22|23"
+        },
+        "overridden-return-finally": {
+            "start": 4486,
+            "end": 4492,
+            "expression": "$value",
+            "full": "100|101|102",
+            "native": "100|101|102"
+        },
+        "return-finally": {
+            "start": 933,
+            "end": 939,
+            "expression": "$value",
+            "full": "12|13",
+            "native": "12|13"
+        },
+        "return-operand-finally": {
+            "start": 1427,
+            "end": 1433,
+            "expression": "$value",
+            "full": "32",
+            "native": "32"
+        },
+        "return-tail": {
+            "start": 977,
+            "end": 983,
+            "expression": "$value",
+            "full": "13",
+            "native": "13"
+        },
+        "shared-finally": {
+            "start": 349,
+            "end": 355,
+            "expression": "$value",
+            "full": "8",
+            "native": "8"
+        },
+        "switch-break-tail": {
+            "start": 3880,
+            "end": 3886,
+            "expression": "$value",
+            "full": "91|92|93",
+            "native": "91|92|93"
+        },
+        "switch-continue-tail": {
+            "start": 4213,
+            "end": 4219,
+            "expression": "$value",
+            "full": "95|96|97",
+            "native": "95|96|97"
+        },
+        "unchanged-holder-entry": {
+            "start": 3110,
+            "end": 3116,
+            "expression": "$value",
+            "full": "71|72",
+            "native": "71|72"
+        },
+        "unchanged-holder-tail": {
+            "start": 3196,
+            "end": 3202,
+            "expression": "$value",
+            "full": "72",
+            "native": "72"
+        }
+    },
+    "errors": []
+}

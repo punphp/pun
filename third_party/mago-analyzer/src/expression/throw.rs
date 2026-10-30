@@ -1,8 +1,6 @@
 use mago_allocator::Arena;
-use std::rc::Rc;
 
 use mago_codex::ttype::TType;
-use mago_codex::ttype::combine_union_types;
 use mago_codex::ttype::get_non_accepting_never;
 use mago_reporting::Annotation;
 use mago_reporting::Issue;
@@ -32,27 +30,6 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Throw<'arena> {
         self.exception.analyze(context, block_context, artifacts)?;
         block_context.flags.set_inside_throw(was_inside_throw);
         block_context.flags.set_has_returned(true);
-        if let Some(scope) = block_context.finally_scope.as_ref() {
-            let mut finally_scope = scope.borrow_mut();
-
-            for (variable, previous_type) in &block_context.locals {
-                if let Some(finally_type) = finally_scope.locals.get_mut(variable) {
-                    let resulting_type = combine_union_types(
-                        previous_type.as_ref(),
-                        finally_type.as_ref(),
-                        context.codebase,
-                        context.settings.combiner_options(),
-                    );
-
-                    finally_scope.locals.insert(*variable, Rc::new(resulting_type));
-                } else {
-                    let mut resulting_type = (**previous_type).clone();
-                    resulting_type.set_possibly_undefined_from_try(true);
-
-                    finally_scope.locals.insert(*variable, Rc::new(resulting_type));
-                }
-            }
-        }
 
         if let Some(exception_type) = artifacts.get_expression_type(self.exception).cloned() {
             for exception_atomic in exception_type.types.as_ref() {

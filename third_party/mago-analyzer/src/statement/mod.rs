@@ -138,6 +138,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Statement<'arena> {
             }
         }
 
+        let was_terminated = block_context.flags.has_returned();
         let result = match self {
             Statement::Inline(_)
             | Statement::OpeningTag(_)
@@ -274,6 +275,16 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Statement<'arena> {
         {
             block_context.flags.set_has_returned(true);
             block_context.control_actions.insert(ControlAction::End);
+        }
+
+        // Throw statements use throw points, which catches can consume. Other
+        // terminating expressions are actual non-throw exit points for finally.
+        if !was_terminated && let Statement::Expression(expression) = self
+            && block_context.flags.has_returned()
+            && !matches!(unwrap_expression(expression.expression), Expression::Throw(_))
+            && let Some(finally_scope) = &block_context.finally_scope
+        {
+            finally_scope.borrow_mut().remember(self.span(), None, block_context.variable_scope());
         }
 
         if let Statement::Expression(expression) = self

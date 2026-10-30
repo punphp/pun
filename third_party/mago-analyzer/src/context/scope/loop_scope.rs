@@ -26,6 +26,8 @@ pub struct LoopScope {
     /// Actual states at loop exits, separate from the back edge and the entry state.
     pub break_locals: Option<WordMap<Rc<TUnion>>>,
     pub break_scopes: Vec<VariableScope>,
+    /// Finally changed actual break holders; legacy mutation summaries predate that transfer.
+    pub(crate) finally_transferred_breaks: bool,
     pub continue_locals: Option<WordMap<Rc<TUnion>>>,
     pub(crate) property_continues: Vec<VariableScope>,
     pub by_reference_loop_mutations: WordMap<Rc<TUnion>>,
@@ -60,6 +62,7 @@ impl LoopScope {
             possibly_defined_loop_parent_variables: WordMap::default(),
             break_locals: None,
             break_scopes: Vec::new(),
+            finally_transferred_breaks: false,
             continue_locals: None,
             property_continues: Vec::new(),
             by_reference_loop_mutations: WordMap::default(),

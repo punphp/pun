@@ -43,7 +43,6 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Try<'arena> {
     where
         A: Arena,
     {
-        let mut catch_actions = vec![];
         let mut all_catches_leave = !self.catch_clauses.is_empty();
 
         for catch_clause in &self.catch_clauses {
@@ -55,16 +54,20 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Try<'arena> {
             );
 
             all_catches_leave = all_catches_leave && !actions.contains(ControlAction::None);
-            catch_actions.push(actions);
         }
 
+        let entry_scope = block_context.variable_scope();
+        let parent_finally = block_context.finally_scope.clone();
         let existing_thrown_exceptions = std::mem::take(&mut block_context.possibly_thrown_exceptions);
         let existing_throw_scopes = std::mem::take(&mut artifacts.variable_throw_scopes);
         let old_block_context_locals = block_context.locals.clone();
         let mut try_block_context = block_context.clone();
 
         if self.finally_clause.is_some() {
-            try_block_context.finally_scope = Some(Rc::new(RefCell::new(FinallyScope::new())));
+            let mut finally = FinallyScope::new();
+            finally.break_depth = block_context.break_types.len();
+            try_block_context.finally_scope = Some(Rc::new(RefCell::new(finally)));
+            block_context.finally_scope = try_block_context.finally_scope.clone();
         }
 
         let assigned_variable_ids = std::mem::take(&mut block_context.assigned_variable_ids);
@@ -108,21 +111,13 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Try<'arena> {
             continuing_scopes.push(block_context.variable_scope());
         }
         let mut finally_entry_scopes = vec![block_context.variable_scope()];
-        finally_entry_scopes.extend(throw_scopes.values().flat_map(|thrown| thrown.values().cloned()));
+        // Keep the existing virtual-holder throw observations separate from value
+        // transfer: consuming a catch edge must not erase their recorded certainty.
+        let finally_throw_markers: Vec<_> = throw_scopes.values().flat_map(|thrown| thrown.values())
+            .map(|scope| scope.state.property_initializations.clone()).collect();
         if !self.catch_clauses.is_empty() {
             block_context.flags.set_has_returned(false);
         }
-
-        let try_block_control_actions = ControlAction::from_statements(
-            self.block.statements.iter().collect::<Vec<_>>(),
-            vec![],
-            Some(artifacts),
-            true,
-        );
-        // Abrupt non-throw exits still use Mago's accumulated finally locals. For blocks
-        // without those exits every finally entry is an observed normal or throwing edge.
-        let mut finally_entries_complete =
-            try_block_control_actions.len() == 1 && try_block_control_actions.contains(ControlAction::None);
 
         let newly_assigned_variable_ids = std::mem::take(&mut block_context.assigned_variable_ids);
         block_context.assigned_variable_ids.extend(assigned_variable_ids);
@@ -164,29 +159,6 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Try<'arena> {
             }
         }
 
-        if let Some(try_scope) = &try_block_context.finally_scope {
-            let mut mutable_try_scope = try_scope.borrow_mut();
-
-            for (variable_id, variable_type) in &try_block_context.locals {
-                if let Some(existing_type) = mutable_try_scope.locals.get_mut(variable_id) {
-                    let combined_type = ttype::combine_union_types(
-                        existing_type,
-                        variable_type.as_ref(),
-                        context.codebase,
-                        CombinerOptions::default(),
-                    );
-
-                    *existing_type = Rc::new(combined_type);
-                } else {
-                    let mut var_type = (**variable_type).clone();
-                    if !old_block_context_locals.contains_key(variable_id) {
-                        var_type.set_possibly_undefined(true, Some(true));
-                    }
-                    mutable_try_scope.locals.insert(*variable_id, Rc::new(var_type));
-                }
-            }
-        }
-
         try_block_context.possibly_thrown_exceptions = block_context.possibly_thrown_exceptions.clone();
         try_block_context.variables_possibly_in_scope = block_context.variables_possibly_in_scope.clone();
 
@@ -207,7 +179,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Try<'arena> {
 
         let mut original_block_context = try_block_context.clone();
 
-        for (i, catch_clause) in self.catch_clauses.iter().enumerate() {
+        for catch_clause in &self.catch_clauses {
             let mut catch_block_context = original_block_context.clone();
             catch_block_context.flags.set_has_returned(false);
             let caught_classes = get_caught_classes(context, &catch_block_context, artifacts, &catch_clause.hint);
@@ -341,81 +313,28 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Try<'arena> {
 
             analyze_statements(catch_clause.block.statements.as_slice(), context, &mut catch_block_context, artifacts)?;
 
-            // recalculate in case there's a no-return clause
-            if let Some(actions) = catch_actions.get_mut(i) {
-                *actions = ControlAction::from_statements(
-                    catch_clause.block.statements.iter().collect::<Vec<_>>(),
-                    vec![],
-                    Some(artifacts),
-                    true,
-                );
-            }
-
             catch_block_context.assigned_variable_ids.extend(old_catch_assigned_variable_ids);
 
             inherit_branch_context_properties(context, block_context, &catch_block_context);
 
-            let catch_doesnt_leave_parent_scope = catch_actions[i].contains(ControlAction::None);
-            finally_entries_complete &= catch_actions[i].len() == 1 && catch_doesnt_leave_parent_scope;
+            let catch_doesnt_leave_parent_scope = !catch_block_context.flags.has_returned();
             finally_entry_scopes.push(catch_block_context.variable_scope());
 
             if catch_doesnt_leave_parent_scope {
                 continuing_scopes.push(catch_block_context.variable_scope());
-
-                let end_action_only =
-                    try_block_control_actions.len() == 1 && try_block_control_actions.contains(ControlAction::End);
-
-                for (variable_id, variable_type) in &catch_block_context.locals {
-                    if end_action_only {
-                        block_context.locals.insert(*variable_id, Rc::clone(variable_type));
-                    } else if let Some(existing_type) = block_context.locals.get(variable_id) {
-                        block_context.locals.insert(
-                            *variable_id,
-                            Rc::new(ttype::combine_union_types(
-                                existing_type.as_ref(),
-                                variable_type.as_ref(),
-                                context.codebase,
-                                CombinerOptions::default(),
-                            )),
-                        );
-                    }
-                }
-
                 block_context.variables_possibly_in_scope.extend(catch_block_context.variables_possibly_in_scope);
             } else if self.finally_clause.is_some() {
                 block_context.variables_possibly_in_scope.extend(catch_block_context.variables_possibly_in_scope);
-            }
-
-            if let Some(mut finally_scope) = try_block_context.finally_scope.as_ref().map(|s| s.borrow_mut()) {
-                for (variable_id, variable_type) in &catch_block_context.locals {
-                    let resulting_type = if let Some(finally_variable_type) = finally_scope.locals.get(variable_id) {
-                        let mut combined = ttype::combine_union_types(
-                            finally_variable_type.as_ref(),
-                            variable_type.as_ref(),
-                            context.codebase,
-                            CombinerOptions::default(),
-                        );
-                        if !old_block_context_locals.contains_key(variable_id) {
-                            combined.set_possibly_undefined(true, Some(true));
-                        }
-                        combined
-                    } else {
-                        let mut finally_variable_type = (**variable_type).clone();
-                        if !old_block_context_locals.contains_key(variable_id) {
-                            finally_variable_type.set_possibly_undefined(true, Some(true));
-                        }
-
-                        finally_variable_type
-                    };
-
-                    finally_scope.locals.insert(*variable_id, Rc::new(resulting_type));
-                }
             }
         }
 
         // Join actual continuing scopes, not the synthetic pre-try/post-try local union.
         // An empty reachable catch is an edge; an impossible or terminating catch is not.
-        block_context.merge_variable_scope_types(&continuing_scopes, context.codebase);
+        if continuing_scopes.is_empty() {
+            block_context.merge_variable_scope_types(&[entry_scope], context.codebase);
+        } else {
+            block_context.merge_variable_scope_types(&continuing_scopes, context.codebase);
+        }
 
         if !try_leaves_loop && let Some(loop_scope) = artifacts.loop_scope.as_mut() {
             loop_scope.final_actions.insert(ControlAction::None);
@@ -426,7 +345,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Try<'arena> {
             // SAFETY: when a try statement has a `finally_clause`, the finally scope is always
             // initialized on `try_block_context` before reaching this point, so the `Option` is
             // guaranteed to be `Some`.
-            let finally_scope = unsafe {
+            let mut finally_scope = unsafe {
                 try_block_context
                     .finally_scope
                     .take()
@@ -435,18 +354,20 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Try<'arena> {
                     .unwrap_unchecked()
             };
 
+            block_context.finally_scope = parent_finally.clone();
+            finally_entry_scopes.extend(finally_scope.exits.iter().map(|exit| exit.scope.clone()));
+            finally_entry_scopes.extend(throw_scopes.values().flat_map(|thrown| thrown.values().cloned()));
+            finally_entry_scopes.extend(artifacts.variable_throw_scopes.values().flat_map(|thrown| thrown.values().cloned()));
             let mut finally_block_context = block_context.clone();
             finally_block_context.assigned_variable_ids = WordMap::default();
             finally_block_context.possibly_assigned_variable_ids = WordSet::default();
-            finally_block_context.locals = finally_scope.locals;
-            if finally_entries_complete {
-                finally_block_context.merge_variable_scope_types(&finally_entry_scopes, context.codebase);
-            }
+            finally_block_context.merge_variable_scope_types(&finally_entry_scopes, context.codebase);
             // TryCatchHandler joins the observed branch end, abrupt exits and throw
             // points for finally entry. These marker snapshots do not replay a body.
             let inside_try = |span: &Span| span.start.offset >= self.span().start.offset
                 && span.end.offset <= self.span().end.offset;
             let marker_entries = finally_entry_scopes.iter().map(|scope| &scope.state.property_initializations)
+                .chain(finally_throw_markers.iter())
                 .chain(artifacts.property_abrupt_scopes.iter().filter(|(span, _)| inside_try(span)).map(|(_, markers)| markers));
             let original_finally_markers = crate::property_initialization::join(marker_entries);
             finally_block_context.variable_state.property_initializations = original_finally_markers.clone();
@@ -456,6 +377,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Try<'arena> {
                 }
             }
             finally_block_context.flags.set_has_returned(false);
+            let original_finally_scope = finally_block_context.variable_scope();
 
             analyze_statements(
                 finally_clause.block.statements.as_slice(),
@@ -467,20 +389,54 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Try<'arena> {
             finally_has_returned = finally_block_context.flags.has_returned();
             let after = &finally_block_context.variable_state.property_initializations;
             if !finally_has_returned {
+                let after_scope = finally_block_context.variable_scope();
+                let mut continuation = block_context.variable_scope();
+                continuation.apply_finally(&after_scope, &original_finally_scope);
+                block_context.merge_variable_scope_types(&[continuation], context.codebase);
+                for exit in &mut finally_scope.exits {
+                    exit.scope.apply_finally(&after_scope, &original_finally_scope);
+                }
                 crate::property_initialization::apply_finally(&mut block_context.variable_state.property_initializations, after, &original_finally_markers);
                 for (_, markers) in artifacts.property_abrupt_scopes.iter_mut().filter(|(span, _)| inside_try(span)) {
                     crate::property_initialization::apply_finally(markers, after, &original_finally_markers);
                 }
                 let mut active_loop = artifacts.loop_scope.as_mut();
                 while let Some(loop_scope) = active_loop {
+                    let changed_breaks = loop_scope.break_scopes.iter().any(|edge| edge.property_exit.as_ref().is_some_and(inside_try));
+                    let changed_continues = loop_scope.property_continues.iter().any(|edge| edge.property_exit.as_ref().is_some_and(inside_try));
                     for edge in loop_scope.break_scopes.iter_mut().chain(&mut loop_scope.property_continues).chain(&mut loop_scope.foreach_continue_scopes) {
                         if edge.property_exit.as_ref().is_some_and(inside_try) {
+                            edge.apply_finally(&after_scope, &original_finally_scope);
                             crate::property_initialization::apply_finally(&mut edge.state.property_initializations, after, &original_finally_markers);
+                        }
+                    }
+                    if changed_breaks {
+                        loop_scope.finally_transferred_breaks = true;
+                        loop_scope.break_locals = None;
+                        for edge in &loop_scope.break_scopes {
+                            crate::context::scope::loop_scope::merge_exit_locals(&mut loop_scope.break_locals, edge.locals(), context.codebase);
+                        }
+                    }
+                    if changed_continues {
+                        loop_scope.continue_locals = None;
+                        for edge in &loop_scope.property_continues {
+                            crate::context::scope::loop_scope::merge_exit_locals(&mut loop_scope.continue_locals, edge.locals(), context.codebase);
                         }
                     }
                     active_loop = loop_scope.parent_loop.as_deref_mut();
                 }
                 for case in &mut artifacts.case_scopes {
+                    if case.break_scopes.iter().any(|edge| edge.property_exit.as_ref().is_some_and(inside_try)) {
+                        for edge in &mut case.break_scopes {
+                            if edge.property_exit.as_ref().is_some_and(inside_try) {
+                                edge.apply_finally(&after_scope, &original_finally_scope);
+                            }
+                        }
+                        case.break_vars = None;
+                        for edge in &case.break_scopes {
+                            crate::context::scope::loop_scope::merge_exit_locals(&mut case.break_vars, edge.locals(), context.codebase);
+                        }
+                    }
                     for (_, markers) in case.property_breaks.iter_mut().filter(|(span, _)| inside_try(span)) {
                         crate::property_initialization::apply_finally(markers, after, &original_finally_markers);
                     }
@@ -488,10 +444,9 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Try<'arena> {
             }
             block_context.possibly_undefined_variable_ids.extend(finally_block_context.possibly_undefined_variable_ids);
 
-            for (variable_id, _) in finally_block_context.assigned_variable_ids {
-                let finally_variable_type = finally_block_context.locals.remove(&variable_id);
-                if let Some(finally_variable_type) = finally_variable_type {
-                    block_context.locals.insert(variable_id, finally_variable_type);
+            if let Some(parent) = &parent_finally {
+                for exit in finally_scope.exits {
+                    parent.borrow_mut().remember(exit.span, exit.target, exit.scope);
                 }
             }
         }

@@ -3361,3 +3361,32 @@ valid parents, inherited constants, and ordinary missing constants. Class-name v
 inference, and expression evaluation order stay unchanged.
 The separate missing literal-string marker on bounded dynamic `class-string<T>` results remains
 outside this syntactic-parent correction.
+
+## Actual finally entries and abrupt-exit transfer
+
+`TryCatchHandler::processStmt` in PHPStan 2.3.1 joins the actual branch ends, non-throw exits,
+surviving throw points, and catch throw points before analyzing `finally`. The analyzer now records
+those scopes on the live try body instead of combining synthetic pre-try and post-try locals.
+Unmatched catches add no continuing edge. A try with no continuation retains its actual entry
+scope for PHPStan's final-scope fallback.
+
+`FinallyScope` records return, terminating-expression, break, and continue scopes. Break targets
+inside the try do not leave through its finally. Nested finally blocks transfer their changed
+holders to pending exits. `VariableScope::apply_finally` follows
+`MutatingScope::processFinallyScopeVariableTypeHolders`: equal holders keep the incoming value,
+while changed or new holders replace it. Loop and switch exit summaries are rebuilt from their
+retained scopes. The do-loop projection uses actual finally-adjusted exits, not stale mutation
+unions. Virtual property holders retain their existing throw observations and finally transfer.
+
+The public `finally_entry_observation` target compares all 33 captured values in both native
+tracking modes and complete level-0 diagnostics. Its fixtures include matching and impossible
+catches, conditional returns, return-operand assignments, nested finally, equal holders, new
+locals, terminating calls, switch breaks and continues, and mixed normal and abrupt loop exits.
+The partial native-expression API remains unavailable after an unsupported try transfer.
+
+The fixtures also capture Rector 2.6.1 with PHPStan 2.2.7 independently. That pinned version does
+not apply finally changes to pending exits, unlike PHPStan 2.3.1. Eight marked records therefore
+differ: nested return, loop break and continue, mixed breaks, foreach continue, switch break and
+continue, and a possibly empty foreach. Their complete original values remain in the fixture
+captures. This ordinary analyzer correction follows PHPStan 2.3.1. It does not activate a lint
+producer or rule mapping.

@@ -315,6 +315,16 @@ fn inherit_loop_block_context<'ctx, A>(
     let has_break = loop_scope.final_actions.contains(ControlAction::Break);
     let can_leave_loop = !known_infinite_loop || has_break;
 
+    let finally_exits = loop_scope.finally_transferred_breaks.then(|| {
+        let mut exits = loop_scope.break_scopes.clone();
+        if !known_infinite_loop && !loop_scope.back_edge_dead {
+            exits.push(inner_loop_block_context.variable_scope());
+        }
+        if !always_enters_loop {
+            exits.push(block_context.variable_scope());
+        }
+        exits
+    });
     inherit_branch_context_properties(context, block_context, &inner_loop_block_context);
 
     let mut marker_exits: Vec<_> =
@@ -385,6 +395,9 @@ fn inherit_loop_block_context<'ctx, A>(
         block_context.possibly_assigned_variable_ids.extend(loop_block_context.possibly_assigned_variable_ids);
     } else {
         block_context.variables_possibly_in_scope = loop_scope.variables_possibly_in_scope;
+    }
+    if let Some(exits) = finally_exits {
+        block_context.merge_variable_scope_types(&exits, context.codebase);
     }
     block_context.variable_state.property_initializations = markers;
 }

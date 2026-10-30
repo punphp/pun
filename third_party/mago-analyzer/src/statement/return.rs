@@ -143,16 +143,8 @@ pub fn handle_return_value<'ctx, A>(
         inferred_return_type = Rc::new(get_null());
     }
 
-    if let Some(finally_scope) = block_context.finally_scope.clone() {
-        let mut finally_scope = (*finally_scope).borrow_mut();
-        for (var_id, var_type) in &block_context.locals {
-            if let Some(finally_type) = finally_scope.locals.get_mut(var_id) {
-                *finally_type =
-                    Rc::new(combine_union_types(finally_type, var_type, context.codebase, CombinerOptions::default()));
-            } else {
-                finally_scope.locals.insert(*var_id, Rc::clone(var_type));
-            }
-        }
+    if !block_context.flags.has_returned() && let Some(finally_scope) = &block_context.finally_scope {
+        finally_scope.borrow_mut().remember(return_span, None, block_context.variable_scope());
     }
 
     block_context.flags.set_has_returned(true);
