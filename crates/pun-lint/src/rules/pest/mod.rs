@@ -126,7 +126,9 @@ pub use prefer_type_matchers::PreferTypeMatchers;
 pub use require_type_matcher_first::RequireTypeMatcherFirst;
 
 use mago_codex::ttype::atomic::TAtomic;
+use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::scalar::TScalar;
+use mago_codex::ttype::union::TUnion;
 use mago_syntax::cst::{
     Access, Argument, ArgumentList, ArrowFunction, Call, ClassLikeMemberSelector, Closure,
     Expression, FunctionCall, Identifier, Keyword, MethodCall, Node, NodeKind, PropertyAccess,
@@ -135,7 +137,7 @@ use mago_syntax::cst::{
 use pun_problem::{Edit, Fix, Safety, Span};
 
 use super::rector_code_quality::{is_constant, text};
-use super::types::facts::facts;
+use super::types::facts::{Facts, facts};
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -591,12 +593,54 @@ pub(crate) enum Is {
 /// type is `mixed`, which may be anything.
 pub(crate) fn type_is(ctx: &Context<'_>, expr: &Expression<'_>, kind: Is) -> Trinary {
     let facts = facts(ctx);
-    let Some(union) = facts.full_type(node_span(unparenthesize(expr))) else {
+    let declared = union_call_type(&facts, expr);
+    let Some(union) = declared
+        .as_ref()
+        .or_else(|| facts.full_type(node_span(unparenthesize(expr))))
+    else {
         return Trinary::Maybe;
     };
     (union.types.iter().map(|t| atomic_is(t, kind)))
         .reduce(|a, b| if a == b { a } else { Trinary::Maybe })
         .unwrap_or(Trinary::Maybe)
+}
+
+/// PHPStan's type of a method call on a union where Mago's differs: `UnionType::getUnresolvedMethodPrototype()` reads
+/// the method of the members whose `hasMethod()` is yes, and a class that only declares `__call` has not the method,
+/// so `(User|Collection)->getAuthPassword()` is `User::getAuthPassword()`'s `string`, where Mago joins it with
+/// `__call`'s return. The declared return types of those members, docblocks read; `None` where Mago's type stands (no
+/// such mixed union) or Pun does not know (a member that is not a known class, a return type with a template or
+/// `static`).
+fn union_call_type(facts: &Facts, expr: &Expression<'_>) -> Option<TUnion> {
+    let Expression::Call(Call::Method(call)) = unparenthesize(expr) else {
+        return None;
+    };
+    let ClassLikeMemberSelector::Identifier(name) = &call.method else {
+        return None;
+    };
+    let receiver = facts.full_type(node_span(unparenthesize(call.object)))?;
+    let codebase = facts.documented();
+    let (mut declared, mut magic) = (Vec::new(), false);
+    for atomic in receiver.types.iter() {
+        let TAtomic::Object(TObject::Named(object)) = atomic else {
+            return None;
+        };
+        let class = object.name.as_bytes();
+        codebase.get_class_like(class)?;
+        if codebase.method_exists(class, name.value) {
+            let method = codebase.get_declaring_method(class, name.value)?;
+            let returns = (method.return_type_metadata.as_ref())
+                .or(method.return_type_declaration_metadata.as_ref())?;
+            let t = &returns.type_union;
+            if t.has_template_types() || t.has_template_or_static() {
+                return None;
+            }
+            declared.extend(t.types.iter().cloned());
+        } else {
+            magic |= codebase.method_exists(class, b"__call");
+        }
+    }
+    (magic && !declared.is_empty()).then(|| TUnion::from_vec(declared))
 }
 
 fn atomic_is(atomic: &TAtomic, kind: Is) -> Trinary {
