@@ -423,23 +423,35 @@ fn is_union(t: &TUnion) -> bool {
     let count = |f: fn(&TAtomic) -> bool| t.types.iter().filter(|a| f(a)).count();
     let bools = count(|a| matches!(a, TAtomic::Scalar(TScalar::Bool(_))));
     let arrays = count(|a| matches!(a, TAtomic::Array(_)));
-    if let [TAtomic::Array(array)] = t.types.as_ref() {
-        return constant_array_is_union(array);
+    if arrays == t.types.len() {
+        let arrays: Vec<&TArray> = (t.types.iter())
+            .filter_map(|a| match a {
+                TAtomic::Array(array) => Some(array),
+                _ => None,
+            })
+            .collect();
+        return constant_arrays_are_union(&arrays);
     }
     t.types.len() - bools.saturating_sub(1) - arrays.saturating_sub(1) > 1
 }
 
 /// `TypeFactory::unwrapConstantArrayTypes`: a constant array (an array shape) is one `array<key, item>` per type of
-/// its items, so items of more than one type (literal values counting as their general type) make a union.
-fn constant_array_is_union(array: &TArray) -> bool {
-    let items: Vec<&(bool, TUnion)> = match array {
-        TArray::Keyed(k) if k.parameters.is_none() => k.known_items.iter().flat_map(|i| i.values()).collect(),
-        TArray::List(l) if l.element_type.is_never() => l.known_elements.iter().flat_map(|i| i.values()).collect(),
-        _ => return false,
-    };
-    // `TypeUtils::flattenTypes` splits it into `getAllArrays()`: with every key optional, one of them is empty
-    if !items.is_empty() && items.iter().all(|(optional, _)| *optional) {
-        return true;
+/// its items, so items of more than one type (literal values counting as their general type) make a union. Mago may
+/// give a union of shapes (`array{'id': 4}|array{'id': 5}`, as PHPStan does) where it gave one shape of their
+/// items' union: each shape unwraps alike, so their items count together. Any other array unites with the rest.
+fn constant_arrays_are_union(arrays: &[&TArray]) -> bool {
+    let mut items: Vec<&(bool, TUnion)> = Vec::new();
+    for array in arrays {
+        let own: Vec<&(bool, TUnion)> = match array {
+            TArray::Keyed(k) if k.parameters.is_none() => k.known_items.iter().flat_map(|i| i.values()).collect(),
+            TArray::List(l) if l.element_type.is_never() => l.known_elements.iter().flat_map(|i| i.values()).collect(),
+            _ => return false,
+        };
+        // `TypeUtils::flattenTypes` splits it into `getAllArrays()`: with every key optional, one of them is empty
+        if !own.is_empty() && own.iter().all(|(optional, _)| *optional) {
+            return true;
+        }
+        items.extend(own);
     }
     let values: Vec<&TUnion> = items.iter().map(|(_, v)| v).collect();
     let mut kinds: Vec<String> = Vec::new();
