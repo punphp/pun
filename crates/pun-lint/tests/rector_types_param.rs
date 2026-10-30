@@ -6,7 +6,7 @@
 
 mod lint_c;
 
-use lint_c::{run_class, run_class_at, run_class_with};
+use lint_c::{run_class, run_class_at, run_class_stubs};
 use pun_lint::Rule;
 use pun_lint::rules::{
     AddParamTypeArrayAnyAll, AddParamTypeArrayDimFetch, AddParamTypeArrayFunction, AddParamTypeArrayMap,
@@ -99,7 +99,7 @@ fn add_param_type_based_on_phpunit_data_provider() {
         ("AddParamTypeBasedOnPHPUnitDataProviderRector", 70400),
         ("AddParamTypeBasedOnPHPUnitDataProviderRectorUnion", 80000),
     ] {
-        run_class_with(vec![Box::new(AddParamTypeDataProvider)], class, version, &["phpunit-stubs"]);
+        run_class_stubs(vec![Box::new(AddParamTypeDataProvider)], class, version, &["phpunit-stubs"]);
     }
 }
 
@@ -122,7 +122,7 @@ fn add_method_call_based_strict_param_type_options() {
 #[test]
 fn add_method_call_based_strict_param_type() {
     let base = "AddMethodCallBasedStrictParamTypeRector";
-    run_class_with(vec![Box::new(AddParamTypeMethodCall::default())], base, 70400, &["phpunit-stubs"]);
+    run_class_stubs(vec![Box::new(AddParamTypeMethodCall::default())], base, 70400, &["phpunit-stubs"]);
     let source = format!("rector/{base}/Source");
     for (suffix, version, treat_classes_as_final) in [
         ("Union", 80000, false),
@@ -135,7 +135,7 @@ fn add_method_call_based_strict_param_type() {
         let mut rule = AddParamTypeMethodCall::default();
         rule.configure(&serde_json::json!({ "treat-classes-as-final": treat_classes_as_final }))
             .unwrap();
-        run_class_with(
+        run_class_stubs(
             vec![Box::new(rule)],
             &format!("{base}{suffix}"),
             version,
