@@ -6,6 +6,20 @@ The two supported-only `r` modifier lines need the newer engine. Its expectation
 PHP and PCRE2 fixtures, not the orb's PHP 8.5.12 oracle, which links 10.42.
 Combine exports only when their token sources are byte-identical.
 
+The seven-prerequisite analyser gate passes 504/505 frozen partitions: all 2,787 level cases,
+all 1,315 rule cases and 648 successful Rust tests. Its failed statements target exposes an actual
+zero-level outer-loop underflow. The source port passes all 23 statement tests and 132 additional
+public/library tests across 29 corrected-main targets. Four additional validation inputs match
+independently captured PHPStan output. The original failure and the drop-zero mutant remain archived.
+Changed production coverage is 186/186 executable lines, without exclusions. The corrected finally
+source covers all 282 executable lines; its isolated exports have the exact same source SHA-256.
+Current source-matched coverage is analyse 44,160/44,169, PHPStan 10,747/10,747 and the frozen
+pre-remote lint source 39,338/39,338 after existing exclusions. Nine older converter/property lines
+remain unmeasured on this source. No new exclusions hide them. A separate fresh parent::class probe
+retains its real Error-versus-class-string mismatch; that failed run contributes no passing coverage.
+The preceding frozen export has 56 exact-object reports; corrected-main and additional-neighbor
+exports add 22 and seven reports. All exports are warning-free, with no unmatched runtime profiles.
+
 The native-boundary gate passes 248 analyser public/library tests across 44 targets, 217 original
 rule cases in 38 partitions, 197 original level cases in fourteen partitions, 54 coverage partitions
 and 445 native analyser units. Four standalone oracle-backed controls also pass, for 803 Rust tests
@@ -99,7 +113,7 @@ Uncovered lines:
 - `crates/pun-analyse/src/laravel/mod.rs:506-513` `Provider::meta()` of the model-attribute hook: Mago's `Provider` trait requires it, but `PluginRegistry` reads `meta()` only for its own library plugins, never for a registered expression hook, and the hook struct is private.
 - `crates/pun-analyse/src/rules/infer.rs:363-366` `Provider::meta()` of the definedness hook: as for the model-attribute hook's above, `PluginRegistry` never reads it for a registered expression hook.
 - `crates/pun-analyse/src/mago.rs:74` the upstream-panic fallback that skips only the failing file. The former debug-panic.php (`int&mixed`) no longer triggers it, and signed integer division overflow is now fixed in the maintained analyzer. The containment guard remains for unexpected upstream failures.
-- `crates/pun-analyse/src/rules/types/convert.rs:882` a symbolic class-constant array key (`array{Foo::BAR: int}`): canonical expansion resolves known literal keys before conversion. Unknown or nonliteral keys can remain symbolic inside Mago, but no public input is known to carry one into this converter. The fallback returns `Error`. This is the existing exclusion shifted by type conversion handling, not a newly excluded branch.
+- `crates/pun-analyse/src/rules/types/convert.rs:912` a symbolic class-constant array key (`array{Foo::BAR: int}`): canonical expansion resolves known literal keys before conversion. Unknown or nonliteral keys can remain symbolic inside Mago, but no public input is known to carry one into this converter. The fallback returns `Error`. This is the existing exclusion shifted by type conversion handling, not a newly excluded branch.
 - `crates/pun-phpstan/src/symbols.rs:167-169` `Visitor::expecting()` of the symbols.json map reader: serde calls it only to word the error for malformed input, and symbols.json is compiled in (every map in it is an object or `[]`).
 - `crates/pun-lint/src/rules/laravel/prefer_nullsafe.rs:49` the non-target node guard: `Linter` dispatches this rule only for MethodCall and PropertyAccess, as its `targets()` requires.
 - `crates/pun-lint/src/rules/laravel/prefer_env_helper.rs:34` the non-target node guard: `Linter` dispatches only ArrayAccess for this rule.

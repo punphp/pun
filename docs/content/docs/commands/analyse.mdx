@@ -54,6 +54,9 @@ Inaccessible array and string callables retain their access diagnostic but use a
 Accessible calls and previously created closures retain their declared signatures.
 Dynamic callable result inference remains incomplete.
 
+First-class built-in function callables retain every positional overload, including each overload's parameter names, reference flags, and effective return type.
+Creating the callable does not select an overload as though it had been invoked with no arguments.
+
 First-class instance method callables with dynamic names retain a bare `Closure` type, without a reflected signature.
 The receiver and name expressions still evaluate once, in that order.
 A missing named method also retains `Closure` after its method-access diagnostic.
@@ -194,6 +197,8 @@ Native array literals, offsets, `isset` operands and coalescing assignments reta
 Native constant arrays preserve insertion order through literals, copies and supported nested reads without restoring PHPDoc-only callable constraints.
 Nullable single-class parameters support native nullsafe reads of ordinary scalar properties, including `isset` and coalescing results.
 These reads use the native property declaration; dynamic, magic, hooked and array-valued properties remain unsupported.
+For supported named-object parameters, the selected PHPDoc type stays within the native declaration.
+An incompatible documented `null` does not make a nonnullable native parameter nullable. Compatible subclasses and template refinements remain selected.
 Native local values also survive bounded function calls whose native return remains unavailable.
 These additional continuations require positional scalar or null arguments and reflection without unsupported reference, callable, assertion, or global effects.
 Unpacked arguments remain unsupported.
@@ -204,6 +209,7 @@ The remaining-cases tip takes precedence. Global certainty options remain incomp
 
 Assignment targets retain their preparation-time reads before the right-hand side and subsequent write.
 Array roots, indexes, property receivers, and selectors keep their effects without a second evaluation during that write.
+Coalescing-assignment targets use write context without suppressing reads of indexes or the right-hand side.
 Compound assignments retain the completed input value separately from the written holder.
 Optional array slots keep absence separate from a nullable value.
 Cached property values do not skip evaluation of their receiver or selector.
@@ -296,11 +302,15 @@ Native `unset` checks retain a property's modifiers and hooks beneath a PHPDoc p
 Annotation-only properties do not acquire native modifiers.
 Interface `@phpstan-require-extends` properties participate in native unset checks, preserving annotation-only reflections as non-native.
 Property writes use the reflected writable type, including compatible PHPDoc annotations over native properties.
+Writable types and declaring-class descriptions resolve generic arguments through the declaring ancestor, including defaults and bounds.
 
 Array literals retain bounded integer and string key alternatives as optional constant slots.
 Repeated finite keys replace optional-slot values and widen required-slot values.
 Automatic indexes and optional constant unpacks follow PHPStan's builder limits.
 General and union unpacks retain their existing fallback.
+
+For supported literal `in_array()` checks, constant-condition diagnostics use the constraints shared by every comparison alternative.
+They do not infer a constant condition solely from the call's runtime membership result.
 
 `array_rand()` inference preserves possible array keys and returns a non-empty list when the requested count is at least two.
 `rand()`, `mt_rand()` and `random_int()` preserve inferred integer bounds.
@@ -334,13 +344,16 @@ Other filters and `FILTER_THROW_ON_FAILURE` retain declaration-based inference.
 Implicit `never` from an empty value domain does not make later statements unreachable.
 Call termination follows the resolved declaration, separately from a dynamic return type.
 An expression statement whose value is explicit `never` also terminates, matching PHPStan's treatment of forwarded calls.
-From level 4, the rule walk skips statements after termination while retaining labels and independent function and class declarations.
+At every level, the rule walk skips statements after termination while retaining labels and independent function and class declarations.
+Unreachable-statement diagnostics start at level 4.
 `exit`, `die`, and `throw` produce PHPStan's nonaccepting `never`, including through inferred arrow-function returns.
 
 From level 2, `analyse/functions/invalid-pure` reports `void.pure` for supported functions and private methods whose bodies provably have no side effects.
 Named constructor calls use their reflected purity and throw declarations, including inherited constructors.
 Dynamic constructor targets, built-in constructor throw extensions, and conditional constructor policies remain incomplete.
 Local `unset` statements preserve operand effects and evaluate an offset's index before its receiver.
+Local `??=` assignments preserve right-hand-side effects and throws, including when the target is already nonnull.
+Supported plain-array targets retain index throw points separately from index impurity and termination, matching PHPStan's target preparation.
 Purity checks support direct locals and single offsets on proven plain arrays. References and nested or property roots remain incomplete.
 Unknown effect producers remain unchecked. Full pure-function and pure-method validation remains incomplete.
 
