@@ -2,6 +2,20 @@
  "general": [],
  "errors": [
   {
+   "file": "holder-fallback.php",
+   "line": 10,
+   "identifier": "property.unusedType",
+   "message": "Property PropertyHolderFallback\\Holder::$narrow (int|null) is never assigned null so it can be removed from the property type.",
+   "tip": null
+  },
+  {
+   "file": "holder-fallback.php",
+   "line": 15,
+   "identifier": "deadCode.unreachable",
+   "message": "Unreachable statement - code above always terminates.",
+   "tip": null
+  },
+  {
    "file": "properties.php",
    "line": 19,
    "identifier": "property.unusedType",
