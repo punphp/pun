@@ -1,0 +1,194 @@
+{
+    "1-on-default": [
+        {
+            "file": "$ROOT/certainty-unnecessary.php",
+            "message": "Coalesce operator ?? is unnecessary because the left side is always set and the right side is null.",
+            "line": 8,
+            "ignorable": true,
+            "identifier": "nullCoalesce.unnecessary"
+        },
+        {
+            "file": "$ROOT/certainty-unnecessary.php",
+            "message": "Coalesce operator ?? is unnecessary because the left side is always set and the right side is null.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "nullCoalesce.unnecessary"
+        }
+    ],
+    "1-on-on": [
+        {
+            "file": "$ROOT/certainty-unnecessary.php",
+            "message": "Coalesce operator ?? is unnecessary because the left side is always set and the right side is null.",
+            "line": 8,
+            "ignorable": true,
+            "identifier": "nullCoalesce.unnecessary"
+        },
+        {
+            "file": "$ROOT/certainty-unnecessary.php",
+            "message": "Coalesce operator ?? is unnecessary because the left side is always set and the right side is null.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "nullCoalesce.unnecessary"
+        }
+    ],
+    "1-on-off": [
+        {
+            "file": "$ROOT/certainty-unnecessary.php",
+            "message": "Coalesce operator ?? is unnecessary because the left side is always set and the right side is null.",
+            "line": 8,
+            "ignorable": true,
+            "identifier": "nullCoalesce.unnecessary"
+        },
+        {
+            "file": "$ROOT/certainty-unnecessary.php",
+            "message": "Coalesce operator ?? is unnecessary because the left side is always set and the right side is null.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "nullCoalesce.unnecessary"
+        }
+    ],
+    "1-off-default": [
+        {
+            "file": "$ROOT/certainty-unnecessary.php",
+            "message": "Coalesce operator ?? is unnecessary because the left side is always set and the right side is null.",
+            "line": 8,
+            "ignorable": true,
+            "identifier": "nullCoalesce.unnecessary"
+        },
+        {
+            "file": "$ROOT/certainty-unnecessary.php",
+            "message": "Coalesce operator ?? is unnecessary because the left side is always set and the right side is null.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "nullCoalesce.unnecessary"
+        }
+    ],
+    "1-off-on": [
+        {
+            "file": "$ROOT/certainty-unnecessary.php",
+            "message": "Coalesce operator ?? is unnecessary because the left side is always set and the right side is null.",
+            "line": 8,
+            "ignorable": true,
+            "identifier": "nullCoalesce.unnecessary"
+        },
+        {
+            "file": "$ROOT/certainty-unnecessary.php",
+            "message": "Coalesce operator ?? is unnecessary because the left side is always set and the right side is null.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "nullCoalesce.unnecessary"
+        }
+    ],
+    "1-off-off": [
+        {
+            "file": "$ROOT/certainty-unnecessary.php",
+            "message": "Coalesce operator ?? is unnecessary because the left side is always set and the right side is null.",
+            "line": 8,
+            "ignorable": true,
+            "identifier": "nullCoalesce.unnecessary"
+        },
+        {
+            "file": "$ROOT/certainty-unnecessary.php",
+            "message": "Coalesce operator ?? is unnecessary because the left side is always set and the right side is null.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "nullCoalesce.unnecessary"
+        }
+    ],
+    "4-on-default": [
+        {
+            "file": "$ROOT/certainty-unnecessary.php",
+            "message": "Coalesce operator ?? is unnecessary because the left side is always set and the right side is null.",
+            "line": 8,
+            "ignorable": true,
+            "identifier": "nullCoalesce.unnecessary"
+        },
+        {
+            "file": "$ROOT/certainty-unnecessary.php",
+            "message": "Coalesce operator ?? is unnecessary because the left side is always set and the right side is null.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "nullCoalesce.unnecessary"
+        }
+    ],
+    "4-on-on": [
+        {
+            "file": "$ROOT/certainty-unnecessary.php",
+            "message": "Coalesce operator ?? is unnecessary because the left side is always set and the right side is null.",
+            "line": 8,
+            "ignorable": true,
+            "identifier": "nullCoalesce.unnecessary"
+        },
+        {
+            "file": "$ROOT/certainty-unnecessary.php",
+            "message": "Coalesce operator ?? is unnecessary because the left side is always set and the right side is null.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "nullCoalesce.unnecessary"
+        }
+    ],
+    "4-on-off": [
+        {
+            "file": "$ROOT/certainty-unnecessary.php",
+            "message": "Coalesce operator ?? is unnecessary because the left side is always set and the right side is null.",
+            "line": 8,
+            "ignorable": true,
+            "identifier": "nullCoalesce.unnecessary"
+        },
+        {
+            "file": "$ROOT/certainty-unnecessary.php",
+            "message": "Coalesce operator ?? is unnecessary because the left side is always set and the right side is null.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "nullCoalesce.unnecessary"
+        }
+    ],
+    "4-off-default": [
+        {
+            "file": "$ROOT/certainty-unnecessary.php",
+            "message": "Coalesce operator ?? is unnecessary because the left side is always set and the right side is null.",
+            "line": 8,
+            "ignorable": true,
+            "identifier": "nullCoalesce.unnecessary"
+        },
+        {
+            "file": "$ROOT/certainty-unnecessary.php",
+            "message": "Coalesce operator ?? is unnecessary because the left side is always set and the right side is null.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "nullCoalesce.unnecessary"
+        }
+    ],
+    "4-off-on": [
+        {
+            "file": "$ROOT/certainty-unnecessary.php",
+            "message": "Coalesce operator ?? is unnecessary because the left side is always set and the right side is null.",
+            "line": 8,
+            "ignorable": true,
+            "identifier": "nullCoalesce.unnecessary"
+        },
+        {
+            "file": "$ROOT/certainty-unnecessary.php",
+            "message": "Coalesce operator ?? is unnecessary because the left side is always set and the right side is null.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "nullCoalesce.unnecessary"
+        }
+    ],
+    "4-off-off": [
+        {
+            "file": "$ROOT/certainty-unnecessary.php",
+            "message": "Coalesce operator ?? is unnecessary because the left side is always set and the right side is null.",
+            "line": 8,
+            "ignorable": true,
+            "identifier": "nullCoalesce.unnecessary"
+        },
+        {
+            "file": "$ROOT/certainty-unnecessary.php",
+            "message": "Coalesce operator ?? is unnecessary because the left side is always set and the right side is null.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "nullCoalesce.unnecessary"
+        }
+    ]
+}

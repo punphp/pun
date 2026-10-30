@@ -1,0 +1,104 @@
+{
+    "1-on-default": [
+        {
+            "file": "$ROOT/certainty-static.php",
+            "message": "Static property IssetCertaintyStatic\\Holder<int>::$value (int) in isset() is not nullable.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/certainty-static.php",
+            "message": "Static property IssetCertaintyStatic\\Holder<int>::$value (int) on left side of ?? is not nullable.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        }
+    ],
+    "1-on-on": [
+        {
+            "file": "$ROOT/certainty-static.php",
+            "message": "Static property IssetCertaintyStatic\\Holder<int>::$value (int) in isset() is not nullable.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/certainty-static.php",
+            "message": "Static property IssetCertaintyStatic\\Holder<int>::$value (int) on left side of ?? is not nullable.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        }
+    ],
+    "1-on-off": [
+        {
+            "file": "$ROOT/certainty-static.php",
+            "message": "Static property IssetCertaintyStatic\\Holder<int>::$value (int) in isset() is not nullable.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/certainty-static.php",
+            "message": "Static property IssetCertaintyStatic\\Holder<int>::$value (int) on left side of ?? is not nullable.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        }
+    ],
+    "1-off-default": [],
+    "1-off-on": [],
+    "1-off-off": [],
+    "4-on-default": [
+        {
+            "file": "$ROOT/certainty-static.php",
+            "message": "Static property IssetCertaintyStatic\\Holder<int>::$value (int) in isset() is not nullable.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/certainty-static.php",
+            "message": "Static property IssetCertaintyStatic\\Holder<int>::$value (int) on left side of ?? is not nullable.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        }
+    ],
+    "4-on-on": [
+        {
+            "file": "$ROOT/certainty-static.php",
+            "message": "Static property IssetCertaintyStatic\\Holder<int>::$value (int) in isset() is not nullable.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/certainty-static.php",
+            "message": "Static property IssetCertaintyStatic\\Holder<int>::$value (int) on left side of ?? is not nullable.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        }
+    ],
+    "4-on-off": [
+        {
+            "file": "$ROOT/certainty-static.php",
+            "message": "Static property IssetCertaintyStatic\\Holder<int>::$value (int) in isset() is not nullable.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/certainty-static.php",
+            "message": "Static property IssetCertaintyStatic\\Holder<int>::$value (int) on left side of ?? is not nullable.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        }
+    ],
+    "4-off-default": [],
+    "4-off-on": [],
+    "4-off-off": []
+}

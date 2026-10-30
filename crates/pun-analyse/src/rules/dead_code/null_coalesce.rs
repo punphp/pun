@@ -291,7 +291,16 @@ fn array_key(t: &Type) -> Type {
 
 impl<'a> IssetCheck<'_, 'a, '_> {
     fn ty(&self, e: &Expression) -> Option<Type> {
+        self.ty_from(e, !self.c.treat_php_doc_types_as_certain)
+    }
+
+    fn ty_from(&self, e: &Expression, native: bool) -> Option<Type> {
         let e = unparen(e);
+        if native {
+            // Only the operand's live read is evidence. Never recover a missing read from full types,
+            // source PHPDoc metadata, a later scope, or another evaluation of the expression.
+            return self.c.phpstan_type_in(e, &self.c.native_types);
+        }
         match e {
             // (Mago types a property fetch on `$this`, not `$this`)
             Expression::Variable(Variable::Direct(v)) if v.name == b"$this" => {
@@ -302,13 +311,13 @@ impl<'a> IssetCheck<'_, 'a, '_> {
     }
 
     /// The type of an offset's holder: an offset it does not have is an ErrorType (Mago types it null).
-    fn holder_type(&self, e: &Expression) -> Option<Type> {
+    fn holder_type(&self, e: &Expression, native: bool) -> Option<Type> {
         if let Expression::ArrayAccess(a) = unparen(e)
-            && has_offset(&self.holder_type(a.array)?, &self.ty(a.index)?).no()
+            && has_offset(&self.holder_type(a.array, native)?, &self.ty_from(a.index, native)?).no()
         {
             return Some(Type::Error);
         }
-        self.ty(e)
+        self.ty_from(e, native)
     }
 
     /// `$scope->hasVariableType()`.
@@ -359,7 +368,9 @@ impl<'a> IssetCheck<'_, 'a, '_> {
                         name.clone()
                     }
                 };
-                let holder = self.ty(p.object)?;
+                // IssetabilityDescriptor's reflection resolver keeps the ordinary scope, including
+                // PHPDoc template arguments and singleton dynamic names, even for a native resolution.
+                let holder = self.ty_from(p.object, false)?;
                 if matches!(holder.resolve_to_bounds(), Type::Union(_) | Type::Benevolent(_)) { return None }
                 let names = holder.object_class_names();
                 let [class] = names.as_slice() else { return None };
@@ -378,12 +389,12 @@ impl<'a> IssetCheck<'_, 'a, '_> {
                         .and_then(|k| k.direct_parent_class.as_ref())
                         .and_then(|p| self.c.codebase.get_class_like(p.as_bytes())),
                     class => {
-                        let names = self.ty(class)?.object_class_names();
+                        let names = self.ty_from(class, false)?.object_class_names();
                         let [class] = names.as_slice() else { return None };
                         self.c.codebase.get_class_like(class.as_bytes())
                     }
                 }?;
-                let holder = Self::holder(e).and_then(|h| self.ty(h))
+                let holder = Self::holder(e).and_then(|h| self.ty_from(h, false))
                     .unwrap_or_else(|| Type::Object(self.c.display(class), vec![], false));
                 (Some(class), v.name[1..].to_vec(), holder)
             }
@@ -460,7 +471,7 @@ impl<'a> IssetCheck<'_, 'a, '_> {
                         { String::from_utf8_lossy(&v.name[1..]).into_owned() } else { String::new() }
                     },
                 };
-                let on = self.ty(fetch.object).expect("a found property's holder is typed");
+                let on = self.ty_from(fetch.object, false).expect("a found property's holder is typed");
                 let nominal = declared::with_classes(self.c, || is_super_type_of(&Type::Object(self.c.display(p.declaring), vec![], false), &on).yes());
                 let class = if nominal { declaring } else { on.describe(Level::TypeOnly) };
                 format!("Property {class}::${name}")
@@ -504,7 +515,7 @@ impl<'a> IssetCheck<'_, 'a, '_> {
                 self.never_defined(v)
             }
             Expression::ArrayAccess(a) => {
-                let holder = self.holder_type(a.array)?;
+                let holder = self.holder_type(a.array, !self.c.treat_php_doc_types_as_certain)?;
                 if !offset_accessible(&holder).yes() {
                     return error.or_else(|| self.undefined(a.array));
                 }
@@ -624,7 +635,8 @@ impl<'a> IssetCheck<'_, 'a, '_> {
         match e {
             Expression::Variable(Variable::Direct(v)) => self.defined(v).yes() && v.name != b"$_SESSION",
             Expression::ArrayAccess(a) => {
-                let (Some(holder), Some(offset)) = (self.holder_type(a.array), self.ty(a.index)) else { return false };
+                // NullCoalesceRule::checkUnnecessaryNullCoalesce explicitly requests full types.
+                let (Some(holder), Some(offset)) = (self.holder_type(a.array, false), self.ty_from(a.index, false)) else { return false };
                 offset_accessible(&holder).yes() && has_offset(&holder, &offset).yes() && self.is_set(a.array)
             }
             Expression::Access(Access::Property(_) | Access::StaticProperty(_)) => {
@@ -645,7 +657,7 @@ impl<'a> IssetCheck<'_, 'a, '_> {
                 if self.defined(v).no() { self.never_defined(v) } else { None }
             }
             Expression::ArrayAccess(a) => {
-                let holder = self.holder_type(a.array)?;
+                let holder = self.holder_type(a.array, !self.c.treat_php_doc_types_as_certain)?;
                 let offset = self.ty(a.index)?;
                 if !offset_accessible(&holder).yes() || !has_offset(&holder, &offset).no() {
                     return self.undefined(a.array);

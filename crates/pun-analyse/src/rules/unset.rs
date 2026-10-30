@@ -566,6 +566,7 @@ mod tests {
             check_arguments_passed_by_reference: false,
             check_this_only: true,
             check_advanced_isset: false,
+            treat_php_doc_types_as_certain: true,
             method_rules: project.method_rules,
             generic_iterable_classes: false,
             new_static_in_abstract_class_static_method: false,

@@ -1,0 +1,53 @@
+{
+    "0-on-default": [
+        {
+            "file": "$ROOT/native-observations.php",
+            "message": "Dumped type: int",
+            "line": 7,
+            "ignorable": false,
+            "identifier": "phpstan.dumpNativeType"
+        },
+        {
+            "file": "$ROOT/native-observations.php",
+            "message": "Dumped type: int",
+            "line": 9,
+            "ignorable": false,
+            "identifier": "phpstan.dumpNativeType"
+        },
+        {
+            "file": "$ROOT/native-observations.php",
+            "message": "Dumped type: array{present: 1}",
+            "line": 15,
+            "ignorable": false,
+            "identifier": "phpstan.dumpNativeType"
+        },
+        {
+            "file": "$ROOT/native-observations.php",
+            "message": "Dumped type: array{}",
+            "line": 17,
+            "ignorable": false,
+            "identifier": "phpstan.dumpNativeType"
+        },
+        {
+            "file": "$ROOT/native-observations.php",
+            "message": "Dumped type: array{second: null, first: 1}",
+            "line": 23,
+            "ignorable": false,
+            "identifier": "phpstan.dumpNativeType"
+        },
+        {
+            "file": "$ROOT/native-observations.php",
+            "message": "Dumped type: array",
+            "line": 29,
+            "ignorable": false,
+            "identifier": "phpstan.dumpNativeType"
+        },
+        {
+            "file": "$ROOT/native-observations.php",
+            "message": "Dumped type: mixed",
+            "line": 35,
+            "ignorable": false,
+            "identifier": "phpstan.dumpNativeType"
+        }
+    ]
+}

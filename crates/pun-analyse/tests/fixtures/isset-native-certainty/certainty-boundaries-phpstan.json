@@ -1,0 +1,1194 @@
+{
+    "0-on-default": [],
+    "0-on-on": [],
+    "0-on-off": [],
+    "0-off-default": [],
+    "0-off-on": [],
+    "0-off-off": [],
+    "1-on-default": [
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} in isset() always exists and is not nullable.",
+            "line": 8,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 'leaf' on array{leaf: int} in isset() always exists and is not nullable.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 'absent' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} in isset() does not exist.",
+            "line": 32,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 'first' on array{first: int, second: int|null} in isset() always exists and is not nullable.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 'required' on array{required: int} on left side of ?? always exists and is not nullable.",
+            "line": 44,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 'required' on array{required: int} on left side of ??= always exists and is not nullable.",
+            "line": 50,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 61,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $copy in isset() always exists and is not nullable.",
+            "line": 80,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 86,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 'first' on array{second: null, first: 1} in isset() always exists and is not nullable.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 100,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<T>::$uninitialized in isset() is not nullable nor uninitialized.",
+            "line": 115,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<int>::$value (int) in isset() is not nullable.",
+            "line": 122,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<int>::$name (int) in isset() is not nullable.",
+            "line": 129,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<int>::$value (int) on left side of ?? is not nullable.",
+            "line": 135,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<int>::$value (int) on left side of ??= is not nullable.",
+            "line": 141,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<mixed>::$defaulted (int) in isset() is not nullable.",
+            "line": 146,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Expression on left side of ?? is not nullable.",
+            "line": 161,
+            "ignorable": true,
+            "identifier": "nullCoalesce.expr"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 172,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 'present' on array{} in isset() does not exist.",
+            "line": 179,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 0 on list{object, non-empty-string}&callable(): mixed in isset() always exists and is not nullable.",
+            "line": 185,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 0 on list{object, non-empty-string}&callable(): mixed in isset() always exists and is not nullable.",
+            "line": 191,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        }
+    ],
+    "1-on-on": [
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} in isset() always exists and is not nullable.",
+            "line": 8,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 'leaf' on array{leaf: int} in isset() always exists and is not nullable.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 'absent' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} in isset() does not exist.",
+            "line": 32,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 'first' on array{first: int, second: int|null} in isset() always exists and is not nullable.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 'required' on array{required: int} on left side of ?? always exists and is not nullable.",
+            "line": 44,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 'required' on array{required: int} on left side of ??= always exists and is not nullable.",
+            "line": 50,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 61,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $copy in isset() always exists and is not nullable.",
+            "line": 80,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 86,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 'first' on array{second: null, first: 1} in isset() always exists and is not nullable.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 100,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<T>::$uninitialized in isset() is not nullable nor uninitialized.",
+            "line": 115,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<int>::$value (int) in isset() is not nullable.",
+            "line": 122,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<int>::$name (int) in isset() is not nullable.",
+            "line": 129,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<int>::$value (int) on left side of ?? is not nullable.",
+            "line": 135,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<int>::$value (int) on left side of ??= is not nullable.",
+            "line": 141,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<mixed>::$defaulted (int) in isset() is not nullable.",
+            "line": 146,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Expression on left side of ?? is not nullable.",
+            "line": 161,
+            "ignorable": true,
+            "identifier": "nullCoalesce.expr"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 172,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 'present' on array{} in isset() does not exist.",
+            "line": 179,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 0 on list{object, non-empty-string}&callable(): mixed in isset() always exists and is not nullable.",
+            "line": 185,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 0 on list{object, non-empty-string}&callable(): mixed in isset() always exists and is not nullable.",
+            "line": 191,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        }
+    ],
+    "1-on-off": [
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 61,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 86,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 'first' on array{second: null, first: 1} in isset() always exists and is not nullable.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 100,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<T>::$uninitialized in isset() is not nullable nor uninitialized.",
+            "line": 115,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<int>::$value (int) in isset() is not nullable.",
+            "line": 122,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<int>::$name (int) in isset() is not nullable.",
+            "line": 129,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<int>::$value (int) on left side of ?? is not nullable.",
+            "line": 135,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<int>::$value (int) on left side of ??= is not nullable.",
+            "line": 141,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<mixed>::$defaulted (int) in isset() is not nullable.",
+            "line": 146,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Expression on left side of ?? is not nullable.",
+            "line": 161,
+            "ignorable": true,
+            "identifier": "nullCoalesce.expr"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 172,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 'present' on array{} in isset() does not exist.",
+            "line": 179,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        }
+    ],
+    "1-off-default": [
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 61,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $copy in isset() always exists and is not nullable.",
+            "line": 80,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 86,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 100,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<T>::$uninitialized in isset() is not nullable nor uninitialized.",
+            "line": 115,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 172,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        }
+    ],
+    "1-off-on": [
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 61,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $copy in isset() always exists and is not nullable.",
+            "line": 80,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 86,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 100,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<T>::$uninitialized in isset() is not nullable nor uninitialized.",
+            "line": 115,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 172,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        }
+    ],
+    "1-off-off": [
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 61,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 86,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 100,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<T>::$uninitialized in isset() is not nullable nor uninitialized.",
+            "line": 115,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 172,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        }
+    ],
+    "4-on-default": [
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} in isset() always exists and is not nullable.",
+            "line": 8,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 'leaf' on array{leaf: int} in isset() always exists and is not nullable.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 'absent' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} in isset() does not exist.",
+            "line": 32,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 'first' on array{first: int, second: int|null} in isset() always exists and is not nullable.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 'required' on array{required: int} on left side of ?? always exists and is not nullable.",
+            "line": 44,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Function IssetCertaintyBoundaries\\assignCoalesce() returns void but does not have any side effects.",
+            "line": 48,
+            "ignorable": true,
+            "identifier": "void.pure"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 'required' on array{required: int} on left side of ??= always exists and is not nullable.",
+            "line": 50,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 61,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Function IssetCertaintyBoundaries\\variableAssignCoalesce() returns void but does not have any side effects.",
+            "line": 71,
+            "ignorable": true,
+            "identifier": "void.pure"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $copy in isset() always exists and is not nullable.",
+            "line": 80,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 86,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 'first' on array{second: null, first: 1} in isset() always exists and is not nullable.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 100,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<T>::$uninitialized in isset() is not nullable nor uninitialized.",
+            "line": 115,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<int>::$value (int) in isset() is not nullable.",
+            "line": 122,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<int>::$name (int) in isset() is not nullable.",
+            "line": 129,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<int>::$value (int) on left side of ?? is not nullable.",
+            "line": 135,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<int>::$value (int) on left side of ??= is not nullable.",
+            "line": 141,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<mixed>::$defaulted (int) in isset() is not nullable.",
+            "line": 146,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Expression on left side of ?? is not nullable.",
+            "line": 161,
+            "ignorable": true,
+            "identifier": "nullCoalesce.expr"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<mixed>::$defaulted (int) does not accept string.",
+            "line": 166,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 172,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 'present' on array{} in isset() does not exist.",
+            "line": 179,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 0 on list{object, non-empty-string}&callable(): mixed in isset() always exists and is not nullable.",
+            "line": 185,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 0 on list{object, non-empty-string}&callable(): mixed in isset() always exists and is not nullable.",
+            "line": 191,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        }
+    ],
+    "4-on-on": [
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} in isset() always exists and is not nullable.",
+            "line": 8,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 'leaf' on array{leaf: int} in isset() always exists and is not nullable.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 'absent' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} in isset() does not exist.",
+            "line": 32,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 'first' on array{first: int, second: int|null} in isset() always exists and is not nullable.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 'required' on array{required: int} on left side of ?? always exists and is not nullable.",
+            "line": 44,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Function IssetCertaintyBoundaries\\assignCoalesce() returns void but does not have any side effects.",
+            "line": 48,
+            "ignorable": true,
+            "identifier": "void.pure"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 'required' on array{required: int} on left side of ??= always exists and is not nullable.",
+            "line": 50,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 61,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Function IssetCertaintyBoundaries\\variableAssignCoalesce() returns void but does not have any side effects.",
+            "line": 71,
+            "ignorable": true,
+            "identifier": "void.pure"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $copy in isset() always exists and is not nullable.",
+            "line": 80,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 86,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 'first' on array{second: null, first: 1} in isset() always exists and is not nullable.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 100,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<T>::$uninitialized in isset() is not nullable nor uninitialized.",
+            "line": 115,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<int>::$value (int) in isset() is not nullable.",
+            "line": 122,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<int>::$name (int) in isset() is not nullable.",
+            "line": 129,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<int>::$value (int) on left side of ?? is not nullable.",
+            "line": 135,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<int>::$value (int) on left side of ??= is not nullable.",
+            "line": 141,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<mixed>::$defaulted (int) in isset() is not nullable.",
+            "line": 146,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Expression on left side of ?? is not nullable.",
+            "line": 161,
+            "ignorable": true,
+            "identifier": "nullCoalesce.expr"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<mixed>::$defaulted (int) does not accept string.",
+            "line": 166,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 172,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 'present' on array{} in isset() does not exist.",
+            "line": 179,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 0 on list{object, non-empty-string}&callable(): mixed in isset() always exists and is not nullable.",
+            "line": 185,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 0 on list{object, non-empty-string}&callable(): mixed in isset() always exists and is not nullable.",
+            "line": 191,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        }
+    ],
+    "4-on-off": [
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Function IssetCertaintyBoundaries\\assignCoalesce() returns void but does not have any side effects.",
+            "line": 48,
+            "ignorable": true,
+            "identifier": "void.pure"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 61,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Function IssetCertaintyBoundaries\\variableAssignCoalesce() returns void but does not have any side effects.",
+            "line": 71,
+            "ignorable": true,
+            "identifier": "void.pure"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 86,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 'first' on array{second: null, first: 1} in isset() always exists and is not nullable.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 100,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<T>::$uninitialized in isset() is not nullable nor uninitialized.",
+            "line": 115,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<int>::$value (int) in isset() is not nullable.",
+            "line": 122,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<int>::$name (int) in isset() is not nullable.",
+            "line": 129,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<int>::$value (int) on left side of ?? is not nullable.",
+            "line": 135,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<int>::$value (int) on left side of ??= is not nullable.",
+            "line": 141,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<mixed>::$defaulted (int) in isset() is not nullable.",
+            "line": 146,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Expression on left side of ?? is not nullable.",
+            "line": 161,
+            "ignorable": true,
+            "identifier": "nullCoalesce.expr"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<mixed>::$defaulted (int) does not accept string.",
+            "line": 166,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 172,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Offset 'present' on array{} in isset() does not exist.",
+            "line": 179,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        }
+    ],
+    "4-off-default": [
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Function IssetCertaintyBoundaries\\assignCoalesce() returns void but does not have any side effects.",
+            "line": 48,
+            "ignorable": true,
+            "identifier": "void.pure"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 61,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Function IssetCertaintyBoundaries\\variableAssignCoalesce() returns void but does not have any side effects.",
+            "line": 71,
+            "ignorable": true,
+            "identifier": "void.pure"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $copy in isset() always exists and is not nullable.",
+            "line": 80,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 86,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 100,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<T>::$uninitialized in isset() is not nullable nor uninitialized.",
+            "line": 115,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<mixed>::$defaulted (int) does not accept string.",
+            "line": 166,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 172,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        }
+    ],
+    "4-off-on": [
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Function IssetCertaintyBoundaries\\assignCoalesce() returns void but does not have any side effects.",
+            "line": 48,
+            "ignorable": true,
+            "identifier": "void.pure"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 61,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Function IssetCertaintyBoundaries\\variableAssignCoalesce() returns void but does not have any side effects.",
+            "line": 71,
+            "ignorable": true,
+            "identifier": "void.pure"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $copy in isset() always exists and is not nullable.",
+            "line": 80,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 86,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 100,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<T>::$uninitialized in isset() is not nullable nor uninitialized.",
+            "line": 115,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<mixed>::$defaulted (int) does not accept string.",
+            "line": 166,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 172,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        }
+    ],
+    "4-off-off": [
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Function IssetCertaintyBoundaries\\assignCoalesce() returns void but does not have any side effects.",
+            "line": 48,
+            "ignorable": true,
+            "identifier": "void.pure"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 61,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Function IssetCertaintyBoundaries\\variableAssignCoalesce() returns void but does not have any side effects.",
+            "line": 71,
+            "ignorable": true,
+            "identifier": "void.pure"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 86,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 100,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<T>::$uninitialized in isset() is not nullable nor uninitialized.",
+            "line": 115,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Property IssetCertaintyBoundaries\\Box<mixed>::$defaulted (int) does not accept string.",
+            "line": 166,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/certainty-boundaries.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 172,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        }
+    ]
+}

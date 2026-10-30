@@ -67,6 +67,8 @@ pub struct Project {
     pub check_this_only: Option<bool>,
     /// `checkAdvancedIsset`: independently overridable; `None` follows the current level (on from 4).
     pub check_advanced_isset: Option<bool>,
+    /// `treatPhpDocTypesAsCertain`: independently overridable; `None` defaults to true. Used by IssetCheck only.
+    pub treat_php_doc_types_as_certain: Option<bool>,
     /// `featureToggles.checkGenericIterableClasses` (on with bleedingEdge).
     pub check_generic_iterable_classes: bool,
     /// `featureToggles.internalTag` (on with bleedingEdge): the `@internal` usage rules.
@@ -294,6 +296,7 @@ impl Project {
             check_arguments_passed_by_reference: optional_flag("checkArgumentsPassedByReference"),
             check_this_only: optional_flag("checkThisOnly"),
             check_advanced_isset: optional_flag("checkAdvancedIsset"),
+            treat_php_doc_types_as_certain: optional_flag("treatPhpDocTypesAsCertain"),
             check_generic_iterable_classes: toggle("checkGenericIterableClasses"),
             internal_tag: toggle("internalTag"),
             new_static_in_abstract_class_static_method: toggle("newStaticInAbstractClassStaticMethod"),
@@ -359,6 +362,7 @@ impl Project {
             check_arguments_passed_by_reference: None,
             check_this_only: None,
             check_advanced_isset: None,
+            treat_php_doc_types_as_certain: None,
             check_generic_iterable_classes: false,
             internal_tag: false,
             new_static_in_abstract_class_static_method: false,

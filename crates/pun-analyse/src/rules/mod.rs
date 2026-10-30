@@ -892,6 +892,8 @@ pub struct Checker<'a, 'arena> {
     check_this_only: bool,
     /// IssetCheck's independent advanced offset, property and leaf checks.
     check_advanced_isset: bool,
+    /// IssetCheck's independent PHPDoc certainty; other rules keep their existing type selection.
+    treat_php_doc_types_as_certain: bool,
     generic_iterable_classes: bool,
     /// [`driver::Checks`]'s `featureToggles.newStaticInAbstractClassStaticMethod`.
     new_static_in_abstract_class_static_method: bool,

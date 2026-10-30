@@ -1,0 +1,1720 @@
+{
+    "1-on-default": [
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} in isset() always exists and is not nullable.",
+            "line": 8,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'absent' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} in isset() does not exist.",
+            "line": 9,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'leaf' on array{leaf: int} in isset() always exists and is not nullable.",
+            "line": 9,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'leaf' on array{leaf: int} on left side of ?? always exists and is not nullable.",
+            "line": 10,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} on left side of ?? always exists and is not nullable.",
+            "line": 10,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} on left side of ??= always exists and is not nullable.",
+            "line": 11,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $native in isset() always exists and is not nullable.",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $native on left side of ?? always exists and is not nullable.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $native on left side of ??= always exists and is not nullable.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'first' on array{first: int, second: int|null} in isset() always exists and is not nullable.",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'first' on array{first: int, second: int|null} on left side of ??= always exists and is not nullable.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\Box<int>::$name (int) in isset() is not nullable.",
+            "line": 46,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\Box<int>::$value (int) in isset() is not nullable.",
+            "line": 46,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\Box<int>::$name (int) on left side of ?? is not nullable.",
+            "line": 47,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\Box<int>::$value (int) on left side of ?? is not nullable.",
+            "line": 47,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\Box<int>::$value (int) on left side of ??= is not nullable.",
+            "line": 48,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\Box<int>::$defaulted (int) in isset() is not nullable.",
+            "line": 49,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Using nullsafe property access \"?->nullable\" in isset() is unnecessary. Use -> instead.",
+            "line": 61,
+            "ignorable": true,
+            "identifier": "nullsafe.neverNull"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Using nullsafe property access \"?->value\" in isset() is unnecessary. Use -> instead.",
+            "line": 61,
+            "ignorable": true,
+            "identifier": "nullsafe.neverNull"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Using nullsafe property access \"?->nullable\" on left side of ?? is unnecessary. Use -> instead.",
+            "line": 62,
+            "ignorable": true,
+            "identifier": "nullsafe.neverNull"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Using nullsafe property access \"?->value\" on left side of ?? is unnecessary. Use -> instead.",
+            "line": 62,
+            "ignorable": true,
+            "identifier": "nullsafe.neverNull"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ?? always exists and is not nullable.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ??= always exists and is not nullable.",
+            "line": 69,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'key' on array{key: 1} in isset() always exists and is not nullable.",
+            "line": 71,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'key' on array{key: 1} on left side of ?? always exists and is not nullable.",
+            "line": 71,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $copy in isset() always exists and is not nullable.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $copy on left side of ?? always exists and is not nullable.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $copy on left side of ??= always exists and is not nullable.",
+            "line": 84,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ?? always exists and is not nullable.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ??= always exists and is not nullable.",
+            "line": 93,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        }
+    ],
+    "1-on-on": [
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} in isset() always exists and is not nullable.",
+            "line": 8,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'absent' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} in isset() does not exist.",
+            "line": 9,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'leaf' on array{leaf: int} in isset() always exists and is not nullable.",
+            "line": 9,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'leaf' on array{leaf: int} on left side of ?? always exists and is not nullable.",
+            "line": 10,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} on left side of ?? always exists and is not nullable.",
+            "line": 10,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} on left side of ??= always exists and is not nullable.",
+            "line": 11,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $native in isset() always exists and is not nullable.",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $native on left side of ?? always exists and is not nullable.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $native on left side of ??= always exists and is not nullable.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'first' on array{first: int, second: int|null} in isset() always exists and is not nullable.",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'first' on array{first: int, second: int|null} on left side of ??= always exists and is not nullable.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\Box<int>::$name (int) in isset() is not nullable.",
+            "line": 46,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\Box<int>::$value (int) in isset() is not nullable.",
+            "line": 46,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\Box<int>::$name (int) on left side of ?? is not nullable.",
+            "line": 47,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\Box<int>::$value (int) on left side of ?? is not nullable.",
+            "line": 47,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\Box<int>::$value (int) on left side of ??= is not nullable.",
+            "line": 48,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\Box<int>::$defaulted (int) in isset() is not nullable.",
+            "line": 49,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Using nullsafe property access \"?->nullable\" in isset() is unnecessary. Use -> instead.",
+            "line": 61,
+            "ignorable": true,
+            "identifier": "nullsafe.neverNull"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Using nullsafe property access \"?->value\" in isset() is unnecessary. Use -> instead.",
+            "line": 61,
+            "ignorable": true,
+            "identifier": "nullsafe.neverNull"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Using nullsafe property access \"?->nullable\" on left side of ?? is unnecessary. Use -> instead.",
+            "line": 62,
+            "ignorable": true,
+            "identifier": "nullsafe.neverNull"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Using nullsafe property access \"?->value\" on left side of ?? is unnecessary. Use -> instead.",
+            "line": 62,
+            "ignorable": true,
+            "identifier": "nullsafe.neverNull"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ?? always exists and is not nullable.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ??= always exists and is not nullable.",
+            "line": 69,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'key' on array{key: 1} in isset() always exists and is not nullable.",
+            "line": 71,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'key' on array{key: 1} on left side of ?? always exists and is not nullable.",
+            "line": 71,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $copy in isset() always exists and is not nullable.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $copy on left side of ?? always exists and is not nullable.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $copy on left side of ??= always exists and is not nullable.",
+            "line": 84,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ?? always exists and is not nullable.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ??= always exists and is not nullable.",
+            "line": 93,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        }
+    ],
+    "1-on-off": [
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $native in isset() always exists and is not nullable.",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $native on left side of ?? always exists and is not nullable.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $native on left side of ??= always exists and is not nullable.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\Box<int>::$name (int) in isset() is not nullable.",
+            "line": 46,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\Box<int>::$value (int) in isset() is not nullable.",
+            "line": 46,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\Box<int>::$name (int) on left side of ?? is not nullable.",
+            "line": 47,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\Box<int>::$value (int) on left side of ?? is not nullable.",
+            "line": 47,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\Box<int>::$value (int) on left side of ??= is not nullable.",
+            "line": 48,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\Box<int>::$defaulted (int) in isset() is not nullable.",
+            "line": 49,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Using nullsafe property access \"?->nullable\" in isset() is unnecessary. Use -> instead.",
+            "line": 61,
+            "ignorable": true,
+            "identifier": "nullsafe.neverNull"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Using nullsafe property access \"?->value\" in isset() is unnecessary. Use -> instead.",
+            "line": 61,
+            "ignorable": true,
+            "identifier": "nullsafe.neverNull"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Using nullsafe property access \"?->nullable\" on left side of ?? is unnecessary. Use -> instead.",
+            "line": 62,
+            "ignorable": true,
+            "identifier": "nullsafe.neverNull"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Using nullsafe property access \"?->value\" on left side of ?? is unnecessary. Use -> instead.",
+            "line": 62,
+            "ignorable": true,
+            "identifier": "nullsafe.neverNull"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ?? always exists and is not nullable.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ??= always exists and is not nullable.",
+            "line": 69,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'key' on array{key: 1} in isset() always exists and is not nullable.",
+            "line": 71,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'key' on array{key: 1} on left side of ?? always exists and is not nullable.",
+            "line": 71,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ?? always exists and is not nullable.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ??= always exists and is not nullable.",
+            "line": 93,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        }
+    ],
+    "1-off-default": [
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $native in isset() always exists and is not nullable.",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $native on left side of ?? always exists and is not nullable.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $native on left side of ??= always exists and is not nullable.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ?? always exists and is not nullable.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ??= always exists and is not nullable.",
+            "line": 69,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $copy in isset() always exists and is not nullable.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $copy on left side of ?? always exists and is not nullable.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $copy on left side of ??= always exists and is not nullable.",
+            "line": 84,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ?? always exists and is not nullable.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ??= always exists and is not nullable.",
+            "line": 93,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        }
+    ],
+    "1-off-on": [
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $native in isset() always exists and is not nullable.",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $native on left side of ?? always exists and is not nullable.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $native on left side of ??= always exists and is not nullable.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ?? always exists and is not nullable.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ??= always exists and is not nullable.",
+            "line": 69,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $copy in isset() always exists and is not nullable.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $copy on left side of ?? always exists and is not nullable.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $copy on left side of ??= always exists and is not nullable.",
+            "line": 84,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ?? always exists and is not nullable.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ??= always exists and is not nullable.",
+            "line": 93,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        }
+    ],
+    "1-off-off": [
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $native in isset() always exists and is not nullable.",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $native on left side of ?? always exists and is not nullable.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $native on left side of ??= always exists and is not nullable.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ?? always exists and is not nullable.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ??= always exists and is not nullable.",
+            "line": 69,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ?? always exists and is not nullable.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ??= always exists and is not nullable.",
+            "line": 93,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        }
+    ],
+    "4-on-default": [
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} in isset() always exists and is not nullable.",
+            "line": 8,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'absent' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} in isset() does not exist.",
+            "line": 9,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'leaf' on array{leaf: int} in isset() always exists and is not nullable.",
+            "line": 9,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'leaf' on array{leaf: int} on left side of ?? always exists and is not nullable.",
+            "line": 10,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} on left side of ?? always exists and is not nullable.",
+            "line": 10,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} on left side of ??= always exists and is not nullable.",
+            "line": 11,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $native in isset() always exists and is not nullable.",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $native on left side of ?? always exists and is not nullable.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $native on left side of ??= always exists and is not nullable.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'first' on array{first: int, second: int|null} in isset() always exists and is not nullable.",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'first' on array{first: int, second: int|null} on left side of ??= always exists and is not nullable.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\Box<int>::$name (int) in isset() is not nullable.",
+            "line": 46,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\Box<int>::$value (int) in isset() is not nullable.",
+            "line": 46,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\Box<int>::$name (int) on left side of ?? is not nullable.",
+            "line": 47,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\Box<int>::$value (int) on left side of ?? is not nullable.",
+            "line": 47,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\Box<int>::$value (int) on left side of ??= is not nullable.",
+            "line": 48,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\Box<int>::$defaulted (int) in isset() is not nullable.",
+            "line": 49,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Using nullsafe property access \"?->nullable\" in isset() is unnecessary. Use -> instead.",
+            "line": 61,
+            "ignorable": true,
+            "identifier": "nullsafe.neverNull"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Using nullsafe property access \"?->value\" in isset() is unnecessary. Use -> instead.",
+            "line": 61,
+            "ignorable": true,
+            "identifier": "nullsafe.neverNull"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Using nullsafe property access \"?->nullable\" on left side of ?? is unnecessary. Use -> instead.",
+            "line": 62,
+            "ignorable": true,
+            "identifier": "nullsafe.neverNull"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Using nullsafe property access \"?->value\" on left side of ?? is unnecessary. Use -> instead.",
+            "line": 62,
+            "ignorable": true,
+            "identifier": "nullsafe.neverNull"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ?? always exists and is not nullable.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ??= always exists and is not nullable.",
+            "line": 69,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'key' on array{key: 1} in isset() always exists and is not nullable.",
+            "line": 71,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'key' on array{key: 1} on left side of ?? always exists and is not nullable.",
+            "line": 71,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\NativeProperties::$value (int) does not accept string.",
+            "line": 76,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $copy in isset() always exists and is not nullable.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $copy on left side of ?? always exists and is not nullable.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $copy on left side of ??= always exists and is not nullable.",
+            "line": 84,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ?? always exists and is not nullable.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ??= always exists and is not nullable.",
+            "line": 93,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        }
+    ],
+    "4-on-on": [
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} in isset() always exists and is not nullable.",
+            "line": 8,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'absent' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} in isset() does not exist.",
+            "line": 9,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'leaf' on array{leaf: int} in isset() always exists and is not nullable.",
+            "line": 9,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'leaf' on array{leaf: int} on left side of ?? always exists and is not nullable.",
+            "line": 10,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} on left side of ?? always exists and is not nullable.",
+            "line": 10,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} on left side of ??= always exists and is not nullable.",
+            "line": 11,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $native in isset() always exists and is not nullable.",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $native on left side of ?? always exists and is not nullable.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $native on left side of ??= always exists and is not nullable.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'first' on array{first: int, second: int|null} in isset() always exists and is not nullable.",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'first' on array{first: int, second: int|null} on left side of ??= always exists and is not nullable.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\Box<int>::$name (int) in isset() is not nullable.",
+            "line": 46,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\Box<int>::$value (int) in isset() is not nullable.",
+            "line": 46,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\Box<int>::$name (int) on left side of ?? is not nullable.",
+            "line": 47,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\Box<int>::$value (int) on left side of ?? is not nullable.",
+            "line": 47,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\Box<int>::$value (int) on left side of ??= is not nullable.",
+            "line": 48,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\Box<int>::$defaulted (int) in isset() is not nullable.",
+            "line": 49,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Using nullsafe property access \"?->nullable\" in isset() is unnecessary. Use -> instead.",
+            "line": 61,
+            "ignorable": true,
+            "identifier": "nullsafe.neverNull"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Using nullsafe property access \"?->value\" in isset() is unnecessary. Use -> instead.",
+            "line": 61,
+            "ignorable": true,
+            "identifier": "nullsafe.neverNull"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Using nullsafe property access \"?->nullable\" on left side of ?? is unnecessary. Use -> instead.",
+            "line": 62,
+            "ignorable": true,
+            "identifier": "nullsafe.neverNull"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Using nullsafe property access \"?->value\" on left side of ?? is unnecessary. Use -> instead.",
+            "line": 62,
+            "ignorable": true,
+            "identifier": "nullsafe.neverNull"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ?? always exists and is not nullable.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ??= always exists and is not nullable.",
+            "line": 69,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'key' on array{key: 1} in isset() always exists and is not nullable.",
+            "line": 71,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'key' on array{key: 1} on left side of ?? always exists and is not nullable.",
+            "line": 71,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\NativeProperties::$value (int) does not accept string.",
+            "line": 76,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $copy in isset() always exists and is not nullable.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $copy on left side of ?? always exists and is not nullable.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $copy on left side of ??= always exists and is not nullable.",
+            "line": 84,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ?? always exists and is not nullable.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ??= always exists and is not nullable.",
+            "line": 93,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        }
+    ],
+    "4-on-off": [
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $native in isset() always exists and is not nullable.",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $native on left side of ?? always exists and is not nullable.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $native on left side of ??= always exists and is not nullable.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\Box<int>::$name (int) in isset() is not nullable.",
+            "line": 46,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\Box<int>::$value (int) in isset() is not nullable.",
+            "line": 46,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\Box<int>::$name (int) on left side of ?? is not nullable.",
+            "line": 47,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\Box<int>::$value (int) on left side of ?? is not nullable.",
+            "line": 47,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\Box<int>::$value (int) on left side of ??= is not nullable.",
+            "line": 48,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\Box<int>::$defaulted (int) in isset() is not nullable.",
+            "line": 49,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Using nullsafe property access \"?->nullable\" in isset() is unnecessary. Use -> instead.",
+            "line": 61,
+            "ignorable": true,
+            "identifier": "nullsafe.neverNull"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Using nullsafe property access \"?->value\" in isset() is unnecessary. Use -> instead.",
+            "line": 61,
+            "ignorable": true,
+            "identifier": "nullsafe.neverNull"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Using nullsafe property access \"?->nullable\" on left side of ?? is unnecessary. Use -> instead.",
+            "line": 62,
+            "ignorable": true,
+            "identifier": "nullsafe.neverNull"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Using nullsafe property access \"?->value\" on left side of ?? is unnecessary. Use -> instead.",
+            "line": 62,
+            "ignorable": true,
+            "identifier": "nullsafe.neverNull"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ?? always exists and is not nullable.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ??= always exists and is not nullable.",
+            "line": 69,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'key' on array{key: 1} in isset() always exists and is not nullable.",
+            "line": 71,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Offset 'key' on array{key: 1} on left side of ?? always exists and is not nullable.",
+            "line": 71,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\NativeProperties::$value (int) does not accept string.",
+            "line": 76,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ?? always exists and is not nullable.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ??= always exists and is not nullable.",
+            "line": 93,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        }
+    ],
+    "4-off-default": [
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $native in isset() always exists and is not nullable.",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $native on left side of ?? always exists and is not nullable.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $native on left side of ??= always exists and is not nullable.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ?? always exists and is not nullable.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ??= always exists and is not nullable.",
+            "line": 69,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\NativeProperties::$value (int) does not accept string.",
+            "line": 76,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $copy in isset() always exists and is not nullable.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $copy on left side of ?? always exists and is not nullable.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $copy on left side of ??= always exists and is not nullable.",
+            "line": 84,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ?? always exists and is not nullable.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ??= always exists and is not nullable.",
+            "line": 93,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        }
+    ],
+    "4-off-on": [
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $native in isset() always exists and is not nullable.",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $native on left side of ?? always exists and is not nullable.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $native on left side of ??= always exists and is not nullable.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ?? always exists and is not nullable.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ??= always exists and is not nullable.",
+            "line": 69,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\NativeProperties::$value (int) does not accept string.",
+            "line": 76,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $copy in isset() always exists and is not nullable.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $copy on left side of ?? always exists and is not nullable.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $copy on left side of ??= always exists and is not nullable.",
+            "line": 84,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ?? always exists and is not nullable.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ??= always exists and is not nullable.",
+            "line": 93,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        }
+    ],
+    "4-off-off": [
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $native in isset() always exists and is not nullable.",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $native on left side of ?? always exists and is not nullable.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $native on left side of ??= always exists and is not nullable.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ?? always exists and is not nullable.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ??= always exists and is not nullable.",
+            "line": 69,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Property IssetNativeCertainty\\NativeProperties::$value (int) does not accept string.",
+            "line": 76,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value in isset() always exists and is not nullable.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ?? always exists and is not nullable.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/native-certainty-matrix.php",
+            "message": "Variable $value on left side of ??= always exists and is not nullable.",
+            "line": 93,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        }
+    ]
+}
