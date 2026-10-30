@@ -40,7 +40,7 @@ use mago_prelude::Prelude;
 use mago_span::HasSpan;
 use mago_syntax::cst::{
     Access, BinaryOperator, Call, ClassLikeConstantSelector, ClassLikeMemberSelector, Expression,
-    FunctionCall, Node, TriviaKind, UnaryPrefixOperator, Variable,
+    FunctionCall, MagicConstant, Node, TriviaKind, UnaryPrefixOperator, Variable,
 };
 use mago_syntax::parser::parse_file;
 use pun_problem::Span;
@@ -263,6 +263,8 @@ pub(crate) struct Facts {
     artifacts: OnceCell<Analysis>,
     /// The analysis of the file as written, docblocks read, run the first time a type of it is needed.
     documented_artifacts: OnceCell<Option<AnalysisArtifacts>>,
+    /// The line table Mago reads the file with (see [`Facts::file`]), worked out the first time it is needed.
+    lines: OnceCell<Option<Vec<u32>>>,
 }
 
 impl Facts {
@@ -414,8 +416,24 @@ impl Facts {
 
     /// The name Mago gives the anonymous class at `span` (`{anonymous-class:<path>:<line>:<column>}`).
     pub fn anonymous_class_name(&self, span: mago_span::Span) -> String {
-        let file = mago_file(&self.path, &self.native_source, FileType::Host);
+        let file = self.file(&self.native_source);
         mago_codex::get_anonymous_class_name(&file, span).to_string()
+    }
+
+    /// The file with `code`, this file's source as written or without its docblocks, as Mago reads it: after a fix
+    /// round, with the line table of [`scanned_lines`] against the source the codebase scanned, when there is one.
+    fn file(&self, code: &str) -> File {
+        let mut file = mago_file(&self.path, code, FileType::Host);
+        let lines = self.lines.get_or_init(|| {
+            let scanned = self.source_of(file.id)?;
+            (*scanned != *self.source)
+                .then(|| scanned_lines(&scanned, &self.source))
+                .flatten()
+        });
+        if let Some(lines) = lines {
+            file.lines.clone_from(lines);
+        }
+        file
     }
 
     /// The type of the expression at `span` with the docblocks read (PHPStan's `getType()`), if the analyser reached
@@ -441,7 +459,7 @@ impl Facts {
 
     /// Mago's analysis of the file as written, docblocks read, in the documented codebase.
     fn analyse_documented(&self) -> Option<AnalysisArtifacts> {
-        let file = mago_file(&self.path, &self.source, FileType::Host);
+        let file = self.file(&self.source);
         let arena = LocalArena::new();
         let program = parse_file(&arena, &file);
         let names = NameResolver::new(&arena).resolve(program);
@@ -457,7 +475,7 @@ impl Facts {
 
     /// Analyse the file. Mago trips debug assertions on some code; an analysis that panics gives no types.
     fn analyse(&self) -> Analysis {
-        let file = mago_file(&self.path, &self.native_source, FileType::Host);
+        let file = self.file(&self.native_source);
         let arena = LocalArena::new();
         let program = parse_file(&arena, &file);
         let mut untyped = HashSet::new();
@@ -973,6 +991,65 @@ fn any_node<'a>(node: Node<'a, 'a>, f: &mut impl FnMut(Node<'a, 'a>)) {
     }
 }
 
+/// A line table for `current`, a file's source after a fix round, in which each closure, arrow function, anonymous
+/// class and `__LINE__` starts at the line and column it has in `scanned`, the source the project's codebase read.
+/// Mago names closures and anonymous classes by where they start, in the codebase as in the analyser, and the analyser
+/// stops at a closure the codebase lacks, so an edit above one would leave the whole file without types. Rector's
+/// PHPStan keeps the project as it was scanned before the first change, and the changed nodes keep their original
+/// lines; with this table the new source reads the metadata of the same closures and the same `__LINE__`, and the
+/// shared codebase stays as it is.
+///
+/// `None` (Mago reads the real lines) when they are not the same ones in the same order (the text of a closure up
+/// to its body, of an arrow function up to its `=>`, or of an anonymous class changed, or a docblock did), or when no
+/// table fits (an edit between two of them on one line).
+fn scanned_lines(scanned: &str, current: &str) -> Option<Vec<u32>> {
+    fn marks(code: &str) -> (File, Vec<(u32, &str)>, Vec<&str>) {
+        let arena = LocalArena::new();
+        let file = mago_file("", code, FileType::Host);
+        let program = parse_file(&arena, &file);
+        let text = |s: mago_span::Span| &code[s.start.offset as usize..s.end.offset as usize];
+        let docblocks: Vec<&str> = (program.trivia.iter())
+            .filter(|t| t.kind == TriviaKind::DocBlockComment)
+            .map(|t| text(t.span))
+            .collect();
+        let mut marks = Vec::new();
+        any_node(Node::Program(program), &mut |n| {
+            let mark = match n {
+                Node::Closure(c) => c.span().join(c.body.left_brace),
+                Node::ArrowFunction(f) => f.span().join(f.arrow),
+                Node::AnonymousClass(c) => c.span(),
+                Node::MagicConstant(c @ MagicConstant::Line(_)) => c.span(),
+                _ => return,
+            };
+            marks.push((mark.start.offset, text(mark)));
+        });
+        (file, marks, docblocks)
+    }
+    let (file, before, docblocks) = marks(scanned);
+    let (_, after, now) = marks(current);
+    let same = docblocks == now
+        && before.len() == after.len()
+        && before.iter().zip(&after).all(|(b, a)| b.1 == a.1);
+    same.then_some(())?;
+    // line starts, strictly increasing; each mark's line starts `column` bytes before it, the next one after it
+    let mut lines = vec![0];
+    let mut next = 1;
+    for (&(was, _), &(offset, _)) in before.iter().zip(&after) {
+        let (line, start) = (file.line_number(was) as usize, offset.checked_sub(file.column_number(was))?);
+        let last = lines.len() - 1;
+        if line == last {
+            (lines[last] == start).then_some(())?;
+        } else {
+            let between = line.checked_sub(last + 1)? as u32;
+            (start >= next + between).then_some(())?;
+            lines.extend(next..next + between);
+            lines.push(start);
+        }
+        next = offset + 1;
+    }
+    Some(lines)
+}
+
 /// `code` with the text of each docblock blanked out (`/** ... */` becomes `/*  ...  */` with spaces, lines kept),
 /// so that every offset stays where it was.
 pub(crate) fn without_docblocks(code: &str) -> String {
@@ -1100,6 +1177,7 @@ fn scan(ctx: &Context<'_>) -> Facts {
         version: php_version_of(ctx.php_version),
         artifacts: OnceCell::new(),
         documented_artifacts: OnceCell::new(),
+        lines: OnceCell::new(),
     }
 }
 
