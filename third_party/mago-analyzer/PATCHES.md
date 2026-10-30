@@ -3390,3 +3390,26 @@ differ: nested return, loop break and continue, mixed breaks, foreach continue, 
 continue, and a possibly empty foreach. Their complete original values remain in the fixture
 captures. This ordinary analyzer correction follows PHPStan 2.3.1. It does not activate a lint
 producer or rule mapping.
+
+## Isolated unmatched-catch observations
+
+The default-off `analyze_dead_code` setting also walks unmatched catch bodies. Rector 2.6.1's
+`PHPStanNodeScopeResolver` decorates each such catch from the pre-try scope with its exception
+variable bound, even though PHPStan 2.2.7 adds no reachable catch edge. The analyzer performs
+that real body walk with detached block and finally state, private artifacts, and recorded
+diagnostics. Only expression types and expression results reach the caller. Context mutations,
+diagnostics, variable flow, inferred returns and yields, and throw points remain isolated.
+
+`unmatched_catch_observation` retains the unchanged 30-record Rector capture, both standalone
+PHPStan captures, and their capture scripts. Every Rector value matches with native tracking
+enabled and disabled, with and without PHPDoc. The controls distinguish pre-try from post-try
+values, matching from nonmatching nested catches, sibling catches, repeated termination,
+assignment-sensitive dead tails, live and isolated finally blocks, void, and native from PHPDoc
+types. The original nested-finally `5` and live outer-finally `8` expectations are unchanged.
+The default-mode 13 observations and complete level-0 diagnostics remain unchanged. Public
+statement hooks also verify that isolated return and yield inference does not escape.
+
+This patch does not enable the setting in a lint producer or activate a rule. The existing
+partial native-expression API still returns unavailable after unsupported try transfer. The
+separate PHPStan 2.2.7 versus 2.3.1 pending-exit differences above remain a version boundary,
+not permission to synthesize types or claim general Rector finally parity.

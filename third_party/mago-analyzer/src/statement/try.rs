@@ -56,6 +56,14 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Try<'arena> {
             all_catches_leave = all_catches_leave && !actions.contains(ControlAction::None);
         }
 
+        // Rector decorates every catch from the pre-try scope, even when PHPStan's
+        // ordinary throw-point transfer cannot reach its body. Never share live sinks.
+        let observation_entry = context.settings.analyze_dead_code.then(|| {
+            let mut entry = block_context.clone();
+            entry.if_body_context = None;
+            entry.finally_scope = None;
+            entry
+        });
         let entry_scope = block_context.variable_scope();
         let parent_finally = block_context.finally_scope.clone();
         let existing_thrown_exceptions = std::mem::take(&mut block_context.possibly_thrown_exceptions);
@@ -292,7 +300,29 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Try<'arena> {
             }
             // TryCatchHandler never adds a catch edge without a matching throw point. In
             // particular, an explicit `@throws void` is not an unknown implicit throw.
-            if catch_entries.is_empty() { continue; }
+            if catch_entries.is_empty() {
+                if let Some(entry) = &observation_entry {
+                    let mut observed = entry.clone();
+                    observed.flags.set_has_returned(false);
+                    if let Some(variable) = &catch_clause.variable {
+                        let name = Word::from(variable.name);
+                        observed.invalidate_variable_certainty(name);
+                        observed.locals.insert(name, Rc::new(TUnion::new(caught_classes.iter().map(|class| {
+                            TAtomic::Object(TObject::Named(TNamedObject::new(*class)))
+                        }).collect())));
+                        observed.remove_variable_from_conflicting_clauses(context, name, None);
+                        observed.variables_possibly_in_scope.insert(name);
+                    }
+                    let mut scratch = AnalysisArtifacts::new().with_native_types(context.settings.track_native_types);
+                    context.isolate_unmatched_catch(|context| {
+                        analyze_statements(catch_clause.block.statements.as_slice(), context, &mut observed, &mut scratch)
+                    })?;
+                    artifacts.extend_expression_types(std::mem::take(&mut scratch.expression_types));
+                    artifacts.transfer_expression_results(&mut scratch);
+                    artifacts.transfer_native_expression_types(&mut scratch);
+                }
+                continue;
+            }
             catch_block_context.merge_variable_scope_types(&catch_entries, context.codebase);
             if let Some(catch_variable) = catch_clause.variable.as_ref() {
                 let exception_type = TUnion::new(

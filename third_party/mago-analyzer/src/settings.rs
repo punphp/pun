@@ -64,6 +64,8 @@ pub struct Settings {
     pub find_overly_wide_return_types: bool,
 
     /// Analyze code that appears to be unreachable. Defaults to `false`.
+    /// Unmatched catches are observed from their pre-try scope without adding flow edges,
+    /// following Rector's catch decoration. Their diagnostics and outward effects are discarded.
     pub analyze_dead_code: bool,
 
     /// Track the literal values of class properties when they are assigned.

@@ -295,6 +295,40 @@ where
         result
     }
 
+    /// Walk Rector's unreachable catch decoration without publishing flow or diagnostics.
+    /// Expression hooks still observe the genuine evaluation, unlike a raw callback gather.
+    pub(super) fn isolate_unmatched_catch<T>(&mut self, callback: impl FnOnce(&mut Self) -> T) -> T {
+        let scope = self.scope.clone();
+        let resolution = self.type_resolution_context.clone();
+        let statement = self.statement_span;
+        let bodies = self.control_body_blocks.clone();
+        let properties = self.property_types.clone();
+        let initializers = self.class_initializers.clone();
+        let constants = self.constant_types.clone();
+        let non_null = self.ensured_non_null_types.clone();
+        let consume = self.consume_stored_expression_results;
+        let flow = std::mem::take(&mut self.variable_flow);
+        let observations = std::mem::take(&mut self.observations);
+        self.observations.calls = observations.calls.clone();
+        self.observations.pricing = observations.pricing;
+        let called_methods = std::mem::take(&mut self.called_method_properties);
+        self.called_method_properties.processing = called_methods.processing;
+        let (result, _) = self.record(callback);
+        self.scope = scope;
+        self.type_resolution_context = resolution;
+        self.statement_span = statement;
+        self.control_body_blocks = bodies;
+        self.property_types = properties;
+        self.class_initializers = initializers;
+        self.constant_types = constants;
+        self.ensured_non_null_types = non_null;
+        self.consume_stored_expression_results = consume;
+        self.variable_flow = flow;
+        self.observations = observations;
+        self.called_method_properties = called_methods;
+        result
+    }
+
     /// A type-pricing world owns its collector and never publishes statement or call events.
     pub(super) fn fork_for_observation(&self) -> Self {
         let program = self.observation_program.expect("requested observations retain the program");
