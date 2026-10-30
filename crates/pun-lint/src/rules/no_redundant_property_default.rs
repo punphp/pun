@@ -60,9 +60,8 @@ impl Rule for NoRedundantPropertyDefault {
         }
         let mut path = ancestors.to_vec();
         path.push(node);
-        let source = ctx.source;
         let scope = Scope {
-            source,
+            ctx,
             members,
             left_brace,
             path: &path,
@@ -119,7 +118,7 @@ impl Rule for NoRedundantPropertyDefault {
 /// anonymous class with `members`, `left_brace` and `extends`, which `path` leads to (and ends with): false without a
 /// constructor.
 pub(crate) fn is_assigned_in_constructor<'a>(
-    source: &str,
+    ctx: &Context<'_>,
     members: &'a Sequence<'a, ClassLikeMember<'a>>,
     left_brace: mago_span::Span,
     extends: Option<&'a Extends<'a>>,
@@ -130,7 +129,7 @@ pub(crate) fn is_assigned_in_constructor<'a>(
         return false;
     };
     Scope {
-        source,
+        ctx,
         members,
         left_brace,
         path,
@@ -264,7 +263,7 @@ fn assigns<'a>(
 }
 
 struct Scope<'s, 'p, 'a> {
-    source: &'s str,
+    ctx: &'s Context<'s>,
     members: &'a Sequence<'a, ClassLikeMember<'a>>,
     left_brace: mago_span::Span,
     path: &'p [Node<'a, 'a>],
@@ -277,7 +276,7 @@ struct Scope<'s, 'p, 'a> {
 /// `ConstructorAssignDetector::isPropertyAssigned` for the property `name` of the class or anonymous class `node`,
 /// whose ancestors are `ancestors`; `test_case` says whether it is a PHPUnit test case.
 pub(crate) fn is_property_assigned(
-    source: &str,
+    ctx: &Context<'_>,
     node: Node<'_, '_>,
     ancestors: &[Node<'_, '_>],
     test_case: bool,
@@ -291,7 +290,7 @@ pub(crate) fn is_property_assigned(
     let mut path = ancestors.to_vec();
     path.push(node);
     let scope = Scope {
-        source,
+        ctx,
         members,
         left_brace,
         path: &path,
@@ -360,12 +359,12 @@ impl<'a> Scope<'_, '_, 'a> {
     /// `AutowiredClassMethodOrPropertyAnalyzer::detect`.
     fn autowired(&self, index: usize, m: &Method<'_>) -> bool {
         let doc = doc_comment(
-            self.source,
+            self.ctx.source,
             member_from(self.members, self.left_brace, index),
             node_span(m).start,
         );
         let tagged = doc.is_some_and(|d| {
-            self.source[d.start..d.end].lines().any(|line| {
+            self.ctx.source[d.start..d.end].lines().any(|line| {
                 let line = line
                     .trim_start()
                     .trim_start_matches("/**")
@@ -402,7 +401,7 @@ impl<'a> Scope<'_, '_, 'a> {
             && let Some(a) = assigns_node(a, name, self.path)
         {
             // Is the property's own value merged into the assignment?
-            if uses_fetch(self.source, Node::Expression(a.rhs), a.lhs) {
+            if uses_fetch(self.ctx.source, Node::Expression(a.rhs), a.lhs) {
                 return Found::Stop(false);
             }
             if first.contains(&node_span(a)) {

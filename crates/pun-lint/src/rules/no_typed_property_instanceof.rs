@@ -72,7 +72,7 @@ impl Rule for NoTypedPropertyInstanceof {
         let source = ctx.source;
         let tokens = tokens(source);
         let facts = facts(ctx);
-        let visited = visited_ifs(source, &tokens, &facts, &class);
+        let visited = visited_ifs(ctx, &tokens, &facts, &class);
         if !visited.contains(&node_span(r#if).start) {
             return;
         }
@@ -83,7 +83,7 @@ impl Rule for NoTypedPropertyInstanceof {
             if !visited.contains(&node_span(sibling).start) {
                 return None;
             }
-            change(source, &tokens, &facts, &class, sibling, chain)
+            change(ctx, &tokens, &facts, &class, sibling, chain)
         });
         if let Some(edits) = edits {
             out.push(Report {
@@ -111,7 +111,7 @@ struct Class<'c, 'ast, 'arena> {
 /// Where the `if`s the walk of the class's methods changes start: it stops at the first loop and does not go into an
 /// `if` it changes.
 fn visited_ifs(
-    source: &str,
+    ctx: &Context<'_>,
     tokens: &[Token],
     facts: &Facts,
     class: &Class<'_, '_, '_>,
@@ -138,7 +138,7 @@ fn visited_ifs(
                     let mut full = chain.clone();
                     full.extend_from_slice(path);
                     full.push(node);
-                    if change(source, tokens, facts, class, r#if, &full).is_some() {
+                    if change(ctx, tokens, facts, class, r#if, &full).is_some() {
                         changed.push(node_span(r#if).start);
                         return false;
                     }
@@ -156,13 +156,14 @@ fn visited_ifs(
 
 /// `refactorStmtAndInstanceof` for the `if` statement `chain` ends with.
 fn change(
-    source: &str,
+    ctx: &Context<'_>,
     tokens: &[Token],
     facts: &Facts,
     class: &Class<'_, '_, '_>,
     r#if: &If<'_>,
     chain: &[Node<'_, '_>],
 ) -> Option<Change> {
+    let source = ctx.source;
     let parts = if_parts(tokens, r#if);
     if parts.has_else || parts.has_elseifs {
         return None;
@@ -208,7 +209,7 @@ fn change(
     if !same {
         return None;
     }
-    if !is_promoted(class, property.value) && is_skipped(source, class, property.value) {
+    if !is_promoted(class, property.value) && is_skipped(ctx, class, property.value) {
         return None;
     }
     if negated || parts.stmts.is_empty() {
@@ -314,11 +315,11 @@ fn is_promoted(class: &Class<'_, '_, '_>, name: &[u8]) -> bool {
 }
 
 /// `isSkippedPropertyFetch`: not assigned in the constructor, and not declared in the class with a native type.
-fn is_skipped(source: &str, class: &Class<'_, '_, '_>, name: &[u8]) -> bool {
+fn is_skipped(ctx: &Context<'_>, class: &Class<'_, '_, '_>, name: &[u8]) -> bool {
     let mut path = class.ancestors.to_vec();
     path.push(class.node);
     if is_assigned_in_constructor(
-        source,
+        ctx,
         class.members,
         class.left_brace,
         class.extends,

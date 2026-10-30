@@ -58,7 +58,7 @@ impl Rule for AddPropertyTypeSetupDocblock {
                     .modifiers()
                     .iter()
                     .any(|m| matches!(m, Modifier::Static(_)))
-                || !is_property_assigned(ctx.source, node, ancestors, true, prop.name())
+                || !is_property_assigned(ctx, node, ancestors, true, prop.name())
             {
                 continue;
             }

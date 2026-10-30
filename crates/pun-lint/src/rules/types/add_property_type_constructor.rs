@@ -106,7 +106,7 @@ impl Rule for AddPropertyTypeConstructor {
             };
             let name = prop.name();
             let mut removes_default = false;
-            if is_property_assigned(ctx.source, node, ancestors, test_case, name)
+            if is_property_assigned(ctx, node, ancestors, test_case, name)
                 && let Some(span) = default_span(prop)
             {
                 edits.push(Edit::new(span, ""));
@@ -237,7 +237,7 @@ pub(crate) fn infer(
         }
     };
     // resolveType
-    let assigned = is_property_assigned(ctx.source, view.node, ancestors, test_case, name);
+    let assigned = is_property_assigned(ctx, view.node, ancestors, test_case, name);
     match assigned_type(facts, view, prop, assigned) {
         Assigned::Type(exact) if exact.is_union() && !are_equal(&resolved, &exact) => Ty::Mixed,
         _ => resolved,
