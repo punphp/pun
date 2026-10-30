@@ -1,0 +1,309 @@
+{
+    "0": [
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Instanceof between object and trait InitializationCoverage\\MarkerTrait will always evaluate to false.",
+            "line": 8,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Instanceof between $this(InstanceofTraitDescriptions\\Declarations\\ParentReceiver) and trait InstanceofTraitDescriptions\\Declarations\\Marker will always evaluate to false.",
+            "line": 40,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Instanceof between $this(InstanceofTraitDescriptions\\Declarations\\ParentReceiver) and trait InstanceofTraitDescriptions\\Declarations\\Marker will always evaluate to false.",
+            "line": 46,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Instanceof between mixed and trait InstanceofTraitDescriptions\\Declarations\\Marker will always evaluate to false.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Instanceof between mixed and trait InstanceofTraitDescriptions\\Declarations\\Marker will always evaluate to false.",
+            "line": 73,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Instanceof between InstanceofTraitDescriptions\\Declarations\\Receiver and trait InstanceofTraitDescriptions\\Declarations\\Marker will always evaluate to false.",
+            "line": 78,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Instanceof between InstanceofTraitDescriptions\\Declarations\\Receiver|null and trait InstanceofTraitDescriptions\\Declarations\\Marker will always evaluate to false.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Instanceof between InstanceofTraitDescriptions\\Declarations\\OtherReceiver|InstanceofTraitDescriptions\\Declarations\\Receiver and trait InstanceofTraitDescriptions\\Declarations\\Marker will always evaluate to false.",
+            "line": 88,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Instanceof between InstanceofTraitDescriptions\\Declarations\\Box<int> and trait InstanceofTraitDescriptions\\Declarations\\Marker will always evaluate to false.",
+            "line": 94,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Instanceof between InstanceofTraitDescriptions\\Declarations\\Box<int>|InstanceofTraitDescriptions\\Declarations\\Receiver and trait InstanceofTraitDescriptions\\Declarations\\Marker will always evaluate to false.",
+            "line": 100,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Instanceof between InstanceofTraitDescriptions\\Declarations\\ChildReceiver and trait InstanceofTraitDescriptions\\Declarations\\Marker will always evaluate to false.",
+            "line": 105,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Instanceof between int and trait InstanceofTraitDescriptions\\Declarations\\Marker will always evaluate to false.",
+            "line": 110,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Instanceof between string and trait InstanceofTraitDescriptions\\Declarations\\Marker will always evaluate to false.",
+            "line": 115,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Instanceof between InstanceofTraitDescriptions\\Declarations\\Receiver and trait InstanceofTraitDescriptions\\Declarations\\Marker will always evaluate to false.",
+            "line": 120,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Instanceof between object and trait InstanceofTraitDescriptions\\Declarations\\Marker will always evaluate to false.",
+            "line": 125,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Instanceof between object and trait InstanceofTraitDescriptions\\Declarations\\MARKER will always evaluate to false.",
+            "line": 130,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Class InstanceofTraitDescriptions\\Consumers\\MissingReceiver not found.",
+            "line": 150,
+            "ignorable": true,
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "identifier": "class.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php (in context of class InstanceofTraitDescriptions\\Declarations\\OtherHost)",
+            "message": "Instanceof between $this(InstanceofTraitDescriptions\\Declarations\\OtherHost) and trait InstanceofTraitDescriptions\\Declarations\\Marker will always evaluate to false.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        },
+        {
+            "file": "$ROOT/receivers.php (in context of class InstanceofTraitDescriptions\\Declarations\\OtherHost)",
+            "message": "Instanceof between object and trait InstanceofTraitDescriptions\\Declarations\\Marker will always evaluate to false.",
+            "line": 30,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        },
+        {
+            "file": "$ROOT/receivers.php (in context of class InstanceofTraitDescriptions\\Declarations\\ParentReceiver)",
+            "message": "Instanceof between $this(InstanceofTraitDescriptions\\Declarations\\ParentReceiver) and trait InstanceofTraitDescriptions\\Declarations\\Marker will always evaluate to false.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        },
+        {
+            "file": "$ROOT/receivers.php (in context of class InstanceofTraitDescriptions\\Declarations\\ParentReceiver)",
+            "message": "Instanceof between object and trait InstanceofTraitDescriptions\\Declarations\\Marker will always evaluate to false.",
+            "line": 30,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        }
+    ],
+    "2": [
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Instanceof between object and trait InitializationCoverage\\MarkerTrait will always evaluate to false.",
+            "line": 8,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Instanceof between $this(InstanceofTraitDescriptions\\Declarations\\ParentReceiver) and trait InstanceofTraitDescriptions\\Declarations\\Marker will always evaluate to false.",
+            "line": 40,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Instanceof between $this(InstanceofTraitDescriptions\\Declarations\\ParentReceiver) and trait InstanceofTraitDescriptions\\Declarations\\Marker will always evaluate to false.",
+            "line": 46,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Instanceof between mixed and trait InstanceofTraitDescriptions\\Declarations\\Marker will always evaluate to false.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Instanceof between mixed and trait InstanceofTraitDescriptions\\Declarations\\Marker will always evaluate to false.",
+            "line": 73,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Instanceof between InstanceofTraitDescriptions\\Declarations\\Receiver and trait InstanceofTraitDescriptions\\Declarations\\Marker will always evaluate to false.",
+            "line": 78,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Instanceof between InstanceofTraitDescriptions\\Declarations\\Receiver|null and trait InstanceofTraitDescriptions\\Declarations\\Marker will always evaluate to false.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Instanceof between InstanceofTraitDescriptions\\Declarations\\OtherReceiver|InstanceofTraitDescriptions\\Declarations\\Receiver and trait InstanceofTraitDescriptions\\Declarations\\Marker will always evaluate to false.",
+            "line": 88,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Instanceof between InstanceofTraitDescriptions\\Declarations\\Box<int> and trait InstanceofTraitDescriptions\\Declarations\\Marker will always evaluate to false.",
+            "line": 94,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Instanceof between InstanceofTraitDescriptions\\Declarations\\Box<int>|InstanceofTraitDescriptions\\Declarations\\Receiver and trait InstanceofTraitDescriptions\\Declarations\\Marker will always evaluate to false.",
+            "line": 100,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Instanceof between InstanceofTraitDescriptions\\Declarations\\ChildReceiver and trait InstanceofTraitDescriptions\\Declarations\\Marker will always evaluate to false.",
+            "line": 105,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Instanceof between int and trait InstanceofTraitDescriptions\\Declarations\\Marker will always evaluate to false.",
+            "line": 110,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Instanceof between string and trait InstanceofTraitDescriptions\\Declarations\\Marker will always evaluate to false.",
+            "line": 115,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Instanceof between InstanceofTraitDescriptions\\Declarations\\Receiver and trait InstanceofTraitDescriptions\\Declarations\\Marker will always evaluate to false.",
+            "line": 120,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Instanceof between object and trait InstanceofTraitDescriptions\\Declarations\\Marker will always evaluate to false.",
+            "line": 125,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Instanceof between object and trait InstanceofTraitDescriptions\\Declarations\\MARKER will always evaluate to false.",
+            "line": 130,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Trait InstanceofTraitDescriptions\\Declarations\\Marker referenced with incorrect case: InstanceofTraitDescriptions\\Declarations\\MARKER.",
+            "line": 130,
+            "ignorable": true,
+            "identifier": "trait.nameCase"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Class InstanceofTraitDescriptions\\Consumers\\MissingReceiver not found.",
+            "line": 150,
+            "ignorable": true,
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "identifier": "class.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php (in context of class InstanceofTraitDescriptions\\Declarations\\OtherHost)",
+            "message": "Instanceof between $this(InstanceofTraitDescriptions\\Declarations\\OtherHost) and trait InstanceofTraitDescriptions\\Declarations\\Marker will always evaluate to false.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        },
+        {
+            "file": "$ROOT/receivers.php (in context of class InstanceofTraitDescriptions\\Declarations\\OtherHost)",
+            "message": "Instanceof between object and trait InstanceofTraitDescriptions\\Declarations\\Marker will always evaluate to false.",
+            "line": 30,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        },
+        {
+            "file": "$ROOT/receivers.php (in context of class InstanceofTraitDescriptions\\Declarations\\ParentReceiver)",
+            "message": "Instanceof between $this(InstanceofTraitDescriptions\\Declarations\\ParentReceiver) and trait InstanceofTraitDescriptions\\Declarations\\Marker will always evaluate to false.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        },
+        {
+            "file": "$ROOT/receivers.php (in context of class InstanceofTraitDescriptions\\Declarations\\ParentReceiver)",
+            "message": "Instanceof between object and trait InstanceofTraitDescriptions\\Declarations\\Marker will always evaluate to false.",
+            "line": 30,
+            "ignorable": true,
+            "identifier": "instanceof.trait"
+        }
+    ]
+}

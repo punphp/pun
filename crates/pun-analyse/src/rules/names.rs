@@ -1,7 +1,6 @@
 //! The rules that check a class name exists where code names one: class constant fetches (ClassConstantRule),
 //! `instanceof`, `catch`, native parameter and return types, `extends`, `implements` and `use` of traits.
 
-use mago_codex::ttype::TType;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use mago_syntax::walker::MutWalker;
@@ -503,8 +502,7 @@ pub fn instanceof<'arena>(
 
 /// The `instanceof.trait` part of ExistingClassInInstanceOfRule.
 fn instanceof_trait<'arena>(c: &mut Checker<'_, 'arena>, expr: &Expression<'arena>, name: &str) {
-    // `$scope->getType($expr)->describe()`: only `$this` (ThisType) and `mixed` are described until
-    // analyse 4 maps Mago's types to PHPStan's descriptions
+    // `$this` uses its class/trait-use scope; infer::TypedExpressions requests the other operands.
     let described = match expr {
         Expression::Variable(Variable::Direct(v)) if v.name == b"$this" => {
             c.class_scope().map(|k| {
@@ -514,10 +512,7 @@ fn instanceof_trait<'arena>(c: &mut Checker<'_, 'arena>, expr: &Expression<'aren
                 )
             })
         }
-        _ => c
-            .type_of(expr)
-            .filter(|t| t.get_id().as_bytes() == b"mixed")
-            .map(|_| "mixed".to_string()),
+        _ => c.phpstan_type(expr).map(|ty| ty.describe(Level::TypeOnly)),
     };
     if let Some(described) = described {
         c.report(
