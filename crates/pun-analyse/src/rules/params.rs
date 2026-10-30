@@ -239,7 +239,11 @@ pub(super) fn select_in(c: &Checker, variants: Variants, counts: &Counts, scope:
         }
         Some(types)
     })();
-    let named = types.as_ref().map_or(counts.named, |types| types.iter().any(|(key, _)| matches!(key, Key::Str(_))));
+    select_from_types(c, variants, counts, types.as_deref())
+}
+
+fn select_from_types(c: &Checker, variants: Variants, counts: &Counts, types: Option<&[(Key, Type)]>) -> Acceptor {
+    let named = types.map_or(counts.named, |types| types.iter().any(|(key, _)| matches!(key, Key::Str(_))));
     let variants = match variants.named {
         Some(variants) if named => variants,
         _ => variants.all,
@@ -263,7 +267,7 @@ pub(super) fn select_in(c: &Checker, variants: Variants, counts: &Counts, scope:
         [] => combine(&variants.iter().collect::<Vec<_>>()),
         [one] => (*one).clone(),
         // Missing selected operands remain unknown; never recover them from the global map.
-        [first, ..] => match types.as_deref().map(|types| winning(c, &acceptable, types, unpack)) {
+        [first, ..] => match types.map(|types| winning(c, &acceptable, types, unpack)) {
             Some(w) if w.is_empty() => combine(&acceptable),
             Some(w) => combine(&w),
             None => (*first).clone(),
