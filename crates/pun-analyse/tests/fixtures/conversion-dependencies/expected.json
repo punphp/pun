@@ -1,0 +1,1129 @@
+{
+    "version": "2.3.1",
+    "phar_sha256": "85157dba3d95d77ca603d2b7303aa78a538f9e3b56ccad07dd794c53aa96d1ae",
+    "sources": {
+        "native": "e985ebd6456087c0b9937c743638857500d4e9d42991421a33600145b356ec95",
+        "selected": "8a4980a98f2f20272664c0ecee073df85bceb28f7ec462720011147fc3f2f5e5"
+    },
+    "observations": {
+        "native": [
+            {
+                "end": 203,
+                "line": 11,
+                "available": true,
+                "label": "implicit-leaf",
+                "start": 198,
+                "expression": "$copy",
+                "full": "array{z: 7, a: null}",
+                "native": "array{z: 7, a: null}",
+                "full_value": {
+                    "shape": [
+                        [
+                            "a",
+                            null
+                        ],
+                        [
+                            "z",
+                            7
+                        ]
+                    ]
+                },
+                "native_value": {
+                    "shape": [
+                        [
+                            "a",
+                            null
+                        ],
+                        [
+                            "z",
+                            7
+                        ]
+                    ]
+                }
+            },
+            {
+                "end": 457,
+                "line": 21,
+                "available": true,
+                "label": "explicit-leaf",
+                "start": 452,
+                "expression": "$leaf",
+                "full": "array{last: false, first: 23}",
+                "native": "array{last: false, first: 23}",
+                "full_value": {
+                    "shape": [
+                        [
+                            "first",
+                            23
+                        ],
+                        [
+                            "last",
+                            false
+                        ]
+                    ]
+                },
+                "native_value": {
+                    "shape": [
+                        [
+                            "first",
+                            23
+                        ],
+                        [
+                            "last",
+                            false
+                        ]
+                    ]
+                }
+            },
+            {
+                "end": 715,
+                "line": 30,
+                "available": true,
+                "label": "generic-leaf",
+                "start": 710,
+                "expression": "$leaf",
+                "full": "array{a: null, z: 'doc'}",
+                "native": "mixed",
+                "full_value": {
+                    "shape": [
+                        [
+                            "a",
+                            null
+                        ],
+                        [
+                            "z",
+                            "doc"
+                        ]
+                    ]
+                },
+                "native_value": "mixed"
+            },
+            {
+                "end": 889,
+                "line": 38,
+                "available": true,
+                "label": "documented-key",
+                "start": 885,
+                "expression": "$key",
+                "full": "0",
+                "native": "int",
+                "full_value": 0,
+                "native_value": "int"
+            },
+            {
+                "end": 953,
+                "line": 40,
+                "available": true,
+                "label": "documented-key-leaf",
+                "start": 948,
+                "expression": "$leaf",
+                "full": "array{z: 7, a: null}",
+                "native": "99|array{z: 7, a: null}",
+                "full_value": {
+                    "shape": [
+                        [
+                            "a",
+                            null
+                        ],
+                        [
+                            "z",
+                            7
+                        ]
+                    ]
+                },
+                "native_value": {
+                    "union": [
+                        99,
+                        {
+                            "shape": [
+                                [
+                                    "a",
+                                    null
+                                ],
+                                [
+                                    "z",
+                                    7
+                                ]
+                            ]
+                        }
+                    ]
+                }
+            },
+            {
+                "end": 1090,
+                "line": 46,
+                "available": false,
+                "label": "unknown-key-source",
+                "start": 1083,
+                "expression": "$source",
+                "full": "non-empty-array<string, array{z: 7, a: null}>",
+                "native": "non-empty-array<string, array{z: 7, a: null}>",
+                "full_value": "array",
+                "native_value": "array"
+            },
+            {
+                "end": 1319,
+                "line": 57,
+                "available": true,
+                "label": "before-array-call",
+                "start": 1312,
+                "expression": "$before",
+                "full": "array{z: 7, a: null}",
+                "native": "array{z: 7, a: null}",
+                "full_value": {
+                    "shape": [
+                        [
+                            "a",
+                            null
+                        ],
+                        [
+                            "z",
+                            7
+                        ]
+                    ]
+                },
+                "native_value": {
+                    "shape": [
+                        [
+                            "a",
+                            null
+                        ],
+                        [
+                            "z",
+                            7
+                        ]
+                    ]
+                }
+            },
+            {
+                "end": 1407,
+                "line": 60,
+                "available": false,
+                "label": "after-array-call",
+                "start": 1401,
+                "expression": "$after",
+                "full": "array{z: 7, a: null}",
+                "native": "array{z: 7, a: null}",
+                "full_value": {
+                    "shape": [
+                        [
+                            "a",
+                            null
+                        ],
+                        [
+                            "z",
+                            7
+                        ]
+                    ]
+                },
+                "native_value": {
+                    "shape": [
+                        [
+                            "a",
+                            null
+                        ],
+                        [
+                            "z",
+                            7
+                        ]
+                    ]
+                }
+            }
+        ],
+        "selected": [
+            {
+                "end": 1078,
+                "line": 57,
+                "available": false,
+                "label": "class-constant-value",
+                "start": 1072,
+                "expression": "$value",
+                "full": "array{z: 11, a: 'first'}",
+                "native": "array{z: 11, a: 'first'}",
+                "full_value": {
+                    "shape": [
+                        [
+                            "a",
+                            "first"
+                        ],
+                        [
+                            "z",
+                            11
+                        ]
+                    ]
+                },
+                "native_value": {
+                    "shape": [
+                        [
+                            "a",
+                            "first"
+                        ],
+                        [
+                            "z",
+                            11
+                        ]
+                    ]
+                }
+            }
+        ]
+    },
+    "calls": {
+        "native": [],
+        "selected": [
+            {
+                "start": 755,
+                "end": 805,
+                "names": [
+                    {
+                        "name": "left",
+                        "filtered": true,
+                        "types": [
+                            {
+                                "start": 755,
+                                "end": 762,
+                                "expression": "$target",
+                                "full": "ConversionSelected\\Receiver",
+                                "native": "ConversionSelected\\Receiver",
+                                "full_value": {
+                                    "object": "ConversionSelected\\Receiver"
+                                },
+                                "native_value": {
+                                    "object": "ConversionSelected\\Receiver"
+                                }
+                            },
+                            {
+                                "start": 784,
+                                "end": 804,
+                                "expression": "$row['holder']::ARGS",
+                                "full": "array{z: 11, a: 'first'}",
+                                "native": "array{other: 'second', tail: 22}|array{z: 11, a: 'first'}",
+                                "full_value": {
+                                    "shape": [
+                                        [
+                                            "a",
+                                            "first"
+                                        ],
+                                        [
+                                            "z",
+                                            11
+                                        ]
+                                    ]
+                                },
+                                "native_value": {
+                                    "union": [
+                                        {
+                                            "shape": [
+                                                [
+                                                    "a",
+                                                    "first"
+                                                ],
+                                                [
+                                                    "z",
+                                                    11
+                                                ]
+                                            ]
+                                        },
+                                        {
+                                            "shape": [
+                                                [
+                                                    "other",
+                                                    "second"
+                                                ],
+                                                [
+                                                    "tail",
+                                                    22
+                                                ]
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "start": 784,
+                                "end": 798,
+                                "expression": "$row['holder']",
+                                "full": "'ConversionSelected\\\\First'",
+                                "native": "'ConversionSelected\\\\First'|'ConversionSelected\\\\Second'",
+                                "full_value": "ConversionSelected\\First",
+                                "native_value": {
+                                    "union": [
+                                        "ConversionSelected\\First",
+                                        "ConversionSelected\\Second"
+                                    ]
+                                }
+                            },
+                            {
+                                "start": 784,
+                                "end": 788,
+                                "expression": "$row",
+                                "full": "array{method: 'left', holder: 'ConversionSelected\\\\First'}",
+                                "native": "array{method: 'left', holder: 'ConversionSelected\\\\First'}|array{method: 'right', holder: 'ConversionSelected\\\\Second'}",
+                                "full_value": {
+                                    "shape": [
+                                        [
+                                            "holder",
+                                            "ConversionSelected\\First"
+                                        ],
+                                        [
+                                            "method",
+                                            "left"
+                                        ]
+                                    ]
+                                },
+                                "native_value": {
+                                    "union": [
+                                        {
+                                            "shape": [
+                                                [
+                                                    "holder",
+                                                    "ConversionSelected\\First"
+                                                ],
+                                                [
+                                                    "method",
+                                                    "left"
+                                                ]
+                                            ]
+                                        },
+                                        {
+                                            "shape": [
+                                                [
+                                                    "holder",
+                                                    "ConversionSelected\\Second"
+                                                ],
+                                                [
+                                                    "method",
+                                                    "right"
+                                                ]
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "start": 789,
+                                "end": 797,
+                                "expression": "'holder'",
+                                "full": "'holder'",
+                                "native": "'holder'",
+                                "full_value": "holder",
+                                "native_value": "holder"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "right",
+                        "filtered": true,
+                        "types": [
+                            {
+                                "start": 755,
+                                "end": 762,
+                                "expression": "$target",
+                                "full": "ConversionSelected\\Receiver",
+                                "native": "ConversionSelected\\Receiver",
+                                "full_value": {
+                                    "object": "ConversionSelected\\Receiver"
+                                },
+                                "native_value": {
+                                    "object": "ConversionSelected\\Receiver"
+                                }
+                            },
+                            {
+                                "start": 784,
+                                "end": 804,
+                                "expression": "$row['holder']::ARGS",
+                                "full": "array{other: 'second', tail: 22}",
+                                "native": "array{other: 'second', tail: 22}|array{z: 11, a: 'first'}",
+                                "full_value": {
+                                    "shape": [
+                                        [
+                                            "other",
+                                            "second"
+                                        ],
+                                        [
+                                            "tail",
+                                            22
+                                        ]
+                                    ]
+                                },
+                                "native_value": {
+                                    "union": [
+                                        {
+                                            "shape": [
+                                                [
+                                                    "a",
+                                                    "first"
+                                                ],
+                                                [
+                                                    "z",
+                                                    11
+                                                ]
+                                            ]
+                                        },
+                                        {
+                                            "shape": [
+                                                [
+                                                    "other",
+                                                    "second"
+                                                ],
+                                                [
+                                                    "tail",
+                                                    22
+                                                ]
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "start": 784,
+                                "end": 798,
+                                "expression": "$row['holder']",
+                                "full": "'ConversionSelected\\\\Second'",
+                                "native": "'ConversionSelected\\\\First'|'ConversionSelected\\\\Second'",
+                                "full_value": "ConversionSelected\\Second",
+                                "native_value": {
+                                    "union": [
+                                        "ConversionSelected\\First",
+                                        "ConversionSelected\\Second"
+                                    ]
+                                }
+                            },
+                            {
+                                "start": 784,
+                                "end": 788,
+                                "expression": "$row",
+                                "full": "array{method: 'right', holder: 'ConversionSelected\\\\Second'}",
+                                "native": "array{method: 'left', holder: 'ConversionSelected\\\\First'}|array{method: 'right', holder: 'ConversionSelected\\\\Second'}",
+                                "full_value": {
+                                    "shape": [
+                                        [
+                                            "holder",
+                                            "ConversionSelected\\Second"
+                                        ],
+                                        [
+                                            "method",
+                                            "right"
+                                        ]
+                                    ]
+                                },
+                                "native_value": {
+                                    "union": [
+                                        {
+                                            "shape": [
+                                                [
+                                                    "holder",
+                                                    "ConversionSelected\\First"
+                                                ],
+                                                [
+                                                    "method",
+                                                    "left"
+                                                ]
+                                            ]
+                                        },
+                                        {
+                                            "shape": [
+                                                [
+                                                    "holder",
+                                                    "ConversionSelected\\Second"
+                                                ],
+                                                [
+                                                    "method",
+                                                    "right"
+                                                ]
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "start": 789,
+                                "end": 797,
+                                "expression": "'holder'",
+                                "full": "'holder'",
+                                "native": "'holder'",
+                                "full_value": "holder",
+                                "native_value": "holder"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "start": 877,
+                "end": 906,
+                "names": [
+                    {
+                        "name": "left",
+                        "filtered": false,
+                        "types": [
+                            {
+                                "start": 877,
+                                "end": 884,
+                                "expression": "$target",
+                                "full": "ConversionSelected\\Receiver",
+                                "native": "ConversionSelected\\Receiver",
+                                "full_value": {
+                                    "object": "ConversionSelected\\Receiver"
+                                },
+                                "native_value": {
+                                    "object": "ConversionSelected\\Receiver"
+                                }
+                            },
+                            {
+                                "start": 894,
+                                "end": 905,
+                                "expression": "First::ARGS",
+                                "full": "array{z: 11, a: 'first'}",
+                                "native": "array{z: 11, a: 'first'}",
+                                "full_value": {
+                                    "shape": [
+                                        [
+                                            "a",
+                                            "first"
+                                        ],
+                                        [
+                                            "z",
+                                            11
+                                        ]
+                                    ]
+                                },
+                                "native_value": {
+                                    "shape": [
+                                        [
+                                            "a",
+                                            "first"
+                                        ],
+                                        [
+                                            "z",
+                                            11
+                                        ]
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "start": 924,
+                "end": 955,
+                "names": [
+                    {
+                        "name": "right",
+                        "filtered": false,
+                        "types": [
+                            {
+                                "start": 924,
+                                "end": 931,
+                                "expression": "$target",
+                                "full": "ConversionSelected\\Receiver",
+                                "native": "ConversionSelected\\Receiver",
+                                "full_value": {
+                                    "object": "ConversionSelected\\Receiver"
+                                },
+                                "native_value": {
+                                    "object": "ConversionSelected\\Receiver"
+                                }
+                            },
+                            {
+                                "start": 942,
+                                "end": 954,
+                                "expression": "Second::ARGS",
+                                "full": "array{other: 'second', tail: 22}",
+                                "native": "array{other: 'second', tail: 22}",
+                                "full_value": {
+                                    "shape": [
+                                        [
+                                            "other",
+                                            "second"
+                                        ],
+                                        [
+                                            "tail",
+                                            22
+                                        ]
+                                    ]
+                                },
+                                "native_value": {
+                                    "shape": [
+                                        [
+                                            "other",
+                                            "second"
+                                        ],
+                                        [
+                                            "tail",
+                                            22
+                                        ]
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "diagnostics": {
+        "native/0/1": [],
+        "native/0/0": [],
+        "native/4/1": [
+            [
+                "native-controls.php",
+                11,
+                "expr.resultUnused",
+                "Expression \"$copy\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                12,
+                "isset.offset",
+                "Offset 'a' on array{z: 7, a: null} in isset() always exists and is always null.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                21,
+                "expr.resultUnused",
+                "Expression \"$leaf\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                22,
+                "isset.offset",
+                "Offset 'first' on array{last: false, first: 23} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                30,
+                "expr.resultUnused",
+                "Expression \"$leaf\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                31,
+                "isset.offset",
+                "Offset 'z' on array{a: null, z: 'doc'} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                35,
+                "void.pure",
+                "Function ConversionDependencies\\documentedKey() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                38,
+                "expr.resultUnused",
+                "Expression \"$key\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                40,
+                "expr.resultUnused",
+                "Expression \"$leaf\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                43,
+                "void.pure",
+                "Function ConversionDependencies\\unknownKey() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                46,
+                "expr.resultUnused",
+                "Expression \"$source\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                57,
+                "expr.resultUnused",
+                "Expression \"$before\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                60,
+                "expr.resultUnused",
+                "Expression \"$after\" on a separate line does not do anything.",
+                null,
+                true
+            ]
+        ],
+        "native/4/0": [
+            [
+                "native-controls.php",
+                11,
+                "expr.resultUnused",
+                "Expression \"$copy\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                12,
+                "isset.offset",
+                "Offset 'a' on array{z: 7, a: null} in isset() always exists and is always null.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                21,
+                "expr.resultUnused",
+                "Expression \"$leaf\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                22,
+                "isset.offset",
+                "Offset 'first' on array{last: false, first: 23} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                30,
+                "expr.resultUnused",
+                "Expression \"$leaf\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                35,
+                "void.pure",
+                "Function ConversionDependencies\\documentedKey() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                38,
+                "expr.resultUnused",
+                "Expression \"$key\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                40,
+                "expr.resultUnused",
+                "Expression \"$leaf\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                43,
+                "void.pure",
+                "Function ConversionDependencies\\unknownKey() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                46,
+                "expr.resultUnused",
+                "Expression \"$source\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                57,
+                "expr.resultUnused",
+                "Expression \"$before\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                60,
+                "expr.resultUnused",
+                "Expression \"$after\" on a separate line does not do anything.",
+                null,
+                true
+            ]
+        ],
+        "native/5/1": [
+            [
+                "native-controls.php",
+                11,
+                "expr.resultUnused",
+                "Expression \"$copy\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                12,
+                "isset.offset",
+                "Offset 'a' on array{z: 7, a: null} in isset() always exists and is always null.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                21,
+                "expr.resultUnused",
+                "Expression \"$leaf\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                22,
+                "isset.offset",
+                "Offset 'first' on array{last: false, first: 23} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                30,
+                "expr.resultUnused",
+                "Expression \"$leaf\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                31,
+                "isset.offset",
+                "Offset 'z' on array{a: null, z: 'doc'} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                35,
+                "void.pure",
+                "Function ConversionDependencies\\documentedKey() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                38,
+                "expr.resultUnused",
+                "Expression \"$key\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                40,
+                "expr.resultUnused",
+                "Expression \"$leaf\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                43,
+                "void.pure",
+                "Function ConversionDependencies\\unknownKey() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                46,
+                "expr.resultUnused",
+                "Expression \"$source\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                57,
+                "expr.resultUnused",
+                "Expression \"$before\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                60,
+                "expr.resultUnused",
+                "Expression \"$after\" on a separate line does not do anything.",
+                null,
+                true
+            ]
+        ],
+        "native/5/0": [
+            [
+                "native-controls.php",
+                11,
+                "expr.resultUnused",
+                "Expression \"$copy\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                12,
+                "isset.offset",
+                "Offset 'a' on array{z: 7, a: null} in isset() always exists and is always null.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                21,
+                "expr.resultUnused",
+                "Expression \"$leaf\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                22,
+                "isset.offset",
+                "Offset 'first' on array{last: false, first: 23} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                30,
+                "expr.resultUnused",
+                "Expression \"$leaf\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                35,
+                "void.pure",
+                "Function ConversionDependencies\\documentedKey() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                38,
+                "expr.resultUnused",
+                "Expression \"$key\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                40,
+                "expr.resultUnused",
+                "Expression \"$leaf\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                43,
+                "void.pure",
+                "Function ConversionDependencies\\unknownKey() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                46,
+                "expr.resultUnused",
+                "Expression \"$source\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                57,
+                "expr.resultUnused",
+                "Expression \"$before\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "native-controls.php",
+                60,
+                "expr.resultUnused",
+                "Expression \"$after\" on a separate line does not do anything.",
+                null,
+                true
+            ]
+        ],
+        "selected/4/1": [
+            [
+                "selected-controls.php",
+                57,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ]
+        ],
+        "selected/5/1": [
+            [
+                "selected-controls.php",
+                44,
+                "argument.parameterRenamedInSubtype",
+                "Call to ConversionSelected\\Receiver::left() uses named argument for parameter $z, but ConversionSelected\\Child renames it to $renamedZ.",
+                null,
+                true
+            ],
+            [
+                "selected-controls.php",
+                44,
+                "argument.parameterRenamedInSubtype",
+                "Call to ConversionSelected\\Receiver::right() uses named argument for parameter $other, but ConversionSelected\\Child renames it to $renamedOther.",
+                null,
+                true
+            ],
+            [
+                "selected-controls.php",
+                49,
+                "argument.parameterRenamedInSubtype",
+                "Call to ConversionSelected\\Receiver::left() uses named argument for parameter $z, but ConversionSelected\\Child renames it to $renamedZ.",
+                null,
+                true
+            ],
+            [
+                "selected-controls.php",
+                50,
+                "argument.parameterRenamedInSubtype",
+                "Call to ConversionSelected\\Receiver::right() uses named argument for parameter $other, but ConversionSelected\\Child renames it to $renamedOther.",
+                null,
+                true
+            ],
+            [
+                "selected-controls.php",
+                57,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ]
+        ]
+    }
+}
