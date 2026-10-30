@@ -326,6 +326,9 @@ fn inherit_loop_block_context<'ctx, A>(
         exits
     });
     inherit_branch_context_properties(context, block_context, &inner_loop_block_context);
+    // A receiver mutated in a possible iteration invalidates its remembered calls
+    // outside the loop too; the pre-loop specification is not an exit holder.
+    block_context.retain_common_method_calls(&inner_loop_block_context);
 
     let mut marker_exits: Vec<_> =
         loop_scope.break_scopes.iter().map(|scope| &scope.state.property_initializations).collect();
@@ -733,6 +736,11 @@ where
                 .locals
                 .iter()
                 .any(|(variable_id, _)| !continue_context.locals.contains_key(variable_id));
+            // WhileHandler merges the back edge with the original entry before
+            // re-evaluating the condition. Include expression specifications in
+            // both that join and the decision to run another diagnostic pass.
+            has_changes |= pre_loop_context.stable_method_call_assertions != continue_context.stable_method_call_assertions;
+            continue_context.retain_common_method_calls(&original_parent_context);
 
             let mut different_from_pre_loop_types = HashSet::default();
 
@@ -1560,6 +1568,8 @@ where
     if is_do {
         return Ok(WordSet::default());
     }
+
+    crate::utils::conditional::apply_boolean_branch(pre_condition, true, artifacts, loop_context);
 
     if !loop_context.clauses.is_empty() {
         let mut loop_context_clauses = loop_context.clauses.clone();

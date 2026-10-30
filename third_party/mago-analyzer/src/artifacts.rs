@@ -106,12 +106,16 @@ pub(crate) struct BooleanExpressionScope {
     pub locals: WordMap<Rc<TUnion>>,
     pub variable_state: VariableState,
     pub variables_possibly_in_scope: WordSet,
+    pub stable_method_calls: WordSet,
+    pub stable_method_call_assertions: WordMap<AssertionSet>,
 }
 
 impl BooleanExpressionScope {
     pub(crate) fn restore_certainty(&self, block_context: &mut BlockContext<'_>) {
         block_context.variable_state.clone_from(&self.variable_state);
         block_context.variables_possibly_in_scope.clone_from(&self.variables_possibly_in_scope);
+        block_context.stable_method_calls.clone_from(&self.stable_method_calls);
+        block_context.stable_method_call_assertions.clone_from(&self.stable_method_call_assertions);
     }
 }
 

@@ -209,6 +209,17 @@ impl<'ctx> BlockContext<'ctx> {
         self.class_type_relations == other.class_type_relations
     }
 
+    /// A remembered expression specification must hold on both incoming edges.
+    pub(crate) fn retain_common_method_calls(&mut self, other: &BlockContext<'_>) {
+        self.stable_method_calls.retain(|key| other.stable_method_calls.contains(key));
+        self.stable_method_call_assertions.retain(|key, assertions| {
+            assertions.retain(|clause| {
+                other.stable_method_call_assertions.get(key).is_some_and(|other| other.contains(clause))
+            });
+            !assertions.is_empty()
+        });
+    }
+
     pub fn new(scope: ScopeContext<'ctx>, register_super_globals: bool) -> Self {
         Self {
             scope,

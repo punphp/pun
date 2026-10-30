@@ -144,6 +144,9 @@ pub(crate) fn apply_boolean_branch(
                 block_context.locals.insert(*key, Rc::clone(value));
             }
         }
+        changed.extend(block_context.stable_method_call_assertions.iter().filter_map(|(key, assertions)| {
+            (scope.stable_method_call_assertions.get(key) != Some(assertions)).then_some(*key)
+        }));
         scope.restore_certainty(block_context);
         BlockContext::retain_unreconciled_clauses(&mut block_context.clauses, &changed);
     }
@@ -171,6 +174,9 @@ pub(crate) fn record_boolean_scopes<'ctx, A: Arena>(
     }
     let operand_scopes = [post.variable_scope(), right.variable_scope()];
     post.merge_variable_scope_types(&operand_scopes, context.codebase);
+    // An invalidated remembered call has no holder on that incoming edge. Unlike
+    // variable definedness, its specification must not survive a one-sided join.
+    post.retain_common_method_calls(&right);
     let expression = Expression::Binary(binary.clone());
     let is_and = matches!(
         binary.operator,
@@ -222,6 +228,8 @@ pub(crate) fn record_boolean_scopes<'ctx, A: Arena>(
             locals: scope.locals,
             variable_state: scope.variable_state,
             variables_possibly_in_scope: scope.variables_possibly_in_scope,
+            stable_method_calls: scope.stable_method_calls,
+            stable_method_call_assertions: scope.stable_method_call_assertions,
         }
     };
     let truthy = branch(context, true);
@@ -230,6 +238,8 @@ pub(crate) fn record_boolean_scopes<'ctx, A: Arena>(
         locals: post.locals,
         variable_state: post.variable_state,
         variables_possibly_in_scope: post.variables_possibly_in_scope,
+        stable_method_calls: post.stable_method_calls,
+        stable_method_call_assertions: post.stable_method_call_assertions,
     };
     let span = binary.span();
     artifacts.boolean_expression_scopes.insert(

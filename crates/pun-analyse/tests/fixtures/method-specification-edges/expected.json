@@ -1,0 +1,90 @@
+[
+    [
+        "input.php",
+        18,
+        "phpstan.dumpType",
+        "Dumped type: bool",
+        null,
+        false
+    ],
+    [
+        "input.php",
+        27,
+        "phpstan.dumpType",
+        "Dumped type: bool",
+        null,
+        false
+    ],
+    [
+        "input.php",
+        36,
+        "phpstan.dumpType",
+        "Dumped type: MethodSpecificationEdges\\Value",
+        null,
+        false
+    ],
+    [
+        "input.php",
+        38,
+        "phpstan.dumpType",
+        "Dumped type: MethodSpecificationEdges\\Value",
+        null,
+        false
+    ],
+    [
+        "input.php",
+        48,
+        "phpstan.dumpType",
+        "Dumped type: MethodSpecificationEdges\\Value",
+        null,
+        false
+    ],
+    [
+        "input.php",
+        50,
+        "phpstan.dumpType",
+        "Dumped type: MethodSpecificationEdges\\Value",
+        null,
+        false
+    ],
+    [
+        "input.php",
+        61,
+        "phpstan.dumpType",
+        "Dumped type: MethodSpecificationEdges\\Value|null",
+        null,
+        false
+    ],
+    [
+        "input.php",
+        70,
+        "phpstan.dumpType",
+        "Dumped type: false",
+        null,
+        false
+    ],
+    [
+        "input.php",
+        72,
+        "phpstan.dumpType",
+        "Dumped type: bool",
+        null,
+        false
+    ],
+    [
+        "input.php",
+        82,
+        "phpstan.dumpType",
+        "Dumped type: true",
+        null,
+        false
+    ],
+    [
+        "input.php",
+        95,
+        "phpstan.dumpType",
+        "Dumped type: MethodSpecificationEdges\\Value|null",
+        null,
+        false
+    ]
+]

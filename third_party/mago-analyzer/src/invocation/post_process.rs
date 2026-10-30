@@ -383,6 +383,8 @@ fn record_null_context_assertions<'ctx, 'arena, A>(
             locals: block.locals.clone(),
             variable_state: block.variable_state.clone(),
             variables_possibly_in_scope: block.variables_possibly_in_scope.clone(),
+            stable_method_calls: block.stable_method_calls.clone(),
+            stable_method_call_assertions: block.stable_method_call_assertions.clone(),
         };
         let narrowed = scope(&specification_context);
         artifacts.boolean_expression_scopes.insert(range, BooleanExpressionScopes {
