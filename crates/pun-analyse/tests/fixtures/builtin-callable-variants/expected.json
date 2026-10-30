@@ -1,0 +1,463 @@
+{
+    "version": "2.3.1",
+    "phar_sha256": "85157dba3d95d77ca603d2b7303aa78a538f9e3b56ccad07dd794c53aa96d1ae",
+    "source_sha256": "bfc8a040c45b9cca4c0c58404fef220c917b1acb910bb9d6f5be09e960cebb97",
+    "errors": {
+        "80400/4": [
+            [
+                "callbacks.php",
+                27,
+                "phpstan.dumpType",
+                "Dumped type #1: (Closure(): int)|(Closure(int, int): int)",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                27,
+                "phpstan.dumpType",
+                "Dumped type #2: (Closure(): int)|(Closure(int, int): int)",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                27,
+                "phpstan.dumpType",
+                "Dumped type #3: (Closure(string): (non-empty-string|false))|(Closure(string, string): (non-empty-string|false))",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                37,
+                "phpstan.dumpType",
+                "Dumped type #1: Closure(int=): int",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                37,
+                "phpstan.dumpType",
+                "Dumped type #2: Closure(string): int<0, max>",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                37,
+                "phpstan.dumpType",
+                "Dumped type #3: Closure(string, bool|float|int|string|null ...): string",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                37,
+                "phpstan.dumpType",
+                "Dumped type #4: Closure(string, string, array<string>|null=, TFlags=, int=): (0|1|false)",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                38,
+                "phpstan.dumpType",
+                "Dumped type #1: Closure(DateTimeInterface, DateTimeInterface, bool=): (DateInterval&object{days: int})",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                38,
+                "phpstan.dumpType",
+                "Dumped type #2: Closure(int): non-empty-string",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                50,
+                "phpstan.dumpType",
+                "Dumped type: Closure(): string",
+                null,
+                false
+            ]
+        ],
+        "80400/9": [
+            [
+                "callbacks.php",
+                16,
+                "argument.type",
+                "Parameter #1 $callback of function BuiltinCallableVariants\\zero expects callable(): int, (Closure(): int)|(Closure(int, int): int) given.",
+                "\u2022 Parameter #1 $min of passed callable is required but accepting callable does not have that parameter. It will be called without it.\n\u2022 Parameter #2 $max of passed callable is required but accepting callable does not have that parameter. It will be called without it.",
+                true
+            ],
+            [
+                "callbacks.php",
+                17,
+                "argument.type",
+                "Parameter #1 $callback of function BuiltinCallableVariants\\one expects callable(int): int, (Closure(): int)|(Closure(int, int): int) given.",
+                "Parameter #2 $max of passed callable is required but accepting callable does not have that parameter. It will be called without it.",
+                true
+            ],
+            [
+                "callbacks.php",
+                20,
+                "argument.type",
+                "Parameter #1 $callback of function BuiltinCallableVariants\\zero expects callable(): int, (Closure(): int)|(Closure(int, int): int) given.",
+                "\u2022 Parameter #1 $min of passed callable is required but accepting callable does not have that parameter. It will be called without it.\n\u2022 Parameter #2 $max of passed callable is required but accepting callable does not have that parameter. It will be called without it.",
+                true
+            ],
+            [
+                "callbacks.php",
+                21,
+                "argument.type",
+                "Parameter #1 $callback of function BuiltinCallableVariants\\zero expects callable(): int, (Closure(): int)|(Closure(int, int): int) given.",
+                "\u2022 Parameter #1 $min of passed callable is required but accepting callable does not have that parameter. It will be called without it.\n\u2022 Parameter #2 $max of passed callable is required but accepting callable does not have that parameter. It will be called without it.",
+                true
+            ],
+            [
+                "callbacks.php",
+                24,
+                "argument.type",
+                "Parameter #1 $callback of function BuiltinCallableVariants\\zero expects callable(): int, (Closure(): int)|(Closure(int, int): int) given.",
+                "\u2022 Parameter #1 $min of passed callable is required but accepting callable does not have that parameter. It will be called without it.\n\u2022 Parameter #2 $max of passed callable is required but accepting callable does not have that parameter. It will be called without it.",
+                true
+            ],
+            [
+                "callbacks.php",
+                27,
+                "phpstan.dumpType",
+                "Dumped type #1: (Closure(): int)|(Closure(int, int): int)",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                27,
+                "phpstan.dumpType",
+                "Dumped type #2: (Closure(): int)|(Closure(int, int): int)",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                27,
+                "phpstan.dumpType",
+                "Dumped type #3: (Closure(string): (non-empty-string|false))|(Closure(string, string): (non-empty-string|false))",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                36,
+                "argument.type",
+                "Parameter #1 $callback of function BuiltinCallableVariants\\zero expects callable(): int, Closure(string): int<0, max> given.",
+                "Parameter #1 $string of passed callable is required but accepting callable does not have that parameter. It will be called without it.",
+                true
+            ],
+            [
+                "callbacks.php",
+                37,
+                "phpstan.dumpType",
+                "Dumped type #1: Closure(int=): int",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                37,
+                "phpstan.dumpType",
+                "Dumped type #2: Closure(string): int<0, max>",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                37,
+                "phpstan.dumpType",
+                "Dumped type #3: Closure(string, bool|float|int|string|null ...): string",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                37,
+                "phpstan.dumpType",
+                "Dumped type #4: Closure(string, string, array<string>|null=, TFlags=, int=): (0|1|false)",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                38,
+                "phpstan.dumpType",
+                "Dumped type #1: Closure(DateTimeInterface, DateTimeInterface, bool=): (DateInterval&object{days: int})",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                38,
+                "phpstan.dumpType",
+                "Dumped type #2: Closure(int): non-empty-string",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                40,
+                "argument.byRef",
+                "Parameter #1 $array of closure is passed by reference, so it expects variables only.",
+                null,
+                true
+            ],
+            [
+                "callbacks.php",
+                50,
+                "phpstan.dumpType",
+                "Dumped type: Closure(): string",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                51,
+                "argument.type",
+                "Parameter #1 $callback of function BuiltinCallableVariants\\zero expects callable(): int, Closure(): string given.",
+                null,
+                true
+            ]
+        ],
+        "80500/4": [
+            [
+                "callbacks.php",
+                27,
+                "phpstan.dumpType",
+                "Dumped type #1: (Closure(): int)|(Closure(int, int): int)",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                27,
+                "phpstan.dumpType",
+                "Dumped type #2: (Closure(): int)|(Closure(int, int): int)",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                27,
+                "phpstan.dumpType",
+                "Dumped type #3: (Closure(string): (non-empty-string|false))|(Closure(string, string): (non-empty-string|false))",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                37,
+                "phpstan.dumpType",
+                "Dumped type #1: Closure(int=): int",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                37,
+                "phpstan.dumpType",
+                "Dumped type #2: Closure(string): int<0, max>",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                37,
+                "phpstan.dumpType",
+                "Dumped type #3: Closure(string, bool|float|int|string|null ...): string",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                37,
+                "phpstan.dumpType",
+                "Dumped type #4: Closure(string, string, array<string>|null=, TFlags=, int=): (0|1|false)",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                38,
+                "phpstan.dumpType",
+                "Dumped type #1: Closure(DateTimeInterface, DateTimeInterface, bool=): (DateInterval&object{days: int})",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                38,
+                "phpstan.dumpType",
+                "Dumped type #2: Closure(int<0, 255>): non-empty-string",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                50,
+                "phpstan.dumpType",
+                "Dumped type: Closure(): string",
+                null,
+                false
+            ]
+        ],
+        "80500/9": [
+            [
+                "callbacks.php",
+                16,
+                "argument.type",
+                "Parameter #1 $callback of function BuiltinCallableVariants\\zero expects callable(): int, (Closure(): int)|(Closure(int, int): int) given.",
+                "\u2022 Parameter #1 $min of passed callable is required but accepting callable does not have that parameter. It will be called without it.\n\u2022 Parameter #2 $max of passed callable is required but accepting callable does not have that parameter. It will be called without it.",
+                true
+            ],
+            [
+                "callbacks.php",
+                17,
+                "argument.type",
+                "Parameter #1 $callback of function BuiltinCallableVariants\\one expects callable(int): int, (Closure(): int)|(Closure(int, int): int) given.",
+                "Parameter #2 $max of passed callable is required but accepting callable does not have that parameter. It will be called without it.",
+                true
+            ],
+            [
+                "callbacks.php",
+                20,
+                "argument.type",
+                "Parameter #1 $callback of function BuiltinCallableVariants\\zero expects callable(): int, (Closure(): int)|(Closure(int, int): int) given.",
+                "\u2022 Parameter #1 $min of passed callable is required but accepting callable does not have that parameter. It will be called without it.\n\u2022 Parameter #2 $max of passed callable is required but accepting callable does not have that parameter. It will be called without it.",
+                true
+            ],
+            [
+                "callbacks.php",
+                21,
+                "argument.type",
+                "Parameter #1 $callback of function BuiltinCallableVariants\\zero expects callable(): int, (Closure(): int)|(Closure(int, int): int) given.",
+                "\u2022 Parameter #1 $min of passed callable is required but accepting callable does not have that parameter. It will be called without it.\n\u2022 Parameter #2 $max of passed callable is required but accepting callable does not have that parameter. It will be called without it.",
+                true
+            ],
+            [
+                "callbacks.php",
+                24,
+                "argument.type",
+                "Parameter #1 $callback of function BuiltinCallableVariants\\zero expects callable(): int, (Closure(): int)|(Closure(int, int): int) given.",
+                "\u2022 Parameter #1 $min of passed callable is required but accepting callable does not have that parameter. It will be called without it.\n\u2022 Parameter #2 $max of passed callable is required but accepting callable does not have that parameter. It will be called without it.",
+                true
+            ],
+            [
+                "callbacks.php",
+                27,
+                "phpstan.dumpType",
+                "Dumped type #1: (Closure(): int)|(Closure(int, int): int)",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                27,
+                "phpstan.dumpType",
+                "Dumped type #2: (Closure(): int)|(Closure(int, int): int)",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                27,
+                "phpstan.dumpType",
+                "Dumped type #3: (Closure(string): (non-empty-string|false))|(Closure(string, string): (non-empty-string|false))",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                36,
+                "argument.type",
+                "Parameter #1 $callback of function BuiltinCallableVariants\\zero expects callable(): int, Closure(string): int<0, max> given.",
+                "Parameter #1 $string of passed callable is required but accepting callable does not have that parameter. It will be called without it.",
+                true
+            ],
+            [
+                "callbacks.php",
+                37,
+                "phpstan.dumpType",
+                "Dumped type #1: Closure(int=): int",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                37,
+                "phpstan.dumpType",
+                "Dumped type #2: Closure(string): int<0, max>",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                37,
+                "phpstan.dumpType",
+                "Dumped type #3: Closure(string, bool|float|int|string|null ...): string",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                37,
+                "phpstan.dumpType",
+                "Dumped type #4: Closure(string, string, array<string>|null=, TFlags=, int=): (0|1|false)",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                38,
+                "phpstan.dumpType",
+                "Dumped type #1: Closure(DateTimeInterface, DateTimeInterface, bool=): (DateInterval&object{days: int})",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                38,
+                "phpstan.dumpType",
+                "Dumped type #2: Closure(int<0, 255>): non-empty-string",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                40,
+                "argument.byRef",
+                "Parameter #1 $array of closure is passed by reference, so it expects variables only.",
+                null,
+                true
+            ],
+            [
+                "callbacks.php",
+                50,
+                "phpstan.dumpType",
+                "Dumped type: Closure(): string",
+                null,
+                false
+            ],
+            [
+                "callbacks.php",
+                51,
+                "argument.type",
+                "Parameter #1 $callback of function BuiltinCallableVariants\\zero expects callable(): int, Closure(): string given.",
+                null,
+                true
+            ]
+        ]
+    }
+}

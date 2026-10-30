@@ -600,6 +600,35 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         Box::new(signature)
     }
 
+    /// `InitializerExprTypeResolver::createFirstClassCallable()`: every positional source variant is a closure,
+    /// not the single acceptor selected for an invocation with no arguments.
+    fn builtin_closures(&self, s: &mago_codex::ttype::atomic::callable::TCallableSignature) -> Option<Type> {
+        use mago_codex::identifier::function_like::FunctionLikeIdentifier;
+        use pun_phpstan::{resolve::resolve_str, symbols::ByRef};
+
+        // get_source deliberately excludes bound partial applications: their declaration no longer describes
+        // the remaining parameters. Methods and user declarations retain the existing inferred conversion.
+        let FunctionLikeIdentifier::Function(name) = s.get_source()? else { return None; };
+        let source = self.codebase.get_function(name.as_bytes())?;
+        if !source.flags.is_built_in() { return None; }
+        let function = self.builtins.functions.get(&text(name.as_bytes()).to_ascii_lowercase())?;
+        let signature = self.signature(s);
+        Some(union(function.variants.iter().map(|variant| {
+            let mut signature = signature.clone();
+            signature.params = variant.params.iter().map(|p| Param {
+                name: p.name.clone(),
+                ty: resolve_str(&p.ty, None),
+                optional: p.optional,
+                by_ref: p.by_ref != ByRef::No,
+                variadic: p.variadic,
+            }).collect();
+            // This is the effective channel. The independently exported native/PHPDoc returns are not its value.
+            signature.ret = resolve_str(&variant.ret, None);
+            signature.templates.clear();
+            Type::Closure(signature)
+        }).collect()))
+    }
+
     /// A class name as its reflection names it (the declaration's case, an anonymous class's display name).
     pub(super) fn reflected_name(&self, name: &[u8]) -> String {
         match self.codebase.get_class_like(name) {
@@ -635,7 +664,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             }
             TAtomic::Callable(TCallable::Signature(s)) => {
                 if s.is_closure {
-                    Type::Closure(self.signature(s))
+                    self.builtin_closures(s).unwrap_or_else(|| Type::Closure(self.signature(s)))
                 } else if unspecified_callable(&self.signature(s)) {
                     Type::Callable(None)
                 } else {
@@ -646,7 +675,8 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             // of its signature
             TAtomic::Callable(TCallable::Alias(id)) => {
                 mago_codex::ttype::expander::get_signature_of_function_like_identifier(id, self.codebase)
-                    .map_or(Type::Callable(None), |s| Type::Closure(self.signature(&s)))
+                    .map_or(Type::Callable(None), |s| self.builtin_closures(&s)
+                        .unwrap_or_else(|| Type::Closure(self.signature(&s))))
             }
             TAtomic::Reference(TReference::Symbol {
                 name, parameters, ..
