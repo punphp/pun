@@ -1,0 +1,5378 @@
+[
+    {
+        "operation": "assignment",
+        "sameInstance": true,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "invariant",
+        "callsite": "invariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            },
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "assignment",
+        "sameInstance": true,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "invariant",
+        "callsite": "covariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            },
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "assignment",
+        "sameInstance": true,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "invariant",
+        "callsite": "contravariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            },
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "assignment",
+        "sameInstance": true,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "invariant",
+        "callsite": "bivariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            },
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "assignment",
+        "sameInstance": true,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "covariant",
+        "callsite": "invariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            },
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "assignment",
+        "sameInstance": true,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "covariant",
+        "callsite": "covariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            },
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "assignment",
+        "sameInstance": true,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "covariant",
+        "callsite": "contravariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            },
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(int|string): (int|string)",
+            "callable(int|string): (int|string)",
+            "callable"
+        ],
+        "phpdoc": "callable((int | string) $x): (int | string)"
+    },
+    {
+        "operation": "assignment",
+        "sameInstance": true,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "covariant",
+        "callsite": "bivariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            },
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(int|string): (int|string)",
+            "callable(int|string): (int|string)",
+            "callable"
+        ],
+        "phpdoc": "callable((int | string) $x): (int | string)"
+    },
+    {
+        "operation": "assignment",
+        "sameInstance": true,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "contravariant",
+        "callsite": "invariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            },
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "assignment",
+        "sameInstance": true,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "contravariant",
+        "callsite": "covariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            },
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(never): never",
+            "callable(never): never",
+            "callable"
+        ],
+        "phpdoc": "callable(never $x): never"
+    },
+    {
+        "operation": "assignment",
+        "sameInstance": true,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "contravariant",
+        "callsite": "contravariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            },
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "assignment",
+        "sameInstance": true,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "contravariant",
+        "callsite": "bivariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            },
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(never): never",
+            "callable(never): never",
+            "callable"
+        ],
+        "phpdoc": "callable(never $x): never"
+    },
+    {
+        "operation": "assignment",
+        "sameInstance": true,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "bivariant",
+        "callsite": "invariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            },
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "assignment",
+        "sameInstance": true,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "bivariant",
+        "callsite": "covariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            },
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "assignment",
+        "sameInstance": true,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "bivariant",
+        "callsite": "contravariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            },
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "assignment",
+        "sameInstance": true,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "bivariant",
+        "callsite": "bivariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            },
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "clone",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "invariant",
+        "callsite": "invariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "invariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "clone",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "invariant",
+        "callsite": "covariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "invariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "clone",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "invariant",
+        "callsite": "contravariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "invariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "clone",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "invariant",
+        "callsite": "bivariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "invariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "clone",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "covariant",
+        "callsite": "invariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "contravariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "clone",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "covariant",
+        "callsite": "covariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "contravariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(never): string",
+            "callable(never): string",
+            "callable"
+        ],
+        "phpdoc": "callable(never $x): string"
+    },
+    {
+        "operation": "clone",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "covariant",
+        "callsite": "contravariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "contravariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): (int|string)",
+            "callable(string): (int|string)",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): (int | string)"
+    },
+    {
+        "operation": "clone",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "covariant",
+        "callsite": "bivariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "contravariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(never): (int|string)",
+            "callable(never): (int|string)",
+            "callable"
+        ],
+        "phpdoc": "callable(never $x): (int | string)"
+    },
+    {
+        "operation": "clone",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "contravariant",
+        "callsite": "invariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "covariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "clone",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "contravariant",
+        "callsite": "covariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "covariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): never",
+            "callable(string): never",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): never"
+    },
+    {
+        "operation": "clone",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "contravariant",
+        "callsite": "contravariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "covariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(int|string): string",
+            "callable(int|string): string",
+            "callable"
+        ],
+        "phpdoc": "callable((int | string) $x): string"
+    },
+    {
+        "operation": "clone",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "contravariant",
+        "callsite": "bivariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "covariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(int|string): never",
+            "callable(int|string): never",
+            "callable"
+        ],
+        "phpdoc": "callable((int | string) $x): never"
+    },
+    {
+        "operation": "clone",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "bivariant",
+        "callsite": "invariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "bivariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "clone",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "bivariant",
+        "callsite": "covariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "bivariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "clone",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "bivariant",
+        "callsite": "contravariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "bivariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "clone",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "bivariant",
+        "callsite": "bivariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "bivariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-identity",
+        "sameInstance": true,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "invariant",
+        "callsite": "invariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            },
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-identity",
+        "sameInstance": true,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "invariant",
+        "callsite": "covariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            },
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-identity",
+        "sameInstance": true,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "invariant",
+        "callsite": "contravariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            },
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-identity",
+        "sameInstance": true,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "invariant",
+        "callsite": "bivariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            },
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-identity",
+        "sameInstance": true,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "covariant",
+        "callsite": "invariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            },
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-identity",
+        "sameInstance": true,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "covariant",
+        "callsite": "covariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            },
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-identity",
+        "sameInstance": true,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "covariant",
+        "callsite": "contravariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            },
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(int|string): (int|string)",
+            "callable(int|string): (int|string)",
+            "callable"
+        ],
+        "phpdoc": "callable((int | string) $x): (int | string)"
+    },
+    {
+        "operation": "traverse-identity",
+        "sameInstance": true,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "covariant",
+        "callsite": "bivariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            },
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(int|string): (int|string)",
+            "callable(int|string): (int|string)",
+            "callable"
+        ],
+        "phpdoc": "callable((int | string) $x): (int | string)"
+    },
+    {
+        "operation": "traverse-identity",
+        "sameInstance": true,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "contravariant",
+        "callsite": "invariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            },
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-identity",
+        "sameInstance": true,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "contravariant",
+        "callsite": "covariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            },
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(never): never",
+            "callable(never): never",
+            "callable"
+        ],
+        "phpdoc": "callable(never $x): never"
+    },
+    {
+        "operation": "traverse-identity",
+        "sameInstance": true,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "contravariant",
+        "callsite": "contravariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            },
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-identity",
+        "sameInstance": true,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "contravariant",
+        "callsite": "bivariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            },
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(never): never",
+            "callable(never): never",
+            "callable"
+        ],
+        "phpdoc": "callable(never $x): never"
+    },
+    {
+        "operation": "traverse-identity",
+        "sameInstance": true,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "bivariant",
+        "callsite": "invariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            },
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-identity",
+        "sameInstance": true,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "bivariant",
+        "callsite": "covariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            },
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-identity",
+        "sameInstance": true,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "bivariant",
+        "callsite": "contravariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            },
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-identity",
+        "sameInstance": true,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "bivariant",
+        "callsite": "bivariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            },
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-fresh-equal-bound",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": false,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "invariant",
+        "callsite": "invariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "invariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-fresh-equal-bound",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": false,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "invariant",
+        "callsite": "covariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "invariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-fresh-equal-bound",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": false,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "invariant",
+        "callsite": "contravariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "invariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-fresh-equal-bound",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": false,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "invariant",
+        "callsite": "bivariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "invariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-fresh-equal-bound",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": false,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "covariant",
+        "callsite": "invariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "contravariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-fresh-equal-bound",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": false,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "covariant",
+        "callsite": "covariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "contravariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(never): string",
+            "callable(never): string",
+            "callable"
+        ],
+        "phpdoc": "callable(never $x): string"
+    },
+    {
+        "operation": "traverse-fresh-equal-bound",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": false,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "covariant",
+        "callsite": "contravariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "contravariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): (int|string)",
+            "callable(string): (int|string)",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): (int | string)"
+    },
+    {
+        "operation": "traverse-fresh-equal-bound",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": false,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "covariant",
+        "callsite": "bivariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "contravariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(never): (int|string)",
+            "callable(never): (int|string)",
+            "callable"
+        ],
+        "phpdoc": "callable(never $x): (int | string)"
+    },
+    {
+        "operation": "traverse-fresh-equal-bound",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": false,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "contravariant",
+        "callsite": "invariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "covariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-fresh-equal-bound",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": false,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "contravariant",
+        "callsite": "covariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "covariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): never",
+            "callable(string): never",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): never"
+    },
+    {
+        "operation": "traverse-fresh-equal-bound",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": false,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "contravariant",
+        "callsite": "contravariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "covariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(int|string): string",
+            "callable(int|string): string",
+            "callable"
+        ],
+        "phpdoc": "callable((int | string) $x): string"
+    },
+    {
+        "operation": "traverse-fresh-equal-bound",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": false,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "contravariant",
+        "callsite": "bivariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "covariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(int|string): never",
+            "callable(int|string): never",
+            "callable"
+        ],
+        "phpdoc": "callable((int | string) $x): never"
+    },
+    {
+        "operation": "traverse-fresh-equal-bound",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": false,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "bivariant",
+        "callsite": "invariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "bivariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-fresh-equal-bound",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": false,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "bivariant",
+        "callsite": "covariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "bivariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-fresh-equal-bound",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": false,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "bivariant",
+        "callsite": "contravariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "bivariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-fresh-equal-bound",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": false,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "bivariant",
+        "callsite": "bivariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "bivariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-changed-bound",
+        "sameInstance": false,
+        "equal": false,
+        "sameBound": false,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of string = 1 (function fixture(), parameter)",
+            "T of string = 1",
+            "T of string = int"
+        ],
+        "position": "invariant",
+        "callsite": "invariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "invariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-changed-bound",
+        "sameInstance": false,
+        "equal": false,
+        "sameBound": false,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of string = 1 (function fixture(), parameter)",
+            "T of string = 1",
+            "T of string = int"
+        ],
+        "position": "invariant",
+        "callsite": "covariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "invariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-changed-bound",
+        "sameInstance": false,
+        "equal": false,
+        "sameBound": false,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of string = 1 (function fixture(), parameter)",
+            "T of string = 1",
+            "T of string = int"
+        ],
+        "position": "invariant",
+        "callsite": "contravariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "invariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-changed-bound",
+        "sameInstance": false,
+        "equal": false,
+        "sameBound": false,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of string = 1 (function fixture(), parameter)",
+            "T of string = 1",
+            "T of string = int"
+        ],
+        "position": "invariant",
+        "callsite": "bivariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "invariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-changed-bound",
+        "sameInstance": false,
+        "equal": false,
+        "sameBound": false,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of string = 1 (function fixture(), parameter)",
+            "T of string = 1",
+            "T of string = int"
+        ],
+        "position": "covariant",
+        "callsite": "invariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "contravariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-changed-bound",
+        "sameInstance": false,
+        "equal": false,
+        "sameBound": false,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of string = 1 (function fixture(), parameter)",
+            "T of string = 1",
+            "T of string = int"
+        ],
+        "position": "covariant",
+        "callsite": "covariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "contravariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(never): string",
+            "callable(never): string",
+            "callable"
+        ],
+        "phpdoc": "callable(never $x): string"
+    },
+    {
+        "operation": "traverse-changed-bound",
+        "sameInstance": false,
+        "equal": false,
+        "sameBound": false,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of string = 1 (function fixture(), parameter)",
+            "T of string = 1",
+            "T of string = int"
+        ],
+        "position": "covariant",
+        "callsite": "contravariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "contravariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): (int|string)",
+            "callable(string): (int|string)",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): (int | string)"
+    },
+    {
+        "operation": "traverse-changed-bound",
+        "sameInstance": false,
+        "equal": false,
+        "sameBound": false,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of string = 1 (function fixture(), parameter)",
+            "T of string = 1",
+            "T of string = int"
+        ],
+        "position": "covariant",
+        "callsite": "bivariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "contravariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(never): (int|string)",
+            "callable(never): (int|string)",
+            "callable"
+        ],
+        "phpdoc": "callable(never $x): (int | string)"
+    },
+    {
+        "operation": "traverse-changed-bound",
+        "sameInstance": false,
+        "equal": false,
+        "sameBound": false,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of string = 1 (function fixture(), parameter)",
+            "T of string = 1",
+            "T of string = int"
+        ],
+        "position": "contravariant",
+        "callsite": "invariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "covariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-changed-bound",
+        "sameInstance": false,
+        "equal": false,
+        "sameBound": false,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of string = 1 (function fixture(), parameter)",
+            "T of string = 1",
+            "T of string = int"
+        ],
+        "position": "contravariant",
+        "callsite": "covariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "covariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): never",
+            "callable(string): never",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): never"
+    },
+    {
+        "operation": "traverse-changed-bound",
+        "sameInstance": false,
+        "equal": false,
+        "sameBound": false,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of string = 1 (function fixture(), parameter)",
+            "T of string = 1",
+            "T of string = int"
+        ],
+        "position": "contravariant",
+        "callsite": "contravariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "covariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-changed-bound",
+        "sameInstance": false,
+        "equal": false,
+        "sameBound": false,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of string = 1 (function fixture(), parameter)",
+            "T of string = 1",
+            "T of string = int"
+        ],
+        "position": "contravariant",
+        "callsite": "bivariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "covariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): never",
+            "callable(string): never",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): never"
+    },
+    {
+        "operation": "traverse-changed-bound",
+        "sameInstance": false,
+        "equal": false,
+        "sameBound": false,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of string = 1 (function fixture(), parameter)",
+            "T of string = 1",
+            "T of string = int"
+        ],
+        "position": "bivariant",
+        "callsite": "invariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "bivariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-changed-bound",
+        "sameInstance": false,
+        "equal": false,
+        "sameBound": false,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of string = 1 (function fixture(), parameter)",
+            "T of string = 1",
+            "T of string = int"
+        ],
+        "position": "bivariant",
+        "callsite": "covariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "bivariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-changed-bound",
+        "sameInstance": false,
+        "equal": false,
+        "sameBound": false,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of string = 1 (function fixture(), parameter)",
+            "T of string = 1",
+            "T of string = int"
+        ],
+        "position": "bivariant",
+        "callsite": "contravariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "bivariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-changed-bound",
+        "sameInstance": false,
+        "equal": false,
+        "sameBound": false,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of string = 1 (function fixture(), parameter)",
+            "T of string = 1",
+            "T of string = int"
+        ],
+        "position": "bivariant",
+        "callsite": "bivariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "bivariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-fresh-equal-default",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": false,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "invariant",
+        "callsite": "invariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "invariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-fresh-equal-default",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": false,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "invariant",
+        "callsite": "covariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "invariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-fresh-equal-default",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": false,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "invariant",
+        "callsite": "contravariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "invariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-fresh-equal-default",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": false,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "invariant",
+        "callsite": "bivariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "invariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-fresh-equal-default",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": false,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "covariant",
+        "callsite": "invariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "contravariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-fresh-equal-default",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": false,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "covariant",
+        "callsite": "covariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "contravariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(never): string",
+            "callable(never): string",
+            "callable"
+        ],
+        "phpdoc": "callable(never $x): string"
+    },
+    {
+        "operation": "traverse-fresh-equal-default",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": false,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "covariant",
+        "callsite": "contravariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "contravariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): (int|string)",
+            "callable(string): (int|string)",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): (int | string)"
+    },
+    {
+        "operation": "traverse-fresh-equal-default",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": false,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "covariant",
+        "callsite": "bivariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "contravariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(never): (int|string)",
+            "callable(never): (int|string)",
+            "callable"
+        ],
+        "phpdoc": "callable(never $x): (int | string)"
+    },
+    {
+        "operation": "traverse-fresh-equal-default",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": false,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "contravariant",
+        "callsite": "invariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "covariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-fresh-equal-default",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": false,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "contravariant",
+        "callsite": "covariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "covariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): never",
+            "callable(string): never",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): never"
+    },
+    {
+        "operation": "traverse-fresh-equal-default",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": false,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "contravariant",
+        "callsite": "contravariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "covariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(int|string): string",
+            "callable(int|string): string",
+            "callable"
+        ],
+        "phpdoc": "callable((int | string) $x): string"
+    },
+    {
+        "operation": "traverse-fresh-equal-default",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": false,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "contravariant",
+        "callsite": "bivariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "covariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(int|string): never",
+            "callable(int|string): never",
+            "callable"
+        ],
+        "phpdoc": "callable((int | string) $x): never"
+    },
+    {
+        "operation": "traverse-fresh-equal-default",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": false,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "bivariant",
+        "callsite": "invariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "bivariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-fresh-equal-default",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": false,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "bivariant",
+        "callsite": "covariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "bivariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-fresh-equal-default",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": false,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "bivariant",
+        "callsite": "contravariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "bivariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "traverse-fresh-equal-default",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": false,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "bivariant",
+        "callsite": "bivariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "bivariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(string): string",
+            "callable(string): string",
+            "callable"
+        ],
+        "phpdoc": "callable(string $x): string"
+    },
+    {
+        "operation": "to-argument",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "invariant",
+        "callsite": "invariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "invariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(T): string",
+            "callable(T): string",
+            "callable"
+        ],
+        "phpdoc": "callable(T $x): string"
+    },
+    {
+        "operation": "to-argument",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "invariant",
+        "callsite": "covariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "invariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(T): string",
+            "callable(T): string",
+            "callable"
+        ],
+        "phpdoc": "callable(T $x): string"
+    },
+    {
+        "operation": "to-argument",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "invariant",
+        "callsite": "contravariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "invariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(T): string",
+            "callable(T): string",
+            "callable"
+        ],
+        "phpdoc": "callable(T $x): string"
+    },
+    {
+        "operation": "to-argument",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "invariant",
+        "callsite": "bivariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "invariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(T): string",
+            "callable(T): string",
+            "callable"
+        ],
+        "phpdoc": "callable(T $x): string"
+    },
+    {
+        "operation": "to-argument",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "covariant",
+        "callsite": "invariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "contravariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(T): string",
+            "callable(T): string",
+            "callable"
+        ],
+        "phpdoc": "callable(T $x): string"
+    },
+    {
+        "operation": "to-argument",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "covariant",
+        "callsite": "covariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "contravariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(T): string",
+            "callable(T): string",
+            "callable"
+        ],
+        "phpdoc": "callable(T $x): string"
+    },
+    {
+        "operation": "to-argument",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "covariant",
+        "callsite": "contravariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "contravariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(T): (int|string)",
+            "callable(T): (int|string)",
+            "callable"
+        ],
+        "phpdoc": "callable(T $x): (int | string)"
+    },
+    {
+        "operation": "to-argument",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "covariant",
+        "callsite": "bivariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "contravariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(T): (int|string)",
+            "callable(T): (int|string)",
+            "callable"
+        ],
+        "phpdoc": "callable(T $x): (int | string)"
+    },
+    {
+        "operation": "to-argument",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "contravariant",
+        "callsite": "invariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "covariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(T): string",
+            "callable(T): string",
+            "callable"
+        ],
+        "phpdoc": "callable(T $x): string"
+    },
+    {
+        "operation": "to-argument",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "contravariant",
+        "callsite": "covariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "covariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(T): never",
+            "callable(T): never",
+            "callable"
+        ],
+        "phpdoc": "callable(T $x): never"
+    },
+    {
+        "operation": "to-argument",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "contravariant",
+        "callsite": "contravariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "covariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(T): string",
+            "callable(T): string",
+            "callable"
+        ],
+        "phpdoc": "callable(T $x): string"
+    },
+    {
+        "operation": "to-argument",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "contravariant",
+        "callsite": "bivariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "covariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(T): never",
+            "callable(T): never",
+            "callable"
+        ],
+        "phpdoc": "callable(T $x): never"
+    },
+    {
+        "operation": "to-argument",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "bivariant",
+        "callsite": "invariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "bivariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(T): string",
+            "callable(T): string",
+            "callable"
+        ],
+        "phpdoc": "callable(T $x): string"
+    },
+    {
+        "operation": "to-argument",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "bivariant",
+        "callsite": "covariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "bivariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(T): string",
+            "callable(T): string",
+            "callable"
+        ],
+        "phpdoc": "callable(T $x): string"
+    },
+    {
+        "operation": "to-argument",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "bivariant",
+        "callsite": "contravariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "bivariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(T): string",
+            "callable(T): string",
+            "callable"
+        ],
+        "phpdoc": "callable(T $x): string"
+    },
+    {
+        "operation": "to-argument",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), parameter)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "bivariant",
+        "callsite": "bivariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "bivariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(T): string",
+            "callable(T): string",
+            "callable"
+        ],
+        "phpdoc": "callable(T $x): string"
+    },
+    {
+        "operation": "argument-to-argument",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "invariant",
+        "callsite": "invariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "invariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "phpdoc": "callable(T $x): T"
+    },
+    {
+        "operation": "argument-to-argument",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "invariant",
+        "callsite": "covariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "invariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "phpdoc": "callable(T $x): T"
+    },
+    {
+        "operation": "argument-to-argument",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "invariant",
+        "callsite": "contravariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "invariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "phpdoc": "callable(T $x): T"
+    },
+    {
+        "operation": "argument-to-argument",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "invariant",
+        "callsite": "bivariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "invariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "invariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "phpdoc": "callable(T $x): T"
+    },
+    {
+        "operation": "argument-to-argument",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "covariant",
+        "callsite": "invariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "contravariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "phpdoc": "callable(T $x): T"
+    },
+    {
+        "operation": "argument-to-argument",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "covariant",
+        "callsite": "covariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "contravariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "phpdoc": "callable(T $x): T"
+    },
+    {
+        "operation": "argument-to-argument",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "covariant",
+        "callsite": "contravariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "contravariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "phpdoc": "callable(T $x): T"
+    },
+    {
+        "operation": "argument-to-argument",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "covariant",
+        "callsite": "bivariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "covariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "contravariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "phpdoc": "callable(T $x): T"
+    },
+    {
+        "operation": "argument-to-argument",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "contravariant",
+        "callsite": "invariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "covariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "phpdoc": "callable(T $x): T"
+    },
+    {
+        "operation": "argument-to-argument",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "contravariant",
+        "callsite": "covariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "covariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "phpdoc": "callable(T $x): T"
+    },
+    {
+        "operation": "argument-to-argument",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "contravariant",
+        "callsite": "contravariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "covariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "phpdoc": "callable(T $x): T"
+    },
+    {
+        "operation": "argument-to-argument",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "contravariant",
+        "callsite": "bivariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "contravariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "covariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "phpdoc": "callable(T $x): T"
+    },
+    {
+        "operation": "argument-to-argument",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "bivariant",
+        "callsite": "invariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "bivariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "phpdoc": "callable(T $x): T"
+    },
+    {
+        "operation": "argument-to-argument",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "bivariant",
+        "callsite": "covariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "bivariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "phpdoc": "callable(T $x): T"
+    },
+    {
+        "operation": "argument-to-argument",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "bivariant",
+        "callsite": "contravariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "bivariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "phpdoc": "callable(T $x): T"
+    },
+    {
+        "operation": "argument-to-argument",
+        "sameInstance": false,
+        "equal": true,
+        "sameBound": true,
+        "sameDefault": true,
+        "original": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "candidate": [
+            "T of int|string = 1 (function fixture(), argument)",
+            "T of int|string = 1",
+            "T of int|string = int"
+        ],
+        "position": "bivariant",
+        "callsite": "bivariant",
+        "references": [
+            {
+                "instance": 0,
+                "name": "T",
+                "position": "bivariant"
+            },
+            {
+                "instance": 1,
+                "name": "T",
+                "position": "bivariant"
+            }
+        ],
+        "before": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "after": [
+            "callable(T): T",
+            "callable(T): T",
+            "callable"
+        ],
+        "phpdoc": "callable(T $x): T"
+    }
+]

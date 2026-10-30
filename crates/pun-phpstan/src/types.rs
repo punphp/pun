@@ -225,6 +225,22 @@ impl PartialEq for Template {
     }
 }
 
+/// A traversal callback's source decision. Replacing a node may intentionally produce an equal type.
+#[derive(Debug)]
+pub enum Traversal {
+    Retain,
+    Replace(Type),
+}
+
+impl Traversal {
+    pub fn into_type(self, original: &Type) -> Type {
+        match self {
+            Self::Retain => original.clone(),
+            Self::Replace(ty) => ty,
+        }
+    }
+}
+
 #[derive(Clone, Debug)]
 pub enum Type {
     Mixed {
@@ -1322,6 +1338,23 @@ impl Type {
 
     /// `traverse()`: the same type with `f` applied to its direct inner types.
     pub fn traverse(&self, f: &dyn Fn(&Type) -> Type) -> Type {
+        self.map_children(f)
+    }
+
+    /// Traverse direct children without guessing source retention from structural equality.
+    pub fn traverse_source(&self, f: &dyn Fn(&Type) -> Traversal) -> Traversal {
+        let replaced = std::cell::Cell::new(false);
+        let mapped = self.map_children(&|inner| match f(inner) {
+            Traversal::Retain => inner.clone(),
+            Traversal::Replace(ty) => {
+                replaced.set(true);
+                ty
+            }
+        });
+        if replaced.get() { Traversal::Replace(mapped) } else { Traversal::Retain }
+    }
+
+    fn map_children(&self, f: &dyn Fn(&Type) -> Type) -> Type {
         let sig = |s: &Signature| Signature {
             params: s
                 .params
