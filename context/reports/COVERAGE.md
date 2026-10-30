@@ -1,5 +1,14 @@
 # Coverage
 
+The guard replay passes all 23 existing tests across `class_constants`, `dynamic_methods` and `pipe_rule`.
+A fresh PHPStan 2.3.1 capture preserves all 287 dynamic-method diagnostic records across 22 configurations.
+Three warning-free exact-object exports cover 21 previously missing scope lines and params.rs:945,
+without source edits, new tests or exclusions. Current source-identical analyse coverage is
+44,268/44,310 after existing exclusions, leaving 42 lines across seven files. Raw coverage is
+44,268/44,328. PHPStan and lint totals are unchanged. This is not a new whole-suite execution.
+Complete test logs, oracle recapture, exact objects, profiles and source manifests are under
+`/tmp/pun-guard-main-gate/`.
+
 The public coalesce replay passes all nine existing tests across `refined_isset_keys` and `coalesce_scope`.
 A fresh PHPStan 2.3.1 capture matches all 96 finite-key records across five levels byte for byte.
 Two warning-free exact-object exports close the eight missing coalesce lines. The source-identical
