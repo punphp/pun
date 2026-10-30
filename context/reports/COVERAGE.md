@@ -6,7 +6,19 @@ The two supported-only `r` modifier lines need the newer engine. Its expectation
 PHP and PCRE2 fixtures, not the orb's PHP 8.5.12 oracle, which links 10.42.
 Combine exports only when their token sources are byte-identical.
 
-The combined live-initialization gate covers all 782 analyser public/library tests, 1,315 rule cases
+The native-scope integration gate passes 119 analyser public/library tests across 21 targets,
+52 original rule cases and 94 original level cases in 35 frozen-source partitions. All 56 targeted
+CLI tests and forty affected lint tests pass. All-dependency instrumentation passes 445 native analyser
+units and 29 public tests. All 109 changed executable vendor-production lines are covered without exclusions.
+Seven build-ID-matched object/profile exports are warning-free, with no unmatched runtime profiles.
+The 94 build-only profiles independently match twelve procedural-macro object identities and do not count
+as runtime coverage. Four fresh PHPStan recaptures are byte-identical. Two obsolete native-unavailability
+assertions are corrected from independent oracle evidence; their original failures remain archived.
+The docs build passes on 1,446 pages, with ten rendered contract checks. No gap allowances change.
+Pun crate production files are unchanged in this vendor-only batch; the whole-crate figures below retain
+only SHA-256-identical source cohorts. Exact instrumented objects and 841 production source files are archived.
+
+The preceding combined live-initialization gate covers all 782 analyser public/library tests, 1,315 rule cases
 and 2,787 level cases in 540 disjoint bounded partitions. Its original two failures are obsolete
 native-unavailability assertions for coalescing assignments and capture feedback. Independent PHPStan
 recaptures preserve all existing diagnostic and full-type records. Both corrected targets pass all
@@ -16,7 +28,7 @@ gate passes 445 native analyser units and 23 public/control tests. No gap allowa
 
 Source-matched coverage is 44,020/44,020 analyser lines, 39,338/39,338 lint lines and 10,747/10,747
 PHPStan lines after existing exclusions. These counts supersede the older generated table below.
-All 808 changed executable production lines are covered. No new exclusions are added.
+The live-initialization batch covers all 808 changed executable production lines. No new exclusions are added.
 Every combined source record has the same SHA-256 as the measured source.
 Coverage exports pair each executable with its build-ID-matched profiles from the verified gate.
 The CLI children's profiles retain the real Pun executable's coverage. All 173 exact-object exports

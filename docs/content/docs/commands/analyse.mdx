@@ -171,6 +171,10 @@ Variable names read from literal array offsets retain branch-dependent definedne
 Writes to the array or another offset invalidate those cached names.
 Literal string offsets use PHP bytes and support negative integer indexes.
 
+At file scope and after `extract()`, `unset` removes a variable's holder without declaring it definitely absent.
+A later read has type `mixed` and might be undefined. Without either scope fallback, a later local read remains definitely undefined.
+False `isset` refinements use the same scope fallback without changing genuine absence.
+
 Branch joins retain conditional type correlations even when every branch defines the affected variable.
 Narrowing a discriminating guard also narrows its correlated receiver, value, or unpacked array.
 Writes and unsets invalidate affected correlations, including symbolic array indexes.
@@ -185,6 +189,11 @@ Per-name filtered observations for dynamic method calls remain incomplete.
 For supported native expressions, constant `if` checks distinguish documented types from native types when adding PHPStan's PHPDoc-certainty tip.
 Function type-predicate checks use each argument's evaluated native type to decide that tip.
 Native array literals, offsets, `isset` operands and coalescing assignments retain separate evaluated values without replacing documented results or repeating expression evaluation.
+Native local values also survive bounded function calls whose native return remains unavailable.
+These additional continuations require positional scalar or null arguments and reflection without unsupported reference, callable, assertion, or global effects.
+Unpacked arguments remain unsupported.
+Native `unset` transfers ordinary locals and single-level array offsets with normalized literal, finite literal-union, or integer keys.
+Nested, property, dynamic, reference and superglobal targets remain unavailable, as do transfers with missing native inputs.
 Unsupported native transfers remain unavailable and do not imply PHPDoc certainty.
 The remaining-cases tip takes precedence. Global certainty options remain incomplete.
 
