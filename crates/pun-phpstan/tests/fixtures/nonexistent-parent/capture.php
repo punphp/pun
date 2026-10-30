@@ -109,6 +109,11 @@ foreach (['stdClass', 'RuntimeException', null, 'UnknownClass'] as $class) {
             'class' => $class, 'input' => $input, 'descriptions' => $describe($result),
             'names' => $result->getObjectClassNames(), 'sentinel' => $result instanceof T\NonexistentParentClassType,
         ];
+        $late = T\TypeUtils::resolveLateResolvableTypes($result);
+        $out['lateResolution'][] = [
+            'class' => $class, 'input' => $input, 'descriptions' => $describe($late),
+            'names' => $late->getObjectClassNames(), 'sentinel' => $late instanceof T\NonexistentParentClassType,
+        ];
     }
 }
 $template = TypeCombinator::intersect($types['template-union'], $parent);

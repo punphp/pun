@@ -790,6 +790,28 @@ fn offset_value(t: &Type, o: &Type) -> Option<Type> {
                 (**v).clone()
             }
         }
+        Type::Object(name, _, _) => {
+            // ObjectType::getOffsetValueType(): a real ArrayAccess needs offsetGet's resolved
+            // reflection. Project class providers currently expose method names, not variants;
+            // keep that operation unresolved rather than inventing a mixed return type.
+            let class = symbols::lookup(name);
+            if class.as_ref().is_some_and(|c| c.name.eq_ignore_ascii_case("ArrayAccess")
+                || c.ancestors.iter().any(|a| a.eq_ignore_ascii_case("ArrayAccess"))) {
+                return None;
+            }
+            // isExtraOffsetAccessibleClass(): unknown, interface and non-final classes may
+            // support offsets. A known final class cannot, except PHPStan's extra classes.
+            let extra = ["DOMNamedNodeMap", "Dom\\NamedNodeMap", "DOMNodeList", "Dom\\NodeList",
+                "Dom\\HTMLCollection", "Dom\\DtdNamedNodeMap", "PDORow", "ResourceBundle",
+                "FFI\\CData", "SimpleXMLElement", "Threaded"];
+            if class.as_ref().is_some_and(|c| c.is_final && !c.is_interface
+                && !extra.iter().any(|name| c.name.eq_ignore_ascii_case(name)
+                    || c.ancestors.iter().any(|a| a.eq_ignore_ascii_case(name)))) {
+                Type::Error
+            } else {
+                mixed()
+            }
+        }
         // `list<T>`, `non-empty-array<T>`: the array's
         Type::Intersection(types) => {
             let array = types.iter().find(|t| matches!(t, Type::Array(..)))?;

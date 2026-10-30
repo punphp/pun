@@ -1103,6 +1103,324 @@
             "sentinel": false
         }
     ],
+    "lateResolution": [
+        {
+            "class": "stdClass",
+            "input": "parent",
+            "descriptions": [
+                "parent",
+                "parent",
+                "parent"
+            ],
+            "names": [],
+            "sentinel": true
+        },
+        {
+            "class": "stdClass",
+            "input": "class-string<parent>",
+            "descriptions": [
+                "class-string<parent>",
+                "class-string<parent>",
+                "class-string<parent>"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": "stdClass",
+            "input": "array<parent, int>",
+            "descriptions": [
+                "array<int|string, int>",
+                "array<int|string, int>",
+                "array<int|string, int>"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": "stdClass",
+            "input": "parent<int>",
+            "descriptions": [
+                "*ERROR*",
+                "mixed",
+                "mixed"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": "stdClass",
+            "input": "parent[0]",
+            "descriptions": [
+                "*ERROR*",
+                "mixed",
+                "mixed"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": "stdClass",
+            "input": "key-of<parent>",
+            "descriptions": [
+                "*ERROR*",
+                "mixed",
+                "mixed"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": "stdClass",
+            "input": "value-of<parent>",
+            "descriptions": [
+                "*ERROR*",
+                "mixed",
+                "mixed"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": "RuntimeException",
+            "input": "parent",
+            "descriptions": [
+                "Exception",
+                "Exception",
+                "Exception"
+            ],
+            "names": [
+                "Exception"
+            ],
+            "sentinel": false
+        },
+        {
+            "class": "RuntimeException",
+            "input": "class-string<parent>",
+            "descriptions": [
+                "class-string<Exception>",
+                "class-string<Exception>",
+                "class-string<Exception>"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": "RuntimeException",
+            "input": "array<parent, int>",
+            "descriptions": [
+                "array<int|string, int>",
+                "array<int|string, int>",
+                "array<int|string, int>"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": "RuntimeException",
+            "input": "parent<int>",
+            "descriptions": [
+                "Exception<int>",
+                "Exception<int>",
+                "Exception<int>"
+            ],
+            "names": [
+                "Exception"
+            ],
+            "sentinel": false
+        },
+        {
+            "class": "RuntimeException",
+            "input": "parent[0]",
+            "descriptions": [
+                "mixed",
+                "mixed",
+                "mixed"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": "RuntimeException",
+            "input": "key-of<parent>",
+            "descriptions": [
+                "*ERROR*",
+                "mixed",
+                "mixed"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": "RuntimeException",
+            "input": "value-of<parent>",
+            "descriptions": [
+                "*ERROR*",
+                "mixed",
+                "mixed"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": null,
+            "input": "parent",
+            "descriptions": [
+                "parent",
+                "parent",
+                "parent"
+            ],
+            "names": [
+                "parent"
+            ],
+            "sentinel": false
+        },
+        {
+            "class": null,
+            "input": "class-string<parent>",
+            "descriptions": [
+                "class-string<parent>",
+                "class-string<parent>",
+                "class-string<parent>"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": null,
+            "input": "array<parent, int>",
+            "descriptions": [
+                "array<int|string, int>",
+                "array<int|string, int>",
+                "array<int|string, int>"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": null,
+            "input": "parent<int>",
+            "descriptions": [
+                "parent<int>",
+                "parent<int>",
+                "parent<int>"
+            ],
+            "names": [
+                "parent"
+            ],
+            "sentinel": false
+        },
+        {
+            "class": null,
+            "input": "parent[0]",
+            "descriptions": [
+                "mixed",
+                "mixed",
+                "mixed"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": null,
+            "input": "key-of<parent>",
+            "descriptions": [
+                "*ERROR*",
+                "mixed",
+                "mixed"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": null,
+            "input": "value-of<parent>",
+            "descriptions": [
+                "*ERROR*",
+                "mixed",
+                "mixed"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": "UnknownClass",
+            "input": "parent",
+            "descriptions": [
+                "parent",
+                "parent",
+                "parent"
+            ],
+            "names": [],
+            "sentinel": true
+        },
+        {
+            "class": "UnknownClass",
+            "input": "class-string<parent>",
+            "descriptions": [
+                "class-string<parent>",
+                "class-string<parent>",
+                "class-string<parent>"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": "UnknownClass",
+            "input": "array<parent, int>",
+            "descriptions": [
+                "array<int|string, int>",
+                "array<int|string, int>",
+                "array<int|string, int>"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": "UnknownClass",
+            "input": "parent<int>",
+            "descriptions": [
+                "*ERROR*",
+                "mixed",
+                "mixed"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": "UnknownClass",
+            "input": "parent[0]",
+            "descriptions": [
+                "*ERROR*",
+                "mixed",
+                "mixed"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": "UnknownClass",
+            "input": "key-of<parent>",
+            "descriptions": [
+                "*ERROR*",
+                "mixed",
+                "mixed"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": "UnknownClass",
+            "input": "value-of<parent>",
+            "descriptions": [
+                "*ERROR*",
+                "mixed",
+                "mixed"
+            ],
+            "names": [],
+            "sentinel": false
+        }
+    ],
     "templateBound": [
         [
             "mixed",

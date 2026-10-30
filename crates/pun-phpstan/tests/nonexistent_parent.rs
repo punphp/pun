@@ -158,18 +158,21 @@ fn parent_combinators_keep_object_disjointness_and_number_equal_descriptions() {
 
 #[test]
 fn phpdoc_parent_is_a_sentinel_only_in_a_parentless_class_scope() {
-    for row in capture()["resolution"].as_array().unwrap() {
-        let class = row["class"].as_str();
-        let input = row["input"].as_str().unwrap();
-        let result = resolve_late(&resolve_str(input, class));
-        assert_eq!(
-            json!({
-                "class": class, "input": input, "descriptions": descriptions(&result),
-                "names": result.object_class_names(), "sentinel": matches!(result, Type::NonexistentParent),
-            }),
-            *row,
-            "{input}, class={class:?}"
-        );
+    for (operation, late) in [("resolution", false), ("lateResolution", true)] {
+        for row in capture()[operation].as_array().unwrap() {
+            let class = row["class"].as_str();
+            let input = row["input"].as_str().unwrap();
+            let raw = resolve_str(input, class);
+            let result = if late { resolve_late(&raw) } else { raw };
+            assert_eq!(
+                json!({
+                    "class": class, "input": input, "descriptions": descriptions(&result),
+                    "names": result.object_class_names(), "sentinel": matches!(result, Type::NonexistentParent),
+                }),
+                *row,
+                "{operation}: {input}, class={class:?}"
+            );
+        }
     }
     // Native unresolved `parent` is deliberately still constructed as a named object by its producer.
     assert_eq!(

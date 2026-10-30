@@ -1,0 +1,131 @@
+{
+    "phar_sha256": "85157dba3d95d77ca603d2b7303aa78a538f9e3b56ccad07dd794c53aa96d1ae",
+    "rows": [
+        {
+            "type": "stdClass",
+            "offset": "0",
+            "value": "mixed",
+            "array": "Maybe",
+            "explicit": false
+        },
+        {
+            "type": "stdClass",
+            "offset": "'key'",
+            "value": "mixed",
+            "array": "Maybe",
+            "explicit": false
+        },
+        {
+            "type": "DateTimeInterface",
+            "offset": "0",
+            "value": "mixed",
+            "array": "Maybe",
+            "explicit": false
+        },
+        {
+            "type": "DateTimeInterface",
+            "offset": "'key'",
+            "value": "mixed",
+            "array": "Maybe",
+            "explicit": false
+        },
+        {
+            "type": "Generator",
+            "offset": "0",
+            "value": "*ERROR*",
+            "array": "Maybe",
+            "explicit": false
+        },
+        {
+            "type": "Generator",
+            "offset": "'key'",
+            "value": "*ERROR*",
+            "array": "Maybe",
+            "explicit": false
+        },
+        {
+            "type": "SensitiveParameterValue",
+            "offset": "0",
+            "value": "*ERROR*",
+            "array": "Maybe",
+            "explicit": false
+        },
+        {
+            "type": "SensitiveParameterValue",
+            "offset": "'key'",
+            "value": "*ERROR*",
+            "array": "Maybe",
+            "explicit": false
+        },
+        {
+            "type": "ConfigShapeMissingObject",
+            "offset": "0",
+            "value": "mixed",
+            "array": "Maybe",
+            "explicit": false
+        },
+        {
+            "type": "ConfigShapeMissingObject",
+            "offset": "'key'",
+            "value": "mixed",
+            "array": "Maybe",
+            "explicit": false
+        },
+        {
+            "type": "DOMNodeList",
+            "offset": "0",
+            "value": "mixed",
+            "array": "Maybe",
+            "explicit": false
+        },
+        {
+            "type": "DOMNodeList",
+            "offset": "'key'",
+            "value": "mixed",
+            "array": "Maybe",
+            "explicit": false
+        },
+        {
+            "type": "FFI\\CData",
+            "offset": "0",
+            "value": "mixed",
+            "array": "Maybe",
+            "explicit": false
+        },
+        {
+            "type": "FFI\\CData",
+            "offset": "'key'",
+            "value": "mixed",
+            "array": "Maybe",
+            "explicit": false
+        },
+        {
+            "type": "ArrayAccess<int, string>",
+            "offset": "0",
+            "value": "string|null",
+            "array": "No",
+            "explicit": null
+        },
+        {
+            "type": "ArrayAccess<int, string>",
+            "offset": "'key'",
+            "value": "string|null",
+            "array": "No",
+            "explicit": null
+        },
+        {
+            "type": "ArrayObject<int, string>",
+            "offset": "0",
+            "value": "string|null",
+            "array": "No",
+            "explicit": null
+        },
+        {
+            "type": "ArrayObject<int, string>",
+            "offset": "'key'",
+            "value": "string|null",
+            "array": "No",
+            "explicit": null
+        }
+    ]
+}
