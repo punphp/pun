@@ -1,6 +1,19 @@
 # Coverage
 
-The local scope/parent batch at f1204856f covers all 114 changed executable production lines without exclusions.
+The property-type batch covers all 25 changed executable production lines without exclusions.
+The refactor first passes all 52 unchanged type-rule tests. Final combined main passes 78 tests across
+four complete targets: the lint library (3), engine (8), strict rules (3) and type rules (64).
+Twelve fresh complete Rector 2.6.1/PHPStan 2.2.7 recaptures are byte-identical.
+All five refactor/final exports are warning-free and use individually matched object/profile identities.
+Fresh property_type.rs coverage is 1,158/1,208, leaving fifty lines without exclusions.
+The source-identical cohort union now reaches lint 72,700/73,200 after existing exclusions,
+leaving 500 lines. Its raw coverage is 72,707/73,256, with 549 missing lines.
+The changed property's old coverage is discarded, not shifted onto new source lines.
+Evidence, verified compressed objects and source manifests are under `/tmp/pun-property-main-gate/`.
+The docs build and both rendered HTML checks pass. Changed-file rustfmt passes; the crate-wide
+rustfmt check still reports pre-existing differences in untouched files.
+
+The preceding scope/parent batch at f1204856f covers all 114 changed executable production lines without exclusions.
 The frozen gate passes 642 Rust tests in all 492 partitions, including all 2,787 original level cases,
 1,315 rule cases and 183 owning and neighboring public/library tests in 33 targets.
 All 445 native analyser units, 76 targeted CLI tests and 141 lint consumer tests also pass.
@@ -29,7 +42,9 @@ LCOV, source manifests, exact objects and test outcomes are retained in the chec
 `/home/user/workspace/quality-bd8-lint-proof.tar.zst` archive. Main's merged proof is retained under
 `/tmp/pun-merged-delivery/`. The deleted 98d97e46 LCOV is not reused: forty production files changed afterward.
 The two bounded audits cover all 946 conditional-rule lines and 678 return-rule lines, but do not establish
-whole-crate coverage. The new property-type audit owns 168 remaining lines independently.
+whole-crate coverage. The property-type audit reduces its 168 uncovered baseline lines to fifty on the
+corrected source. The constructor-peer, parse_url and constant-array PHPDoc probes remain red and do not
+contribute green coverage.
 
 Token coverage combines the full suite on system PCRE2 10.42 with
 `preg_caseless_restrict_matches_upstream` on statically linked PCRE2 10.46 (`PCRE2_SYS_STATIC=1`).

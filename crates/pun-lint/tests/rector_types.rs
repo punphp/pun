@@ -548,3 +548,135 @@ fn child_doctrine_repository_class_type() {
         &["doctrine-stubs"],
     );
 }
+
+#[test]
+fn property_contracts_assignment_flows() {
+    lint_c::run_dirs(
+        vec![Box::new(AddPropertyTypeAssigns::default())],
+        "TypedPropertyFromAssignsRector",
+        &["Oracle/property_contracts_assignment_flows"],
+        70400,
+        &[],
+    );
+}
+
+#[test]
+fn property_contracts_trait_writes() {
+    lint_c::run_dirs(
+        vec![Box::new(AddPropertyTypeAssigns::default())],
+        "TypedPropertyFromAssignsRector",
+        &["Oracle/property_contracts_trait_writes"],
+        70400,
+        &[],
+    );
+}
+
+#[test]
+fn property_contracts_doc_narrowing() {
+    lint_c::run_dirs(
+        vec![Box::new(AddPropertyTypeAssigns::default())],
+        "TypedPropertyFromAssignsRector",
+        &["Oracle/property_contracts_doc_narrowing"],
+        70400,
+        &[],
+    );
+}
+
+#[test]
+fn property_contracts_doc_unions() {
+    lint_c::run_dirs(
+        vec![Box::new(AddPropertyTypeAssigns::default())],
+        "TypedPropertyFromAssignsRector",
+        &["Oracle/property_contracts_doc_unions"],
+        70400,
+        &[],
+    );
+}
+
+#[test]
+fn property_contracts_known_url_components() {
+    lint_c::run_dirs(
+        vec![Box::new(AddPropertyTypeAssigns::default())],
+        "TypedPropertyFromAssignsRectorPhp82",
+        &["Oracle/property_contracts_known_url_components"],
+        80200,
+        &[],
+    );
+}
+
+#[test]
+fn property_contracts_documented_constructor_types() {
+    lint_c::run_dirs(
+        vec![Box::new(AddPropertyTypeConstructor)],
+        "TypedPropertyFromStrictConstructorRector",
+        &["Oracle/property_contracts_documented_constructor_types"],
+        80100,
+        &[],
+    );
+}
+
+#[test]
+fn property_contracts_partial_defaults() {
+    lint_c::run_dirs(
+        vec![Box::new(AddPropertyTypeConstructor)],
+        "TypedPropertyFromStrictConstructorRector",
+        &["Oracle/property_contracts_partial_defaults"],
+        80100,
+        &[],
+    );
+}
+
+#[test]
+fn property_contracts_parent_roundtrip() {
+    lint_c::run_dirs(
+        vec![Box::new(AddPropertyTypeConstructor)],
+        "TypedPropertyFromStrictConstructorRector",
+        &["Oracle/property_contracts_parent_roundtrip"],
+        80100,
+        &[],
+    );
+}
+
+#[test]
+fn property_contracts_getter_dnf() {
+    lint_c::run_dirs(
+        vec![Box::new(AddPropertyTypeSetterGetter)],
+        "PropertyTypeFromStrictSetterGetterRector",
+        &["Oracle/property_contracts_getter_dnf"],
+        80400,
+        &[],
+    );
+}
+
+#[test]
+fn property_contracts_constructor_dnf_boundaries() {
+    lint_c::run_dirs(
+        vec![Box::new(AddPropertyTypeConstructor)],
+        "TypedPropertyFromStrictConstructorRector",
+        &["Oracle/property_contracts_constructor_dnf_boundaries"],
+        80100,
+        &[],
+    );
+}
+
+#[test]
+fn property_contracts_getter_union_boundaries() {
+    lint_c::run_dirs(
+        vec![Box::new(AddPropertyTypeSetterGetter)],
+        "PropertyTypeFromStrictSetterGetterRector",
+        &["Oracle/property_contracts_getter_union_boundaries"],
+        80400,
+        &[],
+    );
+}
+
+#[test]
+fn property_contracts_scalar_hint_comparisons() {
+    lint_c::run_dirs(
+        vec![Box::new(AddPropertyTypeConstructor)],
+        "TypedPropertyFromStrictConstructorRector",
+        &["Oracle/property_contracts_scalar_hint_comparisons"],
+        80100,
+        &[],
+    );
+}

@@ -65,6 +65,8 @@ pub(crate) enum Ty {
     Object(String),
     /// `static` or `$this` in a class.
     Static(String),
+    /// `parent` in a declaration (`ParentStaticType`).
+    Parent(String),
     /// `object`, or an object of an anonymous class.
     ObjectAny,
     /// `new class extends A implements B {}` as `getNativeType` reads it (`ObjectWithoutClassTypeWithParentTypes`): the
@@ -158,6 +160,7 @@ impl Ty {
                     .join(", ")
             ),
             Ty::Object(name) | Ty::Static(name) => name.clone(),
+            Ty::Parent(name) => format!("static({name})"),
             Ty::ObjectAny | Ty::AnonymousWithParents(_) => "object".into(),
             Ty::Closure => "Closure".into(),
             Ty::Callable => "callable".into(),
@@ -173,7 +176,7 @@ impl Ty {
         match self {
             Ty::Mixed => "mixed".into(),
             Ty::Array(k, v) => format!("{}{}{}[]", v.hash(), k.hash(), v.describe()),
-            Ty::Object(name) | Ty::Static(name) => name.to_ascii_lowercase(),
+            Ty::Object(name) | Ty::Static(name) | Ty::Parent(name) => name.to_ascii_lowercase(),
             Ty::Closure => "closure".into(),
             Ty::Null => "NullType".into(),
             Ty::Bool(Some(_)) => "ConstantBooleanType".into(),
@@ -533,7 +536,7 @@ pub(crate) fn hint_ty(
         Hint::Callable(_) => Ty::Callable,
         Hint::Static(_) | Hint::Self_(_) => Ty::Static(scope.name.clone()),
         Hint::Parent(_) => match &scope.parent {
-            Some(parent) => Ty::Object(parent.clone()),
+            Some(parent) => Ty::Parent(parent.clone()),
             None => Ty::Mixed,
         },
         Hint::Void(_) | Hint::Never(_) => Ty::Other("void".into()),
@@ -602,6 +605,7 @@ fn member_declaration(t: &Ty, codebase: &CodebaseMetadata, php_version: u32) -> 
         Ty::Iterable => "iterable".into(),
         Ty::Closure => "\\Closure".into(),
         Ty::Static(_) => "self".into(),
+        Ty::Parent(_) => "parent".into(),
         // ObjectWithoutClassTypeMapper
         Ty::AnonymousWithParents(parents) if parents.len() == 1 => {
             class_text(codebase, &parents[0])
@@ -658,7 +662,9 @@ fn union_declaration(
                 return None;
             }
             let object = many.iter().any(|n| n == "object");
-            let class = many.iter().any(|n| n.starts_with('\\') || n == "self");
+            let class = many
+                .iter()
+                .any(|n| n.starts_with('\\') || matches!(n.as_str(), "self" | "parent"));
             if object && class {
                 return None;
             }
@@ -1408,6 +1414,7 @@ fn overlaps(a: &Ty, b: &Ty) -> bool {
         (
             Ty::Object(_)
             | Ty::Static(_)
+            | Ty::Parent(_)
             | Ty::ObjectAny
             | Ty::AnonymousWithParents(_)
             | Ty::Closure
@@ -1415,6 +1422,7 @@ fn overlaps(a: &Ty, b: &Ty) -> bool {
             | Ty::Iterable,
             Ty::Object(_)
             | Ty::Static(_)
+            | Ty::Parent(_)
             | Ty::ObjectAny
             | Ty::AnonymousWithParents(_)
             | Ty::Closure
@@ -1451,12 +1459,13 @@ fn contains(outer: &Ty, inner: &Ty) -> bool {
             Ty::ObjectAny,
             Ty::Object(_)
             | Ty::Static(_)
+            | Ty::Parent(_)
             | Ty::ObjectAny
             | Ty::AnonymousWithParents(_)
             | Ty::Closure
             | Ty::Intersection(_),
         ) => true,
-        (Ty::Object(o), Ty::Object(i) | Ty::Static(i)) => o.eq_ignore_ascii_case(i),
+        (Ty::Object(o), Ty::Object(i) | Ty::Static(i) | Ty::Parent(i)) => o.eq_ignore_ascii_case(i),
         (Ty::Closure, Ty::Closure) => true,
         (a, b) => a == b,
     }
@@ -1628,24 +1637,34 @@ fn php_parser_and_doc_types_equal(native: &Ty, doc: &Ty) -> bool {
     if !different_scalars && !are_equal(&native, &doc) {
         return false;
     }
-    !matches!(doc, Ty::Static(_))
+    !matches!(doc, Ty::Static(_) | Ty::Parent(_))
 }
 
 /// `ScalarTypeComparator::areDifferentScalarTypes`.
 fn are_different_scalars(a: &Ty, b: &Ty) -> bool {
     let scalar = |t: &Ty| {
-        matches!(
-            t,
-            Ty::Int(_) | Ty::Float(_) | Ty::Str(_) | Ty::Bool(_) | Ty::ClassString
-        )
+        t.members().iter().all(|m| {
+            matches!(
+                m,
+                Ty::Int(_) | Ty::Float(_) | Ty::Str(_) | Ty::Bool(_) | Ty::ClassString
+            )
+        })
     };
     let kind = |t: &Ty| match t {
         Ty::Int(_) => 0,
         Ty::Float(_) => 1,
         Ty::Str(_) | Ty::ClassString => 2,
+        Ty::Union(_) => 4,
         _ => 3,
     };
-    scalar(a) && scalar(b) && kind(a) != kind(b)
+    let all = |t: &Ty, f: fn(&Ty) -> bool| t.members().iter().all(|m| f(m));
+    let string = |t: &Ty| matches!(t, Ty::Str(_) | Ty::ClassString);
+    let integer = |t: &Ty| matches!(t, Ty::Int(_));
+    scalar(a)
+        && scalar(b)
+        && !(all(a, string) && all(b, string))
+        && !(all(a, integer) && all(b, integer))
+        && kind(a) != kind(b)
 }
 
 /// `StaticTypeMapper::mapPHPStanTypeToPHPStanPhpDocTypeNode` for the types Pun prints: scalars, `array`, classes,
@@ -1686,6 +1705,7 @@ pub(crate) fn doc_text(t: &Ty, codebase: &CodebaseMetadata) -> Option<String> {
         }
         Ty::Str(_) => "string".into(),
         Ty::Object(name) => class_text(codebase, name),
+        Ty::Parent(_) => "static".into(),
         Ty::Closure => "\\Closure".into(),
         Ty::ObjectAny => "object".into(),
         Ty::Iterable => "iterable".into(),
