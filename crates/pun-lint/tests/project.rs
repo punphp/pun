@@ -138,3 +138,35 @@ fn autoloaded_vendor_parents_guard_overrides() {
     );
     assert_eq!(fixed, expected);
 }
+
+/// Two class names that autoload to a file declaring neither: the walk scans that file for the first, and again for
+/// the second (the files are read and scanned ahead of the walk, once each). Expected (by hand, as in the test
+/// above): the method overriding the vendor parent's untyped method stays untyped.
+#[test]
+fn a_file_autoloaded_for_two_names_is_scanned_for_each() {
+    let _lock = LOCK.lock().unwrap_or_else(|e| e.into_inner());
+    use pun_lint::rules::AddReturnTypeFromConstant;
+    use pun_lint::rules::facts::project_codebase_autoloaded;
+    let commands = "<?php\n\nnamespace App;\n\nfinal class FromVendor extends \\Acme\\Base\n{\n    public const OK = 1;\n\n    public function run()\n    {\n        return self::OK;\n    }\n\n    public function take(\\Acme\\Missing $a, \\Acme\\Gone $b): void\n    {\n    }\n}\n";
+    let base = "<?php\n\nnamespace Acme;\n\nclass Base\n{\n    public function run()\n    {\n        return 0;\n    }\n}\n";
+    let files = [(
+        "/project/app/Commands.php".to_string(),
+        commands.to_string(),
+    )];
+    let autoload = |class: &[u8]| {
+        matches!(class, b"acme\\base" | b"acme\\missing" | b"acme\\gone").then(|| {
+            (
+                "/project/vendor/acme/pkg/src/Base.php".to_string(),
+                base.to_string(),
+            )
+        })
+    };
+    set_project_codebase(Some(project_codebase_autoloaded(&files, 80400, &autoload)));
+    let linter = Linter::new(vec![Box::new(AddReturnTypeFromConstant)], 80400);
+    let fixed = linter
+        .fix(Path::new("/project/app/Commands.php"), commands)
+        .unwrap()
+        .source;
+    set_project_codebase(None);
+    assert_eq!(fixed, commands);
+}

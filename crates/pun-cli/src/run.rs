@@ -470,28 +470,33 @@ fn project_codebase(cfg: &Config, files: Vec<PathBuf>) {
 fn scan_project(cfg: &Config, files: &[PathBuf]) -> Arc<pun_lint::rules::facts::ProjectCodebase> {
     use pun_lint::rules::facts;
     use pun_phpstan::{Array, Key, Value};
-    let sources: Vec<(String, String)> = (files.par_iter())
-        .filter_map(|f| {
-            let rel = f.strip_prefix(&cfg.root).unwrap_or(f);
-            Some((
-                rel.to_string_lossy().into_owned(),
-                std::fs::read_to_string(f).ok()?,
-            ))
-        })
-        .collect();
+    let read = || -> Vec<(String, String)> {
+        (files.par_iter())
+            .filter_map(|f| {
+                let rel = f.strip_prefix(&cfg.root).unwrap_or(f);
+                Some((
+                    rel.to_string_lossy().into_owned(),
+                    std::fs::read_to_string(f).ok()?,
+                ))
+            })
+            .collect()
+    };
+    let autoloaded = || {
+        let mut extensions = Array::new();
+        extensions.push(Value::Str("php".into()));
+        let mut params = Array::new();
+        params.set(Key::Str("fileExtensions".into()), Value::Array(extensions));
+        let project = pun_analyse::Project::from_config(&cfg.root, &params);
+        // the runtime autoloader Rector loads looks in Composer's generated classmap first
+        (project, composer_classmap(&cfg.root))
+    };
+    let (sources, (project, classmap)) = rayon::join(read, autoloaded);
     let mut sources = sources;
     for path in composer_files(&cfg.root) {
         if let Ok(code) = std::fs::read_to_string(&path) {
             sources.push((path.to_string_lossy().into_owned(), code));
         }
     }
-    let mut extensions = Array::new();
-    extensions.push(Value::Str("php".into()));
-    let mut params = Array::new();
-    params.set(Key::Str("fileExtensions".into()), Value::Array(extensions));
-    let project = pun_analyse::Project::from_config(&cfg.root, &params);
-    // the runtime autoloader Rector loads looks in Composer's generated classmap first
-    let classmap = composer_classmap(&cfg.root);
     // and `vendor/autoload.php` requires Composer's own ClassLoader, which no autoload map lists
     let class_loader = cfg.root.join("vendor/composer/ClassLoader.php");
     let mut by_class: HashMap<&[u8], &Path> = HashMap::new();

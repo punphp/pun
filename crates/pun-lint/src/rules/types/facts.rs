@@ -22,7 +22,7 @@ use mago_analyzer::artifacts::AnalysisArtifacts;
 use mago_analyzer::plugin::{PluginRegistry, create_registry_with_plugins};
 use mago_analyzer::settings::Settings;
 use mago_codex::metadata::CodebaseMetadata;
-use mago_codex::populator::populate_codebase;
+use mago_codex::populator::populate_codebase_parallel;
 use mago_codex::reference::SymbolReferences;
 use mago_codex::scanner::scan_program;
 use mago_codex::ttype::atomic::TAtomic;
@@ -113,17 +113,24 @@ pub fn project_codebase_autoloaded(
     autoload: &(dyn Fn(&[u8]) -> Option<(String, String)> + Sync),
 ) -> Arc<ProjectCodebase> {
     let version = php_version_of(php_version);
-    let (prelude, references) = &*PRELUDE;
-    let (mut codebase, mut documented) = (prelude.clone(), prelude.clone());
-    stub_preg_match(&mut codebase, version);
-    stub_preg_match(&mut documented, version);
+    let stubbed = || {
+        let mut codebase = PRELUDE.0.clone();
+        stub_preg_match(&mut codebase, version);
+        codebase
+    };
     let kind = |path: &str| match is_vendor_path(path) {
         true => FileType::Vendored,
         false => FileType::Host,
     };
-    let scans: Vec<Scanned> = (files.par_iter())
-        .map(|(path, code)| Scanned::new(path, code, kind(path), version))
-        .collect();
+    // the prelude is built while the files are scanned
+    let ((mut codebase, mut documented), scans) = rayon::join(
+        || rayon::join(stubbed, stubbed),
+        || {
+            (files.par_iter())
+                .map(|(path, code)| Scanned::new(path, code, kind(path), version))
+                .collect::<Vec<_>>()
+        },
+    );
     let mut prefetched = prefetch(&scans, version, autoload);
     let mut named = Vec::new();
     for ((path, code), scanned) in files.iter().zip(scans) {
@@ -142,8 +149,8 @@ pub fn project_codebase_autoloaded(
         }
     }
     let populated = |mut codebase: CodebaseMetadata| {
-        let mut references = references.clone();
-        populate_codebase(
+        let mut references = PRELUDE.1.clone();
+        populate_codebase_parallel(
             &mut codebase,
             &mut references,
             Default::default(),
@@ -195,6 +202,7 @@ impl Scanned {
 /// The files the autoload walk of [`project_codebase_autoloaded`] is likely to scan, read and scanned in parallel
 /// ahead of it: the walk merges them one at a time in its own order, and reads and scans a file itself when the
 /// guess missed it.
+#[derive(Default)]
 struct Prefetched {
     /// What `autoload` gave for a class name.
     found: HashMap<Vec<u8>, Option<(String, String)>>,
@@ -202,62 +210,88 @@ struct Prefetched {
     scans: HashMap<String, Scanned>,
 }
 
-/// [`Prefetched`] for the walk that starts from `scans`, a level of the autoload graph at a time: each class a scanned
-/// file names that no scanned file declares and PHP doesn't is looked up, and the files found are scanned.
+/// What [`prefetch`] knows while it runs: the classes the scanned files declare, the class names and paths it
+/// has looked up, and what it found.
+#[derive(Default)]
+struct Prefetching {
+    declared: HashSet<Vec<u8>>,
+    seen: HashSet<Vec<u8>>,
+    paths: HashSet<String>,
+    found: Prefetched,
+}
+
+impl Prefetching {
+    /// The class names `scans` resolve that neither a file scanned so far (counting `scans`) nor PHP declares and
+    /// that weren't looked up yet.
+    fn unknown<'a>(&mut self, scans: impl Iterator<Item = &'a Scanned> + Clone) -> Vec<Vec<u8>> {
+        for s in scans.clone() {
+            (self.declared).extend(s.native.class_likes.keys().map(|k| k.as_bytes().to_vec()));
+        }
+        (scans.flat_map(|s| &s.names))
+            .filter(|n| !self.declared.contains(*n) && PRELUDE.0.get_class_like(n).is_none())
+            .filter(|n| self.seen.insert(n.to_vec()))
+            .cloned()
+            .collect()
+    }
+}
+
+/// [`Prefetched`] for the walk that starts from `scans`: each class a scanned file names that no file scanned so far
+/// declares and PHP doesn't is looked up, and each file found is scanned, as soon as the file naming it is.
 fn prefetch(
     scans: &[Scanned],
     version: PHPVersion,
     autoload: &(dyn Fn(&[u8]) -> Option<(String, String)> + Sync),
 ) -> Prefetched {
-    let (mut declared, mut seen) = (HashSet::new(), HashSet::new());
-    let mut names = unknown(scans.iter(), &mut declared, &mut seen);
-    let (mut found, mut by_path, mut paths) = (HashMap::new(), HashMap::new(), HashSet::new());
-    while !names.is_empty() {
-        let looked_up: Vec<_> = (names.into_par_iter())
-            .map(|name| {
-                let file = autoload(&name);
-                (name, file)
-            })
-            .collect();
-        let mut files = Vec::new();
-        for (name, file) in looked_up {
-            if let Some((path, code)) = &file
-                && paths.insert(path.clone())
-            {
-                files.push((path.clone(), code.clone()));
-            }
-            found.insert(name, file);
+    let state = Mutex::new(Prefetching::default());
+    let names = (state.lock().unwrap_or_else(|e| e.into_inner())).unknown(scans.iter());
+    let look_up = |name: Vec<u8>| Lookup {
+        name,
+        state: &state,
+        version,
+        autoload,
+    };
+    rayon::scope(|scope| {
+        for name in names {
+            let lookup = look_up(name);
+            scope.spawn(move |scope| lookup.run(scope));
         }
-        let level: Vec<(String, Scanned)> = (files.into_par_iter())
-            .map(|(path, code)| {
-                let scanned = Scanned::new(&path, &code, FileType::Vendored, version);
-                (path, scanned)
-            })
-            .collect();
-        names = unknown(level.iter().map(|(_, s)| s), &mut declared, &mut seen);
-        by_path.extend(level);
-    }
-    Prefetched {
-        found,
-        scans: by_path,
-    }
+    });
+    (state.into_inner().unwrap_or_else(|e| e.into_inner())).found
 }
 
-/// The class names `level` resolves that neither a file scanned so far (`declared`, which takes the level's classes)
-/// nor PHP declares and that aren't in `seen` yet, added to `seen`.
-fn unknown<'a>(
-    level: impl Iterator<Item = &'a Scanned> + Clone,
-    declared: &mut HashSet<Vec<u8>>,
-    seen: &mut HashSet<Vec<u8>>,
-) -> Vec<Vec<u8>> {
-    for s in level.clone() {
-        declared.extend(s.native.class_likes.keys().map(|k| k.as_bytes().to_vec()));
+/// One class name for [`prefetch`] to look up.
+struct Lookup<'a> {
+    name: Vec<u8>,
+    state: &'a Mutex<Prefetching>,
+    version: PHPVersion,
+    autoload: &'a (dyn Fn(&[u8]) -> Option<(String, String)> + Sync),
+}
+
+impl<'a> Lookup<'a> {
+    /// Look the name up, scan the file found unless another name found it first, and look up the names it adds.
+    fn run(self, scope: &rayon::Scope<'a>) {
+        let file = (self.autoload)(&self.name);
+        let lock = || self.state.lock().unwrap_or_else(|e| e.into_inner());
+        let new = match &file {
+            Some((path, code)) if lock().paths.insert(path.clone()) => {
+                Some((path.clone(), code.clone()))
+            }
+            _ => None,
+        };
+        lock().found.found.insert(self.name, file);
+        let Some((path, code)) = new else {
+            return;
+        };
+        let scanned = Scanned::new(&path, &code, FileType::Vendored, self.version);
+        let mut state = lock();
+        let names = state.unknown(std::iter::once(&scanned));
+        state.found.scans.insert(path, scanned);
+        drop(state);
+        for name in names {
+            let lookup = Lookup { name, ..self };
+            scope.spawn(move |scope| lookup.run(scope));
+        }
     }
-    (level.flat_map(|s| &s.names))
-        .filter(|n| !declared.contains(*n) && PRELUDE.0.get_class_like(n).is_none())
-        .filter(|n| seen.insert(n.to_vec()))
-        .cloned()
-        .collect()
 }
 
 /// `preg_match()` and `preg_match_all()` with the `$flags` and `$matches` of PHPStan's signatures
