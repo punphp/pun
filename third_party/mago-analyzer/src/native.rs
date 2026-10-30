@@ -16,7 +16,7 @@ use mago_codex::ttype::expander::{TypeExpansionOptions, expand_union};
 use mago_codex::ttype::union::TUnion;
 use mago_codex::ttype::{
     get_bool, get_error, get_false, get_float, get_int, get_int_or_float, get_int_range, get_literal_float,
-    get_literal_int, get_literal_string, get_mixed, get_never, get_string, get_string_with_props,
+    get_literal_int, get_literal_string, get_mixed, get_never, get_null, get_string, get_string_with_props,
     get_true, wrap_atomic,
 };
 use mago_syntax::cst::{
@@ -122,7 +122,7 @@ pub(crate) fn parameter_types(
         expand_union(codebase, &mut ty, &TypeExpansionOptions::default());
         (ty.types.iter().all(|atomic| matches!(atomic,
             TAtomic::Scalar(_) | TAtomic::Null | TAtomic::Mixed(_) | TAtomic::Array(_)))
-            || named_object(&ty).is_some())
+            || named_object(&ty.to_non_nullable()).is_some())
             .then(|| (parameter.name.0, Rc::new(ty)))
     }).collect()
 }
@@ -215,6 +215,7 @@ pub(crate) fn before_expression(expression: &Expression<'_>, block: &mut BlockCo
                         && !block.references_to_external_scope.contains(&word(variable.name)))
         }
         Expression::Access(Access::Property(property)) => property.property.is_identifier(),
+        Expression::Access(Access::NullSafeProperty(property)) => property.property.is_identifier(),
         Expression::ArrayAccess(_) | Expression::Array(_) | Expression::LegacyArray(_)
         | Expression::Construct(Construct::Isset(_)) | Expression::Closure(_) | Expression::ArrowFunction(_) => true,
         Expression::Instantiation(new) => matches!(new.class, Expression::Identifier(_))
@@ -295,7 +296,11 @@ pub(crate) fn after_expression<A: Arena>(
         }
         Expression::Binary(binary) => binary_type(binary, artifacts).map(Rc::new),
         Expression::Access(Access::Property(property)) => {
-            property_type(property.object, &property.property, context, block, artifacts).map(Rc::new)
+            receiver_type(property.object, block, artifacts)
+                .and_then(|receiver| property_type(receiver, &property.property, context, block)).map(Rc::new)
+        }
+        Expression::Access(Access::NullSafeProperty(property)) => {
+            nullsafe_property_type(property.object, &property.property, context, block, artifacts).map(Rc::new)
         }
         Expression::ArrayAccess(access) => {
             get_block_expression_id(expression, context, block).and_then(|id| locals.get(&id).cloned())
@@ -335,10 +340,9 @@ fn receiver_type<'a>(expression: &Expression<'_>, block: &'a BlockContext<'_>, a
 }
 
 fn property_type<A: Arena>(
-    receiver: &Expression<'_>, selector: &ClassLikeMemberSelector<'_>,
-    context: &Context<'_, '_, A>, block: &BlockContext<'_>, artifacts: &AnalysisArtifacts,
+    receiver: &TUnion, selector: &ClassLikeMemberSelector<'_>,
+    context: &Context<'_, '_, A>, block: &BlockContext<'_>,
 ) -> Option<TUnion> {
-    let receiver = receiver_type(receiver, block, artifacts)?;
     if receiver.is_mixed() {
         return Some(get_mixed());
     }
@@ -349,6 +353,31 @@ fn property_type<A: Arena>(
         mago_word::concat_word!(b"$", name.value), true, block.scope.get_class_like_name())?;
     let ty = declaration.native_type(object)?;
     scalar_type(&ty).then_some(ty)
+}
+
+fn nullsafe_property_type<A: Arena>(
+    receiver: &Expression<'_>, selector: &ClassLikeMemberSelector<'_>,
+    context: &Context<'_, '_, A>, block: &BlockContext<'_>, artifacts: &AnalysisArtifacts,
+) -> Option<TUnion> {
+    let native = receiver_type(receiver, block, artifacts)?;
+    // NullsafePropertyFetchHandler captures the selected receiver before ensuring it.
+    // That receiver selects the short-circuit edge, never the property's native value.
+    let selected = artifacts.get_expression_type(receiver)?;
+    if selected.is_null() {
+        return Some(get_null());
+    }
+    // TypehintHelper clamps nullable PHPDoc on a nonnullable native parameter.
+    // The selected parameter facility does not always do that yet. Leave that
+    // inconsistent edge unavailable instead of repairing full state in this lane.
+    if selected.has_null() && !native.has_null() && !native.is_mixed() {
+        return None;
+    }
+    let ty = property_type(&native.to_non_nullable(), selector, context, block)?;
+    Some(if selected.has_null() {
+        combine_union_types(&ty, &get_null(), context.codebase, context.settings.combiner_options())
+    } else {
+        ty
+    })
 }
 
 fn method_type<A: Arena>(
@@ -1228,9 +1257,9 @@ fn isset_fold(
             }
         });
     }
-    // Native/writable property reflection has separate initializedness rules.
-    // Do not infer a verdict from the native value alone.
-    if matches!(expression, Expression::Access(_)) { return None; }
+    // Plain properties have separate initializedness rules. ExpressionResult gives
+    // a nullsafe fetch a leaf descriptor instead, folding its captured own value.
+    if matches!(expression, Expression::Access(access) if !matches!(access, Access::NullSafeProperty(_))) { return None; }
     Some(result.or(non_null(artifacts.get_native_expression_type(expression)?)))
 }
 
