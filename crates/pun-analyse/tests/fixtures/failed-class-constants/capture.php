@@ -30,7 +30,7 @@ $tmp = sys_get_temp_dir() . '/pun-failed-class-constants-' . getmypid();
 mkdir($tmp);
 try {
     $out = ['phpstan_source' => 'cb3b7e99489b2e3789ee2eec10501cb7a72580ea', 'files' => []];
-    foreach (['undefined-class', 'self', 'static', 'parent', 'dynamic-invalid', 'string-class', 'enum', 'controls', 'never'] as $case) {
+    foreach (['undefined-class', 'self', 'static', 'parent', 'dynamic-invalid', 'string-class', 'enum', 'controls', 'never', 'parent-magic'] as $case) {
         $file = __DIR__ . "/$case.php";
         $source = file_get_contents($file);
         $record = ['sha256' => hash('sha256', $source), 'diagnostics' => [], 'expressions' => []];

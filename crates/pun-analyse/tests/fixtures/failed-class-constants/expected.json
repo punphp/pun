@@ -1795,6 +1795,1669 @@
                     "visits": 1
                 }
             }
+        },
+        "parent-magic.php": {
+            "sha256": "7d7632d47aca365aacc21a45b1a0887e91a08a8ae4abfa7aad720b2bc650c54a",
+            "diagnostics": {
+                "0": [
+                    [
+                        7,
+                        "outOfClass.parent",
+                        "Using parent outside of class scope.",
+                        null,
+                        true
+                    ],
+                    [
+                        8,
+                        "phpstan.dumpType",
+                        "Dumped type: class-string",
+                        null,
+                        false
+                    ],
+                    [
+                        9,
+                        "outOfClass.parent",
+                        "Using parent outside of class scope.",
+                        null,
+                        true
+                    ],
+                    [
+                        10,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        18,
+                        "class.noParent",
+                        "Access to parent::class but FailedParentMagic\\Parentless does not extend any class.",
+                        null,
+                        true
+                    ],
+                    [
+                        19,
+                        "phpstan.dumpType",
+                        "Dumped type: class-string",
+                        null,
+                        false
+                    ],
+                    [
+                        20,
+                        "class.noParent",
+                        "Access to parent::CLASS but FailedParentMagic\\Parentless does not extend any class.",
+                        null,
+                        true
+                    ],
+                    [
+                        21,
+                        "phpstan.dumpType",
+                        "Dumped type: class-string",
+                        null,
+                        false
+                    ],
+                    [
+                        22,
+                        "class.noParent",
+                        "Access to parent::class but FailedParentMagic\\Parentless does not extend any class.",
+                        null,
+                        true
+                    ],
+                    [
+                        23,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        24,
+                        "phpstan.dumpType",
+                        "Dumped type: 'class'",
+                        null,
+                        false
+                    ],
+                    [
+                        25,
+                        "class.noParent",
+                        "Access to parent::MISSING but FailedParentMagic\\Parentless does not extend any class.",
+                        null,
+                        true
+                    ],
+                    [
+                        26,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        27,
+                        "class.noParent",
+                        "FailedParentMagic\\Parentless::value() calls new parent but FailedParentMagic\\Parentless does not extend any class.",
+                        null,
+                        true
+                    ],
+                    [
+                        29,
+                        "phpstan.dumpType",
+                        "Dumped type: class-string&literal-string",
+                        null,
+                        false
+                    ],
+                    [
+                        31,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        33,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        34,
+                        "phpstan.dumpType",
+                        "Dumped type: 'class'",
+                        null,
+                        false
+                    ],
+                    [
+                        49,
+                        "phpstan.dumpType",
+                        "Dumped type: 'FailedParentMagic\\\\Base'",
+                        null,
+                        false
+                    ],
+                    [
+                        51,
+                        "phpstan.dumpType",
+                        "Dumped type: 37",
+                        null,
+                        false
+                    ],
+                    [
+                        52,
+                        "classConstant.notFound",
+                        "Access to undefined constant FailedParentMagic\\Base::MISSING.",
+                        null,
+                        true
+                    ],
+                    [
+                        53,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        56,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        67,
+                        "phpstan.dumpType",
+                        "Dumped type: 37",
+                        null,
+                        false
+                    ]
+                ],
+                "8": [
+                    [
+                        7,
+                        "outOfClass.parent",
+                        "Using parent outside of class scope.",
+                        null,
+                        true
+                    ],
+                    [
+                        8,
+                        "phpstan.dumpType",
+                        "Dumped type: class-string",
+                        null,
+                        false
+                    ],
+                    [
+                        9,
+                        "outOfClass.parent",
+                        "Using parent outside of class scope.",
+                        null,
+                        true
+                    ],
+                    [
+                        10,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        18,
+                        "class.noParent",
+                        "Access to parent::class but FailedParentMagic\\Parentless does not extend any class.",
+                        null,
+                        true
+                    ],
+                    [
+                        19,
+                        "phpstan.dumpType",
+                        "Dumped type: class-string",
+                        null,
+                        false
+                    ],
+                    [
+                        20,
+                        "class.noParent",
+                        "Access to parent::CLASS but FailedParentMagic\\Parentless does not extend any class.",
+                        null,
+                        true
+                    ],
+                    [
+                        21,
+                        "phpstan.dumpType",
+                        "Dumped type: class-string",
+                        null,
+                        false
+                    ],
+                    [
+                        22,
+                        "class.noParent",
+                        "Access to parent::class but FailedParentMagic\\Parentless does not extend any class.",
+                        null,
+                        true
+                    ],
+                    [
+                        23,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        24,
+                        "phpstan.dumpType",
+                        "Dumped type: 'class'",
+                        null,
+                        false
+                    ],
+                    [
+                        25,
+                        "class.noParent",
+                        "Access to parent::MISSING but FailedParentMagic\\Parentless does not extend any class.",
+                        null,
+                        true
+                    ],
+                    [
+                        26,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        27,
+                        "class.noParent",
+                        "FailedParentMagic\\Parentless::value() calls new parent but FailedParentMagic\\Parentless does not extend any class.",
+                        null,
+                        true
+                    ],
+                    [
+                        28,
+                        "classConstant.nonObject",
+                        "Cannot access constant class on parent.",
+                        null,
+                        true
+                    ],
+                    [
+                        29,
+                        "phpstan.dumpType",
+                        "Dumped type: class-string&literal-string",
+                        null,
+                        false
+                    ],
+                    [
+                        30,
+                        "classConstant.nonObject",
+                        "Cannot access constant MISSING on parent.",
+                        null,
+                        true
+                    ],
+                    [
+                        31,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        32,
+                        "classConstant.nonObject",
+                        "Cannot access constant class on parent.",
+                        null,
+                        true
+                    ],
+                    [
+                        33,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        34,
+                        "phpstan.dumpType",
+                        "Dumped type: 'class'",
+                        null,
+                        false
+                    ],
+                    [
+                        49,
+                        "phpstan.dumpType",
+                        "Dumped type: 'FailedParentMagic\\\\Base'",
+                        null,
+                        false
+                    ],
+                    [
+                        51,
+                        "phpstan.dumpType",
+                        "Dumped type: 37",
+                        null,
+                        false
+                    ],
+                    [
+                        52,
+                        "classConstant.notFound",
+                        "Access to undefined constant FailedParentMagic\\Base::MISSING.",
+                        null,
+                        true
+                    ],
+                    [
+                        53,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        56,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        67,
+                        "phpstan.dumpType",
+                        "Dumped type: 37",
+                        null,
+                        false
+                    ]
+                ],
+                "10": [
+                    [
+                        7,
+                        "outOfClass.parent",
+                        "Using parent outside of class scope.",
+                        null,
+                        true
+                    ],
+                    [
+                        8,
+                        "phpstan.dumpType",
+                        "Dumped type: class-string",
+                        null,
+                        false
+                    ],
+                    [
+                        9,
+                        "outOfClass.parent",
+                        "Using parent outside of class scope.",
+                        null,
+                        true
+                    ],
+                    [
+                        10,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        18,
+                        "class.noParent",
+                        "Access to parent::class but FailedParentMagic\\Parentless does not extend any class.",
+                        null,
+                        true
+                    ],
+                    [
+                        19,
+                        "phpstan.dumpType",
+                        "Dumped type: class-string",
+                        null,
+                        false
+                    ],
+                    [
+                        20,
+                        "class.noParent",
+                        "Access to parent::CLASS but FailedParentMagic\\Parentless does not extend any class.",
+                        null,
+                        true
+                    ],
+                    [
+                        21,
+                        "phpstan.dumpType",
+                        "Dumped type: class-string",
+                        null,
+                        false
+                    ],
+                    [
+                        22,
+                        "class.noParent",
+                        "Access to parent::class but FailedParentMagic\\Parentless does not extend any class.",
+                        null,
+                        true
+                    ],
+                    [
+                        23,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        24,
+                        "phpstan.dumpType",
+                        "Dumped type: 'class'",
+                        null,
+                        false
+                    ],
+                    [
+                        25,
+                        "class.noParent",
+                        "Access to parent::MISSING but FailedParentMagic\\Parentless does not extend any class.",
+                        null,
+                        true
+                    ],
+                    [
+                        26,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        27,
+                        "class.noParent",
+                        "FailedParentMagic\\Parentless::value() calls new parent but FailedParentMagic\\Parentless does not extend any class.",
+                        null,
+                        true
+                    ],
+                    [
+                        28,
+                        "classConstant.nonObject",
+                        "Cannot access constant class on parent.",
+                        null,
+                        true
+                    ],
+                    [
+                        29,
+                        "phpstan.dumpType",
+                        "Dumped type: class-string&literal-string",
+                        null,
+                        false
+                    ],
+                    [
+                        30,
+                        "classConstant.nonObject",
+                        "Cannot access constant MISSING on parent.",
+                        null,
+                        true
+                    ],
+                    [
+                        31,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        32,
+                        "classConstant.nonObject",
+                        "Cannot access constant class on parent.",
+                        null,
+                        true
+                    ],
+                    [
+                        33,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        34,
+                        "phpstan.dumpType",
+                        "Dumped type: 'class'",
+                        null,
+                        false
+                    ],
+                    [
+                        49,
+                        "phpstan.dumpType",
+                        "Dumped type: 'FailedParentMagic\\\\Base'",
+                        null,
+                        false
+                    ],
+                    [
+                        51,
+                        "phpstan.dumpType",
+                        "Dumped type: 37",
+                        null,
+                        false
+                    ],
+                    [
+                        52,
+                        "classConstant.notFound",
+                        "Access to undefined constant FailedParentMagic\\Base::MISSING.",
+                        null,
+                        true
+                    ],
+                    [
+                        53,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        56,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        67,
+                        "phpstan.dumpType",
+                        "Dumped type: 37",
+                        null,
+                        false
+                    ]
+                ]
+            },
+            "expressions": {
+                "68": {
+                    "expression": "$direct = parent::class",
+                    "line": 7,
+                    "type": "class-string",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    }
+                },
+                "78": {
+                    "expression": "parent::class",
+                    "line": 7,
+                    "type": "class-string",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "constant",
+                    "visits": 1
+                },
+                "129": {
+                    "expression": "$ordinary = parent::MISSING",
+                    "line": 9,
+                    "type": "*ERROR*",
+                    "full": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    }
+                },
+                "141": {
+                    "expression": "parent::MISSING",
+                    "line": 9,
+                    "type": "*ERROR*",
+                    "full": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "constant",
+                    "visits": 1
+                },
+                "201": {
+                    "expression": "'after-outside-parent'",
+                    "line": 11,
+                    "type": "'after-outside-parent'",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [
+                            "after-outside-parent"
+                        ],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [
+                            "after-outside-parent"
+                        ],
+                        "objects": []
+                    },
+                    "kind": "marker",
+                    "visits": 1
+                },
+                "295": {
+                    "expression": "$direct = parent::class",
+                    "line": 18,
+                    "type": "class-string",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    }
+                },
+                "305": {
+                    "expression": "parent::class",
+                    "line": 18,
+                    "type": "class-string",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "constant",
+                    "visits": 1
+                },
+                "364": {
+                    "expression": "$upper = PARENT::CLASS",
+                    "line": 20,
+                    "type": "class-string",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    }
+                },
+                "373": {
+                    "expression": "PARENT::CLASS",
+                    "line": 20,
+                    "type": "class-string",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "constant",
+                    "visits": 1
+                },
+                "431": {
+                    "expression": "$_syntacticSelector = parent::{($syntacticName = 'class')}",
+                    "line": 22,
+                    "type": "mixed",
+                    "full": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    }
+                },
+                "453": {
+                    "expression": "parent::{($syntacticName = 'class')}",
+                    "line": 22,
+                    "type": "mixed",
+                    "full": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "constant",
+                    "visits": 1
+                },
+                "463": {
+                    "expression": "$syntacticName = 'class'",
+                    "line": 22,
+                    "type": "'class'",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [
+                            "class"
+                        ],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [
+                            "class"
+                        ],
+                        "objects": []
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [
+                            "class"
+                        ],
+                        "objects": []
+                    }
+                },
+                "590": {
+                    "expression": "$ordinary = parent::MISSING",
+                    "line": 25,
+                    "type": "*ERROR*",
+                    "full": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    }
+                },
+                "602": {
+                    "expression": "parent::MISSING",
+                    "line": 25,
+                    "type": "*ERROR*",
+                    "full": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "constant",
+                    "visits": 1
+                },
+                "665": {
+                    "expression": "$holder = new parent()",
+                    "line": 27,
+                    "type": "parent",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    }
+                },
+                "697": {
+                    "expression": "$dynamic = ($copy = $holder)::class",
+                    "line": 28,
+                    "type": "class-string&literal-string",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    }
+                },
+                "708": {
+                    "expression": "($copy = $holder)::class",
+                    "line": 28,
+                    "type": "class-string&literal-string",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "constant",
+                    "visits": 1
+                },
+                "709": {
+                    "expression": "$copy = $holder",
+                    "line": 28,
+                    "type": "parent",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    }
+                },
+                "779": {
+                    "expression": "$missing = $holder::MISSING",
+                    "line": 30,
+                    "type": "*ERROR*",
+                    "full": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    }
+                },
+                "790": {
+                    "expression": "$holder::MISSING",
+                    "line": 30,
+                    "type": "*ERROR*",
+                    "full": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "constant",
+                    "visits": 1
+                },
+                "853": {
+                    "expression": "$_selector = $holder::{($name = 'class')}",
+                    "line": 32,
+                    "type": "mixed",
+                    "full": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    }
+                },
+                "866": {
+                    "expression": "$holder::{($name = 'class')}",
+                    "line": 32,
+                    "type": "mixed",
+                    "full": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "constant",
+                    "visits": 1
+                },
+                "877": {
+                    "expression": "$name = 'class'",
+                    "line": 32,
+                    "type": "'class'",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [
+                            "class"
+                        ],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [
+                            "class"
+                        ],
+                        "objects": []
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [
+                            "class"
+                        ],
+                        "objects": []
+                    }
+                },
+                "982": {
+                    "expression": "'after-parentless'",
+                    "line": 35,
+                    "type": "'after-parentless'",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [
+                            "after-parentless"
+                        ],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [
+                            "after-parentless"
+                        ],
+                        "objects": []
+                    },
+                    "kind": "marker",
+                    "visits": 1
+                },
+                "1132": {
+                    "expression": "$direct = parent::class",
+                    "line": 48,
+                    "type": "'FailedParentMagic\\\\Base'",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [
+                            "FailedParentMagic\\Base"
+                        ],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [
+                            "FailedParentMagic\\Base"
+                        ],
+                        "objects": []
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [
+                            "FailedParentMagic\\Base"
+                        ],
+                        "objects": []
+                    }
+                },
+                "1142": {
+                    "expression": "parent::class",
+                    "line": 48,
+                    "type": "'FailedParentMagic\\\\Base'",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [
+                            "FailedParentMagic\\Base"
+                        ],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [
+                            "FailedParentMagic\\Base"
+                        ],
+                        "objects": []
+                    },
+                    "kind": "constant",
+                    "visits": 1
+                },
+                "1201": {
+                    "expression": "$ordinary = parent::NUMBER",
+                    "line": 50,
+                    "type": "37",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [
+                            37
+                        ],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [
+                            37
+                        ],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [
+                            37
+                        ],
+                        "strings": [],
+                        "objects": []
+                    }
+                },
+                "1213": {
+                    "expression": "parent::NUMBER",
+                    "line": 50,
+                    "type": "37",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [
+                            37
+                        ],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [
+                            37
+                        ],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "constant",
+                    "visits": 1
+                },
+                "1275": {
+                    "expression": "$missing = parent::MISSING",
+                    "line": 52,
+                    "type": "*ERROR*",
+                    "full": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    }
+                },
+                "1286": {
+                    "expression": "parent::MISSING",
+                    "line": 52,
+                    "type": "*ERROR*",
+                    "full": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "constant",
+                    "visits": 1
+                },
+                "1348": {
+                    "expression": "$holder = new parent()",
+                    "line": 54,
+                    "type": "FailedParentMagic\\Base",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": [
+                            "FailedParentMagic\\Base"
+                        ]
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": [
+                            "FailedParentMagic\\Base"
+                        ]
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": [
+                            "FailedParentMagic\\Base"
+                        ]
+                    }
+                },
+                "1380": {
+                    "expression": "$dynamic = ($copy = $holder)::NUMBER",
+                    "line": 55,
+                    "type": "mixed",
+                    "full": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    }
+                },
+                "1391": {
+                    "expression": "($copy = $holder)::NUMBER",
+                    "line": 55,
+                    "type": "mixed",
+                    "full": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "constant",
+                    "visits": 1
+                },
+                "1392": {
+                    "expression": "$copy = $holder",
+                    "line": 55,
+                    "type": "FailedParentMagic\\Base",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": [
+                            "FailedParentMagic\\Base"
+                        ]
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": [
+                            "FailedParentMagic\\Base"
+                        ]
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": [
+                            "FailedParentMagic\\Base"
+                        ]
+                    }
+                },
+                "1468": {
+                    "expression": "'after-valid-parent'",
+                    "line": 57,
+                    "type": "'after-valid-parent'",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [
+                            "after-valid-parent"
+                        ],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [
+                            "after-valid-parent"
+                        ],
+                        "objects": []
+                    },
+                    "kind": "marker",
+                    "visits": 1
+                },
+                "1605": {
+                    "expression": "$ordinary = Grandchild::NUMBER",
+                    "line": 66,
+                    "type": "37",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [
+                            37
+                        ],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [
+                            37
+                        ],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [
+                            37
+                        ],
+                        "strings": [],
+                        "objects": []
+                    }
+                },
+                "1617": {
+                    "expression": "Grandchild::NUMBER",
+                    "line": 66,
+                    "type": "37",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [
+                            37
+                        ],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [
+                            37
+                        ],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "constant",
+                    "visits": 1
+                },
+                "1680": {
+                    "expression": "'after-inherited'",
+                    "line": 68,
+                    "type": "'after-inherited'",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [
+                            "after-inherited"
+                        ],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [
+                            "after-inherited"
+                        ],
+                        "objects": []
+                    },
+                    "kind": "marker",
+                    "visits": 1
+                }
+            }
         }
     }
 }

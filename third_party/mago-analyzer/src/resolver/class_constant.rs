@@ -85,6 +85,15 @@ where
             result.has_ambiguous_path = true;
             if class_resolution.origin == ResolutionOrigin::Invalid {
                 result.has_invalid_path = true;
+
+                // Unresolved syntactic parent::class is ClassStringType, not the dynamic
+                // NonexistentParentClassType projection (class-string&literal-string).
+                if matches!(class_expr.unparenthesized(), Expression::Parent(_))
+                    && matches!(selectors.as_slice(), [ResolvedSelector::Identifier(name)]
+                        if name.as_bytes().eq_ignore_ascii_case(b"class"))
+                {
+                    result.constants.push(ResolvedConstant { const_type: get_class_string(), declaration: None });
+                }
             }
 
             continue;

@@ -3343,3 +3343,21 @@ readers reject older minor versions before decoding. The real PHP worker round-t
 the sentinel, its literal class string, an object/sentinel union, and a valid inherited-parent object.
 The public fixture's observations and complete level-0, level-5 and level-9 diagnostics come from the
 hash-pinned PHPStan capture under `tests/fixtures/failed-instantiation/`.
+
+## Unresolved syntactic parent class constants
+
+`InitializerExprTypeResolver::getClassConstFetchTypeByReflection` returns `ClassStringType` for
+unresolved syntactic `parent::class`, including outside class scope. The reference is PHPStan 2.3.1,
+source revision `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`, lines 2687–2691.
+The constant resolver retains that value after class-name resolution reports the invalid parent.
+Ordinary missing constants still return ErrorType. Dynamic constant names still return mixed,
+and a dynamic `NonexistentParent` holder still projects to `class-string&literal-string`.
+
+`failed_class_constants` retains the original seven-record public boundary input and expectations.
+Its additional hash-pinned fixture checks complete diagnostics at levels 0, 8, and 10, raw values,
+assigned holders, continuation, and once-only receiver and selector assignments in both native modes.
+The controls include outside-class and parentless access, uppercase keywords, dynamic selectors,
+valid parents, inherited constants, and ordinary missing constants. Class-name validation, native
+inference, and expression evaluation order stay unchanged.
+The separate missing literal-string marker on bounded dynamic `class-string<T>` results remains
+outside this syntactic-parent correction.

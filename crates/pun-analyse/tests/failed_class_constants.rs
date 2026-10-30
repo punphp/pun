@@ -17,6 +17,7 @@ use mago_analyzer::plugin::{
 use mago_analyzer::settings::Settings;
 use mago_codex::populator::populate_codebase;
 use mago_codex::scanner::scan_program;
+use mago_codex::ttype::TType;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::union::{NeverKind, TUnion};
 use mago_database::file::{File, FileType};
@@ -78,6 +79,7 @@ fn identity(ty: &TUnion) -> Value {
 struct Observed {
     expressions: BTreeMap<String, Value>,
     native: BTreeMap<String, Option<Value>>,
+    descriptions: BTreeMap<String, String>,
 }
 
 struct Observer(Arc<Mutex<Observed>>, Vec<u8>, Option<u32>);
@@ -120,6 +122,14 @@ impl ExpressionHook for Observer {
             .expressions
             .get(&key)
             .map_or(1, |value| value["visits"].as_u64().unwrap() + 1);
+        observed.descriptions.insert(
+            key.clone(),
+            context
+                .get_expression_type(expression)
+                .unwrap()
+                .get_id()
+                .to_string(),
+        );
         let mut record = json!({"full": identity(context.get_expression_type(expression).unwrap()), "visits": visits});
         if let Expression::Assignment(assignment) = expression
             && let Expression::Variable(Variable::Direct(variable)) = assignment.lhs
@@ -217,6 +227,16 @@ fn native_case(name: &str, expected: &Value, native: bool, fail_selector: bool) 
     let observed = observed.lock().unwrap();
     let mut wanted = BTreeMap::new();
     for (offset, record) in expected["expressions"].as_object().unwrap() {
+        if matches!(
+            record["type"].as_str(),
+            Some("class-string" | "class-string&literal-string")
+        ) {
+            assert_eq!(
+                observed.descriptions.get(offset).map(String::as_str),
+                record["type"].as_str(),
+                "unnamed class-string kind for {name}: {record}, native={native}"
+            );
+        }
         let mut value = json!({"full": record["full"], "visits": record["visits"]});
         if let Some(assigned) = record.get("assigned") {
             value["assigned"] = assigned.clone();
@@ -266,9 +286,12 @@ fn native_case(name: &str, expected: &Value, native: bool, fail_selector: bool) 
             "outOfClass.self" => Some(IssueCode::SelfOutsideClassScope),
             "outOfClass.static" => Some(IssueCode::StaticOutsideClassScope),
             "outOfClass.parent" => Some(IssueCode::ParentOutsideClassScope),
+            "class.noParent" => Some(IssueCode::InvalidParentType),
             "classConstant.nameType" => Some(IssueCode::InvalidConstantSelector),
             "classConstant.dynamicString" => Some(IssueCode::InvalidClassConstantOnString),
             "deadCode.unreachable" => Some(IssueCode::UnevaluatedCode),
+            // These are public PHPStan rules, not native resolver diagnostics.
+            "classConstant.nonObject" => None,
             "phpstan.dumpType" => None,
             identifier => panic!("unclassified oracle diagnostic: {identifier}: {error}"),
         };
@@ -276,10 +299,11 @@ fn native_case(name: &str, expected: &Value, native: bool, fail_selector: bool) 
             wanted.push((error[0].as_i64().unwrap(), code.as_str()));
         }
     }
-    // The existing native mixed warning must still distinguish genuine mixed from ErrorType.
+    // Native mixed warnings distinguish genuine mixed from ErrorType and exempt $_ variables.
     for record in expected["expressions"].as_object().unwrap().values() {
-        if record["expression"] == "$genuine = $unknown" {
-            assert_eq!(record["assigned"]["mixed"], true);
+        if record["assigned"]["mixed"] == true
+            && !record["expression"].as_str().unwrap().starts_with("$_")
+        {
             wanted.push((
                 record["line"].as_i64().unwrap(),
                 IssueCode::MixedAssignment.as_str(),
@@ -377,4 +401,35 @@ fn complete_public_diagnostics_match_the_pinned_oracle() {
             );
         }
     }
+}
+
+#[test]
+fn original_prerequisite_boundary_keeps_all_seven_complete_records() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/failed-class-constants/boundary-input");
+    let options = pun_phpstan::config::Options {
+        config: Some(root.join("phpstan.neon").to_string_lossy().into_owned()),
+        ..pun_phpstan::config::Options::for_project(&root.to_string_lossy())
+    };
+    let config = pun_phpstan::config::resolve(&options).unwrap();
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/failed-class-constants/boundary-input/expected-phpstan.json"
+    ))
+    .unwrap();
+    let mut actual: Vec<_> = pun_analyse::analyse(&root, &config)
+        .unwrap()
+        .into_iter()
+        .map(|error| {
+            json!({
+                "file": Path::new(&error.file).file_name().unwrap().to_str().unwrap(),
+                "line": error.line, "identifier": error.identifier,
+                "message": error.message, "tip": error.tip,
+            })
+        })
+        .collect();
+    let mut wanted = expected["errors"].as_array().unwrap().clone();
+    assert_eq!(wanted.len(), 7);
+    actual.sort_by_key(Value::to_string);
+    wanted.sort_by_key(Value::to_string);
+    assert_eq!(actual, wanted);
 }

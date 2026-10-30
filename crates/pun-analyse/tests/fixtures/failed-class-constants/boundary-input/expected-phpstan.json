@@ -1,0 +1,54 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "controls.php",
+   "line": 7,
+   "identifier": "function.alreadyNarrowedType",
+   "message": "Call to function in_array() with arguments 1, array{second: 2, first: 1} and true will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 26,
+   "identifier": "parameter.noParent",
+   "message": "Parameter $value of method PrerequisiteBoundaryValidation\\MissingParent::value() has invalid type parent.",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 28,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: parent",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 29,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: parent",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 29,
+   "identifier": "class.noParent",
+   "message": "PrerequisiteBoundaryValidation\\MissingParent::value() calls new parent but PrerequisiteBoundaryValidation\\MissingParent does not extend any class.",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 30,
+   "identifier": "class.noParent",
+   "message": "Access to parent::class but PrerequisiteBoundaryValidation\\MissingParent does not extend any class.",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 30,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: class-string",
+   "tip": null
+  }
+ ]
+}
