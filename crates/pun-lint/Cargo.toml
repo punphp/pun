@@ -28,6 +28,7 @@ mago-php-version.workspace = true
 mago-prelude.workspace = true
 pcre2.workspace = true
 serde_json.workspace = true
+rayon.workspace = true
 
 [dev-dependencies]
 pun-config.workspace = true

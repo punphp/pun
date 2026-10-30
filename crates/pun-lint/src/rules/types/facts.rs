@@ -44,6 +44,7 @@ use mago_syntax::cst::{
 };
 use mago_syntax::parser::parse_file;
 use pun_problem::Span;
+use rayon::prelude::*;
 
 use crate::Context;
 
@@ -109,39 +110,35 @@ pub fn project_codebase(files: &[(String, String)], php_version: u32) -> Arc<Pro
 pub fn project_codebase_autoloaded(
     files: &[(String, String)],
     php_version: u32,
-    autoload: &dyn Fn(&[u8]) -> Option<(String, String)>,
+    autoload: &(dyn Fn(&[u8]) -> Option<(String, String)> + Sync),
 ) -> Arc<ProjectCodebase> {
     let version = php_version_of(php_version);
     let (prelude, references) = &*PRELUDE;
     let (mut codebase, mut documented) = (prelude.clone(), prelude.clone());
     stub_preg_match(&mut codebase, version);
     stub_preg_match(&mut documented, version);
+    let kind = |path: &str| match is_vendor_path(path) {
+        true => FileType::Vendored,
+        false => FileType::Host,
+    };
+    let scans: Vec<Scanned> = (files.par_iter())
+        .map(|(path, code)| Scanned::new(path, code, kind(path), version))
+        .collect();
+    let mut prefetched = prefetch(&scans, version, autoload);
     let mut named = Vec::new();
-    for (path, code) in files {
-        let kind = if is_vendor_path(path) {
-            FileType::Vendored
-        } else {
-            FileType::Host
-        };
-        let file = mago_file(path, &without_docblocks(code), kind);
-        remember(file.id, path, code);
-        remember_phar(&file, path);
-        named.extend(scan_into(&mut codebase, &file, version));
-        let file = mago_file(path, code, kind);
-        scan_into(&mut documented, &file, version);
+    for ((path, code), scanned) in files.iter().zip(scans) {
+        named.extend(scanned.add(path, code, &mut codebase, &mut documented));
     }
     let mut asked: HashSet<Vec<u8>> = HashSet::new();
     while let Some(name) = named.pop() {
         if !asked.insert(name.clone()) || codebase.get_class_like(&name).is_some() {
             continue;
         }
-        if let Some((path, code)) = autoload(&name) {
-            let file = mago_file(&path, &without_docblocks(&code), FileType::Vendored);
-            remember(file.id, &path, &code);
-            remember_phar(&file, &path);
-            named.extend(scan_into(&mut codebase, &file, version));
-            let file = mago_file(&path, &code, FileType::Vendored);
-            scan_into(&mut documented, &file, version);
+        let loaded = (prefetched.found.remove(&name)).unwrap_or_else(|| autoload(&name));
+        if let Some((path, code)) = loaded {
+            let scanned = (prefetched.scans.remove(&path))
+                .unwrap_or_else(|| Scanned::new(&path, &code, FileType::Vendored, version));
+            named.extend(scanned.add(&path, &code, &mut codebase, &mut documented));
         }
     }
     let populated = |mut codebase: CodebaseMetadata| {
@@ -154,10 +151,113 @@ pub fn project_codebase_autoloaded(
         );
         Arc::new(codebase)
     };
-    Arc::new(ProjectCodebase {
-        native: populated(codebase),
-        documented: populated(documented),
-    })
+    let (native, documented) = rayon::join(|| populated(codebase), || populated(documented));
+    Arc::new(ProjectCodebase { native, documented })
+}
+
+/// A file's symbols as [`scan_symbols`] finds them: with its docblocks blanked out, and as written.
+struct Scanned {
+    id: FileId,
+    native: CodebaseMetadata,
+    documented: CodebaseMetadata,
+    names: Vec<Vec<u8>>,
+}
+
+impl Scanned {
+    fn new(path: &str, code: &str, kind: FileType, version: PHPVersion) -> Self {
+        let file = mago_file(path, &without_docblocks(code), kind);
+        let (native, names) = scan_symbols(&file, version);
+        let (documented, _) = scan_symbols(&mago_file(path, code, kind), version);
+        Self {
+            id: file.id,
+            native,
+            documented,
+            names,
+        }
+    }
+
+    /// Add the symbols to the two codebases, remember the file, and return the names it resolves.
+    fn add(
+        self,
+        path: &str,
+        code: &str,
+        native: &mut CodebaseMetadata,
+        documented: &mut CodebaseMetadata,
+    ) -> Vec<Vec<u8>> {
+        remember(self.id, path, code);
+        remember_phar(self.id, path);
+        native.extend(self.native);
+        documented.extend(self.documented);
+        self.names
+    }
+}
+
+/// The files the autoload walk of [`project_codebase_autoloaded`] is likely to scan, read and scanned in parallel
+/// ahead of it: the walk merges them one at a time in its own order, and reads and scans a file itself when the
+/// guess missed it.
+struct Prefetched {
+    /// What `autoload` gave for a class name.
+    found: HashMap<Vec<u8>, Option<(String, String)>>,
+    /// The scan of an autoloaded file, by path.
+    scans: HashMap<String, Scanned>,
+}
+
+/// [`Prefetched`] for the walk that starts from `scans`, a level of the autoload graph at a time: each class a scanned
+/// file names that no scanned file declares and PHP doesn't is looked up, and the files found are scanned.
+fn prefetch(
+    scans: &[Scanned],
+    version: PHPVersion,
+    autoload: &(dyn Fn(&[u8]) -> Option<(String, String)> + Sync),
+) -> Prefetched {
+    let (mut declared, mut seen) = (HashSet::new(), HashSet::new());
+    let mut names = unknown(scans.iter(), &mut declared, &mut seen);
+    let (mut found, mut by_path, mut paths) = (HashMap::new(), HashMap::new(), HashSet::new());
+    while !names.is_empty() {
+        let looked_up: Vec<_> = (names.into_par_iter())
+            .map(|name| {
+                let file = autoload(&name);
+                (name, file)
+            })
+            .collect();
+        let mut files = Vec::new();
+        for (name, file) in looked_up {
+            if let Some((path, code)) = &file
+                && paths.insert(path.clone())
+            {
+                files.push((path.clone(), code.clone()));
+            }
+            found.insert(name, file);
+        }
+        let level: Vec<(String, Scanned)> = (files.into_par_iter())
+            .map(|(path, code)| {
+                let scanned = Scanned::new(&path, &code, FileType::Vendored, version);
+                (path, scanned)
+            })
+            .collect();
+        names = unknown(level.iter().map(|(_, s)| s), &mut declared, &mut seen);
+        by_path.extend(level);
+    }
+    Prefetched {
+        found,
+        scans: by_path,
+    }
+}
+
+/// The class names `level` resolves that neither a file scanned so far (`declared`, which takes the level's classes)
+/// nor PHP declares and that aren't in `seen` yet, added to `seen`.
+fn unknown<'a>(
+    level: impl Iterator<Item = &'a Scanned> + Clone,
+    declared: &mut HashSet<Vec<u8>>,
+    seen: &mut HashSet<Vec<u8>>,
+) -> Vec<Vec<u8>> {
+    for s in level.clone() {
+        declared.extend(s.native.class_likes.keys().map(|k| k.as_bytes().to_vec()));
+    }
+    (level.flat_map(|s| &s.names))
+        .filter(|n| !declared.contains(*n) && PRELUDE.0.get_class_like(n).is_none())
+        .filter(|n| seen.insert(n.to_vec()))
+        .cloned()
+        .collect()
 }
 
 /// `preg_match()` and `preg_match_all()` with the `$flags` and `$matches` of PHPStan's signatures
@@ -202,9 +302,9 @@ pub(crate) fn is_vendor_file(file: FileId) -> bool {
 /// `RemoveExtraParametersRector` takes for PHPStan's own (its built-in stubs).
 static PHPSTAN_PHAR: LazyLock<RwLock<HashSet<FileId>>> = LazyLock::new(Default::default);
 
-fn remember_phar(file: &File, path: &str) {
+fn remember_phar(file: FileId, path: &str) {
     if path.contains("phpstan.phar") {
-        (PHPSTAN_PHAR.write().unwrap_or_else(|e| e.into_inner())).insert(file.id);
+        (PHPSTAN_PHAR.write().unwrap_or_else(|e| e.into_inner())).insert(file);
     }
 }
 
@@ -1106,9 +1206,9 @@ fn mago_file(path: &str, code: &str, file_type: FileType) -> File {
     )
 }
 
-/// The symbols of `file`, added to `codebase`, and the names the file resolves, ASCII-lowercased. Mago trips debug
-/// assertions on some code; a scan that panics adds none.
-fn scan_into(codebase: &mut CodebaseMetadata, file: &File, version: PHPVersion) -> Vec<Vec<u8>> {
+/// The symbols of `file`, and the names the file resolves, ASCII-lowercased. Mago trips debug
+/// assertions on some code; a scan that panics has none.
+fn scan_symbols(file: &File, version: PHPVersion) -> (CodebaseMetadata, Vec<Vec<u8>>) {
     let arena = LocalArena::new();
     let program = parse_file(&arena, file);
     let names = NameResolver::new(&arena).resolve(program);
@@ -1121,11 +1221,10 @@ fn scan_into(codebase: &mut CodebaseMetadata, file: &File, version: PHPVersion) 
             !class.as_bytes().is_empty() || PRELUDE.0.get_function(name.as_bytes()).is_none()
         });
     }
-    codebase.extend(scanned);
-    names
-        .iter()
+    let names = (names.iter())
         .map(|(_, _, name, _)| name.to_ascii_lowercase())
-        .collect()
+        .collect();
+    (scanned, names)
 }
 
 /// Whether `path` has a `vendor/` directory (Rector: its path contains `/vendor/`).

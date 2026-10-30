@@ -1520,6 +1520,7 @@ dependencies = [
  "punphp-phpstan",
  "punphp-problem",
  "punphp-tokens",
+ "rayon",
  "regex",
  "serde_json",
 ]
