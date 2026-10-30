@@ -294,12 +294,15 @@ fn loop_body(c: &Checker, s: &[Statement], condition: Option<bool>, do_while: bo
     result
 }
 
-/// getExitPointsForOuterLoop(): a multi-level jump continues as a new one level lower, without a position.
+/// getExitPointsForOuterLoop(): drop level 1; decrement above 2, otherwise retain a synthetic level 1.
 fn outer_loop(jumps: &mut Vec<(Option<Span>, &'static str, u64)>) {
     jumps.retain_mut(|(span, _, n)| {
-        *n -= 1;
+        if *n == 1 {
+            return false;
+        }
+        *n = if *n > 2 { *n - 1 } else { 1 };
         *span = None;
-        *n > 0
+        true
     });
 }
 

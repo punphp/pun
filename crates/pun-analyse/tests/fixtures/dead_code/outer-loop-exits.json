@@ -1,0 +1,102 @@
+{
+    "phar_sha256": "85157dba3d95d77ca603d2b7303aa78a538f9e3b56ccad07dd794c53aa96d1ae",
+    "source_sha256": "16f50ba32a0e04c41e7771041c6d9cc2020329c77ca392fb0ac7df2a5ac9b39c",
+    "errors": [
+        [
+            "outer-loop-exits.php",
+            -1,
+            "finally.exitPoint",
+            "This break is overwritten by a different one in the finally block below.",
+            null,
+            true
+        ],
+        [
+            "outer-loop-exits.php",
+            -1,
+            "finally.exitPoint",
+            "This break is overwritten by a different one in the finally block below.",
+            null,
+            true
+        ],
+        [
+            "outer-loop-exits.php",
+            -1,
+            "finally.exitPoint",
+            "This continue is overwritten by a different one in the finally block below.",
+            null,
+            true
+        ],
+        [
+            "outer-loop-exits.php",
+            -1,
+            "finally.exitPoint",
+            "This continue is overwritten by a different one in the finally block below.",
+            null,
+            true
+        ],
+        [
+            "outer-loop-exits.php",
+            13,
+            "finally.exitPoint",
+            "The overwriting return is on this line.",
+            null,
+            true
+        ],
+        [
+            "outer-loop-exits.php",
+            26,
+            "finally.exitPoint",
+            "The overwriting return is on this line.",
+            null,
+            true
+        ],
+        [
+            "outer-loop-exits.php",
+            63,
+            "finally.exitPoint",
+            "The overwriting return is on this line.",
+            null,
+            true
+        ],
+        [
+            "outer-loop-exits.php",
+            78,
+            "finally.exitPoint",
+            "The overwriting return is on this line.",
+            null,
+            true
+        ],
+        [
+            "outer-loop-exits.php",
+            89,
+            "finally.exitPoint",
+            "This break is overwritten by a different one in the finally block below.",
+            null,
+            true
+        ],
+        [
+            "outer-loop-exits.php",
+            91,
+            "finally.exitPoint",
+            "The overwriting return is on this line.",
+            null,
+            true
+        ],
+        [
+            "outer-loop-exits.php",
+            102,
+            "finally.exitPoint",
+            "This continue is overwritten by a different one in the finally block below.",
+            null,
+            true
+        ],
+        [
+            "outer-loop-exits.php",
+            104,
+            "finally.exitPoint",
+            "The overwriting return is on this line.",
+            null,
+            true
+        ]
+    ]
+}

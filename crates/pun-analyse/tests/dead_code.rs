@@ -251,3 +251,39 @@ fn function_certainty_tips_match_phpstan_full_records() {
         serde_json::to_string_pretty(&differences).unwrap()
     );
 }
+
+/// PHPStan retains zero as a synthetic level-one exit, drops local level-one jumps, and preserves direct positions.
+#[test]
+fn outer_loop_exit_points_match_phpstan_full_records() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/dead_code");
+    let expected: Value =
+        serde_json::from_str(include_str!("fixtures/dead_code/outer-loop-exits.json")).unwrap();
+    let mut project = Project::new(vec![root.join("outer-loop-exits.php")], vec![]);
+    project.level = 4;
+    project.php_version = 80500;
+    let analysis = pun_analyse::analyse_project(&project).unwrap();
+    let mut actual: Vec<_> = analysis
+        .errors
+        .into_iter()
+        .map(|error| {
+            (
+                Path::new(&error.file)
+                    .strip_prefix(&root)
+                    .unwrap()
+                    .to_str()
+                    .unwrap()
+                    .to_owned(),
+                error.line,
+                error.identifier,
+                error.message,
+                error.tip,
+                error.can_be_ignored,
+            )
+        })
+        .collect();
+    actual.sort();
+    let actual = serde_json::to_value(actual).unwrap();
+    println!("outer-loop-exit-records={actual}");
+    assert!(analysis.general.is_empty(), "{:?}", analysis.general);
+    assert_eq!(actual, expected["errors"]);
+}
