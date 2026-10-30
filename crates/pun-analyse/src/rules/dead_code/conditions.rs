@@ -29,7 +29,7 @@ use super::super::declarations::doc_before;
 use super::super::members;
 use mago_codex::symbol::SymbolKind;
 use pun_phpstan::ignore::Error;
-use pun_phpstan::types::{Accessory, Level, NeverKind, Tri, Type, float_to_string, is_super_type_of, recommended_level, union};
+use pun_phpstan::types::{Accessory, Level, NeverKind, Tri, Type, float_to_string, intersect, is_super_type_of, recommended_level, union};
 use super::finally;
 use super::no_discard::unparen;
 use super::noop::{self, asserts, function_of};
@@ -1196,8 +1196,8 @@ impl Checker<'_, '_> {
             "in_array" => {
                 let needle = arg(0)?;
                 let haystack = arg(1)?;
-                super::super::declared::with_classes(self, || self.in_array(
-                    needle, haystack, args.arguments.get(2).and_then(|a| self.phpstan_type(a.value())),
+                return super::super::declared::with_classes(self, || self.in_array(
+                    args, types, needle, haystack, args.arguments.get(2).and_then(|a| self.phpstan_type(a.value())),
                 ))
             }
             "method_exists" => self.method_exists(arg(0)?, arg(1)?),
@@ -1236,9 +1236,9 @@ impl Checker<'_, '_> {
         })
     }
 
-    fn in_array(&self, needle: Type, haystack: Type, strict: Option<Type>) -> Option<bool> {
+    fn in_array(&self, args: &ArgumentList, types: CheckTypes, needle: Type, haystack: Type, strict: Option<Type>) -> Option<Option<bool>> {
         if !haystack.is_array().yes() {
-            return None;
+            return Some(None);
         }
         let value = haystack.iterable_value_type();
         let is_enum = |t: &Type| {
@@ -1246,18 +1246,18 @@ impl Checker<'_, '_> {
             !values.is_empty() && values.iter().all(|t| matches!(t, Type::EnumCase(..)))
         };
         if strict != Some(Type::ConstBool(true)) && !is_enum(&needle) && !is_enum(&value) {
-            return None;
+            return Some(None);
         }
         let needles = finite(self, &needle);
         let values = finite(self, &value);
         let needle_super = is_super_type_of(&needle, &value);
         if !has_constant_array(&haystack) {
             if haystack.is_iterable_at_least_once().yes() {
-                return (needles.len() == 1 && values.len() == 1).then(|| decided(needle_super)).flatten();
+                return Some((needles.len() == 1 && values.len() == 1).then(|| decided(needle_super)).flatten());
             }
             if !needle_super.no() {
                 // the array might be empty
-                return None;
+                return Some(None);
             }
         }
         if !matches!(&haystack, Type::ConstArray(a) if a.values.is_empty()) {
@@ -1265,14 +1265,16 @@ impl Checker<'_, '_> {
                 Type::Union(ts) => ts.clone(),
                 t => vec![t.clone()],
             };
-            (arrays.len() != 1 || !matches!(value, Type::Never(_))).then_some(())?;
+            if arrays.len() == 1 && matches!(value, Type::Never(_)) {
+                return Some(None);
+            }
             if !needle_super.no() {
                 if needles.is_empty() {
-                    return None;
+                    return Some(None);
                 }
                 for array in &arrays {
                     // a general array cannot guarantee any specific value is present
-                    let Type::ConstArray(a) = array else { return None };
+                    let Type::ConstArray(a) = array else { return Some(None) };
                     let guaranteed: Vec<Type> = a
                         .values
                         .iter()
@@ -1282,14 +1284,97 @@ impl Checker<'_, '_> {
                         .map(|[v]| v)
                         .collect();
                     if !needles.iter().all(|n| guaranteed.iter().any(|g| is_super_type_of(g, n).yes())) {
-                        return None;
+                        return Some(None);
                     }
                 }
             }
             // (a needle that is a supertype of the values has finite types, so the values have them too)
         }
-        // the narrowed needle and the non-empty haystack
-        decided(is_super_type_of(&value, &needle).and(haystack.is_iterable_at_least_once()))
+        // The specialized checks fall through to the TypeSpecifier, not the call's runtime value.
+        self.in_array_narrowing(args, types, &needle, &haystack)
+    }
+
+    /// InArrayFunctionTypeSpecifyingExtension in truthy context, then ImpossibleCheckTypeHelper's sure entries.
+    /// None pins are SpecifiedTypes' deferred alternatives: the helper does not inspect those entries.
+    fn in_array_narrowing(&self, args: &ArgumentList, types: CheckTypes, needle: &Type, haystack: &Type) -> Option<Option<bool>> {
+        let left = unparen(args.arguments.first()?.value());
+        let right = unparen(args.arguments.get(1)?.value());
+        let elements = match right {
+            Expression::Array(a) => Some(&a.elements),
+            Expression::LegacyArray(a) => Some(&a.elements),
+            _ => None,
+        };
+        let Some(elements) = elements.filter(|es| !es.is_empty() && !es.iter().any(|e| matches!(e, ArrayElement::Variadic(_)))) else {
+            // Nonliteral arrays and unpacking use create(needle, value) plus the non-empty array entry.
+            return Some(decided(is_super_type_of(&haystack.iterable_value_type(), needle).and(haystack.is_iterable_at_least_once())));
+        };
+        let mut merged: Option<HashMap<String, (Type, Option<Type>, Tri)>> = None;
+        for element in elements.iter() {
+            let item = unparen(element.get_value()?);
+            let value = types.argument(self, item)?;
+            if elements.len() == 1 {
+                // A single comparison retains its root expression; multiple comparisons clear it.
+                return Some(if finite(self, needle).len() == 1 && *needle == value {
+                    Some(true)
+                } else {
+                    is_super_type_of(needle, &value).no().then_some(false)
+                });
+            }
+            let mut pins = HashMap::new();
+            // IdenticalNarrowingHelper: literal null/bool sides first, then constant-bool types.
+            let constant = |e: &Expression| matches!(e, Expression::Literal(Literal::True(_) | Literal::False(_) | Literal::Null(_)));
+            let fetch = |e: &Expression| constant(e) || matches!(e, Expression::ConstantAccess(_));
+            if constant(left) || (matches!(needle, Type::ConstBool(_)) && !fetch(item)) {
+                self.in_array_pin(&mut pins, item, &value, needle, matches!(needle, Type::ConstBool(_)))?;
+            } else if constant(item) || (matches!(value, Type::ConstBool(_)) && !fetch(left)) {
+                self.in_array_pin(&mut pins, left, needle, &value, matches!(value, Type::ConstBool(_)))?;
+            } else {
+                let left_single = finite(self, needle).len() == 1;
+                let right_single = finite(self, &value).len() == 1;
+                if left_single || !right_single {
+                    self.in_array_pin(&mut pins, item, &value, needle, false)?;
+                }
+                if right_single || !left_single {
+                    self.in_array_pin(&mut pins, left, needle, &value, false)?;
+                }
+            }
+            // SpecifiedTypes::intersectWith(): only subjects constrained by every alternative survive.
+            if let Some(merged) = &mut merged {
+                merged.retain(|key, (_, pin, _)| {
+                    let Some((_, other, _)) = pins.get(key) else { return false };
+                    *pin = pin.take().zip(other.clone()).map(|(a, b)| union(vec![a, b]));
+                    true
+                });
+            } else {
+                merged = Some(pins);
+            }
+        }
+        let results: Vec<_> = merged?.into_values().filter_map(|(given, pin, defined)| {
+            pin.map(|pin| if defined.yes() { is_super_type_of(&pin, &given) } else { Tri::Maybe })
+        }).collect();
+        Some(results.into_iter().reduce(Tri::and).and_then(decided))
+    }
+
+    /// createSubjectTypes(), including assignment fan-out and the subject's own boolean narrowing.
+    fn in_array_pin(&self, pins: &mut HashMap<String, (Type, Option<Type>, Tri)>, expression: &Expression, given: &Type, pin: &Type, boolean: bool) -> Option<()> {
+        let expression = unparen(expression);
+        if let Expression::Assignment(a) = expression {
+            if !a.operator.is_assign() { return None; }
+            self.in_array_pin(pins, a.lhs, given, pin, boolean)?;
+            return self.in_array_pin(pins, a.rhs, given, pin, false);
+        }
+        let (own_boolean, defined) = match expression {
+            Expression::Variable(Variable::Direct(_)) => (true, self.variables.reads.get(&expression.span()).map_or(Tri::Maybe, |r| r.1)),
+            Expression::Literal(Literal::True(_) | Literal::False(_) | Literal::Null(_)) | Expression::ConstantAccess(_) => (true, Tri::Yes),
+            Expression::Literal(_) => (false, Tri::Yes),
+            // Other handlers can narrow dependencies or decline impure values; no substitute scope is available.
+            _ => return None,
+        };
+        let pin = (!(boolean && own_boolean)).then(|| pin.clone());
+        pins.entry(noop::print(self, expression)).and_modify(|(_, old, _)| {
+            *old = old.take().zip(pin.clone()).map(|(a, b)| intersect(vec![a, b]));
+        }).or_insert_with(|| (given.clone(), pin, defined));
+        Some(())
     }
 
     /// `ObjectType::hasMethod()`, with whether the class declares the method natively.

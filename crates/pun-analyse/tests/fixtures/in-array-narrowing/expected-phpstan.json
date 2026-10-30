@@ -1,0 +1,157 @@
+{
+    "0": [],
+    "4": [
+        {
+            "file": "$ROOT/decisions.php",
+            "line": 22,
+            "identifier": "function.alreadyNarrowedType",
+            "message": "Call to function in_array() with arguments true, array{true} and true will always evaluate to true.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "$ROOT/decisions.php",
+            "line": 27,
+            "identifier": "function.impossibleType",
+            "message": "Call to function in_array() with arguments false, array{true} and true will always evaluate to false.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "$ROOT/decisions.php",
+            "line": 38,
+            "identifier": "function.alreadyNarrowedType",
+            "message": "Call to function in_array() with arguments bool, array{true, false} and true will always evaluate to true.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "$ROOT/decisions.php",
+            "line": 44,
+            "identifier": "function.alreadyNarrowedType",
+            "message": "Call to function in_array() with arguments 1|2, array{1, 2} and true will always evaluate to true.",
+            "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.",
+            "ignorable": true
+        },
+        {
+            "file": "$ROOT/decisions.php",
+            "line": 62,
+            "identifier": "function.alreadyNarrowedType",
+            "message": "Call to function in_array() with arguments 1|'one', array{1, 'one'} and true will always evaluate to true.",
+            "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.",
+            "ignorable": true
+        },
+        {
+            "file": "$ROOT/decisions.php",
+            "line": 73,
+            "identifier": "function.alreadyNarrowedType",
+            "message": "Call to function in_array() with arguments bool, array{true, false} and true will always evaluate to true.",
+            "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.",
+            "ignorable": true
+        },
+        {
+            "file": "$ROOT/decisions.php",
+            "line": 85,
+            "identifier": "function.alreadyNarrowedType",
+            "message": "Call to function in_array() with arguments true, array{0: true, 1?: false} and true will always evaluate to true.",
+            "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.",
+            "ignorable": true
+        },
+        {
+            "file": "$ROOT/decisions.php",
+            "line": 91,
+            "identifier": "function.alreadyNarrowedType",
+            "message": "Call to function in_array() with arguments bool, array{false, true, 7}|array{true, false} and true will always evaluate to true.",
+            "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.",
+            "ignorable": true
+        },
+        {
+            "file": "$ROOT/decisions.php",
+            "line": 103,
+            "identifier": "function.alreadyNarrowedType",
+            "message": "Call to function in_array() with arguments true, non-empty-array<true> and true will always evaluate to true.",
+            "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.",
+            "ignorable": true
+        },
+        {
+            "file": "$ROOT/decisions.php",
+            "line": 109,
+            "identifier": "function.impossibleType",
+            "message": "Call to function in_array() with arguments false, non-empty-array<true> and true will always evaluate to false.",
+            "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.",
+            "ignorable": true
+        },
+        {
+            "file": "$ROOT/decisions.php",
+            "line": 120,
+            "identifier": "function.impossibleType",
+            "message": "Call to function in_array() with arguments bool, array{1, 'one'} and true will always evaluate to false.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "$ROOT/decisions.php",
+            "line": 125,
+            "identifier": "function.impossibleType",
+            "message": "Call to function in_array() with arguments bool, array{} and true will always evaluate to false.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "$ROOT/decisions.php",
+            "line": 140,
+            "identifier": "function.alreadyNarrowedType",
+            "message": "Call to function in_array() with arguments bool, array{true, false} and true will always evaluate to true.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "$ROOT/decisions.php",
+            "line": 145,
+            "identifier": "function.alreadyNarrowedType",
+            "message": "Call to function in_array() with arguments bool, array{true, false} and true will always evaluate to true.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "$ROOT/decisions.php",
+            "line": 150,
+            "identifier": "function.impossibleType",
+            "message": "Call to function is_int() with string will always evaluate to false.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "$ROOT/decisions.php",
+            "line": 165,
+            "identifier": "function.alreadyNarrowedType",
+            "message": "Call to function in_array() with arguments 1, array{1, 2} and true will always evaluate to true.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "$ROOT/decisions.php",
+            "line": 171,
+            "identifier": "function.alreadyNarrowedType",
+            "message": "Call to function in_array() with arguments 1, array{1, 2} and true will always evaluate to true.",
+            "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.",
+            "ignorable": true
+        },
+        {
+            "file": "$ROOT/decisions.php",
+            "line": 202,
+            "identifier": "function.alreadyNarrowedType",
+            "message": "Call to function in_array() with arguments 1.0|2.0, array{1.0, 2.0} and true will always evaluate to true.",
+            "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.",
+            "ignorable": true
+        },
+        {
+            "file": "$ROOT/decisions.php",
+            "line": 208,
+            "identifier": "function.alreadyNarrowedType",
+            "message": "Call to function in_array() with arguments 1|2, array{left: 1, right: 2} and true will always evaluate to true.",
+            "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.",
+            "ignorable": true
+        }
+    ]
+}
