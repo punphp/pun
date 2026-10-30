@@ -101,6 +101,8 @@ Initializer coalescing removes explicit `null` alternatives without subtracting 
 Named `new` initializers retain bare class identities without constructor-inferred generic arguments. Member lookups use template defaults and bounds without changing those identities.
 Expression-class initializers such as `new (Box::class)(1)` retain `object`. Ordinary construction still infers constructor arguments.
 Finite class-string and object initializer holders resolve named constants across their possible classes, including forward and scanned dependencies.
+When no parent exists, `parent::class` retains `class-string` alongside its invalid-parent diagnostic.
+Ordinary missing constants retain the error type. Dynamic `NonexistentParent` holders retain their separate `class-string&literal-string` result.
 Exact class strings retain raw initializers. Object holders respect final classes and native or PHPDoc declarations.
 Canonical joins preserve reflection order, including the first mixed or error value. Trait constant equality ignores union member order within values.
 Reflected initializer magic constants use PHPStan's reflection context. Ordinary trait declaration and attribute checks use the consuming class's scope.
@@ -150,6 +152,8 @@ Their source bytes and spans remain unchanged.
 Assignment checks allow references on individual destructuring targets and nested `array(...)` targets inside short-array destructuring.
 Arrays nested directly inside an explicit `list()` remain literal expressions, not destructuring targets.
 Their keys and values are read after the right-hand side and preceding targets, including reference-item values.
+Keyed destructuring preserves PHPStan's empty-offset assignment contexts across later items.
+Branch merges and nested functions isolate these contexts.
 Reference-valued array literals preserve failed reads as `*ERROR*` instead of replacing them with `mixed`.
 Taking a reference preserves the captured root value while invalidating dependent offset observations.
 

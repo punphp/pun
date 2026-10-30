@@ -1,10 +1,23 @@
 # Coverage
 
-The combined lint/analyser delivery covers all 255 changed executable production lines without exclusions.
+The local scope/parent batch at f1204856f covers all 114 changed executable production lines without exclusions.
+The frozen gate passes 642 Rust tests in all 492 partitions, including all 2,787 original level cases,
+1,315 rule cases and 183 owning and neighboring public/library tests in 33 targets.
+All 445 native analyser units, 76 targeted CLI tests and 141 lint consumer tests also pass.
+All 49 final exact-object exports are warning-free, with zero unmatched runtime profiles.
+Source-identical cohorts reach analyse 44,238/44,310, PHPStan 10,747/10,747 and lint 72,593/73,211
+after existing exclusions. The remaining 72 analyser lines across eight files and 618 lint lines
+are reported without new exclusions. Historical identical-source executions supplement this fresh gate;
+their reuse does not establish semantic retesting against changed dependencies.
+Evidence, source hashes, complete oracle records and object/profile manifests are under
+`/tmp/pun-scope-parent-main-gate/`. The independent whole-lint cohort below is included only where its
+production SHA-256 values still match. The two fresh complete PHPStan captures are byte-identical.
+
+The preceding combined lint/analyser delivery covers all 255 changed executable production lines without exclusions.
 Its runner passes 209 tests across all 36 targets, seven additional pipe tests, all 76 targeted CLI tests,
 57 config tests and eighty additional lint owner/neighbor tests. Fifty exact-object exports are warning-free.
 Source-identical coverage cohorts reach analyse 43,911/44,209, PHPStan 10,747/10,747 and lint
-72,593/73,211 after existing exclusions. These are the current figures, not the older table below.
+72,593/73,211 after existing exclusions. These figures predate the local scope/parent batch.
 Whole-crate coverage is incomplete. No new exclusions conceal the remaining lines.
 
 The complete independent lint measurement at bd8a29649 passes all 628 public and three existing library tests.
