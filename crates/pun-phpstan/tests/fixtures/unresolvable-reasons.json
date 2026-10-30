@@ -1240,6 +1240,128 @@
                     "An intersection reason."
                 ]
             }
-        }
+        },
+        "mixedOffsets": [
+            {
+                "name": "error",
+                "offset": "0",
+                "value": [
+                    "mixed",
+                    null
+                ],
+                "explicit": false,
+                "isArray": "Maybe"
+            },
+            {
+                "name": "error",
+                "offset": "'known'",
+                "value": [
+                    "mixed",
+                    null
+                ],
+                "explicit": false,
+                "isArray": "Maybe"
+            },
+            {
+                "name": "reasoned-error",
+                "offset": "0",
+                "value": [
+                    "mixed",
+                    null
+                ],
+                "explicit": false,
+                "isArray": "Maybe"
+            },
+            {
+                "name": "reasoned-error",
+                "offset": "'known'",
+                "value": [
+                    "mixed",
+                    null
+                ],
+                "explicit": false,
+                "isArray": "Maybe"
+            },
+            {
+                "name": "implicit",
+                "offset": "0",
+                "value": [
+                    "mixed",
+                    null
+                ],
+                "explicit": false,
+                "isArray": "Maybe"
+            },
+            {
+                "name": "implicit",
+                "offset": "'known'",
+                "value": [
+                    "mixed",
+                    null
+                ],
+                "explicit": false,
+                "isArray": "Maybe"
+            },
+            {
+                "name": "explicit",
+                "offset": "0",
+                "value": [
+                    "mixed",
+                    null
+                ],
+                "explicit": true,
+                "isArray": "Maybe"
+            },
+            {
+                "name": "explicit",
+                "offset": "'known'",
+                "value": [
+                    "mixed",
+                    null
+                ],
+                "explicit": true,
+                "isArray": "Maybe"
+            },
+            {
+                "name": "implicit-subtracted",
+                "offset": "0",
+                "value": [
+                    "mixed",
+                    null
+                ],
+                "explicit": false,
+                "isArray": "Maybe"
+            },
+            {
+                "name": "implicit-subtracted",
+                "offset": "'known'",
+                "value": [
+                    "mixed",
+                    null
+                ],
+                "explicit": false,
+                "isArray": "Maybe"
+            },
+            {
+                "name": "explicit-subtracted",
+                "offset": "0",
+                "value": [
+                    "mixed",
+                    null
+                ],
+                "explicit": true,
+                "isArray": "Maybe"
+            },
+            {
+                "name": "explicit-subtracted",
+                "offset": "'known'",
+                "value": [
+                    "mixed",
+                    null
+                ],
+                "explicit": true,
+                "isArray": "Maybe"
+            }
+        ]
     }
 }

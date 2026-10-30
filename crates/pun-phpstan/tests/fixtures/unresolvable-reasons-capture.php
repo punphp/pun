@@ -120,6 +120,22 @@ foreach (['error' => new ErrorType('An array key reason.'), 'never' => new Never
         'substitute' => observation(TemplateTypeHelper::resolveTemplateTypes($type, new TemplateTypeMap([]), new TemplateTypeVarianceMap([]), TemplateTypeVariance::createContravariant())),
     ];
 }
+foreach ([
+    'error' => new ErrorType(),
+    'reasoned-error' => new ErrorType('An array key reason.'),
+    'implicit' => new MixedType(),
+    'explicit' => new MixedType(true),
+    'implicit-subtracted' => new MixedType(false, new PHPStan\Type\IntegerType()),
+    'explicit-subtracted' => new MixedType(true, new PHPStan\Type\IntegerType()),
+] as $name => $type) {
+    foreach (['0', "'known'"] as $offset) {
+        $value = $type->getOffsetValueType($resolver->resolve($offset));
+        $result['mixedOffsets'][] = [
+            'name' => $name, 'offset' => $offset, 'value' => observation($value),
+            'explicit' => $value->isExplicitMixed(), 'isArray' => $value->isArray()->describe(),
+        ];
+    }
+}
 
 $fixture = json_decode(file_get_contents($argv[2]), true, flags: JSON_THROW_ON_ERROR);
 $fixture['api'] = $result;

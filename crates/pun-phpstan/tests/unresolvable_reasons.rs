@@ -284,6 +284,30 @@ fn observation(t: &Type) -> Value {
 }
 
 #[test]
+fn mixed_offsets_preserve_explicitness_and_drop_source_constraints() {
+    let oracle: Value =
+        serde_json::from_str(include_str!("fixtures/unresolvable-reasons.json")).unwrap();
+    for row in oracle["api"]["mixedOffsets"].as_array().unwrap() {
+        let source = match row["name"].as_str().unwrap() {
+            "error" => Type::Error,
+            "reasoned-error" => Type::Error.with_unresolvable_reason("An array key reason.".into()),
+            "implicit" => mixed(),
+            "explicit" => Type::Mixed { explicit: true },
+            "implicit-subtracted" => Type::mixed_subtracted(false, Type::Int),
+            "explicit-subtracted" => Type::mixed_subtracted(true, Type::Int),
+            _ => unreachable!(),
+        };
+        let value = resolve_late(&Type::OffsetAccess(
+            Box::new(source),
+            Box::new(resolve_str(row["offset"].as_str().unwrap(), None)),
+        ));
+        assert_eq!(observation(&value), row["value"], "{row}");
+        assert_eq!(json!(value.mixed_explicitness()), row["explicit"], "{row}");
+        assert_eq!(format!("{:?}", value.is_array()), row["isArray"], "{row}");
+    }
+}
+
+#[test]
 fn late_shapes_keep_query_substitution_and_identity_contracts() {
     let oracle: Value =
         serde_json::from_str(include_str!("fixtures/unresolvable-reasons.json")).unwrap();

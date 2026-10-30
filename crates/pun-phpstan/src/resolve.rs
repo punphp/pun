@@ -768,8 +768,9 @@ pub fn resolve_late(t: &Type) -> Type {
 /// `getOffsetValueType()` of the types modelled (`None` for the others), an error type when there is no offset `o`.
 fn offset_value(t: &Type, o: &Type) -> Option<Type> {
     let key = array_key(o.clone());
-    Some(match t {
-        Type::Mixed { .. } => Type::Mixed { explicit: false },
+    Some(match t.unreasoned() {
+        Type::Mixed { explicit } | Type::SubtractedMixed { explicit, .. } => Type::Mixed { explicit: *explicit },
+        Type::Error => Type::Mixed { explicit: false },
         Type::ConstArray(a) => {
             if !matches!(key, Type::ConstInt(_) | Type::ConstString(_)) {
                 return None;
