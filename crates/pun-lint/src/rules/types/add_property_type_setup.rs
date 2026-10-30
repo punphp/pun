@@ -65,7 +65,7 @@ impl Rule for AddPropertyTypeSetup {
                     Property::Hooked(h) => Some(&h.item),
                 },
             };
-            let t = infer(&facts, &view, &prop, set_up, ctx, ancestors, test_case);
+            let t = infer(&facts, &view, &prop, set_up, ctx, test_case);
             let Some(declaration) = property_declaration(&t, &facts.codebase, ctx.php_version)
             else {
                 continue;

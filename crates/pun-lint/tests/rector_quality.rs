@@ -62,10 +62,10 @@ use mago_syntax::cst::Node;
 use pun_lint::rules::{
     NoAlwaysFalseCondition, NoAlwaysTrueIf, NoAlwaysTrueInstanceof, NoAlwaysTrueInstanceofAssert,
     NoConstantCondition, NoConstantViaVariable, NoInvalidVarTag, NoPhpdocClassCaseMismatch,
-    NoRedundantForeachGuard, NoTypedPropertyInstanceof, NoUnusedTestMethodParam, NoUselessCast,
-    NoUselessFilterVar, NoUselessMath, PreferInlineArrayReturn, PreferInstanceMethod,
-    PreferPropertyExists, PreferReturnedCondition, RequireConsistentReturn,
-    RequirePreviousException,
+    NoRedundantForeachGuard, NoRedundantPropertyDefault, NoTypedPropertyInstanceof,
+    NoUnusedTestMethodParam, NoUselessCast, NoUselessFilterVar, NoUselessMath,
+    PreferInlineArrayReturn, PreferInstanceMethod, PreferPropertyExists, PreferReturnedCondition,
+    RequireConsistentReturn, RequirePreviousException,
 };
 use pun_lint::{Linter, Rule};
 
@@ -214,6 +214,14 @@ impl Rule for Everywhere {
     ) {
         self.0.visit(node, ancestors, ctx, out);
     }
+}
+
+#[test]
+fn remove_default_value_from_assigned_property_on_every_node() {
+    check(
+        Everywhere(Box::new(NoRedundantPropertyDefault)),
+        "RemoveDefaultValueFromAssignedPropertyRector",
+    );
 }
 
 #[test]

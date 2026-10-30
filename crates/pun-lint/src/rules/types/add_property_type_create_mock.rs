@@ -74,7 +74,7 @@ impl Rule for AddPropertyTypeCreateMock {
                 item: Some(item),
             };
             let name = prop.name();
-            let assigned = is_property_assigned(ctx, node, ancestors, true, name);
+            let assigned = is_property_assigned(ctx, &view, true, name);
             let Assigned::Type(t) = assigned_type(&facts, &view, &prop, assigned) else {
                 continue;
             };

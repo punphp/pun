@@ -19,8 +19,9 @@ use pun_phpstan::types::Type;
 use pun_problem::{Edit, Fix, Safety, Span};
 
 use super::rector_batch5::{
-    doc_comment, has_attribute, member_from, method, resolve_class_name, scope_statements,
+    doc_comment, has_attribute, method, resolve_class_name, scope_statements,
 };
+use super::rector_stmts::previous_token_end;
 use super::types::compare::classes::with_classes;
 use super::types::compare::mapper::expr_type;
 use super::types::facts::{self, facts, path_of};
@@ -68,7 +69,7 @@ impl Rule for NoRedundantPropertyDefault {
         let scope = Scope {
             ctx,
             members,
-            left_brace,
+            comments_from: left_brace.end.offset as usize,
             path: &path,
             extends,
             constructor: Some(constructor),
@@ -136,7 +137,7 @@ pub(crate) fn is_assigned_in_constructor<'a>(
     Scope {
         ctx,
         members,
-        left_brace,
+        comments_from: left_brace.end.offset as usize,
         path,
         extends,
         constructor: Some(constructor),
@@ -299,7 +300,8 @@ fn assigns<'a>(
 struct Scope<'s, 'p, 'a> {
     ctx: &'s Context<'s>,
     members: &'a Sequence<'a, ClassLikeMember<'a>>,
-    left_brace: mago_span::Span,
+    /// A lower bound for the first member's leading comments.
+    comments_from: usize,
     path: &'p [Node<'a, 'a>],
     extends: Option<&'a Extends<'a>>,
     constructor: Option<&'a Method<'a>>,
@@ -307,29 +309,22 @@ struct Scope<'s, 'p, 'a> {
     test_case: Option<bool>,
 }
 
-/// `ConstructorAssignDetector::isPropertyAssigned` for the property `name` of the class or anonymous class `node`,
-/// whose ancestors are `ancestors`; `test_case` says whether it is a PHPUnit test case.
+/// `ConstructorAssignDetector::isPropertyAssigned` for the property `name` of `view`;
+/// `test_case` says whether it is a PHPUnit test case.
 pub(crate) fn is_property_assigned(
     ctx: &Context<'_>,
-    node: Node<'_, '_>,
-    ancestors: &[Node<'_, '_>],
+    view: &ClassView<'_, '_>,
     test_case: bool,
     name: &[u8],
 ) -> bool {
-    let (members, left_brace, extends) = match node {
-        Node::Class(c) => (&c.members, c.left_brace, c.extends.as_ref()),
-        Node::AnonymousClass(c) => (&c.members, c.left_brace, c.extends.as_ref()),
-        _ => return false,
-    };
-    let mut path = ancestors.to_vec();
-    path.push(node);
     let scope = Scope {
         ctx,
-        members,
-        left_brace,
-        path: &path,
-        extends,
-        constructor: method(members, b"__construct"),
+        members: view.members,
+        comments_from: node_span(&view.node).start,
+        path: &view.path,
+        // The caller already resolves test-case ancestry, so the syntactic fallback is unused.
+        extends: None,
+        constructor: view.method(b"__construct"),
         test_case: Some(test_case),
     };
     scope.is_assigned(name)
@@ -397,11 +392,13 @@ impl<'a> Scope<'_, '_, 'a> {
 
     /// `AutowiredClassMethodOrPropertyAnalyzer::detect`.
     fn autowired(&self, index: usize, m: &Method<'_>) -> bool {
-        let doc = doc_comment(
-            self.ctx.source,
-            member_from(self.members, self.left_brace, index),
-            node_span(m).start,
-        );
+        let from = index
+            .checked_sub(1)
+            .and_then(|i| self.members.get(i))
+            .map_or(self.comments_from, |previous| node_span(previous).end);
+        // From the class's start, the last non-comment token before its first member is its `{`.
+        let from = previous_token_end(self.ctx.source, from, node_span(m).start);
+        let doc = doc_comment(self.ctx.source, from, node_span(m).start);
         let tagged = doc.is_some_and(|d| {
             self.ctx.source[d.start..d.end].lines().any(|line| {
                 let line = line

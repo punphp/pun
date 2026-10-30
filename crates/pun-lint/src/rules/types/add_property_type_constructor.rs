@@ -73,7 +73,7 @@ impl Rule for AddPropertyTypeConstructor {
             if !is_legal(&facts, &view, prop, true) || !parent_allows(&facts, &view, prop.name()) {
                 continue;
             }
-            let t = infer(&facts, &view, prop, constructor, ctx, ancestors, test_case);
+            let t = infer(&facts, &view, prop, constructor, ctx, test_case);
             if matches!(t, Ty::Mixed) || is_doctrine_collection(&facts, &t) {
                 continue;
             }
@@ -106,7 +106,7 @@ impl Rule for AddPropertyTypeConstructor {
             };
             let name = prop.name();
             let mut removes_default = false;
-            if is_property_assigned(ctx, node, ancestors, test_case, name)
+            if is_property_assigned(ctx, &view, test_case, name)
                 && let Some(span) = default_span(prop)
             {
                 edits.push(Edit::new(span, ""));
@@ -167,7 +167,6 @@ pub(crate) fn infer(
     prop: &Prop<'_, '_>,
     constructor: &Method<'_>,
     ctx: &Context<'_>,
-    ancestors: &[Node<'_, '_>],
     test_case: bool,
 ) -> Ty {
     let name = prop.name();
@@ -237,7 +236,7 @@ pub(crate) fn infer(
         }
     };
     // resolveType
-    let assigned = is_property_assigned(ctx, view.node, ancestors, test_case, name);
+    let assigned = is_property_assigned(ctx, view, test_case, name);
     match assigned_type(facts, view, prop, assigned) {
         Assigned::Type(exact) if exact.is_union() && !are_equal(&resolved, &exact) => Ty::Mixed,
         _ => resolved,

@@ -97,7 +97,7 @@ impl Rule for AddPropertyTypeAssigns {
             if !is_legal(&facts, &view, prop, self.inline_public) {
                 continue;
             }
-            let assigned = is_property_assigned(ctx, node, ancestors, test_case, prop.name());
+            let assigned = is_property_assigned(ctx, &view, test_case, prop.name());
             let Assigned::Type(t) = assigned_type(&facts, &view, prop, assigned) else {
                 continue;
             };
