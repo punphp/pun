@@ -601,7 +601,6 @@ fn member_declaration(t: &Ty, codebase: &CodebaseMetadata, php_version: u32) -> 
         Ty::Array(..) | Ty::ConstArray(_) => "array".into(),
         Ty::Iterable => "iterable".into(),
         Ty::Closure => "\\Closure".into(),
-        Ty::Callable => "callable".into(),
         Ty::Static(_) => "self".into(),
         // ObjectWithoutClassTypeMapper
         Ty::AnonymousWithParents(parents) if parents.len() == 1 => {
@@ -646,9 +645,6 @@ fn union_declaration(
         [one] => Some(one.clone()),
         [a, b] if a == "null" || b == "null" => {
             let other = if a == "null" { b } else { a };
-            if php_version < NULLABLE_TYPE {
-                return None;
-            }
             if other.contains('&') {
                 return (php_version >= PHP_82).then(|| format!("({other})|null"));
             }
@@ -694,7 +690,6 @@ pub(crate) struct ClassView<'ast, 'arena> {
     /// The name the codebase knows the class by.
     pub name: String,
     pub parent: Option<String>,
-    pub is_final: bool,
 }
 
 impl<'ast, 'arena> ClassView<'ast, 'arena> {
@@ -705,12 +700,11 @@ impl<'ast, 'arena> ClassView<'ast, 'arena> {
     ) -> Option<Self> {
         let mut path = ancestors.to_vec();
         path.push(node);
-        let (members, name, extends, is_final) = match node {
+        let (members, name, extends) = match node {
             Node::Class(Class {
                 members,
                 name,
                 extends,
-                modifiers,
                 ..
             }) => (
                 members,
@@ -719,7 +713,6 @@ impl<'ast, 'arena> ClassView<'ast, 'arena> {
                     None => String::from_utf8_lossy(name.value).into_owned(),
                 },
                 extends.as_ref(),
-                modifiers.iter().any(|m| matches!(m, Modifier::Final(_))),
             ),
             Node::AnonymousClass(
                 c @ AnonymousClass {
@@ -729,7 +722,6 @@ impl<'ast, 'arena> ClassView<'ast, 'arena> {
                 members,
                 facts.anonymous_class_name(mago_span::HasSpan::span(c)),
                 extends.as_ref(),
-                true,
             ),
             _ => return None,
         };
@@ -742,7 +734,6 @@ impl<'ast, 'arena> ClassView<'ast, 'arena> {
             path,
             name,
             parent,
-            is_final,
         })
     }
 
@@ -825,8 +816,9 @@ impl<'ast, 'arena> Prop<'ast, 'arena> {
 }
 
 /// `PropertyTypeChangeGuard::isLegal` (with `MakePropertyTypedGuard`'s check that the property is untyped): one item,
-/// no trait the class uses declares or writes the property, the property's own type is not forbidden, and, unless
-/// `inline_public`, the property is private, or protected in a final class whose parents do not declare it.
+/// no trait the class uses declares or writes the property, and the property's own type is not forbidden. Its
+/// callers select private properties before asking with `inline_public = false`; the protected-property fallback
+/// of the upstream shared guard is therefore never needed by these rules.
 pub(crate) fn is_legal(
     facts: &Facts,
     view: &ClassView<'_, '_>,
@@ -842,11 +834,7 @@ pub(crate) fn is_legal(
     {
         return false;
     }
-    if inline_public || prop.is_private() {
-        return true;
-    }
-    // isSafeProtectedProperty with ParentPropertyLookupGuard
-    prop.is_protected() && view.is_final && !parent_has_property(facts, view, name)
+    inline_public || prop.is_private()
 }
 
 /// `PropertyTypeOverrideGuard::isLegal`'s parent check: the nearest parent class that has the property decides; it
@@ -861,15 +849,6 @@ pub(crate) fn parent_allows(facts: &Facts, view: &ClassView<'_, '_>, name: &[u8]
         }
     }
     true
-}
-
-fn parent_has_property(facts: &Facts, view: &ClassView<'_, '_>, name: &[u8]) -> bool {
-    parent_classes(facts, view).iter().any(|p| {
-        facts
-            .codebase
-            .get_declaring_property(p.as_bytes(), &dollar(name))
-            .is_some()
-    })
 }
 
 fn dollar(name: &[u8]) -> Vec<u8> {
@@ -1412,17 +1391,14 @@ fn is_disjoint(inferred: &Ty, default: &Ty) -> bool {
         .any(|d| inferred.members().iter().any(|i| overlaps(i, d)))
 }
 
-/// Whether some value is of both types.
+/// Whether some value is of both types. `is_disjoint` has ruled out `mixed`, and the inferred members have already
+/// had their scalar constants generalized by `mixed_passed_or_union(types, false)`.
 fn overlaps(a: &Ty, b: &Ty) -> bool {
     match (a, b) {
-        (Ty::Mixed, _) | (_, Ty::Mixed) => true,
         (Ty::Null, Ty::Null) => true,
         (Ty::Bool(x), Ty::Bool(y)) => x.is_none() || y.is_none() || x == y,
-        (Ty::Int(Scalar::Literal(x)), Ty::Int(Scalar::Literal(y))) => x == y,
         (Ty::Int(_), Ty::Int(_)) => true,
-        (Ty::Float(Scalar::Literal(x)), Ty::Float(Scalar::Literal(y))) => x == y,
         (Ty::Float(_), Ty::Float(_)) => true,
-        (Ty::Str(Scalar::Literal(x)), Ty::Str(Scalar::Literal(y))) => x == y,
         (Ty::Str(_) | Ty::ClassString, Ty::Str(_) | Ty::ClassString) => true,
         (
             Ty::Array(..) | Ty::ConstArray(_) | Ty::Iterable,
@@ -1650,9 +1626,6 @@ fn php_parser_and_doc_types_equal(native: &Ty, doc: &Ty) -> bool {
     let (native, doc) = (normalize(native), normalize(doc));
     let different_scalars = are_different_scalars(&native, &doc);
     if !different_scalars && !are_equal(&native, &doc) {
-        return false;
-    }
-    if different_scalars && doc.is_constant() && contains_all(&native, &doc) {
         return false;
     }
     !matches!(doc, Ty::Static(_))
