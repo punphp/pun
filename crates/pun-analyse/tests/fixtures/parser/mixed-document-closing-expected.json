@@ -1,0 +1,539 @@
+{
+    "analysed": {
+        "errors": [
+            {
+                "file": "mixed-binary-heredoc.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "Invalid indentation - tabs and spaces cannot be mixed on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "mixed-binary-nowdoc.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "Invalid indentation - tabs and spaces cannot be mixed on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "mixed-empty-heredoc.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Invalid indentation - tabs and spaces cannot be mixed on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "mixed-empty-nowdoc.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Invalid indentation - tabs and spaces cannot be mixed on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "mixed-heredoc.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "Invalid indentation - tabs and spaces cannot be mixed on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "mixed-nowdoc.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "Invalid indentation - tabs and spaces cannot be mixed on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "mixed-quoted-heredoc.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "Invalid indentation - tabs and spaces cannot be mixed on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "valid-diagnostic.php",
+                "line": 2,
+                "identifier": "function.notFound",
+                "message": "Function mixed_document_closing_missing_control not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            }
+        ],
+        "general": []
+    },
+    "scanned": {
+        "mixed-heredoc": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "mixed-nowdoc": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "valid-spaces": {
+            "errors": [],
+            "general": []
+        },
+        "valid-tabs": {
+            "errors": [],
+            "general": []
+        },
+        "valid-none": {
+            "errors": [],
+            "general": []
+        }
+    },
+    "order": {
+        "parameter-and-name": {
+            "errors": [
+                {
+                    "file": "order.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "void cannot be used as a parameter type on line 3",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 4,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid indentation - tabs and spaces cannot be mixed on line 4",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"void cannot be used as a parameter type on line 3\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid indentation - tabs and spaces cannot be mixed on line 4\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "namespace": {
+            "errors": [
+                {
+                    "file": "order.php",
+                    "line": 4,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid indentation - tabs and spaces cannot be mixed on line 4",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 5,
+                    "identifier": "phpstan.parse",
+                    "message": "Namespace declaration statement has to be the very first statement in the script on line 5",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid indentation - tabs and spaces cannot be mixed on line 4\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Namespace declaration statement has to be the very first statement in the script on line 5\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "array-postprocessing": {
+            "errors": [
+                {
+                    "file": "order.php",
+                    "line": 4,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot use empty array elements in arrays on line 4",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 4,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid indentation - tabs and spaces cannot be mixed on line 4",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid indentation - tabs and spaces cannot be mixed on line 4\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Cannot use empty array elements in arrays on line 4\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "two-documents": {
+            "errors": [
+                {
+                    "file": "order.php",
+                    "line": 4,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid indentation - tabs and spaces cannot be mixed on line 4",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 7,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid indentation - tabs and spaces cannot be mixed on line 7",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid indentation - tabs and spaces cannot be mixed on line 4\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid indentation - tabs and spaces cannot be mixed on line 7\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "nested-documents": {
+            "errors": [
+                {
+                    "file": "order.php",
+                    "line": 5,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid indentation - tabs and spaces cannot be mixed on line 5",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 7,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid indentation - tabs and spaces cannot be mixed on line 7",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid indentation - tabs and spaces cannot be mixed on line 5\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid indentation - tabs and spaces cannot be mixed on line 7\" cannot be ignored, use excludePaths instead."
+            ]
+        }
+    },
+    "versions": {
+        "70100": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 4,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid indentation - tabs and spaces cannot be mixed on line 4",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 6,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid indentation - tabs and spaces cannot be mixed on line 6",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "70300": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 4,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid indentation - tabs and spaces cannot be mixed on line 4",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 6,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid indentation - tabs and spaces cannot be mixed on line 6",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "70400": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 4,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid indentation - tabs and spaces cannot be mixed on line 4",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 6,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid indentation - tabs and spaces cannot be mixed on line 6",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "80000": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 4,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid indentation - tabs and spaces cannot be mixed on line 4",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 6,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid indentation - tabs and spaces cannot be mixed on line 6",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "80100": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 4,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid indentation - tabs and spaces cannot be mixed on line 4",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 6,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid indentation - tabs and spaces cannot be mixed on line 6",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "80200": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 4,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid indentation - tabs and spaces cannot be mixed on line 4",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 6,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid indentation - tabs and spaces cannot be mixed on line 6",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "80400": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 4,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid indentation - tabs and spaces cannot be mixed on line 4",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 6,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid indentation - tabs and spaces cannot be mixed on line 6",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "80500": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 4,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid indentation - tabs and spaces cannot be mixed on line 4",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 6,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid indentation - tabs and spaces cannot be mixed on line 6",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        }
+    },
+    "boundaries": {
+        "body-short": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "body-mixed": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid indentation - tabs and spaces cannot be mixed on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "unicode-fatal": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "numeric-lexical": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid numeric literal on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "recovered-expression": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 4,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid indentation - tabs and spaces cannot be mixed on line 4",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 5,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected ';' on line 5",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "unclosed-document": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 4,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected EOF, expecting T_VARIABLE or T_DOLLAR_OPEN_CURLY_BRACES or T_CURLY_OPEN on line 4",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        }
+    }
+}

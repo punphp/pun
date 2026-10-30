@@ -1,0 +1,425 @@
+{
+    "calls": {
+        "696": {
+            "line": 20,
+            "expression": "$o->{($v = $m)}([pricingFunction($v)])",
+            "names": [
+                {
+                    "name": "bar",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 696,
+                            "end": 698,
+                            "expression": "$o",
+                            "type": "PricingSink"
+                        },
+                        {
+                            "start": 712,
+                            "end": 733,
+                            "expression": "[pricingFunction($v)]",
+                            "type": "array{'bar'}"
+                        }
+                    ]
+                },
+                {
+                    "name": "foo",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 696,
+                            "end": 698,
+                            "expression": "$o",
+                            "type": "PricingSink"
+                        },
+                        {
+                            "start": 712,
+                            "end": 733,
+                            "expression": "[pricingFunction($v)]",
+                            "type": "array{'foo'}"
+                        }
+                    ]
+                }
+            ]
+        },
+        "751": {
+            "line": 21,
+            "expression": "$o->{($v = $m)}([pricingHook($v)])",
+            "names": [
+                {
+                    "name": "bar",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 751,
+                            "end": 753,
+                            "expression": "$o",
+                            "type": "PricingSink"
+                        },
+                        {
+                            "start": 767,
+                            "end": 784,
+                            "expression": "[pricingHook($v)]",
+                            "type": "array{'bar'}"
+                        }
+                    ]
+                },
+                {
+                    "name": "foo",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 751,
+                            "end": 753,
+                            "expression": "$o",
+                            "type": "PricingSink"
+                        },
+                        {
+                            "start": 767,
+                            "end": 784,
+                            "expression": "[pricingHook($v)]",
+                            "type": "array{'foo'}"
+                        }
+                    ]
+                }
+            ]
+        },
+        "802": {
+            "line": 22,
+            "expression": "$o->{($v = $m)}([pricingExpression($v)])",
+            "names": [
+                {
+                    "name": "bar",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 802,
+                            "end": 804,
+                            "expression": "$o",
+                            "type": "PricingSink"
+                        },
+                        {
+                            "start": 818,
+                            "end": 841,
+                            "expression": "[pricingExpression($v)]",
+                            "type": "array{'bar'}"
+                        }
+                    ]
+                },
+                {
+                    "name": "foo",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 802,
+                            "end": 804,
+                            "expression": "$o",
+                            "type": "PricingSink"
+                        },
+                        {
+                            "start": 818,
+                            "end": 841,
+                            "expression": "[pricingExpression($v)]",
+                            "type": "array{'foo'}"
+                        }
+                    ]
+                }
+            ]
+        },
+        "859": {
+            "line": 23,
+            "expression": "$o->{($v = $m)}([$w->fromProvider($v)])",
+            "names": [
+                {
+                    "name": "bar",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 859,
+                            "end": 861,
+                            "expression": "$o",
+                            "type": "PricingSink"
+                        },
+                        {
+                            "start": 875,
+                            "end": 897,
+                            "expression": "[$w->fromProvider($v)]",
+                            "type": "array{'bar'}"
+                        }
+                    ]
+                },
+                {
+                    "name": "foo",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 859,
+                            "end": 861,
+                            "expression": "$o",
+                            "type": "PricingSink"
+                        },
+                        {
+                            "start": 875,
+                            "end": 897,
+                            "expression": "[$w->fromProvider($v)]",
+                            "type": "array{'foo'}"
+                        }
+                    ]
+                }
+            ]
+        },
+        "915": {
+            "line": 24,
+            "expression": "$o->{($v = $m)}([$w->fromHook($v)])",
+            "names": [
+                {
+                    "name": "bar",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 915,
+                            "end": 917,
+                            "expression": "$o",
+                            "type": "PricingSink"
+                        },
+                        {
+                            "start": 931,
+                            "end": 949,
+                            "expression": "[$w->fromHook($v)]",
+                            "type": "array{'bar'}"
+                        }
+                    ]
+                },
+                {
+                    "name": "foo",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 915,
+                            "end": 917,
+                            "expression": "$o",
+                            "type": "PricingSink"
+                        },
+                        {
+                            "start": 931,
+                            "end": 949,
+                            "expression": "[$w->fromHook($v)]",
+                            "type": "array{'foo'}"
+                        }
+                    ]
+                }
+            ]
+        },
+        "967": {
+            "line": 25,
+            "expression": "$o->{($v = $m)}([PricingWorker::staticProvider($v)])",
+            "names": [
+                {
+                    "name": "bar",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 967,
+                            "end": 969,
+                            "expression": "$o",
+                            "type": "PricingSink"
+                        },
+                        {
+                            "start": 983,
+                            "end": 1018,
+                            "expression": "[PricingWorker::staticProvider($v)]",
+                            "type": "array{'bar'}"
+                        }
+                    ]
+                },
+                {
+                    "name": "foo",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 967,
+                            "end": 969,
+                            "expression": "$o",
+                            "type": "PricingSink"
+                        },
+                        {
+                            "start": 983,
+                            "end": 1018,
+                            "expression": "[PricingWorker::staticProvider($v)]",
+                            "type": "array{'foo'}"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1036": {
+            "line": 26,
+            "expression": "$o->{($v = $m)}([PricingWorker::staticHook($v)])",
+            "names": [
+                {
+                    "name": "bar",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 1036,
+                            "end": 1038,
+                            "expression": "$o",
+                            "type": "PricingSink"
+                        },
+                        {
+                            "start": 1052,
+                            "end": 1083,
+                            "expression": "[PricingWorker::staticHook($v)]",
+                            "type": "array{'bar'}"
+                        }
+                    ]
+                },
+                {
+                    "name": "foo",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 1036,
+                            "end": 1038,
+                            "expression": "$o",
+                            "type": "PricingSink"
+                        },
+                        {
+                            "start": 1052,
+                            "end": 1083,
+                            "expression": "[PricingWorker::staticHook($v)]",
+                            "type": "array{'foo'}"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1101": {
+            "line": 27,
+            "expression": "$o->{($v = $m)}([$w?->fromProvider($v)])",
+            "names": [
+                {
+                    "name": "bar",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 1101,
+                            "end": 1103,
+                            "expression": "$o",
+                            "type": "PricingSink"
+                        },
+                        {
+                            "start": 1117,
+                            "end": 1140,
+                            "expression": "[$w?->fromProvider($v)]",
+                            "type": "array{'bar'}"
+                        }
+                    ]
+                },
+                {
+                    "name": "foo",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 1101,
+                            "end": 1103,
+                            "expression": "$o",
+                            "type": "PricingSink"
+                        },
+                        {
+                            "start": 1117,
+                            "end": 1140,
+                            "expression": "[$w?->fromProvider($v)]",
+                            "type": "array{'foo'}"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1158": {
+            "line": 28,
+            "expression": "$o->{($v = $m)}([$w?->fromHook($v)])",
+            "names": [
+                {
+                    "name": "bar",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 1158,
+                            "end": 1160,
+                            "expression": "$o",
+                            "type": "PricingSink"
+                        },
+                        {
+                            "start": 1174,
+                            "end": 1193,
+                            "expression": "[$w?->fromHook($v)]",
+                            "type": "array{'bar'}"
+                        }
+                    ]
+                },
+                {
+                    "name": "foo",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 1158,
+                            "end": 1160,
+                            "expression": "$o",
+                            "type": "PricingSink"
+                        },
+                        {
+                            "start": 1174,
+                            "end": 1193,
+                            "expression": "[$w?->fromHook($v)]",
+                            "type": "array{'foo'}"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1211": {
+            "line": 29,
+            "expression": "$o->{($v = $m)}([new PricingValue($v)])",
+            "names": [
+                {
+                    "name": "bar",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 1211,
+                            "end": 1213,
+                            "expression": "$o",
+                            "type": "PricingSink"
+                        },
+                        {
+                            "start": 1227,
+                            "end": 1249,
+                            "expression": "[new PricingValue($v)]",
+                            "type": "array{PricingValue}"
+                        }
+                    ]
+                },
+                {
+                    "name": "foo",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 1211,
+                            "end": 1213,
+                            "expression": "$o",
+                            "type": "PricingSink"
+                        },
+                        {
+                            "start": 1227,
+                            "end": 1249,
+                            "expression": "[new PricingValue($v)]",
+                            "type": "array{PricingValue}"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "errors": []
+}

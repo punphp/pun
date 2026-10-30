@@ -124,3 +124,24 @@ class Offsets
     ) {
     }
 }
+
+/** @param class-string<\stdClass> $class */
+function stdClassCallables(string $class): void
+{
+    $class::missing();
+    $class::missing(...);
+}
+
+/** @param class-string<Suit> $class */
+function objectCallables(string $class): void
+{
+    $class::missing();
+    $class::missing(...);
+}
+
+/** @param class-string<mixed> $class */
+function mixedClassCallables(string $class): void
+{
+    $class::missing();
+    $class::missing(...);
+}

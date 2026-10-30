@@ -1,0 +1,3032 @@
+{
+    "phar_sha256": "85157dba3d95d77ca603d2b7303aa78a538f9e3b56ccad07dd794c53aa96d1ae",
+    "types": {
+        "illegal.php": [
+            {
+                "start": 180,
+                "end": 192,
+                "expression": "$written = 0",
+                "type": "0",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantIntegerType",
+                "final": null,
+                "native": {
+                    "type": "0",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 198,
+                "end": 233,
+                "expression": "$value = new Contract($written = 1)",
+                "type": "FailedInstantiation\\Contract",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\ObjectType",
+                "final": false,
+                "native": {
+                    "type": "FailedInstantiation\\Contract",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 207,
+                "end": 233,
+                "expression": "new Contract($written = 1)",
+                "type": "FailedInstantiation\\Contract",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\ObjectType",
+                "final": false,
+                "native": {
+                    "type": "FailedInstantiation\\Contract",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 220,
+                "end": 232,
+                "expression": "$written = 1",
+                "type": "1",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantIntegerType",
+                "final": null,
+                "native": {
+                    "type": "1",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 249,
+                "end": 255,
+                "expression": "$value",
+                "type": "FailedInstantiation\\Contract",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\ObjectType",
+                "final": false,
+                "native": {
+                    "type": "FailedInstantiation\\Contract",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 271,
+                "end": 279,
+                "expression": "$written",
+                "type": "1",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantIntegerType",
+                "final": null,
+                "native": {
+                    "type": "1",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 339,
+                "end": 351,
+                "expression": "$written = 0",
+                "type": "0",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantIntegerType",
+                "final": null,
+                "native": {
+                    "type": "0",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 357,
+                "end": 392,
+                "expression": "$value = new Reusable($written = 2)",
+                "type": "FailedInstantiation\\Reusable",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\ObjectType",
+                "final": false,
+                "native": {
+                    "type": "FailedInstantiation\\Reusable",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 366,
+                "end": 392,
+                "expression": "new Reusable($written = 2)",
+                "type": "FailedInstantiation\\Reusable",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\ObjectType",
+                "final": false,
+                "native": {
+                    "type": "FailedInstantiation\\Reusable",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 379,
+                "end": 391,
+                "expression": "$written = 2",
+                "type": "2",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantIntegerType",
+                "final": null,
+                "native": {
+                    "type": "2",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 408,
+                "end": 414,
+                "expression": "$value",
+                "type": "FailedInstantiation\\Reusable",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\ObjectType",
+                "final": false,
+                "native": {
+                    "type": "FailedInstantiation\\Reusable",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 430,
+                "end": 438,
+                "expression": "$written",
+                "type": "2",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantIntegerType",
+                "final": null,
+                "native": {
+                    "type": "2",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 493,
+                "end": 505,
+                "expression": "$written = 0",
+                "type": "0",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantIntegerType",
+                "final": null,
+                "native": {
+                    "type": "0",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 511,
+                "end": 544,
+                "expression": "$value = new Choice($written = 3)",
+                "type": "FailedInstantiation\\Choice",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\ObjectType",
+                "final": true,
+                "native": {
+                    "type": "FailedInstantiation\\Choice",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 520,
+                "end": 544,
+                "expression": "new Choice($written = 3)",
+                "type": "FailedInstantiation\\Choice",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\ObjectType",
+                "final": true,
+                "native": {
+                    "type": "FailedInstantiation\\Choice",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 531,
+                "end": 543,
+                "expression": "$written = 3",
+                "type": "3",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantIntegerType",
+                "final": null,
+                "native": {
+                    "type": "3",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 560,
+                "end": 566,
+                "expression": "$value",
+                "type": "FailedInstantiation\\Choice",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\ObjectType",
+                "final": true,
+                "native": {
+                    "type": "FailedInstantiation\\Choice",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 582,
+                "end": 590,
+                "expression": "$written",
+                "type": "3",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantIntegerType",
+                "final": null,
+                "native": {
+                    "type": "3",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 648,
+                "end": 660,
+                "expression": "$written = 0",
+                "type": "0",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantIntegerType",
+                "final": null,
+                "native": {
+                    "type": "0",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 666,
+                "end": 697,
+                "expression": "$value = new Base($written = 4)",
+                "type": "FailedInstantiation\\Base",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\ObjectType",
+                "final": false,
+                "native": {
+                    "type": "FailedInstantiation\\Base",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 675,
+                "end": 697,
+                "expression": "new Base($written = 4)",
+                "type": "FailedInstantiation\\Base",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\ObjectType",
+                "final": false,
+                "native": {
+                    "type": "FailedInstantiation\\Base",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 684,
+                "end": 696,
+                "expression": "$written = 4",
+                "type": "4",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantIntegerType",
+                "final": null,
+                "native": {
+                    "type": "4",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 713,
+                "end": 719,
+                "expression": "$value",
+                "type": "FailedInstantiation\\Base",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\ObjectType",
+                "final": false,
+                "native": {
+                    "type": "FailedInstantiation\\Base",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 735,
+                "end": 743,
+                "expression": "$written",
+                "type": "4",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantIntegerType",
+                "final": null,
+                "native": {
+                    "type": "4",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 804,
+                "end": 816,
+                "expression": "$written = 0",
+                "type": "0",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantIntegerType",
+                "final": null,
+                "native": {
+                    "type": "0",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 822,
+                "end": 856,
+                "expression": "$value = new Missing($written = 5)",
+                "type": "FailedInstantiation\\Missing",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\ObjectType",
+                "final": null,
+                "native": {
+                    "type": "FailedInstantiation\\Missing",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 831,
+                "end": 856,
+                "expression": "new Missing($written = 5)",
+                "type": "FailedInstantiation\\Missing",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\ObjectType",
+                "final": null,
+                "native": {
+                    "type": "FailedInstantiation\\Missing",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 843,
+                "end": 855,
+                "expression": "$written = 5",
+                "type": "5",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantIntegerType",
+                "final": null,
+                "native": {
+                    "type": "5",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 872,
+                "end": 878,
+                "expression": "$value",
+                "type": "FailedInstantiation\\Missing",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\ObjectType",
+                "final": null,
+                "native": {
+                    "type": "FailedInstantiation\\Missing",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 894,
+                "end": 902,
+                "expression": "$written",
+                "type": "5",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantIntegerType",
+                "final": null,
+                "native": {
+                    "type": "5",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 959,
+                "end": 971,
+                "expression": "$written = 0",
+                "type": "0",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantIntegerType",
+                "final": null,
+                "native": {
+                    "type": "0",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 977,
+                "end": 1008,
+                "expression": "$value = new self($written = 6)",
+                "type": "self",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\ObjectType",
+                "final": null,
+                "native": {
+                    "type": "self",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 986,
+                "end": 1008,
+                "expression": "new self($written = 6)",
+                "type": "self",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\ObjectType",
+                "final": null,
+                "native": {
+                    "type": "self",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 995,
+                "end": 1007,
+                "expression": "$written = 6",
+                "type": "6",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantIntegerType",
+                "final": null,
+                "native": {
+                    "type": "6",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1024,
+                "end": 1030,
+                "expression": "$value",
+                "type": "self",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\ObjectType",
+                "final": null,
+                "native": {
+                    "type": "self",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1046,
+                "end": 1054,
+                "expression": "$written",
+                "type": "6",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantIntegerType",
+                "final": null,
+                "native": {
+                    "type": "6",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1110,
+                "end": 1122,
+                "expression": "$written = 0",
+                "type": "0",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantIntegerType",
+                "final": null,
+                "native": {
+                    "type": "0",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1128,
+                "end": 1161,
+                "expression": "$value = new static($written = 7)",
+                "type": "*ERROR*",
+                "error": true,
+                "kind": null,
+                "class": "PHPStan\\Type\\ErrorType",
+                "final": null,
+                "native": {
+                    "type": "*ERROR*",
+                    "error": true,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1137,
+                "end": 1161,
+                "expression": "new static($written = 7)",
+                "type": "*ERROR*",
+                "error": true,
+                "kind": null,
+                "class": "PHPStan\\Type\\ErrorType",
+                "final": null,
+                "native": {
+                    "type": "*ERROR*",
+                    "error": true,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1148,
+                "end": 1160,
+                "expression": "$written = 7",
+                "type": "7",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantIntegerType",
+                "final": null,
+                "native": {
+                    "type": "7",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1177,
+                "end": 1183,
+                "expression": "$value",
+                "type": "*ERROR*",
+                "error": true,
+                "kind": null,
+                "class": "PHPStan\\Type\\ErrorType",
+                "final": null,
+                "native": {
+                    "type": "*ERROR*",
+                    "error": true,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1199,
+                "end": 1207,
+                "expression": "$written",
+                "type": "7",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantIntegerType",
+                "final": null,
+                "native": {
+                    "type": "7",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1265,
+                "end": 1277,
+                "expression": "$written = 0",
+                "type": "0",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantIntegerType",
+                "final": null,
+                "native": {
+                    "type": "0",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1283,
+                "end": 1316,
+                "expression": "$value = new parent($written = 8)",
+                "type": "parent",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\NonexistentParentClassType",
+                "final": null,
+                "native": {
+                    "type": "parent",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1292,
+                "end": 1316,
+                "expression": "new parent($written = 8)",
+                "type": "parent",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\NonexistentParentClassType",
+                "final": null,
+                "native": {
+                    "type": "parent",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1303,
+                "end": 1315,
+                "expression": "$written = 8",
+                "type": "8",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantIntegerType",
+                "final": null,
+                "native": {
+                    "type": "8",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1332,
+                "end": 1338,
+                "expression": "$value",
+                "type": "parent",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\NonexistentParentClassType",
+                "final": null,
+                "native": {
+                    "type": "parent",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1354,
+                "end": 1362,
+                "expression": "$written",
+                "type": "8",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantIntegerType",
+                "final": null,
+                "native": {
+                    "type": "8",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1421,
+                "end": 1433,
+                "expression": "$written = 0",
+                "type": "0",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantIntegerType",
+                "final": null,
+                "native": {
+                    "type": "0",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1439,
+                "end": 1452,
+                "expression": "$target = 123",
+                "type": "123",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantIntegerType",
+                "final": null,
+                "native": {
+                    "type": "123",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1458,
+                "end": 1492,
+                "expression": "$value = new $target($written = 9)",
+                "type": "*ERROR*",
+                "error": true,
+                "kind": null,
+                "class": "PHPStan\\Type\\ErrorType",
+                "final": null,
+                "native": {
+                    "type": "*ERROR*",
+                    "error": true,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1467,
+                "end": 1492,
+                "expression": "new $target($written = 9)",
+                "type": "*ERROR*",
+                "error": true,
+                "kind": null,
+                "class": "PHPStan\\Type\\ErrorType",
+                "final": null,
+                "native": {
+                    "type": "*ERROR*",
+                    "error": true,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1479,
+                "end": 1491,
+                "expression": "$written = 9",
+                "type": "9",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantIntegerType",
+                "final": null,
+                "native": {
+                    "type": "9",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1508,
+                "end": 1514,
+                "expression": "$value",
+                "type": "*ERROR*",
+                "error": true,
+                "kind": null,
+                "class": "PHPStan\\Type\\ErrorType",
+                "final": null,
+                "native": {
+                    "type": "*ERROR*",
+                    "error": true,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1530,
+                "end": 1538,
+                "expression": "$written",
+                "type": "9",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantIntegerType",
+                "final": null,
+                "native": {
+                    "type": "9",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1595,
+                "end": 1609,
+                "expression": "$target = null",
+                "type": "null",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\NullType",
+                "final": null,
+                "native": {
+                    "type": "null",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1615,
+                "end": 1650,
+                "expression": "$value = new $target($written = 10)",
+                "type": "*ERROR*",
+                "error": true,
+                "kind": null,
+                "class": "PHPStan\\Type\\ErrorType",
+                "final": null,
+                "native": {
+                    "type": "*ERROR*",
+                    "error": true,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1624,
+                "end": 1650,
+                "expression": "new $target($written = 10)",
+                "type": "*ERROR*",
+                "error": true,
+                "kind": null,
+                "class": "PHPStan\\Type\\ErrorType",
+                "final": null,
+                "native": {
+                    "type": "*ERROR*",
+                    "error": true,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1636,
+                "end": 1649,
+                "expression": "$written = 10",
+                "type": "10",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantIntegerType",
+                "final": null,
+                "native": {
+                    "type": "10",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1666,
+                "end": 1672,
+                "expression": "$value",
+                "type": "*ERROR*",
+                "error": true,
+                "kind": null,
+                "class": "PHPStan\\Type\\ErrorType",
+                "final": null,
+                "native": {
+                    "type": "*ERROR*",
+                    "error": true,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1688,
+                "end": 1696,
+                "expression": "$written",
+                "type": "10",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantIntegerType",
+                "final": null,
+                "native": {
+                    "type": "10",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1753,
+                "end": 1768,
+                "expression": "$target = false",
+                "type": "false",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantBooleanType",
+                "final": null,
+                "native": {
+                    "type": "false",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1774,
+                "end": 1809,
+                "expression": "$value = new $target($written = 11)",
+                "type": "*ERROR*",
+                "error": true,
+                "kind": null,
+                "class": "PHPStan\\Type\\ErrorType",
+                "final": null,
+                "native": {
+                    "type": "*ERROR*",
+                    "error": true,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1783,
+                "end": 1809,
+                "expression": "new $target($written = 11)",
+                "type": "*ERROR*",
+                "error": true,
+                "kind": null,
+                "class": "PHPStan\\Type\\ErrorType",
+                "final": null,
+                "native": {
+                    "type": "*ERROR*",
+                    "error": true,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1795,
+                "end": 1808,
+                "expression": "$written = 11",
+                "type": "11",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantIntegerType",
+                "final": null,
+                "native": {
+                    "type": "11",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1825,
+                "end": 1831,
+                "expression": "$value",
+                "type": "*ERROR*",
+                "error": true,
+                "kind": null,
+                "class": "PHPStan\\Type\\ErrorType",
+                "final": null,
+                "native": {
+                    "type": "*ERROR*",
+                    "error": true,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1847,
+                "end": 1855,
+                "expression": "$written",
+                "type": "11",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantIntegerType",
+                "final": null,
+                "native": {
+                    "type": "11",
+                    "error": false,
+                    "kind": null
+                }
+            }
+        ],
+        "controls.php": [
+            {
+                "start": 174,
+                "end": 187,
+                "expression": "$out = 'done'",
+                "type": "'done'",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantStringType",
+                "final": null,
+                "native": {
+                    "type": "'done'",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 313,
+                "end": 326,
+                "expression": "$out = 'done'",
+                "type": "'done'",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantStringType",
+                "final": null,
+                "native": {
+                    "type": "'done'",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 908,
+                "end": 929,
+                "expression": "$value = new parent()",
+                "type": "parent",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\NonexistentParentClassType",
+                "final": null,
+                "native": {
+                    "type": "parent",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 917,
+                "end": 929,
+                "expression": "new parent()",
+                "type": "parent",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\NonexistentParentClassType",
+                "final": null,
+                "native": {
+                    "type": "parent",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 949,
+                "end": 955,
+                "expression": "$value",
+                "type": "parent",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\NonexistentParentClassType",
+                "final": null,
+                "native": {
+                    "type": "parent",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1023,
+                "end": 1031,
+                "expression": "$out = 0",
+                "type": "0",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantIntegerType",
+                "final": null,
+                "native": {
+                    "type": "0",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1037,
+                "end": 1064,
+                "expression": "$value = new Ordinary($out)",
+                "type": "FailedInstantiationControls\\Ordinary",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\ObjectType",
+                "final": true,
+                "native": {
+                    "type": "FailedInstantiationControls\\Ordinary",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1046,
+                "end": 1064,
+                "expression": "new Ordinary($out)",
+                "type": "FailedInstantiationControls\\Ordinary",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\ObjectType",
+                "final": true,
+                "native": {
+                    "type": "FailedInstantiationControls\\Ordinary",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1080,
+                "end": 1086,
+                "expression": "$value",
+                "type": "FailedInstantiationControls\\Ordinary",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\ObjectType",
+                "final": true,
+                "native": {
+                    "type": "FailedInstantiationControls\\Ordinary",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1102,
+                "end": 1106,
+                "expression": "$out",
+                "type": "string",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\StringType",
+                "final": null,
+                "native": {
+                    "type": "mixed",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1172,
+                "end": 1180,
+                "expression": "$out = 0",
+                "type": "0",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantIntegerType",
+                "final": null,
+                "native": {
+                    "type": "0",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1186,
+                "end": 1228,
+                "expression": "$value = new AbstractWithConstructor($out)",
+                "type": "FailedInstantiationControls\\AbstractWithConstructor",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\ObjectType",
+                "final": false,
+                "native": {
+                    "type": "FailedInstantiationControls\\AbstractWithConstructor",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1195,
+                "end": 1228,
+                "expression": "new AbstractWithConstructor($out)",
+                "type": "FailedInstantiationControls\\AbstractWithConstructor",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\ObjectType",
+                "final": false,
+                "native": {
+                    "type": "FailedInstantiationControls\\AbstractWithConstructor",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1244,
+                "end": 1250,
+                "expression": "$value",
+                "type": "FailedInstantiationControls\\AbstractWithConstructor",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\ObjectType",
+                "final": false,
+                "native": {
+                    "type": "FailedInstantiationControls\\AbstractWithConstructor",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1266,
+                "end": 1270,
+                "expression": "$out",
+                "type": "string",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\StringType",
+                "final": null,
+                "native": {
+                    "type": "mixed",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1348,
+                "end": 1356,
+                "expression": "$out = 0",
+                "type": "0",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantIntegerType",
+                "final": null,
+                "native": {
+                    "type": "0",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1362,
+                "end": 1405,
+                "expression": "$value = new InterfaceWithConstructor($out)",
+                "type": "FailedInstantiationControls\\InterfaceWithConstructor",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\ObjectType",
+                "final": false,
+                "native": {
+                    "type": "FailedInstantiationControls\\InterfaceWithConstructor",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1371,
+                "end": 1405,
+                "expression": "new InterfaceWithConstructor($out)",
+                "type": "FailedInstantiationControls\\InterfaceWithConstructor",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\ObjectType",
+                "final": false,
+                "native": {
+                    "type": "FailedInstantiationControls\\InterfaceWithConstructor",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1421,
+                "end": 1427,
+                "expression": "$value",
+                "type": "FailedInstantiationControls\\InterfaceWithConstructor",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\ObjectType",
+                "final": false,
+                "native": {
+                    "type": "FailedInstantiationControls\\InterfaceWithConstructor",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1443,
+                "end": 1447,
+                "expression": "$out",
+                "type": "string",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\StringType",
+                "final": null,
+                "native": {
+                    "type": "mixed",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1522,
+                "end": 1530,
+                "expression": "$out = 0",
+                "type": "0",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantIntegerType",
+                "final": null,
+                "native": {
+                    "type": "0",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1536,
+                "end": 1575,
+                "expression": "$value = new TraitWithConstructor($out)",
+                "type": "FailedInstantiationControls\\TraitWithConstructor",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\ObjectType",
+                "final": false,
+                "native": {
+                    "type": "FailedInstantiationControls\\TraitWithConstructor",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1545,
+                "end": 1575,
+                "expression": "new TraitWithConstructor($out)",
+                "type": "FailedInstantiationControls\\TraitWithConstructor",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\ObjectType",
+                "final": false,
+                "native": {
+                    "type": "FailedInstantiationControls\\TraitWithConstructor",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1591,
+                "end": 1597,
+                "expression": "$value",
+                "type": "FailedInstantiationControls\\TraitWithConstructor",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\ObjectType",
+                "final": false,
+                "native": {
+                    "type": "FailedInstantiationControls\\TraitWithConstructor",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1613,
+                "end": 1617,
+                "expression": "$out",
+                "type": "string",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\StringType",
+                "final": null,
+                "native": {
+                    "type": "mixed",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1692,
+                "end": 1725,
+                "expression": "$value = new PrivateConstructor()",
+                "type": "FailedInstantiationControls\\PrivateConstructor",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\ObjectType",
+                "final": true,
+                "native": {
+                    "type": "FailedInstantiationControls\\PrivateConstructor",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1701,
+                "end": 1725,
+                "expression": "new PrivateConstructor()",
+                "type": "FailedInstantiationControls\\PrivateConstructor",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\ObjectType",
+                "final": true,
+                "native": {
+                    "type": "FailedInstantiationControls\\PrivateConstructor",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1741,
+                "end": 1747,
+                "expression": "$value",
+                "type": "FailedInstantiationControls\\PrivateConstructor",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\ObjectType",
+                "final": true,
+                "native": {
+                    "type": "FailedInstantiationControls\\PrivateConstructor",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1805,
+                "end": 1825,
+                "expression": "$value = new Stops()",
+                "type": "never",
+                "error": false,
+                "kind": "nonaccepting",
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "final": null,
+                "native": {
+                    "type": "FailedInstantiationControls\\Stops",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1814,
+                "end": 1825,
+                "expression": "new Stops()",
+                "type": "never",
+                "error": false,
+                "kind": "nonaccepting",
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "final": null,
+                "native": {
+                    "type": "FailedInstantiationControls\\Stops",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1907,
+                "end": 1935,
+                "expression": "$value = new AbstractStops()",
+                "type": "never",
+                "error": false,
+                "kind": "nonaccepting",
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "final": null,
+                "native": {
+                    "type": "FailedInstantiationControls\\AbstractStops",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 1916,
+                "end": 1935,
+                "expression": "new AbstractStops()",
+                "type": "never",
+                "error": false,
+                "kind": "nonaccepting",
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "final": null,
+                "native": {
+                    "type": "FailedInstantiationControls\\AbstractStops",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 2025,
+                "end": 2047,
+                "expression": "$target = Stops::class",
+                "type": "'FailedInstantiationControls\\\\Stops'",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\Constant\\ConstantStringType",
+                "final": null,
+                "native": {
+                    "type": "'FailedInstantiationControls\\\\Stops'",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 2053,
+                "end": 2075,
+                "expression": "$value = new $target()",
+                "type": "FailedInstantiationControls\\Stops",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\ObjectType",
+                "final": true,
+                "native": {
+                    "type": "FailedInstantiationControls\\Stops",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 2062,
+                "end": 2075,
+                "expression": "new $target()",
+                "type": "FailedInstantiationControls\\Stops",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\ObjectType",
+                "final": true,
+                "native": {
+                    "type": "FailedInstantiationControls\\Stops",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 2091,
+                "end": 2097,
+                "expression": "$value",
+                "type": "FailedInstantiationControls\\Stops",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\ObjectType",
+                "final": true,
+                "native": {
+                    "type": "FailedInstantiationControls\\Stops",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 2165,
+                "end": 2191,
+                "expression": "$value = new Missing(exit)",
+                "type": "FailedInstantiationControls\\Missing",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\ObjectType",
+                "final": null,
+                "native": {
+                    "type": "FailedInstantiationControls\\Missing",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 2174,
+                "end": 2191,
+                "expression": "new Missing(exit)",
+                "type": "FailedInstantiationControls\\Missing",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\ObjectType",
+                "final": null,
+                "native": {
+                    "type": "FailedInstantiationControls\\Missing",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 2334,
+                "end": 2353,
+                "expression": "new AbstractStops()",
+                "type": "never",
+                "error": false,
+                "kind": "nonaccepting",
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "final": null,
+                "native": {
+                    "type": "FailedInstantiationControls\\AbstractStops",
+                    "error": false,
+                    "kind": null
+                }
+            },
+            {
+                "start": 2444,
+                "end": 2468,
+                "expression": "new PrivateConstructor()",
+                "type": "FailedInstantiationControls\\PrivateConstructor",
+                "error": false,
+                "kind": null,
+                "class": "PHPStan\\Type\\ObjectType",
+                "final": true,
+                "native": {
+                    "type": "FailedInstantiationControls\\PrivateConstructor",
+                    "error": false,
+                    "kind": null
+                }
+            }
+        ]
+    },
+    "continued": {
+        "illegal.php": {
+            "after-abstract": 749,
+            "after-boolean": 1861,
+            "after-enum": 596,
+            "after-integer": 1544,
+            "after-interface": 285,
+            "after-null": 1702,
+            "after-parent": 1368,
+            "after-self": 1060,
+            "after-static": 1213,
+            "after-trait": 444,
+            "after-unknown": 908
+        },
+        "controls.php": {
+            "after-abstract-never-argument": 2360,
+            "after-abstract-reference": 1276,
+            "after-dynamic-never": 2103,
+            "after-interface-reference": 1453,
+            "after-no-parent": 965,
+            "after-object-argument": 2475,
+            "after-private": 1753,
+            "after-success": 1112,
+            "after-trait-reference": 1623
+        }
+    },
+    "errors": {
+        "0": [
+            [
+                "controls.php",
+                100,
+                "new.privateConstructor",
+                "Cannot instantiate class FailedInstantiationControls\\PrivateConstructor via private constructor FailedInstantiationControls\\PrivateConstructor::__construct().",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                35,
+                "class.noParent",
+                "FailedInstantiationControls\\NoParent::make() calls new parent but FailedInstantiationControls\\NoParent does not extend any class.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                49,
+                "new.abstract",
+                "Instantiated class FailedInstantiationControls\\AbstractWithConstructor is abstract.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                56,
+                "new.interface",
+                "Cannot instantiate interface FailedInstantiationControls\\InterfaceWithConstructor.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                63,
+                "new.trait",
+                "Cannot instantiate trait FailedInstantiationControls\\TraitWithConstructor.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                69,
+                "new.privateConstructor",
+                "Cannot instantiate class FailedInstantiationControls\\PrivateConstructor via private constructor FailedInstantiationControls\\PrivateConstructor::__construct().",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                79,
+                "new.abstract",
+                "Instantiated class FailedInstantiationControls\\AbstractStops is abstract.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                90,
+                "class.notFound",
+                "Instantiated class FailedInstantiationControls\\Missing not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ],
+            [
+                "controls.php",
+                96,
+                "new.abstract",
+                "Instantiated class FailedInstantiationControls\\AbstractStops is abstract.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                13,
+                "new.interface",
+                "Cannot instantiate interface FailedInstantiation\\Contract.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                20,
+                "new.trait",
+                "Cannot instantiate trait FailedInstantiation\\Reusable.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                27,
+                "new.enum",
+                "Cannot instantiate enum FailedInstantiation\\Choice.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                34,
+                "new.abstract",
+                "Instantiated class FailedInstantiation\\Base is abstract.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                41,
+                "class.notFound",
+                "Instantiated class FailedInstantiation\\Missing not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ],
+            [
+                "illegal.php",
+                48,
+                "outOfClass.self",
+                "Using self outside of class scope.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                55,
+                "outOfClass.static",
+                "Using static outside of class scope.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                62,
+                "outOfClass.parent",
+                "Using parent outside of class scope.",
+                null,
+                true
+            ]
+        ],
+        "5": [
+            [
+                "controls.php",
+                100,
+                "argument.type",
+                "Parameter #1 $value of function FailedInstantiationControls\\acceptsInt expects int, FailedInstantiationControls\\PrivateConstructor given.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                100,
+                "new.privateConstructor",
+                "Cannot instantiate class FailedInstantiationControls\\PrivateConstructor via private constructor FailedInstantiationControls\\PrivateConstructor::__construct().",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                101,
+                "expr.resultUnused",
+                "Expression \"'after-object-argument'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                35,
+                "class.noParent",
+                "FailedInstantiationControls\\NoParent::make() calls new parent but FailedInstantiationControls\\NoParent does not extend any class.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                36,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                37,
+                "expr.resultUnused",
+                "Expression \"'after-no-parent'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                43,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                44,
+                "expr.resultUnused",
+                "Expression \"$out\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                45,
+                "expr.resultUnused",
+                "Expression \"'after-success'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                49,
+                "new.abstract",
+                "Instantiated class FailedInstantiationControls\\AbstractWithConstructor is abstract.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                50,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                51,
+                "expr.resultUnused",
+                "Expression \"$out\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                52,
+                "expr.resultUnused",
+                "Expression \"'after-abstract-reference'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                56,
+                "new.interface",
+                "Cannot instantiate interface FailedInstantiationControls\\InterfaceWithConstructor.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                57,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                58,
+                "expr.resultUnused",
+                "Expression \"$out\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                59,
+                "expr.resultUnused",
+                "Expression \"'after-interface-reference'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                63,
+                "new.trait",
+                "Cannot instantiate trait FailedInstantiationControls\\TraitWithConstructor.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                64,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                65,
+                "expr.resultUnused",
+                "Expression \"$out\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                66,
+                "expr.resultUnused",
+                "Expression \"'after-trait-reference'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                69,
+                "new.privateConstructor",
+                "Cannot instantiate class FailedInstantiationControls\\PrivateConstructor via private constructor FailedInstantiationControls\\PrivateConstructor::__construct().",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                70,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                71,
+                "expr.resultUnused",
+                "Expression \"'after-private'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                75,
+                "deadCode.unreachable",
+                "Unreachable statement - code above always terminates.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                79,
+                "new.abstract",
+                "Instantiated class FailedInstantiationControls\\AbstractStops is abstract.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                80,
+                "deadCode.unreachable",
+                "Unreachable statement - code above always terminates.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                86,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                87,
+                "expr.resultUnused",
+                "Expression \"'after-dynamic-never'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                90,
+                "class.notFound",
+                "Instantiated class FailedInstantiationControls\\Missing not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ],
+            [
+                "controls.php",
+                91,
+                "deadCode.unreachable",
+                "Unreachable statement - code above always terminates.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                96,
+                "new.abstract",
+                "Instantiated class FailedInstantiationControls\\AbstractStops is abstract.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                97,
+                "expr.resultUnused",
+                "Expression \"'after-abstract-never-argument'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                11,
+                "void.pure",
+                "Function FailedInstantiation\\interfaceCase() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                13,
+                "new.interface",
+                "Cannot instantiate interface FailedInstantiation\\Contract.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                14,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                15,
+                "expr.resultUnused",
+                "Expression \"$written\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                16,
+                "expr.resultUnused",
+                "Expression \"'after-interface'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                18,
+                "void.pure",
+                "Function FailedInstantiation\\traitCase() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                20,
+                "new.trait",
+                "Cannot instantiate trait FailedInstantiation\\Reusable.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                21,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                22,
+                "expr.resultUnused",
+                "Expression \"$written\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                23,
+                "expr.resultUnused",
+                "Expression \"'after-trait'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                25,
+                "void.pure",
+                "Function FailedInstantiation\\enumCase() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                27,
+                "new.enum",
+                "Cannot instantiate enum FailedInstantiation\\Choice.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                28,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                29,
+                "expr.resultUnused",
+                "Expression \"$written\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                30,
+                "expr.resultUnused",
+                "Expression \"'after-enum'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                32,
+                "void.pure",
+                "Function FailedInstantiation\\abstractCase() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                34,
+                "new.abstract",
+                "Instantiated class FailedInstantiation\\Base is abstract.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                35,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                36,
+                "expr.resultUnused",
+                "Expression \"$written\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                37,
+                "expr.resultUnused",
+                "Expression \"'after-abstract'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                41,
+                "class.notFound",
+                "Instantiated class FailedInstantiation\\Missing not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ],
+            [
+                "illegal.php",
+                42,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                43,
+                "expr.resultUnused",
+                "Expression \"$written\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                44,
+                "expr.resultUnused",
+                "Expression \"'after-unknown'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                48,
+                "outOfClass.self",
+                "Using self outside of class scope.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                49,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                50,
+                "expr.resultUnused",
+                "Expression \"$written\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                51,
+                "expr.resultUnused",
+                "Expression \"'after-self'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                55,
+                "outOfClass.static",
+                "Using static outside of class scope.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                56,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                57,
+                "expr.resultUnused",
+                "Expression \"$written\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                58,
+                "expr.resultUnused",
+                "Expression \"'after-static'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                62,
+                "outOfClass.parent",
+                "Using parent outside of class scope.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                63,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                64,
+                "expr.resultUnused",
+                "Expression \"$written\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                65,
+                "expr.resultUnused",
+                "Expression \"'after-parent'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                71,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                72,
+                "expr.resultUnused",
+                "Expression \"$written\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                73,
+                "expr.resultUnused",
+                "Expression \"'after-integer'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                78,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                79,
+                "expr.resultUnused",
+                "Expression \"$written\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                80,
+                "expr.resultUnused",
+                "Expression \"'after-null'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                85,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                86,
+                "expr.resultUnused",
+                "Expression \"$written\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                87,
+                "expr.resultUnused",
+                "Expression \"'after-boolean'\" on a separate line does not do anything.",
+                null,
+                true
+            ]
+        ],
+        "9": [
+            [
+                "controls.php",
+                100,
+                "argument.type",
+                "Parameter #1 $value of function FailedInstantiationControls\\acceptsInt expects int, FailedInstantiationControls\\PrivateConstructor given.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                100,
+                "new.privateConstructor",
+                "Cannot instantiate class FailedInstantiationControls\\PrivateConstructor via private constructor FailedInstantiationControls\\PrivateConstructor::__construct().",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                101,
+                "expr.resultUnused",
+                "Expression \"'after-object-argument'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                35,
+                "class.noParent",
+                "FailedInstantiationControls\\NoParent::make() calls new parent but FailedInstantiationControls\\NoParent does not extend any class.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                36,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                37,
+                "expr.resultUnused",
+                "Expression \"'after-no-parent'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                43,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                44,
+                "expr.resultUnused",
+                "Expression \"$out\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                45,
+                "expr.resultUnused",
+                "Expression \"'after-success'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                49,
+                "new.abstract",
+                "Instantiated class FailedInstantiationControls\\AbstractWithConstructor is abstract.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                50,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                51,
+                "expr.resultUnused",
+                "Expression \"$out\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                52,
+                "expr.resultUnused",
+                "Expression \"'after-abstract-reference'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                56,
+                "new.interface",
+                "Cannot instantiate interface FailedInstantiationControls\\InterfaceWithConstructor.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                57,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                58,
+                "expr.resultUnused",
+                "Expression \"$out\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                59,
+                "expr.resultUnused",
+                "Expression \"'after-interface-reference'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                63,
+                "new.trait",
+                "Cannot instantiate trait FailedInstantiationControls\\TraitWithConstructor.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                64,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                65,
+                "expr.resultUnused",
+                "Expression \"$out\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                66,
+                "expr.resultUnused",
+                "Expression \"'after-trait-reference'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                69,
+                "new.privateConstructor",
+                "Cannot instantiate class FailedInstantiationControls\\PrivateConstructor via private constructor FailedInstantiationControls\\PrivateConstructor::__construct().",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                70,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                71,
+                "expr.resultUnused",
+                "Expression \"'after-private'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                75,
+                "deadCode.unreachable",
+                "Unreachable statement - code above always terminates.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                79,
+                "new.abstract",
+                "Instantiated class FailedInstantiationControls\\AbstractStops is abstract.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                80,
+                "deadCode.unreachable",
+                "Unreachable statement - code above always terminates.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                86,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                87,
+                "expr.resultUnused",
+                "Expression \"'after-dynamic-never'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                90,
+                "class.notFound",
+                "Instantiated class FailedInstantiationControls\\Missing not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ],
+            [
+                "controls.php",
+                91,
+                "deadCode.unreachable",
+                "Unreachable statement - code above always terminates.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                96,
+                "new.abstract",
+                "Instantiated class FailedInstantiationControls\\AbstractStops is abstract.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                97,
+                "expr.resultUnused",
+                "Expression \"'after-abstract-never-argument'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                11,
+                "void.pure",
+                "Function FailedInstantiation\\interfaceCase() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                13,
+                "new.interface",
+                "Cannot instantiate interface FailedInstantiation\\Contract.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                14,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                15,
+                "expr.resultUnused",
+                "Expression \"$written\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                16,
+                "expr.resultUnused",
+                "Expression \"'after-interface'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                18,
+                "void.pure",
+                "Function FailedInstantiation\\traitCase() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                20,
+                "new.trait",
+                "Cannot instantiate trait FailedInstantiation\\Reusable.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                21,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                22,
+                "expr.resultUnused",
+                "Expression \"$written\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                23,
+                "expr.resultUnused",
+                "Expression \"'after-trait'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                25,
+                "void.pure",
+                "Function FailedInstantiation\\enumCase() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                27,
+                "new.enum",
+                "Cannot instantiate enum FailedInstantiation\\Choice.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                28,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                29,
+                "expr.resultUnused",
+                "Expression \"$written\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                30,
+                "expr.resultUnused",
+                "Expression \"'after-enum'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                32,
+                "void.pure",
+                "Function FailedInstantiation\\abstractCase() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                34,
+                "new.abstract",
+                "Instantiated class FailedInstantiation\\Base is abstract.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                35,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                36,
+                "expr.resultUnused",
+                "Expression \"$written\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                37,
+                "expr.resultUnused",
+                "Expression \"'after-abstract'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                41,
+                "class.notFound",
+                "Instantiated class FailedInstantiation\\Missing not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ],
+            [
+                "illegal.php",
+                42,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                43,
+                "expr.resultUnused",
+                "Expression \"$written\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                44,
+                "expr.resultUnused",
+                "Expression \"'after-unknown'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                48,
+                "outOfClass.self",
+                "Using self outside of class scope.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                49,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                50,
+                "expr.resultUnused",
+                "Expression \"$written\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                51,
+                "expr.resultUnused",
+                "Expression \"'after-self'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                55,
+                "outOfClass.static",
+                "Using static outside of class scope.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                56,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                57,
+                "expr.resultUnused",
+                "Expression \"$written\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                58,
+                "expr.resultUnused",
+                "Expression \"'after-static'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                62,
+                "outOfClass.parent",
+                "Using parent outside of class scope.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                63,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                64,
+                "expr.resultUnused",
+                "Expression \"$written\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                65,
+                "expr.resultUnused",
+                "Expression \"'after-parent'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                71,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                72,
+                "expr.resultUnused",
+                "Expression \"$written\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                73,
+                "expr.resultUnused",
+                "Expression \"'after-integer'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                78,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                79,
+                "expr.resultUnused",
+                "Expression \"$written\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                80,
+                "expr.resultUnused",
+                "Expression \"'after-null'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                85,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                86,
+                "expr.resultUnused",
+                "Expression \"$written\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "illegal.php",
+                87,
+                "expr.resultUnused",
+                "Expression \"'after-boolean'\" on a separate line does not do anything.",
+                null,
+                true
+            ]
+        ]
+    }
+}

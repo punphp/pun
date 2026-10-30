@@ -1,0 +1,173 @@
+{
+  "general": [],
+  "errors": [
+    {
+      "file": "internal.php",
+      "line": 7,
+      "identifier": "class.nameCase",
+      "message": "Class Attribute referenced with incorrect case: ATTRIBUTE.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 17,
+      "identifier": "class.nameCase",
+      "message": "Class ClassCaseOptions\\Definitions\\Marker referenced with incorrect case: ClassCaseOptions\\Definitions\\marker.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 20,
+      "identifier": "class.nameCase",
+      "message": "Class ClassCaseOptions\\Definitions\\Marker referenced with incorrect case: ClassCaseOptions\\Definitions\\marker.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 20,
+      "identifier": "class.nameCase",
+      "message": "Class ClassCaseOptions\\Definitions\\Marker referenced with incorrect case: ClassCaseOptions\\Definitions\\marker.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 20,
+      "identifier": "class.nameCase",
+      "message": "Class ClassCaseOptions\\Definitions\\Marker referenced with incorrect case: ClassCaseOptions\\Definitions\\marker.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 34,
+      "identifier": "class.nameCase",
+      "message": "Class ClassCaseOptions\\Definitions\\Marker referenced with incorrect case: ClassCaseOptions\\Definitions\\marker.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 34,
+      "identifier": "class.nameCase",
+      "message": "Class ClassCaseOptions\\Definitions\\Marker referenced with incorrect case: ClassCaseOptions\\Definitions\\marker.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 35,
+      "identifier": "class.nameCase",
+      "message": "Class ClassCaseOptions\\Definitions\\Marker referenced with incorrect case: ClassCaseOptions\\Definitions\\marker.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 35,
+      "identifier": "class.nameCase",
+      "message": "Class ClassCaseOptions\\Definitions\\Marker referenced with incorrect case: ClassCaseOptions\\Definitions\\marker.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 40,
+      "identifier": "class.nameCase",
+      "message": "Class ClassCaseOptions\\Definitions\\Marker referenced with incorrect case: ClassCaseOptions\\Definitions\\MARKER.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 48,
+      "identifier": "class.nameCase",
+      "message": "Class ClassCaseOptions\\Definitions\\Marker referenced with incorrect case: ClassCaseOptions\\Definitions\\MARKER.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 54,
+      "identifier": "class.nameCase",
+      "message": "Class ClassCaseOptions\\Definitions\\Marker referenced with incorrect case: ClassCaseOptions\\Definitions\\MARKER.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 64,
+      "identifier": "class.nameCase",
+      "message": "Class ClassCaseOptions\\Definitions\\Marker referenced with incorrect case: ClassCaseOptions\\Definitions\\marker.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 68,
+      "identifier": "class.nameCase",
+      "message": "Class ClassCaseOptions\\Definitions\\Marker referenced with incorrect case: ClassCaseOptions\\Definitions\\marker.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 71,
+      "identifier": "class.nameCase",
+      "message": "Class ClassCaseOptions\\Definitions\\Marker referenced with incorrect case: ClassCaseOptions\\Definitions\\marker.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 73,
+      "identifier": "class.nameCase",
+      "message": "Class ClassCaseOptions\\Definitions\\Marker referenced with incorrect case: ClassCaseOptions\\Definitions\\marker.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 77,
+      "identifier": "class.nameCase",
+      "message": "Class ClassCaseOptions\\Definitions\\Marker referenced with incorrect case: ClassCaseOptions\\Definitions\\MARKER.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 83,
+      "identifier": "class.nameCase",
+      "message": "Class ClassCaseOptions\\Definitions\\Marker referenced with incorrect case: ClassCaseOptions\\Definitions\\MARKER.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 91,
+      "identifier": "class.nameCase",
+      "message": "Class ClassCaseOptions\\Relative\\Marker referenced with incorrect case: ClassCaseOptions\\Relative\\marker.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 93,
+      "identifier": "class.nameCase",
+      "message": "Class ClassCaseOptions\\Relative\\Marker referenced with incorrect case: ClassCaseOptions\\Relative\\marker.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 100,
+      "identifier": "class.nameCase",
+      "message": "Class ClassCaseOptions\\Reset\\Alias referenced with incorrect case: ClassCaseOptions\\Reset\\alias.",
+      "tip": null,
+      "ignorable": true
+    }
+  ]
+}

@@ -1,0 +1,128 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 19
+  },
+  "files": {
+    "fallback.php": {
+      "errors": 19,
+      "messages": [
+        {
+          "message": "Constant InitializerExpressionFallback\\LiteralMismatch::VALUE with value 1 overriding constant InitializerExpressionFallback\\CallInput::VALUE with different value mixed should have the same value.",
+          "line": 5,
+          "ignorable": false,
+          "identifier": "classConstant.value"
+        },
+        {
+          "message": "Constant InitializerExpressionFallback\\CallMismatch::VALUE with value mixed overriding constant InitializerExpressionFallback\\LiteralInput::VALUE with different value 1 should have the same value.",
+          "line": 7,
+          "ignorable": false,
+          "identifier": "classConstant.value"
+        },
+        {
+          "message": "Dumped type: mixed",
+          "line": 20,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{value: mixed}",
+          "line": 21,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: mixed~(0|0.0|''|'0'|array{}|false|null)",
+          "line": 22,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: mixed~(0|0.0|''|'0'|array{}|false|null)",
+          "line": 23,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: mixed",
+          "line": 24,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{value: mixed}",
+          "line": 25,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 7",
+          "line": 26,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: mixed",
+          "line": 27,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: mixed",
+          "line": 28,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: mixed",
+          "line": 29,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int",
+          "line": 31,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: mixed",
+          "line": 32,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: mixed",
+          "line": 33,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{value: mixed}",
+          "line": 34,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: mixed",
+          "line": 39,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int",
+          "line": 40,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Class InitializerExpressionFallback\\InvalidAttribute is not an Attribute class.",
+          "line": 42,
+          "ignorable": true,
+          "identifier": "attribute.notAttribute"
+        }
+      ]
+    }
+  },
+  "errors": []
+}

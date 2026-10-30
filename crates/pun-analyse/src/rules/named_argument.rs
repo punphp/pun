@@ -6,10 +6,12 @@
 use std::collections::{BTreeMap, HashSet};
 use std::path::Path;
 
+use mago_analyzer::observations::CallScopeRequest;
 use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::metadata::function_like::FunctionLikeMetadata;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
+use mago_syntax::walker::MutWalker;
 use pun_phpstan::comments::{LinesToIgnore, lines_to_ignore};
 use pun_phpstan::ignore::{Error, ignores_without_comments, local_ignores};
 use pun_phpstan::types::{NeverKind, Type};
@@ -83,95 +85,6 @@ fn method_doc(
     own
 }
 
-struct Method {
-    class: String,
-    name: String,
-    acceptor: params::Acceptor,
-    accepts: bool,
-    private: bool,
-    final_class: bool,
-}
-
-/// UnionTypeMethodReflection / IntersectionTypeMethodReflection, retaining their distinct declaring-class,
-/// parameter combination, private and acceptsNamedArguments contracts. No receiver types are inferred here.
-fn method(c: &Checker, ty: &Type, name: &[u8], counts: &params::Counts) -> Option<Method> {
-    match ty {
-        Type::Union(ts) | Type::Benevolent(ts) => {
-            let methods: Vec<_> = ts
-                .iter()
-                .map(|t| method(c, t, name, counts))
-                .collect::<Option<_>>()?;
-            let first = methods.first()?;
-            Some(Method {
-                class: first.class.clone(),
-                name: String::from_utf8_lossy(name).into_owned(),
-                acceptor: params::combine(&methods.iter().map(|m| &m.acceptor).collect::<Vec<_>>()),
-                accepts: methods.iter().all(|m| m.accepts),
-                private: methods.iter().any(|m| m.private),
-                final_class: first.final_class,
-            })
-        }
-        Type::Intersection(ts) => {
-            let methods: Vec<_> = ts
-                .iter()
-                .filter_map(|t| method(c, t, name, counts))
-                .collect();
-            let mut selected = methods.first()?;
-            for candidate in &methods[1..] {
-                if (candidate.acceptor.variadic, candidate.acceptor.names.len())
-                    > (selected.acceptor.variadic, selected.acceptor.names.len())
-                {
-                    selected = candidate;
-                }
-            }
-            Some(Method {
-                class: selected.class.clone(),
-                name: String::from_utf8_lossy(name).into_owned(),
-                acceptor: selected.acceptor.clone(),
-                accepts: methods.iter().any(|m| m.accepts),
-                private: methods.iter().all(|m| m.private),
-                final_class: selected.final_class,
-            })
-        }
-        Type::Template(t) => method(c, &t.bound, name, counts),
-        Type::Object(n, _) | Type::Static(n, _) | Type::This(n) | Type::EnumCase(n, _) => {
-            let m = c.method_of(n, name).ok().flatten()?;
-            let (accepts, final_class) = match &m {
-                members::Method::User { declaring, f, .. } => {
-                    (accepts(c, declaring, f), declaring.flags.is_final())
-                }
-                members::Method::Builtin { declaring, .. } => (true, declaring.is_final),
-            };
-            Some(Method {
-                class: m.declaring_name(),
-                name: m.name(),
-                acceptor: params::select(c, m.variants(), counts),
-                accepts,
-                private: m.visibility().is_private(),
-                final_class,
-            })
-        }
-        _ => None,
-    }
-}
-
-fn strings(ty: &Type) -> Vec<String> {
-    match ty {
-        Type::ConstString(s) => vec![s.clone()],
-        Type::Union(ts) | Type::Benevolent(ts) => {
-            let parts: Vec<_> = ts.iter().map(strings).collect();
-            if parts.iter().any(Vec::is_empty) {
-                Vec::new()
-            } else {
-                parts.concat()
-            }
-        }
-        Type::Intersection(ts) => ts.iter().flat_map(strings).collect(),
-        Type::Template(t) => strings(&t.bound),
-        _ => Vec::new(),
-    }
-}
-
 /// The part of a ConstantArrayType that FunctionCallParametersCheck reads when binding names.
 struct ArrayArguments {
     keys: Vec<Type>,
@@ -231,7 +144,7 @@ fn unpacked_names(ty: &Type, first: bool) -> Option<Vec<Option<String>>> {
         .filter_map(|i| {
             let key = &arrays[0].keys[i];
             let name = match key {
-                Type::ConstString(s) if arrays.iter().all(|a| a.keys[i] == *key) => Some(s.clone()),
+                Type::ConstString(s) if arrays.iter().all(|a| a.keys[i] == *key) => Some(String::from_utf8_lossy(s).into_owned()),
                 _ => None,
             };
             if name.is_none() && arrays.last().unwrap().optional.contains(&i) {
@@ -247,54 +160,91 @@ fn unpacked_names(ty: &Type, first: bool) -> Option<Vec<Option<String>>> {
     Some(names)
 }
 
+/// Named collectors and constant dynamic method checks share owned operand-position scopes.
+pub(super) fn requests(program: &Program) -> Vec<CallScopeRequest> {
+    let mut calls = Requests(Vec::new());
+    calls.walk_program(program, &mut ());
+    calls.0
+}
+
+struct Requests(Vec<CallScopeRequest>);
+impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Requests {
+    fn walk_in_expression(&mut self, expression: &'ast Expression<'arena>, _: &mut ()) {
+        let (object, selector, args) = match expression {
+            Expression::Call(Call::Method(call)) => (call.object, &call.method, &call.argument_list),
+            Expression::Call(Call::NullSafeMethod(call)) => (call.object, &call.method, &call.argument_list),
+            _ => return,
+        };
+        if matches!(selector, ClassLikeMemberSelector::Identifier(_))
+            && !args.arguments.iter().any(|arg| matches!(arg, Argument::Named(_))
+            || matches!(arg, Argument::Positional(arg) if arg.ellipsis.is_some()))
+        {
+            return;
+        }
+        let mut expressions = Expressions(Vec::new());
+        expressions.walk_expression(object, &mut ());
+        expressions.walk_class_like_member_selector(selector, &mut ());
+        expressions.walk_argument_list(args, &mut ());
+        expressions.0.sort_unstable_by_key(|span| (span.start.offset, span.end.offset));
+        expressions.0.dedup();
+        self.0.push(CallScopeRequest { call: expression.span(), expressions: expressions.0 });
+    }
+}
+
+struct Expressions(Vec<Span>);
+impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Expressions {
+    fn walk_in_expression(&mut self, expression: &'ast Expression<'arena>, _: &mut ()) {
+        self.0.push(expression.span());
+    }
+    fn walk_in_variable(&mut self, variable: &'ast Variable<'arena>, _: &mut ()) {
+        self.0.push(variable.span());
+    }
+}
+
 /// CallMethodsRule's instance calls only. Static calls, constructors and first-class callables do not emit.
 pub(super) fn call(
     c: &mut Checker,
+    span: Span,
     object: &Expression,
-    selector: &ClassLikeMemberSelector,
     args: &ArgumentList,
     nullsafe: bool,
 ) {
-    // FunctionCallParametersCheck returns before emitting when both argument checks are disabled (levels 0–4).
-    if c.level < 5 {
+    // FunctionCallParametersCheck returns before emitting only when both independent argument checks are off.
+    if (!c.check_argument_types && !c.check_arguments_passed_by_reference) || !c.checks_expression(object) {
         return;
     }
-    let names = match selector {
-        ClassLikeMemberSelector::Identifier(n) => {
-            vec![String::from_utf8_lossy(n.value).into_owned()]
-        }
-        _ => super::types::dynamic_names::member(selector)
-            .and_then(|span| c.types.get(&span))
-            .map_or_else(Vec::new, |t| strings(&c.to_phpstan(t))),
-    };
     let counts = params::count(args);
-    let mut object = object;
-    while let Expression::Parenthesized(p) = object {
-        object = p.expression;
-    }
-    let exact = c.conditions.exact.contains(&object.span())
-        || matches!(object, Expression::Instantiation(_));
-    for name in names {
-        let ty = c.phpstan_type(object).map(|t| {
-            if nullsafe || super::assign::contains_nullsafe(object) {
-                t.remove_null()
-            } else {
-                t
-            }
+    let object = object.unparenthesized();
+    let mut records = Vec::new();
+    for scope in c.named_call_scopes.get(&span).into_iter().flatten() {
+        // Missing observations are not mixed: later names cannot bind against an unknown unpack width.
+        if counts.args.iter().any(|arg| arg.unpack.is_some() && !scope.types.contains_key(&arg.value)) {
+            continue;
+        }
+        let name = scope.name;
+        let short_circuit = scope.types.get(&object.span()).is_some_and(|t| t.has_nullsafe_null());
+        // Both null removal and RuleLevelHelper recombine alternatives using declared generic variance.
+        let ty = declared::with_classes(c, || {
+            let ty = c.phpstan_type_in(object, &scope.types).map(|t| {
+                // An earlier nullsafe operator does not erase null returned by the method itself.
+                if nullsafe || (short_circuit && super::assign::contains_nullsafe(object)) {
+                    t.remove_null()
+                } else {
+                    t
+                }
+            });
+            c.find_type_to_check_of(ty, &|t| matches!(c.reflected_method(t, name.as_bytes()), Ok(Some(_))))
         });
-        let ty = c.find_type_to_check_of(ty, &|t| method(c, t, name.as_bytes(), &counts).is_some());
         let Some(m) = ty
             .as_ref()
-            .and_then(|t| method(c, t, name.as_bytes(), &counts))
+            .and_then(|t| c.reflected_method(t, name.as_bytes()).ok().flatten())
         else {
             continue;
         };
-        // NewHandler's asFinal() applies to the called-on class, not the class of an inherited declaration.
-        let final_called_on =
-            exact && ty.as_ref().unwrap().object_class_names() == vec![m.class.clone()];
-        if m.private || m.final_class || final_called_on || !m.accepts {
+        if m.private || m.final_class || !m.accepts {
             continue;
         }
+        let acceptor = m.select(c, &counts, Some(scope));
         // processArguments(): names bind the actual parameter (including a user variadic's unknown names).
         // Positional arguments beyond the signature stop processing, even if a named argument follows.
         let mut position = 0;
@@ -307,14 +257,14 @@ pub(super) fn call(
             let names = match &arg.unpack {
                 None => vec![arg.name.clone()],
                 Some(_) => c
-                    .phpstan_type(value)
+                    .phpstan_type_in(value, &scope.types)
                     .and_then(|t| unpacked_names(&t, position == 0))
                     .unwrap_or_else(|| vec![None]),
             };
             for name in names {
                 let Some(name) = name else {
-                    if position >= m.acceptor.names.len()
-                        && !m.acceptor.variadics.last().copied().unwrap_or(false)
+                    if position >= acceptor.names.len()
+                        && !acceptor.variadics.last().copied().unwrap_or(false)
                     {
                         stopped = true;
                         break;
@@ -323,31 +273,31 @@ pub(super) fn call(
                     continue;
                 };
                 position += 1;
-                let parameter = m
-                    .acceptor
+                let parameter = acceptor
                     .names
                     .iter()
                     .position(|p| *p == name)
                     .or_else(|| {
-                        (!m.acceptor.builtin && m.acceptor.variadics.last() == Some(&true))
-                            .then(|| m.acceptor.names.len() - 1)
+                        (!m.builtin() && acceptor.variadics.last() == Some(&true))
+                            .then(|| acceptor.names.len() - 1)
                     });
                 if let Some(parameter) = parameter {
-                    c.report(
+                    records.push((
                         arg.span,
-                        ID,
                         format!(
                             "{ENTRY}call\u{1f}{}\u{1f}{}\u{1f}{}",
-                            m.class, m.name, m.acceptor.names[parameter]
+                            m.declaring.declaring_name(), m.name, acceptor.names[parameter]
                         ),
-                        None,
-                    );
+                    ));
                 }
             }
             if stopped {
                 break;
             }
         }
+    }
+    for (span, record) in records {
+        c.report(span, ID, record, None);
     }
 }
 
@@ -372,10 +322,15 @@ pub(crate) fn resolve(
     errors: Vec<Error>,
     sources: &crate::codebase::Sources,
     explain_ignores: bool,
+    enabled: bool,
 ) -> Vec<Error> {
     let (mut records, mut errors): (Vec<_>, Vec<_>) = errors
         .into_iter()
         .partition(|e| e.message.starts_with(ENTRY));
+    // An unregistered CollectedDataNode rule never joins or consumes provisional unmatched ignores.
+    if !enabled {
+        return errors;
+    }
     records.sort_by(|a, b| a.file_path.cmp(&b.file_path));
     let mut calls: BTreeMap<(&str, &str, &str), Vec<&Error>> = BTreeMap::new();
     for e in &records {
@@ -429,7 +384,11 @@ pub(crate) fn resolve(
                         e.identifier.as_deref() == Some("ignore.unmatchedLine")
                     } else {
                         e.identifier.as_deref() == Some("ignore.unmatchedIdentifier")
-                            && e.message.contains(ID)
+                            && e.message
+                                == format!(
+                                    "No error with identifier {ID} is reported on line {}.",
+                                    ignored.line.unwrap()
+                                )
                     }
             }) {
                 errors.remove(i);

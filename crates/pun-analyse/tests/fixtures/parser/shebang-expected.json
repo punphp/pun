@@ -1,0 +1,332 @@
+{
+    "analysed": {
+        "namespace-same-eof": [
+            {
+                "file": "input.php",
+                "line": 1,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declaration statement has to be the very first statement in the script on line 1",
+                "tip": null,
+                "ignorable": false
+            }
+        ],
+        "namespace-same-lf": [
+            {
+                "file": "input.php",
+                "line": 1,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declaration statement has to be the very first statement in the script on line 1",
+                "tip": null,
+                "ignorable": false
+            }
+        ],
+        "namespace-same-crlf": [
+            {
+                "file": "input.php",
+                "line": 1,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declaration statement has to be the very first statement in the script on line 1",
+                "tip": null,
+                "ignorable": false
+            }
+        ],
+        "namespace-same-cr": [
+            {
+                "file": "input.php",
+                "line": 1,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declaration statement has to be the very first statement in the script on line 1",
+                "tip": null,
+                "ignorable": false
+            }
+        ],
+        "namespace-before-lf": [],
+        "namespace-before-crlf": [],
+        "namespace-before-cr": [
+            {
+                "file": "input.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declaration statement has to be the very first statement in the script on line 2",
+                "tip": null,
+                "ignorable": false
+            }
+        ],
+        "namespace-ordinary-inline": [
+            {
+                "file": "input.php",
+                "line": 1,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declaration statement has to be the very first statement in the script on line 1",
+                "tip": null,
+                "ignorable": false
+            }
+        ],
+        "namespace-raw-leading-comment": [
+            {
+                "file": "input.php",
+                "line": 1,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declaration statement has to be the very first statement in the script on line 1",
+                "tip": null,
+                "ignorable": false
+            }
+        ],
+        "namespace-php-leading-comment": [
+            {
+                "file": "input.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declaration statement has to be the very first statement in the script on line 2",
+                "tip": null,
+                "ignorable": false
+            }
+        ],
+        "namespace-comment-after-shebang": [],
+        "namespace-space-before-shebang": [
+            {
+                "file": "input.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declaration statement has to be the very first statement in the script on line 2",
+                "tip": null,
+                "ignorable": false
+            }
+        ],
+        "namespace-extra-inline": [
+            {
+                "file": "input.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declaration statement has to be the very first statement in the script on line 2",
+                "tip": null,
+                "ignorable": false
+            }
+        ],
+        "namespace-extra-inline-crlf": [
+            {
+                "file": "input.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declaration statement has to be the very first statement in the script on line 2",
+                "tip": null,
+                "ignorable": false
+            }
+        ],
+        "void-parameter": [
+            {
+                "file": "input.php",
+                "line": 1,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 1",
+                "tip": null,
+                "ignorable": false
+            }
+        ],
+        "void-before-namespace": [
+            {
+                "file": "input.php",
+                "line": 1,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declaration statement has to be the very first statement in the script on line 1",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "input.php",
+                "line": 1,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 1",
+                "tip": null,
+                "ignorable": false
+            }
+        ],
+        "missing-function-eof": [
+            {
+                "file": "input.php",
+                "line": 1,
+                "identifier": "function.notFound",
+                "message": "Function missing_shebang_control not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            }
+        ],
+        "missing-function-lf": [
+            {
+                "file": "input.php",
+                "line": 1,
+                "identifier": "function.notFound",
+                "message": "Function missing_shebang_control not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            }
+        ],
+        "missing-function-crlf": [
+            {
+                "file": "input.php",
+                "line": 1,
+                "identifier": "function.notFound",
+                "message": "Function missing_shebang_control not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            }
+        ],
+        "missing-function-cr": [
+            {
+                "file": "input.php",
+                "line": 1,
+                "identifier": "function.notFound",
+                "message": "Function missing_shebang_control not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            }
+        ],
+        "missing-function-next-line": [
+            {
+                "file": "input.php",
+                "line": 2,
+                "identifier": "function.notFound",
+                "message": "Function missing_shebang_control not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            }
+        ],
+        "missing-function-after-cr": [
+            {
+                "file": "input.php",
+                "line": 2,
+                "identifier": "function.notFound",
+                "message": "Function missing_shebang_control not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            }
+        ],
+        "missing-function-after-lf": [
+            {
+                "file": "input.php",
+                "line": 2,
+                "identifier": "function.notFound",
+                "message": "Function missing_shebang_control not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            }
+        ],
+        "missing-function-after-crlf": [
+            {
+                "file": "input.php",
+                "line": 2,
+                "identifier": "function.notFound",
+                "message": "Function missing_shebang_control not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            }
+        ],
+        "echo-tag": [
+            {
+                "file": "input.php",
+                "line": 1,
+                "identifier": "function.notFound",
+                "message": "Function missing_shebang_control not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            }
+        ],
+        "no-opening-tag": [],
+        "opening-tag-at-eof": []
+    },
+    "scanned": {
+        "valid-same-eof": [],
+        "valid-same-lf": [],
+        "valid-same-crlf": [],
+        "valid-same-cr": [],
+        "valid-next-line": [],
+        "valid-before-lf": [],
+        "valid-before-crlf": [],
+        "valid-before-cr": [],
+        "valid-namespace": [],
+        "invalid-parameter": [
+            {
+                "file": "main.php",
+                "line": 2,
+                "identifier": "class.notFound",
+                "message": "Instantiated class ScanBefore not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "file": "main.php",
+                "line": 3,
+                "identifier": "class.notFound",
+                "message": "Instantiated class ScanAfter not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "file": "main.php",
+                "line": 4,
+                "identifier": "function.notFound",
+                "message": "Function scanFunction not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "file": "main.php",
+                "line": 5,
+                "identifier": "constant.notFound",
+                "message": "Used constant SCAN_CONSTANT not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "file": "main.php",
+                "line": 6,
+                "identifier": "constant.notFound",
+                "message": "Constant SCAN_CONSTANT not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            }
+        ],
+        "invalid-namespace": [
+            {
+                "file": "main.php",
+                "line": 2,
+                "identifier": "class.notFound",
+                "message": "Instantiated class ScanBefore not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "file": "main.php",
+                "line": 3,
+                "identifier": "class.notFound",
+                "message": "Instantiated class ScanAfter not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "file": "main.php",
+                "line": 4,
+                "identifier": "function.notFound",
+                "message": "Function scanFunction not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "file": "main.php",
+                "line": 5,
+                "identifier": "constant.notFound",
+                "message": "Used constant SCAN_CONSTANT not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "file": "main.php",
+                "line": 6,
+                "identifier": "constant.notFound",
+                "message": "Constant SCAN_CONSTANT not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            }
+        ]
+    }
+}

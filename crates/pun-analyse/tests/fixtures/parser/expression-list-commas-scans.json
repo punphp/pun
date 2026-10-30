@@ -1,0 +1,10 @@
+{
+  "initialization": "<?php\nclass ScanBefore {}\nfor (1,; false;) {}\nclass ScanAfter {}\nfunction scanFunction() {}\nconst SCAN_CONSTANT = 1;\n",
+  "condition": "<?php\nclass ScanBefore {}\nfor (; false,;) {}\nclass ScanAfter {}\nfunction scanFunction() {}\nconst SCAN_CONSTANT = 1;\n",
+  "increment": "<?php\nclass ScanBefore {}\nfor (;; 1,) {}\nclass ScanAfter {}\nfunction scanFunction() {}\nconst SCAN_CONSTANT = 1;\n",
+  "echo": "<?php\nclass ScanBefore {}\necho 1,;\nclass ScanAfter {}\nfunction scanFunction() {}\nconst SCAN_CONSTANT = 1;\n",
+  "short-echo": "<?php\nclass ScanBefore {}\n?>\n<?= 1, ?>\n<?php\nclass ScanAfter {}\nfunction scanFunction() {}\nconst SCAN_CONSTANT = 1;\n",
+  "valid-for": "<?php\nclass ScanBefore {}\nfor ($i = 0, $j = 1; false; $i++, $j++) {}\nclass ScanAfter {}\nfunction scanFunction() {}\nconst SCAN_CONSTANT = 1;\n",
+  "valid-echo": "<?php\nclass ScanBefore {}\necho 1, 2;\nclass ScanAfter {}\nfunction scanFunction() {}\nconst SCAN_CONSTANT = 1;\n",
+  "valid-short-echo": "<?php\nclass ScanBefore {}\n?>\n<?= 1, 2 ?>\n<?php\nclass ScanAfter {}\nfunction scanFunction() {}\nconst SCAN_CONSTANT = 1;\n"
+}

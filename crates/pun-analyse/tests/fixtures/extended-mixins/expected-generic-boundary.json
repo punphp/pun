@@ -1,0 +1,220 @@
+{
+    "5": [
+        {
+            "file": "$ROOT/extended-mixins/generic-boundary.php",
+            "message": "Parameter #1 $value of method ExtendedGenericBoundary\\Holder<int>::value() expects int, string given.",
+            "line": 22,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/extended-mixins/generic-boundary.php",
+            "message": "Parameter #1 $value of method ExtendedGenericBoundary\\Holder<string>::value() expects string, int given.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/extended-mixins/generic-boundary.php",
+            "message": "Parameter #1 $value of method ExtendedGenericBoundary\\Holder<int>::value() expects int, string given.",
+            "line": 40,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/extended-mixins/generic-boundary.php",
+            "message": "Parameter #1 $value of method ExtendedGenericBoundary\\Holder<int>::value() expects int, string given.",
+            "line": 41,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/extended-mixins/generic-boundary.php",
+            "message": "Parameter #1 $value of method ExtendedGenericBoundary\\Holder<int>::value() expects int, string given.",
+            "line": 42,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/extended-mixins/generic-boundary.php",
+            "message": "Parameter #1 $value of method ExtendedGenericBoundary\\Holder<int>::value() expects int, string given.",
+            "line": 53,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/extended-mixins/generic-boundary.php",
+            "message": "Parameter #1 $value of method ExtendedGenericBoundary\\Holder<string>::value() expects string, int given.",
+            "line": 54,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/extended-mixins/generic-boundary.php",
+            "message": "Parameter #2 $concrete of method ExtendedGenericBoundary\\Holder<int>::value() expects int, string given.",
+            "line": 56,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/extended-mixins/generic-boundary.php",
+            "message": "Parameter #2 $concrete of method ExtendedGenericBoundary\\Holder<string>::value() expects int, string given.",
+            "line": 57,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/extended-mixins/generic-boundary.php",
+            "message": "Method ExtendedGenericBoundary\\PolicyAllowed::run() invoked with named argument $old, but it's not allowed because of @no-named-arguments.",
+            "line": 85,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/extended-mixins/generic-boundary.php",
+            "message": "Call to ExtendedGenericBoundary\\PolicyAllowed::run() uses named argument for parameter $old, but ExtendedGenericBoundary\\PolicyRenamed renames it to $new.",
+            "line": 91,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/extended-mixins/generic-boundary.php",
+            "message": "Method ExtendedGenericBoundary\\PolicyDenied::run() invoked with named argument $old, but it's not allowed because of @no-named-arguments.",
+            "line": 97,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/extended-mixins/generic-boundary.php",
+            "message": "Method ExtendedGenericBoundary\\PolicyAllowed::run() invoked with named argument $old, but it's not allowed because of @no-named-arguments.",
+            "line": 103,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/rules/data/Methods/data/bug-7593.php",
+            "message": "Instantiated class Bug7593\\LogicException not found.",
+            "line": 30,
+            "ignorable": true,
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "identifier": "class.notFound"
+        },
+        {
+            "file": "$ROOT/rules/data/Methods/data/bug-7593.php",
+            "message": "Throwing object of an unknown class Bug7593\\LogicException.",
+            "line": 30,
+            "ignorable": true,
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "identifier": "class.notFound"
+        }
+    ],
+    "9": [
+        {
+            "file": "$ROOT/extended-mixins/generic-boundary.php",
+            "message": "Parameter #1 $value of method ExtendedGenericBoundary\\Holder<int>::value() expects int, string given.",
+            "line": 22,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/extended-mixins/generic-boundary.php",
+            "message": "Parameter #1 $value of method ExtendedGenericBoundary\\Holder<string>::value() expects string, int given.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/extended-mixins/generic-boundary.php",
+            "message": "Parameter #1 $value of method ExtendedGenericBoundary\\Holder<int>::value() expects int, string given.",
+            "line": 40,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/extended-mixins/generic-boundary.php",
+            "message": "Parameter #1 $value of method ExtendedGenericBoundary\\Holder<int>::value() expects int, string given.",
+            "line": 41,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/extended-mixins/generic-boundary.php",
+            "message": "Parameter #1 $value of method ExtendedGenericBoundary\\Holder<int>::value() expects int, string given.",
+            "line": 42,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/extended-mixins/generic-boundary.php",
+            "message": "Parameter #1 $value of method ExtendedGenericBoundary\\Holder<int>::value() expects int, string given.",
+            "line": 53,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/extended-mixins/generic-boundary.php",
+            "message": "Parameter #1 $value of method ExtendedGenericBoundary\\Holder<string>::value() expects string, int given.",
+            "line": 54,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/extended-mixins/generic-boundary.php",
+            "message": "Parameter #2 $concrete of method ExtendedGenericBoundary\\Holder<int>::value() expects int, string given.",
+            "line": 56,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/extended-mixins/generic-boundary.php",
+            "message": "Parameter #2 $concrete of method ExtendedGenericBoundary\\Holder<string>::value() expects int, string given.",
+            "line": 57,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/extended-mixins/generic-boundary.php",
+            "message": "Method ExtendedGenericBoundary\\PolicyAllowed::run() invoked with named argument $old, but it's not allowed because of @no-named-arguments.",
+            "line": 85,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/extended-mixins/generic-boundary.php",
+            "message": "Call to ExtendedGenericBoundary\\PolicyAllowed::run() uses named argument for parameter $old, but ExtendedGenericBoundary\\PolicyRenamed renames it to $new.",
+            "line": 91,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/extended-mixins/generic-boundary.php",
+            "message": "Method ExtendedGenericBoundary\\PolicyDenied::run() invoked with named argument $old, but it's not allowed because of @no-named-arguments.",
+            "line": 97,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/extended-mixins/generic-boundary.php",
+            "message": "Method ExtendedGenericBoundary\\PolicyAllowed::run() invoked with named argument $old, but it's not allowed because of @no-named-arguments.",
+            "line": 103,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/rules/data/Methods/data/bug-7593.php",
+            "message": "Instantiated class Bug7593\\LogicException not found.",
+            "line": 30,
+            "ignorable": true,
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "identifier": "class.notFound"
+        },
+        {
+            "file": "$ROOT/rules/data/Methods/data/bug-7593.php",
+            "message": "Throwing object of an unknown class Bug7593\\LogicException.",
+            "line": 30,
+            "ignorable": true,
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "identifier": "class.notFound"
+        }
+    ]
+}

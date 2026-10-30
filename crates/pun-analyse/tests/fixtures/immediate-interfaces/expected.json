@@ -1,0 +1,222 @@
+{
+    "repeated": [
+        {
+            "file": "$ROOT/repeated.php",
+            "message": "Call to ImmediateRepeated\\Contract::run() uses named argument for parameter $old, but ImmediateRepeated\\ParentClass renames it to $middle.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/repeated.php",
+            "message": "Call to ImmediateRepeated\\ParentClass::run() uses named argument for parameter $middle, but ImmediateRepeated\\Child renames it to $new.",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/repeated.php",
+            "message": "Call to ImmediateRepeated\\Child::run() uses named argument for parameter $new, but ImmediateRepeated\\Grandchild renames it to $last.",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "transitive": [
+        {
+            "file": "$ROOT/transitive.php",
+            "message": "Call to ImmediateTransitive\\AncestorContract::run() uses named argument for parameter $old, but ImmediateTransitive\\ZNarrow renames it to $middle.",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/transitive.php",
+            "message": "Call to ImmediateTransitive\\ZNarrow::run() uses named argument for parameter $middle, but ImmediateTransitive\\AncestorFirst renames it to $first.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/transitive.php",
+            "message": "Call to ImmediateTransitive\\ZNarrow::run() uses named argument for parameter $middle, but ImmediateTransitive\\DescendantFirst renames it to $second.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/transitive.php",
+            "message": "Call to ImmediateTransitive\\ZNarrow::run() uses named argument for parameter $middle, but ImmediateTransitive\\Indirect renames it to $indirect.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "ordering": [
+        {
+            "file": "$ROOT/ordering.php",
+            "message": "Call to ImmediateOrdering\\ZFirst::run() uses named argument for parameter $z, but ImmediateOrdering\\Imported renames it to $imported.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/ordering.php",
+            "message": "Call to ImmediateOrdering\\ZFirst::run() uses named argument for parameter $z, but ImmediateOrdering\\WrittenFirst renames it to $first.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/ordering.php",
+            "message": "Call to ImmediateOrdering\\ZFirst::run() uses named argument for parameter $z, but ImmediateOrdering\\ZLeft renames it to $left.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/ordering.php",
+            "message": "Call to ImmediateOrdering\\ALast::run() uses named argument for parameter $a, but ImmediateOrdering\\ARight renames it to $right.",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/ordering.php",
+            "message": "Call to ImmediateOrdering\\ALast::run() uses named argument for parameter $a, but ImmediateOrdering\\WrittenReverse renames it to $reverse.",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/ordering.php",
+            "message": "Call to ImmediateOrdering\\ZFirst::run() uses named argument for parameter $z, but ImmediateOrdering\\Imported renames it to $imported.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/ordering.php",
+            "message": "Call to ImmediateOrdering\\ZFirst::run() uses named argument for parameter $z, but ImmediateOrdering\\WrittenFirst renames it to $first.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/ordering.php",
+            "message": "Call to ImmediateOrdering\\ZFirst::run() uses named argument for parameter $z, but ImmediateOrdering\\ZLeft renames it to $left.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "constructors": [
+        {
+            "file": "$ROOT/constructors.php",
+            "message": "Parameter #1 $new (int) of method ImmediateConstructors\\Repeated::__construct() is not contravariant with parameter #1 $z (string) of method ImmediateConstructors\\ZConstructor::__construct().",
+            "line": 10,
+            "ignorable": false,
+            "identifier": "method.childParameterType"
+        },
+        {
+            "file": "$ROOT/constructors.php",
+            "message": "Parameter #1 $new (int) of method ImmediateConstructors\\Inherited::__construct() is not contravariant with parameter #1 $z (string) of method ImmediateConstructors\\ZConstructor::__construct().",
+            "line": 13,
+            "ignorable": false,
+            "identifier": "method.childParameterType"
+        },
+        {
+            "file": "$ROOT/constructors.php",
+            "message": "Parameter #1 $new (int) of method ImmediateConstructors\\ReverseInherited::__construct() is not contravariant with parameter #1 $a (string) of method ImmediateConstructors\\AConstructor::__construct().",
+            "line": 19,
+            "ignorable": false,
+            "identifier": "method.childParameterType"
+        },
+        {
+            "file": "$ROOT/constructors.php",
+            "message": "Parameter #1 $new (int) of method ImmediateConstructors\\NarrowRepeated::__construct() is not contravariant with parameter #1 $narrow (string) of method ImmediateConstructors\\NarrowConstructor::__construct().",
+            "line": 26,
+            "ignorable": false,
+            "identifier": "method.childParameterType"
+        },
+        {
+            "file": "$ROOT/constructors.php",
+            "message": "Constructor of class ImmediateConstructors\\ConcreteParent has an unused parameter $old.",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "constructor.unusedParameter"
+        },
+        {
+            "file": "$ROOT/constructors.php",
+            "message": "Constructor of class ImmediateConstructors\\FreeConstructor has an unused parameter $new.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "constructor.unusedParameter"
+        },
+        {
+            "file": "$ROOT/constructors.php",
+            "message": "Constructor of class ImmediateConstructors\\AbstractChild has an unused parameter $new.",
+            "line": 31,
+            "ignorable": true,
+            "identifier": "constructor.unusedParameter"
+        },
+        {
+            "file": "$ROOT/constructors.php",
+            "message": "Parameter #1 $new (int) of method ImmediateConstructors\\AbstractChild::__construct() is not contravariant with parameter #1 $old (string) of method ImmediateConstructors\\AbstractParent::__construct().",
+            "line": 31,
+            "ignorable": false,
+            "identifier": "method.childParameterType"
+        },
+        {
+            "file": "$ROOT/constructors.php",
+            "message": "Parameter #1 $new (int) of method ImmediateConstructors\\DiamondChild::__construct() is not contravariant with parameter #1 $z (string) of method ImmediateConstructors\\ZConstructor::__construct().",
+            "line": 37,
+            "ignorable": false,
+            "identifier": "method.childParameterType"
+        }
+    ],
+    "builtins": [
+        {
+            "file": "$ROOT/builtins.php",
+            "message": "Parameter #1 $key (string) of method ImmediateBuiltins\\NativeArray::offsetSet() is not contravariant with parameter #1 $key (mixed) of method ArrayObject<(int|string),mixed>::offsetSet().",
+            "line": 5,
+            "ignorable": false,
+            "identifier": "method.childParameterType"
+        },
+        {
+            "file": "$ROOT/builtins.php",
+            "message": "Parameter #1 $key (int) of method ImmediateBuiltins\\NativeGrandchild::offsetSet() is not contravariant with parameter #1 $key (string) of method ImmediateBuiltins\\NativeArray::offsetSet().",
+            "line": 8,
+            "ignorable": false,
+            "identifier": "method.childParameterType"
+        },
+        {
+            "file": "$ROOT/builtins.php",
+            "message": "Parameter #1 $key (string) of method ImmediateBuiltins\\TransitiveArray::offsetSet() is not contravariant with parameter #1 $key (mixed) of method ImmediateBuiltins\\UserArray::offsetSet().",
+            "line": 16,
+            "ignorable": false,
+            "identifier": "method.childParameterType"
+        },
+        {
+            "file": "$ROOT/builtins.php",
+            "message": "Constructor of class ImmediateBuiltins\\NativeConstructor has an unused parameter $only.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "constructor.unusedParameter"
+        },
+        {
+            "file": "$ROOT/builtins.php",
+            "message": "Call to ImmediateBuiltins\\EnumContract::run() uses named argument for parameter $old, but ImmediateBuiltins\\Backed renames it to $backed.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/builtins.php",
+            "message": "Call to ImmediateBuiltins\\EnumContract::run() uses named argument for parameter $old, but ImmediateBuiltins\\Plain renames it to $plain.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ]
+}

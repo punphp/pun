@@ -1,0 +1,10 @@
+parameters:
+    level: 6
+    phpVersion: 80400
+    paths:
+        - values.php
+        - conflicts.php
+        - attributes.php
+    scanFiles:
+        - scanned.php
+    tmpDir: cache

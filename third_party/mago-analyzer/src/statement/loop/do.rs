@@ -145,9 +145,9 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for DoWhile<'arena> {
             );
         }
 
-        let infinite_loop = artifacts
-            .get_expression_type(self.condition)
-            .is_some_and(mago_codex::ttype::union::TUnion::is_always_truthy);
+        // This flag belongs to the real condition evaluation, before truthy loop
+        // reconciliation. The final cached operand may already have been narrowed.
+        let infinite_loop = loop_scope.truthy_pre_conditions;
 
         r#loop::inherit_loop_block_context(
             context,

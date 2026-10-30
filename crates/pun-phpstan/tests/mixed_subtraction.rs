@@ -17,6 +17,7 @@ fn oracle() -> Value {
 fn phpstan_types() -> BTreeMap<&'static str, Type> {
     let mut types = BTreeMap::from([
         ("mixed", mixed()),
+        ("explicit-mixed", Type::Mixed { explicit: true }),
         ("error", Type::Error),
         ("zero", Type::ConstInt(0)),
         ("one", Type::ConstInt(1)),
@@ -290,6 +291,189 @@ fn pun_mixed_queries_distinguish_complete_domains_from_partial_exclusions() {
             };
             if got != row[query].as_str().unwrap() {
                 failures.push(format!("{label} {query}: {got}, expected {}", row[query]));
+            }
+        }
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+}
+
+#[test]
+fn subtraction_descriptions_follow_runtime_type_not_rendered_delimiters() {
+    use pun_phpstan::resolve::resolve_str;
+    use pun_phpstan::types::{Accessory, Template};
+
+    fn input(spec: &Value, argument: bool) -> Type {
+        if let Some(ty) = spec.as_str() {
+            return resolve_str(ty, None);
+        }
+        if let Some(bound) = spec.get("template") {
+            let argument = argument || spec["argument"].as_bool().unwrap();
+            return Type::Template(Box::new(Template {
+                name: spec["name"].as_str().unwrap().into(),
+                scope: "function subtractionDescriptions()".into(),
+                bound: input(bound, argument),
+                default: None,
+                argument,
+            }));
+        }
+        if let Some(excluded) = spec.get("mixed") {
+            return Type::mixed_subtracted(
+                spec["explicit"].as_bool().unwrap(),
+                input(excluded, argument),
+            );
+        }
+        if let Some(parts) = spec["array"].as_array() {
+            return Type::array(input(&parts[0], argument), input(&parts[1], argument));
+        }
+        if spec["accessory"] == "non-empty-array" {
+            return Type::Accessory(Accessory::NonEmptyArray);
+        }
+        for kind in ["union", "benevolent", "intersection"] {
+            if let Some(parts) = spec[kind].as_array() {
+                let parts = parts.iter().map(|part| input(part, argument)).collect();
+                return match kind {
+                    "union" => Type::Union(parts),
+                    "benevolent" => Type::Benevolent(parts),
+                    _ => Type::Intersection(parts),
+                };
+            }
+        }
+        panic!("unknown oracle type input: {spec}");
+    }
+
+    let rows: Value =
+        serde_json::from_str(include_str!("fixtures/mixed-subtraction-descriptions.json")).unwrap();
+    let mut failures = vec![];
+    for row in rows.as_array().unwrap() {
+        let ty = input(&row["input"], false);
+        for (i, level) in [Level::Precise, Level::Value, Level::TypeOnly]
+            .into_iter()
+            .enumerate()
+        {
+            let got = ty.describe(level);
+            let want = row["descriptions"][i].as_str().unwrap();
+            if got != want {
+                failures.push(format!(
+                    "{} {level:?}: {got}, expected {want}",
+                    row["label"]
+                ));
+            }
+        }
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+}
+
+// Exclusions retain the positive identity for iteration, but not for containment or precise unions.
+#[test]
+fn object_exclusions_keep_identity_through_public_queries_and_unions() {
+    use pun_phpstan::resolve::resolve_str;
+    use pun_phpstan::types::{Cast, StrictMixed, cast_is_error};
+    use serde_json::json;
+
+    fn input(spec: &Value) -> Type {
+        if let Some(name) = spec.as_str() {
+            return resolve_str(name, None);
+        }
+        if let Some(object) = spec.get("object") {
+            return Type::object_subtracted(input(object), input(&spec["excluded"]));
+        }
+        if let Some(excluded) = spec.get("mixed") {
+            return Type::mixed_subtracted(
+                spec["explicit"].as_bool().unwrap_or(false),
+                input(excluded),
+            );
+        }
+        if let Some(class) = spec["static"].as_str() {
+            return Type::Static(class.into(), vec![]);
+        }
+        if spec["parent"] == true {
+            return Type::NonexistentParent;
+        }
+        if spec["never"] == true {
+            return Type::Never(NeverKind::Implicit);
+        }
+        Type::Union(
+            spec["union"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(input)
+                .collect(),
+        )
+    }
+
+    let describe =
+        |t: &Type| [Level::Precise, Level::Value, Level::TypeOnly].map(|level| t.describe(level));
+    let tri = |result: Tri| match result {
+        Tri::Yes => "Yes",
+        Tri::Maybe => "Maybe",
+        Tri::No => "No",
+    };
+    let oracle: Value =
+        serde_json::from_str(include_str!("fixtures/object-subtraction-api.json")).unwrap();
+    let types: BTreeMap<_, _> = oracle["inputs"]
+        .as_object()
+        .unwrap()
+        .iter()
+        .map(|(name, spec)| (name.as_str(), input(spec)))
+        .collect();
+    for (name, expected) in oracle["queries"].as_object().unwrap() {
+        let t = &types[name.as_str()];
+        assert_eq!(
+            json!({
+                "descriptions": describe(t), "names": t.object_class_names(),
+                "key": describe(&t.iterable_key_type()), "value": describe(&t.iterable_value_type()),
+            }),
+            *expected,
+            "{name}"
+        );
+    }
+    for (pair, expected) in oracle["super"].as_object().unwrap() {
+        let (a, b) = pair.split_once(':').unwrap();
+        assert_eq!(
+            json!(tri(is_super_type_of(&types[a], &types[b]))),
+            *expected,
+            "{pair}"
+        );
+    }
+    for (pair, expected) in oracle["unions"].as_object().unwrap() {
+        let (a, b) = pair.split_once(':').unwrap();
+        assert_eq!(
+            json!(describe(&union(vec![types[a].clone(), types[b].clone()]))),
+            *expected,
+            "{pair}"
+        );
+    }
+    let observe = |t: &Type, a: &Type, b: &Type| {
+        json!({
+            "descriptions": describe(t), "names": t.object_class_names(),
+            "key": describe(&t.iterable_key_type()), "value": describe(&t.iterable_value_type()),
+            "implicitMixed": t.is_implicit_mixed(),
+            "casts": ([Cast::String, Cast::Number, Cast::Integer, Cast::Float, Cast::Boolean, Cast::BitwiseNot]
+                .map(|cast| cast_is_error(t, cast, StrictMixed::default()))),
+            "relations": ([a, b].map(|other| json!({
+                "equals": [t == other, other == t],
+                "super": [tri(is_super_type_of(t, other)), tri(is_super_type_of(other, t))],
+                "accepts": ([false, true].map(|strict| [tri(accepts(t, other, strict)), tri(accepts(other, t, strict))])),
+            }))),
+        })
+    };
+    let mut failures = Vec::new();
+    for (pair, operations) in oracle["combinators"].as_object().unwrap() {
+        let (a, b) = pair.split_once(':').unwrap();
+        let (a, b) = (&types[a], &types[b]);
+        for (operation, result) in [
+            ("union", union(vec![a.clone(), b.clone()])),
+            ("intersection", intersect(vec![a.clone(), b.clone()])),
+        ] {
+            let actual = observe(&result, a, b);
+            for (field, expected) in operations[operation].as_object().unwrap() {
+                if actual[field] != *expected {
+                    failures.push(format!(
+                        "{pair} {operation} {field}: {}, expected {expected}",
+                        actual[field]
+                    ));
+                }
             }
         }
     }

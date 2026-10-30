@@ -384,7 +384,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Class<'arena> {
 
         analyze_class_like_attributes(context, artifacts, self.attribute_lists.as_slice(), class_like_metadata)?;
 
-        if class_like_metadata.span != self.span() {
+        if context.codebase.declaration_span(class_like_metadata.span) != self.span() {
             report_duplicate_definition(context, "Class", "class", name, self.span(), class_like_metadata.span);
             return Ok(());
         }
@@ -527,7 +527,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Interface<'arena> {
 
         analyze_class_like_attributes(context, artifacts, self.attribute_lists.as_slice(), class_like_metadata)?;
 
-        if class_like_metadata.span != self.span() {
+        if context.codebase.declaration_span(class_like_metadata.span) != self.span() {
             report_duplicate_definition(context, "Interface", "interface", name, self.span(), class_like_metadata.span);
             return Ok(());
         }
@@ -608,7 +608,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Trait<'arena> {
 
         analyze_class_like_attributes(context, artifacts, self.attribute_lists.as_slice(), class_like_metadata)?;
 
-        if class_like_metadata.span != self.span() {
+        if context.codebase.declaration_span(class_like_metadata.span) != self.span() {
             report_duplicate_definition(context, "Trait", "trait", name, self.span(), class_like_metadata.span);
             return Ok(());
         }
@@ -689,7 +689,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Enum<'arena> {
 
         analyze_class_like_attributes(context, artifacts, self.attribute_lists.as_slice(), class_like_metadata)?;
 
-        if class_like_metadata.span != self.span() {
+        if context.codebase.declaration_span(class_like_metadata.span) != self.span() {
             report_duplicate_definition(context, "Enum", "enum", name, self.span(), class_like_metadata.span);
             return Ok(());
         }
@@ -1055,7 +1055,17 @@ where
 
     let mut block_context = BlockContext::new(scope, context.settings.register_super_globals);
 
-    for member in members {
+    let mut ordered_members: Vec<_> = members.iter().collect();
+    if !context.settings.property_initialization_observations.is_empty() {
+        // ClassLikeHandler: static methods, constructor, then instance methods/hooks.
+        // This opt-in ordering never invokes a method body a second time.
+        ordered_members.sort_by_key(|member| match member {
+            ClassLikeMember::Method(method) if method.is_static() => 0,
+            ClassLikeMember::Method(method) if method.name.value.eq_ignore_ascii_case(b"__construct") => 1,
+            _ => 2,
+        });
+    }
+    for member in ordered_members {
         match member {
             ClassLikeMember::Constant(class_like_constant) => {
                 if context.settings.diff

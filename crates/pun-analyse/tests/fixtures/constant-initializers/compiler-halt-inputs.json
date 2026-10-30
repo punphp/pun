@@ -1,0 +1,22 @@
+{
+    "absent": "<?php\necho __COMPILER_HALT_OFFSET__;\n",
+    "line-comment": "<?php\n// __halt_compiler();\necho __COMPILER_HALT_OFFSET__;\n",
+    "block-comment": "<?php\n/* __halt_compiler(); */\necho __COMPILER_HALT_OFFSET__;\n",
+    "doc-comment": "<?php\n/** __HALT_COMPILER(); */\necho __COMPILER_HALT_OFFSET__;\n",
+    "single-string": "<?php\n$text = '__halt_compiler();';\necho __COMPILER_HALT_OFFSET__;\n",
+    "double-string": "<?php\n$text = \"__HALT_COMPILER();\";\necho __COMPILER_HALT_OFFSET__;\n",
+    "nowdoc": "<?php\n$text = <<<'TEXT'\n__halt_compiler();\nTEXT;\necho __COMPILER_HALT_OFFSET__;\n",
+    "html": "__halt_compiler();\n<?php\necho __COMPILER_HALT_OFFSET__;\n",
+    "top-level": "<?php\necho __COMPILER_HALT_OFFSET__;\necho \\__COMPILER_HALT_OFFSET__;\necho __compiler_halt_offset__;\necho Other\\__COMPILER_HALT_OFFSET__;\n__halt_compiler();\nnot PHP\n",
+    "uppercase-statement": "<?php\necho __COMPILER_HALT_OFFSET__;\n__HALT_COMPILER();\n",
+    "namespace-implicit": "<?php\nnamespace HaltImplicit;\necho __COMPILER_HALT_OFFSET__;\necho \\__COMPILER_HALT_OFFSET__;\necho namespace\\__COMPILER_HALT_OFFSET__;\necho __compiler_halt_offset__;\n__halt_compiler();\n",
+    "namespace-braced-outside": "<?php\nnamespace HaltBraced {\n    echo __COMPILER_HALT_OFFSET__;\n    echo \\__COMPILER_HALT_OFFSET__;\n    echo namespace\\__COMPILER_HALT_OFFSET__;\n}\n__halt_compiler();\n",
+    "namespace-global-outside": "<?php\nnamespace {\n    echo __COMPILER_HALT_OFFSET__;\n    echo \\__COMPILER_HALT_OFFSET__;\n}\n__halt_compiler();\n",
+    "qualified-call": "<?php\necho __COMPILER_HALT_OFFSET__;\n\\__halt_compiler();\n",
+    "relative-call": "<?php\nnamespace HaltRelative;\necho __COMPILER_HALT_OFFSET__;\nnamespace\\__halt_compiler();\n",
+    "namespace-comment": "<?php\nnamespace HaltComment;\n// __halt_compiler();\necho __COMPILER_HALT_OFFSET__;\necho \\__COMPILER_HALT_OFFSET__;\necho namespace\\__COMPILER_HALT_OFFSET__;\n",
+    "declared-spellings": "<?php\nnamespace HaltDeclared;\nconst __COMPILER_HALT_OFFSET__ = 1;\nconst __compiler_halt_offset__ = 2;\necho __COMPILER_HALT_OFFSET__;\necho namespace\\__COMPILER_HALT_OFFSET__;\necho \\__COMPILER_HALT_OFFSET__;\necho __compiler_halt_offset__;\n",
+    "imported-spellings": "<?php\nnamespace HaltImported;\nuse const HaltImported\\VALUE as __COMPILER_HALT_OFFSET__;\nconst VALUE = 1;\necho __COMPILER_HALT_OFFSET__;\necho \\__COMPILER_HALT_OFFSET__;\n",
+    "imported-global": "<?php\nnamespace HaltAlias;\nuse const __COMPILER_HALT_OFFSET__ as OFFSET;\necho OFFSET;\n__halt_compiler();\n",
+    "guarded-absent": "<?php\nif (defined('__COMPILER_HALT_OFFSET__')) {\n    echo __COMPILER_HALT_OFFSET__;\n}\n"
+}

@@ -1,0 +1,155 @@
+{
+    "calls": {
+        "377": {
+            "line": 11,
+            "expression": "$target->invoke(fn($value) => $value)",
+            "names": [
+                {
+                    "name": "invoke",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 377,
+                            "end": 384,
+                            "expression": "$target",
+                            "type": "IntegerCallback|StringCallback"
+                        },
+                        {
+                            "start": 393,
+                            "end": 413,
+                            "expression": "fn($value) => $value",
+                            "type": "Closure(mixed): (int|string)"
+                        },
+                        {
+                            "start": 396,
+                            "end": 402,
+                            "expression": "$value",
+                            "type": "*ERROR*"
+                        },
+                        {
+                            "start": 407,
+                            "end": 413,
+                            "expression": "$value",
+                            "type": "int|string"
+                        }
+                    ]
+                }
+            ]
+        },
+        "985": {
+            "line": 33,
+            "expression": "$target->invoke(++$i, fn($value) => $value)",
+            "names": [
+                {
+                    "name": "invoke",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 985,
+                            "end": 992,
+                            "expression": "$target",
+                            "type": "GenericCallbackLeft|GenericCallbackRight"
+                        },
+                        {
+                            "start": 1001,
+                            "end": 1005,
+                            "expression": "++$i",
+                            "type": "1"
+                        },
+                        {
+                            "start": 1003,
+                            "end": 1005,
+                            "expression": "$i",
+                            "type": "0"
+                        },
+                        {
+                            "start": 1007,
+                            "end": 1027,
+                            "expression": "fn($value) => $value",
+                            "type": "Closure(mixed): (1|T)"
+                        },
+                        {
+                            "start": 1010,
+                            "end": 1016,
+                            "expression": "$value",
+                            "type": "*ERROR*"
+                        },
+                        {
+                            "start": 1021,
+                            "end": 1027,
+                            "expression": "$value",
+                            "type": "1|T (method GenericCallbackRight::invoke(), parameter)"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1423": {
+            "line": 43,
+            "expression": "$target->$name(fn($value) => $value)",
+            "names": [
+                {
+                    "name": "bar",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 1423,
+                            "end": 1430,
+                            "expression": "$target",
+                            "type": "NamedCallback"
+                        },
+                        {
+                            "start": 1438,
+                            "end": 1458,
+                            "expression": "fn($value) => $value",
+                            "type": "Closure(mixed): mixed"
+                        },
+                        {
+                            "start": 1441,
+                            "end": 1447,
+                            "expression": "$value",
+                            "type": "*ERROR*"
+                        },
+                        {
+                            "start": 1452,
+                            "end": 1458,
+                            "expression": "$value",
+                            "type": "mixed"
+                        }
+                    ]
+                },
+                {
+                    "name": "foo",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 1423,
+                            "end": 1430,
+                            "expression": "$target",
+                            "type": "NamedCallback"
+                        },
+                        {
+                            "start": 1438,
+                            "end": 1458,
+                            "expression": "fn($value) => $value",
+                            "type": "Closure(mixed): mixed"
+                        },
+                        {
+                            "start": 1441,
+                            "end": 1447,
+                            "expression": "$value",
+                            "type": "*ERROR*"
+                        },
+                        {
+                            "start": 1452,
+                            "end": 1458,
+                            "expression": "$value",
+                            "type": "mixed"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "errors": []
+}

@@ -4,18 +4,24 @@ use foldhash::HashMap;
 use mago_codex::ttype::union::TUnion;
 
 type ExpressionRange = (u32, u32);
-type TypeMap = HashMap<ExpressionRange, Rc<TUnion>>;
+type TypeMap<T = Rc<TUnion>> = HashMap<ExpressionRange, T>;
 
-/// Nested checkpoints that copy only changed expression types.
-#[derive(Debug, Clone, Default)]
-pub(crate) struct ExpressionTypeCheckpoints {
-    checkpoints: Vec<Checkpoint>,
+/// Nested checkpoints that copy only changed expression observations.
+#[derive(Debug, Clone)]
+pub(crate) struct ExpressionTypeCheckpoints<T = Rc<TUnion>> {
+    checkpoints: Vec<Checkpoint<T>>,
 }
 
 #[derive(Debug, Clone)]
-enum Checkpoint {
-    Changes(HashMap<ExpressionRange, Option<Rc<TUnion>>>),
-    Snapshot(TypeMap),
+enum Checkpoint<T> {
+    Changes(HashMap<ExpressionRange, Option<T>>),
+    Snapshot(TypeMap<T>),
+}
+
+impl<T> Default for ExpressionTypeCheckpoints<T> {
+    fn default() -> Self {
+        Self { checkpoints: Vec::new() }
+    }
 }
 
 #[derive(Clone, Copy)]
@@ -28,16 +34,20 @@ pub(crate) enum CheckpointAction {
     Merge,
 }
 
-impl ExpressionTypeCheckpoints {
+impl<T: Clone> ExpressionTypeCheckpoints<T> {
     pub(crate) fn is_empty(&self) -> bool {
         self.checkpoints.is_empty()
+    }
+
+    pub(crate) fn depth(&self) -> usize {
+        self.checkpoints.len()
     }
 
     pub(crate) fn begin_checkpoint(&mut self) {
         self.checkpoints.push(Checkpoint::Changes(HashMap::default()));
     }
 
-    pub(crate) fn checkpoint_matches(&self, types: &TypeMap, same: impl Fn(&TUnion, &TUnion) -> bool) -> bool {
+    pub(crate) fn checkpoint_matches(&self, types: &TypeMap<T>, same: impl Fn(&T, &T) -> bool) -> bool {
         let Some(checkpoint) = self.checkpoints.last() else {
             unreachable!("expression type checkpoint must exist");
         };
@@ -58,7 +68,34 @@ impl ExpressionTypeCheckpoints {
         }
     }
 
-    pub(crate) fn finish_checkpoint(&mut self, types: &mut TypeMap, action: CheckpointAction) {
+    pub(crate) fn finish_checkpoint(&mut self, types: &mut TypeMap<T>, action: CheckpointAction) {
+        self.finish_checkpoint_where(types, action, |_| true);
+    }
+
+    /// A replaced effective value cannot recover metadata from an older evaluation on merge.
+    pub(crate) fn can_restore_related(
+        &self,
+        range: &ExpressionRange,
+        types: &TypeMap<T>,
+        same: impl Fn(&T, &T) -> bool,
+    ) -> bool {
+        if !types.contains_key(range) {
+            return true;
+        }
+        match self.checkpoints.last().expect("expression type checkpoint must exist") {
+            Checkpoint::Changes(changes) => !changes.contains_key(range),
+            Checkpoint::Snapshot(snapshot) => {
+                snapshot.get(range).zip(types.get(range)).is_some_and(|(before, after)| same(before, after))
+            }
+        }
+    }
+
+    pub(crate) fn finish_checkpoint_where(
+        &mut self,
+        types: &mut TypeMap<T>,
+        action: CheckpointAction,
+        restore: impl Fn(&ExpressionRange) -> bool,
+    ) {
         let Some(checkpoint) = self.checkpoints.pop() else {
             unreachable!("expression type checkpoint must exist");
         };
@@ -70,6 +107,7 @@ impl ExpressionTypeCheckpoints {
                     CheckpointAction::Keep => {}
                     CheckpointAction::Rollback => *types = snapshot,
                     CheckpointAction::Merge => {
+                        snapshot.retain(|range, _| types.contains_key(range) || restore(range));
                         snapshot.extend(std::mem::take(types));
                         *types = snapshot;
                     }
@@ -86,9 +124,10 @@ impl ExpressionTypeCheckpoints {
 
         for (range, previous_type) in changes {
             if matches!(action, CheckpointAction::Merge)
+                && restore(&range)
                 && let Some(previous_type) = &previous_type
             {
-                types.entry(range).or_insert_with(|| Rc::clone(previous_type));
+                types.entry(range).or_insert_with(|| previous_type.clone());
             }
 
             if let Some(Checkpoint::Changes(parent)) = self.checkpoints.last_mut() {
@@ -98,7 +137,7 @@ impl ExpressionTypeCheckpoints {
     }
 
     /// Preserve complete maps before a hook makes untracked changes.
-    pub(crate) fn detach(&mut self, types: &TypeMap) -> Self {
+    pub(crate) fn detach(&mut self, types: &TypeMap<T>) -> Self {
         let mut previous_types = types.clone();
         let mut checkpoints = Vec::with_capacity(self.checkpoints.len());
         for checkpoint in std::mem::take(&mut self.checkpoints).into_iter().rev() {
@@ -114,7 +153,7 @@ impl ExpressionTypeCheckpoints {
     }
 
     #[inline]
-    pub(crate) fn insert(&mut self, types: &mut TypeMap, range: ExpressionRange, ty: Rc<TUnion>) -> Option<Rc<TUnion>> {
+    pub(crate) fn insert(&mut self, types: &mut TypeMap<T>, range: ExpressionRange, ty: T) -> Option<T> {
         let previous_type = types.insert(range, ty);
         if let Some(Checkpoint::Changes(changes)) = self.checkpoints.last_mut() {
             changes.entry(range).or_insert_with(|| previous_type.clone());
@@ -124,7 +163,7 @@ impl ExpressionTypeCheckpoints {
     }
 
     #[inline]
-    pub(crate) fn remove(&mut self, types: &mut TypeMap, range: &ExpressionRange) -> Option<Rc<TUnion>> {
+    pub(crate) fn remove(&mut self, types: &mut TypeMap<T>, range: &ExpressionRange) -> Option<T> {
         let previous_type = types.remove(range);
         if let Some(Checkpoint::Changes(changes)) = self.checkpoints.last_mut() {
             changes.entry(*range).or_insert_with(|| previous_type.clone());
@@ -134,7 +173,7 @@ impl ExpressionTypeCheckpoints {
     }
 }
 
-fn restore_changes(types: &mut TypeMap, changes: HashMap<ExpressionRange, Option<Rc<TUnion>>>) {
+fn restore_changes<T>(types: &mut TypeMap<T>, changes: HashMap<ExpressionRange, Option<T>>) {
     for (range, previous_type) in changes {
         match previous_type {
             Some(previous_type) => {

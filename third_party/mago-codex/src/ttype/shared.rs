@@ -178,8 +178,10 @@ pub static EMPTY_STRING_ATOMIC: LazyLock<TAtomic> = LazyLock::new(|| {
     TAtomic::Scalar(TScalar::String(TString {
         literal: Some(TStringLiteral::Value(empty_word())),
         is_numeric: false,
+        decimal_integer: None,
         is_truthy: false,
         is_non_empty: false,
+        is_non_empty_implied: false,
         is_callable: false,
         casing: TStringCasing::Unspecified,
     }))

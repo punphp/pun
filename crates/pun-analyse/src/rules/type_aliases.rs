@@ -58,8 +58,7 @@ impl AliasDoc {
 }
 
 /// phpdoc-parser's `TOKEN_IDENTIFIER` at the start of `s`.
-fn identifier(s: &str) -> Option<&str> {
-    let bytes = s.as_bytes();
+fn identifier(bytes: &[u8]) -> Option<&[u8]> {
     let mut i = 0;
     loop {
         let start = i;
@@ -79,44 +78,44 @@ fn identifier(s: &str) -> Option<&str> {
             i += 1;
         }
     }
-    (i > 0).then(|| &s[..i])
+    (i > 0).then(|| &bytes[..i])
 }
 
 /// `parseTypeAliasTagValue()`: `Name Type` or `Name = Type`.
-fn alias_value(value: &str) -> Option<AliasTag> {
+fn alias_value(value: &[u8]) -> Option<AliasTag> {
     let name = identifier(value)?;
-    let rest = value[name.len()..].trim_start();
-    let rest = rest.strip_prefix('=').unwrap_or(rest).trim_start();
+    let rest = value[name.len()..].trim_ascii_start();
+    let rest = rest.strip_prefix(b"=").unwrap_or(rest).trim_ascii_start();
     let node = match phpdoc::parse_prefix(rest) {
-        Ok((node, end)) if rest[end..].trim().is_empty() => Some(node),
+        Ok((node, end)) if rest[end..].trim_ascii().is_empty() => Some(node),
         _ => None,
     };
     Some(AliasTag {
-        name: name.to_string(),
+        name: String::from_utf8_lossy(name).into_owned(),
         node,
     })
 }
 
 /// `parseTypeAliasImportTagValue()`: `Alias from Class` or `Alias from Class as Name`.
-fn import_value(value: &str, scope: &NameScope) -> Option<ImportTag> {
+fn import_value(value: &[u8], scope: &NameScope) -> Option<ImportTag> {
     let alias = identifier(value)?;
-    let rest = value[alias.len()..].trim_start();
-    let rest = rest.strip_prefix("from")?;
+    let rest = value[alias.len()..].trim_ascii_start();
+    let rest = rest.strip_prefix(b"from")?;
     if identifier(rest).is_some() {
         // `fromX`: no `from` token
         return None;
     }
-    let rest = rest.trim_start();
+    let rest = rest.trim_ascii_start();
     let from = identifier(rest)?;
-    let rest = rest[from.len()..].trim_start();
+    let rest = rest[from.len()..].trim_ascii_start();
     let imported_as = rest
-        .strip_prefix("as")
+        .strip_prefix(b"as")
         .filter(|r| identifier(r).is_none())
-        .and_then(|r| identifier(r.trim_start()))
-        .map(str::to_string);
+        .and_then(|r| identifier(r.trim_ascii_start()))
+        .map(|name| String::from_utf8_lossy(name).into_owned());
     Some(ImportTag {
-        alias: alias.to_string(),
-        from: scope.resolve_name(from),
+        alias: String::from_utf8_lossy(alias).into_owned(),
+        from: scope.resolve_name(&String::from_utf8_lossy(from)),
         imported_as,
     })
 }
@@ -387,9 +386,6 @@ pub(super) fn class_aliases(c: &Checker, k: &ClassLikeMetadata, using: Option<&C
     aliases
 }
 
-/// `parent` without a parent class: NonexistentParentClassType, which is no ErrorType and references no class.
-const NO_PARENT: &str = "\0parent";
-
 /// The NameScope a PHPDoc's types resolve in, with its type aliases.
 struct AliasScope<'r, 'c, 'a, 'arena> {
     resolver: &'r Resolver<'c, 'a, 'arena>,
@@ -404,12 +400,7 @@ impl Scope for AliasScope<'_, '_, '_, '_> {
         self.doc.scope.class()
     }
     fn parent(&self) -> Option<String> {
-        Some(
-            self.doc
-                .scope
-                .parent()
-                .unwrap_or_else(|| NO_PARENT.to_string()),
-        )
+        self.doc.scope.parent()
     }
     fn resolve_name(&self, name: &str) -> String {
         self.doc.scope.resolve_name(name)
@@ -456,11 +447,11 @@ pub(super) fn each(ty: &Type, f: &mut dyn FnMut(&Type)) {
 fn referenced_classes(ty: &Type) -> Vec<String> {
     let mut out = Vec::new();
     each(ty, &mut |t| match t {
-        Type::Object(name, _)
+        Type::Object(name, _, _)
         | Type::Static(name, _)
         | Type::This(name)
         | Type::EnumCase(name, _)
-            if !out.contains(name) && name != NO_PARENT =>
+            if !out.contains(name) =>
         {
             out.push(name.clone());
         }
@@ -670,7 +661,7 @@ fn use_context(r: &Resolver, doc: &AliasDoc, out: &mut Vec<Found>) {
         // GenericObjectTypeCheck: a generic type of a class without templates
         let mut generics = Vec::new();
         each(&ty, &mut |t| {
-            if let Type::Object(class, args) = t
+            if let Type::Object(class, args, _) = t
                 && !args.is_empty()
             {
                 generics.push((class.clone(), t.clone()));

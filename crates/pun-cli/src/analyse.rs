@@ -169,9 +169,24 @@ fn project(cfg: &Config, analysed: Vec<PathBuf>) -> Result<pun_analyse::Project>
         IgnoredErrors::new(&ignores.unwrap_or_default(), true).with_rules(rule_of_identifier);
     let on: std::collections::HashSet<String> =
         cfg.analyse.rules.iter().map(|r| r.id.clone()).collect();
+    let method_rules = pun_analyse::MethodRules {
+        call_methods: on.contains("analyse/undefined/method"),
+        overriding_method: on.contains("analyse/classes/incompatible-override"),
+        consistent_constructor: on.contains("analyse/classes/inconsistent-constructor"),
+        renamed_named_arguments: on.contains("analyse/types/renamed-parameter-in-subtype"),
+    };
+    project.method_rules = method_rules;
     project.reported = Some(std::sync::Arc::new(move |id| {
+        // Both registered comparison owners emit these identifiers. Their invocation gates, not the
+        // identifier's single canonical mapping, decide which owner's errors exist.
+        if method_rules.consistent_constructor && matches!(id,
+            "method.childParameterType" | "method.visibility" | "parameter.byRef" | "parameter.missing"
+            | "parameter.notByRef" | "parameter.notOptional" | "parameter.notVariadic" | "parameter.variadic"
+        ) {
+            return true;
+        }
         // Unmatched/comment-policy errors come from ignore processing, not a configurable rule.
-        rule_of_identifier(id).map_or_else(|| id.starts_with("ignore."), |r| on.contains(r))
+        rule_of_identifier(id).map_or_else(|| id == "phpstan.parse" || id.starts_with("ignore."), |r| on.contains(r))
     }));
     Ok(project)
 }
@@ -184,10 +199,24 @@ pub(crate) fn analyse(cfg: &Config, paths: &[PathBuf], use_baseline: bool) -> Re
     let project = project(cfg, files)?;
     let analysis =
         pun_analyse::analyse_project(&project).map_err(|e| run_error(e.to_string(), None))?;
+    let mut errors = analysis.errors;
+    let mut general = analysis.general;
+    // AnalyseCommand presents only exception-backed failures, deduplicated by message. Non-ignorable rule
+    // errors are not severe; the public analyser still retains diagnostics from the other valid files.
+    let severe = errors.iter().any(|e| e.identifier == "phpstan.parse");
+    if severe {
+        let mut seen = std::collections::HashSet::new();
+        errors.retain(|e| e.identifier == "phpstan.parse" && seen.insert(e.message.clone()));
+        general.clear();
+    }
     // pun-analyse reported the enabled rules' errors only, and the errors about ignores
-    let mut findings: Vec<Finding> = (analysis.errors.into_iter())
+    let mut findings: Vec<Finding> = (errors.into_iter())
         .map(|e| {
-            let rule = rule_of_identifier(&e.identifier).unwrap_or(UNMATCHED_IGNORE);
+            let rule = rule_of_identifier(&e.identifier).unwrap_or(if e.identifier == "phpstan.parse" {
+                "parser-error"
+            } else {
+                UNMATCHED_IGNORE
+            });
             // PHPStan reports, sorts and relativises normalised paths (a configured `../x` included).
             let file = PathBuf::from(normalize_path(&e.file));
             Finding {
@@ -203,9 +232,9 @@ pub(crate) fn analyse(cfg: &Config, paths: &[PathBuf], use_baseline: bool) -> Re
             }
         })
         .collect();
-    let malformed = apply_ignores(&mut findings, &cfg.root);
+    let malformed = if severe { Vec::new() } else { apply_ignores(&mut findings, &cfg.root) };
     let mut unmatched_baseline = 0;
-    if use_baseline && let Some(path) = &cfg.analyse.baseline {
+    if !severe && use_baseline && let Some(path) = &cfg.analyse.baseline {
         let b = baseline::Baseline::read(&cfg.root.join(path))?;
         unmatched_baseline = b.filter(&mut findings);
     }
@@ -221,7 +250,7 @@ pub(crate) fn analyse(cfg: &Config, paths: &[PathBuf], use_baseline: bool) -> Re
     }
     Ok(Analysed {
         findings,
-        general: analysis.general,
+        general,
         files: count,
         unmatched_baseline,
         malformed,
@@ -303,6 +332,11 @@ pub(crate) fn run(a: AnalyseArgs) -> Result<u8> {
         return generate_baseline(&a, &cfg, path.as_deref(), started);
     }
     let analysed = analyse(&cfg, &a.paths, true)?;
+    present(&a, &cfg, &analysed, started)
+}
+
+fn present(a: &AnalyseArgs, cfg: &Config, analysed: &Analysed, started: Instant) -> Result<u8> {
+    let root = &cfg.root;
     let errors = analysed.findings.len() + analysed.malformed.len() + analysed.general.len();
     match a.format.as_deref() {
         Some(format) => {
@@ -354,6 +388,9 @@ fn generate_baseline(
         None => PathBuf::from(cfg.analyse.baseline.as_deref().unwrap_or(baseline::DEFAULT)),
     };
     let mut analysed = analyse(cfg, &a.paths, false)?;
+    if analysed.findings.iter().any(|e| e.identifier == "phpstan.parse") {
+        return present(a, cfg, &analysed, started);
+    }
     // PHPStan's baseline leaves out the errors that can't be ignored
     analysed.findings.retain(Finding::ignorable);
     let b = baseline::Baseline::of(&analysed.findings);

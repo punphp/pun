@@ -1,0 +1,369 @@
+{
+  "general": [],
+  "errors": [
+    {
+      "file": "operands.php",
+      "line": 18,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyOperands\\Holder::$missing.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 18,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: *ERROR*",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 21,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyOperands\\Holder::$missing.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 21,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyOperands\\Holder::$missing.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 22,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyOperands\\Holder::$missing.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 22,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyOperands\\Holder::$missing.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 23,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyOperands\\Holder::$missing.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 23,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyOperands\\Holder::$missing.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 24,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyOperands\\Holder::$missing.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 24,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyOperands\\Holder::$missing.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 29,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyOperands\\Holder::$missing.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 29,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyOperands\\Holder::$other.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 29,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: *ERROR*",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 33,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyOperands\\Holder::$missing.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 33,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyOperands\\Holder::$missing.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 33,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyOperands\\Holder::$other.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 33,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyOperands\\Holder::$other.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 35,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyOperands\\Holder::$missing.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 35,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyOperands\\Holder::$missing.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 35,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyOperands\\Holder::$other.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 35,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyOperands\\Holder::$other.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 37,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyOperands\\Holder::$missing.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 37,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyOperands\\Holder::$missing.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 37,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyOperands\\Holder::$other.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 37,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyOperands\\Holder::$other.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 39,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyOperands\\Holder::$missing.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 39,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyOperands\\Holder::$missing.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 39,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyOperands\\Holder::$other.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 39,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyOperands\\Holder::$other.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 44,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyOperands\\Holder::$missing.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 44,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: *ERROR*",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 45,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyOperands\\Holder::$missing.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 45,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyOperands\\Holder::$missing.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 49,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyOperands\\Holder::$other.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 49,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyOperands\\Holder::$other.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 52,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyOperands\\Holder::$missing.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 52,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyOperands\\Holder::$missing.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 54,
+      "identifier": "preDec.type",
+      "message": "Cannot use -- on null.",
+      "tip": "Operator -- is deprecated for null."
+    },
+    {
+      "file": "operands.php",
+      "line": 55,
+      "identifier": "postDec.type",
+      "message": "Cannot use -- on null.",
+      "tip": "Operator -- is deprecated for null."
+    },
+    {
+      "file": "operands.php",
+      "line": 60,
+      "identifier": "preDec.type",
+      "message": "Cannot use -- on null.",
+      "tip": "Operator -- is deprecated for null."
+    },
+    {
+      "file": "operands.php",
+      "line": 68,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: int",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 69,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: int",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 70,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: int",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 71,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: int",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 85,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyOperands\\Holder::$.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 85,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyOperands\\Holder::$.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 86,
+      "identifier": "staticProperty.private",
+      "message": "Access to private property $secret of class StaticPropertyOperands\\Holder.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 86,
+      "identifier": "staticProperty.private",
+      "message": "Access to private property $secret of class StaticPropertyOperands\\Holder.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 87,
+      "identifier": "property.staticAccess",
+      "message": "Static access to instance property StaticPropertyOperands\\Holder::$instance.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 87,
+      "identifier": "property.staticAccess",
+      "message": "Static access to instance property StaticPropertyOperands\\Holder::$instance.",
+      "tip": null
+    },
+    {
+      "file": "operands.php",
+      "line": 88,
+      "identifier": "preDec.type",
+      "message": "Cannot use -- on string.",
+      "tip": "Operator -- is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_decrement()."
+    },
+    {
+      "file": "operands.php",
+      "line": 89,
+      "identifier": "postInc.type",
+      "message": "Cannot use ++ on bool.",
+      "tip": "Operator ++ is deprecated for bool."
+    }
+  ]
+}

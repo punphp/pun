@@ -10,6 +10,8 @@ mod class_names;
 mod classes;
 mod constants;
 mod dead_code;
+mod declaration_effects;
+mod declaration_purity;
 mod debug;
 mod declarations;
 mod declared;
@@ -31,6 +33,7 @@ mod invalid_throws;
 mod larastan;
 mod members;
 mod method_callable;
+mod method_reflection;
 mod missing_types;
 mod named_argument;
 mod names;
@@ -105,6 +108,8 @@ pub(crate) use unused_trait::unused_traits;
 
 pub fn reports(identifier: &str) -> bool {
     IDENTIFIERS.contains(&identifier)
+        // Only the conservative unspecified-declaration branch; the complete Pure*Rule mappings stay unported.
+        || identifier == "void.pure"
         || missing_types::IDENTIFIERS.contains(&identifier)
         || generics::IDENTIFIERS.contains(&identifier)
         || larastan::IDENTIFIERS.contains(&identifier)
@@ -286,6 +291,7 @@ pub const IDENTIFIERS: &[&str] = &[
     "ignore.unmatched",
     "ignore.count",
     "ignore.allLineErrors",
+    "phpstan.parse",
     "enum.constructor",
     "enum.destructor",
     "enum.magicMethod",
@@ -713,6 +719,11 @@ pub const IDENTIFIERS: &[&str] = &[
     "nullsafe.neverNull",
     "nullCoalesce.unnecessary",
     "nullCoalesce.initializedProperty",
+    "isset.variable",
+    "isset.offset",
+    "isset.property",
+    "isset.expr",
+    "isset.initializedProperty",
     "switch.duplicateCase",
     "switch.alwaysFalse",
     "switch.alwaysTrue",
@@ -777,12 +788,28 @@ pub enum FunctionScopeKind {
 
 pub struct Checker<'a, 'arena> {
     file: &'a File,
+    /// `MutatingScope::fileHasCompilerHaltStatementCalls()` for this file's parsed program.
+    has_compiler_halt: bool,
     /// The display names of the file's anonymous classes, by their codex name (see [`anonymous::names()`]).
     anonymous: HashMap<Vec<u8>, String>,
     property_access: property_access::State,
     relative_path: &'a crate::relative_path::RelativePath,
     /// Mago's inferred types of the expressions rules ask about (see [`typed_expressions()`]).
     types: HashMap<Span, TUnion>,
+    /// ExpressionResult keep-void answers, read only behind Scope's explicit-null gate.
+    keep_void_types: HashMap<Span, TUnion>,
+    /// Independent native answers from the same evaluations; absence never substitutes the full type.
+    native_types: HashMap<Span, TUnion>,
+    /// The processed nullsafe receiver before its non-null plain twin, not the ensured operand view.
+    nullsafe_method_receiver_types: HashMap<Span, TUnion>,
+    /// PHPStan VariableWritesNode results for completed closure bodies.
+    variable_writes: HashMap<Span, mago_analyzer::variable_flow::VariableWritesNode>,
+    /// Requested PropertyInitializationExpr certainties immediately before real IssetCheck operands.
+    property_initializations: HashMap<Span, mago_analyzer::property_initialization::PropertyInitializationCertainty>,
+    /// Resolved calls' own termination, independent of their provider-selected result type.
+    call_terminations: HashMap<(u32, u32), bool>,
+    /// Operand-position answers for each method name, including its expression conversion dependencies.
+    named_call_scopes: HashMap<Span, Vec<infer::NamedCallScope>>,
     /// `$scope->hasVariableType()` where the wanted direct variables are read (see [`infer::analyse()`]).
     defined: HashMap<Span, pun_phpstan::types::Tri>,
     /// The running inference blocks observed by DefinedVariableRule and CompactVariablesRule.
@@ -852,10 +879,19 @@ pub struct Checker<'a, 'arena> {
     standalone_throws: HashSet<Span>,
     /// [`Checks`]'s `check_class_case_sensitivity`.
     case_sensitivity: bool,
+    /// [`Checks`]'s independent class-name case options.
+    check_internal_class_case_sensitivity: bool,
+    check_imported_class_name_case: bool,
     /// [`Checks`]'s independent `checkFunctionNameCase` switch.
     check_function_name_case: bool,
     /// [`driver::Checks`]'s level and `checkGenericIterableClasses`.
     level: u8,
+    /// FunctionCallParametersCheck's independent switches and RuleLevelHelper's receiver eligibility.
+    check_argument_types: bool,
+    check_arguments_passed_by_reference: bool,
+    check_this_only: bool,
+    /// IssetCheck's independent advanced offset, property and leaf checks.
+    check_advanced_isset: bool,
     generic_iterable_classes: bool,
     /// [`driver::Checks`]'s `featureToggles.newStaticInAbstractClassStaticMethod`.
     new_static_in_abstract_class_static_method: bool,
@@ -867,8 +903,8 @@ pub struct Checker<'a, 'arena> {
     /// [`driver::Checks`]'s `featureToggles.internalTag`.
     internal_tag: bool,
     precise_unused_parameter_line: bool,
-    /// The statements UnreachableStatementRule reports.
-    unreachable: HashSet<Span>,
+    /// UnreachableStatementNode positions and statement traversal after termination.
+    unreachable: dead_code::UnreachableStatements,
     /// LastConditionVisitor's attributes and more the constant condition rules read.
     conditions: dead_code::ConditionFacts,
     /// [`driver::Checks`]'s level-2 RestrictedInternalMethodUsageExtension and RestrictedInternalPropertyUsageExtension.
@@ -886,6 +922,9 @@ pub struct Checker<'a, 'arena> {
     non_stringable_names: bool,
     cli_arguments_variables_registered: bool,
     check_maybe_undefined_variables: bool,
+    pollute_scope_with_loop_initial_assignments: bool,
+    pollute_scope_with_always_iterable_foreach: bool,
+    pollute_scope_with_block: bool,
     /// MethodSignatureRule's purity checks: `featureToggles.reportMethodPurityOverride`.
     method_purity_override: bool,
     /// UninitializedPropertyRule: `checkUninitializedProperties`.
@@ -898,6 +937,8 @@ pub struct Checker<'a, 'arena> {
     include_state: include_file::State,
     /// How many `Closure::bind()` calls the walk is inside (`isInClosureBind()`).
     closure_bind: usize,
+    /// Registrations of the owners of named-argument call and rename records.
+    method_rules: crate::MethodRules,
     errors: Vec<Error>,
 }
 
@@ -1346,6 +1387,11 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     /// A trait is analysed only in the context of each class using it (see [`in_trait_context()`]).
     fn walk_trait(&mut self, t: &'ast Trait<'arena>, c: &mut ()) {
+        // Sources also retains scanned global declarations for initializer resolution. Retention is
+        // not admission to ordinary trait-body analysis.
+        if self.file.file_type != mago_database::file::FileType::Host {
+            return;
+        }
         let start = i64::from(self.file.line_number(t.span().start.offset)) + 1;
         let end = i64::from(self.file.line_number(t.span().end.offset)) + 1;
         self.trait_lines.push((start, end));
@@ -1375,6 +1421,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         self.classes[saved].name = Some(class.clone());
         self.decls.push(decl);
         self.in_target = true;
+        self.types.extend(crate::codebase::trait_initializer_types(
+            self.codebase, self.file, t.span(), mago_word::word(&class), self.php_version,
+        ));
         let display = self
             .codebase
             .get_class_like(name.as_bytes())
@@ -1487,6 +1536,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
 
     fn walk_in_function(&mut self, f: &'ast Function<'arena>, _: &mut ()) {
         dead_code::impure_function(self, f);
+        declaration_purity::function(self, f);
         callable_tags::function_like(self, f.span(), &f.parameter_list);
         conditional_return::function(self, f);
         assert_tags::function(self, f);
@@ -1576,6 +1626,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_in_method(&mut self, m: &'ast Method<'arena>, _: &mut ()) {
         dead_code::impure_method(self, m);
+        declaration_purity::method(self, m);
         phpdoc_tags::node(self, m.span());
         callable_tags::function_like(self, m.span(), &m.parameter_list);
         conditional_return::method(self, m);
@@ -1944,6 +1995,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_in_construct(&mut self, construct: &'ast Construct<'arena>, _: &mut ()) {
         include_file::construct(self, construct);
+        if let Construct::Isset(i) = construct {
+            dead_code::isset(self, i);
+        }
     }
     fn walk_in_property_access(&mut self, p: &'ast PropertyAccess<'arena>, _: &mut ()) {
         property_access::read(self, p);
@@ -2022,18 +2076,24 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         _: &mut (),
     ) {
         self.bind_method_arguments(call.object, &call.method, &call.argument_list, false);
-        named_argument::call(self, call.object, &call.method, &call.argument_list, true);
+        if self.method_rules.call_methods {
+            named_argument::call(self, call.span(), call.object, &call.argument_list, true);
+        }
         internal::method_call(self, call.span(), call.object, &call.method);
         strict::dynamic_call(self, call.span(), call.object, &call.method);
-        types::method_call(self, call.span(), call.object, &call.method, &call.argument_list, true);
-        if let Some(name) = types::dynamic_names::member(&call.method) {
-            types::dynamic_names::check(self, name, false, "Method", call.object, true, "method.nameNotString");
+        if self.method_rules.call_methods {
+            types::method_call(self, call.span(), call.object, &call.method, &call.argument_list, true);
+            if let Some(name) = types::dynamic_names::member(&call.method) {
+                types::dynamic_names::check(self, name, false, "Method", call.object, true, "method.nameNotString");
+            }
         }
         types::nullsafe_method(self, call);
     }
     fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, _: &mut ()) {
         self.bind_method_arguments(call.object, &call.method, &call.argument_list, false);
-        named_argument::call(self, call.object, &call.method, &call.argument_list, false);
+        if self.method_rules.call_methods {
+            named_argument::call(self, call.span(), call.object, &call.argument_list, false);
+        }
         dead_code::method_check(self, call);
         internal::method_call(self, call.span(), call.object, &call.method);
         strict::dynamic_call(self, call.span(), call.object, &call.method);
@@ -2046,12 +2106,14 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         }
         // A static closure has no `$this`, even when its parameter carries a binding annotation. The undefined
         // variable check reports it; there is no receiver on which to check methods.
-        if self.this_defined() {
+        if self.method_rules.call_methods && self.this_defined() {
             calls::method_call(self, call);
         }
-        types::method_call(self, call.span(), call.object, &call.method, &call.argument_list, false);
-        if let Some(name) = types::dynamic_names::member(&call.method) {
-            types::dynamic_names::check(self, name, false, "Method", call.object, false, "method.nameNotString");
+        if self.method_rules.call_methods {
+            types::method_call(self, call.span(), call.object, &call.method, &call.argument_list, false);
+            if let Some(name) = types::dynamic_names::member(&call.method) {
+                types::dynamic_names::check(self, name, false, "Method", call.object, false, "method.nameNotString");
+            }
         }
         assign::arguments(self, assign::Callee::Method(call));
     }
@@ -2402,6 +2464,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
 
     fn walk_in_program(&mut self, program: &'ast Program<'arena>, _: &mut ()) {
+        self.has_compiler_halt = names::file_has_compiler_halt_statement_calls(program);
         syntax::used_names(self, program);
         self.unreachable = dead_code::unreachable_statements(self, program);
         self.conditions = dead_code::condition_facts(self, program);
@@ -2469,13 +2532,18 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     ) {
         self.pop_frame();
     }
+    fn walk_statement(&mut self, s: &'ast Statement<'arena>, context: &mut ()) {
+        if self.unreachable.reported.contains(&s.span()) {
+            self.report(s, "deadCode.unreachable", "Unreachable statement - code above always terminates.".into(), None);
+        }
+        if !self.unreachable.skipped.contains(&s.span()) {
+            mago_syntax::walker::walk_statement_mut(self, s, context);
+        }
+    }
     fn walk_in_statement(&mut self, s: &'ast Statement<'arena>, _: &mut ()) {
         invalid_throws::statement(self, s);
         phpdoc_tags::statement(self, s);
         statements::statement_position(self, s);
-        if self.unreachable.contains(&s.span()) {
-            self.report(s, "deadCode.unreachable", "Unreachable statement - code above always terminates.".into(), None);
-        }
     }
     fn walk_in_declare(&mut self, d: &'ast Declare<'arena>, _: &mut ()) {
         statements::declare(self, d);
@@ -2521,7 +2589,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             self.invalidate_expression(u.operand);
         }
         if u.operator.is_increment_or_decrement() {
-            types::property_increment(self, u.operand);
+            types::property_increment(self, u.operand, u.operator.span(), u.span());
         }
     }
     fn walk_in_unary_postfix(&mut self, u: &'ast UnaryPostfix<'arena>, _: &mut ()) {
@@ -2530,7 +2598,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         assign::increment(self, u.operand);
         self.incremented(u.operand);
         self.invalidate_expression(u.operand);
-        types::property_increment(self, u.operand);
+        types::property_increment(self, u.operand, u.operator.span(), u.span());
     }
     fn walk_out_for(&mut self, _: &'ast For<'arena>, _: &mut ()) {
         self.syntax.parents.pop();

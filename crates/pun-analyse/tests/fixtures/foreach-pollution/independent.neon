@@ -1,0 +1,4 @@
+includes:
+    - disabled.neon
+parameters:
+    polluteScopeWithLoopInitialAssignments: false

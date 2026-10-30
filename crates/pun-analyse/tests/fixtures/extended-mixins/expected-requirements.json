@@ -1,0 +1,652 @@
+{
+    "4": [
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "PHPDoc tag @phpstan-require-extends can only be used once.",
+            "line": 95,
+            "ignorable": true,
+            "identifier": "requireExtends.duplicate"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "PHPDoc tag @phpstan-require-extends can only be used once.",
+            "line": 101,
+            "ignorable": true,
+            "identifier": "requireExtends.duplicate"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "PHPDoc tag @phpstan-require-extends can only be used once.",
+            "line": 107,
+            "ignorable": true,
+            "identifier": "requireExtends.duplicate"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "PHPDoc tag @phpstan-require-extends can only be used once.",
+            "line": 113,
+            "ignorable": true,
+            "identifier": "requireExtends.duplicate"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "PHPDoc tag @phpstan-require-extends can only be used once.",
+            "line": 130,
+            "ignorable": true,
+            "identifier": "requireExtends.duplicate"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to an undefined method ExtendedRequirements\\ContinueRequirement::absent().",
+            "line": 145,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "PHPDoc tag @phpstan-require-extends is only valid on trait or interface.",
+            "line": 151,
+            "ignorable": true,
+            "identifier": "requireExtends.onClass"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to an undefined method ExtendedRequirements\\NotAnInterface::run().",
+            "line": 155,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Missing parameter $tag (int) in call to method ExtendedRequirements\\TaggedProxy::run().",
+            "line": 188,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Unknown parameter $old in call to method ExtendedRequirements\\TaggedProxy::run().",
+            "line": 188,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "PHPDoc tag @phpstan-require-extends can only be used once.",
+            "line": 210,
+            "ignorable": true,
+            "identifier": "requireExtends.duplicate"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to an undefined method ExtendedRequirements\\CycleRequirement::absent().",
+            "line": 214,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Missing parameter $value (int|string) in call to method ExtendedRequirements\\Holder<int>::value().",
+            "line": 244,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Unknown parameter $extra in call to method ExtendedRequirements\\Holder<int>::value().",
+            "line": 244,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "PHPDoc tag @phpstan-require-extends contains non-object type mixed.",
+            "line": 248,
+            "ignorable": true,
+            "identifier": "requireExtends.nonObject"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to an undefined method ExtendedRequirements\\BranchOrder::absent().",
+            "line": 268,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        }
+    ],
+    "5": [
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to ExtendedRequirements\\Base::run() uses named argument for parameter $old, but ExtendedRequirements\\Child renames it to $new.",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to ExtendedRequirements\\Base::run() uses named argument for parameter $old, but ExtendedRequirements\\Child renames it to $new.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to ExtendedRequirements\\Base::run() uses named argument for parameter $old, but ExtendedRequirements\\Child renames it to $new.",
+            "line": 30,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to ExtendedRequirements\\Base::run() uses named argument for parameter $old, but ExtendedRequirements\\Child renames it to $new.",
+            "line": 69,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Parameter $new of method ExtendedRequirements\\Child::run() expects int, string given.",
+            "line": 72,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Parameter #1 $value of method ExtendedRequirements\\Holder<int>::value() expects int, string given.",
+            "line": 88,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "PHPDoc tag @phpstan-require-extends can only be used once.",
+            "line": 95,
+            "ignorable": true,
+            "identifier": "requireExtends.duplicate"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "PHPDoc tag @phpstan-require-extends can only be used once.",
+            "line": 101,
+            "ignorable": true,
+            "identifier": "requireExtends.duplicate"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "PHPDoc tag @phpstan-require-extends can only be used once.",
+            "line": 107,
+            "ignorable": true,
+            "identifier": "requireExtends.duplicate"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "PHPDoc tag @phpstan-require-extends can only be used once.",
+            "line": 113,
+            "ignorable": true,
+            "identifier": "requireExtends.duplicate"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to ExtendedRequirements\\Base::run() uses named argument for parameter $old, but ExtendedRequirements\\Child renames it to $new.",
+            "line": 117,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to ExtendedRequirements\\OtherBase::run() uses named argument for parameter $other, but ExtendedRequirements\\OtherChild renames it to $changed.",
+            "line": 118,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to ExtendedRequirements\\OtherBase::run() uses named argument for parameter $other, but ExtendedRequirements\\OtherChild renames it to $changed.",
+            "line": 119,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to ExtendedRequirements\\Base::run() uses named argument for parameter $old, but ExtendedRequirements\\Child renames it to $new.",
+            "line": 120,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "PHPDoc tag @phpstan-require-extends can only be used once.",
+            "line": 130,
+            "ignorable": true,
+            "identifier": "requireExtends.duplicate"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to ExtendedRequirements\\Base::run() uses named argument for parameter $old, but ExtendedRequirements\\Child renames it to $new.",
+            "line": 144,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to an undefined method ExtendedRequirements\\ContinueRequirement::absent().",
+            "line": 145,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to ExtendedRequirements\\Base::run() uses named argument for parameter $old, but ExtendedRequirements\\Child renames it to $new.",
+            "line": 146,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to ExtendedRequirements\\Base::run() uses named argument for parameter $old, but ExtendedRequirements\\Child renames it to $new.",
+            "line": 147,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "PHPDoc tag @phpstan-require-extends is only valid on trait or interface.",
+            "line": 151,
+            "ignorable": true,
+            "identifier": "requireExtends.onClass"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to an undefined method ExtendedRequirements\\NotAnInterface::run().",
+            "line": 155,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to ExtendedRequirements\\OtherBase::run() uses named argument for parameter $other, but ExtendedRequirements\\OtherChild renames it to $changed.",
+            "line": 186,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Missing parameter $tag (int) in call to method ExtendedRequirements\\TaggedProxy::run().",
+            "line": 188,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Unknown parameter $old in call to method ExtendedRequirements\\TaggedProxy::run().",
+            "line": 188,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "PHPDoc tag @phpstan-require-extends can only be used once.",
+            "line": 210,
+            "ignorable": true,
+            "identifier": "requireExtends.duplicate"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to an undefined method ExtendedRequirements\\CycleRequirement::absent().",
+            "line": 214,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to ExtendedRequirements\\Base::run() uses named argument for parameter $old, but ExtendedRequirements\\Child renames it to $new.",
+            "line": 215,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to ExtendedRequirements\\Base::run() uses named argument for parameter $old, but ExtendedRequirements\\Child renames it to $new.",
+            "line": 216,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to ExtendedRequirements\\Base::run() uses named argument for parameter $old, but ExtendedRequirements\\Child renames it to $new.",
+            "line": 221,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to ExtendedRequirements\\Base::run() uses named argument for parameter $old, but ExtendedRequirements\\Child renames it to $new.",
+            "line": 223,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to ExtendedRequirements\\Base::run() uses named argument for parameter $old, but ExtendedRequirements\\Child renames it to $new.",
+            "line": 239,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Missing parameter $value (int|string) in call to method ExtendedRequirements\\Holder<int>::value().",
+            "line": 244,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Unknown parameter $extra in call to method ExtendedRequirements\\Holder<int>::value().",
+            "line": 244,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "PHPDoc tag @phpstan-require-extends contains non-object type mixed.",
+            "line": 248,
+            "ignorable": true,
+            "identifier": "requireExtends.nonObject"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to ExtendedRequirements\\OtherBase::run() uses named argument for parameter $other, but ExtendedRequirements\\OtherChild renames it to $changed.",
+            "line": 265,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to ExtendedRequirements\\Base::run() uses named argument for parameter $old, but ExtendedRequirements\\Child renames it to $new.",
+            "line": 266,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to an undefined method ExtendedRequirements\\BranchOrder::absent().",
+            "line": 268,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Parameter #1 $value of method ExtendedRequirements\\Holder<int>::value() expects int, string given.",
+            "line": 283,
+            "ignorable": true,
+            "identifier": "argument.type"
+        }
+    ],
+    "8": [
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to ExtendedRequirements\\Base::run() uses named argument for parameter $old, but ExtendedRequirements\\Child renames it to $new.",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to ExtendedRequirements\\Base::run() uses named argument for parameter $old, but ExtendedRequirements\\Child renames it to $new.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to ExtendedRequirements\\Base::run() uses named argument for parameter $old, but ExtendedRequirements\\Child renames it to $new.",
+            "line": 30,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to ExtendedRequirements\\Base::run() uses named argument for parameter $old, but ExtendedRequirements\\Child renames it to $new.",
+            "line": 69,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Parameter $new of method ExtendedRequirements\\Child::run() expects int, string given.",
+            "line": 72,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Parameter #1 $value of method ExtendedRequirements\\Holder<int>::value() expects int, string given.",
+            "line": 88,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "PHPDoc tag @phpstan-require-extends can only be used once.",
+            "line": 95,
+            "ignorable": true,
+            "identifier": "requireExtends.duplicate"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "PHPDoc tag @phpstan-require-extends can only be used once.",
+            "line": 101,
+            "ignorable": true,
+            "identifier": "requireExtends.duplicate"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "PHPDoc tag @phpstan-require-extends can only be used once.",
+            "line": 107,
+            "ignorable": true,
+            "identifier": "requireExtends.duplicate"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "PHPDoc tag @phpstan-require-extends can only be used once.",
+            "line": 113,
+            "ignorable": true,
+            "identifier": "requireExtends.duplicate"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to ExtendedRequirements\\Base::run() uses named argument for parameter $old, but ExtendedRequirements\\Child renames it to $new.",
+            "line": 117,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to ExtendedRequirements\\OtherBase::run() uses named argument for parameter $other, but ExtendedRequirements\\OtherChild renames it to $changed.",
+            "line": 118,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to ExtendedRequirements\\OtherBase::run() uses named argument for parameter $other, but ExtendedRequirements\\OtherChild renames it to $changed.",
+            "line": 119,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to ExtendedRequirements\\Base::run() uses named argument for parameter $old, but ExtendedRequirements\\Child renames it to $new.",
+            "line": 120,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "PHPDoc tag @phpstan-require-extends can only be used once.",
+            "line": 130,
+            "ignorable": true,
+            "identifier": "requireExtends.duplicate"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to ExtendedRequirements\\Base::run() uses named argument for parameter $old, but ExtendedRequirements\\Child renames it to $new.",
+            "line": 144,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to an undefined method ExtendedRequirements\\ContinueRequirement::absent().",
+            "line": 145,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to ExtendedRequirements\\Base::run() uses named argument for parameter $old, but ExtendedRequirements\\Child renames it to $new.",
+            "line": 146,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to ExtendedRequirements\\Base::run() uses named argument for parameter $old, but ExtendedRequirements\\Child renames it to $new.",
+            "line": 147,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "PHPDoc tag @phpstan-require-extends is only valid on trait or interface.",
+            "line": 151,
+            "ignorable": true,
+            "identifier": "requireExtends.onClass"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to an undefined method ExtendedRequirements\\NotAnInterface::run().",
+            "line": 155,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to ExtendedRequirements\\OtherBase::run() uses named argument for parameter $other, but ExtendedRequirements\\OtherChild renames it to $changed.",
+            "line": 186,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Missing parameter $tag (int) in call to method ExtendedRequirements\\TaggedProxy::run().",
+            "line": 188,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Unknown parameter $old in call to method ExtendedRequirements\\TaggedProxy::run().",
+            "line": 188,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "PHPDoc tag @phpstan-require-extends can only be used once.",
+            "line": 210,
+            "ignorable": true,
+            "identifier": "requireExtends.duplicate"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to an undefined method ExtendedRequirements\\CycleRequirement::absent().",
+            "line": 214,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to ExtendedRequirements\\Base::run() uses named argument for parameter $old, but ExtendedRequirements\\Child renames it to $new.",
+            "line": 215,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to ExtendedRequirements\\Base::run() uses named argument for parameter $old, but ExtendedRequirements\\Child renames it to $new.",
+            "line": 216,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to ExtendedRequirements\\Base::run() uses named argument for parameter $old, but ExtendedRequirements\\Child renames it to $new.",
+            "line": 221,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to ExtendedRequirements\\Base::run() uses named argument for parameter $old, but ExtendedRequirements\\Child renames it to $new.",
+            "line": 223,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to ExtendedRequirements\\Base::run() uses named argument for parameter $old, but ExtendedRequirements\\Child renames it to $new.",
+            "line": 239,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Missing parameter $value (int|string) in call to method ExtendedRequirements\\Holder<int>::value().",
+            "line": 244,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Unknown parameter $extra in call to method ExtendedRequirements\\Holder<int>::value().",
+            "line": 244,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "PHPDoc tag @phpstan-require-extends contains non-object type mixed.",
+            "line": 248,
+            "ignorable": true,
+            "identifier": "requireExtends.nonObject"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to ExtendedRequirements\\OtherBase::run() uses named argument for parameter $other, but ExtendedRequirements\\OtherChild renames it to $changed.",
+            "line": 265,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to ExtendedRequirements\\Base::run() uses named argument for parameter $old, but ExtendedRequirements\\Child renames it to $new.",
+            "line": 266,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Call to an undefined method ExtendedRequirements\\BranchOrder::absent().",
+            "line": 268,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/requirements.php",
+            "message": "Parameter #1 $value of method ExtendedRequirements\\Holder<int>::value() expects int, string given.",
+            "line": 283,
+            "ignorable": true,
+            "identifier": "argument.type"
+        }
+    ]
+}

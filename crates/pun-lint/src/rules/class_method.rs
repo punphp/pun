@@ -44,13 +44,25 @@ pub(crate) fn class_info<'ast, 'arena>(
     ancestors: &[Node<'ast, 'arena>],
     facts: &Facts,
 ) -> Option<ClassInfo<'ast, 'arena>> {
+    let mut info = None;
+    with_class_info(node, ancestors, facts, |c| info = Some(c));
+    info
+}
+
+/// Visit the class `node` is; the rule's targets select classes or anonymous classes, and `ancestors` lead to it.
+pub(crate) fn with_class_info<'ast, 'arena>(
+    node: Node<'ast, 'arena>,
+    ancestors: &[Node<'ast, 'arena>],
+    facts: &Facts,
+    mut visit: impl FnMut(ClassInfo<'ast, 'arena>),
+) {
     let extended = |extends: Option<&Extends<'_>>| {
         extends
             .and_then(|e| e.types.first())
             .map(|id| resolve_class_name(ancestors, id))
     };
-    match node {
-        Node::Class(c) => Some(ClassInfo {
+    if let Node::Class(c) = node {
+        visit(ClassInfo {
             node,
             members: &c.members,
             left_brace: c.left_brace,
@@ -59,8 +71,10 @@ pub(crate) fn class_info<'ast, 'arena>(
             is_anonymous: false,
             is_final: c.modifiers.iter().any(|m| matches!(m, Modifier::Final(_))),
             extends: extended(c.extends.as_ref()),
-        }),
-        Node::AnonymousClass(c) => Some(ClassInfo {
+        });
+    }
+    if let Node::AnonymousClass(c) = node {
+        visit(ClassInfo {
             node,
             members: &c.members,
             left_brace: c.left_brace,
@@ -69,8 +83,7 @@ pub(crate) fn class_info<'ast, 'arena>(
             is_anonymous: true,
             is_final: c.modifiers.iter().any(|m| matches!(m, Modifier::Final(_))),
             extends: extended(c.extends.as_ref()),
-        }),
-        _ => None,
+        });
     }
 }
 

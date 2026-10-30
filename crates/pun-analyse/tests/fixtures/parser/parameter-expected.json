@@ -1,0 +1,457 @@
+{
+    "analysed": [
+        {
+            "file": "attribute-name-precedence.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "void cannot be used as a parameter type on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "both-token-lines.php",
+            "line": 4,
+            "identifier": "phpstan.parse",
+            "message": "void cannot be used as a parameter type on line 4",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "both-token-lines.php",
+            "line": 6,
+            "identifier": "phpstan.parse",
+            "message": "Variadic parameter cannot have a default value on line 6",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "both.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Variadic parameter cannot have a default value on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "both.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "void cannot be used as a parameter type on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "default-name-precedence.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Variadic parameter cannot have a default value on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "earlier-name-precedence.php",
+            "line": 4,
+            "identifier": "phpstan.parse",
+            "message": "void cannot be used as a parameter type on line 4",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "member-postchecks.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Constructor __construct() cannot be static on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "member-postchecks.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Method __construct() cannot be readonly on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "member-postchecks.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Variadic parameter cannot have a default value on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "member-postchecks.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "void cannot be used as a parameter type on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "multiple-parameters.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Variadic parameter cannot have a default value on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "multiple-parameters.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "void cannot be used as a parameter type on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "multiple-parameters.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "void cannot be used as a parameter type on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "nested-default.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Variadic parameter cannot have a default value on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "nested-default.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "void cannot be used as a parameter type on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "parenthesized-default-line.php",
+            "line": 5,
+            "identifier": "phpstan.parse",
+            "message": "Variadic parameter cannot have a default value on line 5",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "parser-alias-collection.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Cannot use Foo as parent because 'parent' is a special class name on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "parser-alias-collection.php",
+            "line": 4,
+            "identifier": "phpstan.parse",
+            "message": "void cannot be used as a parameter type on line 4",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "positive-named-ordinary-error.php",
+            "line": 3,
+            "identifier": "function.notFound",
+            "message": "Function missing_parameter_control not found.",
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "ignorable": true
+        },
+        {
+            "file": "positive-nullable-void.php",
+            "line": 3,
+            "identifier": "nullableType.void",
+            "message": "Type void cannot be part of a nullable type declaration.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "positive-qualified-void.php",
+            "line": 3,
+            "identifier": "class.notFound",
+            "message": "Parameter $x of function Parameter_positive_qualified_void\\f() has invalid type void.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "positive-relative-void.php",
+            "line": 3,
+            "identifier": "class.notFound",
+            "message": "Parameter $x of function Parameter_positive_relative_void\\f() has invalid type Parameter_positive_relative_void\\void.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "positive-union-void.php",
+            "line": 3,
+            "identifier": "unionType.void",
+            "message": "Type void cannot be part of a union type declaration.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "variadic-arrow-default.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Variadic parameter cannot have a default value on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "variadic-closure-default.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Variadic parameter cannot have a default value on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "variadic-default.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Variadic parameter cannot have a default value on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "variadic-hook-default.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Variadic parameter cannot have a default value on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "variadic-null-default.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Variadic parameter cannot have a default value on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "variadic-reference-default.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Variadic parameter cannot have a default value on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "void-arrow.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "void cannot be used as a parameter type on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "void-case.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "void cannot be used as a parameter type on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "void-closure.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "void cannot be used as a parameter type on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "void-function.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "void cannot be used as a parameter type on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "void-hook.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "void cannot be used as a parameter type on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "void-interface.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "void cannot be used as a parameter type on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "void-method.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "void cannot be used as a parameter type on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "void-promoted.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "void cannot be used as a parameter type on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "void-reference.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "void cannot be used as a parameter type on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "void-trait.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "void cannot be used as a parameter type on line 3",
+            "tip": null,
+            "ignorable": false
+        }
+    ],
+    "original": [
+        {
+            "file": "void-parameter-typehint.php",
+            "line": 8,
+            "identifier": "phpstan.parse",
+            "message": "void cannot be used as a parameter type on line 8",
+            "tip": null,
+            "ignorable": false
+        }
+    ],
+    "original-functions": [
+        {
+            "file": "void-parameter-typehint.php",
+            "line": 5,
+            "identifier": "phpstan.parse",
+            "message": "void cannot be used as a parameter type on line 5",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "void-parameter-typehint.php",
+            "line": 9,
+            "identifier": "phpstan.parse",
+            "message": "void cannot be used as a parameter type on line 9",
+            "tip": null,
+            "ignorable": false
+        }
+    ],
+    "scanned": {
+        "void": [
+            {
+                "file": "main.php",
+                "line": 2,
+                "identifier": "class.notFound",
+                "message": "Instantiated class ScanBefore not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "file": "main.php",
+                "line": 3,
+                "identifier": "class.notFound",
+                "message": "Instantiated class ScanAfter not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "file": "main.php",
+                "line": 4,
+                "identifier": "function.notFound",
+                "message": "Function scanFunction not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "file": "main.php",
+                "line": 5,
+                "identifier": "constant.notFound",
+                "message": "Used constant SCAN_CONSTANT not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            }
+        ],
+        "variadic": [
+            {
+                "file": "main.php",
+                "line": 2,
+                "identifier": "class.notFound",
+                "message": "Instantiated class ScanBefore not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "file": "main.php",
+                "line": 3,
+                "identifier": "class.notFound",
+                "message": "Instantiated class ScanAfter not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "file": "main.php",
+                "line": 4,
+                "identifier": "function.notFound",
+                "message": "Function scanFunction not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "file": "main.php",
+                "line": 5,
+                "identifier": "constant.notFound",
+                "message": "Used constant SCAN_CONSTANT not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            }
+        ],
+        "both": [
+            {
+                "file": "main.php",
+                "line": 2,
+                "identifier": "class.notFound",
+                "message": "Instantiated class ScanBefore not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "file": "main.php",
+                "line": 3,
+                "identifier": "class.notFound",
+                "message": "Instantiated class ScanAfter not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "file": "main.php",
+                "line": 4,
+                "identifier": "function.notFound",
+                "message": "Function scanFunction not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "file": "main.php",
+                "line": 5,
+                "identifier": "constant.notFound",
+                "message": "Used constant SCAN_CONSTANT not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            }
+        ],
+        "valid": []
+    }
+}

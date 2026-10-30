@@ -1,0 +1,59 @@
+{
+    "calls": {
+        "208": {
+            "line": 8,
+            "expression": "$sink->$name([7])",
+            "names": [
+                {
+                    "name": "bar",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 208,
+                            "end": 213,
+                            "expression": "$sink",
+                            "type": "BudgetSink"
+                        },
+                        {
+                            "start": 221,
+                            "end": 224,
+                            "expression": "[7]",
+                            "type": "array{7}"
+                        },
+                        {
+                            "start": 222,
+                            "end": 223,
+                            "expression": "7",
+                            "type": "7"
+                        }
+                    ]
+                },
+                {
+                    "name": "foo",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 208,
+                            "end": 213,
+                            "expression": "$sink",
+                            "type": "BudgetSink"
+                        },
+                        {
+                            "start": 221,
+                            "end": 224,
+                            "expression": "[7]",
+                            "type": "array{7}"
+                        },
+                        {
+                            "start": 222,
+                            "end": 223,
+                            "expression": "7",
+                            "type": "7"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "errors": []
+}

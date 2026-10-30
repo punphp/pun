@@ -1,0 +1,68 @@
+{
+    "76": {
+        "end": 78,
+        "expression": "$i",
+        "type": "*ERROR*",
+        "visits": 1
+    },
+    "88": {
+        "end": 100,
+        "expression": "$never(++$i)",
+        "type": "*ERROR*",
+        "visits": 1
+    },
+    "95": {
+        "end": 99,
+        "expression": "++$i",
+        "type": "1",
+        "visits": 1
+    },
+    "97": {
+        "end": 99,
+        "expression": "$i",
+        "type": "0",
+        "visits": 1
+    },
+    "106": {
+        "end": 108,
+        "expression": "$i",
+        "type": "1",
+        "visits": 1
+    },
+    "162": {
+        "end": 164,
+        "expression": "$i",
+        "type": "*ERROR*",
+        "visits": 1
+    },
+    "174": {
+        "end": 188,
+        "expression": "$invalid(++$i)",
+        "type": "*ERROR*",
+        "visits": 1
+    },
+    "183": {
+        "end": 187,
+        "expression": "++$i",
+        "type": "1",
+        "visits": 1
+    },
+    "185": {
+        "end": 187,
+        "expression": "$i",
+        "type": "0",
+        "visits": 1
+    },
+    "194": {
+        "end": 196,
+        "expression": "$i",
+        "type": "1",
+        "visits": 1
+    },
+    "287": {
+        "end": 295,
+        "expression": "stop()()",
+        "type": "*ERROR*",
+        "visits": 1
+    }
+}

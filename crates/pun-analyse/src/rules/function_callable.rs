@@ -3,7 +3,7 @@
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use mago_syntax::walker::MutWalker;
-use pun_phpstan::types::{Level, Tri, Type};
+use pun_phpstan::types::{Level, Type};
 
 use super::types::flow::unparen;
 use super::{Checker, DISCOVERING_SYMBOLS_TIP, declared, internal};
@@ -78,7 +78,7 @@ pub(super) fn check<'arena>(c: &mut Checker<'_, 'arena>, f: &FunctionPartialAppl
         ),
         (
             mago_codex::ttype::get_mixed_closure(),
-            Type::Object("Closure".into(), vec![]),
+            Type::Object("Closure".into(), vec![], false),
         ),
     ] {
         if c.type_of(unparen(f.function))
@@ -99,12 +99,7 @@ pub(super) fn check<'arena>(c: &mut Checker<'_, 'arena>, f: &FunctionPartialAppl
             };
         }
     }
-    // RuleLevelHelper leaves strict mixed as mixed; StrictMixedType::isCallable() is no, not maybe.
-    let callable = if matches!(ty, Type::Mixed { .. }) {
-        Tri::No
-    } else {
-        declared::with_classes(c, || ty.is_callable())
-    };
+    let callable = declared::with_classes(c, || ty.is_callable());
     if callable.no() || c.level >= 7 && callable.maybe() {
         let value = declared::with_classes(c, || ty.describe(Level::Value));
         let not = if callable.no() {

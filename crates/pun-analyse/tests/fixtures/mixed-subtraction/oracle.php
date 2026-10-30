@@ -23,6 +23,7 @@ $n = new NullType();
 $empty = new ConstantArrayType([], []);
 $types = [
     'mixed' => $m, 'error' => new ErrorType(), 'zero' => $z,
+    'explicit-mixed' => new MixedType(true),
     'one' => new ConstantIntegerType(1), 'thirteen' => new ConstantIntegerType(13),
     'null' => $n, 'int' => new IntegerType(), 'string' => new StringType(),
     'literal' => new ConstantStringType('x'), 'empty' => $empty, 'never' => new NeverType(),
@@ -52,6 +53,14 @@ foreach (['mixed', 'error', 'not-zero', 'not-null', 'not-zero-empty', 'not-empty
 foreach (['mixed', 'error', 'not-zero'] as $name) {
     foreach (['zero', 'null', 'mixed', 'error', 'not-one', 'never'] as $remove) {
         $out['types']["subtract:$name:$remove"] = $record($types[$name]->subtract($types[$remove]));
+    }
+}
+foreach (['mixed', 'explicit-mixed', 'error', 'not-zero', 'not-int', 'int', 'range', 'zero'] as $name) {
+    foreach (['int', 'zero', 'string', 'mixed', 'error', 'not-one', 'not-int', 'not-zero-null'] as $remove) {
+        $result = C::remove($types[$name], $types[$remove]);
+        $out['types']["remove:$name:$remove"] = $record($result) + [
+            'explicit' => $result instanceof MixedType && $result->isExplicitMixed(),
+        ];
     }
 }
 foreach (['not-zero', 'not-null', 'not-zero-null', 'not-int', 'not-string', 'not-range'] as $name) {

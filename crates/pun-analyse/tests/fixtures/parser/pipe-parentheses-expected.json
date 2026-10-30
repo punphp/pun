@@ -1,0 +1,263 @@
+{
+    "analysed": {
+        "errors": [
+            {
+                "file": "attribute-start-line.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Arrow functions on the right hand side of |> must be parenthesized on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "bare.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Arrow functions on the right hand side of |> must be parenthesized on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "body-only-parenthesized.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Arrow functions on the right hand side of |> must be parenthesized on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "by-reference-arrow.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Arrow functions on the right hand side of |> must be parenthesized on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "parenthesized-outer-invalid-inner.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Arrow functions on the right hand side of |> must be parenthesized on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "resolver-suppressed.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Arrow functions on the right hand side of |> must be parenthesized on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "static-start-line.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Arrow functions on the right hand side of |> must be parenthesized on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "suffix-suppressed.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Arrow functions on the right hand side of |> must be parenthesized on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "valid-neighbor.php",
+                "line": 3,
+                "identifier": "function.notFound",
+                "message": "Function missing_neighbor not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "file": "whole-pipe-parenthesized.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Arrow functions on the right hand side of |> must be parenthesized on line 2",
+                "tip": null,
+                "ignorable": false
+            }
+        ],
+        "general": []
+    },
+    "scanned": {
+        "bare": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "body": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "valid": {
+            "errors": [],
+            "general": []
+        }
+    },
+    "order": {
+        "errors": [
+            {
+                "file": "order.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Arrow functions on the right hand side of |> must be parenthesized on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "order.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "order.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Arrow functions on the right hand side of |> must be parenthesized on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "order.php",
+                "line": 5,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declaration statement has to be the very first statement in the script on line 5",
+                "tip": null,
+                "ignorable": false
+            }
+        ],
+        "general": [
+            "Error message \"void cannot be used as a parameter type on line 2\" cannot be ignored, use excludePaths instead.",
+            "Error message \"Arrow functions on the right hand side of |> must be parenthesized on line 3\" cannot be ignored, use excludePaths instead.",
+            "Error message \"Arrow functions on the right hand side of |> must be parenthesized on line 2\" cannot be ignored, use excludePaths instead.",
+            "Error message \"Namespace declaration statement has to be the very first statement in the script on line 5\" cannot be ignored, use excludePaths instead."
+        ]
+    },
+    "older": {
+        "80000": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected '>' on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "80100": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected '>' on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "80200": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected '>' on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "80400": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected '>' on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        }
+    }
+}

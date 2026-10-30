@@ -1,0 +1,8 @@
+{
+  "bare-constant-lhs": "const VALUE = 1; VALUE =& new stdClass;",
+  "class-constant-lhs": "class Holder { const VALUE = 1; } Holder::VALUE =& new stdClass;",
+  "parenthesized-lhs": "($value) =& new stdClass;",
+  "destructuring-lhs": "[$value] =& new stdClass;",
+  "parenthesized-new": "$value =& (new stdClass);",
+  "compound-assignment": "$value += &new stdClass;"
+}

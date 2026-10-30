@@ -1,0 +1,161 @@
+{
+    "1": [],
+    "4": [
+        {
+            "file": "$ROOT/properties.php",
+            "message": "Property IssetProperties\\Named::$name (int) in isset() is not nullable.",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/properties.php",
+            "message": "Property IssetProperties\\Named::$name (int) on left side of ?? is not nullable.",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/properties.php",
+            "message": "Property IssetProperties\\Named::$name (int) on left side of ??= is not nullable.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/properties.php",
+            "message": "Static property IssetProperties\\Named::$shared (int) in isset() is not nullable.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/properties.php",
+            "message": "Property IssetProperties\\Box<int>::$value (int) in isset() is not nullable.",
+            "line": 51,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/properties.php",
+            "message": "Property IssetProperties\\Box<int>::$name (int) in isset() is not nullable.",
+            "line": 53,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/properties.php",
+            "message": "Property IssetProperties\\Box<int>::$value (int) on left side of ?? is not nullable.",
+            "line": 54,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/properties.php",
+            "message": "Property IssetProperties\\Box<int>::$value (int) on left side of ??= is not nullable.",
+            "line": 55,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/properties.php",
+            "message": "Property IssetProperties\\Box<int>::$value (int) in isset() is not nullable.",
+            "line": 74,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/properties.php",
+            "message": "Property IssetProperties\\Box<int>::$name (int) in isset() is not nullable.",
+            "line": 76,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/properties.php",
+            "message": "Property IssetProperties\\Box<int>::$value (int) in isset() is not nullable.",
+            "line": 84,
+            "ignorable": true,
+            "identifier": "isset.property"
+        }
+    ],
+    "5": [
+        {
+            "file": "$ROOT/properties.php",
+            "message": "Property IssetProperties\\Named::$name (int) in isset() is not nullable.",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/properties.php",
+            "message": "Property IssetProperties\\Named::$name (int) on left side of ?? is not nullable.",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/properties.php",
+            "message": "Property IssetProperties\\Named::$name (int) on left side of ??= is not nullable.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/properties.php",
+            "message": "Static property IssetProperties\\Named::$shared (int) in isset() is not nullable.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/properties.php",
+            "message": "Property IssetProperties\\Box<int>::$value (int) in isset() is not nullable.",
+            "line": 51,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/properties.php",
+            "message": "Property IssetProperties\\Box<int>::$name (int) in isset() is not nullable.",
+            "line": 53,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/properties.php",
+            "message": "Property IssetProperties\\Box<int>::$value (int) on left side of ?? is not nullable.",
+            "line": 54,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/properties.php",
+            "message": "Property IssetProperties\\Box<int>::$value (int) on left side of ??= is not nullable.",
+            "line": 55,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/properties.php",
+            "message": "Property IssetProperties\\Box<int>::$value (int) in isset() is not nullable.",
+            "line": 74,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/properties.php",
+            "message": "Property IssetProperties\\Box<int>::$name (int) in isset() is not nullable.",
+            "line": 76,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/properties.php",
+            "message": "Property IssetProperties\\Box<int>::$value (int) in isset() is not nullable.",
+            "line": 84,
+            "ignorable": true,
+            "identifier": "isset.property"
+        }
+    ]
+}

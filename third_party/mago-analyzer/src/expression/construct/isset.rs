@@ -1,4 +1,5 @@
 use mago_allocator::Arena;
+use std::rc::Rc;
 use mago_codex::ttype::get_bool;
 use mago_codex::ttype::get_false;
 use mago_codex::ttype::get_true;
@@ -71,6 +72,27 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for IssetConstruct<'arena> {
         };
 
         artifacts.set_expression_type(self, result_type);
+        if block_context.native_locals.is_some() {
+            // IssetHandler folds captured reads on its post-revert scope. The
+            // reads keep their operand positions; no expression is walked again.
+            let mut verdict = Some(true);
+            let mut available = true;
+            for value in &self.values {
+                match crate::native::isset(value, block_context, artifacts, context.codebase) {
+                    Some(Some(false)) => verdict = Some(false),
+                    Some(None) if verdict != Some(false) => verdict = None,
+                    Some(_) => {},
+                    None => available = false,
+                }
+            }
+            if available {
+                artifacts.set_rc_native_expression_type(self, Rc::new(match verdict {
+                    Some(true) => get_true(),
+                    Some(false) => get_false(),
+                    None => get_bool(),
+                }));
+            }
+        }
 
         Ok(())
     }

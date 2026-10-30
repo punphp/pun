@@ -1,0 +1,6 @@
+{
+  "named": "class ScanBefore {} function scanFunction() {} const SCAN_CONSTANT = 1; readonly class ScanAfter {}",
+  "final": "class ScanBefore {} function scanFunction() {} const SCAN_CONSTANT = 1; final readonly class ScanAfter {}",
+  "anonymous-return": "class ScanBefore {} function scanFunction() { return new readonly class {}; } const SCAN_CONSTANT = 1; class ScanAfter {}",
+  "positive": "class ScanBefore {} function scanFunction() {} const SCAN_CONSTANT = 1; class ScanAfter {}"
+}

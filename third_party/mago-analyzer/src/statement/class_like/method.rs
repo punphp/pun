@@ -72,7 +72,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Method<'arena> {
         };
 
         // Skip duplicate methods; semantics reports the error
-        if method_metadata.span != self.span() {
+        if context.codebase.declaration_span(method_metadata.span) != self.span() {
             return Ok(());
         }
 
@@ -87,7 +87,16 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Method<'arena> {
 
             method_block_context.flags.set_collect_initializations(true);
 
-            analyze_function_like(
+            let track_markers = !context.settings.property_initialization_observations.is_empty();
+            let constructor = lowercase_method_name.as_bytes() == b"__construct";
+            if track_markers && !constructor && !self.is_static() {
+                method_block_context
+                    .variable_state
+                    .property_initializations
+                    .clone_from(&block_context.variable_state.property_initializations);
+            }
+
+            let method_artifacts = analyze_function_like(
                 context,
                 artifacts,
                 &mut method_block_context,
@@ -96,6 +105,23 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Method<'arena> {
                 FunctionLikeBody::Statements(concrete_body.statements.as_slice(), concrete_body.span()),
                 None,
             )?;
+
+            if track_markers && constructor {
+                let mut exits: Vec<_> = method_artifacts.constructor_property_returns.values().collect();
+                if !method_block_context.flags.has_returned() && !method_block_context.variable_state.impossible {
+                    exits.push(&method_block_context.variable_state.property_initializations);
+                }
+                // Serialization can rebuild objects without executing their constructor.
+                let class = class_like_metadata.name.as_bytes();
+                let custom_serialization = [b"__sleep".as_slice(), b"__serialize", b"__unserialize"]
+                    .iter()
+                    .any(|method| context.codebase.method_exists(class, method))
+                    || (context.codebase.is_instance_of(class, b"Serializable")
+                        && context.codebase.method_exists(class, b"unserialize"));
+                if !custom_serialization {
+                    block_context.variable_state.property_initializations = crate::property_initialization::join(exits);
+                }
+            }
 
             let method_key = (class_like_metadata.name, lowercase_method_name);
 

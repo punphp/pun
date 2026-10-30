@@ -19,6 +19,7 @@ pub enum Method<'a> {
         f: &'a FunctionLikeMetadata,
         /// The reflected name and modifiers can differ from a trait's stored declaration.
         name: mago_word::Word,
+        original_name: mago_word::Word,
         visibility: Visibility,
     },
     Builtin {
@@ -47,9 +48,8 @@ impl Method<'_> {
 
     pub fn name(&self) -> String {
         match self {
-            Method::User { f, name, .. } => {
-                let name = if *name == f.name { f.original_name } else { *name };
-                String::from_utf8_lossy(name.as_bytes()).into_owned()
+            Method::User { original_name, .. } => {
+                String::from_utf8_lossy(original_name.as_bytes()).into_owned()
             }
             Method::Builtin { f, .. } => f.name.clone(),
         }
@@ -282,5 +282,7 @@ fn user<'a>(
 ) -> Method<'a> {
     let visibility = c.codebase.get_method_visibility(declaring.name.as_bytes(), name.as_bytes())
         .unwrap_or_else(|| f.method_metadata.as_ref().map_or(Visibility::Public, |m| m.visibility));
-    Method::User { declaring, f, name, visibility }
+    let original_name = c.codebase.get_method_original_name(declaring.name.as_bytes(), name.as_bytes())
+        .unwrap_or(f.original_name);
+    Method::User { declaring, f, name, original_name, visibility }
 }

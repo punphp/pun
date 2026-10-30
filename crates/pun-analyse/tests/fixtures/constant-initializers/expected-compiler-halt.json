@@ -1,0 +1,321 @@
+{
+    "absent": {
+        "rootNodes": [
+            "Stmt_Echo"
+        ],
+        "errors": [
+            {
+                "line": 2,
+                "identifier": "constant.notFound",
+                "message": "Constant __COMPILER_HALT_OFFSET__ not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            }
+        ]
+    },
+    "line-comment": {
+        "rootNodes": [
+            "Stmt_Echo"
+        ],
+        "errors": [
+            {
+                "line": 3,
+                "identifier": "constant.notFound",
+                "message": "Constant __COMPILER_HALT_OFFSET__ not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            }
+        ]
+    },
+    "block-comment": {
+        "rootNodes": [
+            "Stmt_Echo"
+        ],
+        "errors": [
+            {
+                "line": 3,
+                "identifier": "constant.notFound",
+                "message": "Constant __COMPILER_HALT_OFFSET__ not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            }
+        ]
+    },
+    "doc-comment": {
+        "rootNodes": [
+            "Stmt_Echo"
+        ],
+        "errors": [
+            {
+                "line": 3,
+                "identifier": "constant.notFound",
+                "message": "Constant __COMPILER_HALT_OFFSET__ not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            }
+        ]
+    },
+    "single-string": {
+        "rootNodes": [
+            "Stmt_Expression",
+            "Stmt_Echo"
+        ],
+        "errors": [
+            {
+                "line": 3,
+                "identifier": "constant.notFound",
+                "message": "Constant __COMPILER_HALT_OFFSET__ not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            }
+        ]
+    },
+    "double-string": {
+        "rootNodes": [
+            "Stmt_Expression",
+            "Stmt_Echo"
+        ],
+        "errors": [
+            {
+                "line": 3,
+                "identifier": "constant.notFound",
+                "message": "Constant __COMPILER_HALT_OFFSET__ not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            }
+        ]
+    },
+    "nowdoc": {
+        "rootNodes": [
+            "Stmt_Expression",
+            "Stmt_Echo"
+        ],
+        "errors": [
+            {
+                "line": 5,
+                "identifier": "constant.notFound",
+                "message": "Constant __COMPILER_HALT_OFFSET__ not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            }
+        ]
+    },
+    "html": {
+        "rootNodes": [
+            "Stmt_InlineHTML",
+            "Stmt_Echo"
+        ],
+        "errors": [
+            {
+                "line": 3,
+                "identifier": "constant.notFound",
+                "message": "Constant __COMPILER_HALT_OFFSET__ not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            }
+        ]
+    },
+    "top-level": {
+        "rootNodes": [
+            "Stmt_Echo",
+            "Stmt_Echo",
+            "Stmt_Echo",
+            "Stmt_Echo",
+            "Stmt_HaltCompiler"
+        ],
+        "errors": [
+            {
+                "line": 4,
+                "identifier": "constant.notFound",
+                "message": "Constant __compiler_halt_offset__ not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "line": 5,
+                "identifier": "constant.notFound",
+                "message": "Constant Other\\__COMPILER_HALT_OFFSET__ not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            }
+        ]
+    },
+    "uppercase-statement": {
+        "rootNodes": [
+            "Stmt_Echo",
+            "Stmt_HaltCompiler"
+        ],
+        "errors": []
+    },
+    "namespace-implicit": {
+        "rootNodes": [
+            "Stmt_Namespace",
+            "Stmt_HaltCompiler"
+        ],
+        "errors": [
+            {
+                "line": 5,
+                "identifier": "constant.notFound",
+                "message": "Constant HaltImplicit\\__COMPILER_HALT_OFFSET__ not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "line": 6,
+                "identifier": "constant.notFound",
+                "message": "Constant __compiler_halt_offset__ not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            }
+        ]
+    },
+    "namespace-braced-outside": {
+        "rootNodes": [
+            "Stmt_Namespace",
+            "Stmt_HaltCompiler"
+        ],
+        "errors": [
+            {
+                "line": 5,
+                "identifier": "constant.notFound",
+                "message": "Constant HaltBraced\\__COMPILER_HALT_OFFSET__ not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            }
+        ]
+    },
+    "namespace-global-outside": {
+        "rootNodes": [
+            "Stmt_Namespace",
+            "Stmt_HaltCompiler"
+        ],
+        "errors": []
+    },
+    "qualified-call": {
+        "rootNodes": [
+            "Stmt_Echo",
+            "Stmt_Expression"
+        ],
+        "errors": [
+            {
+                "line": 2,
+                "identifier": "constant.notFound",
+                "message": "Constant __COMPILER_HALT_OFFSET__ not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "line": 3,
+                "identifier": "function.notFound",
+                "message": "Function __halt_compiler not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            }
+        ]
+    },
+    "relative-call": {
+        "rootNodes": [
+            "Stmt_Namespace"
+        ],
+        "errors": [
+            {
+                "line": 3,
+                "identifier": "constant.notFound",
+                "message": "Constant __COMPILER_HALT_OFFSET__ not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "line": 4,
+                "identifier": "function.notFound",
+                "message": "Function HaltRelative\\__halt_compiler not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            }
+        ]
+    },
+    "namespace-comment": {
+        "rootNodes": [
+            "Stmt_Namespace"
+        ],
+        "errors": [
+            {
+                "line": 4,
+                "identifier": "constant.notFound",
+                "message": "Constant __COMPILER_HALT_OFFSET__ not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "line": 5,
+                "identifier": "constant.notFound",
+                "message": "Constant __COMPILER_HALT_OFFSET__ not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "line": 6,
+                "identifier": "constant.notFound",
+                "message": "Constant HaltComment\\__COMPILER_HALT_OFFSET__ not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            }
+        ]
+    },
+    "declared-spellings": {
+        "rootNodes": [
+            "Stmt_Namespace"
+        ],
+        "errors": [
+            {
+                "line": 5,
+                "identifier": "constant.notFound",
+                "message": "Constant __COMPILER_HALT_OFFSET__ not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "line": 7,
+                "identifier": "constant.notFound",
+                "message": "Constant __COMPILER_HALT_OFFSET__ not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            }
+        ]
+    },
+    "imported-spellings": {
+        "rootNodes": [
+            "Stmt_Namespace"
+        ],
+        "errors": [
+            {
+                "line": 6,
+                "identifier": "constant.notFound",
+                "message": "Constant __COMPILER_HALT_OFFSET__ not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            }
+        ]
+    },
+    "imported-global": {
+        "rootNodes": [
+            "Stmt_Namespace",
+            "Stmt_HaltCompiler"
+        ],
+        "errors": []
+    },
+    "guarded-absent": {
+        "rootNodes": [
+            "Stmt_If"
+        ],
+        "errors": [
+            {
+                "line": 3,
+                "identifier": "constant.notFound",
+                "message": "Constant __COMPILER_HALT_OFFSET__ not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            }
+        ]
+    }
+}

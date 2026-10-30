@@ -39,3 +39,5 @@ md-5.workspace = true
 
 [dev-dependencies]
 mago-reporting.workspace = true
+mago-codex = { workspace = true, features = ["serde"] }
+mago-extension = "=1.57.0"

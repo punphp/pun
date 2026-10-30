@@ -7,3 +7,4 @@
 target-*/
 /dist/
 /target-bench
+/.amp/portals/*

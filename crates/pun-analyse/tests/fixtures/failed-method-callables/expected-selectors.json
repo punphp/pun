@@ -1,0 +1,53 @@
+{
+    "phar_sha256": "85157dba3d95d77ca603d2b7303aa78a538f9e3b56ccad07dd794c53aa96d1ae",
+    "types": [
+        {
+            "start": 179,
+            "end": 182,
+            "expression": "123",
+            "full": {
+                "kind": "value",
+                "type": "123"
+            },
+            "native": {
+                "kind": "value",
+                "type": "123"
+            }
+        }
+    ],
+    "errors": {
+        "0": [],
+        "5": [],
+        "9": [],
+        "0-bleeding": [
+            [
+                "selectors.php",
+                6,
+                "method.nameNotString",
+                "Method name for SelectorTarget must be a string, but 123 was given.",
+                null,
+                true
+            ]
+        ],
+        "5-bleeding": [
+            [
+                "selectors.php",
+                6,
+                "method.nameNotString",
+                "Method name for SelectorTarget must be a string, but 123 was given.",
+                null,
+                true
+            ]
+        ],
+        "9-bleeding": [
+            [
+                "selectors.php",
+                6,
+                "method.nameNotString",
+                "Method name for SelectorTarget must be a string, but 123 was given.",
+                null,
+                true
+            ]
+        ]
+    }
+}

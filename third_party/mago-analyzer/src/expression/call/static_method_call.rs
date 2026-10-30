@@ -1,5 +1,7 @@
 use mago_allocator::Arena;
 use mago_codex::identifier::function_like::FunctionLikeIdentifier;
+use mago_codex::ttype::get_error;
+use mago_codex::ttype::get_mixed;
 use mago_span::HasSpan;
 use mago_syntax::cst::ClassLikeMemberSelector;
 use mago_syntax::cst::Expression;
@@ -75,6 +77,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for StaticMethodCall<'arena> {
             }
         }
 
+        let reflection_scope = block_context.clone();
         let mut method_resolution =
             resolve_static_method_targets(context, block_context, artifacts, self.class, &self.method, self.span())?;
         let undocumented_template_result =
@@ -106,6 +109,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for StaticMethodCall<'arena> {
 
             let method_target_context = MethodTargetContext {
                 invocation_kind: MethodInvocationKind::Static,
+                requested_name: resolved_method.requested_name,
                 declaring_method_id: Some(resolved_method.method_identifier),
                 class_like_metadata: metadata,
                 class_type: resolved_method.static_class_type,
@@ -155,6 +159,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for StaticMethodCall<'arena> {
             analyze_invocation_targets(
                 context,
                 block_context,
+                &reflection_scope,
                 artifacts,
                 method_resolution.template_result,
                 invocation_targets,
@@ -164,6 +169,8 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for StaticMethodCall<'arena> {
                 method_resolution.encountered_mixed,
                 expression_is_nullsafe(self.class) || method_resolution.encountered_null,
                 class_has_nullsafe_null,
+                false,
+                matches!(&self.method, ClassLikeMemberSelector::Identifier(_)),
             )?;
         }
 
@@ -179,6 +186,19 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for StaticMethodCall<'arena> {
                 MethodInvocationKind::Static,
                 !has_resolved_methods,
             )?;
+        }
+
+        // StaticCallHandler resolves a failed object/class-string method to ErrorType. Invalid class
+        // operands first become ErrorType themselves, whose permissive method reflection returns mixed.
+        if artifacts.get_expression_type(&self.span()).is_none() {
+            let return_type = if method_resolution.has_dynamic_selector
+                || (method_resolution.has_ambiguous_target && method_resolution.has_invalid_target)
+            {
+                get_mixed()
+            } else {
+                get_error()
+            };
+            artifacts.set_resolved_expression_type(&self.span(), return_type);
         }
 
         if context.plugin_registry.has_static_method_call_hooks() {
@@ -325,7 +345,6 @@ mod tests {
         issues = [
             IssueCode::StaticAccessOnInterface,
             IssueCode::StaticAccessOnInterface,
-            IssueCode::MixedArgument,
         ]
     }
 }

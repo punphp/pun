@@ -1,6 +1,7 @@
 use std::rc::Rc;
 
 use foldhash::HashMap;
+use foldhash::HashSet;
 use mago_allocator::Arena;
 use mago_word::Word;
 use mago_word::WordMap;
@@ -40,6 +41,7 @@ type PropertyTypes = Vec<(Word, Rc<TUnion>)>;
 pub mod assertion;
 pub mod block;
 pub mod block_flags;
+pub(crate) mod non_nullability;
 pub mod scope;
 pub mod utils;
 
@@ -60,6 +62,8 @@ where
     pub(super) scope: NamespaceScope,
     pub(super) collector: Collector<'ctx, 'arena, A>,
     pub(super) statement_span: Span,
+    /// CST braces owned by control statements are not PHP-Parser's standalone Block nodes.
+    pub(super) control_body_blocks: HashSet<Span>,
     pub(super) plugin_registry: &'ctx PluginRegistry,
     pub(super) external_analysis_session: Option<&'ctx ExternalAnalysisSession>,
     pub(super) additional_symbol_references: Option<&'ctx SymbolReferences>,
@@ -69,6 +73,12 @@ where
     pub(super) constant_types: HashMap<Span, TUnion>,
     /// PHPStan's speculative closure-return walk must not publish observer events.
     pub(super) raw_callback_gather_depth: u8,
+    pub(crate) variable_flow: crate::variable_flow::State,
+    pub(super) observations: crate::observations::ObservationState<'ctx, 'arena>,
+    pub(super) observation_program: Option<&'arena mago_syntax::cst::Program<'arena>>,
+    pub(super) ensured_non_null_types: Vec<WordMap<TUnion>>,
+    pub(crate) consume_stored_expression_results: bool,
+    pub(crate) called_method_properties: crate::property_initialization::CalledMethods,
 }
 
 impl<'ctx, 'arena, A> Context<'ctx, 'arena, A>
@@ -98,6 +108,7 @@ where
             settings,
             scope: NamespaceScope::default(),
             statement_span,
+            control_body_blocks: HashSet::default(),
             collector,
             plugin_registry,
             external_analysis_session,
@@ -106,6 +117,12 @@ where
             class_initializers: WordMap::default(),
             constant_types: HashMap::default(),
             raw_callback_gather_depth: 0,
+            variable_flow: crate::variable_flow::State::default(),
+            observations: crate::observations::ObservationState::default(),
+            observation_program: None,
+            ensured_non_null_types: Vec::new(),
+            consume_stored_expression_results: false,
+            called_method_properties: crate::property_initialization::CalledMethods::default(),
         }
     }
 
@@ -276,6 +293,36 @@ where
         self.property_types = properties;
         self.class_initializers = initializers;
         result
+    }
+
+    /// A type-pricing world owns its collector and never publishes statement or call events.
+    pub(super) fn fork_for_observation(&self) -> Self {
+        let program = self.observation_program.expect("requested observations retain the program");
+        let mut fork = Self::new(
+            self.arena,
+            self.codebase,
+            self.source_file,
+            self.resolved_names,
+            self.settings,
+            self.statement_span,
+            self.comments,
+            Collector::new(self.arena, self.source_file, program, &[]),
+            self.plugin_registry,
+            self.external_analysis_session,
+            self.additional_symbol_references,
+        );
+        fork.scope = self.scope.clone();
+        fork.type_resolution_context = self.type_resolution_context.clone();
+        fork.control_body_blocks = self.control_body_blocks.clone();
+        fork.property_types = self.property_types.clone();
+        fork.class_initializers = self.class_initializers.clone();
+        fork.constant_types = self.constant_types.clone();
+        fork.ensured_non_null_types = self.ensured_non_null_types.clone();
+        fork.consume_stored_expression_results = self.consume_stored_expression_results;
+        fork.observation_program = self.observation_program;
+        fork.observations.calls = self.observations.calls.clone();
+        fork.observations.pricing = true;
+        fork
     }
 
     pub fn finish(self, artifacts: AnalysisArtifacts, analysis_result: &mut AnalysisResult) {

@@ -83,7 +83,9 @@ fn build(codebase: &CodebaseMetadata, name: &str) -> Option<Class> {
         // a constant whose value is not a literal reads as `mixed`, as in pun-analyse
         constants: (k.constants.values())
             .map(|m| {
-                let value = m.inferred_type.as_ref().and_then(literal);
+                let value = (m.inferred_type.as_ref())
+                    .filter(|t| t.is_single())
+                    .and_then(|t| literal(t.get_single()));
                 (
                     text(m.name.as_bytes()),
                     value.map_or_else(|| "mixed".to_string(), |t| to_phpdoc(&t)),
@@ -104,7 +106,7 @@ fn literal(a: &TAtomic) -> Option<Type> {
         TAtomic::Scalar(TScalar::Float(f)) => f.get_literal_value().map(Type::ConstFloat),
         TAtomic::Scalar(TScalar::String(s)) => s
             .get_known_literal_value()
-            .map(|v| Type::ConstString(text(v))),
+            .map(|v| Type::ConstString(v.to_vec())),
         TAtomic::Scalar(TScalar::Bool(b)) => b.value.map(Type::ConstBool),
         TAtomic::Null => Some(Type::Null),
         _ => None,

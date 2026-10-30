@@ -4,8 +4,7 @@
 //! ones from PHPStan's reflection (data/native-methods.json, written by scripts/export-native-methods.php).
 //! checkPhpDocMethodSignatures (MethodSignatureRule) and checkMissingOverrideMethodAttribute are off below level 3.
 //! ponytail: PHP 8.1 and up only, so the helpers' PHP 7 branches (no contravariance, covariance, tentative return
-//! types or abstract trait methods) are left out; Mago keeps a class's interfaces and traits unordered, so when two
-//! of them declare the method, the first by name wins instead of the first declared.
+//! types or abstract trait methods) are left out; the trait walk still breaks competing declarations by name.
 
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::sync::OnceLock;
@@ -205,6 +204,9 @@ enum Found<'a> {
         declaring: &'a ClassLikeMetadata,
         implementing: Class<'a>,
         f: &'a FunctionLikeMetadata,
+        /// The reflected lookup name and adapted visibility are independent of trait storage identity.
+        name: mago_word::Word,
+        visibility: Visibility,
     },
     Builtin {
         declaring: &'static NativeClass,
@@ -287,6 +289,9 @@ impl<'a> Checker<'a, '_> {
                             declaring,
                             implementing,
                             f,
+                            name: mago_word::word(lower),
+                            visibility: self.codebase.get_method_visibility(k.name.as_bytes(), lower.as_bytes())
+                                .unwrap_or(Visibility::Public),
                         })
                     }
                     builtin => self.native_method(builtin, lower),
@@ -305,7 +310,8 @@ impl<'a> Checker<'a, '_> {
         }
     }
 
-    /// `getImmediateInterfaces()`, by name.
+    /// ClassReflection::getImmediateInterfaces(): exclude parent-provided and transitively inherited interfaces,
+    /// retaining native reflection's declaration order. Built-in entries already export this exact list.
     fn immediate_interfaces(&self, class: Class<'a>) -> Vec<Class<'a>> {
         let names: Vec<String> = match class {
             Class::User(k) => {
@@ -318,6 +324,37 @@ impl<'a> Checker<'a, '_> {
                     .filter(|n| !is_enum || !(n.starts_with("__internal_do_not_use__") || n == "unitenum" || n == "backedenum"))
                     .collect();
                 names.sort();
+                // The populated codex uses a set. Recover only its ordering from the declaration's CST, resolving
+                // imported names in that file rather than sorting either the aliases or resolved names.
+                if names.len() > 1 && let Some(contents) = self.file_contents(k.span.file_id) {
+                    let arena = mago_allocator::LocalArena::new();
+                    let file = mago_database::file::File::ephemeral(
+                        std::borrow::Cow::Borrowed(b"interfaces.php".as_slice()),
+                        std::borrow::Cow::Owned([b"<?php ".as_slice(), &contents[k.span.to_range_usize()], b";"].concat()),
+                    );
+                    let program = mago_syntax::parser::parse_file(&arena, &file);
+                    let scope = super::doc::scopes_of(k.span.file_id, &contents).at(k.span.start.offset);
+                    let mut pending = vec![Node::Program(program)];
+                    let mut order = Vec::new();
+                    while let Some(node) = pending.pop() {
+                        let types = match node {
+                            Node::Class(k) => k.implements.as_ref().map(|i| &i.types),
+                            Node::Interface(k) => k.extends.as_ref().map(|i| &i.types),
+                            Node::Enum(k) => k.implements.as_ref().map(|i| &i.types),
+                            Node::AnonymousClass(k) => k.implements.as_ref().map(|i| &i.types),
+                            _ => {
+                                pending.extend(node.children().into_iter().rev());
+                                continue;
+                            }
+                        };
+                        for id in types.into_iter().flatten() {
+                            let resolved = scope.resolve(mago_names::kind::NameKind::Default, id.value()).0;
+                            order.push(String::from_utf8_lossy(&resolved).to_ascii_lowercase());
+                        }
+                        break;
+                    }
+                    names.sort_by_key(|n| order.iter().position(|written| written == n).unwrap_or(usize::MAX));
+                }
                 if is_enum {
                     names.push("UnitEnum".to_string());
                     names.extend(k.enum_type.is_some().then(|| "BackedEnum".to_string()));
@@ -326,7 +363,35 @@ impl<'a> Checker<'a, '_> {
             }
             Class::Builtin(b) => b.interfaces.clone(),
         };
-        names.iter().filter_map(|n| self.reflected(n)).collect()
+        let interfaces: Vec<_> = names.iter().filter_map(|n| self.reflected(n)).collect();
+        let mut indirect = self.parent_class(class).map(|p| self.native_interface_names(p)).unwrap_or_default();
+        for interface in &interfaces {
+            indirect.extend(self.native_interface_names(*interface));
+        }
+        interfaces.into_iter().filter(|i| !indirect.contains(&class_display(self, *i).to_ascii_lowercase())).collect()
+    }
+
+    /// Native reflection's complete interface-name set. User metadata already includes transitive ancestors;
+    /// the exported built-in data instead lists immediate interfaces, so expand just those native edges.
+    fn native_interface_names(&self, class: Class<'a>) -> HashSet<String> {
+        let mut names = HashSet::new();
+        let mut pending = vec![class];
+        let mut seen = HashSet::new();
+        while let Some(class) = pending.pop() {
+            match class {
+                Class::User(k) => names.extend(k.all_parent_interfaces.iter().map(|i| i.to_string().to_ascii_lowercase())),
+                Class::Builtin(b) => {
+                    if seen.insert(&b.name) {
+                        for name in &b.interfaces {
+                            names.insert(name.to_ascii_lowercase());
+                            pending.extend(self.reflected(name));
+                        }
+                        pending.extend(self.parent_class(class));
+                    }
+                }
+            }
+        }
+        names
     }
 
     pub(super) fn parent_class(&self, class: Class<'a>) -> Option<Class<'a>> {
@@ -378,7 +443,7 @@ impl<'a> Checker<'a, '_> {
 
     fn found_visibility(&self, found: Found<'a>) -> Visibility {
         match found {
-            Found::User { f, .. } => f.method_metadata.as_ref().map_or(Visibility::Public, |m| m.visibility),
+            Found::User { visibility, .. } => visibility,
             Found::Builtin { m, .. } => m.visibility,
         }
     }
@@ -392,7 +457,7 @@ impl<'a> Checker<'a, '_> {
             let map = |t: &Type| -> Type {
                 fn go(t: &Type, name: &str, class: &str) -> Type {
                     match t {
-                        Type::Object(n, args) if n.eq_ignore_ascii_case(name) => Type::Object(class.to_string(), args.clone()),
+                        Type::Object(n, args, exact) if n.eq_ignore_ascii_case(name) => Type::Object(class.to_string(), args.clone(), *exact),
                         Type::Static(n, args) if n.eq_ignore_ascii_case(name) => Type::Static(class.to_string(), args.clone()),
                         _ => t.traverse(&|t| go(t, name, class)),
                     }
@@ -460,7 +525,7 @@ impl<'a> Checker<'a, '_> {
                 ret: self.with_ancestor_args(&m.ret, k),
                 will_change: m.will_change,
             },
-            Found::User { declaring, implementing, f } => {
+            Found::User { declaring, implementing, f, name, visibility } => {
                 let ty = |t: &Type| self.localize(t, declaring, k);
                 let meta = f.method_metadata.as_ref();
                 let final_by_keyword = meta.is_some_and(|m| m.is_final)
@@ -477,11 +542,13 @@ impl<'a> Checker<'a, '_> {
                 let owner = if declaring.kind.is_trait() {
                     match implementing { Class::User(k) => k, Class::Builtin(_) => declaring }
                 } else { declaring };
+                let reflected_name = self.codebase.get_method_original_name(owner.name.as_bytes(), name.as_bytes())
+                    .unwrap_or(f.original_name);
                 Facts {
                     declaring: declared::original_name(owner),
-                    accepts_named_arguments: super::named_argument::accepts(self, owner, f),
-                    name: String::from_utf8_lossy(f.original_name.as_bytes()).into_owned(),
-                    visibility: meta.map_or(Visibility::Public, |m| m.visibility),
+                    accepts_named_arguments: declared::reflected_accepts_named(self, owner, &name.to_string()),
+                    name: String::from_utf8_lossy(reflected_name.as_bytes()).into_owned(),
+                    visibility,
                     is_static: meta.is_some_and(|m| m.is_static),
                     is_abstract: self.method_abstract(declaring, f),
                     final_by_keyword,
@@ -520,6 +587,7 @@ impl<'a> Checker<'a, '_> {
     /// class `k` shows it: with the template types `k`'s ancestry gives it.
     fn declaring_display(&self, k: &ClassLikeMetadata, found: Found<'a>) -> String {
         let name = match found {
+            Found::User { declaring, implementing, .. } if declaring.kind.is_trait() => class_display(self, implementing),
             Found::User { declaring, .. } => self.display(declaring),
             Found::Builtin { declaring, .. } => declaring.name.clone(),
         };
@@ -611,23 +679,45 @@ impl<'a> Checker<'a, '_> {
         out
     }
 
-    /// `getInterfaces()`: every interface the class implements.
+    /// ClassReflection::getInterfaces(): own immediate interfaces, parents' immediate interfaces and their
+    /// ancestors, then own interfaces' ancestors. Replacing an existing associative-array key keeps its position.
     pub(super) fn all_interfaces(&self, class: Class<'a>) -> Vec<Class<'a>> {
-        let mut out = Vec::new();
-        let mut pending = vec![class];
-        // a circular hierarchy (which PHP refuses) ends after ANCESTRY classes
+        let immediate = self.immediate_interfaces(class);
+        let mut out = immediate.clone();
+        let mut seen: HashSet<_> = out.iter().map(|i| class_display(self, *i)).collect();
+        for parent in std::iter::successors(self.parent_class(class), |p| self.parent_class(*p)).take(ANCESTRY) {
+            for interface in self.immediate_interfaces(parent) {
+                if seen.insert(class_display(self, interface)) {
+                    out.push(interface);
+                }
+                self.collect_interfaces(interface, &mut out, &mut seen);
+            }
+        }
+        for interface in immediate {
+            self.collect_interfaces(interface, &mut out, &mut seen);
+        }
+        out
+    }
+
+    /// ClassReflection::collectInterfaces(), including its stack order and per-call visited set.
+    fn collect_interfaces(&self, interface: Class<'a>, out: &mut Vec<Class<'a>>, seen: &mut HashSet<String>) {
+        let mut pending = vec![interface];
+        let mut collected = HashSet::new();
         let mut steps = 0;
         while let Some(c) = pending.pop()
             && steps <= ANCESTRY * ANCESTRY
         {
             steps += 1;
             for i in self.immediate_interfaces(c) {
-                pending.push(i);
-                out.push(i);
+                let name = class_display(self, i);
+                if collected.insert(name.clone()) {
+                    if seen.insert(name) {
+                        out.push(i);
+                    }
+                    pending.push(i);
+                }
             }
-            pending.extend(self.parent_class(c));
         }
-        out
     }
 }
 
@@ -835,7 +925,7 @@ fn analysed(c: &Checker, m: &Method, name: &str, k: &ClassLikeMetadata) -> Facts
     // transformStaticType(): `static` is the class's object type in a final class
     fn static_to_object(t: &Type) -> Type {
         match t {
-            Type::Static(n, args) => Type::Object(n.clone(), args.clone()),
+            Type::Static(n, args) => Type::Object(n.clone(), args.clone(), false),
             _ => t.traverse(&static_to_object),
         }
     }
@@ -886,13 +976,18 @@ pub fn method<'arena>(c: &mut Checker<'_, 'arena>, m: &Method<'arena>, name: &st
     let k = c.class_scope().expect("a method is walked inside its class-like");
     let mut collected = Vec::new();
     let messages = declared::with_classes(c, || {
-        let mut out = overriding_method(c, m, name, k, &mut collected);
-        // OverridingMethodRule::addErrors(): MethodSignatureRule (checkPhpDocMethodSignatures, level 3) when the
-        // rule itself found nothing
-        if out.is_empty() && c.level >= 3 && c.method_purity_override {
-            out = purity_override(c, m, name, k);
+        let mut out = Vec::new();
+        if c.method_rules.overriding_method {
+            out = overriding_method(c, m, name, k, &mut collected);
+            // OverridingMethodRule::addErrors(): MethodSignatureRule (checkPhpDocMethodSignatures, level 3) when the
+            // rule itself found nothing
+            if out.is_empty() && c.level >= 3 && c.method_purity_override {
+                out = purity_override(c, m, name, k);
+            }
         }
-        out.extend(consistent_constructor(c, m, name, k, &mut collected));
+        if c.method_rules.consistent_constructor {
+            out.extend(consistent_constructor(c, m, name, k, &mut collected));
+        }
         out
     });
     for record in collected {
@@ -1064,7 +1159,7 @@ fn overriding_method<'a>(c: &Checker<'a, '_>, m: &Method, name: &str, k: &'a Cla
 /// MethodSignatureRule's purity checks (`featureToggles.reportMethodPurityOverride`) against
 /// ParentMethodHelper::collectParentMethods(): the parent class's method, every interface's, and the abstract
 /// methods the class's traits (and theirs, and its parents') declare. ponytail: the rule's return and parameter type
-/// checks are not ported, and a built-in parent's purity (the signature map's `hasSideEffects`) is not consulted.
+/// checks are not ported.
 fn purity_override<'a>(c: &Checker<'a, '_>, m: &Method, name: &str, k: &'a ClassLikeMetadata) -> Vec<Message> {
     let lower = name.to_ascii_lowercase();
     // ponytail: `reportStaticMethodSignatures` stays at its default, off
@@ -1087,17 +1182,34 @@ fn purity_override<'a>(c: &Checker<'a, '_>, m: &Method, name: &str, k: &'a Class
         if let Some(f) = c.codebase.get_method(t.name.as_bytes(), lower.as_bytes())
             && f.method_metadata.as_ref().is_some_and(|mm| mm.is_abstract)
         {
-            parents.push(Found::User { declaring: t, implementing: Class::User(t), f });
+            parents.push(Found::User {
+                declaring: t,
+                implementing: Class::User(t),
+                f,
+                name: f.name,
+                visibility: f.method_metadata.as_ref().map_or(Visibility::Public, |m| m.visibility),
+            });
         }
     }
     let class = c.display(k);
     parents
         .into_iter()
         .filter_map(|found| {
-            let Found::User { declaring, .. } = found else {
-                return None;
+            let (pure, unless_callable, unless_passed) = match found {
+                Found::User { declaring, .. } => declared::method_purity(c, declaring, lower.as_bytes()),
+                Found::Builtin { declaring, .. } => {
+                    // NativeMethodReflection::isPure() negates hasSideEffects(); the export already includes
+                    // its non-constructor void override. Native methods have neither conditional-purity tag.
+                    let pure = symbols::class(&declaring.name)
+                        .and_then(|class| class.methods.get(&lower))
+                        .and_then(|method| match method.side_effects.as_str() {
+                            "No" => Some(true),
+                            "Yes" => Some(false),
+                            _ => None,
+                        });
+                    (pure, false, false)
+                }
             };
-            let (pure, unless_callable, unless_passed) = declared::method_purity(c, declaring, lower.as_bytes());
             let parent = format!("{}::{}()", c.declaring_display(k, found), c.facts(found, k).name);
             let (id, message) = if pure == Some(true) {
                 ("method.impure", format!("Impure method {class}::{name}() overrides pure method {parent}."))
@@ -1180,10 +1292,7 @@ pub fn inherited_case(c: &mut Checker, m: &Method, name: &str) {
             let Some(found) = c.native_method(ancestor, &lower) else {
                 continue;
             };
-            let found_name = match found {
-                Found::User { f, .. } => String::from_utf8_lossy(f.original_name.as_bytes()).into_owned(),
-                Found::Builtin { m, .. } => m.name.clone(),
-            };
+            let found_name = c.facts(found, k).name;
             if found_name != name {
                 messages.push(format!(
                     "Method {}::{name}() does not match {kind} method name: {}::{found_name}().",

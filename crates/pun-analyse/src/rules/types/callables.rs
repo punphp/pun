@@ -99,7 +99,7 @@ fn of_signature(c: &Checker, s: &Signature, source: Span) -> Acceptor {
     }
 }
 
-/// `InaccessibleMethod`: no parameters, variadic.
+/// `TrivialParametersAcceptor` (also used for inaccessible methods): no parameters, variadic.
 fn inaccessible() -> Acceptor {
     Acceptor {
         optional: vec![],
@@ -133,20 +133,37 @@ fn acceptors(c: &Checker, t: &Type, source: Span, inaccessible: &mut Option<Stri
     };
     match t {
         Type::Closure(s) | Type::Callable(Some(s)) => Some(vec![of_signature(c, s, source)]),
-        Type::ConstString(s) => match s.split_once("::") {
+        Type::Callable(None) => Some(vec![self::inaccessible()]),
+        Type::Object(name, _, _) if name.eq_ignore_ascii_case("Closure") => {
+            Some(vec![self::inaccessible()])
+        }
+        Type::Intersection(parts) => {
+            let variants = parts
+                .iter()
+                .filter(|part| declared::with_classes(c, || part.is_callable().yes()))
+                .map(|part| acceptors(c, part, source, inaccessible))
+                .collect::<Option<Vec<_>>>()?;
+            variants.into_iter().reduce(|combined, next| {
+                combined
+                    .iter()
+                    .flat_map(|left| next.iter().map(|right| params::combine(&[left, right])))
+                    .collect()
+            })
+        }
+        Type::ConstString(s) => match std::str::from_utf8(s).ok()?.split_once("::") {
             Some((class, name)) => method(class, name, inaccessible),
-            None => c.function(s.as_bytes()).map(|(_, v)| v.all),
+            None => c.function(s).map(|(_, v)| v.all),
         },
         Type::ConstArray(a) if a.values.len() == 2 => {
             let class = match &a.values[0] {
-                Type::ConstString(s) => s.clone(),
-                Type::Object(n, _) | Type::Static(n, _) | Type::This(n) => n.clone(),
+                Type::ConstString(s) => String::from_utf8_lossy(s).into_owned(),
+                Type::Object(n, _, _) | Type::Static(n, _) | Type::This(n) => n.clone(),
                 _ => return None,
             };
             let Type::ConstString(name) = &a.values[1] else { return None };
-            method(&class, name, inaccessible)
+            method(&class, &String::from_utf8_lossy(name), inaccessible)
         }
-        Type::Object(n, _) | Type::Static(n, _) | Type::This(n) => method(n, "__invoke", inaccessible),
+        Type::Object(n, _, _) | Type::Static(n, _) | Type::This(n) => method(n, "__invoke", inaccessible),
         Type::Union(ts) => ts.iter().map(|t| acceptors(c, t, source, inaccessible)).collect::<Option<Vec<Vec<_>>>>().map(|v| v.concat()),
         _ => None,
     }
@@ -208,8 +225,7 @@ fn invoke(c: &mut Checker, callee: &Expression, counts: &params::Counts, at: Spa
     let Some(t) = found.ty else {
         return;
     };
-    // (a `mixed` left by findTypeToCheck() is a StrictMixedType, never callable)
-    let callable = if matches!(t, Type::Mixed { .. }) { pun_phpstan::types::Tri::No } else { declared::with_classes(c, || t.is_callable()) };
+    let callable = declared::with_classes(c, || t.is_callable());
     let value = declared::with_classes(c, || t.describe(Level::Value));
     if callable.no() || c.level >= 7 && callable.maybe() {
         let not = if callable.no() { "it's not" } else { "it might not be" };
@@ -244,7 +260,7 @@ fn check(
     let mut acceptor = params::select(c, Variants { all, named: None }, counts);
     acceptor.accepts_named_arguments = accepts_named;
     let subject = described[..1].to_ascii_uppercase() + &described[1..];
-    let call = params::Call { kind, subject: &subject, void_message: Some(format!("Result of {described} (void) is used.")) };
+    let call = params::Call { kind, subject: &subject, scope: Some(at), void_message: Some(format!("Result of {described} (void) is used.")) };
     params::check(c, &acceptor, counts, at, call, first_level);
 }
 

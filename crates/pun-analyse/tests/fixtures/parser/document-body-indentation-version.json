@@ -1,0 +1,1 @@
+"<?php\n$x = <<<TXT\n short\n  TXT;\n$y = <<<'TXT'\n\twrong\n  TXT;\n"

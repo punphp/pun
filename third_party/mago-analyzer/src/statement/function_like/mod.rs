@@ -12,6 +12,7 @@ use mago_word::word;
 use mago_codex::context::ScopeContext;
 use mago_codex::identifier::function_like::FunctionLikeIdentifier;
 use mago_codex::metadata::class_like::ClassLikeMetadata;
+use mago_codex::metadata::function_like::FunctionLikeKind;
 use mago_codex::metadata::function_like::FunctionLikeMetadata;
 use mago_codex::metadata::parameter::FunctionLikeParameterMetadata;
 use mago_codex::metadata::ttype::TypeMetadata;
@@ -41,7 +42,9 @@ use mago_codex::ttype::get_keyed_array;
 use mago_codex::ttype::get_list;
 use mago_codex::ttype::get_mixed;
 use mago_codex::ttype::get_never;
+use mago_codex::ttype::get_non_accepting_never;
 use mago_codex::ttype::get_void;
+use mago_codex::ttype::intersect_union_types;
 use mago_codex::ttype::union::TUnion;
 use mago_codex::ttype::wrap_atomic;
 use mago_php_version::feature::Feature;
@@ -162,7 +165,7 @@ where
             if let Some(inferred_return_type) = inferred_return_type {
                 signature.return_type = Some(Arc::new(inferred_return_type));
             } else if inner_has_returned {
-                signature.return_type = Some(Arc::new(get_never()));
+                signature.return_type = Some(Arc::new(get_non_accepting_never()));
             } else {
                 signature.return_type = Some(Arc::new(get_void()));
             }
@@ -252,7 +255,17 @@ where
     }
 
     if context.settings.track_native_types && context.external_analysis_session.is_none() {
-        block_context.native_locals = crate::native::parameter_types(function_like_metadata);
+        let parameters = crate::native::parameter_types(function_like_metadata, context.codebase);
+        block_context.native_locals = if matches!(function_like_metadata.kind,
+            FunctionLikeKind::Closure | FunctionLikeKind::ArrowFunction)
+        {
+            block_context.native_locals.take().zip(parameters).map(|(mut captures, parameters)| {
+                captures.extend(parameters);
+                captures
+            })
+        } else {
+            parameters
+        };
     }
 
     add_parameter_types_to_context(
@@ -265,6 +278,7 @@ where
     )?;
 
     if !block_context.scope.is_static()
+        && !block_context.locals.contains_key(&word("$this"))
         && let Some(class_like_metadata) = block_context.scope.get_class_like()
     {
         block_context.locals.insert(
@@ -275,6 +289,9 @@ where
                 Some(function_like_metadata),
             )))),
         );
+        if let Some(native) = &mut block_context.native_locals {
+            native.insert(Word::from("$this"), block_context.locals[&Word::from("$this")].clone());
+        }
     }
 
     if let FunctionLikeBody::Statements(statements, _) = body {
@@ -374,10 +391,19 @@ where
     let expression_types = std::mem::take(&mut artifacts.expression_types);
     if parent_artifacts.should_retain_completed_expression_types() {
         parent_artifacts.extend_expression_types(expression_types);
+        parent_artifacts.transfer_expression_results(&mut artifacts);
         parent_artifacts.transfer_native_expression_types(&mut artifacts);
+        parent_artifacts.transfer_call_terminations(&mut artifacts);
     }
+    parent_artifacts.nullsafe_method_receiver_types.extend(std::mem::take(&mut artifacts.nullsafe_method_receiver_types));
     parent_artifacts.variable_definedness.extend(std::mem::take(&mut artifacts.variable_definedness));
     parent_artifacts.resolved_method_calls.append(&mut artifacts.resolved_method_calls);
+    for (span, observations) in std::mem::take(&mut artifacts.property_initialization_observations) {
+        let retained = parent_artifacts.property_initialization_observations.entry(span).or_default();
+        for (property, certainty) in observations {
+            retained.entry(property).and_modify(|previous| *previous = previous.join(certainty)).or_insert(certainty);
+        }
+    }
     if let Some(editor) = &mut parent_artifacts.editor
         && let Some(child) = artifacts.editor.take()
     {
@@ -630,7 +656,19 @@ where
             final_parameter_type
         };
 
+        // Arrow parameters shadow captured guards and consequences, just like assignVariable.
+        block_context.invalidate_variable_certainty(parameter_variable_str);
         block_context.locals.insert(parameter_variable_str, Rc::new(final_parameter_type));
+
+        if !context.settings.property_initialization_observations.is_empty()
+            && parameter_node.is_promoted_property()
+            && function_like_metadata.method_metadata.as_ref().is_some_and(|method| method.is_constructor)
+        {
+            block_context.variable_state.property_initializations.insert(
+                word(&parameter_node.variable.name[1..]),
+                crate::property_initialization::PropertyInitializationCertainty::Yes,
+            );
+        }
 
         if parameter_node.is_promoted_property()
             && let Some(hook_list) = &parameter_node.hooks
@@ -638,6 +676,38 @@ where
             let property_name = word(parameter_node.variable.name);
             for hook in &hook_list.hooks {
                 analyze_property_hook(hook, property_name, context, block_context, artifacts)?;
+            }
+        }
+    }
+
+    // MutatingScope::enterFunctionLike prepares relationships from effective formal types,
+    // before variadic wrapping, independently of the ordinary union and native holders.
+    if matches!(function_like_metadata.kind, FunctionLikeKind::Function | FunctionLikeKind::Method) {
+        let parameter_types: HashMap<_, _> = function_like_metadata.parameters.iter().map(|parameter| {
+            let ty = parameter.get_type_metadata().map_or_else(get_mixed, |metadata| {
+                expand_type_union(context, block_context, function_like_metadata, &metadata.type_union, true)
+            });
+            (parameter.name.0, ty)
+        }).collect();
+        for parameter in &function_like_metadata.parameters {
+            let ty = &parameter_types[&parameter.name.0];
+            if let [TAtomic::Conditional(conditional)] = ty.types.as_ref()
+                && let [TAtomic::Variable(guard)] = conditional.subject.types.as_ref()
+                && let Some(guard_type) = parameter_types.get(guard)
+            {
+                let guard_type = expand_type_union(context, block_context, function_like_metadata, guard_type, false);
+                let (if_type, else_type) = if conditional.negated {
+                    (&conditional.otherwise, &conditional.then)
+                } else {
+                    (&conditional.then, &conditional.otherwise)
+                };
+                let positive = intersect_union_types(&guard_type, &conditional.target, context.codebase)
+                    .unwrap_or_else(get_never);
+                let negative = guard_type.difference(&conditional.target, context.codebase);
+                let if_type = expand_type_union(context, block_context, function_like_metadata, if_type, false);
+                let else_type = expand_type_union(context, block_context, function_like_metadata, else_type, false);
+                block_context.add_parameter_condition(*guard, positive, parameter.name.0, if_type);
+                block_context.add_parameter_condition(*guard, negative, parameter.name.0, else_type);
             }
         }
     }
@@ -671,7 +741,17 @@ where
 {
     add_symbol_references(&type_metadata.type_union, &block_context.scope, artifacts);
 
-    let mut signature_union = type_metadata.type_union.clone();
+    expand_type_union(context, block_context, function_like_metadata, &type_metadata.type_union, false)
+}
+
+fn expand_type_union<A: Arena>(
+    context: &Context<'_, '_, A>,
+    block_context: &BlockContext<'_>,
+    function_like_metadata: &FunctionLikeMetadata,
+    union: &TUnion,
+    preserve_parameter_dependencies: bool,
+) -> TUnion {
+    let mut signature_union = union.clone();
 
     let calling_class = block_context.scope.get_class_like_name();
 
@@ -690,6 +770,7 @@ where
             } else {
                 false
             },
+            preserve_parameter_dependencies,
             ..Default::default()
         },
     );
@@ -909,7 +990,9 @@ where
         variances: None,
         is_static: true,
         is_this: true,
+        is_exact: false,
         intersection_types: if intersections.is_empty() { None } else { Some(Box::new(intersections)) },
+        subtracted_type: None,
         remapped_parameters: false,
     })
 }

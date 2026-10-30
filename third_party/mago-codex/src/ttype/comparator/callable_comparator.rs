@@ -3,6 +3,8 @@ use std::borrow::Cow;
 use crate::metadata::CodebaseMetadata;
 use crate::ttype::atomic::TAtomic;
 use crate::ttype::atomic::callable::TCallable;
+use crate::ttype::atomic::callable::TCallableSignature;
+use crate::ttype::atomic::object::TObject;
 use crate::ttype::cast::can_atomic_be_callable;
 use crate::ttype::cast::cast_atomic_to_callable;
 use crate::ttype::comparator::ComparisonResult;
@@ -18,6 +20,24 @@ pub(crate) fn is_contained_by(
     let TAtomic::Callable(TCallable::Signature(container_signature)) = container_type_part else {
         return false;
     };
+
+    if let TAtomic::Object(TObject::Named(object)) = input_type_part
+        && object.name.as_bytes().eq_ignore_ascii_case(b"Closure")
+        && object.intersection_types.is_none()
+    {
+        // ClosureType::accepts delegates opaque Closure objects to ObjectType.
+        // CallableType uses their trivial acceptor, whose purity is only maybe.
+        // Do not replace that missing signature with an incompatible mixed one.
+        let accepted = container_signature.is_closure() || !container_signature.is_pure();
+        // isSuperTypeOf is stricter: a missing signature cannot prove a typed
+        // callable constraint. TypeCombinator only simplifies definite subtypes.
+        let definite = !container_signature.is_closure()
+            && (container_signature == &TCallableSignature::mixed(false)
+                || (container_signature.get_parameters().is_empty()
+                    && container_signature.get_return_type().is_none_or(|ty| ty.is_vanilla_mixed())));
+        atomic_comparison_result.is_only_accepted |= accepted && !definite;
+        return accepted;
+    }
 
     let Some(input_callable) = cast_atomic_to_callable(input_type_part, codebase, None) else {
         if can_atomic_be_callable(input_type_part, codebase) {
@@ -102,6 +122,7 @@ pub(crate) fn is_contained_by(
             return false;
         }
 
+        atomic_comparison_result.is_only_accepted |= parameter_comparison_result.is_only_accepted;
         atomic_comparison_result
             .type_variable_lower_bounds
             .extend(parameter_comparison_result.type_variable_upper_bounds);

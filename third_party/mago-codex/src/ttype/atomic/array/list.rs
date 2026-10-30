@@ -7,6 +7,7 @@ use mago_word::word;
 
 use crate::ttype::TType;
 use crate::ttype::TypeRef;
+use crate::ttype::atomic::TAtomic;
 use crate::ttype::get_never;
 use crate::ttype::union::TUnion;
 
@@ -24,6 +25,9 @@ pub struct TList {
     pub known_count: Option<usize>,
     /// Flag indicating if the list is known to contain at least one element.
     pub non_empty: bool,
+    /// A value-owned callable intersection, independent of its array/offset projection.
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub callable: Option<Arc<TAtomic>>,
 }
 
 impl PartialEq for TList {
@@ -33,7 +37,7 @@ impl PartialEq for TList {
             return true;
         }
 
-        if self.non_empty != other.non_empty {
+        if self.non_empty != other.non_empty || self.callable != other.callable {
             return false;
         }
 
@@ -59,7 +63,7 @@ impl TList {
     #[inline]
     #[must_use]
     pub fn new(element_type: Arc<TUnion>) -> Self {
-        Self { element_type, known_elements: None, known_count: None, non_empty: false }
+        Self { element_type, known_elements: None, known_count: None, non_empty: false, callable: None }
     }
 
     /// Creates new metadata for a list type with specified known elements.
@@ -81,13 +85,14 @@ impl TList {
             },
             non_empty: known_elements.values().any(|(optional, _)| !*optional),
             known_elements: Some(Arc::new(known_elements)),
+            callable: None,
         }
     }
 
     #[inline]
     #[must_use]
     pub fn new_non_empty(element_type: Arc<TUnion>) -> Self {
-        Self { element_type, known_elements: None, known_count: None, non_empty: true }
+        Self { element_type, known_elements: None, known_count: None, non_empty: true, callable: None }
     }
 
     /// Returns a reference to the general element type (`TUnion`).
@@ -113,6 +118,7 @@ impl TList {
             known_elements: self.known_elements.clone(),
             known_count: self.known_count,
             non_empty: true,
+            callable: self.callable.clone(),
         }
     }
 

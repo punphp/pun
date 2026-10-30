@@ -1,7 +1,7 @@
 //! TemplateTypeTrait::equals() at PHPStan 2.3.1 cb3b7e99 ignores the inference strategy, not template identity.
 
 use pun_phpstan::resolve::resolve_str;
-use pun_phpstan::types::{Accessory, Level, Template, Type, intersect, is_super_type_of};
+use pun_phpstan::types::{Accessory, Level, Template, Type, intersect, is_super_type_of, union};
 use serde_json::Value;
 
 fn template(scope: &str, name: &str, bound: &str, default: Option<&str>, argument: bool) -> Type {
@@ -30,7 +30,7 @@ fn template_identity_ignores_strategy_but_keeps_scope_name_bound_and_default() {
         assert_eq!(base == other, row["equals"].as_bool().unwrap(), "{row}");
         if row["equals"].as_bool().unwrap() {
             // A generic's invariant arguments must not reject the same template after toArgument().
-            let object = |t| Type::Object("ArrayObject".into(), vec![Type::Int, t]);
+            let object = |t| Type::Object("ArrayObject".into(), vec![Type::Int, t], false);
             assert_eq!(
                 format!(
                     "{:?}",
@@ -112,6 +112,48 @@ fn array_intersections_rebuild_only_when_the_bound_requires_it() {
         if descriptions != want.as_slice()
             || matches!(result, Type::Template(_)) != row["template"].as_bool().unwrap()
         {
+            failures.push(format!("{row}\nactual: {descriptions:?}; {result:?}"));
+        }
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n\n"));
+}
+
+#[test]
+fn array_unions_preserve_nonplain_empty_template_alternatives() {
+    let rows: Value =
+        serde_json::from_str(include_str!("fixtures/template-array-intersections.json")).unwrap();
+    let mut failures = Vec::new();
+    for row in rows
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|row| row["union"].is_object())
+    {
+        let empty = intersect(vec![
+            template(
+                "function fixture()",
+                "T",
+                row["bound"].as_str().unwrap(),
+                Some("array{}"),
+                row["argument"].as_bool().unwrap(),
+            ),
+            resolve_str("array{}", None),
+        ]);
+        let other = resolve_str(row["union"]["with"].as_str().unwrap(), None);
+        let result = if row["union"]["reverse"].as_bool().unwrap() {
+            union(vec![other, empty])
+        } else {
+            union(vec![empty, other])
+        };
+        let descriptions =
+            [Level::Precise, Level::Value, Level::TypeOnly].map(|level| result.describe(level));
+        let want: Vec<_> = row["union"]["descriptions"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|description| description.as_str().unwrap())
+            .collect();
+        if descriptions != want.as_slice() {
             failures.push(format!("{row}\nactual: {descriptions:?}; {result:?}"));
         }
     }

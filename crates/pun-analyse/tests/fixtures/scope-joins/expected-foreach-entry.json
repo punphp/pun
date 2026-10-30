@@ -1,0 +1,330 @@
+{
+    "default": [
+        [
+            "foreach-entry.php",
+            12,
+            "phpstan.dumpType",
+            "Dumped type: T (function ForeachEntryJoins\\templateIterator(), argument)",
+            null,
+            false
+        ],
+        [
+            "foreach-entry.php",
+            22,
+            "phpstan.dumpType",
+            "Dumped type: T of stdClass (function ForeachEntryJoins\\objectTemplateIterator(), argument)",
+            null,
+            false
+        ],
+        [
+            "foreach-entry.php",
+            28,
+            "phpstan.dumpType",
+            "Dumped type: mixed",
+            null,
+            false
+        ],
+        [
+            "foreach-entry.php",
+            35,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "foreach-entry.php",
+            38,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "foreach-entry.php",
+            39,
+            "variable.undefined",
+            "Call to function compact() contains possibly undefined variable $value.",
+            null,
+            true
+        ],
+        [
+            "foreach-entry.php",
+            43,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "foreach-entry.php",
+            44,
+            "variable.undefined",
+            "Call to function compact() contains undefined variable $value.",
+            null,
+            true
+        ],
+        [
+            "foreach-entry.php",
+            51,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "foreach-entry.php",
+            57,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "foreach-entry.php",
+            58,
+            "variable.undefined",
+            "Call to function compact() contains possibly undefined variable $value.",
+            null,
+            true
+        ]
+    ],
+    "quiet": [
+        [
+            "foreach-entry.php",
+            12,
+            "phpstan.dumpType",
+            "Dumped type: T (function ForeachEntryJoins\\templateIterator(), argument)",
+            null,
+            false
+        ],
+        [
+            "foreach-entry.php",
+            22,
+            "phpstan.dumpType",
+            "Dumped type: T of stdClass (function ForeachEntryJoins\\objectTemplateIterator(), argument)",
+            null,
+            false
+        ],
+        [
+            "foreach-entry.php",
+            28,
+            "phpstan.dumpType",
+            "Dumped type: mixed",
+            null,
+            false
+        ],
+        [
+            "foreach-entry.php",
+            35,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "foreach-entry.php",
+            43,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "foreach-entry.php",
+            44,
+            "variable.undefined",
+            "Call to function compact() contains undefined variable $value.",
+            null,
+            true
+        ],
+        [
+            "foreach-entry.php",
+            51,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ]
+    ],
+    "foreach-off": [
+        [
+            "foreach-entry.php",
+            12,
+            "phpstan.dumpType",
+            "Dumped type: T (function ForeachEntryJoins\\templateIterator(), argument)",
+            null,
+            false
+        ],
+        [
+            "foreach-entry.php",
+            22,
+            "phpstan.dumpType",
+            "Dumped type: T of stdClass (function ForeachEntryJoins\\objectTemplateIterator(), argument)",
+            null,
+            false
+        ],
+        [
+            "foreach-entry.php",
+            28,
+            "phpstan.dumpType",
+            "Dumped type: mixed",
+            null,
+            false
+        ],
+        [
+            "foreach-entry.php",
+            35,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "foreach-entry.php",
+            38,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "foreach-entry.php",
+            39,
+            "variable.undefined",
+            "Call to function compact() contains possibly undefined variable $value.",
+            null,
+            true
+        ],
+        [
+            "foreach-entry.php",
+            43,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "foreach-entry.php",
+            44,
+            "variable.undefined",
+            "Call to function compact() contains undefined variable $value.",
+            null,
+            true
+        ],
+        [
+            "foreach-entry.php",
+            51,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "foreach-entry.php",
+            57,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "foreach-entry.php",
+            58,
+            "variable.undefined",
+            "Call to function compact() contains possibly undefined variable $value.",
+            null,
+            true
+        ]
+    ],
+    "loop-off": [
+        [
+            "foreach-entry.php",
+            12,
+            "phpstan.dumpType",
+            "Dumped type: T (function ForeachEntryJoins\\templateIterator(), argument)",
+            null,
+            false
+        ],
+        [
+            "foreach-entry.php",
+            22,
+            "phpstan.dumpType",
+            "Dumped type: T of stdClass (function ForeachEntryJoins\\objectTemplateIterator(), argument)",
+            null,
+            false
+        ],
+        [
+            "foreach-entry.php",
+            28,
+            "phpstan.dumpType",
+            "Dumped type: mixed",
+            null,
+            false
+        ],
+        [
+            "foreach-entry.php",
+            35,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "foreach-entry.php",
+            38,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "foreach-entry.php",
+            39,
+            "variable.undefined",
+            "Call to function compact() contains possibly undefined variable $value.",
+            null,
+            true
+        ],
+        [
+            "foreach-entry.php",
+            43,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "foreach-entry.php",
+            44,
+            "variable.undefined",
+            "Call to function compact() contains undefined variable $value.",
+            null,
+            true
+        ],
+        [
+            "foreach-entry.php",
+            51,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "foreach-entry.php",
+            57,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "foreach-entry.php",
+            58,
+            "variable.undefined",
+            "Call to function compact() contains possibly undefined variable $value.",
+            null,
+            true
+        ]
+    ]
+}

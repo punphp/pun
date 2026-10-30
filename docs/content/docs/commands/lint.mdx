@@ -65,6 +65,10 @@ Lint applies shared and lint-specific paths and exclusions. It skips Blade templ
 
 The `types/*` rules look up classes in every file lint selects, even when you name only some of them. They also look up classes that Composer autoloads: the generated `vendor/composer/autoload_classmap.php`, then the psr-4 and psr-0 directories in `composer.json` and `vendor/composer/installed.json`. Rector's PHPStan finds the same classes through the autoloader. A method that overrides a parent method gets a return type only when both classes are in `vendor/` or both are outside it.
 Rules ported from Rector read types the way Rector does with PHPStan 2.2.7, the version that Rector and Larastan projects such as Pinkary lock. In a trait, only `$this` and the trait's own members have no type.
+`types/add-return-type-from-constant` reads documented constant types. Anonymous classes are final for late-static constant lookup.
+
+Fix rounds refresh closure and arrow-function signatures after source edits.
+Moving a closure preserves its parameters, return type, and captured variables.
 
 Clean-file cache entries are separate from format entries. `--no-cache` disables cache reads and writes.
 

@@ -1,0 +1,230 @@
+{
+    "totals": {
+        "errors": 0,
+        "file_errors": 36
+    },
+    "files": {
+        "visibility.php": {
+            "errors": 36,
+            "messages": [
+                {
+                    "message": "Dumped type: void",
+                    "line": 15,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Result of callable array{$this(CallableVisibility\\Base), 'hidden'} (void) is used.",
+                    "line": 15,
+                    "ignorable": true,
+                    "identifier": "callable.void"
+                },
+                {
+                    "message": "Dumped type: null",
+                    "line": 16,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Result of function call_user_func (void) is used.",
+                    "line": 16,
+                    "ignorable": true,
+                    "identifier": "function.void"
+                },
+                {
+                    "message": "Dumped type: null",
+                    "line": 17,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Result of function call_user_func_array (void) is used.",
+                    "line": 17,
+                    "ignorable": true,
+                    "identifier": "function.void"
+                },
+                {
+                    "message": "Dumped type: null",
+                    "line": 18,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Result of function call_user_func (void) is used.",
+                    "line": 18,
+                    "ignorable": true,
+                    "identifier": "function.void"
+                },
+                {
+                    "message": "Dumped type: void",
+                    "line": 33,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Result of callable array{$this(CallableVisibility\\Child), 'guarded'} (void) is used.",
+                    "line": 33,
+                    "ignorable": true,
+                    "identifier": "callable.void"
+                },
+                {
+                    "message": "Dumped type: null",
+                    "line": 34,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Result of function call_user_func (void) is used.",
+                    "line": 34,
+                    "ignorable": true,
+                    "identifier": "function.void"
+                },
+                {
+                    "message": "Call to private method hidden() of class CallableVisibility\\Base.",
+                    "line": 41,
+                    "ignorable": true,
+                    "identifier": "callable.inaccessibleMethod"
+                },
+                {
+                    "message": "Dumped type: mixed",
+                    "line": 41,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: mixed",
+                    "line": 42,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: mixed",
+                    "line": 43,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: mixed",
+                    "line": 44,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Call to private method hiddenStatic() of class CallableVisibility\\Base.",
+                    "line": 46,
+                    "ignorable": true,
+                    "identifier": "callable.inaccessibleMethod"
+                },
+                {
+                    "message": "Dumped type: mixed",
+                    "line": 46,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: mixed",
+                    "line": 47,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Call to protected method guarded() of class CallableVisibility\\Base.",
+                    "line": 49,
+                    "ignorable": true,
+                    "identifier": "callable.inaccessibleMethod"
+                },
+                {
+                    "message": "Dumped type: mixed",
+                    "line": 49,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: mixed",
+                    "line": 50,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: void",
+                    "line": 52,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Result of callable array{CallableVisibility\\Base, 'exposed'} (void) is used.",
+                    "line": 52,
+                    "ignorable": true,
+                    "identifier": "callable.void"
+                },
+                {
+                    "message": "Dumped type: null",
+                    "line": 53,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Result of function call_user_func (void) is used.",
+                    "line": 53,
+                    "ignorable": true,
+                    "identifier": "function.void"
+                },
+                {
+                    "message": "Dumped type: void",
+                    "line": 55,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Result of closure (void) is used.",
+                    "line": 55,
+                    "ignorable": true,
+                    "identifier": "callable.void"
+                },
+                {
+                    "message": "Dumped type: mixed",
+                    "line": 57,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: mixed",
+                    "line": 58,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: mixed",
+                    "line": 59,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: mixed",
+                    "line": 60,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: *ERROR*",
+                    "line": 62,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Trying to invoke 17 but it's not a callable.",
+                    "line": 62,
+                    "ignorable": true,
+                    "identifier": "callable.nonCallable"
+                },
+                {
+                    "message": "Dumped type: *ERROR*",
+                    "line": 64,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                }
+            ]
+        }
+    },
+    "errors": []
+}

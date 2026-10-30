@@ -1,0 +1,149 @@
+{
+    "calls": {
+        "492": {
+            "line": 19,
+            "expression": "$inspect->inspect($grid, $grid['nest'], $grid['nest']['sink'])",
+            "names": [
+                {
+                    "name": "inspect",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 492,
+                            "end": 500,
+                            "expression": "$inspect",
+                            "type": "NestedJoinInspect"
+                        },
+                        {
+                            "start": 510,
+                            "end": 515,
+                            "expression": "$grid",
+                            "type": "array{nest: array{sink: NestedJoinSink|null}, other: 0|1}"
+                        },
+                        {
+                            "start": 517,
+                            "end": 530,
+                            "expression": "$grid['nest']",
+                            "type": "array{sink: NestedJoinSink|null}"
+                        },
+                        {
+                            "start": 532,
+                            "end": 553,
+                            "expression": "$grid['nest']['sink']",
+                            "type": "NestedJoinSink|null"
+                        }
+                    ]
+                }
+            ]
+        },
+        "664": {
+            "line": 25,
+            "expression": "$inspect->inspect($reverse, $reverse['nest'], $reverse['nest']['sink'])",
+            "names": [
+                {
+                    "name": "inspect",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 664,
+                            "end": 672,
+                            "expression": "$inspect",
+                            "type": "NestedJoinInspect"
+                        },
+                        {
+                            "start": 682,
+                            "end": 690,
+                            "expression": "$reverse",
+                            "type": "array{nest: array{sink: NestedJoinSink|null}, other: 0|1}"
+                        },
+                        {
+                            "start": 692,
+                            "end": 708,
+                            "expression": "$reverse['nest']",
+                            "type": "array{sink: NestedJoinSink|null}"
+                        },
+                        {
+                            "start": 710,
+                            "end": 734,
+                            "expression": "$reverse['nest']['sink']",
+                            "type": "NestedJoinSink|null"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1093": {
+            "line": 39,
+            "expression": "$inspect->inspect($grid, $grid['nest'], $grid['nest']['sink'])",
+            "names": [
+                {
+                    "name": "inspect",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 1093,
+                            "end": 1101,
+                            "expression": "$inspect",
+                            "type": "NestedJoinInspect"
+                        },
+                        {
+                            "start": 1111,
+                            "end": 1116,
+                            "expression": "$grid",
+                            "type": "array{nest: array{sink: NestedJoinSink}, other: 1}|array{nest: array{sink: null}, other: 0}"
+                        },
+                        {
+                            "start": 1118,
+                            "end": 1131,
+                            "expression": "$grid['nest']",
+                            "type": "array{sink: NestedJoinSink}|array{sink: null}"
+                        },
+                        {
+                            "start": 1133,
+                            "end": 1154,
+                            "expression": "$grid['nest']['sink']",
+                            "type": "NestedJoinSink|null"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1263": {
+            "line": 45,
+            "expression": "$inspect->inspect($reverse, $reverse['nest'], $reverse['nest']['sink'])",
+            "names": [
+                {
+                    "name": "inspect",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 1263,
+                            "end": 1271,
+                            "expression": "$inspect",
+                            "type": "NestedJoinInspect"
+                        },
+                        {
+                            "start": 1281,
+                            "end": 1289,
+                            "expression": "$reverse",
+                            "type": "array{nest: array{sink: NestedJoinSink}, other: 1}|array{nest: array{sink: null}, other: 0}"
+                        },
+                        {
+                            "start": 1291,
+                            "end": 1307,
+                            "expression": "$reverse['nest']",
+                            "type": "array{sink: NestedJoinSink}|array{sink: null}"
+                        },
+                        {
+                            "start": 1309,
+                            "end": 1333,
+                            "expression": "$reverse['nest']['sink']",
+                            "type": "NestedJoinSink|null"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "errors": []
+}

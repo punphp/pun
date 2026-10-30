@@ -179,3 +179,258 @@ function computedReferenceReceivers(): void
     referenceReceiver()?->readNative($nullsafeInput);
     echo $newOutput, $returnedOutput, $chainedOutput, $nullsafeOutput, $staticOutput;
 }
+
+function nestedNames(bool $flag): void
+{
+    echo $${'missingNestedRead'};
+    isset($${'missingNestedIsset'});
+    empty($${'missingNestedEmpty'});
+    $${'missingNestedAssign'} = 1;
+    $${'missingNestedCoalesce'} ?? null;
+    $${'missingNestedCoalesceAssign'} ??= 1;
+    unset($${'missingNestedUnset'});
+    if ($flag) {
+        $maybeName = 'existingNested';
+    }
+    $existingNested = 'thirdNested';
+    $thirdNested = 1;
+    echo $${'maybeName'};
+    $knownName = 'existingNested';
+    echo $${'knownName'};
+    echo $$${'knownName'};
+    echo $${($createdName = 'createdName')};
+    echo $$${'missingDeep'};
+}
+
+class MultilineNames
+{
+    public function names(\Stringable $castable): void
+    {
+        echo ${
+            $this
+        };
+        ${
+            $this
+        } = 1;
+        isset(${
+            $this
+        });
+        echo ${
+            $castable
+        };
+    }
+}
+
+function negativeOffsetNames(bool $flag): void
+{
+    $names = [];
+    if ($flag) {
+        $names['key'] = 'foo';
+    } else {
+        $names['key'] = 'bar';
+        $foo = $bar = 1;
+    }
+    echo ${$names['key']};
+}
+
+function positiveOffsetNames(bool $flag): void
+{
+    $names = [];
+    if ($flag) {
+        $names['key'] = 'foo';
+        $foo = 1;
+    } else {
+        $names['key'] = 'bar';
+        $bar = 1;
+    }
+    echo ${($names['key'])};
+}
+
+function overwrittenOffsetNames(bool $flag, bool $other): void
+{
+    $names = [];
+    if ($flag) {
+        $names['key'] = 'foo';
+        $foo = 1;
+    } else {
+        $names['key'] = 'bar';
+        $bar = 1;
+    }
+    $names['key'] = $other ? 'foo' : 'bar';
+    echo ${$names['key']};
+}
+
+function integerOffsetNames(bool $flag): void
+{
+    $names = [];
+    if ($flag) {
+        $names[0] = 'foo';
+    } else {
+        $names[0] = 'bar';
+        $foo = $bar = 1;
+    }
+    echo ${$names[0]};
+}
+
+function literalOffsetNames(bool $flag): void
+{
+    if ($flag) {
+        $names = ['foo'];
+    } else {
+        $names = ['bar'];
+        $foo = $bar = 1;
+    }
+    echo ${$names["0"]};
+}
+
+function nestedOffsetNames(bool $flag): void
+{
+    if ($flag) {
+        $names = ['nested' => ['key' => 'foo']];
+        $foo = 1;
+    } else {
+        $names = ['nested' => ['key' => 'bar']];
+        $bar = 1;
+    }
+    echo ${$names['nested']['key']};
+    $names = ['nested' => ['key' => $flag ? 'bar' : 'foo']];
+    echo ${$names['nested']['key']};
+}
+
+function variableOffsetName(): void
+{
+    $names = ['key' => 'untrackedOffset'];
+    $key = 'key';
+    echo ${$names[$key]};
+}
+
+function literalStringOffsetNames(): void
+{
+    $names = 'foo';
+    echo ${$names[0]};
+    echo ${$names[-1]};
+    echo ${$names[-3]};
+    echo ${$names[3]};
+    echo ${$names[-4]};
+    echo ${$names[9223372036854775807]};
+    $names = '';
+    echo ${$names[0]};
+    echo ${$names[-1]};
+}
+
+function invalidStringOffsetNames(): void
+{
+    $names = 'foo';
+    echo ${$names['0']};
+    echo ${$names[false]};
+    echo ${$names[0.0]};
+    echo ${$names[null]};
+}
+
+function byteStringOffsetNames(): void
+{
+    $names = 'éa';
+    echo ${$names[2]};
+    echo ${$names[-1]};
+    $names = "\xffa";
+    echo ${$names[1]};
+    $names = "\0a";
+    echo ${$names[1]};
+}
+
+function definedStringOffsetNames(bool $flag): void
+{
+    $names = 'foo';
+    $f = $o = 1;
+    echo ${$names[0]};
+    echo ${$names[-1]};
+    $names = 'bar';
+    if ($flag) {
+        $b = 1;
+    }
+    echo ${$names[0]};
+}
+
+function replacedStringOffsetNames(): void
+{
+    $names = 'foo';
+    echo ${$names[0]};
+    $names = 'bar';
+    echo ${$names[0]};
+    $index = 0;
+    echo ${$names[$index]};
+    $index = 1;
+    echo ${$names[$index]};
+    $names = 'zip';
+    echo ${$names[$index]};
+}
+
+function writtenStringOffsetNames(): void
+{
+    $names = 'foo';
+    echo ${$names[0]};
+    $names[0] = 'b';
+    echo ${$names[0]};
+}
+
+function unionStringOffsetNames(bool $flag): void
+{
+    $names = $flag ? 'foo' : 'bar';
+    echo ${$names[0]};
+}
+
+function missingStringOffsetFallbacks(): void
+{
+    $names = 'foo';
+    echo ${$names[3] ?? 'missingStringOffset'};
+    echo ${$names[-4] ?? 'negativeStringOffset'};
+    echo ${$names[0] ?? 'unusedStringOffset'};
+    $names = '';
+    echo ${$names[0] ?? 'emptyStringOffset'};
+}
+
+function generalIntegerStringNames(int $index): void
+{
+    $names = 'foo';
+    echo ${$names[$index]};
+}
+
+/** @param int<1, 2> $index */
+function boundedIntegerStringNames(int $index): void
+{
+    $names = 'abcd';
+    echo ${$names[$index]};
+}
+
+/** @param int<0, 1> $index */
+function maybeBoundedStringNames(int $index, bool $flag): void
+{
+    $names = 'fo';
+    $f = 1;
+    if ($flag) {
+        $o = 1;
+    }
+    echo ${$names[$index]};
+}
+
+function cachedFailedOffsetNames(int $index): void
+{
+    $names = '';
+    $copy = $names[$index];
+    echo ${$names[$index] ?? 'cachedStringName'};
+    echo ${$names[$index]};
+    $names = [];
+    $key = 'missing';
+    $copy = $names[$key];
+    echo ${$names[$key] ?? 'cachedArrayName'};
+    echo ${$names[$key]};
+}
+
+function cachedPostfixOffsetNames(): void
+{
+    $names = 'foo';
+    $index = 4;
+    $copy = $names[$index];
+    echo ${$names[$index++] ?? 'cachedPostfixName'};
+    echo ${$names[$index]};
+}

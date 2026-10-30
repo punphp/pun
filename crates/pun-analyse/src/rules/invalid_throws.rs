@@ -123,7 +123,7 @@ fn check(c: &mut Checker, at: Span, scope: impl FnOnce(&Checker, &[u8]) -> NameS
 /// `PhpDocNodeResolver::resolveThrowsTags()`: all valid tags of the first supported name, unioned. A malformed
 /// preferred tag does not hide valid ordinary tags, and unrelated tools' tag names are not aliases.
 fn throws_type(raw: &[u8], scope: &NameScope) -> Option<Type> {
-    let tags = phpdoc::tags(&String::from_utf8_lossy(raw)).unwrap_or_default();
+    let tags = phpdoc::tags(raw).unwrap_or_default();
     for name in ["@phpstan-throws", "@throws"] {
         let types: Vec<_> = tags
             .iter()
@@ -172,7 +172,7 @@ fn is_throws_valid(c: &Checker, ty: &Type) -> bool {
         }
     }
     is_super_type_of(
-        &Type::Object("Throwable".into(), vec![]),
+        &Type::Object("Throwable".into(), vec![], false),
         &intersect(constrained),
     )
     .yes()

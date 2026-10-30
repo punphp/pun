@@ -87,4 +87,41 @@ foreach ([
         }
     }
 }
+foreach ([
+    ['list<int>', "array{'final'}"],
+    ['array<int, int>', "array{'final'}"],
+    ['array{}', "array{'final'}"],
+    ['non-empty-list<int>', "array{'final'}"],
+    ['list<int>', 'array{0?: int}'],
+    ['list<int>', 'array{}'],
+] as [$bound, $with]) {
+    foreach ([false, true] as $argument) {
+        $template = TemplateTypeFactory::create(
+            TemplateTypeScope::createWithFunction('fixture'),
+            'T',
+            $resolver->resolve($bound, $scope),
+            TemplateTypeVariance::createInvariant(),
+            default: $resolver->resolve('array{}', $scope),
+        );
+        if ($argument) {
+            $template = $template->toArgument();
+        }
+        $empty = TypeCombinator::intersect($template, $resolver->resolve('array{}', $scope));
+        foreach ([false, true] as $reverse) {
+            $other = $resolver->resolve($with, $scope);
+            $union = $reverse ? TypeCombinator::union($other, $empty) : TypeCombinator::union($empty, $other);
+            $describe = fn ($type) => array_map(fn ($level) => $type->describe($level), [VerbosityLevel::precise(), VerbosityLevel::value(), VerbosityLevel::typeOnly()]);
+            $rows[] = [
+                'bound' => $bound,
+                'other' => 'array{}',
+                'argument' => $argument,
+                'reverse' => false,
+                'otherTemplate' => null,
+                'descriptions' => $describe($empty),
+                'template' => $empty instanceof TemplateType,
+                'union' => ['with' => $with, 'reverse' => $reverse, 'descriptions' => $describe($union)],
+            ];
+        }
+    }
+}
 echo json_encode($rows, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n";

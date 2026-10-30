@@ -9,8 +9,11 @@ use super::*;
 /// The reasons of `$a->accepts($b, $strictTypes)`.
 pub fn accepts_reasons(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Vec<String> {
     use Type as T;
+    if sm.explicit || sm.implicit {
+        return accepts_reasons(a, &sm.transform(b), strict, StrictMixed::default());
+    }
     let rec = |x: &Type, y: &Type| accepts_reasons(x, y, strict, StrictMixed::default());
-    let compound = b.is_compound() || sm.applies(b);
+    let compound = b.is_compound();
     match a {
         T::Reasoned(t, _) => rec(t, b),
         T::LateArrayShape(s) => rec(&s.resolve(), b),
@@ -39,7 +42,7 @@ pub fn accepts_reasons(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Vec
             _ => vec![],
         },
         T::ConstArray(c) if c.unsealed.is_none() && (!compound || matches!(b, T::Intersection(_))) => our_keys(c, b, strict),
-        T::Mixed { .. } | T::SubtractedMixed { .. } | T::Error | T::Wildcard | T::OffsetAccess(..) | T::Never(_) | T::ObjectShape(_) => vec![],
+        T::Mixed { .. } | T::StrictMixed | T::SubtractedMixed { .. } | T::Error | T::Wildcard | T::OffsetAccess(..) | T::Never(_) | T::ObjectShape(_) => vec![],
         _ if compound => accepted_by(a, b, strict, sm),
         T::Array(key, item) => match b {
             T::ConstArray(c) => merged(c.keys.iter().zip(&c.values).flat_map(|(k, v)| [rec(key, k), rec(item, v)])),
@@ -53,7 +56,7 @@ pub fn accepts_reasons(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Vec
             T::Closure(theirs) => signature(ours, theirs, strict),
             _ => vec![],
         },
-        T::Object(class, args) if !args.is_empty() => generic(class, args, b),
+        T::Object(class, args, _) if !args.is_empty() => generic(class, args, b),
         _ => vec![],
     }
 }
@@ -73,7 +76,7 @@ fn merged(all: impl IntoIterator<Item = Vec<String>>) -> Vec<String> {
 fn union(a: &Type, types: &[Type], b: &Type, strict: bool, sm: StrictMixed) -> Vec<String> {
     use Type as T;
     if let T::Iterable(k, v) = b {
-        let alt = T::Union(vec![T::Array(k.clone(), v.clone()), T::Object("Traversable".into(), vec![(**k).clone(), (**v).clone()])]);
+        let alt = T::Union(vec![T::Array(k.clone(), v.clone()), T::Object("Traversable".into(), vec![(**k).clone(), (**v).clone()], false)]);
         return accepts_reasons(a, &alt, strict, sm);
     }
     let inner: Vec<Vec<String>> = sort_types(types).iter().map(|t| accepts_reasons(t, b, strict, sm)).collect();
@@ -86,7 +89,7 @@ fn union(a: &Type, types: &[Type], b: &Type, strict: bool, sm: StrictMixed) -> V
     if !common.is_empty() {
         reasons = (0..inner.len()).flat_map(|i| common.iter().map(move |r| decorate(i, r))).collect();
     }
-    if (b.is_compound() || sm.applies(b)) && !matches!(b, T::Callable(_) | T::Template(_) | T::Intersection(_)) {
+    if b.is_compound() && !matches!(b, T::Callable(_) | T::Template(_) | T::Intersection(_)) {
         return accepted_by(a, b, strict, sm);
     }
     if matches!(b, T::Template(t) if matches!(t.bound, T::Union(_) | T::Benevolent(_))) {
@@ -101,7 +104,7 @@ fn accepted_by(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Vec<String>
     // (a StrictMixedType answers `mixed`, which gives no reasons)
     let rec = |t: &Type| accepts_reasons(a, t, strict, sm);
     match b {
-        T::SubtractedMixed { excluded, .. } if !sm.applies(b) && is_super_type_of(excluded, a).yes() => vec![format!(
+        T::SubtractedMixed { excluded, .. } if is_super_type_of(excluded, a).yes() => vec![format!(
             "Type {} has already been eliminated from mixed.", excluded.describe(Level::Precise)
         )],
         T::Union(types) | T::Benevolent(types) => merged(types.iter().map(rec)),
@@ -121,6 +124,7 @@ fn accepted_by(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Vec<String>
 
 /// CallableTypeHelper::isParametersAcceptorSuperTypeOf() with `$treatMixedAsAny`: `ours` accepting `theirs`.
 fn signature(ours: &Signature, theirs: &Signature, strict: bool) -> Vec<String> {
+    let theirs = specialize_signature(ours, theirs);
     let mut params: Vec<&Param> = theirs.params.iter().collect();
     if let Some(last) = theirs.params.last().filter(|p| p.variadic) {
         while params.len() < ours.params.len() {
@@ -208,7 +212,7 @@ fn our_keys(c: &ConstArray, b: &Type, strict: bool) -> Vec<String> {
 /// GenericObjectType::isSuperTypeOfInternal() in an accepts context: an invariant template given a subtype is not
 /// covariant (TemplateTypeVariance::isValidVariance()).
 pub(super) fn generic(class: &str, args: &[Type], b: &Type) -> Vec<String> {
-    let (Type::Object(name, other) | Type::Static(name, other)) = b else {
+    let (Type::Object(name, other, _) | Type::Static(name, other)) = b else {
         return vec![];
     };
     let (Some(c), Some(theirs)) = (symbols::lookup(class), ancestor(name, other, class)) else {
@@ -223,8 +227,7 @@ pub(super) fn generic(class: &str, args: &[Type], b: &Type) -> Vec<String> {
         if t.variance != "invariant" || matches!(ours, Type::Projection(..)) {
             continue;
         }
-        let trivial = matches!(theirs, Type::Never(_) | Type::Mixed { .. }) || matches!(ours, Type::Mixed { .. });
-        if !trivial && ours != theirs && is_super_type_of(ours, theirs).yes() {
+        if !valid_variance(ours, theirs, t.variance, false).yes() && is_super_type_of(ours, theirs).yes() {
             reasons.push(format!(
                 "Template type {} on class {} is not covariant. Learn more: <fg=cyan>https://phpstan.org/blog/whats-up-with-template-covariant</>",
                 t.name, c.name

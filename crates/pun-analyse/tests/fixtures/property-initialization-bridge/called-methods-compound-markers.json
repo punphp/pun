@@ -1,0 +1,312 @@
+[
+    {
+        "start": 288,
+        "end": 300,
+        "line": 11,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodCompound\\AOwner",
+        "method": "__construct",
+        "certainty": "No"
+    },
+    {
+        "start": 422,
+        "end": 434,
+        "line": 16,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodCompound\\AOwner",
+        "method": "__construct",
+        "certainty": "Yes"
+    },
+    {
+        "start": 553,
+        "end": 565,
+        "line": 19,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodCompound\\AOwner",
+        "method": "check",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 852,
+        "end": 864,
+        "line": 29,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodCompound\\ZOwner",
+        "method": "__construct",
+        "certainty": "No"
+    },
+    {
+        "start": 986,
+        "end": 998,
+        "line": 34,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodCompound\\ZOwner",
+        "method": "__construct",
+        "certainty": "Yes"
+    },
+    {
+        "start": 1117,
+        "end": 1129,
+        "line": 37,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodCompound\\ZOwner",
+        "method": "check",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 1452,
+        "end": 1464,
+        "line": 48,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodCompound\\AIntersectionWide",
+        "method": "__construct",
+        "certainty": "Yes"
+    },
+    {
+        "start": 1491,
+        "end": 1503,
+        "line": 50,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodCompound\\AIntersectionWide",
+        "method": "__construct",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 1643,
+        "end": 1655,
+        "line": 53,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodCompound\\AIntersectionWide",
+        "method": "check",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 1942,
+        "end": 1954,
+        "line": 63,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodCompound\\ZIntersectionNarrow",
+        "method": "__construct",
+        "certainty": "No"
+    },
+    {
+        "start": 1981,
+        "end": 1993,
+        "line": 65,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodCompound\\ZIntersectionNarrow",
+        "method": "__construct",
+        "certainty": "No"
+    },
+    {
+        "start": 2112,
+        "end": 2124,
+        "line": 68,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodCompound\\ZIntersectionNarrow",
+        "method": "check",
+        "certainty": "No"
+    },
+    {
+        "start": 2392,
+        "end": 2404,
+        "line": 78,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodCompound\\ZIntersectionWide",
+        "method": "__construct",
+        "certainty": "Yes"
+    },
+    {
+        "start": 2431,
+        "end": 2443,
+        "line": 80,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodCompound\\ZIntersectionWide",
+        "method": "__construct",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 2583,
+        "end": 2595,
+        "line": 83,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodCompound\\ZIntersectionWide",
+        "method": "check",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 2882,
+        "end": 2894,
+        "line": 93,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodCompound\\AIntersectionNarrow",
+        "method": "__construct",
+        "certainty": "No"
+    },
+    {
+        "start": 2921,
+        "end": 2933,
+        "line": 95,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodCompound\\AIntersectionNarrow",
+        "method": "__construct",
+        "certainty": "No"
+    },
+    {
+        "start": 3052,
+        "end": 3064,
+        "line": 98,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodCompound\\AIntersectionNarrow",
+        "method": "check",
+        "certainty": "No"
+    },
+    {
+        "start": 3344,
+        "end": 3356,
+        "line": 108,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodCompound\\EqualIntersection",
+        "method": "__construct",
+        "certainty": "No"
+    },
+    {
+        "start": 3383,
+        "end": 3395,
+        "line": 110,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodCompound\\EqualIntersection",
+        "method": "__construct",
+        "certainty": "No"
+    },
+    {
+        "start": 3514,
+        "end": 3526,
+        "line": 113,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodCompound\\EqualIntersection",
+        "method": "check",
+        "certainty": "No"
+    },
+    {
+        "start": 3826,
+        "end": 3838,
+        "line": 123,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodCompound\\FixedIntersection",
+        "method": "__construct",
+        "certainty": "No"
+    },
+    {
+        "start": 3865,
+        "end": 3877,
+        "line": 125,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodCompound\\FixedIntersection",
+        "method": "__construct",
+        "certainty": "No"
+    },
+    {
+        "start": 4035,
+        "end": 4047,
+        "line": 128,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodCompound\\FixedIntersection",
+        "method": "check",
+        "certainty": "No"
+    },
+    {
+        "start": 4369,
+        "end": 4381,
+        "line": 138,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodCompound\\VariadicIntersection",
+        "method": "__construct",
+        "certainty": "Yes"
+    },
+    {
+        "start": 4408,
+        "end": 4420,
+        "line": 140,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodCompound\\VariadicIntersection",
+        "method": "__construct",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 4553,
+        "end": 4565,
+        "line": 143,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodCompound\\VariadicIntersection",
+        "method": "check",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 4773,
+        "end": 4785,
+        "line": 152,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodCompound\\FilteredUnion",
+        "method": "__construct",
+        "certainty": "Yes"
+    },
+    {
+        "start": 4904,
+        "end": 4916,
+        "line": 155,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodCompound\\FilteredUnion",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 5093,
+        "end": 5105,
+        "line": 163,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodCompound\\ScalarUnion",
+        "method": "__construct",
+        "certainty": "Yes"
+    },
+    {
+        "start": 5224,
+        "end": 5236,
+        "line": 166,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CalledMethodCompound\\ScalarUnion",
+        "method": "check",
+        "certainty": "Yes"
+    }
+]

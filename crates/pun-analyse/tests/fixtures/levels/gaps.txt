@@ -14,7 +14,6 @@
 3 Functions/ReturnTypeRuleTest::testBug3801
 3 Functions/ReturnTypeRuleTest::testBug7766
 3 Functions/ReturnTypeRuleTest::testBug3028
-3 Methods/ReturnTypeRuleTest::testBug11435
 3 Methods/ReturnTypeRuleTest::testBug4590
 3 Methods/ReturnTypeRuleTest::testTaggedUnions
 3 Methods/ReturnTypeRuleTest::testBug6358
@@ -29,7 +28,6 @@
 3 Methods/ReturnTypeRuleTest::testMergeInheritedPhpDocs
 3 Methods/ReturnTypeRuleTest::testBug3997
 3 Methods/ReturnTypeRuleTest::testBug3118
-6 Methods/MissingMethodReturnTypehintRuleTest::testIndirectInheritanceBug2740
 # Mago's inference differs from PHPStan's: `static`/`$this` lost on fluent and `new $class` returns, array shapes
 # and lists, SimpleXMLElement and DateTime::format() return types, intersections and narrowing, a trait method
 # analysed in its class, or the file's types dropped when Mago's analyzer panics (TUnion::from_vec)
@@ -69,7 +67,6 @@
 # an-dead: CallTo*StatementWithoutImpurePointsRule: the treatPhpDocTypesAsCertain tip of the fixtures' is_int(); a union receiver's classes in PHPStan's order (the message names the last one)
 4 DeadCode/CallToConstructorStatementWithoutImpurePointsRuleTest::testThrows
 4 DeadCode/CallToFunctionStatementWithoutImpurePointsRuleTest::testThrows
-4 DeadCode/CallToMethodStatementWithoutImpurePointsRuleTest::testRule
 4 DeadCode/CallToMethodStatementWithoutImpurePointsRuleTest::testThrows
 4 DeadCode/CallToStaticMethodStatementWithoutImpurePointsRuleTest::testThrows
 4 DeadCode/UnusedPrivateMethodRuleTest::testRule
@@ -97,12 +94,10 @@
 5 Methods/CallMethodsRuleTest::testBug8888
 5 Methods/CallMethodsRuleTest::testSiblingMethodPrototype
 5 Methods/CallMethodsRuleTest::testTypedClassConstants
-5 Methods/CallStaticMethodsRuleTest::testBug14150
 5 Methods/CallStaticMethodsRuleTest::testBug5536
 5 Methods/CallStaticMethodsRuleTest::testBug6249
 5 Methods/CallStaticMethodsRuleTest::testBug7489
 5 Properties/AccessStaticPropertiesRuleTest::testAccessStaticProperties
-9 Functions/CallToFunctionParametersRuleTest::testBug10559
 9 Functions/CallToFunctionParametersRuleTest::testBug11386
 9 Functions/CallToFunctionParametersRuleTest::testBug9580
 9 Functions/CallToFunctionParametersRuleTest::testBug9697
@@ -117,14 +112,11 @@
 9 Methods/CallMethodsRuleTest::testBug8888
 9 Methods/CallMethodsRuleTest::testSiblingMethodPrototype
 9 Methods/CallMethodsRuleTest::testTypedClassConstants
-9 Methods/CallStaticMethodsRuleTest::testBug14150
 9 Methods/CallStaticMethodsRuleTest::testBug5536
 9 Methods/CallStaticMethodsRuleTest::testBug6249
 9 Methods/CallStaticMethodsRuleTest::testBug7489
 # an-types2: callbacks: a closure's parameter types are not narrowed by the callable it is passed to (ClosureTypeResolver),
-# Mago's closure return types differ (`<=>` is -1|0|1); curl:
-# Mago orders a constant array's integer keys (curl_setopt_array()'s shape follows them) and merges `array{}|array{10022: 123}`
-5 Functions/CallToFunctionParametersRuleTest::testBug13862c
+# Mago's closure return types differ (`<=>` is -1|0|1)
 5 Functions/CallToFunctionParametersRuleTest::testArrayAllCallback
 5 Functions/CallToFunctionParametersRuleTest::testArrayAnyCallback
 5 Functions/CallToFunctionParametersRuleTest::testArrayDiffUassoc
@@ -144,14 +136,11 @@
 5 Functions/CallToFunctionParametersRuleTest::testCurlSetOptArray
 5 Methods/CallMethodsRuleTest::testBug14549
 5 Methods/CallMethodsRuleTest::testBug14893
-5 Methods/CallMethodsRuleTest::testInvokeMagicInvokeMethod
 5 Methods/CallStaticMethodsRuleTest::testBug1971Php8
 9 Functions/CallToFunctionParametersRuleTest::testArrayAllCallback
 9 Functions/CallToFunctionParametersRuleTest::testArrayAnyCallback
 9 Functions/CallToFunctionParametersRuleTest::testArrayDiffUassoc
 9 Functions/CallToFunctionParametersRuleTest::testArrayDiffUkey
-9 Functions/CallToFunctionParametersRuleTest::testArrayFilterCallback#0
-9 Functions/CallToFunctionParametersRuleTest::testArrayFilterCallback#1
 9 Functions/CallToFunctionParametersRuleTest::testArrayFindCallback
 9 Functions/CallToFunctionParametersRuleTest::testArrayFindKeyCallback
 9 Functions/CallToFunctionParametersRuleTest::testArrayIntersectUassoc
@@ -178,13 +167,7 @@
 9 Methods/CallMethodsRuleTest::testCallablesWithoutCheckNullables#1
 9 Methods/CallMethodsRuleTest::testCallablesWithoutCheckNullables#2
 9 Methods/CallMethodsRuleTest::testCallablesWithoutCheckNullables#3
-9 Methods/CallMethodsRuleTest::testExplicitMixed#0
-9 Methods/CallMethodsRuleTest::testExplicitMixed#1
 9 Methods/CallMethodsRuleTest::testPureCallable
-9 Methods/CallStaticMethodsRuleTest::testMixed#0
-9 Methods/CallStaticMethodsRuleTest::testMixed#1
-9 Methods/CallStaticMethodsRuleTest::testMixed#2
-9 Methods/CallStaticMethodsRuleTest::testMixed#3
 # an-types2: anonymous-class display names (`Stringable@anonymous`, the exporter's absolute paths)
 5 Classes/InstantiationRuleTest::testInstantiation
 5 Functions/CallToFunctionParametersRuleTest::testBug6560#0
@@ -230,27 +213,20 @@
 5 Functions/ArrayValuesRuleTest::testFile
 5 Functions/CallToFunctionParametersRuleTest::testBenevolentSuperglobalKeys
 5 Functions/CallToFunctionParametersRuleTest::testBug12676
-5 Functions/CallToFunctionParametersRuleTest::testBug12847
 5 Functions/CallToFunctionParametersRuleTest::testBug4371
-5 Functions/CallToFunctionParametersRuleTest::testBug5986
 5 Functions/CallToFunctionParametersRuleTest::testBug7823
 5 Functions/CallToFunctionParametersRuleTest::testBug9559
 5 Functions/CallToFunctionParametersRuleTest::testIsSubclassAllowString
-5 Functions/CallToFunctionParametersRuleTest::testProcOpen
-5 Functions/ParameterCastableToStringRuleTest::testBug3946
 5 Functions/ParameterCastableToStringRuleTest::testEnum
 5 Functions/ParameterCastableToStringRuleTest::testRule
-5 Functions/RandomIntParametersRuleTest::testFile
 5 Methods/CallMethodsRuleTest::testAcceptThrowable
 5 Methods/CallMethodsRuleTest::testBug11463
 5 Methods/CallMethodsRuleTest::testBug13171
 5 Methods/CallMethodsRuleTest::testBug13993
-5 Methods/CallMethodsRuleTest::testBug14732
 5 Methods/CallMethodsRuleTest::testBug1661
 5 Methods/CallMethodsRuleTest::testBug3555
 5 Methods/CallMethodsRuleTest::testBug5372
 5 Methods/CallMethodsRuleTest::testBug6371
-5 Methods/CallMethodsRuleTest::testBug6464
 5 Methods/CallMethodsRuleTest::testBug9487
 5 Methods/CallMethodsRuleTest::testBugTemplateMixedUnionIntersect
 5 Methods/CallMethodsRuleTest::testCallMethodWithPhpDocsImplicitInheritance
@@ -264,23 +240,19 @@
 5 Methods/CallMethodsRuleTest::testIterables#0
 5 Methods/CallMethodsRuleTest::testIterables#1
 5 Methods/CallMethodsRuleTest::testLiteralString
-5 Methods/CallMethodsRuleTest::testMixin
 5 Methods/CallMethodsRuleTest::testNegatedInstanceof
 5 Methods/CallMethodsRuleTest::testNewInstanceArgsIssue8679
 5 Methods/CallMethodsRuleTest::testObjectShapes
 5 Methods/CallMethodsRuleTest::testReadOnlyPropertyPassedByReference
 5 Methods/CallMethodsRuleTest::testRecursiveIteratorIterator
 5 Methods/CallMethodsRuleTest::testRequireExtends
-5 Methods/CallMethodsRuleTest::testStringableStrictTypes
 5 Methods/CallStaticMethodsRuleTest::testBug3641
 5 Methods/CallStaticMethodsRuleTest::testBug5259
-5 Methods/CallStaticMethodsRuleTest::testBug8296
 5 Methods/CallStaticMethodsRuleTest::testBugWrongMethodNameWithTemplateMixed
 5 Methods/CallStaticMethodsRuleTest::testDynamicCall
 5 Methods/CallStaticMethodsRuleTest::testRequireExtends
 5 Properties/AccessPropertiesRuleTest::testBug12645
 5 Properties/AccessPropertiesRuleTest::testBug13537
-5 Properties/AccessPropertiesRuleTest::testBug6899
 5 Properties/AccessPropertiesRuleTest::testDynamicProperties#0
 5 Properties/AccessPropertiesRuleTest::testDynamicProperties#1
 5 Properties/AccessPropertiesRuleTest::testMixin
@@ -289,19 +261,14 @@
 9 Functions/CallToFunctionParametersRuleTest::testBenevolentSuperglobalKeys
 9 Functions/CallToFunctionParametersRuleTest::testBug10974
 9 Functions/CallToFunctionParametersRuleTest::testBug11533
-9 Functions/CallToFunctionParametersRuleTest::testBug11534
 9 Functions/CallToFunctionParametersRuleTest::testBug12676
 9 Functions/CallToFunctionParametersRuleTest::testBug12847
 9 Functions/CallToFunctionParametersRuleTest::testBug13247
-9 Functions/CallToFunctionParametersRuleTest::testBug13862c
 9 Functions/CallToFunctionParametersRuleTest::testBug14312
 9 Functions/CallToFunctionParametersRuleTest::testBug14312b
 9 Functions/CallToFunctionParametersRuleTest::testBug2911
 9 Functions/CallToFunctionParametersRuleTest::testBug4371
-9 Functions/CallToFunctionParametersRuleTest::testBug5872
-9 Functions/CallToFunctionParametersRuleTest::testBug5986
 9 Functions/CallToFunctionParametersRuleTest::testBug6175
-9 Functions/CallToFunctionParametersRuleTest::testBug6720
 9 Functions/CallToFunctionParametersRuleTest::testBug6987
 9 Functions/CallToFunctionParametersRuleTest::testBug7082
 9 Functions/CallToFunctionParametersRuleTest::testBug7156
@@ -314,9 +281,7 @@
 9 Functions/CallToFunctionParametersRuleTest::testCountArrayShift
 9 Functions/CallToFunctionParametersRuleTest::testDiscussion7450WithCheckExplicitMixed
 9 Functions/CallToFunctionParametersRuleTest::testDiscussion7450WithoutCheckExplicitMixed
-9 Functions/CallToFunctionParametersRuleTest::testFunctionWithNumericParameterThatCreatedByAddition
 9 Functions/CallToFunctionParametersRuleTest::testIsSubclassAllowString
-9 Functions/CallToFunctionParametersRuleTest::testProcOpen
 9 Methods/CallMethodsRuleTest::testAcceptThrowable
 9 Methods/CallMethodsRuleTest::testBug10719
 9 Methods/CallMethodsRuleTest::testBug11463
@@ -327,21 +292,16 @@
 9 Methods/CallMethodsRuleTest::testBug13805
 9 Methods/CallMethodsRuleTest::testBug13993
 9 Methods/CallMethodsRuleTest::testBug14719
-9 Methods/CallMethodsRuleTest::testBug14732
 9 Methods/CallMethodsRuleTest::testBug1661
 9 Methods/CallMethodsRuleTest::testBug3555
 9 Methods/CallMethodsRuleTest::testBug3589
 9 Methods/CallMethodsRuleTest::testBug4188
-9 Methods/CallMethodsRuleTest::testBug4199
 9 Methods/CallMethodsRuleTest::testBug5372
 9 Methods/CallMethodsRuleTest::testBug5623
-9 Methods/CallMethodsRuleTest::testBug5868
 9 Methods/CallMethodsRuleTest::testBug6371
-9 Methods/CallMethodsRuleTest::testBug6464
 9 Methods/CallMethodsRuleTest::testBug9141
 9 Methods/CallMethodsRuleTest::testBug9487
 9 Methods/CallMethodsRuleTest::testBug9724
-9 Methods/CallMethodsRuleTest::testBug9951
 9 Methods/CallMethodsRuleTest::testBugTemplateMixedUnionIntersect
 9 Methods/CallMethodsRuleTest::testCallMethodWithPhpDocsImplicitInheritance
 9 Methods/CallMethodsRuleTest::testCallMethodsNullIssue
@@ -352,30 +312,22 @@
 9 Methods/CallMethodsRuleTest::testGenericVariance
 9 Methods/CallMethodsRuleTest::testGenericsInferCollection
 9 Methods/CallMethodsRuleTest::testGenericsInferCollectionLevel8
-9 Methods/CallMethodsRuleTest::testImplicitMixed#0
-9 Methods/CallMethodsRuleTest::testImplicitMixed#1
 9 Methods/CallMethodsRuleTest::testIterables#0
 9 Methods/CallMethodsRuleTest::testIterables#1
 9 Methods/CallMethodsRuleTest::testLiteralString
-9 Methods/CallMethodsRuleTest::testLowercaseString
-9 Methods/CallMethodsRuleTest::testMixin
 9 Methods/CallMethodsRuleTest::testNegatedInstanceof
 9 Methods/CallMethodsRuleTest::testNewInstanceArgsIssue8679
 9 Methods/CallMethodsRuleTest::testObjectShapes
 9 Methods/CallMethodsRuleTest::testReadOnlyPropertyPassedByReference
 9 Methods/CallMethodsRuleTest::testRecursiveIteratorIterator
 9 Methods/CallMethodsRuleTest::testRequireExtends
-9 Methods/CallMethodsRuleTest::testStringableStrictTypes
-9 Methods/CallMethodsRuleTest::testUppercaseString
 9 Methods/CallStaticMethodsRuleTest::testBug12558
 9 Methods/CallStaticMethodsRuleTest::testBug13267
 9 Methods/CallStaticMethodsRuleTest::testBug2164
 9 Methods/CallStaticMethodsRuleTest::testBug3641
 9 Methods/CallStaticMethodsRuleTest::testBug4550
 9 Methods/CallStaticMethodsRuleTest::testBug5259
-9 Methods/CallStaticMethodsRuleTest::testBug8296
 9 Methods/CallStaticMethodsRuleTest::testBugWrongMethodNameWithTemplateMixed
-9 Methods/CallStaticMethodsRuleTest::testDiscussion7004
 9 Methods/CallStaticMethodsRuleTest::testDynamicCall
 9 Methods/CallStaticMethodsRuleTest::testRequireExtends
 # offsetAccess.invalidOffset: array_rand() is list<int|string> by Mago, array<int, int|string> by PHPStan's dynamic
@@ -462,8 +414,6 @@
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug14904
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug8060
 4 Comparison/TernaryOperatorConstantConditionRuleTest::testBug3370
-# an-types: class constant values: `self::C` of a constant with a @var reads the @var type, not the value; generics.notGeneric is not reported
-2 Constants/ValueAssignedToClassConstantRuleTest::testRule
 # an-types: property writes: trait context, `already assigned`, WeakMap's template default, array offset and list values, generic declaring-class display, set-hook parameter types, accepts tips, @param-out values, clone with, constant/range types where Mago's differ
 3 Properties/ReadOnlyByPhpDocPropertyAssignRuleTest::testRule
 3 Properties/ReadOnlyByPhpDocPropertyAssignRuleTest::testFeature7648
@@ -489,7 +439,6 @@
 3 Properties/TypesAssignedToPropertiesRuleTest::testBug13438f
 3 Properties/TypesAssignedToPropertiesRuleTest::testBug7912
 3 Properties/TypesAssignedToPropertiesRuleTest::testCloneWith
-3 Properties/TypesAssignedToPropertiesRuleTest::testBug12688
 # an-types: generic objects without their template arguments: parameter defaults and template bounds (generics.notSupportedBound) where Mago's types differ
 3 Properties/TypesAssignedToPropertiesRuleTest::testGenericObjectWithUnspecifiedTemplateTypes
 3 Properties/TypesAssignedToPropertiesRuleTest::testGenericObjectWithUnspecifiedTemplateTypesLevel8
@@ -532,8 +481,6 @@
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug8485
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug3633
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug7578
-4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug6260
-4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug9104
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug9142
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testLowercaseString
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testUppercaseString
@@ -553,10 +500,6 @@
 1 Classes/UnusedConstructorParametersRuleTest::testResolvedDynamicUsages
 1 Classes/UnusedConstructorParametersRuleTest::testValueFlow
 1 Classes/UnusedConstructorParametersRuleTest::testValueFlowWithoutBleedingEdge
-1 Functions/HelperDeadCode::testRule
-1 Functions/UnusedClosureUsesRuleTest::testResolvedDynamicUsages
-1 Functions/UnusedClosureUsesRuleTest::testValueFlow
-1 Functions/UnusedClosureUsesRuleTest::testValueFlowWithoutBleedingEdge
 # PHPStan 2.3's ClassConstantAccessType: a deferred `T::CONFIG_*` or `static::FOO_*` PHPDoc type is no unresolvable type
 2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testClassConstantWildcardUnresolvable
 2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testBug4548
@@ -570,7 +513,6 @@
 3 Functions/ReturnTypeRuleTest::testBug10290
 3 Functions/ReturnTypeRuleTest::testBug5741
 3 Methods/ReturnTypeRuleTest::testBug14647
-3 Methods/ReturnTypeRuleTest::testBug12601
 3 Methods/ReturnTypeRuleTest::testBug12490
 3 Methods/ReturnTypeRuleTest::testBug11835
 3 Methods/ReturnTypeRuleTest::testBug10289
@@ -583,7 +525,6 @@
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug14248
 4 DeadCode/UnreachableStatementRuleTest::testBugWithoutGitHubIssue1
 4 DeadCode/UnreachableStatementRuleTest::testBug15169TreatPhpDocTypesAsCertain
-4 DeadCode/UnreachableStatementRuleTest::testNullsafeShortCircuitTerminating
 # PHPStan 2.3 counts an expression that can throw an Error (`/` and `%` by a non-constant, sprintf(), strpos() and
 # array_combine() with a ValueError) as an impure point, so it is no noop
 4 DeadCode/NoopRuleTest::testErrorThrows
@@ -630,7 +571,6 @@
 3 Properties/ReadOnlyByPhpDocPropertyAssignRuleTest::testCloneWith
 3 Properties/ReadOnlyPropertyAssignRefRuleTest::testRule
 3 Properties/ReadOnlyPropertyAssignRuleTest::testCloneWith
-4 Comparison/NumberComparisonOperatorsConstantConditionRuleTest::testBug3867
 5 Functions/CallToFunctionParametersRuleTest::testBug14012
 5 Functions/CallToFunctionParametersRuleTest::testBug5474
 5 Functions/ParameterCastableToStringRuleTest::testBug11111
@@ -639,11 +579,8 @@
 5 Methods/CallMethodsRuleTest::testCallMethodsNullIssue
 5 Methods/CallStaticMethodsRuleTest::testHasMethodStaticCall
 5 Properties/AccessPropertiesRuleTest::testAccessPropertiesAfterIsNullInBooleanOr
-5 Properties/AccessPropertiesRuleTest::testBug2861
 5 Properties/AccessPropertiesRuleTest::testDomExtensionLegacyTemplateNodes
 5 Properties/AccessPropertiesRuleTest::testObjectShapes
-5 Properties/AccessStaticPropertiesRuleTest::testBug2861
-5 Properties/AccessStaticPropertiesRuleTest::testBug8333
 9 Functions/CallToFunctionParametersRuleTest::testBug14012
 9 Functions/CallToFunctionParametersRuleTest::testBug3107
 9 Functions/CallToFunctionParametersRuleTest::testBug5474
@@ -654,8 +591,6 @@
 # callables is not split into its arrays, pipe calls by expression are not checked, and Pun reports bug-3616's constant PHPDoc
 2 Functions/CallCallablesRuleTest::testBug3616
 2 Functions/CallCallablesRuleTest::testRule
-# an-types2: Pun finds array<NonexistentClass, AnotherNonexistentClass> unresolvable (parameter.unresolvableType)
-2 Methods/ExistingClassesInTypehintsRuleTest::testExistingClassInTypehint
 # an-types2: PHPDoc classes (FunctionDefinitionCheck, level 2): imported type aliases that import each other, and an anonymous
 # class's use of its enclosing method's template are not resolved; Closure::bind() returns ?Closure (no dynamic return type extension)
 # class's use of its enclosing method's template are not resolved
@@ -699,14 +634,12 @@
 5 Functions/CallToFunctionParametersRuleTest::testBug13114#0
 5 Functions/CallToFunctionParametersRuleTest::testBug13114#1
 5 Functions/CallToFunctionParametersRuleTest::testBug13114#2
-5 Functions/CallToFunctionParametersRuleTest::testBug1946
 5 Functions/CallToFunctionParametersRuleTest::testClosureSignatureFromUsages
 5 Functions/CallToFunctionParametersRuleTest::testClosureSignatureFromUsagesOfGenericObject
 5 Methods/CallMethodsRuleTest::testBug8441
 5 Methods/CallMethodsRuleTest::testClassConstantWildcardArguments
 5 Methods/CallMethodsRuleTest::testGenericArgumentNullability#0
 5 Methods/CallMethodsRuleTest::testGenericArgumentNullability#1
-5 Methods/CallMethodsRuleTest::testVoidConditionalReturnType
 9 Functions/CallToFunctionParametersRuleTest::testBug11041
 9 Functions/CallToFunctionParametersRuleTest::testBug11510
 9 Functions/CallToFunctionParametersRuleTest::testBug11919
@@ -715,7 +648,6 @@
 9 Functions/CallToFunctionParametersRuleTest::testBug13114#2
 9 Functions/CallToFunctionParametersRuleTest::testBug13334
 9 Functions/CallToFunctionParametersRuleTest::testBug15168
-9 Functions/CallToFunctionParametersRuleTest::testBug1946
 9 Functions/CallToFunctionParametersRuleTest::testBug9377
 9 Functions/CallToFunctionParametersRuleTest::testClosureSignatureFromUsages
 9 Functions/CallToFunctionParametersRuleTest::testClosureSignatureFromUsagesOfGenericObject
@@ -727,7 +659,6 @@
 9 Methods/CallMethodsRuleTest::testGenericArgumentNullability#1
 9 Methods/CallMethodsRuleTest::testNullSafeOnTemplateTypeNarrowedAgainstNull
 9 Methods/CallMethodsRuleTest::testUnconstrainedCollectionTemplateArguments
-9 Methods/CallMethodsRuleTest::testVoidConditionalReturnType
 9 Methods/CallStaticMethodsRuleTest::testBug15251
 # an-types: class constant values: `self::C` of a constant with a @var reads the @var type, not the value; generics.notGeneric and IncompatibleClassConstantPhpDocTypeRule are not ported
 # an-types: property writes: trait context, `already assigned`, WeakMap's template default, array offset and list values, generic declaring-class display, set-hook parameter types, accepts tips, @param-out values, clone with, constant/range types where Mago's differ
@@ -760,27 +691,22 @@
 4 Classes/ImpossibleInstanceOfRuleTest::testBug12267
 4 Classes/ImpossibleInstanceOfRuleTest::testNewIsAlwaysFinalClass
 4 Classes/ImpossibleInstanceOfRuleTest::testBug13975#0
-4 Classes/ImpossibleInstanceOfRuleTest::testBug13975#1
 4 Classes/ImpossibleInstanceOfRuleTest::testPossiblyImpureTip
 4 Classes/ImpossibleInstanceOfRuleTest::testInTrait
-# an-types: too-wide returns where Mago's types differ (an arrow function's printed `fn ():`, a final class's constant with a @var read as the @var type, is_subclass_of() narrowing a class-string, a $_GET element)
+# an-types: too-wide returns where Mago's types differ (an arrow function's printed `fn ():`, is_subclass_of() narrowing a class-string, a $_GET element)
 4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug8954
 5 Functions/CallToFunctionParametersRuleTest::testBug9580
 4 TooWideTypehints/TooWideArrowFunctionReturnTypehintRuleTest::testRule
-4 TooWideTypehints/TooWideMethodReturnTypehintRuleTest::testBug10312b
 # an-phpdoc: Mago's inferred type of a trait method's `callable(self)` parameter resolves `self` to the trait, not to
 # the using class (CallCallablesRule's argument.type)
 6 Classes/LocalTypeTraitAliasesRuleTest::testBug11591
 6 Classes/LocalTypeTraitUseAliasesRuleTest::testBug11591
 # an-dead: NullCoalesceRule: Mago orders a shape's keys, keeps no assigned offset as its own expression, narrows offsets differently (after `?? null` comparisons, `non-empty-array` after a write), and loses a property's type on the right side of `??=`
 1 Variables/NullCoalesceRuleTest::testCoalesceAssignRule
-1 Variables/NullCoalesceRuleTest::testCoalesceRule
 4 Variables/NullCoalesceRuleTest::testBug13488
 4 Variables/NullCoalesceRuleTest::testBug13488Loose
 4 Variables/NullCoalesceRuleTest::testBug7190
 4 Variables/NullCoalesceRuleTest::testCoalesceAssignRule
-4 Variables/NullCoalesceRuleTest::testCoalesceRule
-4 Variables/NullCoalesceRuleTest::testNullCoalesceAssignRightSideScope
 # array_combine()'s dynamic throw type extension (ValueError on PHP 8) is not read.
 3 Exceptions/ThrowsVoidMethodWithExplicitThrowPointRuleTest::testBug13642
 # Other rules' identifiers (resultUnused, property.notFound, assign.propertyType, deadCode.unreachable and more).
@@ -798,10 +724,7 @@
 4 Methods/NullsafeMethodCallRuleTest::testBug8523c
 # IssetCheck's `?->` on the left of `??` messages are not ported.
 4 Properties/NullsafePropertyFetchRuleTest::testBug7109
-# Mago loses `$this` after a dynamic `?->$this?->$name` fetch.
-5 Properties/AccessPropertiesRuleTest::testDynamicStringableNullsafeAccess
 # Mago's explicit mixed and benevolent unions describe differently.
-9 Operators/InvalidIncDecOperationRuleTest::testMixed
 9 Operators/InvalidIncDecOperationRuleTest::testUnion
 # cross-branch after the nullsafe + NullCoalesce + templateType merges (owners notified)
 4 Variables/NullCoalesceRuleTest::testBug7109

@@ -1,0 +1,243 @@
+{
+    "calls": {
+        "372": {
+            "line": 11,
+            "expression": "$inspect->inspect($sink)",
+            "names": [
+                {
+                    "name": "inspect",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 372,
+                            "end": 380,
+                            "expression": "$inspect",
+                            "type": "nullsafescopeedge"
+                        },
+                        {
+                            "start": 390,
+                            "end": 395,
+                            "expression": "$sink",
+                            "type": "nullsafescopeedge"
+                        }
+                    ]
+                }
+            ]
+        },
+        "440": {
+            "line": 12,
+            "expression": "$inspect->inspect($sink, $born)",
+            "names": [
+                {
+                    "name": "inspect",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 440,
+                            "end": 448,
+                            "expression": "$inspect",
+                            "type": "nullsafescopeedge"
+                        },
+                        {
+                            "start": 458,
+                            "end": 463,
+                            "expression": "$sink",
+                            "type": "nullsafescopeedge|null"
+                        },
+                        {
+                            "start": 465,
+                            "end": 470,
+                            "expression": "$born",
+                            "type": "1"
+                        }
+                    ]
+                }
+            ]
+        },
+        "678": {
+            "line": 20,
+            "expression": "$inspect->inspect($born)",
+            "names": [
+                {
+                    "name": "inspect",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 678,
+                            "end": 686,
+                            "expression": "$inspect",
+                            "type": "nullsafescopeedge"
+                        },
+                        {
+                            "start": 696,
+                            "end": 701,
+                            "expression": "$born",
+                            "type": "2"
+                        }
+                    ]
+                }
+            ]
+        },
+        "892": {
+            "line": 25,
+            "expression": "$inspect->inspect($box->holders, $box->holders['sink'])",
+            "names": [
+                {
+                    "name": "inspect",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 892,
+                            "end": 900,
+                            "expression": "$inspect",
+                            "type": "nullsafescopeedge"
+                        },
+                        {
+                            "start": 910,
+                            "end": 923,
+                            "expression": "$box->holders",
+                            "type": "array{sink: nullsafescopeedge|null}"
+                        },
+                        {
+                            "start": 925,
+                            "end": 946,
+                            "expression": "$box->holders['sink']",
+                            "type": "nullsafescopeedge|null"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1217": {
+            "line": 31,
+            "expression": "$inspect->inspect($sink->child, $holders)",
+            "names": [
+                {
+                    "name": "inspect",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 1217,
+                            "end": 1225,
+                            "expression": "$inspect",
+                            "type": "nullsafescopeedge"
+                        },
+                        {
+                            "start": 1235,
+                            "end": 1247,
+                            "expression": "$sink->child",
+                            "type": "nullsafescopeedge|null"
+                        },
+                        {
+                            "start": 1249,
+                            "end": 1257,
+                            "expression": "$holders",
+                            "type": "array{}"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1423": {
+            "line": 36,
+            "expression": "$inspect->inspect($sink, $born)",
+            "names": [
+                {
+                    "name": "inspect",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 1423,
+                            "end": 1431,
+                            "expression": "$inspect",
+                            "type": "nullsafescopeedge"
+                        },
+                        {
+                            "start": 1441,
+                            "end": 1446,
+                            "expression": "$sink",
+                            "type": "nullsafescopeedge|null"
+                        },
+                        {
+                            "start": 1448,
+                            "end": 1453,
+                            "expression": "$born",
+                            "type": "3"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1629": {
+            "line": 42,
+            "expression": "$inspect->inspect($born)",
+            "names": [
+                {
+                    "name": "inspect",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 1629,
+                            "end": 1637,
+                            "expression": "$inspect",
+                            "type": "nullsafescopeedge"
+                        },
+                        {
+                            "start": 1647,
+                            "end": 1652,
+                            "expression": "$born",
+                            "type": "4"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1872": {
+            "line": 48,
+            "expression": "$inspect->inspect($holders, $born)",
+            "names": [
+                {
+                    "name": "inspect",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 1872,
+                            "end": 1880,
+                            "expression": "$inspect",
+                            "type": "nullsafescopeedge"
+                        },
+                        {
+                            "start": 1890,
+                            "end": 1898,
+                            "expression": "$holders",
+                            "type": "array{sink?: nullsafescopeedge|null}"
+                        },
+                        {
+                            "start": 1900,
+                            "end": 1905,
+                            "expression": "$born",
+                            "type": "5"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "errors": [
+        [
+            11,
+            "method.void",
+            "Result of method nullsafescopeedge::foo() (void) is used.",
+            null,
+            true
+        ],
+        [
+            11,
+            "method.void",
+            "Result of method nullsafescopeedge::inspect() (void) is used.",
+            null,
+            true
+        ]
+    ],
+    "function_events": []
+}

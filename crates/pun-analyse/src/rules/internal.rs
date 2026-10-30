@@ -12,7 +12,6 @@ use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::symbol::SymbolKind;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::TObject;
-use mago_codex::ttype::union::TUnion;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use mago_syntax::walker::MutWalker;
@@ -181,7 +180,6 @@ pub fn typed_expressions(names: Option<&Names>, program: &Program) -> Vec<Span> 
 /// The classes of an expression's object types (`getObjectClassNames()`), as Mago infers them.
 pub(super) fn object_classes<'a>(c: &Checker<'a, '_>, e: &Expression) -> Vec<&'a ClassLikeMetadata> {
     c.type_of(e)
-        .or_else(|| narrowed_object(c, e))
         .into_iter()
         .flat_map(|t| t.types.iter())
         .filter_map(|a| match a {
@@ -190,27 +188,6 @@ pub(super) fn object_classes<'a>(c: &Checker<'a, '_>, e: &Expression) -> Vec<&'a
             _ => None,
         })
         .collect()
-}
-
-/// Mago types no object of `$var->name` once that property is narrowed (after an assignment to it): the type of the
-/// variable's latest typed occurrence before it in the same function.
-/// ponytail: ignores a reassignment of the variable in between, and nested functions at the top level
-fn narrowed_object<'a>(c: &'a Checker, e: &Expression) -> Option<&'a TUnion> {
-    let Expression::Variable(Variable::Direct(v)) = e else {
-        return None;
-    };
-    let at = e.span();
-    let from = c.functions.last().map_or(0, |f| f.start);
-    c.types
-        .iter()
-        .filter(|(s, _)| {
-            s.file_id == at.file_id
-                && from <= s.start.offset
-                && s.end.offset <= at.start.offset
-                && c.file.contents.get(s.start.offset as usize..s.end.offset as usize) == Some(v.name)
-        })
-        .max_by_key(|(s, _)| s.start.offset)
-        .map(|(_, t)| t)
 }
 
 /// `$obj->name()` and `$obj?->name()` (`call` spans the whole call: the error is on its first line).

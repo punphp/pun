@@ -1,0 +1,992 @@
+{
+    "declarations.php": {
+        "314": {
+            "line": 14,
+            "expression": "$explicit",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "356": {
+            "line": 15,
+            "expression": "$implicit",
+            "full": {
+                "type": "mixed",
+                "explicit": false
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "422": {
+            "line": 17,
+            "expression": "$copy",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "478": {
+            "line": 19,
+            "expression": "$explicit",
+            "full": {
+                "type": "1",
+                "explicit": null
+            },
+            "native": {
+                "type": "1",
+                "explicit": null
+            }
+        },
+        "515": {
+            "line": 20,
+            "expression": "$flag ? $copy : $implicit",
+            "full": {
+                "type": "mixed",
+                "explicit": false
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "574": {
+            "line": 21,
+            "expression": "$flag ? $implicit : $copy",
+            "full": {
+                "type": "mixed",
+                "explicit": false
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "633": {
+            "line": 22,
+            "expression": "$flag ? $copy : 1",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "683": {
+            "line": 23,
+            "expression": "$flag ? 1 : $copy",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "825": {
+            "line": 29,
+            "expression": "$explicit",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "871": {
+            "line": 30,
+            "expression": "$implicit",
+            "full": {
+                "type": "mixed",
+                "explicit": false
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "959": {
+            "line": 35,
+            "expression": "declared()",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "999": {
+            "line": 36,
+            "expression": "unknown()",
+            "full": {
+                "type": "mixed",
+                "explicit": false
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "1037": {
+            "line": 37,
+            "expression": "documented()",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "1081": {
+            "line": 38,
+            "expression": "documentedTruthy()",
+            "full": {
+                "type": "mixed~(0|0.0|''|'0'|array{}|false|null)",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "1138": {
+            "line": 39,
+            "expression": "json_decode($text)",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "1184": {
+            "line": 40,
+            "expression": "unserialize($text)",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "1551": {
+            "line": 50,
+            "expression": "$explicit['key']",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "1599": {
+            "line": 51,
+            "expression": "$explicit[0][1]",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "1653": {
+            "line": 52,
+            "expression": "$implicit['key']",
+            "full": {
+                "type": "mixed",
+                "explicit": false
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "1701": {
+            "line": 53,
+            "expression": "$explicitItems['key']",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "1752": {
+            "line": 54,
+            "expression": "$implicitItems['key']",
+            "full": {
+                "type": "string",
+                "explicit": null
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "1803": {
+            "line": 55,
+            "expression": "$wildcardItems['key']",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "1854": {
+            "line": 56,
+            "expression": "$mixedKeyItems['key']",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "1915": {
+            "line": 57,
+            "expression": "$explicit->unknown",
+            "full": {
+                "type": "mixed",
+                "explicit": false
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "1966": {
+            "line": 58,
+            "expression": "$explicit->unknown()",
+            "full": {
+                "type": "mixed",
+                "explicit": false
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "2042": {
+            "line": 60,
+            "expression": "$explicit[0]",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "2180": {
+            "line": 66,
+            "expression": "$explicit",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "2234": {
+            "line": 67,
+            "expression": "$implicit",
+            "full": {
+                "type": "mixed",
+                "explicit": false
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "2300": {
+            "line": 68,
+            "expression": "$value",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "2357": {
+            "line": 69,
+            "expression": "$value",
+            "full": {
+                "type": "mixed",
+                "explicit": false
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "2466": {
+            "line": 72,
+            "expression": "$copy",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "2504": {
+            "line": 73,
+            "expression": "$implicit",
+            "full": {
+                "type": "mixed",
+                "explicit": false
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "2589": {
+            "line": 76,
+            "expression": "$copy",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "2654": {
+            "line": 78,
+            "expression": "$explicit",
+            "full": {
+                "type": "1",
+                "explicit": null
+            },
+            "native": {
+                "type": "1",
+                "explicit": null
+            }
+        },
+        "2807": {
+            "line": 86,
+            "expression": "$left",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "2853": {
+            "line": 87,
+            "expression": "$right",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "3070": {
+            "line": 99,
+            "expression": "$this->explicit",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "3123": {
+            "line": 100,
+            "expression": "$this->implicit",
+            "full": {
+                "type": "mixed",
+                "explicit": false
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "3175": {
+            "line": 101,
+            "expression": "$this->documented",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "3336": {
+            "line": 109,
+            "expression": "$copy",
+            "full": {
+                "type": "mixed~(0|0.0|''|'0'|array{}|false|null)",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "3383": {
+            "line": 110,
+            "expression": "$copy[0]",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        }
+    },
+    "xm.php": {
+        "480": {
+            "line": 34,
+            "expression": "$this->m()",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "514": {
+            "line": 35,
+            "expression": "$this->n()",
+            "full": {
+                "type": "mixed",
+                "explicit": false
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "548": {
+            "line": 36,
+            "expression": "json_decode($s)",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "587": {
+            "line": 37,
+            "expression": "$m",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "613": {
+            "line": 38,
+            "expression": "$u",
+            "full": {
+                "type": "mixed",
+                "explicit": false
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "639": {
+            "line": 39,
+            "expression": "$this->prop",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "674": {
+            "line": 40,
+            "expression": "$this->untypedProp",
+            "full": {
+                "type": "mixed",
+                "explicit": false
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "716": {
+            "line": 41,
+            "expression": "parent::push()",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "754": {
+            "line": 42,
+            "expression": "static::sm()",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "790": {
+            "line": 43,
+            "expression": "self::sm()",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "824": {
+            "line": 44,
+            "expression": "$m ?? 1",
+            "full": {
+                "type": "mixed~null",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed~null",
+                "explicit": true
+            }
+        },
+        "855": {
+            "line": 45,
+            "expression": "$this->m() ?: null",
+            "full": {
+                "type": "mixed~(0|0.0|''|'0'|array{}|false)",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed~(0|0.0|''|'0'|array{}|false)",
+                "explicit": true
+            }
+        },
+        "897": {
+            "line": 46,
+            "expression": "$attribute->getArguments()",
+            "full": {
+                "type": "array",
+                "explicit": null
+            },
+            "native": {
+                "type": "array",
+                "explicit": null
+            }
+        },
+        "949": {
+            "line": 47,
+            "expression": "$x",
+            "full": {
+                "type": "mixed",
+                "explicit": false
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "983": {
+            "line": 48,
+            "expression": "$x",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "1009": {
+            "line": 49,
+            "expression": "(string) $m",
+            "full": {
+                "type": "string",
+                "explicit": null
+            },
+            "native": {
+                "type": "string",
+                "explicit": null
+            }
+        },
+        "1044": {
+            "line": 50,
+            "expression": "$m['k']",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "1075": {
+            "line": 51,
+            "expression": "$m->x",
+            "full": {
+                "type": "mixed",
+                "explicit": false
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "1104": {
+            "line": 52,
+            "expression": "$m->call()",
+            "full": {
+                "type": "mixed",
+                "explicit": false
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "1138": {
+            "line": 53,
+            "expression": "unserialize($s)",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "1177": {
+            "line": 54,
+            "expression": "array_pop($s)",
+            "full": {
+                "type": "null",
+                "explicit": null
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        }
+    },
+    "xm2.php": {
+        "190": {
+            "line": 12,
+            "expression": "$u ?? $m",
+            "full": {
+                "type": "mixed",
+                "explicit": false
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "222": {
+            "line": 13,
+            "expression": "$m ?? $u",
+            "full": {
+                "type": "mixed",
+                "explicit": false
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "254": {
+            "line": 14,
+            "expression": "1 ?? $m",
+            "full": {
+                "type": "1",
+                "explicit": null
+            },
+            "native": {
+                "type": "1",
+                "explicit": null
+            }
+        },
+        "285": {
+            "line": 15,
+            "expression": "$c ? $m : $u",
+            "full": {
+                "type": "mixed",
+                "explicit": false
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "321": {
+            "line": 16,
+            "expression": "$c ? $u : $m",
+            "full": {
+                "type": "mixed",
+                "explicit": false
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "357": {
+            "line": 17,
+            "expression": "$c ? $m : 1",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "392": {
+            "line": 18,
+            "expression": "$u ?: $m",
+            "full": {
+                "type": "mixed",
+                "explicit": false
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "424": {
+            "line": 19,
+            "expression": "$m ?: $u",
+            "full": {
+                "type": "mixed",
+                "explicit": false
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "456": {
+            "line": 20,
+            "expression": "$arr['k']",
+            "full": {
+                "type": "mixed",
+                "explicit": false
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "489": {
+            "line": 21,
+            "expression": "$m[0][1]",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "521": {
+            "line": 22,
+            "expression": "$this->m()['x']",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "560": {
+            "line": 23,
+            "expression": "match ($c) { true => $m, false => 1 }",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "621": {
+            "line": 24,
+            "expression": "$m ?? null",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "655": {
+            "line": 25,
+            "expression": "@$m",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "683": {
+            "line": 26,
+            "expression": "$m",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "710": {
+            "line": 27,
+            "expression": "clone $m",
+            "full": {
+                "type": "object",
+                "explicit": null
+            },
+            "native": {
+                "type": "object",
+                "explicit": null
+            }
+        },
+        "742": {
+            "line": 28,
+            "expression": "$m = 1",
+            "full": {
+                "type": "1",
+                "explicit": null
+            },
+            "native": {
+                "type": "1",
+                "explicit": null
+            }
+        },
+        "789": {
+            "line": 30,
+            "expression": "$y",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "831": {
+            "line": 32,
+            "expression": "$m",
+            "full": {
+                "type": "5",
+                "explicit": null
+            },
+            "native": {
+                "type": "5",
+                "explicit": null
+            }
+        },
+        "1021": {
+            "line": 42,
+            "expression": "$z",
+            "full": {
+                "type": "0|0.0|1|''|'0'|array{}|false|null",
+                "explicit": null
+            },
+            "native": {
+                "type": "0|0.0|1|''|'0'|array{}|false|null",
+                "explicit": null
+            }
+        }
+    }
+}

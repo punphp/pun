@@ -20,6 +20,8 @@ pub struct TMixed {
     #[cfg_attr(feature = "serde", serde(default))]
     is_error: bool,
     #[cfg_attr(feature = "serde", serde(default))]
+    is_explicit: bool,
+    #[cfg_attr(feature = "serde", serde(default))]
     pub(super) subtracted_type: Option<Arc<TUnion>>,
 }
 
@@ -36,8 +38,21 @@ impl TMixed {
             is_empty: false,
             truthiness: TMixedTruthiness::Undetermined,
             is_error: false,
+            is_explicit: false,
             subtracted_type: None,
         }
+    }
+
+    /// PHPStan's explicit mixed identity, independent of annotations on the containing union.
+    #[must_use]
+    pub const fn with_is_explicit(mut self, is_explicit: bool) -> Self {
+        self.is_explicit = is_explicit;
+        self
+    }
+
+    #[must_use]
+    pub const fn is_explicit(&self) -> bool {
+        self.is_explicit
     }
 
     /// Creates an unconstrained mixed value with PHPStan's `ErrorType` identity.

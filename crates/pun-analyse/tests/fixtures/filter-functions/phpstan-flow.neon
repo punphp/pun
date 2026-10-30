@@ -1,0 +1,7 @@
+parameters:
+    level: 9
+    phpVersion: 80400
+    tmpDir: ../../../../../target/oracle-filter-functions-flow
+    paths: [flow.php]
+    parallel:
+        maximumNumberOfProcesses: 1

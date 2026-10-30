@@ -1,0 +1,192 @@
+[
+    {
+        "start": 273,
+        "end": 285,
+        "line": 9,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "SingleVisitMarker",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 474,
+        "end": 486,
+        "line": 14,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "ImpossibleReturnMarker",
+        "method": "check",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 705,
+        "end": 717,
+        "line": 21,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "DoReturnMarker",
+        "method": "check",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 941,
+        "end": 953,
+        "line": 28,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "ThrowFinallyMarker",
+        "method": "check",
+        "certainty": "No"
+    },
+    {
+        "start": 1164,
+        "end": 1176,
+        "line": 35,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "TwoRawReturnsMarker",
+        "method": "check",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 1385,
+        "end": 1397,
+        "line": 41,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "NestedFinallyMarker",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 1604,
+        "end": 1616,
+        "line": 48,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "ContinueSwitchMarker",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 1908,
+        "end": 1920,
+        "line": 57,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "ThrowCaughtMarker",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 2111,
+        "end": 2123,
+        "line": 62,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "FinallyReturnsMarker",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 2276,
+        "end": 2288,
+        "line": 67,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "NestedLoopArrowMarker",
+        "method": "check",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 2332,
+        "end": 2344,
+        "line": 68,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "NestedLoopArrowMarker",
+        "method": "check",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 2518,
+        "end": 2530,
+        "line": 74,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "ReturnOperandMarker",
+        "method": "check",
+        "certainty": "No"
+    },
+    {
+        "start": 2728,
+        "end": 2740,
+        "line": 79,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "ReturnThrowMarker",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 2964,
+        "end": 2976,
+        "line": 85,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "TraitPropertyMarker",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 3232,
+        "end": 3244,
+        "line": 93,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "RedeclaredMarkerChild",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 3648,
+        "end": 3660,
+        "line": 106,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "LateTerminatingSwitchMarker",
+        "method": "middleGroup",
+        "certainty": "No"
+    },
+    {
+        "start": 3662,
+        "end": 3674,
+        "line": 106,
+        "property": "other",
+        "expression": "$this->other",
+        "class": "LateTerminatingSwitchMarker",
+        "method": "middleGroup",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 3896,
+        "end": 3908,
+        "line": 113,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "LateTerminatingSwitchMarker",
+        "method": "lastGroup",
+        "certainty": "No"
+    },
+    {
+        "start": 3910,
+        "end": 3922,
+        "line": 113,
+        "property": "other",
+        "expression": "$this->other",
+        "class": "LateTerminatingSwitchMarker",
+        "method": "lastGroup",
+        "certainty": "Yes"
+    }
+]

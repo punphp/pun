@@ -140,10 +140,10 @@ impl CombinationFlags {
 pub struct TypeCombination {
     pub flags: CombinationFlags,
     pub value_types: WordMap<TAtomic>,
+    // Object identity includes exactness and nested generic metadata, not just the printed ID.
+    pub named_objects: Vec<TAtomic>,
     pub callable_collisions: WordMap<Vec<TAtomic>>,
     pub enum_names: HashSet<(Word, Option<Word>)>,
-    pub object_type_params: WordMap<(Word, Vec<TUnion>)>,
-    pub object_static: WordMap<bool>,
     pub keyed_array_entries: BTreeMap<ArrayKey, (bool, TUnion)>,
     pub list_array_entries: BTreeMap<usize, (bool, TUnion)>,
     pub keyed_array_parameters: Option<(TUnion, TUnion)>,
@@ -170,9 +170,8 @@ impl TypeCombination {
         Self {
             flags,
             value_types: WordMap::default(),
+            named_objects: Vec::new(),
             callable_collisions: WordMap::default(),
-            object_type_params: WordMap::default(),
-            object_static: WordMap::default(),
             keyed_array_entries: BTreeMap::new(),
             list_array_entries: BTreeMap::new(),
             keyed_array_parameters: None,
@@ -201,7 +200,7 @@ impl TypeCombination {
             && self.keyed_array_parameters.is_none()
             && self.list_array_parameter.is_none()
         {
-            return self.object_type_params.is_empty()
+            return self.named_objects.is_empty()
                 && self.enum_names.is_empty()
                 && self.literal_strings.is_empty()
                 && self.literal_floats.is_empty()

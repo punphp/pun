@@ -36,6 +36,7 @@ use mago_codex::ttype::template::inferred_type_replacer;
 use mago_codex::ttype::union::TUnion;
 use mago_reporting::Annotation;
 use mago_reporting::Issue;
+use mago_reporting::IssueCollection;
 use mago_span::HasSpan;
 use mago_span::Span;
 use mago_syntax::cst::Expression;
@@ -44,6 +45,7 @@ use mago_word::WordMap;
 use mago_word::WordSet;
 use mago_word::concat_word;
 
+use crate::analyzable::Analyzable;
 use crate::artifacts::AnalysisArtifacts;
 use crate::artifacts::ClosureBindScope;
 use crate::code::IssueCode;
@@ -186,6 +188,8 @@ fn gather_raw_callback<'ctx, 'arena, A: Arena>(
     block.finally_scope = None;
     let mut scratch = AnalysisArtifacts::new().with_native_types(context.settings.track_native_types);
     context.gather_callback(|context| {
+        let call_context =
+            crate::observations::argument_context(context, None, Some(parameter_type), expression.span());
         analyze_and_store_argument_type(
             context,
             &mut block,
@@ -196,6 +200,9 @@ fn gather_raw_callback<'ctx, 'arena, A: Arena>(
             &mut [],
             false,
             Some(parameter_type),
+            call_context,
+            None,
+            None,
         )?;
         Ok(scratch.get_expression_type(expression).cloned())
     })
@@ -215,7 +222,399 @@ pub fn analyze_invocation<'ctx, 'arena, A>(
 where
     A: Arena,
 {
-    if context.external_analysis_session.is_some()
+    let mut arguments = EvaluatedArguments::new(invocation.arguments_source.argument_count());
+    analyze_invocation_with_arguments(
+        context,
+        block_context,
+        artifacts,
+        invocation,
+        calling_class_like,
+        class_related_argument_variables,
+        template_result,
+        parameter_types,
+        &mut arguments,
+    )
+}
+
+/// Physical operand values belong to the source call. Callee-local argument
+/// narrowing, binding and template inference must not mutate this cache.
+pub(crate) struct EvaluatedArguments<'ctx> {
+    types: Vec<Option<(Rc<TUnion>, Span)>>,
+    targets: Vec<InvocationTarget<'ctx>>,
+    templates: TemplateResult,
+    has_walk_reflection: bool,
+    walk_target: Option<InvocationTarget<'ctx>>,
+    entered: bool,
+    expression_issues: Option<IssueCollection>,
+    parameter_contexts: Vec<Option<TUnion>>,
+    raw_callbacks: Vec<Option<TUnion>>,
+    walk_binding: Option<(TemplateResult, WordMap<TUnion>)>,
+}
+
+impl<'ctx> EvaluatedArguments<'ctx> {
+    pub(crate) fn new(count: usize) -> Self {
+        Self {
+            types: vec![None; count],
+            targets: Vec::new(),
+            templates: TemplateResult::default(),
+            has_walk_reflection: true,
+            walk_target: None,
+            entered: false,
+            expression_issues: None,
+            parameter_contexts: vec![None; count],
+            raw_callbacks: vec![None; count],
+            walk_binding: None,
+        }
+    }
+
+    pub(crate) fn for_targets<A: Arena>(
+        context: &Context<'ctx, '_, A>,
+        count: usize,
+        mut targets: Vec<InvocationTarget<'ctx>>,
+        templates: TemplateResult,
+        has_walk_reflection: bool,
+    ) -> Self {
+        // Method resolution uses a LIFO receiver stack. PHPStan's combined
+        // reflection retains the receiver union's original member order.
+        if targets.iter().all(|target| target.get_method_context().is_some()) {
+            targets.reverse();
+        }
+        let walk_target = has_walk_reflection.then(|| combine_walk_reflection(context, &targets)).flatten();
+        Self { targets, templates, has_walk_reflection, walk_target, ..Self::new(count) }
+    }
+
+    /// ArgumentsHandler owns the physical walk, independently of the semantic
+    /// target loop. Only a statically named call supplies a walk reflection.
+    /// Combined-signature verification is discarded; real operand diagnostics
+    /// are retained, and every original callee is verified below from the cache.
+    pub(crate) fn evaluate<'arena, A: Arena>(
+        &mut self,
+        context: &mut Context<'ctx, 'arena, A>,
+        block_context: &mut BlockContext<'ctx>,
+        artifacts: &mut AnalysisArtifacts,
+        source: InvocationArgumentsSource<'_, 'arena>,
+        span: Span,
+        class_related_argument_variables: Option<&WordSet>,
+    ) -> Result<(), AnalysisError> {
+        if self.targets.is_empty() || (self.has_walk_reflection && self.targets.len() == 1) {
+            return Ok(());
+        }
+        let target = self.walk_target.clone().unwrap_or_else(|| InvocationTarget::Callable {
+            source: None,
+            signature: TCallableSignature::new(false, false),
+            effective_signature: None,
+            span,
+        });
+        let mut invocation = Invocation::new(target, source, span);
+        if context.plugin_registry.has_expression_hooks() {
+            let mut hook_context = HookContext::new(context.codebase, context.source_file, block_context, artifacts);
+            hook_context.raw_callback_gather = context.raw_callback_gather_depth > 0;
+            context.plugin_registry.before_arguments(&InvocationInfo::new(&invocation), &mut hook_context)?;
+            for reported in hook_context.take_issues() {
+                context.collector.report_with_code(reported.code, reported.issue);
+            }
+        }
+        self.entered = true;
+        self.expression_issues = Some(IssueCollection::new());
+        let mut templates = self.templates.clone();
+        let mut parameters = WordMap::default();
+        let (result, _) = context.record(|context| {
+            analyze_invocation_with_arguments(
+                context,
+                block_context,
+                artifacts,
+                &mut invocation,
+                None,
+                class_related_argument_variables,
+                &mut templates,
+                &mut parameters,
+                self,
+            )
+        });
+        context.collector.extend(self.expression_issues.take().unwrap());
+        result?;
+        self.walk_binding = Some((templates, parameters));
+        Ok(())
+    }
+
+    pub(crate) fn has_evaluated(&self, source: &InvocationArgumentsSource<'_, '_>) -> bool {
+        source
+            .iter_arguments()
+            .enumerate()
+            .all(|(offset, argument)| argument.value().is_none() || self.types[offset].is_some())
+    }
+
+    pub(crate) fn remember(&mut self, source: &InvocationArgumentsSource<'_, '_>, artifacts: &AnalysisArtifacts) {
+        for (offset, expression) in source
+            .iter_arguments()
+            .enumerate()
+            .filter_map(|(offset, argument)| argument.value().map(|expression| (offset, expression)))
+        {
+            let ty = artifacts.get_rc_expression_type(expression).cloned().unwrap_or_else(|| Rc::new(get_mixed()));
+            self.types[offset] = Some((ty, expression.span()));
+        }
+    }
+
+    fn reference_context(&self, argument: &InvocationArgument<'_, '_>, offset: usize) -> Option<bool> {
+        (!self.targets.is_empty()).then(|| {
+            self.walk_target.as_ref().is_some_and(|target| {
+                if argument.is_unpacked() {
+                    target
+                        .parameter_count()
+                        .checked_sub(1)
+                        .and_then(|offset| target.get_parameter(offset))
+                        .is_some_and(|parameter| parameter.is_variadic() && parameter.is_by_reference())
+                } else {
+                    get_parameter_of_argument(target, argument, offset)
+                        .is_some_and(|(_, parameter)| parameter.is_by_reference())
+                }
+            })
+        })
+    }
+
+    fn closure_parameter_type(&self, offset: usize, single_target_type: Option<&TUnion>) -> Option<TUnion> {
+        if !self.has_walk_reflection {
+            return None;
+        }
+        self.parameter_contexts[offset].as_ref().or(single_target_type).cloned()
+    }
+
+    /// MethodCallReturnTypeHelper selects a dynamic name's generic acceptor on
+    /// beforeScope. Those are type queries, not another physical operand walk:
+    /// each query owns its scope and artifacts, and publishes no live events.
+    pub(crate) fn resolve_return_arguments<'arena, A: Arena>(
+        &self,
+        context: &mut Context<'ctx, 'arena, A>,
+        before: &BlockContext<'ctx>,
+        artifacts: &AnalysisArtifacts,
+        invocation: &Invocation<'ctx, '_, 'arena>,
+        templates: &mut TemplateResult,
+        parameters: &mut WordMap<TUnion>,
+    ) -> Result<(), AnalysisError> {
+        let mut scratch = artifacts.clone();
+        scratch.loop_scope = None;
+        scratch.case_scopes.clear();
+        let mut values = Self::new(invocation.arguments_source.argument_count());
+        values.entered = true;
+        let saved_observations = std::mem::take(&mut context.observations);
+        let constants = context.constant_types.clone();
+        let blocks = context.control_body_blocks.clone();
+        let ensured = context.ensured_non_null_types.clone();
+        let consume = context.consume_stored_expression_results;
+        context.observations.pricing = true;
+        let result = crate::plugin::registry::with_isolated_type_pricing(|| {
+            context.gather_callback(|context| {
+                for expression in invocation.arguments_source.iter_arguments().filter_map(|argument| argument.value()) {
+                    let mut scope = before.clone();
+                    scope.if_body_context = None;
+                    scope.finally_scope = None;
+                    expression.analyze(context, &mut scope, &mut scratch)?;
+                }
+                values.remember(&invocation.arguments_source, &scratch);
+                let mut scope = before.clone();
+                scope.if_body_context = None;
+                scope.finally_scope = None;
+                let mut invocation = invocation.clone();
+                analyze_invocation_with_arguments(
+                    context,
+                    &mut scope,
+                    &mut scratch,
+                    &mut invocation,
+                    None,
+                    None,
+                    templates,
+                    parameters,
+                    &mut values,
+                )
+            })
+        });
+        context.observations = saved_observations;
+        context.constant_types = constants;
+        context.control_body_blocks = blocks;
+        context.ensured_non_null_types = ensured;
+        context.consume_stored_expression_results = consume;
+        result
+    }
+
+    /// Resolve the single physical writeback contract from the gathered operands.
+    /// This pass binds cached values only. It never evaluates an argument or
+    /// dispatches a return provider, and does not apply any candidate's OUT write.
+    pub(crate) fn apply_writeback<'arena, A: Arena>(
+        &mut self,
+        context: &mut Context<'ctx, 'arena, A>,
+        block_context: &mut BlockContext<'ctx>,
+        artifacts: &mut AnalysisArtifacts,
+        source: InvocationArgumentsSource<'_, 'arena>,
+        span: Span,
+    ) -> Result<(), AnalysisError> {
+        let Some(target) = self
+            .walk_target
+            .clone()
+            .filter(|target| target.iter_parameters().any(|parameter| parameter.is_by_reference()))
+        else {
+            return Ok(());
+        };
+        let mut invocation = Invocation::new(target, source, span);
+        let positional_writeback = source.iter_arguments().any(|argument| {
+            argument
+                .get_parameter_name()
+                .is_some_and(|name| find_named_parameter_offset(&invocation.target, name).is_none())
+        });
+        if let Some((templates, parameters)) = &self.walk_binding {
+            return crate::invocation::post_process::update_by_reference_argument_types(
+                context,
+                block_context,
+                artifacts,
+                &invocation,
+                templates,
+                parameters,
+                positional_writeback,
+            );
+        }
+        let mut templates = self.templates.clone();
+        let mut parameters = WordMap::default();
+        let (result, _) = context.record(|context| {
+            analyze_invocation_with_arguments(
+                context,
+                block_context,
+                artifacts,
+                &mut invocation,
+                None,
+                None,
+                &mut templates,
+                &mut parameters,
+                self,
+            )
+        });
+        result?;
+        crate::invocation::post_process::update_by_reference_argument_types(
+            context,
+            block_context,
+            artifacts,
+            &invocation,
+            &templates,
+            &parameters,
+            positional_writeback,
+        )
+    }
+}
+
+/// ParametersAcceptorSelector::combineAcceptors. Only the physical argument
+/// contract is combined. Every original target keeps its own return provider.
+fn combine_walk_reflection<'ctx, A: Arena>(
+    context: &Context<'ctx, '_, A>,
+    targets: &[InvocationTarget<'ctx>],
+) -> Option<InvocationTarget<'ctx>> {
+    let mut target = targets.first()?.clone();
+    if targets.len() == 1 {
+        return Some(target);
+    }
+    let minimum = targets
+        .iter()
+        .map(|target| {
+            target.iter_parameters().filter(|parameter| !parameter.has_default() && !parameter.is_variadic()).count()
+        })
+        .min()
+        .unwrap();
+    let mut parameters: Vec<TCallableParameter> = Vec::new();
+    for candidate in targets {
+        let method = candidate.get_method_context();
+        for (offset, parameter) in candidate.iter_parameters().enumerate() {
+            let expand = |ty: &TUnion| {
+                resolve_type_in_class_context(
+                    context,
+                    ty.clone(),
+                    method.map(|method| method.class_like_metadata),
+                    None,
+                    None,
+                    method.map(|method| &method.class_type),
+                )
+            };
+            let ty = parameter.get_type().map_or_else(get_mixed, expand);
+            let mut combined = TCallableParameter::new(
+                Some(std::sync::Arc::new(ty)),
+                parameter.is_by_reference(),
+                parameter.is_variadic(),
+                offset >= minimum,
+            )
+            .with_name(parameter.get_name().copied())
+            .with_out_type(parameter.get_out_type().map(expand).map(std::sync::Arc::new))
+            .with_closure_this_type(parameter.get_closure_this_type().map(expand).map(std::sync::Arc::new));
+            if let Some(previous) = parameters.get(offset) {
+                let union = |left: &TUnion, right: &TUnion| {
+                    add_union_type(left.clone(), right, context.codebase, CombinerOptions::default())
+                };
+                let mut ty = union(previous.get_type_signature().unwrap(), combined.get_type_signature().unwrap());
+                let out = previous.get_out_type().zip(combined.get_out_type()).map(|(left, right)| union(left, right));
+                let closure_this = previous
+                    .get_closure_this_type()
+                    .zip(combined.get_closure_this_type())
+                    .map(|(left, right)| union(left, right));
+                let variadic = previous.is_variadic() || combined.is_variadic();
+                if variadic {
+                    for dropped in parameters.iter().skip(offset + 1) {
+                        ty = union(&ty, dropped.get_type_signature().unwrap());
+                    }
+                    for dropped in candidate.iter_parameters().skip(offset + 1) {
+                        ty = union(&ty, &dropped.get_type().map_or_else(get_mixed, expand));
+                    }
+                }
+                let name = previous.get_name().zip(combined.get_name()).map(|(left, right)| {
+                    if left == right {
+                        *left
+                    } else {
+                        mago_codex::misc::VariableIdentifier(concat_word!(
+                            left.0,
+                            "|",
+                            trim_start_byte(right.0.as_bytes(), b'$')
+                        ))
+                    }
+                });
+                combined = TCallableParameter::new(
+                    Some(std::sync::Arc::new(ty)),
+                    previous.is_by_reference() || combined.is_by_reference(),
+                    variadic,
+                    offset >= minimum,
+                )
+                .with_name(name)
+                .with_out_type(out.map(std::sync::Arc::new))
+                .with_closure_this_type(closure_this.map(std::sync::Arc::new));
+                parameters[offset] = combined;
+                if variadic {
+                    parameters.truncate(offset + 1);
+                    break;
+                }
+            } else {
+                parameters.push(combined);
+            }
+        }
+    }
+    target.set_effective_signature(crate::invocation::EffectiveCallableSignature {
+        parameters,
+        allows_named_arguments: true,
+        display_name: None,
+    });
+    Some(target)
+}
+
+pub(crate) fn analyze_invocation_with_arguments<'ctx, 'arena, A>(
+    context: &mut Context<'ctx, 'arena, A>,
+    block_context: &mut BlockContext<'ctx>,
+    artifacts: &mut AnalysisArtifacts,
+    invocation: &mut Invocation<'ctx, '_, 'arena>,
+    calling_class_like: Option<(Word, Option<&TAtomic>)>,
+    class_related_argument_variables: Option<&WordSet>,
+    template_result: &mut TemplateResult,
+    parameter_types: &mut WordMap<TUnion>,
+    arguments: &mut EvaluatedArguments<'ctx>,
+) -> Result<(), AnalysisError>
+where
+    A: Arena,
+{
+    let first_analysis = !arguments.entered;
+    arguments.entered = true;
+    if arguments.targets.is_empty()
+        && context.external_analysis_session.is_some()
         && !invocation.target.has_effective_signature()
         && let Some(identifier) = invocation.target.get_function_like_identifier().copied()
         && context.plugin_registry.may_have_callable_signature_provider(&identifier)
@@ -244,7 +643,7 @@ where
 
     populate_template_result_from_invocation(context, invocation, template_result);
 
-    if context.plugin_registry.has_expression_hooks() {
+    if first_analysis && context.plugin_registry.has_expression_hooks() {
         let mut hook_context = HookContext::new(context.codebase, context.source_file, block_context, artifacts);
         hook_context.raw_callback_gather = context.raw_callback_gather_depth > 0;
         context.plugin_registry.before_arguments(&InvocationInfo::new(invocation), &mut hook_context)?;
@@ -254,7 +653,7 @@ where
     }
 
     let arg_count = invocation.arguments_source.argument_count();
-    let mut analyzed_argument_types = vec![None; arg_count];
+    let mut analyzed_argument_types = arguments.types.clone();
 
     let mut non_closure_arguments = Vec::with_capacity(arg_count);
     let mut closure_arguments = Vec::new();
@@ -316,8 +715,40 @@ where
     let calling_instance_type = calling_class_like.and_then(|(_, atomic)| atomic);
     let method_class_type = method_call_context.map(|ctx| &ctx.class_type);
 
-    for (argument_offset, parameter) in &non_closure_arguments {
-        let Some(argument) = invocation.arguments_source.get_argument(*argument_offset) else {
+    // Like PHPStan's ArgumentsHandler, defer closures but evaluate every other
+    // operand once in its written order, including unpacked operands.
+    let mut non_closure_parameters = non_closure_arguments.iter().peekable();
+    for (offset, argument) in invocation.arguments_source.iter_arguments().enumerate() {
+        if argument.is_unpacked()
+            && let Some(argument_expression) = argument.value()
+        {
+            let referenced_parameter = invocation
+                .target
+                .parameter_count()
+                .checked_sub(1)
+                .and_then(|offset| invocation.target.get_parameter(offset))
+                .is_some_and(|parameter| parameter.is_variadic() && parameter.is_by_reference());
+            analyze_and_store_argument_type(
+                context,
+                block_context,
+                artifacts,
+                &invocation.target,
+                argument_expression,
+                offset,
+                &mut analyzed_argument_types,
+                referenced_parameter,
+                None,
+                None,
+                arguments.reference_context(&argument, offset),
+                arguments.expression_issues.as_mut(),
+            )?;
+            arguments.types[offset].clone_from(&analyzed_argument_types[offset]);
+            continue;
+        }
+
+        let Some((argument_offset, parameter)) =
+            non_closure_parameters.next_if(|(argument_offset, _)| *argument_offset == offset)
+        else {
             continue;
         };
         let Some(argument_expression) = argument.value() else {
@@ -326,6 +757,24 @@ where
 
         let parameter = *parameter;
 
+        let observation_type = context.observation_program.and_then(|_| {
+            parameter.map(|(_, parameter)| {
+                get_parameter_type(
+                    context,
+                    Some(parameter),
+                    base_class_metadata,
+                    calling_class_like_metadata,
+                    calling_instance_type,
+                    method_class_type,
+                )
+            })
+        });
+        let call_context = crate::observations::argument_context(
+            context,
+            Some(&invocation.target),
+            observation_type.as_ref(),
+            argument_expression.span(),
+        );
         analyze_and_store_argument_type(
             context,
             block_context,
@@ -336,7 +785,11 @@ where
             &mut analyzed_argument_types,
             parameter.is_some_and(|p| p.1.is_by_reference()),
             None,
+            call_context,
+            arguments.reference_context(&argument, *argument_offset),
+            arguments.expression_issues.as_mut(),
         )?;
+        arguments.types[*argument_offset].clone_from(&analyzed_argument_types[*argument_offset]);
 
         if let Some((argument_type, _)) = &mut analyzed_argument_types[*argument_offset]
             && let Some(narrowed_type) = narrow_class_related_argument(
@@ -401,7 +854,17 @@ where
         parameter_types.insert(parameter_name.0, argument_type);
     }
 
-    let global_closure_bind_scope = detect_closure_bind_scope(context, invocation, &analyzed_argument_types);
+    if arguments.expression_issues.is_some() && arguments.targets.len() > 1 {
+        // GenericParametersAcceptorResolver's combined acceptor keeps the first
+        // declaring scope for a colliding template name, not one bound per callee.
+        for (name, bounds) in &mut template_result.lower_bounds {
+            if let Some(first) = template_result.template_types.get(name).and_then(|types| types.first()) {
+                bounds.retain(|scope, _| *scope == first.defining_entity);
+            }
+        }
+    }
+
+    let global_closure_bind_scope = detect_closure_bind_scope(context, artifacts, invocation, &analyzed_argument_types);
     let previous_bind_scope = artifacts.closure_bind_scope.take();
 
     for (argument_offset, parameter) in &closure_arguments {
@@ -498,7 +961,9 @@ where
             })
             .or_else(|| global_closure_bind_scope.clone());
 
-        let raw_callback_type = if let Some(base_type) = &base_parameter_type_for_inference
+        let raw_callback_type = if arguments.types[*argument_offset].is_some() {
+            arguments.raw_callbacks[*argument_offset].clone()
+        } else if let Some(base_type) = &base_parameter_type_for_inference
             && matches!(&invocation.target, InvocationTarget::FunctionLike { metadata, effective_signature: None, .. }
                 if metadata.flags.is_user_defined()
                     && !metadata.return_type_metadata.as_ref().is_some_and(|t| contains_parameter_variable(&t.type_union)))
@@ -518,6 +983,37 @@ where
             None
         };
 
+        // GenericParametersAcceptorResolver selects a reflection from the argument's
+        // stored type before processing it. Do the same for the pricing context only.
+        let mut observation_type = context.observation_program.and_then(|_| parameter_type.clone());
+        if context.observations.pricing
+            && let Some(base_type) = &base_parameter_type_for_inference
+            && let Some(argument_type) = crate::observations::stored_type(context, argument_expression.span())
+        {
+            let mut observation_templates = template_result.clone();
+            infer_parameter_templates_from_argument(
+                context,
+                base_type,
+                &argument_type,
+                &mut observation_templates,
+                *argument_offset,
+                argument_expression.span(),
+                false,
+            );
+            observation_type = observation_type
+                .map(|ty| resolve_invocation_type(context, invocation, &observation_templates, parameter_types, ty));
+        }
+        let physical_parameter_type = arguments.closure_parameter_type(*argument_offset, parameter_type.as_ref());
+        if arguments.types[*argument_offset].is_none() {
+            arguments.parameter_contexts[*argument_offset].clone_from(&physical_parameter_type);
+            arguments.raw_callbacks[*argument_offset].clone_from(&raw_callback_type);
+        }
+        let call_context = crate::observations::argument_context(
+            context,
+            Some(&invocation.target),
+            if arguments.targets.len() > 1 { physical_parameter_type.as_ref() } else { observation_type.as_ref() },
+            argument_expression.span(),
+        );
         analyze_and_store_argument_type(
             context,
             block_context,
@@ -527,8 +1023,12 @@ where
             *argument_offset,
             &mut analyzed_argument_types,
             parameter.is_some_and(|p| p.1.is_by_reference()),
-            parameter_type.as_ref(),
+            physical_parameter_type.as_ref(),
+            call_context,
+            arguments.reference_context(&argument, *argument_offset),
+            arguments.expression_issues.as_mut(),
         )?;
+        arguments.types[*argument_offset].clone_from(&analyzed_argument_types[*argument_offset]);
 
         // Use the original unreplaced type for inference to allow closure return types
         // to contribute bounds that can widen literal types from other arguments.
@@ -590,20 +1090,6 @@ where
                 let Some(argument_expression) = argument.value() else {
                     continue;
                 };
-
-                if artifacts.get_expression_type(argument_expression).is_none() {
-                    analyze_and_store_argument_type(
-                        context,
-                        block_context,
-                        artifacts,
-                        &invocation.target,
-                        argument_expression,
-                        usize::MAX,
-                        &mut analyzed_argument_types,
-                        false,
-                        None,
-                    )?;
-                }
 
                 let argument_value_type =
                     artifacts.get_expression_type(argument_expression).cloned().unwrap_or_else(get_mixed);
@@ -941,20 +1427,6 @@ where
                     continue;
                 };
 
-                if artifacts.get_expression_type(argument_expression).is_none() {
-                    analyze_and_store_argument_type(
-                        context,
-                        block_context,
-                        artifacts,
-                        &invocation.target,
-                        argument_expression,
-                        usize::MAX,
-                        &mut analyzed_argument_types,
-                        last_parameter_ref.is_by_reference(),
-                        None,
-                    )?;
-                }
-
                 let argument_value_type =
                     artifacts.get_expression_type(argument_expression).cloned().unwrap_or_else(get_mixed);
 
@@ -1061,20 +1533,6 @@ where
                         continue;
                     };
 
-                    if artifacts.get_expression_type(argument_expression).is_none() {
-                        analyze_and_store_argument_type(
-                            context,
-                            block_context,
-                            artifacts,
-                            &invocation.target,
-                            argument_expression,
-                            usize::MAX,
-                            &mut analyzed_argument_types,
-                            last_parameter_ref.is_by_reference(),
-                            None,
-                        )?;
-                    }
-
                     let argument_value_type =
                         artifacts.get_expression_type(argument_expression).cloned().unwrap_or_else(get_mixed); // Get type of the iterable
 
@@ -1128,20 +1586,8 @@ where
                             continue;
                         };
 
-                        if artifacts.get_expression_type(argument_expression).is_none() {
-                            analyze_and_store_argument_type(
-                                context,
-                                block_context,
-                                artifacts,
-                                &invocation.target,
-                                argument_expression,
-                                usize::MAX,
-                                &mut analyzed_argument_types,
-                                false,
-                                None,
-                            )?;
-                        }
-
+                        // Nonvariadic unpacks were evaluated before template inference.
+                        // A semantic hook's missing type is not permission to replay it.
                         let argument_value_type =
                             artifacts.get_expression_type(argument_expression).cloned().unwrap_or_else(get_mixed);
 
@@ -1350,6 +1796,37 @@ where
         context.collector.report_with_code(IssueCode::TooManyArguments, issue);
     }
 
+    if context.observation_program.is_some() {
+        for (offset, argument) in invocation.arguments_source.iter_arguments().enumerate() {
+            let Some(expression) = argument.value() else { continue };
+            let parameter =
+                get_parameter_of_argument(&invocation.target, &argument, offset).filter(|_| !argument.is_unpacked());
+            let parameter_type = parameter.map(|(_, parameter)| {
+                let ty = get_parameter_type(
+                    context,
+                    Some(parameter),
+                    base_class_metadata,
+                    calling_class_like_metadata,
+                    calling_instance_type,
+                    method_class_type,
+                );
+                resolve_invocation_type(context, invocation, template_result, parameter_types, ty)
+            });
+            let parameter_type = if matches!(expression, Expression::Closure(_) | Expression::ArrowFunction(_)) {
+                arguments.closure_parameter_type(offset, parameter_type.as_ref())
+            } else {
+                parameter_type
+            };
+            if let Some(resolved) = crate::observations::argument_context(
+                context,
+                Some(&invocation.target),
+                parameter_type.as_ref(),
+                expression.span(),
+            ) {
+                crate::observations::settle_argument(context, &resolved);
+            }
+        }
+    }
     Ok(())
 }
 
@@ -1425,7 +1902,7 @@ fn infer_generic_callable_arguments<'ctx, 'arena, A>(
             &result_without_callback_bounds,
             parameter_types,
             base_class_metadata,
-            base_parameter_type,
+            base_parameter_type.clone(),
         );
 
         let expected_signatures = expected_parameter_type.types.iter().filter_map(|atomic| match atomic {
@@ -1454,6 +1931,14 @@ fn infer_generic_callable_arguments<'ctx, 'arena, A>(
                     _ => continue,
                 };
 
+                let parameter_dependent_return =
+                    input_signature.get_return_type().is_some_and(contains_parameter_variable);
+                let mut callback_parameters = WordMap::default();
+                if parameter_dependent_return {
+                    // Replace the provisional callback bounds only after its inputs are known.
+                    remove_template_bounds_from_argument(template_result, argument_offset);
+                }
+
                 for (input_parameter, expected_parameter) in
                     input_signature.get_parameters().iter().zip(expected_signature.get_parameters())
                 {
@@ -1464,6 +1949,10 @@ fn infer_generic_callable_arguments<'ctx, 'arena, A>(
                         continue;
                     };
 
+                    if parameter_dependent_return && let Some(name) = input_parameter.get_name() {
+                        callback_parameters.insert(name.0, expected_type.clone());
+                    }
+
                     if !input_type.has_template_types() || expected_type.is_mixed() {
                         continue;
                     }
@@ -1472,6 +1961,27 @@ fn infer_generic_callable_arguments<'ctx, 'arena, A>(
                         context,
                         input_type,
                         expected_type,
+                        template_result,
+                        argument_offset,
+                        *argument_span,
+                        false,
+                    );
+                }
+
+                if parameter_dependent_return {
+                    let return_type = resolve_invocation_type(
+                        context,
+                        invocation,
+                        template_result,
+                        &callback_parameters,
+                        input_signature.get_return_type().unwrap().clone(),
+                    );
+                    let mut specialized_signature = input_signature.into_owned();
+                    specialized_signature.return_type = Some(std::sync::Arc::new(return_type));
+                    infer_parameter_templates_from_argument(
+                        context,
+                        &base_parameter_type,
+                        &TUnion::from_atomic(TAtomic::Callable(TCallable::Signature(specialized_signature))),
                         template_result,
                         argument_offset,
                         *argument_span,
@@ -2039,6 +2549,7 @@ fn validate_keyed_array_elements<'ctx, 'arena, A>(
 /// `None` otherwise.
 fn detect_closure_bind_scope<'ctx, 'arena, A>(
     context: &Context<'ctx, 'arena, A>,
+    artifacts: &AnalysisArtifacts,
     invocation: &Invocation<'ctx, '_, 'arena>,
     analyzed_argument_types: &[Option<(Rc<TUnion>, Span)>],
 ) -> Option<ClosureBindScope>
@@ -2075,7 +2586,42 @@ where
             None
         };
 
-    if class_name.is_some() || has_this { Some(ClosureBindScope { class_name, has_this }) } else { None }
+    // StaticCallHandler keeps the second argument's native holder, but an
+    // explicit object/class scope supplies the full holder. Keep every member
+    // of that scope union, independently of the member-access class above.
+    let this_type = analyzed_argument_types
+        .get(new_scope_offset)
+        .and_then(Option::as_ref)
+        .map(|(scope, _)| {
+            scope
+                .types
+                .iter()
+                .filter_map(|atomic| {
+                    extract_class_name_from_scope_arg(context, &TUnion::from_atomic(atomic.clone()))
+                        .map(|name| TAtomic::Object(TObject::new_named(name)))
+                })
+                .collect::<Vec<_>>()
+        })
+        .filter(|types| !types.is_empty())
+        .map(TUnion::from_vec)
+        .or_else(|| new_this_type.filter(|ty| !ty.is_null()).cloned())
+        .map(Rc::new);
+
+    if class_name.is_some() || this_type.is_some() {
+        Some(ClosureBindScope {
+            class_name,
+            has_this: this_type.is_some(),
+            this_type,
+            native_this_type: analyzed_argument_types
+                .get(new_this_offset)
+                .and_then(Option::as_ref)
+                .and_then(|(_, span)| artifacts.get_rc_native_expression_type(span))
+                .filter(|ty| !ty.is_null())
+                .cloned(),
+        })
+    } else {
+        None
+    }
 }
 
 /// Extracts a class name from a scope argument (typically the 3rd argument to Closure::bind).
@@ -2112,11 +2658,15 @@ where
     None
 }
 
-/// Builds the bind scope for a `@param-closure-this` type: `$this` is bound (non-static) to the
-/// extracted class. Returns `None` when no concrete class can be extracted from the type.
+/// A PHPDoc binding changes the full holder without replacing the lexical class.
+/// PHPStan assigns ObjectWithoutClassType to the corresponding native holder.
 fn closure_this_bind_scope(closure_this_type: &TUnion) -> Option<ClosureBindScope> {
-    extract_class_name_from_type(closure_this_type)
-        .map(|class_name| ClosureBindScope { class_name: Some(class_name), has_this: true })
+    Some(ClosureBindScope {
+        class_name: None,
+        has_this: true,
+        this_type: Some(Rc::new(closure_this_type.clone())),
+        native_this_type: Some(Rc::new(mago_codex::ttype::get_object())),
+    })
 }
 
 /// Extracts a class name from a type union (typically for $this type).

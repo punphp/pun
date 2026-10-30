@@ -186,6 +186,8 @@ where
         );
     }
 
+    conditional::apply_boolean_branch(binary.lhs, true, artifacts, &mut right_block_context);
+
     let partitioned_clauses = BlockContext::remove_reconciled_clause_refs(
         &{
             let mut c = left_block_context.clauses.clone();
@@ -209,9 +211,7 @@ where
         }
 
         result_type = get_false();
-        let mut dead_rhs_context = right_block_context.clone();
-        dead_rhs_context.flags.set_has_returned(true);
-        binary.rhs.analyze(context, &mut dead_rhs_context, artifacts)?;
+        binary.rhs.analyze(context, &mut right_block_context, artifacts)?;
     } else {
         binary.rhs.analyze(context, &mut right_block_context, artifacts)?;
         let rhs_type = match artifacts.get_rc_expression_type(&binary.rhs).cloned() {
@@ -267,6 +267,14 @@ where
     }
 
     artifacts.set_expression_type(binary, result_type);
+
+    let evaluated_scope = conditional::record_boolean_scopes(
+        context,
+        artifacts,
+        binary,
+        &left_block_context,
+        &right_block_context,
+    );
 
     block_context.conditionally_referenced_variable_ids = left_block_context.conditionally_referenced_variable_ids;
     block_context
@@ -331,6 +339,9 @@ where
             &right_assigned_var_ids,
         );
     }
+
+    evaluated_scope.restore_certainty(block_context);
+    block_context.locals = evaluated_scope.locals;
 
     Ok(())
 }
@@ -481,6 +492,8 @@ where
             );
         }
 
+        conditional::apply_boolean_branch(binary.lhs, false, artifacts, &mut right_block_context);
+
         right_block_context.clauses.clone_from(&clauses_for_right_analysis);
 
         if !changed_var_ids.is_empty() {
@@ -607,9 +620,17 @@ where
 
         block_context
             .conditionally_referenced_variable_ids
-            .extend(right_block_context.conditionally_referenced_variable_ids);
+            .extend(right_block_context.conditionally_referenced_variable_ids.iter().copied());
         block_context.assigned_variable_ids.extend(right_block_context.assigned_variable_ids.clone());
     }
+
+    let evaluated_scope = conditional::record_boolean_scopes(
+        context,
+        artifacts,
+        binary,
+        &left_block_context,
+        &right_block_context,
+    );
 
     if let Some(if_body_context) = &block_context.if_body_context {
         let mut if_body_context_inner = if_body_context.borrow_mut();
@@ -648,6 +669,9 @@ where
     }
 
     artifacts.set_expression_type(binary, result_type);
+
+    evaluated_scope.restore_certainty(block_context);
+    block_context.locals = evaluated_scope.locals;
 
     Ok(())
 }

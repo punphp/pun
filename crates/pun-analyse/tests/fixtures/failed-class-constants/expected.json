@@ -1,0 +1,1800 @@
+{
+    "phpstan_source": "cb3b7e99489b2e3789ee2eec10501cb7a72580ea",
+    "files": {
+        "undefined-class.php": {
+            "sha256": "adbd8f623deaa50772e7645b95187868ddc61d8f75a6626fc430e4910b87a679",
+            "diagnostics": {
+                "0": [
+                    [
+                        3,
+                        "class.notFound",
+                        "Access to constant SOME_CONST on an unknown class NonExistentClass.",
+                        "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                        true
+                    ]
+                ],
+                "8": [
+                    [
+                        3,
+                        "class.notFound",
+                        "Access to constant SOME_CONST on an unknown class NonExistentClass.",
+                        "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                        true
+                    ]
+                ],
+                "10": [
+                    [
+                        3,
+                        "class.notFound",
+                        "Access to constant SOME_CONST on an unknown class NonExistentClass.",
+                        "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                        true
+                    ]
+                ]
+            },
+            "expressions": {
+                "7": {
+                    "expression": "$_ = NonExistentClass::SOME_CONST",
+                    "line": 3,
+                    "type": "*ERROR*",
+                    "full": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    }
+                },
+                "12": {
+                    "expression": "NonExistentClass::SOME_CONST",
+                    "line": 3,
+                    "type": "*ERROR*",
+                    "full": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "constant",
+                    "visits": 1
+                }
+            }
+        },
+        "self.php": {
+            "sha256": "6b40dd51fb342e1c7335916ee8375af2ebf460eee0ca38c3c6ad38c8ab759040",
+            "diagnostics": {
+                "0": [
+                    [
+                        3,
+                        "outOfClass.self",
+                        "Using self outside of class scope.",
+                        null,
+                        true
+                    ]
+                ],
+                "8": [
+                    [
+                        3,
+                        "outOfClass.self",
+                        "Using self outside of class scope.",
+                        null,
+                        true
+                    ]
+                ],
+                "10": [
+                    [
+                        3,
+                        "outOfClass.self",
+                        "Using self outside of class scope.",
+                        null,
+                        true
+                    ]
+                ]
+            },
+            "expressions": {
+                "7": {
+                    "expression": "$_ = self::SOME_CONST",
+                    "line": 3,
+                    "type": "*ERROR*",
+                    "full": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    }
+                },
+                "12": {
+                    "expression": "self::SOME_CONST",
+                    "line": 3,
+                    "type": "*ERROR*",
+                    "full": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "constant",
+                    "visits": 1
+                }
+            }
+        },
+        "static.php": {
+            "sha256": "6329f4e3ff5437d616e2c911305a2615a51f71e3719def82150a0bb520ce73b8",
+            "diagnostics": {
+                "0": [
+                    [
+                        3,
+                        "outOfClass.static",
+                        "Using static outside of class scope.",
+                        null,
+                        true
+                    ]
+                ],
+                "8": [
+                    [
+                        3,
+                        "outOfClass.static",
+                        "Using static outside of class scope.",
+                        null,
+                        true
+                    ]
+                ],
+                "10": [
+                    [
+                        3,
+                        "outOfClass.static",
+                        "Using static outside of class scope.",
+                        null,
+                        true
+                    ]
+                ]
+            },
+            "expressions": {
+                "7": {
+                    "expression": "$_ = static::SOME_CONST",
+                    "line": 3,
+                    "type": "*ERROR*",
+                    "full": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    }
+                },
+                "12": {
+                    "expression": "static::SOME_CONST",
+                    "line": 3,
+                    "type": "*ERROR*",
+                    "full": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "constant",
+                    "visits": 1
+                }
+            }
+        },
+        "parent.php": {
+            "sha256": "9c52c561e178aa5eb0ee11f3601f30722518125d282a66e6497115b8cfa3e884",
+            "diagnostics": {
+                "0": [
+                    [
+                        3,
+                        "outOfClass.parent",
+                        "Using parent outside of class scope.",
+                        null,
+                        true
+                    ]
+                ],
+                "8": [
+                    [
+                        3,
+                        "outOfClass.parent",
+                        "Using parent outside of class scope.",
+                        null,
+                        true
+                    ]
+                ],
+                "10": [
+                    [
+                        3,
+                        "outOfClass.parent",
+                        "Using parent outside of class scope.",
+                        null,
+                        true
+                    ]
+                ]
+            },
+            "expressions": {
+                "7": {
+                    "expression": "$_ = parent::SOME_CONST",
+                    "line": 3,
+                    "type": "*ERROR*",
+                    "full": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    }
+                },
+                "12": {
+                    "expression": "parent::SOME_CONST",
+                    "line": 3,
+                    "type": "*ERROR*",
+                    "full": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "constant",
+                    "visits": 1
+                }
+            }
+        },
+        "dynamic-invalid.php": {
+            "sha256": "e4224b6c1168e67c585819bcb0b55940446011a5b553f1004cc3e504c2224697",
+            "diagnostics": {
+                "0": [],
+                "8": [
+                    [
+                        5,
+                        "classConstant.nameType",
+                        "Class constant name in dynamic fetch can only be a string, int given.",
+                        null,
+                        true
+                    ]
+                ],
+                "10": [
+                    [
+                        5,
+                        "classConstant.nameType",
+                        "Class constant name in dynamic fetch can only be a string, int given.",
+                        null,
+                        true
+                    ]
+                ]
+            },
+            "expressions": {
+                "38": {
+                    "expression": "$constName = 123",
+                    "line": 4,
+                    "type": "123",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [
+                            123
+                        ],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [
+                            123
+                        ],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [
+                            123
+                        ],
+                        "strings": [],
+                        "objects": []
+                    }
+                },
+                "56": {
+                    "expression": "$_ = MyClass::{$constName}",
+                    "line": 5,
+                    "type": "mixed",
+                    "full": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    }
+                },
+                "61": {
+                    "expression": "MyClass::{$constName}",
+                    "line": 5,
+                    "type": "mixed",
+                    "full": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "constant",
+                    "visits": 1
+                }
+            }
+        },
+        "string-class.php": {
+            "sha256": "ae7800ea2f0da8bff58d51a79cef712049c21fbd88e6006d47d932da773a59c5",
+            "diagnostics": {
+                "0": [],
+                "8": [
+                    [
+                        3,
+                        "classConstant.dynamicString",
+                        "Accessing ::class constant on a dynamic string is not supported in PHP.",
+                        null,
+                        false
+                    ]
+                ],
+                "10": [
+                    [
+                        3,
+                        "classConstant.dynamicString",
+                        "Accessing ::class constant on a dynamic string is not supported in PHP.",
+                        null,
+                        false
+                    ]
+                ]
+            },
+            "expressions": {
+                "6": {
+                    "expression": "$className = \"MyClass\"",
+                    "line": 2,
+                    "type": "'MyClass'",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [
+                            "MyClass"
+                        ],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [
+                            "MyClass"
+                        ],
+                        "objects": []
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [
+                            "MyClass"
+                        ],
+                        "objects": []
+                    }
+                },
+                "30": {
+                    "expression": "$_ = $className::class",
+                    "line": 3,
+                    "type": "*ERROR*",
+                    "full": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    }
+                },
+                "35": {
+                    "expression": "$className::class",
+                    "line": 3,
+                    "type": "*ERROR*",
+                    "full": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "constant",
+                    "visits": 1
+                }
+            }
+        },
+        "enum.php": {
+            "sha256": "e5cc6c83378048a0df11e7cd515be1d1a22b151a34064fd1b222e2bcaaac856b",
+            "diagnostics": {
+                "0": [
+                    [
+                        3,
+                        "classConstant.notFound",
+                        "Access to undefined constant Suit::Diamonds.",
+                        null,
+                        true
+                    ]
+                ],
+                "8": [
+                    [
+                        3,
+                        "classConstant.notFound",
+                        "Access to undefined constant Suit::Diamonds.",
+                        null,
+                        true
+                    ]
+                ],
+                "10": [
+                    [
+                        3,
+                        "classConstant.notFound",
+                        "Access to undefined constant Suit::Diamonds.",
+                        null,
+                        true
+                    ]
+                ]
+            },
+            "expressions": {
+                "33": {
+                    "expression": "$_ = Suit::Diamonds",
+                    "line": 3,
+                    "type": "*ERROR*",
+                    "full": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    }
+                },
+                "38": {
+                    "expression": "Suit::Diamonds",
+                    "line": 3,
+                    "type": "*ERROR*",
+                    "full": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "constant",
+                    "visits": 1
+                }
+            }
+        },
+        "controls.php": {
+            "sha256": "f10a1a768fd9c9a38b7a7c7c3cb9a0e96078b8dc80e73967b9bbc2bb1b8ae51f",
+            "diagnostics": {
+                "0": [
+                    [
+                        11,
+                        "classConstant.notFound",
+                        "Access to undefined constant FailedClassConstants\\One::MISSING.",
+                        null,
+                        true
+                    ],
+                    [
+                        12,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        13,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        14,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        18,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        21,
+                        "phpstan.dumpType",
+                        "Dumped type: 11",
+                        null,
+                        false
+                    ],
+                    [
+                        22,
+                        "phpstan.dumpType",
+                        "Dumped type: 11|'two'",
+                        null,
+                        false
+                    ],
+                    [
+                        24,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        26,
+                        "phpstan.dumpType",
+                        "Dumped type: 'FailedClassConstants\\\\One'",
+                        null,
+                        false
+                    ],
+                    [
+                        29,
+                        "phpstan.dumpType",
+                        "Dumped type: FailedClassConstants\\One",
+                        null,
+                        false
+                    ],
+                    [
+                        30,
+                        "phpstan.dumpType",
+                        "Dumped type: 'NUMBER'",
+                        null,
+                        false
+                    ],
+                    [
+                        31,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        34,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        41,
+                        "phpstan.dumpType",
+                        "Dumped type: 11",
+                        null,
+                        false
+                    ]
+                ],
+                "8": [
+                    [
+                        11,
+                        "classConstant.notFound",
+                        "Access to undefined constant FailedClassConstants\\One::MISSING.",
+                        null,
+                        true
+                    ],
+                    [
+                        12,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        13,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        14,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        17,
+                        "classConstant.nameType",
+                        "Class constant name in dynamic fetch can only be a string, int given.",
+                        null,
+                        true
+                    ],
+                    [
+                        18,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        21,
+                        "phpstan.dumpType",
+                        "Dumped type: 11",
+                        null,
+                        false
+                    ],
+                    [
+                        22,
+                        "phpstan.dumpType",
+                        "Dumped type: 11|'two'",
+                        null,
+                        false
+                    ],
+                    [
+                        24,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        26,
+                        "phpstan.dumpType",
+                        "Dumped type: 'FailedClassConstants\\\\One'",
+                        null,
+                        false
+                    ],
+                    [
+                        29,
+                        "phpstan.dumpType",
+                        "Dumped type: FailedClassConstants\\One",
+                        null,
+                        false
+                    ],
+                    [
+                        30,
+                        "phpstan.dumpType",
+                        "Dumped type: 'NUMBER'",
+                        null,
+                        false
+                    ],
+                    [
+                        31,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        34,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        40,
+                        "classConstant.notFound",
+                        "Access to undefined constant FailedClassConstants\\Missing|FailedClassConstants\\One::NUMBER.",
+                        null,
+                        true
+                    ],
+                    [
+                        41,
+                        "phpstan.dumpType",
+                        "Dumped type: 11",
+                        null,
+                        false
+                    ]
+                ],
+                "10": [
+                    [
+                        11,
+                        "classConstant.notFound",
+                        "Access to undefined constant FailedClassConstants\\One::MISSING.",
+                        null,
+                        true
+                    ],
+                    [
+                        12,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        13,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        14,
+                        "phpstan.dumpType",
+                        "Dumped type: *ERROR*",
+                        null,
+                        false
+                    ],
+                    [
+                        17,
+                        "classConstant.nameType",
+                        "Class constant name in dynamic fetch can only be a string, int given.",
+                        null,
+                        true
+                    ],
+                    [
+                        18,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        21,
+                        "phpstan.dumpType",
+                        "Dumped type: 11",
+                        null,
+                        false
+                    ],
+                    [
+                        22,
+                        "phpstan.dumpType",
+                        "Dumped type: 11|'two'",
+                        null,
+                        false
+                    ],
+                    [
+                        24,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        26,
+                        "phpstan.dumpType",
+                        "Dumped type: 'FailedClassConstants\\\\One'",
+                        null,
+                        false
+                    ],
+                    [
+                        29,
+                        "phpstan.dumpType",
+                        "Dumped type: FailedClassConstants\\One",
+                        null,
+                        false
+                    ],
+                    [
+                        30,
+                        "phpstan.dumpType",
+                        "Dumped type: 'NUMBER'",
+                        null,
+                        false
+                    ],
+                    [
+                        31,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        34,
+                        "phpstan.dumpType",
+                        "Dumped type: mixed",
+                        null,
+                        false
+                    ],
+                    [
+                        40,
+                        "classConstant.notFound",
+                        "Access to undefined constant FailedClassConstants\\Missing|FailedClassConstants\\One::NUMBER.",
+                        null,
+                        true
+                    ],
+                    [
+                        41,
+                        "phpstan.dumpType",
+                        "Dumped type: 11",
+                        null,
+                        false
+                    ]
+                ]
+            },
+            "expressions": {
+                "214": {
+                    "expression": "$failed = One::MISSING",
+                    "line": 11,
+                    "type": "*ERROR*",
+                    "full": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    }
+                },
+                "224": {
+                    "expression": "One::MISSING",
+                    "line": 11,
+                    "type": "*ERROR*",
+                    "full": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "constant",
+                    "visits": 1
+                },
+                "292": {
+                    "expression": "$copy = $failed",
+                    "line": 13,
+                    "type": "*ERROR*",
+                    "full": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": true,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    }
+                },
+                "349": {
+                    "expression": "'after-failed-assignment'",
+                    "line": 15,
+                    "type": "'after-failed-assignment'",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [
+                            "after-failed-assignment"
+                        ],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [
+                            "after-failed-assignment"
+                        ],
+                        "objects": []
+                    },
+                    "kind": "marker",
+                    "visits": 1
+                },
+                "381": {
+                    "expression": "$_invalid = One::{123}",
+                    "line": 17,
+                    "type": "mixed",
+                    "full": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    }
+                },
+                "393": {
+                    "expression": "One::{123}",
+                    "line": 17,
+                    "type": "mixed",
+                    "full": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "constant",
+                    "visits": 1
+                },
+                "448": {
+                    "expression": "'after-dynamic-invalid'",
+                    "line": 19,
+                    "type": "'after-dynamic-invalid'",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [
+                            "after-dynamic-invalid"
+                        ],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [
+                            "after-dynamic-invalid"
+                        ],
+                        "objects": []
+                    },
+                    "kind": "marker",
+                    "visits": 1
+                },
+                "496": {
+                    "expression": "One::NUMBER",
+                    "line": 21,
+                    "type": "11",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [
+                            11
+                        ],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [
+                            11
+                        ],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "constant",
+                    "visits": 1
+                },
+                "532": {
+                    "expression": "$receiver::NUMBER",
+                    "line": 22,
+                    "type": "11|'two'",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [
+                            11
+                        ],
+                        "strings": [
+                            "two"
+                        ],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [
+                            11
+                        ],
+                        "strings": [
+                            "two"
+                        ],
+                        "objects": []
+                    },
+                    "kind": "constant",
+                    "visits": 1
+                },
+                "556": {
+                    "expression": "$_literal = One::{'NUMBER'}",
+                    "line": 23,
+                    "type": "mixed",
+                    "full": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    }
+                },
+                "568": {
+                    "expression": "One::{'NUMBER'}",
+                    "line": 23,
+                    "type": "mixed",
+                    "full": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "constant",
+                    "visits": 1
+                },
+                "623": {
+                    "expression": "$class = One::class",
+                    "line": 25,
+                    "type": "'FailedClassConstants\\\\One'",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [
+                            "FailedClassConstants\\One"
+                        ],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [
+                            "FailedClassConstants\\One"
+                        ],
+                        "objects": []
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [
+                            "FailedClassConstants\\One"
+                        ],
+                        "objects": []
+                    }
+                },
+                "632": {
+                    "expression": "One::class",
+                    "line": 25,
+                    "type": "'FailedClassConstants\\\\One'",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [
+                            "FailedClassConstants\\One"
+                        ],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [
+                            "FailedClassConstants\\One"
+                        ],
+                        "objects": []
+                    },
+                    "kind": "constant",
+                    "visits": 1
+                },
+                "680": {
+                    "expression": "$_sequence = ($receiver = new One())::{($selector = 'NUMBER')}",
+                    "line": 28,
+                    "type": "mixed",
+                    "full": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    }
+                },
+                "693": {
+                    "expression": "($receiver = new One())::{($selector = 'NUMBER')}",
+                    "line": 28,
+                    "type": "mixed",
+                    "full": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "constant",
+                    "visits": 1
+                },
+                "694": {
+                    "expression": "$receiver = new One()",
+                    "line": 28,
+                    "type": "FailedClassConstants\\One",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": [
+                            "FailedClassConstants\\One"
+                        ]
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": [
+                            "FailedClassConstants\\One"
+                        ]
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": [
+                            "FailedClassConstants\\One"
+                        ]
+                    }
+                },
+                "720": {
+                    "expression": "$selector = 'NUMBER'",
+                    "line": 28,
+                    "type": "'NUMBER'",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [
+                            "NUMBER"
+                        ],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [
+                            "NUMBER"
+                        ],
+                        "objects": []
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [
+                            "NUMBER"
+                        ],
+                        "objects": []
+                    }
+                },
+                "852": {
+                    "expression": "$genuine = $unknown",
+                    "line": 33,
+                    "type": "mixed",
+                    "full": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    }
+                },
+                "915": {
+                    "expression": "'after-controls'",
+                    "line": 35,
+                    "type": "'after-controls'",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [
+                            "after-controls"
+                        ],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [
+                            "after-controls"
+                        ],
+                        "objects": []
+                    },
+                    "kind": "marker",
+                    "visits": 1
+                },
+                "993": {
+                    "expression": "$_partial = $receiver::NUMBER",
+                    "line": 40,
+                    "type": "11",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [
+                            11
+                        ],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [
+                            11
+                        ],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [
+                            11
+                        ],
+                        "strings": [],
+                        "objects": []
+                    }
+                },
+                "1005": {
+                    "expression": "$receiver::NUMBER",
+                    "line": 40,
+                    "type": "11",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [
+                            11
+                        ],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [
+                            11
+                        ],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "constant",
+                    "visits": 1
+                },
+                "1067": {
+                    "expression": "'after-partial-union'",
+                    "line": 42,
+                    "type": "'after-partial-union'",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [
+                            "after-partial-union"
+                        ],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": null,
+                        "ints": [],
+                        "strings": [
+                            "after-partial-union"
+                        ],
+                        "objects": []
+                    },
+                    "kind": "marker",
+                    "visits": 1
+                }
+            }
+        },
+        "never.php": {
+            "sha256": "1aa5fcf322e158fd7cb957b1b0c9110246ba316121b8a6d99f656450f1dd9119",
+            "diagnostics": {
+                "0": [],
+                "8": [
+                    [
+                        11,
+                        "deadCode.unreachable",
+                        "Unreachable statement - code above always terminates.",
+                        null,
+                        true
+                    ],
+                    [
+                        17,
+                        "deadCode.unreachable",
+                        "Unreachable statement - code above always terminates.",
+                        null,
+                        true
+                    ]
+                ],
+                "10": [
+                    [
+                        11,
+                        "deadCode.unreachable",
+                        "Unreachable statement - code above always terminates.",
+                        null,
+                        true
+                    ],
+                    [
+                        17,
+                        "deadCode.unreachable",
+                        "Unreachable statement - code above always terminates.",
+                        null,
+                        true
+                    ]
+                ]
+            },
+            "expressions": {
+                "154": {
+                    "expression": "$_result = Known::{stop()}",
+                    "line": 10,
+                    "type": "mixed",
+                    "full": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "assignment",
+                    "visits": 1,
+                    "assigned": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    }
+                },
+                "165": {
+                    "expression": "Known::{stop()}",
+                    "line": 10,
+                    "type": "mixed",
+                    "full": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": true,
+                        "never": null,
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "constant",
+                    "visits": 1
+                },
+                "173": {
+                    "expression": "stop()",
+                    "line": 10,
+                    "type": "never",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": "nonaccepting",
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": "nonaccepting",
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "stop",
+                    "visits": 1
+                },
+                "255": {
+                    "expression": "stop()",
+                    "line": 16,
+                    "type": "never",
+                    "full": {
+                        "error": false,
+                        "mixed": false,
+                        "never": "nonaccepting",
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "native": {
+                        "error": false,
+                        "mixed": false,
+                        "never": "nonaccepting",
+                        "ints": [],
+                        "strings": [],
+                        "objects": []
+                    },
+                    "kind": "stop",
+                    "visits": 1
+                }
+            }
+        }
+    }
+}

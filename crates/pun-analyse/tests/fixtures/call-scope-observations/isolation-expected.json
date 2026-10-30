@@ -1,0 +1,97 @@
+{
+    "calls": {
+        "179": {
+            "line": 8,
+            "expression": "$o->{($v = $m)}((function () use ($v) {\n        function observationLocal($x) { return $x; }\n        class ObservationLocal {}\n        interface ObservationLocalInterface {}\n        trait ObservationLocalTrait {}\n        enum ObservationLocalEnum { case A; }\n        return $v;\n    })())",
+            "names": [
+                {
+                    "name": "bar",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 179,
+                            "end": 181,
+                            "expression": "$o",
+                            "type": "IsolationSink"
+                        },
+                        {
+                            "start": 195,
+                            "end": 465,
+                            "expression": "(function () use ($v) {\n        function observationLocal($x) { return $x; }\n        class ObservationLocal {}\n        interface ObservationLocalInterface {}\n        trait ObservationLocalTrait {}\n        enum ObservationLocalEnum { case A; }\n        return $v;\n    })()",
+                            "type": "'bar'|'foo'"
+                        }
+                    ]
+                },
+                {
+                    "name": "foo",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 179,
+                            "end": 181,
+                            "expression": "$o",
+                            "type": "IsolationSink"
+                        },
+                        {
+                            "start": 195,
+                            "end": 465,
+                            "expression": "(function () use ($v) {\n        function observationLocal($x) { return $x; }\n        class ObservationLocal {}\n        interface ObservationLocalInterface {}\n        trait ObservationLocalTrait {}\n        enum ObservationLocalEnum { case A; }\n        return $v;\n    })()",
+                            "type": "'bar'|'foo'"
+                        }
+                    ]
+                }
+            ]
+        },
+        "483": {
+            "line": 16,
+            "expression": "$o->{($v = $m)}((new class($v) {\n        public function __construct($v) {}\n        public function value($v): int { return 1; }\n    })->value($v))",
+            "names": [
+                {
+                    "name": "bar",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 483,
+                            "end": 485,
+                            "expression": "$o",
+                            "type": "IsolationSink"
+                        },
+                        {
+                            "start": 499,
+                            "end": 629,
+                            "expression": "(new class($v) {\n        public function __construct($v) {}\n        public function value($v): int { return 1; }\n    })->value($v)",
+                            "type": "int"
+                        }
+                    ]
+                },
+                {
+                    "name": "foo",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 483,
+                            "end": 485,
+                            "expression": "$o",
+                            "type": "IsolationSink"
+                        },
+                        {
+                            "start": 499,
+                            "end": 629,
+                            "expression": "(new class($v) {\n        public function __construct($v) {}\n        public function value($v): int { return 1; }\n    })->value($v)",
+                            "type": "int"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "errors": [
+        [
+            9,
+            "function.inner",
+            "Inner named functions are not supported by PHPStan. Consider refactoring to an anonymous function, class method, or a top-level-defined function. See issue #165 (https://github.com/phpstan/phpstan/issues/165) for more details.",
+            null,
+            true
+        ]
+    ]
+}

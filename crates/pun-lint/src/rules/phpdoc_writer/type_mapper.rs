@@ -55,7 +55,7 @@ impl Mapper {
             Type::ClassString(Some(inner)) => TypeNode::Generic {
                 base: "class-string".to_string(),
                 args: vec![match &**inner {
-                    Type::Object(name, args) if args.is_empty() => self.object_name(name),
+                    Type::Object(name, args, _) if args.is_empty() => self.object_name(name),
                     other => TypeNode::Raw(to_phpdoc(other)),
                 }],
             },
@@ -67,8 +67,8 @@ impl Mapper {
             }
             Type::Never(_) => TypeNode::ident("never"),
             Type::Null => TypeNode::ident("null"),
-            Type::Object(name, args) if args.is_empty() => self.object_name(name),
-            Type::Object(name, args) => TypeNode::Generic {
+            Type::Object(name, args, _) if args.is_empty() => self.object_name(name),
+            Type::Object(name, args, _) => TypeNode::Generic {
                 base: format!("\\{name}"),
                 args: args
                     .iter()
@@ -227,7 +227,7 @@ fn qualify(node: &mut TypeNode) {
 /// `ObjectTypeMapper`'s traversal for a generic object's arguments: classes fully qualified.
 fn fully_qualified(t: &Type) -> Type {
     match t {
-        Type::Object(name, args) if args.is_empty() => Type::Object(format!("\\{name}"), vec![]),
+        Type::Object(name, args, _) if args.is_empty() => Type::Object(format!("\\{name}"), vec![], false),
         t => t.traverse(&fully_qualified),
     }
 }
@@ -548,8 +548,8 @@ pub fn type_hash(t: &Type) -> String {
             type_hash(&t.iterable_key_type()),
             item.describe(Level::Precise)
         ),
-        Type::Object(_, args) if !args.is_empty() => t.describe(Level::Precise),
-        Type::Object(name, _) | Type::Static(name, _) | Type::This(name) => name.clone(),
+        Type::Object(_, args, _) if !args.is_empty() => t.describe(Level::Precise),
+        Type::Object(name, _, _) | Type::Static(name, _) | Type::This(name) => name.clone(),
         Type::EnumCase(name, _) => name.clone(),
         // `isConstantValue()`: the class name
         Type::ConstBool(_) => "ConstantBooleanType".to_string(),

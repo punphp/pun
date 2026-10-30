@@ -1,0 +1,152 @@
+{
+    "types": {
+        "implicit": {
+            "description": "*NEVER*",
+            "kind": "implicit"
+        },
+        "explicit": {
+            "description": "*NEVER*",
+            "kind": "explicit"
+        },
+        "nonaccepting": {
+            "description": "never",
+            "kind": "nonaccepting"
+        },
+        "int": {
+            "description": "int",
+            "kind": null
+        }
+    },
+    "unions": {
+        "implicit|implicit": {
+            "description": "*NEVER*",
+            "kind": "implicit"
+        },
+        "implicit|explicit": {
+            "description": "*NEVER*",
+            "kind": "explicit"
+        },
+        "implicit|nonaccepting": {
+            "description": "never",
+            "kind": "nonaccepting"
+        },
+        "implicit|int": {
+            "description": "int",
+            "kind": null
+        },
+        "explicit|implicit": {
+            "description": "*NEVER*",
+            "kind": "explicit"
+        },
+        "explicit|explicit": {
+            "description": "*NEVER*",
+            "kind": "explicit"
+        },
+        "explicit|nonaccepting": {
+            "description": "*NEVER*",
+            "kind": "explicit"
+        },
+        "explicit|int": {
+            "description": "int",
+            "kind": null
+        },
+        "nonaccepting|implicit": {
+            "description": "never",
+            "kind": "nonaccepting"
+        },
+        "nonaccepting|explicit": {
+            "description": "*NEVER*",
+            "kind": "explicit"
+        },
+        "nonaccepting|nonaccepting": {
+            "description": "never",
+            "kind": "nonaccepting"
+        },
+        "nonaccepting|int": {
+            "description": "int",
+            "kind": null
+        },
+        "int|implicit": {
+            "description": "int",
+            "kind": null
+        },
+        "int|explicit": {
+            "description": "int",
+            "kind": null
+        },
+        "int|nonaccepting": {
+            "description": "int",
+            "kind": null
+        },
+        "int|int": {
+            "description": "int",
+            "kind": null
+        }
+    },
+    "intersections": {
+        "implicit&implicit": {
+            "description": "*NEVER*",
+            "kind": "implicit"
+        },
+        "implicit&explicit": {
+            "description": "*NEVER*",
+            "kind": "implicit"
+        },
+        "implicit&nonaccepting": {
+            "description": "*NEVER*",
+            "kind": "implicit"
+        },
+        "implicit&int": {
+            "description": "*NEVER*",
+            "kind": "implicit"
+        },
+        "explicit&implicit": {
+            "description": "*NEVER*",
+            "kind": "implicit"
+        },
+        "explicit&explicit": {
+            "description": "*NEVER*",
+            "kind": "explicit"
+        },
+        "explicit&nonaccepting": {
+            "description": "never",
+            "kind": "nonaccepting"
+        },
+        "explicit&int": {
+            "description": "*NEVER*",
+            "kind": "explicit"
+        },
+        "nonaccepting&implicit": {
+            "description": "*NEVER*",
+            "kind": "implicit"
+        },
+        "nonaccepting&explicit": {
+            "description": "never",
+            "kind": "nonaccepting"
+        },
+        "nonaccepting&nonaccepting": {
+            "description": "never",
+            "kind": "nonaccepting"
+        },
+        "nonaccepting&int": {
+            "description": "never",
+            "kind": "nonaccepting"
+        },
+        "int&implicit": {
+            "description": "*NEVER*",
+            "kind": "implicit"
+        },
+        "int&explicit": {
+            "description": "*NEVER*",
+            "kind": "explicit"
+        },
+        "int&nonaccepting": {
+            "description": "never",
+            "kind": "nonaccepting"
+        },
+        "int&int": {
+            "description": "int",
+            "kind": null
+        }
+    }
+}

@@ -165,6 +165,13 @@ fn named_call_expression_guards_respect_purity_and_mutation() {
 }
 
 #[test]
+fn dynamic_method_selector_identities_preserve_syntax_and_invalidation() {
+    expression_guards("dynamic-method-guards", &[0, 1, 2, 7, 8, 9, 10]);
+    // Mago recovers missing method selectors, unlike PHPStan's parse failure. They must not acquire keys.
+    expression_guards("dynamic-method-recovered", &[2]);
+}
+
+#[test]
 fn recovered_selectors_do_not_invent_a_constant_fetch() {
     // PHPStan rejects the incomplete selector before running ClassConstantRule. Mago recovers the CST;
     // the rule must still leave it without a fabricated constant name or receiver error.

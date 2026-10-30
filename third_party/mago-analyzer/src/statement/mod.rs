@@ -9,11 +9,20 @@ use mago_reporting::Issue;
 use mago_span::HasSpan;
 use mago_syntax::comments::docblock::PrecedingDocblocks;
 use mago_syntax::cst::Call;
+use mago_syntax::cst::DoWhile;
 use mago_syntax::cst::Expression;
 use mago_syntax::cst::ExpressionStatement;
+use mago_syntax::cst::For;
+use mago_syntax::cst::ForBody;
+use mago_syntax::cst::Foreach;
+use mago_syntax::cst::ForeachBody;
 use mago_syntax::cst::FunctionCall;
+use mago_syntax::cst::If;
+use mago_syntax::cst::IfBody;
 use mago_syntax::cst::Node;
 use mago_syntax::cst::Statement;
+use mago_syntax::cst::While;
+use mago_syntax::cst::WhileBody;
 use mago_word::Word;
 
 use crate::Context;
@@ -21,6 +30,7 @@ use crate::analyzable::Analyzable;
 use crate::artifacts::AnalysisArtifacts;
 use crate::code::IssueCode;
 use crate::context::block::BlockContext;
+use crate::context::scope::control_action::ControlAction;
 use crate::error::AnalysisError;
 use crate::plugin::HookAction;
 use crate::plugin::context::HookContext;
@@ -99,6 +109,32 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Statement<'arena> {
                 let override_existing = !matches!(self, Statement::Foreach(_));
 
                 populate_docblock_variables(context, block_context, artifacts, override_existing);
+            }
+        }
+
+        if !context.settings.pollute_scope_with_block {
+            // PHP-Parser exposes these bodies as statement lists, not standalone Block nodes.
+            // Record only the actual CST body wrapper; nested and colon-body blocks stay standalone.
+            let mut body = |statement: &Statement<'arena>| {
+                if let Statement::Block(block) = statement {
+                    context.control_body_blocks.insert(block.span());
+                }
+            };
+            match self {
+                Statement::If(If { body: IfBody::Statement(statement), .. }) => {
+                    body(statement.statement);
+                    for clause in &statement.else_if_clauses {
+                        body(clause.statement);
+                    }
+                    if let Some(clause) = &statement.else_clause {
+                        body(clause.statement);
+                    }
+                }
+                Statement::For(For { body: ForBody::Statement(statement), .. })
+                | Statement::Foreach(Foreach { body: ForeachBody::Statement(statement), .. })
+                | Statement::While(While { body: WhileBody::Statement(statement), .. })
+                | Statement::DoWhile(DoWhile { statement, .. }) => body(statement),
+                _ => {}
             }
         }
 
@@ -184,9 +220,34 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Statement<'arena> {
                 function.analyze(context, block_context, artifacts)
             }
             Statement::Block(block) => {
-                analyze_statements(block.statements.as_slice(), context, block_context, artifacts)
+                let entry = (!context.settings.pollute_scope_with_block && !context.control_body_blocks.contains(&block.span()))
+                    .then(|| (block_context.variable_scope(), block_context.native_locals.clone()));
+                analyze_statements(block.statements.as_slice(), context, block_context, artifacts)?;
+                if let Some((entry, native_entry)) = entry {
+                    // BlockHandler merges scopes, not statement results: actual termination, exits,
+                    // throws and side effects still belong to the body that was evaluated once.
+                    block_context.merge_variable_scope_types(&[entry, block_context.variable_scope()], context.codebase);
+                    block_context.native_locals =
+                        crate::native::join(&[native_entry, block_context.native_locals.take()], context.codebase);
+                }
+                Ok(())
             }
-            Statement::Expression(expression) => expression.expression.analyze(context, block_context, artifacts),
+            Statement::Expression(expression) => {
+                let span = expression.expression.span();
+                // Discard this expression's previous walk, not a surrounding expression's
+                // specifications when a nested closure body is analysed.
+                artifacts
+                    .null_context_clauses
+                    .retain(|&(start, end), _| start < span.start.offset || end > span.end.offset);
+                expression.expression.analyze(context, block_context, artifacts)?;
+                crate::utils::conditional::apply_null_context_specifications(
+                    context,
+                    block_context,
+                    artifacts,
+                    expression.expression,
+                );
+                Ok(())
+            }
             Statement::Try(r#try) => r#try.analyze(context, block_context, artifacts),
             Statement::Foreach(foreach) => foreach.analyze(context, block_context, artifacts),
             Statement::For(r#for) => r#for.analyze(context, block_context, artifacts),
@@ -209,6 +270,13 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Statement<'arena> {
         result?;
 
         if let Statement::Expression(expression) = self
+            && artifacts.get_expression_type(expression.expression).is_some_and(|ty| ty.is_explicit_never())
+        {
+            block_context.flags.set_has_returned(true);
+            block_context.control_actions.insert(ControlAction::End);
+        }
+
+        if let Statement::Expression(expression) = self
             && context.settings.find_unused_expressions
         {
             detect_unused_statement_expressions(expression.expression, self, context, artifacts);
@@ -228,6 +296,10 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Statement<'arena> {
 
         artifacts.record_static_local_types(block_context, context.codebase, context.settings.combiner_options());
 
+        crate::variable_flow::statement(self, context, artifacts);
+        if context.called_method_properties.processing {
+            crate::property_initialization::statement_end(self, block_context, artifacts);
+        }
         Ok(())
     }
 }

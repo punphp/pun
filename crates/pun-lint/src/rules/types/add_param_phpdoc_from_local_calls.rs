@@ -228,8 +228,8 @@ fn resolve_types_from_calls(ctx: &Context<'_>, scope: &[Node<'_, '_>], calls: &[
 /// `normalizeType()`: an object of a class PHPStan does not know is `mixed`.
 fn normalize_type(ctx: &Context<'_>, t: Type) -> Type {
     match t {
-        Type::This(name) => Type::Object(name, vec![]),
-        Type::Object(name, _) if facts(ctx).codebase.get_class_like(name.as_bytes()).is_none() => mixed(),
+        Type::This(name) => Type::Object(name, vec![], false),
+        Type::Object(name, _, _) if facts(ctx).codebase.get_class_like(name.as_bytes()).is_none() => mixed(),
         t => t,
     }
 }

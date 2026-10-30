@@ -1,0 +1,59 @@
+{
+    "calls": {
+        "411": {
+            "line": 12,
+            "expression": "$target->invoke(fn($value) => $value, ++$i, $i)",
+            "names": [
+                {
+                    "name": "invoke",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 411,
+                            "end": 418,
+                            "expression": "$target",
+                            "type": "ReverseFixed|ReverseVariadic"
+                        },
+                        {
+                            "start": 427,
+                            "end": 447,
+                            "expression": "fn($value) => $value",
+                            "type": "Closure(mixed): (int|string)"
+                        },
+                        {
+                            "start": 430,
+                            "end": 436,
+                            "expression": "$value",
+                            "type": "*ERROR*"
+                        },
+                        {
+                            "start": 441,
+                            "end": 447,
+                            "expression": "$value",
+                            "type": "int|string"
+                        },
+                        {
+                            "start": 449,
+                            "end": 453,
+                            "expression": "++$i",
+                            "type": "1"
+                        },
+                        {
+                            "start": 451,
+                            "end": 453,
+                            "expression": "$i",
+                            "type": "0"
+                        },
+                        {
+                            "start": 455,
+                            "end": 457,
+                            "expression": "$i",
+                            "type": "0"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "errors": []
+}

@@ -1,0 +1,1474 @@
+{
+    "phar_sha256": "85157dba3d95d77ca603d2b7303aa78a538f9e3b56ccad07dd794c53aa96d1ae",
+    "sources": {
+        "shapes": "f98f341ac3b367a7c01341c41701ddb7b309b71e699f2756d6159db936698064",
+        "certainty": "3f1f6a418cb3bd1a81df9852602767e7192ed58e551a6afd1f2eb9c182523bca",
+        "controls": "f6a8df172d1eb35c5e0852222009c55d3247fc360dffc66e7e50d30f6bcab156"
+    },
+    "cases": {
+        "shapes-0": [
+            [
+                "shapes.php",
+                4,
+                "phpstan.dumpType",
+                "Dumped type: object{present: int}",
+                null,
+                false
+            ],
+            [
+                "shapes.php",
+                11,
+                "phpstan.dumpType",
+                "Dumped type: object{present: int}",
+                null,
+                false
+            ],
+            [
+                "shapes.php",
+                19,
+                "phpstan.dumpType",
+                "Dumped type: object{present: int}",
+                null,
+                false
+            ]
+        ],
+        "shapes-4": [
+            [
+                "shapes.php",
+                4,
+                "phpstan.dumpType",
+                "Dumped type: object{present: int}",
+                null,
+                false
+            ],
+            [
+                "shapes.php",
+                5,
+                "function.impossibleType",
+                "Call to function property_exists() with object{present: int} and 'absent' will always evaluate to false.",
+                "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.",
+                true
+            ],
+            [
+                "shapes.php",
+                5,
+                "function.resultUnused",
+                "Call to function property_exists() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "shapes.php",
+                6,
+                "function.resultUnused",
+                "Call to function property_exists() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "shapes.php",
+                11,
+                "phpstan.dumpType",
+                "Dumped type: object{present: int}",
+                null,
+                false
+            ],
+            [
+                "shapes.php",
+                12,
+                "function.impossibleType",
+                "Call to function property_exists() with object{present: int} and 'absent' will always evaluate to false.",
+                "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.",
+                true
+            ],
+            [
+                "shapes.php",
+                12,
+                "function.resultUnused",
+                "Call to function property_exists() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "shapes.php",
+                13,
+                "function.resultUnused",
+                "Call to function property_exists() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "shapes.php",
+                19,
+                "phpstan.dumpType",
+                "Dumped type: object{present: int}",
+                null,
+                false
+            ],
+            [
+                "shapes.php",
+                20,
+                "function.impossibleType",
+                "Call to function property_exists() with object{present: int} and 'absent' will always evaluate to false.",
+                "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.",
+                true
+            ],
+            [
+                "shapes.php",
+                20,
+                "function.resultUnused",
+                "Call to function property_exists() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "shapes.php",
+                21,
+                "function.resultUnused",
+                "Call to function property_exists() on a separate line has no effect.",
+                null,
+                true
+            ]
+        ],
+        "shapes-5": [
+            [
+                "shapes.php",
+                4,
+                "phpstan.dumpType",
+                "Dumped type: object{present: int}",
+                null,
+                false
+            ],
+            [
+                "shapes.php",
+                5,
+                "function.impossibleType",
+                "Call to function property_exists() with object{present: int} and 'absent' will always evaluate to false.",
+                "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.",
+                true
+            ],
+            [
+                "shapes.php",
+                5,
+                "function.resultUnused",
+                "Call to function property_exists() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "shapes.php",
+                6,
+                "function.resultUnused",
+                "Call to function property_exists() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "shapes.php",
+                11,
+                "phpstan.dumpType",
+                "Dumped type: object{present: int}",
+                null,
+                false
+            ],
+            [
+                "shapes.php",
+                12,
+                "function.impossibleType",
+                "Call to function property_exists() with object{present: int} and 'absent' will always evaluate to false.",
+                "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.",
+                true
+            ],
+            [
+                "shapes.php",
+                12,
+                "function.resultUnused",
+                "Call to function property_exists() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "shapes.php",
+                13,
+                "function.resultUnused",
+                "Call to function property_exists() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "shapes.php",
+                19,
+                "phpstan.dumpType",
+                "Dumped type: object{present: int}",
+                null,
+                false
+            ],
+            [
+                "shapes.php",
+                20,
+                "function.impossibleType",
+                "Call to function property_exists() with object{present: int} and 'absent' will always evaluate to false.",
+                "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.",
+                true
+            ],
+            [
+                "shapes.php",
+                20,
+                "function.resultUnused",
+                "Call to function property_exists() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "shapes.php",
+                21,
+                "function.resultUnused",
+                "Call to function property_exists() on a separate line has no effect.",
+                null,
+                true
+            ]
+        ],
+        "certainty-0": [],
+        "certainty-4": [
+            [
+                "certainty.php",
+                4,
+                "expr.resultUnused",
+                "Expression \"$shape\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                5,
+                "function.impossibleType",
+                "Call to function property_exists() with object{present: int} and 'absent' will always evaluate to false.",
+                "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.",
+                true
+            ],
+            [
+                "certainty.php",
+                5,
+                "function.resultUnused",
+                "Call to function property_exists() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                6,
+                "function.resultUnused",
+                "Call to function property_exists() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                11,
+                "expr.resultUnused",
+                "Expression \"$shape\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                12,
+                "function.impossibleType",
+                "Call to function property_exists() with object{present: int} and 'absent' will always evaluate to false.",
+                "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.",
+                true
+            ],
+            [
+                "certainty.php",
+                12,
+                "function.resultUnused",
+                "Call to function property_exists() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                13,
+                "function.resultUnused",
+                "Call to function property_exists() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                19,
+                "expr.resultUnused",
+                "Expression \"$shape\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                20,
+                "function.impossibleType",
+                "Call to function property_exists() with object{present: int} and 'absent' will always evaluate to false.",
+                "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.",
+                true
+            ],
+            [
+                "certainty.php",
+                20,
+                "function.resultUnused",
+                "Call to function property_exists() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                21,
+                "function.resultUnused",
+                "Call to function property_exists() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                25,
+                "expr.resultUnused",
+                "Expression \"$object\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                26,
+                "function.impossibleType",
+                "Call to function property_exists() with NativeBox and 'absent' will always evaluate to false.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                26,
+                "function.resultUnused",
+                "Call to function property_exists() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                27,
+                "function.alreadyNarrowedType",
+                "Call to function property_exists() with NativeBox and 'present' will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                27,
+                "function.resultUnused",
+                "Call to function property_exists() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                30,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                31,
+                "function.impossibleType",
+                "Call to function is_string() with int will always evaluate to false.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                31,
+                "function.resultUnused",
+                "Call to function is_string() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                32,
+                "function.alreadyNarrowedType",
+                "Call to function is_int() with int will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                32,
+                "function.resultUnused",
+                "Call to function is_int() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                36,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                37,
+                "function.impossibleType",
+                "Call to function is_string() with int will always evaluate to false.",
+                "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.",
+                true
+            ],
+            [
+                "certainty.php",
+                37,
+                "function.resultUnused",
+                "Call to function is_string() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                38,
+                "function.alreadyNarrowedType",
+                "Call to function is_int() with int will always evaluate to true.",
+                "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.",
+                true
+            ],
+            [
+                "certainty.php",
+                38,
+                "function.resultUnused",
+                "Call to function is_int() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                42,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                43,
+                "function.impossibleType",
+                "Call to function is_int() with 'known' will always evaluate to false.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                43,
+                "function.resultUnused",
+                "Call to function is_int() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                44,
+                "function.alreadyNarrowedType",
+                "Call to function is_string() with 'known' will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                44,
+                "function.resultUnused",
+                "Call to function is_string() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                49,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                50,
+                "function.impossibleType",
+                "Call to function is_string() with 1 will always evaluate to false.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                50,
+                "function.resultUnused",
+                "Call to function is_string() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                51,
+                "function.alreadyNarrowedType",
+                "Call to function is_int() with 1 will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                51,
+                "function.resultUnused",
+                "Call to function is_int() on a separate line has no effect.",
+                null,
+                true
+            ]
+        ],
+        "certainty-5": [
+            [
+                "certainty.php",
+                4,
+                "expr.resultUnused",
+                "Expression \"$shape\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                5,
+                "function.impossibleType",
+                "Call to function property_exists() with object{present: int} and 'absent' will always evaluate to false.",
+                "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.",
+                true
+            ],
+            [
+                "certainty.php",
+                5,
+                "function.resultUnused",
+                "Call to function property_exists() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                6,
+                "function.resultUnused",
+                "Call to function property_exists() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                11,
+                "expr.resultUnused",
+                "Expression \"$shape\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                12,
+                "function.impossibleType",
+                "Call to function property_exists() with object{present: int} and 'absent' will always evaluate to false.",
+                "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.",
+                true
+            ],
+            [
+                "certainty.php",
+                12,
+                "function.resultUnused",
+                "Call to function property_exists() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                13,
+                "function.resultUnused",
+                "Call to function property_exists() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                19,
+                "expr.resultUnused",
+                "Expression \"$shape\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                20,
+                "function.impossibleType",
+                "Call to function property_exists() with object{present: int} and 'absent' will always evaluate to false.",
+                "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.",
+                true
+            ],
+            [
+                "certainty.php",
+                20,
+                "function.resultUnused",
+                "Call to function property_exists() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                21,
+                "function.resultUnused",
+                "Call to function property_exists() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                25,
+                "expr.resultUnused",
+                "Expression \"$object\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                26,
+                "function.impossibleType",
+                "Call to function property_exists() with NativeBox and 'absent' will always evaluate to false.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                26,
+                "function.resultUnused",
+                "Call to function property_exists() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                27,
+                "function.alreadyNarrowedType",
+                "Call to function property_exists() with NativeBox and 'present' will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                27,
+                "function.resultUnused",
+                "Call to function property_exists() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                30,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                31,
+                "function.impossibleType",
+                "Call to function is_string() with int will always evaluate to false.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                31,
+                "function.resultUnused",
+                "Call to function is_string() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                32,
+                "function.alreadyNarrowedType",
+                "Call to function is_int() with int will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                32,
+                "function.resultUnused",
+                "Call to function is_int() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                36,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                37,
+                "function.impossibleType",
+                "Call to function is_string() with int will always evaluate to false.",
+                "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.",
+                true
+            ],
+            [
+                "certainty.php",
+                37,
+                "function.resultUnused",
+                "Call to function is_string() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                38,
+                "function.alreadyNarrowedType",
+                "Call to function is_int() with int will always evaluate to true.",
+                "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.",
+                true
+            ],
+            [
+                "certainty.php",
+                38,
+                "function.resultUnused",
+                "Call to function is_int() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                42,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                43,
+                "function.impossibleType",
+                "Call to function is_int() with 'known' will always evaluate to false.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                43,
+                "function.resultUnused",
+                "Call to function is_int() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                44,
+                "function.alreadyNarrowedType",
+                "Call to function is_string() with 'known' will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                44,
+                "function.resultUnused",
+                "Call to function is_string() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                49,
+                "expr.resultUnused",
+                "Expression \"$value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                50,
+                "function.impossibleType",
+                "Call to function is_string() with 1 will always evaluate to false.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                50,
+                "function.resultUnused",
+                "Call to function is_string() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                51,
+                "function.alreadyNarrowedType",
+                "Call to function is_int() with 1 will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "certainty.php",
+                51,
+                "function.resultUnused",
+                "Call to function is_int() on a separate line has no effect.",
+                null,
+                true
+            ]
+        ],
+        "controls-0": [],
+        "controls-4": [
+            [
+                "controls.php",
+                5,
+                "function.alreadyNarrowedType",
+                "Call to function is_string() with 'changed' will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                6,
+                "function.impossibleType",
+                "Call to function is_int() with 'changed' will always evaluate to false.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                6,
+                "function.resultUnused",
+                "Call to function is_int() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                7,
+                "function.alreadyNarrowedType",
+                "Call to function is_int() with 7 will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                8,
+                "function.impossibleType",
+                "Call to function is_string() with 7 will always evaluate to false.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                8,
+                "function.resultUnused",
+                "Call to function is_string() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                12,
+                "function.alreadyNarrowedType",
+                "Call to function is_string() with 'changed' will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                13,
+                "function.impossibleType",
+                "Call to function is_int() with 'changed' will always evaluate to false.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                13,
+                "function.resultUnused",
+                "Call to function is_int() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                17,
+                "function.impossibleType",
+                "Call to function is_string() with int will always evaluate to false.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                17,
+                "function.resultUnused",
+                "Call to function is_string() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                18,
+                "function.alreadyNarrowedType",
+                "Call to function is_int() with int will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                18,
+                "function.resultUnused",
+                "Call to function is_int() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                23,
+                "function.impossibleType",
+                "Call to function is_string() with int will always evaluate to false.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                23,
+                "function.resultUnused",
+                "Call to function is_string() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                24,
+                "function.alreadyNarrowedType",
+                "Call to function is_int() with int will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                24,
+                "function.resultUnused",
+                "Call to function is_int() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                27,
+                "function.alreadyNarrowedType",
+                "Call to function is_int() with int will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                36,
+                "function.alreadyNarrowedType",
+                "Call to function assertInt() with int will always evaluate to true.",
+                "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.",
+                true
+            ],
+            [
+                "controls.php",
+                37,
+                "function.alreadyNarrowedType",
+                "Call to function assertInt() with int will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                39,
+                "function.alreadyNarrowedType",
+                "Call to function assert() with true will always evaluate to true.",
+                "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.",
+                true
+            ],
+            [
+                "controls.php",
+                40,
+                "function.alreadyNarrowedType",
+                "Call to function assert() with true will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                41,
+                "function.impossibleType",
+                "Call to function is_bool() with int will always evaluate to false.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                41,
+                "function.resultUnused",
+                "Call to function is_bool() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                42,
+                "function.impossibleType",
+                "Call to function is_float() with int will always evaluate to false.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                42,
+                "function.resultUnused",
+                "Call to function is_float() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                43,
+                "function.impossibleType",
+                "Call to function is_null() with int will always evaluate to false.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                43,
+                "function.resultUnused",
+                "Call to function is_null() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                44,
+                "function.impossibleType",
+                "Call to function is_array() with int will always evaluate to false.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                44,
+                "function.resultUnused",
+                "Call to function is_array() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                45,
+                "function.impossibleType",
+                "Call to function is_object() with int will always evaluate to false.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                45,
+                "function.resultUnused",
+                "Call to function is_object() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                46,
+                "function.impossibleType",
+                "Call to function is_iterable() with int will always evaluate to false.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                46,
+                "function.resultUnused",
+                "Call to function is_iterable() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                51,
+                "function.alreadyNarrowedType",
+                "Call to function is_int() with int will always evaluate to true.",
+                "Remove remaining cases below this one and this error will disappear too.",
+                true
+            ],
+            [
+                "controls.php",
+                63,
+                "method.alreadyNarrowedType",
+                "Call to method CertaintyControls\\Assertions::check() with int will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                64,
+                "staticMethod.alreadyNarrowedType",
+                "Call to static method CertaintyControls\\Assertions::staticCheck() with int will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                67,
+                "function.impossibleType",
+                "Call to function assert() with false will always evaluate to false.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                68,
+                "function.alreadyNarrowedType",
+                "Call to function is_scalar() with int will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                68,
+                "function.resultUnused",
+                "Call to function is_scalar() on a separate line has no effect.",
+                null,
+                true
+            ]
+        ],
+        "controls-5": [
+            [
+                "controls.php",
+                5,
+                "function.alreadyNarrowedType",
+                "Call to function is_string() with 'changed' will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                6,
+                "function.impossibleType",
+                "Call to function is_int() with 'changed' will always evaluate to false.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                6,
+                "function.resultUnused",
+                "Call to function is_int() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                7,
+                "function.alreadyNarrowedType",
+                "Call to function is_int() with 7 will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                8,
+                "function.impossibleType",
+                "Call to function is_string() with 7 will always evaluate to false.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                8,
+                "function.resultUnused",
+                "Call to function is_string() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                12,
+                "function.alreadyNarrowedType",
+                "Call to function is_string() with 'changed' will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                13,
+                "function.impossibleType",
+                "Call to function is_int() with 'changed' will always evaluate to false.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                13,
+                "function.resultUnused",
+                "Call to function is_int() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                17,
+                "function.impossibleType",
+                "Call to function is_string() with int will always evaluate to false.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                17,
+                "function.resultUnused",
+                "Call to function is_string() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                18,
+                "function.alreadyNarrowedType",
+                "Call to function is_int() with int will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                18,
+                "function.resultUnused",
+                "Call to function is_int() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                23,
+                "function.impossibleType",
+                "Call to function is_string() with int will always evaluate to false.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                23,
+                "function.resultUnused",
+                "Call to function is_string() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                24,
+                "function.alreadyNarrowedType",
+                "Call to function is_int() with int will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                24,
+                "function.resultUnused",
+                "Call to function is_int() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                27,
+                "function.alreadyNarrowedType",
+                "Call to function is_int() with int will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                36,
+                "function.alreadyNarrowedType",
+                "Call to function assertInt() with int will always evaluate to true.",
+                "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.",
+                true
+            ],
+            [
+                "controls.php",
+                37,
+                "function.alreadyNarrowedType",
+                "Call to function assertInt() with int will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                39,
+                "function.alreadyNarrowedType",
+                "Call to function assert() with true will always evaluate to true.",
+                "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.",
+                true
+            ],
+            [
+                "controls.php",
+                40,
+                "function.alreadyNarrowedType",
+                "Call to function assert() with true will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                41,
+                "function.impossibleType",
+                "Call to function is_bool() with int will always evaluate to false.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                41,
+                "function.resultUnused",
+                "Call to function is_bool() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                42,
+                "function.impossibleType",
+                "Call to function is_float() with int will always evaluate to false.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                42,
+                "function.resultUnused",
+                "Call to function is_float() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                43,
+                "function.impossibleType",
+                "Call to function is_null() with int will always evaluate to false.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                43,
+                "function.resultUnused",
+                "Call to function is_null() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                44,
+                "function.impossibleType",
+                "Call to function is_array() with int will always evaluate to false.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                44,
+                "function.resultUnused",
+                "Call to function is_array() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                45,
+                "function.impossibleType",
+                "Call to function is_object() with int will always evaluate to false.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                45,
+                "function.resultUnused",
+                "Call to function is_object() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                46,
+                "function.impossibleType",
+                "Call to function is_iterable() with int will always evaluate to false.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                46,
+                "function.resultUnused",
+                "Call to function is_iterable() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                51,
+                "function.alreadyNarrowedType",
+                "Call to function is_int() with int will always evaluate to true.",
+                "Remove remaining cases below this one and this error will disappear too.",
+                true
+            ],
+            [
+                "controls.php",
+                63,
+                "method.alreadyNarrowedType",
+                "Call to method CertaintyControls\\Assertions::check() with int will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                64,
+                "staticMethod.alreadyNarrowedType",
+                "Call to static method CertaintyControls\\Assertions::staticCheck() with int will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                67,
+                "function.impossibleType",
+                "Call to function assert() with false will always evaluate to false.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                68,
+                "function.alreadyNarrowedType",
+                "Call to function is_scalar() with int will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "controls.php",
+                68,
+                "function.resultUnused",
+                "Call to function is_scalar() on a separate line has no effect.",
+                null,
+                true
+            ]
+        ]
+    }
+}

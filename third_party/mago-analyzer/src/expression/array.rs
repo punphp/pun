@@ -15,6 +15,7 @@ use mago_codex::ttype::atomic::array::list::TList;
 use mago_codex::ttype::atomic::mixed::TMixed;
 use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::scalar::TScalar;
+use mago_codex::ttype::atomic::scalar::int::TInteger;
 use mago_codex::ttype::atomic::scalar::string::TString;
 use mago_codex::ttype::combine_union_types;
 use mago_codex::ttype::combiner::combine;
@@ -114,6 +115,143 @@ struct ArrayCreationInfo {
     known_non_list: bool,
     can_be_empty: bool,
     known_int_offset: bool,
+    finite_key_indexes: Option<Vec<i64>>,
+    property_order: Vec<ArrayKey>,
+    degraded_finite_keys: bool,
+    has_general_unpack: bool,
+}
+
+// PHPStan 2.3.1 ConstantArrayTypeBuilder::setOffsetValueType and
+// IntegerRangeType::getFiniteTypes: all alternatives must be bounded, and a
+// non-singleton offset must have fewer than ARRAY_COUNT_LIMIT (256) scalars.
+fn finite_array_keys(key_type: &TUnion) -> Option<Vec<ArrayKey>> {
+    let mut keys = Vec::new();
+    let ranges =
+        key_type.types.iter().all(|atomic| matches!(atomic, TAtomic::Scalar(TScalar::Integer(TInteger::Range(..)))));
+    for atomic in key_type.types.iter() {
+        if let Some(value) = atomic.get_literal_string_value() {
+            keys.push(ArrayKey::from_string(word(value)));
+        } else if let Some(value) = atomic.get_literal_int_value() {
+            keys.push(ArrayKey::Integer(value));
+        } else if ranges && let TAtomic::Scalar(TScalar::Integer(TInteger::Range(min, max))) = atomic {
+            if i128::from(*max) - i128::from(*min) > 128 {
+                break;
+            }
+            keys.extend((*min..=*max).map(ArrayKey::Integer));
+        } else {
+            return None;
+        }
+    }
+    let mut seen: HashSet<_> = HashSet::default();
+    keys.retain(|key| seen.insert(*key));
+    (!keys.is_empty() && keys.len() < 256).then_some(keys)
+}
+
+fn degrade_finite_array(info: &mut ArrayCreationInfo) {
+    info.degraded_finite_keys = true;
+    info.can_create_objectlike = false;
+    for (key, (_, value)) in std::mem::take(&mut info.property_types) {
+        info.item_key_atomic_types.extend(key.to_union().types.into_owned());
+        info.item_value_atomic_types.extend(value.types.into_owned());
+    }
+}
+
+fn set_finite_array_offset<A: Arena>(
+    context: &Context<'_, '_, A>,
+    info: &mut ArrayCreationInfo,
+    keys: Option<&[ArrayKey]>,
+    value: &TUnion,
+    optional: bool,
+) {
+    let indexes = info.finite_key_indexes.get_or_insert_with(|| {
+        let maximum = info.property_types.keys().filter_map(ArrayKey::get_integer).max().unwrap_or(-1).max(-1);
+        maximum.checked_add(1).into_iter().collect()
+    });
+    if keys.is_none() && indexes.is_empty() {
+        return;
+    }
+    if info.degraded_finite_keys {
+        let keys = keys.map_or_else(|| indexes.iter().copied().map(ArrayKey::Integer).collect(), <[ArrayKey]>::to_vec);
+        for key in keys {
+            info.item_key_atomic_types.extend(key.to_union().types.into_owned());
+        }
+        info.item_value_atomic_types.extend(value.types.iter().cloned());
+        return;
+    }
+    let union = |old: &TUnion| combine_union_types(old, value, context.codebase, context.settings.combiner_options());
+    match keys {
+        None => {
+            // The append branch visits existing slots in insertion order, not
+            // key order. Only the first matched optional slot becomes required.
+            let maximum = indexes.iter().copied().max().unwrap();
+            let mut next = if optional { indexes.clone() } else { Vec::new() };
+            let mut has_optional = false;
+            for key in &info.property_order {
+                if let ArrayKey::Integer(index) = key
+                    && indexes.contains(index)
+                {
+                    let (slot_optional, old) = info.property_types.get_mut(key).unwrap();
+                    *old = union(old);
+                    if !has_optional && !optional {
+                        *slot_optional = false;
+                    }
+                    next.extend(index.checked_add(1));
+                    has_optional = true;
+                }
+            }
+            let key = ArrayKey::Integer(maximum);
+            info.property_order.push(key);
+            info.property_types.insert(key, (optional || has_optional, value.clone()));
+            next.extend(maximum.checked_add(1));
+            next.sort_unstable();
+            next.dedup();
+            *indexes = next;
+        }
+        Some([key]) => {
+            let existed = info.property_types.contains_key(key);
+            if !existed {
+                info.property_order.push(*key);
+            }
+            let (slot_optional, next_value) =
+                if optional && let Some((was_optional, old)) = info.property_types.get(key) {
+                    (*was_optional, union(old))
+                } else {
+                    (optional, value.clone())
+                };
+            info.property_types.insert(*key, (slot_optional, next_value));
+            if let ArrayKey::Integer(index) = key {
+                if existed && !optional {
+                    indexes.retain(|next| next > index);
+                } else if !existed && indexes.iter().max().is_some_and(|maximum| index >= maximum) {
+                    // Unpacked integer slots use the append branch above;
+                    // explicit integer offsets in a literal are required.
+                    *indexes = index.checked_add(1).into_iter().collect();
+                }
+            }
+        }
+        Some(keys) => {
+            // A finite union is not a union of singleton arrays: matched
+            // optional slots are replaced, matched required slots are widened,
+            // and only unmatched offsets become optional slots.
+            for key in keys {
+                if let Some((was_optional, old)) = info.property_types.get_mut(key) {
+                    *old = if *was_optional && !optional { value.clone() } else { union(old) };
+                    continue;
+                }
+                info.property_order.push(*key);
+                info.property_types.insert(*key, (true, value.clone()));
+                if let ArrayKey::Integer(index) = key
+                    && indexes.iter().max().is_some_and(|maximum| index >= maximum)
+                {
+                    indexes.extend(index.checked_add(1));
+                }
+                info.known_non_list = true;
+            }
+        }
+    }
+    if info.property_types.len() > 256 {
+        degrade_finite_array(info);
+    }
 }
 
 fn report_unpacked_int_key_overflow<A>(context: &mut Context<'_, '_, A>, element_span: Span)
@@ -142,6 +280,9 @@ where
 {
     if elements.is_empty() {
         artifacts.set_expression_type(&expression_span, get_empty_keyed_array());
+        if block_context.native_locals.is_some() {
+            artifacts.set_rc_native_expression_type(&expression_span, Rc::new(get_empty_keyed_array()));
+        }
 
         return Ok(());
     }
@@ -158,6 +299,10 @@ where
         known_non_list: false,
         can_be_empty: true,
         known_int_offset: true,
+        finite_key_indexes: None,
+        property_order: Vec::new(),
+        degraded_finite_keys: false,
+        has_general_unpack: false,
     };
 
     for element in elements {
@@ -360,25 +505,38 @@ where
             }
         }
 
-        match artifacts.get_expression_type(value) {
-            Some(value_type) => {
-                if let Some(item_key_value) = item_key_value {
-                    array_creation_info.property_types.insert(item_key_value, (false, value_type.clone()));
-                } else {
-                    array_creation_info.can_create_objectlike = false;
-                    array_creation_info.item_key_atomic_types.extend(key_type.types.into_owned());
-                    array_creation_info.item_value_atomic_types.extend(value_type.types.iter().cloned());
+        let value_type = artifacts.get_expression_type(value).cloned().unwrap_or_else(get_mixed);
+        let keys = item_key_value.map(|key| vec![key]).or_else(|| finite_array_keys(&key_type));
+        if item_is_list_item && array_creation_info.finite_key_indexes.is_some() {
+            set_finite_array_offset(context, &mut array_creation_info, None, &value_type, false);
+        } else if ((array_creation_info.can_create_objectlike && !array_creation_info.has_general_unpack)
+            || array_creation_info.degraded_finite_keys)
+            && let Some(keys) = keys
+        {
+            if array_creation_info.finite_key_indexes.is_some() || keys.len() > 1 || item_key_value.is_none() {
+                set_finite_array_offset(
+                    context,
+                    &mut array_creation_info,
+                    (!item_is_list_item).then_some(keys.as_slice()),
+                    &value_type,
+                    false,
+                );
+            } else {
+                let key = keys[0];
+                if !array_creation_info.property_types.contains_key(&key) {
+                    array_creation_info.property_order.push(key);
                 }
+                array_creation_info.property_types.insert(key, (false, value_type));
             }
-            None => {
-                if let Some(item_key_value) = item_key_value {
-                    array_creation_info.property_types.insert(item_key_value, (false, get_mixed()));
-                } else {
-                    array_creation_info.can_create_objectlike = false;
-                    array_creation_info.item_key_atomic_types.extend(key_type.types.into_owned());
-                    array_creation_info.item_value_atomic_types.push(TAtomic::Mixed(TMixed::new()));
-                }
+        } else if let Some(key) = item_key_value.filter(|_| !array_creation_info.degraded_finite_keys) {
+            array_creation_info.property_types.insert(key, (false, value_type));
+        } else {
+            if array_creation_info.finite_key_indexes.is_some() && !array_creation_info.degraded_finite_keys {
+                degrade_finite_array(&mut array_creation_info);
             }
+            array_creation_info.can_create_objectlike = false;
+            array_creation_info.item_key_atomic_types.extend(key_type.types.into_owned());
+            array_creation_info.item_value_atomic_types.extend(value_type.types.into_owned());
         }
     }
 
@@ -426,30 +584,32 @@ where
         }
     }
 
+    // PHPStan's builder degrades the shape, not its finite scalar unions.
+    // Mago's ordinary 128-literal combiner budget must not widen those unions.
+    let mut combiner_options = context.settings.combiner_options();
+    if array_creation_info.degraded_finite_keys {
+        combiner_options.integer_combination_threshold = u16::MAX;
+        combiner_options.string_combination_threshold = u16::MAX;
+    }
     let item_key_type = if array_creation_info.item_key_atomic_types.is_empty() {
         None
     } else {
-        Some(TUnion::from_vec(combine(
-            array_creation_info.item_key_atomic_types,
-            context.codebase,
-            context.settings.combiner_options(),
-        )))
+        Some(TUnion::from_vec(combine(array_creation_info.item_key_atomic_types, context.codebase, combiner_options)))
     };
 
     let item_value_type = if array_creation_info.item_value_atomic_types.is_empty() {
         None
     } else {
-        Some(TUnion::from_vec(combine(
-            array_creation_info.item_value_atomic_types,
-            context.codebase,
-            context.settings.combiner_options(),
-        )))
+        Some(TUnion::from_vec(combine(array_creation_info.item_value_atomic_types, context.codebase, combiner_options)))
     };
 
     let array_type = if !array_creation_info.property_types.is_empty() {
         if array_creation_info.is_list {
             TUnion::from_vec(vec![TAtomic::Array(TArray::List(TList {
-                known_count: if array_creation_info.known_int_offset {
+                callable: None,
+                known_count: if array_creation_info.known_int_offset
+                    && array_creation_info.property_types.values().all(|(optional, _)| !optional)
+                {
                     Some(array_creation_info.property_types.len())
                 } else {
                     None
@@ -467,10 +627,11 @@ where
                     Some(value) => value,
                     None => get_never(),
                 }),
-                non_empty: true,
+                non_empty: !array_creation_info.can_be_empty,
             }))])
         } else {
             TUnion::from_vec(vec![TAtomic::Array(TArray::Keyed(TKeyedArray {
+                callable: None,
                 known_items: Some(array_creation_info.property_types.into()),
                 parameters: if array_creation_info.can_create_objectlike {
                     None
@@ -482,7 +643,7 @@ where
                         _ => Some((Arc::new(get_arraykey()), Arc::new(get_mixed()))),
                     }
                 },
-                non_empty: true,
+                non_empty: !array_creation_info.can_be_empty,
                 known_non_list: array_creation_info.known_non_list,
             }))])
         }
@@ -490,6 +651,7 @@ where
         get_empty_keyed_array()
     } else if array_creation_info.is_list {
         TUnion::from_vec(vec![TAtomic::Array(TArray::List(TList {
+            callable: None,
             known_elements: None,
             element_type: Arc::new(item_value_type.unwrap_or_else(get_mixed)),
             known_count: None,
@@ -497,6 +659,7 @@ where
         }))])
     } else {
         TUnion::from_vec(vec![TAtomic::Array(TArray::Keyed(TKeyedArray {
+            callable: None,
             known_items: None,
             parameters: match (item_key_type, item_value_type) {
                 (Some(key), Some(value)) => Some((Arc::new(key), Arc::new(value))),
@@ -510,8 +673,47 @@ where
     };
 
     artifacts.set_expression_type(&expression_span, array_type);
+    if block_context.native_locals.is_some()
+        && let Some(native) = native_literal(elements, artifacts)
+    {
+        artifacts.set_rc_native_expression_type(&expression_span, Rc::new(native));
+    }
 
     Ok(())
+}
+
+// InitializerExprTypeResolver::getArrayType reads each operand in the requested
+// flavour. This bounded constant builder consumes only completed native reads.
+// Unpacking/nonconstant keys remain unavailable, not selected-type substitutes.
+fn native_literal(elements: &[ArrayElement<'_>], artifacts: &AnalysisArtifacts) -> Option<TUnion> {
+    // InitializerExprTypeResolver degrades larger literals before pricing items.
+    if elements.len() > 256 {
+        return None;
+    }
+    let mut items = BTreeMap::new();
+    let mut next = 0i64;
+    for element in elements {
+        let (key, value) = match element {
+            ArrayElement::KeyValue(item) => (
+                artifacts.get_native_expression_type(item.key)?.get_single_array_key()?,
+                item.value,
+            ),
+            ArrayElement::Value(item) => (ArrayKey::Integer(next), item.value),
+            _ => return None,
+        };
+        if let ArrayKey::Integer(index) = key {
+            next = next.max(index.checked_add(1)?);
+        }
+        items.insert(key, (false, artifacts.get_native_expression_type(value)?.clone()));
+    }
+    if items.keys().enumerate().all(|(index, key)| *key == ArrayKey::Integer(index as i64)) {
+        return Some(TUnion::from_atomic(TAtomic::Array(TArray::List(TList::from_known_elements(
+            items.into_iter().enumerate().map(|(index, (_, item))| (index, item)).collect(),
+        )))));
+    }
+    Some(TUnion::from_atomic(TAtomic::Array(TArray::Keyed(
+        TKeyedArray::new().with_known_items(items).with_non_empty(true),
+    ))))
 }
 
 fn handle_variadic_array_element<'arena, A>(
@@ -522,6 +724,51 @@ fn handle_variadic_array_element<'arena, A>(
 ) where
     A: Arena,
 {
+    // InitializerExprTypeResolver::getArrayType forwards constant unpack slots
+    // to the same builder. In particular, optional finite-key slots must not be
+    // skipped or promoted to required offsets by the ordinary unpack fallback.
+    let constant = match variadic_array_element_type.types.as_ref() {
+        [TAtomic::Array(TArray::Keyed(array))] if array.parameters.is_none() => {
+            array.known_items.as_ref().map(|items| {
+                items
+                    .iter()
+                    .map(|(key, (optional, value))| (key.is_string().then_some(*key), *optional, value))
+                    .collect::<Vec<_>>()
+            })
+        }
+        [TAtomic::Array(TArray::List(array))] if array.element_type.is_never() => array
+            .known_elements
+            .as_ref()
+            .map(|items| items.values().map(|(optional, value)| (None, *optional, value)).collect::<Vec<_>>()),
+        _ => None,
+    };
+    // A later finite key must not reseal parameters from a general or union
+    // unpack. Those inputs retain the existing general-array fallback.
+    array_creation_info.has_general_unpack |= constant.is_none();
+    if ((array_creation_info.can_create_objectlike && !array_creation_info.has_general_unpack)
+        || array_creation_info.degraded_finite_keys)
+        && let Some(items) = constant
+        && (array_creation_info.finite_key_indexes.is_some() || items.iter().any(|(_, optional, _)| *optional))
+    {
+        array_creation_info.is_list &= items.iter().all(|(key, _, _)| key.is_none());
+        array_creation_info.can_be_empty &= items.iter().all(|(_, optional, _)| *optional);
+        for (key, optional, value) in items {
+            set_finite_array_offset(
+                context,
+                array_creation_info,
+                key.as_ref().map(std::slice::from_ref),
+                value,
+                optional,
+            );
+        }
+        return;
+    }
+    if array_creation_info.finite_key_indexes.is_some() && !array_creation_info.degraded_finite_keys {
+        degrade_finite_array(array_creation_info);
+        if variadic_array_element_type.types.iter().any(|atomic| matches!(atomic, TAtomic::Array(TArray::List(_)))) {
+            array_creation_info.item_key_atomic_types.extend(get_int().types.into_owned());
+        }
+    }
     let mut all_non_empty = true;
 
     for atomic_type in variadic_array_element_type.types.as_ref() {

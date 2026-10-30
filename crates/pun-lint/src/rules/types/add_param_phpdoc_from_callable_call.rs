@@ -161,7 +161,7 @@ fn callback_param_type(
 /// `StaticTypeMapper::mapPhpParserNodePHPStanType()` of a hint.
 fn hint_type(scope: &[Node<'_, '_>], hint: &Hint<'_>) -> Option<Type> {
     Some(match hint {
-        Hint::Identifier(id) => Type::Object(resolve_class_name(scope, id), vec![]),
+        Hint::Identifier(id) => Type::Object(resolve_class_name(scope, id), vec![], false),
         Hint::Integer(_) => Type::Int,
         Hint::String(_) => Type::String,
         Hint::Float(_) => Type::Float,

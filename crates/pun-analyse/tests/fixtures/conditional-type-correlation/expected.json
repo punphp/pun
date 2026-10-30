@@ -1,0 +1,1258 @@
+{
+    "default": [
+        [
+            "correlations.php",
+            18,
+            "phpstan.dumpType",
+            "Dumped type: ConditionalTypeCorrelation\\RightReceiver",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            19,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            21,
+            "phpstan.dumpType",
+            "Dumped type: ConditionalTypeCorrelation\\LeftReceiver",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            23,
+            "phpstan.dumpType",
+            "Dumped type: ConditionalTypeCorrelation\\LeftReceiver|ConditionalTypeCorrelation\\RightReceiver",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            25,
+            "phpstan.dumpType",
+            "Dumped type: ConditionalTypeCorrelation\\LeftReceiver",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            39,
+            "phpstan.dumpType",
+            "Dumped type: ConditionalTypeCorrelation\\LeftReceiver",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            40,
+            "phpstan.dumpType",
+            "Dumped type: int",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            54,
+            "phpstan.dumpType",
+            "Dumped type: array{first: 1}",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            57,
+            "phpstan.dumpType",
+            "Dumped type: array{second: 'value'}",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            77,
+            "phpstan.dumpType",
+            "Dumped type: 'low'",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            80,
+            "phpstan.dumpType",
+            "Dumped type: 'high'",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            83,
+            "phpstan.dumpType",
+            "Dumped type: 'high'|'low'",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            98,
+            "phpstan.dumpType",
+            "Dumped type: 'wide'",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            101,
+            "phpstan.dumpType",
+            "Dumped type: 'positive'|'wide'",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            116,
+            "phpstan.dumpType",
+            "Dumped type: int<1, max>",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            119,
+            "phpstan.dumpType",
+            "Dumped type: int",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            137,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            140,
+            "phpstan.dumpType",
+            "Dumped type: 1|2",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            143,
+            "phpstan.dumpType",
+            "Dumped type: 2",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            156,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "correlations.php",
+            158,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            173,
+            "phpstan.dumpType",
+            "Dumped type: 1|2",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            188,
+            "phpstan.dumpType",
+            "Dumped type: 3",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            203,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "correlations.php",
+            220,
+            "phpstan.dumpType",
+            "Dumped type: 1|2",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            237,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            240,
+            "phpstan.dumpType",
+            "Dumped type: 2",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            243,
+            "phpstan.dumpType",
+            "Dumped type: 3",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            259,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            260,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            274,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "correlations.php",
+            277,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "correlations.php",
+            295,
+            "phpstan.dumpType",
+            "Dumped type: 2",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            319,
+            "phpstan.dumpType",
+            "Dumped type: 1|3",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            322,
+            "phpstan.dumpType",
+            "Dumped type: 2|4",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            338,
+            "phpstan.dumpType",
+            "Dumped type: 1|2",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            352,
+            "phpstan.dumpType",
+            "Dumped type: 'fixed'|'wide'",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            366,
+            "phpstan.dumpType",
+            "Dumped type: 'wide'",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            369,
+            "phpstan.dumpType",
+            "Dumped type: 'true'|'wide'",
+            null,
+            false
+        ]
+    ],
+    "quiet": [
+        [
+            "correlations.php",
+            18,
+            "phpstan.dumpType",
+            "Dumped type: ConditionalTypeCorrelation\\RightReceiver",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            19,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            21,
+            "phpstan.dumpType",
+            "Dumped type: ConditionalTypeCorrelation\\LeftReceiver",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            23,
+            "phpstan.dumpType",
+            "Dumped type: ConditionalTypeCorrelation\\LeftReceiver|ConditionalTypeCorrelation\\RightReceiver",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            25,
+            "phpstan.dumpType",
+            "Dumped type: ConditionalTypeCorrelation\\LeftReceiver",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            39,
+            "phpstan.dumpType",
+            "Dumped type: ConditionalTypeCorrelation\\LeftReceiver",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            40,
+            "phpstan.dumpType",
+            "Dumped type: int",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            54,
+            "phpstan.dumpType",
+            "Dumped type: array{first: 1}",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            57,
+            "phpstan.dumpType",
+            "Dumped type: array{second: 'value'}",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            77,
+            "phpstan.dumpType",
+            "Dumped type: 'low'",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            80,
+            "phpstan.dumpType",
+            "Dumped type: 'high'",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            83,
+            "phpstan.dumpType",
+            "Dumped type: 'high'|'low'",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            98,
+            "phpstan.dumpType",
+            "Dumped type: 'wide'",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            101,
+            "phpstan.dumpType",
+            "Dumped type: 'positive'|'wide'",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            116,
+            "phpstan.dumpType",
+            "Dumped type: int<1, max>",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            119,
+            "phpstan.dumpType",
+            "Dumped type: int",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            137,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            140,
+            "phpstan.dumpType",
+            "Dumped type: 1|2",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            143,
+            "phpstan.dumpType",
+            "Dumped type: 2",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            156,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "correlations.php",
+            158,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            173,
+            "phpstan.dumpType",
+            "Dumped type: 1|2",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            188,
+            "phpstan.dumpType",
+            "Dumped type: 3",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            203,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "correlations.php",
+            220,
+            "phpstan.dumpType",
+            "Dumped type: 1|2",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            237,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            240,
+            "phpstan.dumpType",
+            "Dumped type: 2",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            243,
+            "phpstan.dumpType",
+            "Dumped type: 3",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            259,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            260,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            274,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "correlations.php",
+            277,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "correlations.php",
+            295,
+            "phpstan.dumpType",
+            "Dumped type: 2",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            319,
+            "phpstan.dumpType",
+            "Dumped type: 1|3",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            322,
+            "phpstan.dumpType",
+            "Dumped type: 2|4",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            338,
+            "phpstan.dumpType",
+            "Dumped type: 1|2",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            352,
+            "phpstan.dumpType",
+            "Dumped type: 'fixed'|'wide'",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            366,
+            "phpstan.dumpType",
+            "Dumped type: 'wide'",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            369,
+            "phpstan.dumpType",
+            "Dumped type: 'true'|'wide'",
+            null,
+            false
+        ]
+    ],
+    "foreach-off": [
+        [
+            "correlations.php",
+            18,
+            "phpstan.dumpType",
+            "Dumped type: ConditionalTypeCorrelation\\RightReceiver",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            19,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            21,
+            "phpstan.dumpType",
+            "Dumped type: ConditionalTypeCorrelation\\LeftReceiver",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            23,
+            "phpstan.dumpType",
+            "Dumped type: ConditionalTypeCorrelation\\LeftReceiver|ConditionalTypeCorrelation\\RightReceiver",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            25,
+            "phpstan.dumpType",
+            "Dumped type: ConditionalTypeCorrelation\\LeftReceiver",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            39,
+            "phpstan.dumpType",
+            "Dumped type: ConditionalTypeCorrelation\\LeftReceiver",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            40,
+            "phpstan.dumpType",
+            "Dumped type: int",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            54,
+            "phpstan.dumpType",
+            "Dumped type: array{first: 1}",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            57,
+            "phpstan.dumpType",
+            "Dumped type: array{second: 'value'}",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            77,
+            "phpstan.dumpType",
+            "Dumped type: 'low'",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            80,
+            "phpstan.dumpType",
+            "Dumped type: 'high'",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            83,
+            "phpstan.dumpType",
+            "Dumped type: 'high'|'low'",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            98,
+            "phpstan.dumpType",
+            "Dumped type: 'wide'",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            101,
+            "phpstan.dumpType",
+            "Dumped type: 'positive'|'wide'",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            116,
+            "phpstan.dumpType",
+            "Dumped type: int<1, max>",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            119,
+            "phpstan.dumpType",
+            "Dumped type: int",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            137,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            140,
+            "phpstan.dumpType",
+            "Dumped type: 1|2",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            143,
+            "phpstan.dumpType",
+            "Dumped type: 2",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            156,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "correlations.php",
+            158,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            173,
+            "phpstan.dumpType",
+            "Dumped type: 1|2",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            188,
+            "phpstan.dumpType",
+            "Dumped type: 3",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            203,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "correlations.php",
+            220,
+            "phpstan.dumpType",
+            "Dumped type: 1|2",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            237,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            240,
+            "phpstan.dumpType",
+            "Dumped type: 2",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            243,
+            "phpstan.dumpType",
+            "Dumped type: 3",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            259,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            260,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            274,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "correlations.php",
+            277,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "correlations.php",
+            295,
+            "phpstan.dumpType",
+            "Dumped type: 2",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            319,
+            "phpstan.dumpType",
+            "Dumped type: 1|3",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            322,
+            "phpstan.dumpType",
+            "Dumped type: 2|4",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            338,
+            "phpstan.dumpType",
+            "Dumped type: 1|2",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            352,
+            "phpstan.dumpType",
+            "Dumped type: 'fixed'|'wide'",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            366,
+            "phpstan.dumpType",
+            "Dumped type: 'wide'",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            369,
+            "phpstan.dumpType",
+            "Dumped type: 'true'|'wide'",
+            null,
+            false
+        ]
+    ],
+    "loop-off": [
+        [
+            "correlations.php",
+            18,
+            "phpstan.dumpType",
+            "Dumped type: ConditionalTypeCorrelation\\RightReceiver",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            19,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            21,
+            "phpstan.dumpType",
+            "Dumped type: ConditionalTypeCorrelation\\LeftReceiver",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            23,
+            "phpstan.dumpType",
+            "Dumped type: ConditionalTypeCorrelation\\LeftReceiver|ConditionalTypeCorrelation\\RightReceiver",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            25,
+            "phpstan.dumpType",
+            "Dumped type: ConditionalTypeCorrelation\\LeftReceiver",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            39,
+            "phpstan.dumpType",
+            "Dumped type: ConditionalTypeCorrelation\\LeftReceiver",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            40,
+            "phpstan.dumpType",
+            "Dumped type: int",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            54,
+            "phpstan.dumpType",
+            "Dumped type: array{first: 1}",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            57,
+            "phpstan.dumpType",
+            "Dumped type: array{second: 'value'}",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            77,
+            "phpstan.dumpType",
+            "Dumped type: 'low'",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            80,
+            "phpstan.dumpType",
+            "Dumped type: 'high'",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            83,
+            "phpstan.dumpType",
+            "Dumped type: 'high'|'low'",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            98,
+            "phpstan.dumpType",
+            "Dumped type: 'wide'",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            101,
+            "phpstan.dumpType",
+            "Dumped type: 'positive'|'wide'",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            116,
+            "phpstan.dumpType",
+            "Dumped type: int<1, max>",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            119,
+            "phpstan.dumpType",
+            "Dumped type: int",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            137,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            140,
+            "phpstan.dumpType",
+            "Dumped type: 1|2",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            143,
+            "phpstan.dumpType",
+            "Dumped type: 2",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            156,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "correlations.php",
+            158,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            173,
+            "phpstan.dumpType",
+            "Dumped type: 1|2",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            188,
+            "phpstan.dumpType",
+            "Dumped type: 3",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            203,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "correlations.php",
+            220,
+            "phpstan.dumpType",
+            "Dumped type: 1|2",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            237,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            240,
+            "phpstan.dumpType",
+            "Dumped type: 2",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            243,
+            "phpstan.dumpType",
+            "Dumped type: 3",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            259,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            260,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            274,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "correlations.php",
+            277,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "correlations.php",
+            295,
+            "phpstan.dumpType",
+            "Dumped type: 2",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            319,
+            "phpstan.dumpType",
+            "Dumped type: 1|3",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            322,
+            "phpstan.dumpType",
+            "Dumped type: 2|4",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            338,
+            "phpstan.dumpType",
+            "Dumped type: 1|2",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            352,
+            "phpstan.dumpType",
+            "Dumped type: 'fixed'|'wide'",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            366,
+            "phpstan.dumpType",
+            "Dumped type: 'wide'",
+            null,
+            false
+        ],
+        [
+            "correlations.php",
+            369,
+            "phpstan.dumpType",
+            "Dumped type: 'true'|'wide'",
+            null,
+            false
+        ]
+    ]
+}

@@ -48,11 +48,22 @@ impl PartialEq for Type {
             (T::Never(a), T::Never(b)) => a == b,
             (T::ConstBool(a), T::ConstBool(b)) => a == b,
             (T::ConstInt(a), T::ConstInt(b)) => a == b,
-            (T::ConstFloat(a), T::ConstFloat(b)) => a == b,
-            (T::ConstString(a), T::ConstString(b)) | (T::This(a), T::This(b)) => a == b,
+            (T::ConstFloat(a), T::ConstFloat(b)) => a == b || (a.is_nan() && b.is_nan()),
+            (T::ConstString(a), T::ConstString(b)) => a == b,
+            (T::This(a), T::This(b)) => a == b,
             (T::IntRange(a, x), T::IntRange(b, y)) => a == b && x == y,
             (T::ClassString(a), T::ClassString(b)) => a == b,
-            (T::Object(a, x), T::Object(b, y)) | (T::Static(a, x), T::Static(b, y)) => {
+            (T::SubtractedObject {
+                    object: a,
+                    excluded: x,
+                },
+                T::SubtractedObject {
+                    object: b,
+                    excluded: y,
+                },
+            ) => a == b && x == y,
+            // ObjectType::equals() omits the final reflection override; union containment must still see it.
+            (T::Object(a, x, _), T::Object(b, y, _)) | (T::Static(a, x), T::Static(b, y)) => {
                 a == b && x == y
             }
             (T::EnumCase(a, x), T::EnumCase(b, y)) => a == b && x == y,
@@ -64,14 +75,30 @@ impl PartialEq for Type {
             (T::Closure(a), T::Closure(b)) => a == b,
             (T::Union(a), T::Union(b))
             | (T::Benevolent(a), T::Benevolent(b))
-            | (T::Intersection(a), T::Intersection(b)) => a == b,
+            | (T::Intersection(a), T::Intersection(b)) => a.len() == b.len() && {
+                // UnionType/IntersectionType::equals(): match each alternative once, without sorting the
+                // stored members. Their written order still selects the first reflected union method.
+                let mut remaining: Vec<_> = b.iter().collect();
+                a.iter().all(|inner| {
+                    let Some(i) = remaining.iter().position(|other| inner == *other) else { return false };
+                    remaining.remove(i);
+                    true
+                })
+            },
             (T::Accessory(a), T::Accessory(b)) => a == b,
             (T::Conditional(a), T::Conditional(b)) => a == b,
+            // TemplateTypeTrait::equals() omits the strategy. StrictMixedType::equals() also accepts its
+            // template subclass (the reverse comparison still uses TemplateTypeTrait).
+            (T::Template(a), T::Template(b)) if matches!(a.bound, T::StrictMixed) =>
+                a.name == b.name && a.scope == b.scope && a.bound == b.bound && a.default == b.default,
             (T::Template(a), T::Template(b)) => a == b,
             (T::ObjectShape(a), T::ObjectShape(b)) => a == b,
             (T::Projection(a, x), T::Projection(b, y)) => a == b && x == y,
             (T::LateArrayShape(a), T::LateArrayShape(b)) => a == b,
-            (T::Error, T::Error)
+            (T::StrictMixed, T::Template(t)) => matches!(t.bound, T::StrictMixed),
+            (T::StrictMixed, T::StrictMixed)
+            | (T::Error, T::Error)
+            | (T::NonexistentParent, T::NonexistentParent)
             | (T::Void, T::Void)
             | (T::Null, T::Null)
             | (T::Bool, T::Bool)
@@ -136,7 +163,7 @@ pub(super) fn compare(a: &Type, b: &Type) -> (Tri, Vec<String>) {
             return compare(a, &resolved);
         }
     }
-    if let (Type::ObjectShape(shape), Type::Object(class, _)) = (a, b)
+    if let (Type::ObjectShape(shape), Type::Object(class, _, _)) = (a, b)
         && let Some((missing, properties)) = PROPERTIES.with(|p| {
             p.borrow()
                 .iter()
@@ -195,7 +222,7 @@ pub(super) fn compare(a: &Type, b: &Type) -> (Tri, Vec<String>) {
             excluded.describe(Level::Precise),
             a.describe(Level::TypeOnly)
         )],
-        Type::Object(class, args) if result.no() && !args.is_empty() => {
+        Type::Object(class, args, _) if result.no() && !args.is_empty() => {
             super::reasons::generic(class, args, b)
         }
         _ => vec![],

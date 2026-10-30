@@ -53,8 +53,7 @@ pub fn doc_at(c: &Checker, span: Span) -> Option<(Vec<u8>, Arc<FileScopes>)> {
 
 /// The `NameScope` of a PHPDoc at `span` in class-like `class` (`None` outside one), with `templates` in scope.
 pub fn scope_at(c: &Checker, span: Span, class: Option<&ClassLikeMetadata>) -> NameScope {
-    let names = c
-        .file_contents(span.file_id)
+    let names = file_contents(c, span.file_id)
         .map(|contents| scopes_of(span.file_id, &contents).at(span.start.offset))
         .unwrap_or_default();
     let mut scope = NameScope {
@@ -193,7 +192,7 @@ fn trait_templates(
             continue;
         };
         for node in &Doc::parse(doc).uses {
-            if let Type::Object(name, found) = resolve_in(node, &scope)
+            if let Type::Object(name, found, _) = resolve_in(node, &scope)
                 && !found.is_empty()
                 && name.eq_ignore_ascii_case(&trait_name)
             {
@@ -229,7 +228,7 @@ fn native_with(
     name: &dyn Fn(&Identifier) -> String,
 ) -> Type {
     match hint {
-        Hint::Identifier(id) => Type::Object(name(id), vec![]),
+        Hint::Identifier(id) => Type::Object(name(id), vec![], false),
         Hint::Parenthesized(p) => native_with(c, p.hint, class, name),
         Hint::Nullable(n) => native_with(c, n.hint, class, name).add_null(),
         Hint::Union(u) => {
@@ -265,15 +264,15 @@ fn native_with(
         Hint::Callable(_) => Type::Callable(None),
         Hint::Static(_) => match class {
             Some(k) => Type::Static(original_name(k), vec![]),
-            None => Type::Object("static".to_string(), vec![]),
+            None => Type::Object("static".to_string(), vec![], false),
         },
         Hint::Self_(_) => match class {
-            Some(k) => Type::Object(original_name(k), vec![]),
-            None => Type::Object("self".to_string(), vec![]),
+            Some(k) => Type::Object(original_name(k), vec![], false),
+            None => Type::Object("self".to_string(), vec![], false),
         },
         Hint::Parent(_) => match class.and_then(|k| parent_name(c.codebase, k)) {
-            Some(parent) => Type::Object(parent, vec![]),
-            None => Type::Object("parent".to_string(), vec![]),
+            Some(parent) => Type::Object(parent, vec![], false),
+            None => Type::Object("parent".to_string(), vec![], false),
         },
         Hint::Void(_) => Type::Void,
         Hint::Never(_) => Type::Never(NeverKind::Explicit),
@@ -480,7 +479,7 @@ pub(super) fn from_tunion_in(
         TAtomic::Array(_) => Type::array(mixed(), mixed()),
         TAtomic::Iterable(_) => Type::Iterable(Box::new(mixed()), Box::new(mixed())),
         TAtomic::Callable(TCallable::Signature(s)) if s.is_closure => {
-            Type::Object("Closure".to_string(), vec![])
+            Type::Object("Closure".to_string(), vec![], false)
         }
         TAtomic::Callable(_) => Type::Callable(None),
         TAtomic::Object(TObject::Named(n)) => {
@@ -488,9 +487,9 @@ pub(super) fn from_tunion_in(
             let ty = if n.is_static {
                 Type::Static(name, vec![])
             } else if name.eq_ignore_ascii_case("parent") {
-                Type::Object(class.and_then(|k| parent_name(c.codebase, k)).unwrap_or(name), vec![])
+                Type::Object(class.and_then(|k| parent_name(c.codebase, k)).unwrap_or(name), vec![], false)
             } else {
-                Type::Object(name, vec![])
+                Type::Object(name, vec![], false)
             };
             match &n.intersection_types {
                 None => ty,
@@ -502,7 +501,7 @@ pub(super) fn from_tunion_in(
             }
         }
         TAtomic::Reference(TReference::Symbol { name, .. }) => {
-            Type::Object(text(name.as_bytes()), vec![])
+            Type::Object(text(name.as_bytes()), vec![], false)
         }
         TAtomic::Object(TObject::Any) => Type::ObjectWithoutClass,
         _ => Type::Mixed { explicit: true },
@@ -1573,7 +1572,6 @@ impl<'c, 'a, 'arena> Classes<'c, 'a, 'arena> {
             is_enum: k.kind == SymbolKind::Enum,
             is_final: k.flags.contains(MetadataFlags::FINAL),
             properties: Vec::new(),
-            // ponytail: a constant whose value is not a literal (arrays, expressions) reads as `mixed`
             constants: k
                 .constants
                 .values()
@@ -1581,7 +1579,7 @@ impl<'c, 'a, 'arena> Classes<'c, 'a, 'arena> {
                     let value = m
                         .inferred_type
                         .as_ref()
-                        .and_then(|a| super::enums::constant_value(c, a));
+                        .map(|value| c.to_phpstan(value));
                     (
                         text(m.name.as_bytes()),
                         value.map_or_else(|| "mixed".to_string(), |t| to_phpdoc(&t)),
@@ -1640,7 +1638,7 @@ impl<'c, 'a, 'arena> Classes<'c, 'a, 'arena> {
                     .insert(t.name.clone(), Type::Template(Box::new(t.clone())));
             }
             for node in &doc.ancestors {
-                if let Type::Object(name, args) = resolve_in(node, &scope)
+                if let Type::Object(name, args, _) = resolve_in(node, &scope)
                     && !args.is_empty()
                 {
                     let name = c
@@ -1704,16 +1702,17 @@ fn serialize(t: &Type) -> String {
         match t {
             Type::Template(tpl) => {
                 let mut args = vec![
-                    Type::Object(tpl.name.clone(), vec![]),
-                    Type::ConstString(tpl.scope.clone()),
+                    Type::Object(tpl.name.clone(), vec![], false),
+                    Type::ConstString(tpl.scope.as_bytes().to_vec()),
                     encode(&tpl.bound),
                 ];
                 args.extend(tpl.default.as_ref().map(encode));
-                Type::Object("__template".to_string(), args)
+                Type::Object("__template".to_string(), args, false)
             }
             Type::Benevolent(types) => Type::Object(
                 "__benevolent".to_string(),
                 vec![Type::Union(types.iter().map(encode).collect())],
+                false,
             ),
             _ => t.traverse(&encode),
         }

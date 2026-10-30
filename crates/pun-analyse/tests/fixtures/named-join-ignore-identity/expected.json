@@ -1,0 +1,62 @@
+{
+    "ignore-identity-all": [
+        {
+            "file": "$ROOT/calls.php",
+            "message": "No error with identifier argument.parameterRenamedInSubtype.extra is reported on line 10.",
+            "line": 10,
+            "ignorable": false,
+            "identifier": "ignore.unmatchedIdentifier"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "No error with identifier argument.parameterRenamedInSubtype.extra is reported on line 12.",
+            "line": 12,
+            "ignorable": false,
+            "identifier": "ignore.unmatchedIdentifier"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to BaseJoinAudit::run() uses named argument for parameter $old, but ChildJoinAudit renames it to $new.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "ignore-identity-no-join": [
+        {
+            "file": "$ROOT/calls.php",
+            "message": "No error with identifier argument.parameterRenamedInSubtype is reported on line 10.",
+            "line": 10,
+            "ignorable": false,
+            "identifier": "ignore.unmatchedIdentifier"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "No error with identifier argument.parameterRenamedInSubtype.extra is reported on line 10.",
+            "line": 10,
+            "ignorable": false,
+            "identifier": "ignore.unmatchedIdentifier"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "No error with identifier argument.parameterRenamedInSubtype is reported on line 12.",
+            "line": 12,
+            "ignorable": false,
+            "identifier": "ignore.unmatchedIdentifier"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "No error with identifier argument.parameterRenamedInSubtype.extra is reported on line 12.",
+            "line": 12,
+            "ignorable": false,
+            "identifier": "ignore.unmatchedIdentifier"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "No error with identifier argument.parameterRenamedInSubtype is reported on line 14.",
+            "line": 14,
+            "ignorable": false,
+            "identifier": "ignore.unmatchedIdentifier"
+        }
+    ]
+}

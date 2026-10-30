@@ -317,6 +317,7 @@ where
             effective_signature: None,
             method_context: Some(MethodTargetContext {
                 invocation_kind: MethodInvocationKind::Instance,
+                requested_name: constructor_id.get_method_name(),
                 declaring_method_id: Some(declaring_constructor_id),
                 class_like_metadata: metadata,
                 class_type: StaticClassType::Exact(metadata.original_name),

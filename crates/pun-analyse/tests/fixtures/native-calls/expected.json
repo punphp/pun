@@ -1,0 +1,818 @@
+{
+    "phar_sha256": "85157dba3d95d77ca603d2b7303aa78a538f9e3b56ccad07dd794c53aa96d1ae",
+    "sources": {
+        "certainty": "3f1f6a418cb3bd1a81df9852602767e7192ed58e551a6afd1f2eb9c182523bca",
+        "boundaries": "b5e7fa67d60b8dbfe48156c636d0297af5e450dd35a3ee395fd630efb3fa3f2c"
+    },
+    "types": {
+        "certainty": {
+            "90:96": {
+                "line": 4,
+                "source": "$shape",
+                "full": "object{present: int}",
+                "native": "mixed",
+                "available": true
+            },
+            "112:145": {
+                "line": 5,
+                "source": "property_exists($shape, 'absent')",
+                "full": "bool",
+                "native": "bool",
+                "available": true
+            },
+            "128:134": {
+                "line": 5,
+                "source": "$shape",
+                "full": "object{present: int}",
+                "native": "mixed",
+                "available": true
+            },
+            "151:185": {
+                "line": 6,
+                "source": "property_exists($shape, 'present')",
+                "full": "bool",
+                "native": "bool",
+                "available": true
+            },
+            "167:173": {
+                "line": 6,
+                "source": "$shape",
+                "full": "object{present: int}",
+                "native": "mixed",
+                "available": true
+            },
+            "287:293": {
+                "line": 10,
+                "source": "$input",
+                "full": "mixed",
+                "native": "mixed",
+                "available": true
+            },
+            "299:305": {
+                "line": 11,
+                "source": "$shape",
+                "full": "object{present: int}",
+                "native": "mixed",
+                "available": true
+            },
+            "321:354": {
+                "line": 12,
+                "source": "property_exists($shape, 'absent')",
+                "full": "bool",
+                "native": "bool",
+                "available": true
+            },
+            "337:343": {
+                "line": 12,
+                "source": "$shape",
+                "full": "object{present: int}",
+                "native": "mixed",
+                "available": true
+            },
+            "360:394": {
+                "line": 13,
+                "source": "property_exists($shape, 'present')",
+                "full": "bool",
+                "native": "bool",
+                "available": true
+            },
+            "376:382": {
+                "line": 13,
+                "source": "$shape",
+                "full": "object{present: int}",
+                "native": "mixed",
+                "available": true
+            },
+            "540:549": {
+                "line": 18,
+                "source": "factory()",
+                "full": "object{present: int}",
+                "native": "object",
+                "available": true
+            },
+            "555:561": {
+                "line": 19,
+                "source": "$shape",
+                "full": "object{present: int}",
+                "native": "object",
+                "available": true
+            },
+            "577:610": {
+                "line": 20,
+                "source": "property_exists($shape, 'absent')",
+                "full": "bool",
+                "native": "bool",
+                "available": true
+            },
+            "593:599": {
+                "line": 20,
+                "source": "$shape",
+                "full": "object{present: int}",
+                "native": "object",
+                "available": true
+            },
+            "616:650": {
+                "line": 21,
+                "source": "property_exists($shape, 'present')",
+                "full": "bool",
+                "native": "bool",
+                "available": true
+            },
+            "632:638": {
+                "line": 21,
+                "source": "$shape",
+                "full": "object{present: int}",
+                "native": "object",
+                "available": true
+            },
+            "754:761": {
+                "line": 25,
+                "source": "$object",
+                "full": "NativeBox",
+                "native": "NativeBox",
+                "available": true
+            },
+            "777:811": {
+                "line": 26,
+                "source": "property_exists($object, 'absent')",
+                "full": "bool",
+                "native": "bool",
+                "available": true
+            },
+            "793:800": {
+                "line": 26,
+                "source": "$object",
+                "full": "NativeBox",
+                "native": "NativeBox",
+                "available": true
+            },
+            "817:852": {
+                "line": 27,
+                "source": "property_exists($object, 'present')",
+                "full": "bool",
+                "native": "bool",
+                "available": true
+            },
+            "833:840": {
+                "line": 27,
+                "source": "$object",
+                "full": "NativeBox",
+                "native": "NativeBox",
+                "available": true
+            },
+            "902:908": {
+                "line": 30,
+                "source": "$value",
+                "full": "int",
+                "native": "int",
+                "available": true
+            },
+            "924:941": {
+                "line": 31,
+                "source": "is_string($value)",
+                "full": "false",
+                "native": "bool",
+                "available": true
+            },
+            "934:940": {
+                "line": 31,
+                "source": "$value",
+                "full": "int",
+                "native": "int",
+                "available": true
+            },
+            "947:961": {
+                "line": 32,
+                "source": "is_int($value)",
+                "full": "true",
+                "native": "bool",
+                "available": true
+            },
+            "954:960": {
+                "line": 32,
+                "source": "$value",
+                "full": "int",
+                "native": "int",
+                "available": true
+            },
+            "1029:1035": {
+                "line": 36,
+                "source": "$value",
+                "full": "int",
+                "native": "mixed",
+                "available": true
+            },
+            "1051:1068": {
+                "line": 37,
+                "source": "is_string($value)",
+                "full": "false",
+                "native": "bool",
+                "available": true
+            },
+            "1061:1067": {
+                "line": 37,
+                "source": "$value",
+                "full": "int",
+                "native": "mixed",
+                "available": true
+            },
+            "1074:1088": {
+                "line": 38,
+                "source": "is_int($value)",
+                "full": "true",
+                "native": "bool",
+                "available": true
+            },
+            "1081:1087": {
+                "line": 38,
+                "source": "$value",
+                "full": "int",
+                "native": "mixed",
+                "available": true
+            },
+            "1179:1185": {
+                "line": 42,
+                "source": "$value",
+                "full": "'known'",
+                "native": "string",
+                "available": true
+            },
+            "1201:1215": {
+                "line": 43,
+                "source": "is_int($value)",
+                "full": "false",
+                "native": "bool",
+                "available": true
+            },
+            "1208:1214": {
+                "line": 43,
+                "source": "$value",
+                "full": "'known'",
+                "native": "string",
+                "available": true
+            },
+            "1221:1238": {
+                "line": 44,
+                "source": "is_string($value)",
+                "full": "true",
+                "native": "bool",
+                "available": true
+            },
+            "1231:1237": {
+                "line": 44,
+                "source": "$value",
+                "full": "'known'",
+                "native": "string",
+                "available": true
+            },
+            "1323:1329": {
+                "line": 49,
+                "source": "$value",
+                "full": "1",
+                "native": "1",
+                "available": true
+            },
+            "1345:1362": {
+                "line": 50,
+                "source": "is_string($value)",
+                "full": "false",
+                "native": "bool",
+                "available": true
+            },
+            "1355:1361": {
+                "line": 50,
+                "source": "$value",
+                "full": "1",
+                "native": "1",
+                "available": true
+            },
+            "1368:1382": {
+                "line": 51,
+                "source": "is_int($value)",
+                "full": "true",
+                "native": "bool",
+                "available": true
+            },
+            "1375:1381": {
+                "line": 51,
+                "source": "$value",
+                "full": "1",
+                "native": "1",
+                "available": true
+            }
+        },
+        "boundaries": {
+            "481:519": {
+                "line": 10,
+                "source": "\\PHPStan\\dumpType($value /* native */)",
+                "full": "mixed",
+                "native": "mixed",
+                "available": true
+            },
+            "499:505": {
+                "line": 10,
+                "source": "$value",
+                "full": "int",
+                "native": "int",
+                "available": true
+            },
+            "538:544": {
+                "line": 11,
+                "source": "$value",
+                "full": "int",
+                "native": "int",
+                "available": true
+            },
+            "563:632": {
+                "line": 12,
+                "source": "\\PHPStan\\dumpNativeType($value /* native */, $value = 2 /* native */)",
+                "full": "mixed",
+                "native": "mixed",
+                "available": true
+            },
+            "587:593": {
+                "line": 12,
+                "source": "$value",
+                "full": "int",
+                "native": "int",
+                "available": true
+            },
+            "608:618": {
+                "line": 12,
+                "source": "$value = 2",
+                "full": "2",
+                "native": "2",
+                "available": true
+            },
+            "617:618": {
+                "line": 12,
+                "source": "2",
+                "full": "2",
+                "native": "2",
+                "available": true
+            },
+            "651:657": {
+                "line": 13,
+                "source": "$value",
+                "full": "2",
+                "native": "2",
+                "available": true
+            },
+            "676:720": {
+                "line": 14,
+                "source": "\\PHPStan\\dumpPhpDocType($value /* native */)",
+                "full": "mixed",
+                "native": "mixed",
+                "available": true
+            },
+            "700:706": {
+                "line": 14,
+                "source": "$value",
+                "full": "2",
+                "native": "2",
+                "available": true
+            },
+            "739:745": {
+                "line": 15,
+                "source": "$value",
+                "full": "2",
+                "native": "2",
+                "available": true
+            },
+            "867:873": {
+                "line": 19,
+                "source": "$shape",
+                "full": "object{present: int}",
+                "native": "mixed",
+                "available": true
+            },
+            "893:952": {
+                "line": 20,
+                "source": "property_exists($shape /* native */, 'absent' /* native */)",
+                "full": "bool",
+                "native": "bool",
+                "available": true
+            },
+            "909:915": {
+                "line": 20,
+                "source": "$shape",
+                "full": "object{present: int}",
+                "native": "mixed",
+                "available": true
+            },
+            "930:938": {
+                "line": 20,
+                "source": "'absent'",
+                "full": "'absent'",
+                "native": "'absent'",
+                "available": true
+            },
+            "971:977": {
+                "line": 21,
+                "source": "$shape",
+                "full": "object{present: int}",
+                "native": "mixed",
+                "available": true
+            },
+            "1035:1060": {
+                "line": 24,
+                "source": "$object = objectFactory()",
+                "full": "object{present: int}",
+                "native": "object",
+                "available": true
+            },
+            "1045:1060": {
+                "line": 24,
+                "source": "objectFactory()",
+                "full": "object{present: int}",
+                "native": "object",
+                "available": true
+            },
+            "1079:1086": {
+                "line": 25,
+                "source": "$object",
+                "full": "object{present: int}",
+                "native": "object",
+                "available": true
+            },
+            "1105:1165": {
+                "line": 26,
+                "source": "property_exists($object /* native */, 'absent' /* native */)",
+                "full": "bool",
+                "native": "bool",
+                "available": true
+            },
+            "1121:1128": {
+                "line": 26,
+                "source": "$object",
+                "full": "object{present: int}",
+                "native": "object",
+                "available": true
+            },
+            "1143:1151": {
+                "line": 26,
+                "source": "'absent'",
+                "full": "'absent'",
+                "native": "'absent'",
+                "available": true
+            },
+            "1184:1208": {
+                "line": 27,
+                "source": "$object = namedFactory()",
+                "full": "NativeReturnBox",
+                "native": "NativeReturnBox",
+                "available": true
+            },
+            "1194:1208": {
+                "line": 27,
+                "source": "namedFactory()",
+                "full": "NativeReturnBox",
+                "native": "NativeReturnBox",
+                "available": true
+            },
+            "1227:1234": {
+                "line": 28,
+                "source": "$object",
+                "full": "NativeReturnBox",
+                "native": "NativeReturnBox",
+                "available": true
+            },
+            "1253:1326": {
+                "line": 29,
+                "source": "property_exists($object /* native */, $property = 'present' /* native */)",
+                "full": "bool",
+                "native": "bool",
+                "available": true
+            },
+            "1269:1276": {
+                "line": 29,
+                "source": "$object",
+                "full": "NativeReturnBox",
+                "native": "NativeReturnBox",
+                "available": true
+            },
+            "1291:1312": {
+                "line": 29,
+                "source": "$property = 'present'",
+                "full": "'present'",
+                "native": "'present'",
+                "available": true
+            },
+            "1303:1312": {
+                "line": 29,
+                "source": "'present'",
+                "full": "'present'",
+                "native": "'present'",
+                "available": true
+            },
+            "1345:1354": {
+                "line": 30,
+                "source": "$property",
+                "full": "'present'",
+                "native": "'present'",
+                "available": true
+            },
+            "1422:1484": {
+                "line": 33,
+                "source": "argumentsInOrder($value /* native */, $value = 7 /* native */)",
+                "full": "int",
+                "native": "int",
+                "available": true
+            },
+            "1439:1445": {
+                "line": 33,
+                "source": "$value",
+                "full": "int",
+                "native": "int",
+                "available": true
+            },
+            "1460:1470": {
+                "line": 33,
+                "source": "$value = 7",
+                "full": "7",
+                "native": "7",
+                "available": true
+            },
+            "1469:1470": {
+                "line": 33,
+                "source": "7",
+                "full": "7",
+                "native": "7",
+                "available": true
+            },
+            "1503:1509": {
+                "line": 34,
+                "source": "$value",
+                "full": "7",
+                "native": "7",
+                "available": true
+            },
+            "1528:1590": {
+                "line": 35,
+                "source": "argumentsInOrder($value = 9 /* native */, $value /* native */)",
+                "full": "int",
+                "native": "int",
+                "available": true
+            },
+            "1545:1555": {
+                "line": 35,
+                "source": "$value = 9",
+                "full": "9",
+                "native": "9",
+                "available": true
+            },
+            "1554:1555": {
+                "line": 35,
+                "source": "9",
+                "full": "9",
+                "native": "9",
+                "available": true
+            },
+            "1570:1576": {
+                "line": 35,
+                "source": "$value",
+                "full": "9",
+                "native": "9",
+                "available": true
+            },
+            "1609:1651": {
+                "line": 36,
+                "source": "is_string($value = 'changed' /* native */)",
+                "full": "true",
+                "native": "bool",
+                "available": true
+            },
+            "1619:1637": {
+                "line": 36,
+                "source": "$value = 'changed'",
+                "full": "'changed'",
+                "native": "'changed'",
+                "available": true
+            },
+            "1628:1637": {
+                "line": 36,
+                "source": "'changed'",
+                "full": "'changed'",
+                "native": "'changed'",
+                "available": true
+            },
+            "1670:1676": {
+                "line": 37,
+                "source": "$value",
+                "full": "'changed'",
+                "native": "'changed'",
+                "available": true
+            },
+            "1695:1722": {
+                "line": 38,
+                "source": "is_int($value /* native */)",
+                "full": "false",
+                "native": "bool",
+                "available": true
+            },
+            "1702:1708": {
+                "line": 38,
+                "source": "$value",
+                "full": "'changed'",
+                "native": "'changed'",
+                "available": true
+            },
+            "1741:1747": {
+                "line": 39,
+                "source": "$value",
+                "full": "'changed'",
+                "native": "'changed'",
+                "available": true
+            },
+            "1817:1878": {
+                "line": 42,
+                "source": "missingFunction($value /* native */, $value = 3 /* native */)",
+                "full": "*ERROR*",
+                "native": "*ERROR*",
+                "available": false
+            },
+            "1833:1839": {
+                "line": 42,
+                "source": "$value",
+                "full": "int",
+                "native": "int",
+                "available": true
+            },
+            "1854:1864": {
+                "line": 42,
+                "source": "$value = 3",
+                "full": "3",
+                "native": "3",
+                "available": true
+            },
+            "1863:1864": {
+                "line": 42,
+                "source": "3",
+                "full": "3",
+                "native": "3",
+                "available": true
+            },
+            "1902:1908": {
+                "line": 43,
+                "source": "$value",
+                "full": "3",
+                "native": "3",
+                "available": false
+            },
+            "1949:1955": {
+                "line": 45,
+                "source": "$value",
+                "full": "99",
+                "native": "99",
+                "available": false
+            },
+            "2032:2067": {
+                "line": 48,
+                "source": "writeReference($value /* native */)",
+                "full": "int",
+                "native": "int",
+                "available": false
+            },
+            "2047:2053": {
+                "line": 48,
+                "source": "$value",
+                "full": "int",
+                "native": "int",
+                "available": true
+            },
+            "2091:2097": {
+                "line": 49,
+                "source": "$value",
+                "full": "string",
+                "native": "mixed",
+                "available": false
+            },
+            "2169:2262": {
+                "line": 52,
+                "source": "argumentsInOrder($value /* native */, missingFunction($value /* native */) /* unavailable */)",
+                "full": "int",
+                "native": "int",
+                "available": false
+            },
+            "2186:2192": {
+                "line": 52,
+                "source": "$value",
+                "full": "int",
+                "native": "int",
+                "available": true
+            },
+            "2207:2243": {
+                "line": 52,
+                "source": "missingFunction($value /* native */)",
+                "full": "*ERROR*",
+                "native": "*ERROR*",
+                "available": false
+            },
+            "2223:2229": {
+                "line": 52,
+                "source": "$value",
+                "full": "int",
+                "native": "int",
+                "available": true
+            },
+            "2286:2292": {
+                "line": 53,
+                "source": "$value",
+                "full": "int",
+                "native": "int",
+                "available": false
+            },
+            "2372:2469": {
+                "line": 56,
+                "source": "missingFunction(missingFunction($value /* native */) /* unavailable */, $value /* unavailable */)",
+                "full": "*ERROR*",
+                "native": "*ERROR*",
+                "available": false
+            },
+            "2388:2424": {
+                "line": 56,
+                "source": "missingFunction($value /* native */)",
+                "full": "*ERROR*",
+                "native": "*ERROR*",
+                "available": false
+            },
+            "2404:2410": {
+                "line": 56,
+                "source": "$value",
+                "full": "int",
+                "native": "int",
+                "available": true
+            },
+            "2444:2450": {
+                "line": 56,
+                "source": "$value",
+                "full": "int",
+                "native": "int",
+                "available": false
+            },
+            "2493:2499": {
+                "line": 57,
+                "source": "$value",
+                "full": "int",
+                "native": "int",
+                "available": false
+            },
+            "2570:2642": {
+                "line": 60,
+                "source": "\\PHPStan\\dumpType(writeReference($value /* native */) /* unavailable */)",
+                "full": "mixed",
+                "native": "mixed",
+                "available": false
+            },
+            "2588:2623": {
+                "line": 60,
+                "source": "writeReference($value /* native */)",
+                "full": "int",
+                "native": "int",
+                "available": false
+            },
+            "2603:2609": {
+                "line": 60,
+                "source": "$value",
+                "full": "int",
+                "native": "int",
+                "available": true
+            },
+            "2666:2672": {
+                "line": 61,
+                "source": "$value",
+                "full": "string",
+                "native": "mixed",
+                "available": false
+            },
+            "2746:2782": {
+                "line": 64,
+                "source": "strlen($value = 'text' /* native */)",
+                "full": "4",
+                "native": "int<0, max>",
+                "available": false
+            },
+            "2753:2768": {
+                "line": 64,
+                "source": "$value = 'text'",
+                "full": "'text'",
+                "native": "'text'",
+                "available": true
+            },
+            "2762:2768": {
+                "line": 64,
+                "source": "'text'",
+                "full": "'text'",
+                "native": "'text'",
+                "available": true
+            },
+            "2806:2812": {
+                "line": 65,
+                "source": "$value",
+                "full": "'text'",
+                "native": "'text'",
+                "available": true
+            }
+        }
+    }
+}

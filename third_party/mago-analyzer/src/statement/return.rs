@@ -52,6 +52,18 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Return<'arena> {
     where
         A: Arena,
     {
+        // ReturnHandler calls the gatherer with stmtScope, before the operand and
+        // finally. These are syntax-walk returns, including discarded false branches.
+        // Function-local artifacts keep nested function returns out of this set.
+        if !context.settings.property_initialization_observations.is_empty()
+            && matches!(block_context.scope.get_function_like_identifier(), Some(FunctionLikeIdentifier::Method(..)))
+        {
+            crate::property_initialization::remember(
+                &mut artifacts.constructor_property_returns,
+                self.span(),
+                &block_context.variable_state.property_initializations,
+            );
+        }
         let inferred_return_type = if let Some(return_value) = self.value.as_ref() {
             block_context.flags.set_inside_return(true);
             return_value.analyze(context, block_context, artifacts)?;
@@ -120,6 +132,13 @@ pub fn handle_return_value<'ctx, A>(
 ) where
     A: Arena,
 {
+    // Runtime exits for finally are distinct from ClassMethodHandler's raw returns.
+    if !context.settings.property_initialization_observations.is_empty()
+        && !block_context.variable_state.impossible
+        && !inferred_return_type.is_never()
+    {
+        crate::property_initialization::remember(&mut artifacts.property_abrupt_scopes, return_span, &block_context.variable_state.property_initializations);
+    }
     if inferred_return_type.is_void() {
         inferred_return_type = Rc::new(get_null());
     }
@@ -355,6 +374,25 @@ pub fn handle_return_value<'ctx, A>(
                 ),
             );
 
+            return;
+        }
+
+        // PHPStan's BenevolentUnionType::isAcceptedBy accepts any matching member.
+        // Both flags carry benevolence; a strict union still requires every member.
+        if inferred_return_type.ignore_nullable_issues()
+            && inferred_return_type.ignore_falsable_issues()
+            && inferred_return_type.types.iter().any(|atomic| {
+                is_contained_by(
+                    context.codebase,
+                    &TUnion::from_atomic(atomic.clone()),
+                    &expected_return_type,
+                    false,
+                    false,
+                    false,
+                    &mut ComparisonResult::new(),
+                )
+            })
+        {
             return;
         }
 

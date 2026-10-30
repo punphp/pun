@@ -1,10 +1,17 @@
 use mago_allocator::Arena;
+use std::collections::BTreeMap;
 use std::rc::Rc;
 
+use mago_codex::ttype::atomic::TAtomic;
+use mago_codex::ttype::atomic::array::TArray;
+use mago_codex::ttype::atomic::array::key::ArrayKey;
+use mago_codex::ttype::atomic::array::keyed::TKeyedArray;
 use mago_codex::ttype::add_optional_union_type;
+use mago_codex::ttype::get_error;
 use mago_codex::ttype::get_mixed;
 use mago_codex::ttype::get_never;
 use mago_codex::ttype::get_null;
+use mago_codex::ttype::wrap_atomic;
 use mago_span::HasSpan;
 use mago_syntax::cst::Expression;
 use mago_syntax::cst::StaticPropertyAccess;
@@ -55,6 +62,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for StaticPropertyAccess<'arena> {
             resolve_static_properties(context, block_context, artifacts, self.class, &self.property, false)?;
 
         let mut resulting_expression_type = None;
+        let mut named_types = BTreeMap::new();
         if !resolution_result.has_error_path {
             for resolved_property in resolution_result.properties {
                 if let Some(declaring_class_id) = resolved_property.declaring_class_id {
@@ -63,6 +71,14 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for StaticPropertyAccess<'arena> {
                         declaring_class_id,
                         resolved_property.property_name,
                     );
+                }
+
+                if !matches!(self.property, Variable::Direct(_)) {
+                    named_types.entry(ArrayKey::String(resolved_property.property_name))
+                        .and_modify(|(_, previous)| {
+                            *previous = add_optional_union_type(resolved_property.property_type.clone(), Some(previous), context.codebase);
+                        })
+                        .or_insert((false, resolved_property.property_type.clone()));
                 }
 
                 resulting_expression_type = Some(add_optional_union_type(
@@ -80,10 +96,25 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for StaticPropertyAccess<'arena> {
                     Some(add_optional_union_type(get_mixed(), resulting_expression_type.as_ref(), context.codebase));
             }
 
-            if resolution_result.has_invalid_path || resolution_result.encountered_null {
+            // StaticPropertyFetchHandler resolves an absent property to ErrorType, including failed arms of
+            // a finite name union. Null is a value of a real property, not a failed lookup's placeholder.
+            if resolution_result.has_invalid_path {
+                resulting_expression_type =
+                    Some(add_optional_union_type(get_error(), resulting_expression_type.as_ref(), context.codebase));
+            }
+
+            if resolution_result.encountered_null {
                 resulting_expression_type =
                     Some(add_optional_union_type(get_null(), resulting_expression_type.as_ref(), context.codebase));
             }
+        }
+
+        if !matches!(self.property, Variable::Direct(_)) {
+            // Virtual property assignments narrow a finite selector to each name. Retain the already resolved
+            // alternatives before ErrorType or a broader arm absorbs them; do not evaluate the selector again.
+            artifacts.set_expression_type(&self.property, wrap_atomic(TAtomic::Array(TArray::Keyed(
+                TKeyedArray::new().with_known_items(named_types),
+            ))));
         }
 
         let resulting_type = Rc::new(resulting_expression_type.unwrap_or_else(get_never));
@@ -284,7 +315,6 @@ mod tests {
         issues = [
             IssueCode::UnusedProperty,
             IssueCode::InvalidPropertyRead,
-            IssueCode::NoValue,
         ]
     }
 
@@ -314,7 +344,6 @@ mod tests {
         "},
         issues = [
             IssueCode::InvalidPropertyRead,
-            IssueCode::NoValue,
         ]
     }
 
@@ -327,7 +356,6 @@ mod tests {
         "},
         issues = [
             IssueCode::InvalidStaticPropertyAccess,
-            IssueCode::NoValue,
         ]
     }
 

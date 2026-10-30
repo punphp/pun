@@ -1,0 +1,294 @@
+{
+    "calls-4": [],
+    "calls-5": [
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to DynamicNamedScope\\ALeft::first() uses named argument for parameter $value, but DynamicNamedScope\\ALeftChild renames it to $renamed.",
+            "line": 33,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to DynamicNamedScope\\BRight::second() uses named argument for parameter $value, but DynamicNamedScope\\BRightChild renames it to $renamed.",
+            "line": 33,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to DynamicNamedScope\\UnpackTarget::first() uses named argument for parameter $left, but DynamicNamedScope\\UnpackChild renames it to $renamedLeft.",
+            "line": 70,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to DynamicNamedScope\\UnpackTarget::second() uses named argument for parameter $right, but DynamicNamedScope\\UnpackChild renames it to $renamedRight.",
+            "line": 70,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to DynamicNamedScope\\BRight::second() uses named argument for parameter $value, but DynamicNamedScope\\BRightChild renames it to $renamed.",
+            "line": 94,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to DynamicNamedScope\\BRight::second() uses named argument for parameter $value, but DynamicNamedScope\\BRightChild renames it to $renamed.",
+            "line": 107,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to DynamicNamedScope\\ALeft::first() uses named argument for parameter $value, but DynamicNamedScope\\ALeftChild renames it to $renamed.",
+            "line": 113,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to DynamicNamedScope\\BRight::second() uses named argument for parameter $value, but DynamicNamedScope\\BRightChild renames it to $renamed.",
+            "line": 114,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to DynamicNamedScope\\ALeft::first() uses named argument for parameter $value, but DynamicNamedScope\\ALeftChild renames it to $renamed.",
+            "line": 115,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to DynamicNamedScope\\UnpackTarget::first() uses named argument for parameter $left, but DynamicNamedScope\\UnpackChild renames it to $renamedLeft.",
+            "line": 116,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to DynamicNamedScope\\UnpackTarget::second() uses named argument for parameter $right, but DynamicNamedScope\\UnpackChild renames it to $renamedRight.",
+            "line": 117,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to DynamicNamedScope\\BRight::second() uses named argument for parameter $value, but DynamicNamedScope\\BRightChild renames it to $renamed.",
+            "line": 132,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "boundaries-4": [
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Cannot call method next() on null.",
+            "line": 143,
+            "ignorable": true,
+            "identifier": "method.nonObject"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Cannot call method run() on null.",
+            "line": 153,
+            "ignorable": true,
+            "identifier": "method.nonObject"
+        }
+    ],
+    "boundaries-5": [
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to FilteredNamedArguments\\Target::first() uses named argument for parameter $left, but FilteredNamedArguments\\Child renames it to $renamedLeft.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to FilteredNamedArguments\\Target::second() uses named argument for parameter $right, but FilteredNamedArguments\\Child renames it to $renamedRight.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to FilteredNamedArguments\\Target::first() uses named argument for parameter $left, but FilteredNamedArguments\\Child renames it to $renamedLeft.",
+            "line": 45,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to FilteredNamedArguments\\Target::second() uses named argument for parameter $right, but FilteredNamedArguments\\Child renames it to $renamedRight.",
+            "line": 45,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to FilteredNamedArguments\\Target::first() uses named argument for parameter $left, but FilteredNamedArguments\\Child renames it to $renamedLeft.",
+            "line": 46,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to FilteredNamedArguments\\Target::second() uses named argument for parameter $right, but FilteredNamedArguments\\Child renames it to $renamedRight.",
+            "line": 46,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to FilteredNamedArguments\\Target::first() uses named argument for parameter $left, but FilteredNamedArguments\\Child renames it to $renamedLeft.",
+            "line": 63,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to FilteredNamedArguments\\Target::first() uses named argument for parameter $left, but FilteredNamedArguments\\Child renames it to $renamedLeft.",
+            "line": 64,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to FilteredNamedArguments\\Target::first() uses named argument for parameter $left, but FilteredNamedArguments\\Child renames it to $renamedLeft.",
+            "line": 65,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to FilteredNamedArguments\\Target::first() uses named argument for parameter $left, but FilteredNamedArguments\\Child renames it to $renamedLeft.",
+            "line": 72,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to FilteredNamedArguments\\Target::first() uses named argument for parameter $left, but FilteredNamedArguments\\Child renames it to $renamedLeft.",
+            "line": 81,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to FilteredNamedArguments\\Target::first() uses named argument for parameter $left, but FilteredNamedArguments\\Child renames it to $renamedLeft.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to FilteredNamedArguments\\Target::first() uses named argument for parameter $left, but FilteredNamedArguments\\Child renames it to $renamedLeft.",
+            "line": 96,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to FilteredNamedArguments\\Target::second() uses named argument for parameter $right, but FilteredNamedArguments\\Child renames it to $renamedRight.",
+            "line": 96,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to FilteredNamedArguments\\Target::first() uses named argument for parameter $left, but FilteredNamedArguments\\Child renames it to $renamedLeft.",
+            "line": 123,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to FilteredNamedArguments\\Target::first() uses named argument for parameter $left, but FilteredNamedArguments\\Child renames it to $renamedLeft.",
+            "line": 127,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to FilteredNamedArguments\\Target::first() uses named argument for parameter $left, but FilteredNamedArguments\\Child renames it to $renamedLeft.",
+            "line": 134,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to FilteredNamedArguments\\Target::first() uses named argument for parameter $left, but FilteredNamedArguments\\Child renames it to $renamedLeft.",
+            "line": 136,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Cannot call method next() on null.",
+            "line": 143,
+            "ignorable": true,
+            "identifier": "method.nonObject"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Cannot call method run() on null.",
+            "line": 153,
+            "ignorable": true,
+            "identifier": "method.nonObject"
+        }
+    ],
+    "nullable-chain-4": [],
+    "nullable-chain-5": [
+        {
+            "file": "$ROOT/nullable-chain.php",
+            "message": "Call to NullableNamedChain\\Base::run() uses named argument for parameter $old, but NullableNamedChain\\Child renames it to $new.",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/nullable-chain.php",
+            "message": "Call to NullableNamedChain\\Base::run() uses named argument for parameter $old, but NullableNamedChain\\Child renames it to $new.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/nullable-chain.php",
+            "message": "Call to NullableNamedChain\\Base::run() uses named argument for parameter $old, but NullableNamedChain\\Child renames it to $new.",
+            "line": 19,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "nullable-chain-8": [
+        {
+            "file": "$ROOT/nullable-chain.php",
+            "message": "Call to NullableNamedChain\\Base::run() uses named argument for parameter $old, but NullableNamedChain\\Child renames it to $new.",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/nullable-chain.php",
+            "message": "Cannot call method run() on NullableNamedChain\\Base|null.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "method.nonObject"
+        },
+        {
+            "file": "$ROOT/nullable-chain.php",
+            "message": "Call to NullableNamedChain\\Base::run() uses named argument for parameter $old, but NullableNamedChain\\Child renames it to $new.",
+            "line": 19,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ]
+}

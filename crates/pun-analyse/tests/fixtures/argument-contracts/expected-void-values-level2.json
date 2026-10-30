@@ -1,0 +1,102 @@
+{
+  "errors": [
+    {
+      "file": "void-values.php",
+      "line": 16,
+      "identifier": "function.void",
+      "message": "Result of function VoidValues\\sink (void) is used.",
+      "tip": null
+    },
+    {
+      "file": "void-values.php",
+      "line": 17,
+      "identifier": "method.void",
+      "message": "Result of method VoidValues\\Receiver::sink() (void) is used.",
+      "tip": null
+    },
+    {
+      "file": "void-values.php",
+      "line": 18,
+      "identifier": "method.void",
+      "message": "Result of method VoidValues\\Receiver::sink() (void) is used.",
+      "tip": null
+    },
+    {
+      "file": "void-values.php",
+      "line": 19,
+      "identifier": "staticMethod.void",
+      "message": "Result of static method VoidValues\\Receiver::staticSink() (void) is used.",
+      "tip": null
+    },
+    {
+      "file": "void-values.php",
+      "line": 20,
+      "identifier": "callable.void",
+      "message": "Result of callable 'VoidValues\\\\sink' (void) is used.",
+      "tip": null
+    },
+    {
+      "file": "void-values.php",
+      "line": 21,
+      "identifier": "callable.void",
+      "message": "Result of closure (void) is used.",
+      "tip": null
+    },
+    {
+      "file": "void-values.php",
+      "line": 22,
+      "identifier": "function.void",
+      "message": "Result of function call_user_func (void) is used.",
+      "tip": null
+    },
+    {
+      "file": "void-values.php",
+      "line": 23,
+      "identifier": "function.void",
+      "message": "Result of function VoidValues\\sink (void) is used.",
+      "tip": null
+    },
+    {
+      "file": "void-values.php",
+      "line": 24,
+      "identifier": "method.void",
+      "message": "Result of method VoidValues\\Receiver::sink() (void) is used.",
+      "tip": null
+    },
+    {
+      "file": "void-values.php",
+      "line": 25,
+      "identifier": "staticMethod.void",
+      "message": "Result of static method VoidValues\\Receiver::staticSink() (void) is used.",
+      "tip": null
+    },
+    {
+      "file": "void-values.php",
+      "line": 26,
+      "identifier": "callable.void",
+      "message": "Result of callable 'VoidValues\\\\sink' (void) is used.",
+      "tip": null
+    },
+    {
+      "file": "void-values.php",
+      "line": 27,
+      "identifier": "callable.void",
+      "message": "Result of closure (void) is used.",
+      "tip": null
+    },
+    {
+      "file": "void-values.php",
+      "line": 34,
+      "identifier": "match.void",
+      "message": "Result of match expression (void) is used.",
+      "tip": null
+    },
+    {
+      "file": "void-values.php",
+      "line": 37,
+      "identifier": "match.void",
+      "message": "Result of match expression (void) is used.",
+      "tip": null
+    }
+  ]
+}

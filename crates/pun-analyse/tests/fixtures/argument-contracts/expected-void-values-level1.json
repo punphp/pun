@@ -1,0 +1,39 @@
+{
+  "errors": [
+    {
+      "file": "void-values.php",
+      "line": 16,
+      "identifier": "function.void",
+      "message": "Result of function VoidValues\\sink (void) is used.",
+      "tip": null
+    },
+    {
+      "file": "void-values.php",
+      "line": 19,
+      "identifier": "staticMethod.void",
+      "message": "Result of static method VoidValues\\Receiver::staticSink() (void) is used.",
+      "tip": null
+    },
+    {
+      "file": "void-values.php",
+      "line": 22,
+      "identifier": "function.void",
+      "message": "Result of function call_user_func (void) is used.",
+      "tip": null
+    },
+    {
+      "file": "void-values.php",
+      "line": 23,
+      "identifier": "function.void",
+      "message": "Result of function VoidValues\\sink (void) is used.",
+      "tip": null
+    },
+    {
+      "file": "void-values.php",
+      "line": 25,
+      "identifier": "staticMethod.void",
+      "message": "Result of static method VoidValues\\Receiver::staticSink() (void) is used.",
+      "tip": null
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+{
+    "calls": {},
+    "arguments": {
+        "1948": {
+            "expression": "$arguments",
+            "line": 72,
+            "end": 1958,
+            "unpacked": true,
+            "type": "array{left: 1}",
+            "visits": 1
+        },
+        "2044": {
+            "expression": "$arguments",
+            "line": 74,
+            "end": 2054,
+            "unpacked": true,
+            "type": "array{left: 1}",
+            "visits": 1
+        },
+        "2183": {
+            "expression": "$arguments",
+            "line": 81,
+            "end": 2193,
+            "unpacked": true,
+            "type": "array{left: 1}",
+            "visits": 1
+        },
+        "2287": {
+            "expression": "$arguments",
+            "line": 83,
+            "end": 2297,
+            "unpacked": true,
+            "type": "array{left: 1}",
+            "visits": 1
+        },
+        "3061": {
+            "expression": "$box->arguments",
+            "line": 121,
+            "end": 3076,
+            "unpacked": true,
+            "type": "array",
+            "visits": 1
+        },
+        "3154": {
+            "expression": "$box->arguments",
+            "line": 123,
+            "end": 3169,
+            "unpacked": true,
+            "type": "array{left: 1}",
+            "visits": 1
+        },
+        "3247": {
+            "expression": "$box->arguments",
+            "line": 125,
+            "end": 3262,
+            "unpacked": true,
+            "type": "array",
+            "visits": 1
+        },
+        "3338": {
+            "expression": "$box->arguments",
+            "line": 127,
+            "end": 3353,
+            "unpacked": true,
+            "type": "array{left: 1}",
+            "visits": 1
+        },
+        "3508": {
+            "expression": "$box->arguments",
+            "line": 134,
+            "end": 3523,
+            "unpacked": true,
+            "type": "array{left: 1}",
+            "visits": 1
+        },
+        "3609": {
+            "expression": "$box->arguments",
+            "line": 136,
+            "end": 3624,
+            "unpacked": true,
+            "type": "array{left: 1}",
+            "visits": 1
+        }
+    }
+}

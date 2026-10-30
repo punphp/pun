@@ -83,7 +83,7 @@ fn class_names(c: &Checker, expr: &Expression) -> Vec<(String, bool)> {
 /// collect their members, and a template delegates to its bound. In particular `Object|'Name'` has neither.
 fn names(ty: &Type, strings: bool) -> Vec<String> {
     match ty {
-        Type::ConstString(s) if strings => vec![s.clone()],
+        Type::ConstString(s) if strings => vec![String::from_utf8_lossy(s).into_owned()],
         Type::Template(t) => names(&t.bound, strings),
         Type::Union(parts) | Type::Benevolent(parts) | Type::Intersection(parts) => {
             let mut out = Vec::new();
@@ -114,8 +114,8 @@ fn class_string_object(c: &Checker, ty: &Type) -> Option<Type> {
                 .cloned()
                 .unwrap_or(Type::ObjectWithoutClass),
         ),
-        Type::ConstString(n) if class_like(c, n).found().is_some() => {
-            Some(Type::Object(n.clone(), vec![]))
+        Type::ConstString(n) if class_like(c, &String::from_utf8_lossy(n)).found().is_some() => {
+            Some(Type::Object(String::from_utf8_lossy(n).into_owned(), vec![], false))
         }
         // TemplateTypeFactory has no TemplateGenericClassStringType: a direct class-string bound falls back
         // to TemplateMixedType. Its union/intersection and ordinary string template subclasses retain bounds.
@@ -351,6 +351,7 @@ fn check_class(
         params::Call {
             kind: params::CallKind::New,
             subject: &format!("Class {display} constructor"),
+            scope: None,
             void_message: None,
         },
         false,

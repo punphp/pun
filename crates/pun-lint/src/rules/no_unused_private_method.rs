@@ -12,7 +12,7 @@ use mago_syntax::cst::*;
 use pun_problem::{Fix, Safety};
 
 use super::class_method::{
-    class_info, data_provider_methods, is_class_method_used, is_magic, is_private, walk,
+    data_provider_methods, is_class_method_used, is_magic, is_private, walk, with_class_info,
 };
 use super::rector_batch5::remove_members;
 use super::types::facts::facts;
@@ -38,69 +38,68 @@ impl Rule for NoUnusedPrivateMethod {
         out: &mut Vec<Report>,
     ) {
         let facts = facts(ctx);
-        let Some(class) = class_info(node, ancestors, &facts) else {
-            return;
-        };
-        // The oracle leaves a class that declares a named class in a method body alone.
-        let mut nested = false;
-        walk(node, &mut |n, path| {
-            nested = nested || (!path.is_empty() && matches!(n, Node::Class(_)));
-            !nested
-        });
-        if nested {
-            return;
-        }
-        let data_providers = data_provider_methods(ctx.source, ancestors, &class);
-        let class_string_calls = class_string_static_calls(node);
-        let has_call = facts
-            .codebase
-            .method_exists(class.name.as_bytes(), b"__call");
-        let mut removed = vec![false; class.members.len()];
-        let mut methods: Vec<&Method<'_>> = Vec::new();
-        for (index, member) in class.members.iter().enumerate() {
-            let ClassLikeMember::Method(method) = member else {
-                continue;
-            };
-            let name = method.name.value;
-            if !is_private(method)
-                || has_dynamic_method_call_on_this(method)
-                || is_magic(name)
-                || has_call
-                || is_class_method_used(&facts, ancestors, &class, name)
-            {
-                continue;
-            }
-            let named = |names: &[Vec<u8>]| names.iter().any(|n| n.eq_ignore_ascii_case(name));
-            if named(&data_providers) || named(&class_string_calls) {
-                continue;
-            }
-            removed[index] = true;
-            methods.push(method);
-        }
-        if !removed.contains(&true) {
-            return;
-        }
-        let edits = remove_members(
-            ctx.source,
-            class.members,
-            class.left_brace,
-            class.right_brace,
-            &removed,
-        );
-        for method in methods {
-            out.push(Report {
-                span: node_span(method),
-                message: format!(
-                    "Remove the private method `{}()`, which nothing calls.",
-                    String::from_utf8_lossy(method.name.value)
-                ),
-                help: None,
-                fix: Some(Fix {
-                    safety: Safety::Safe,
-                    edits: edits.clone(),
-                }),
+        with_class_info(node, ancestors, &facts, |class| {
+            // The oracle leaves a class that declares a named class in a method body alone.
+            let mut nested = false;
+            walk(node, &mut |n, path| {
+                nested = nested || (!path.is_empty() && matches!(n, Node::Class(_)));
+                !nested
             });
-        }
+            if nested {
+                return;
+            }
+            let data_providers = data_provider_methods(ctx.source, ancestors, &class);
+            let class_string_calls = class_string_static_calls(node);
+            let has_call = facts
+                .codebase
+                .method_exists(class.name.as_bytes(), b"__call");
+            let mut removed = vec![false; class.members.len()];
+            let mut methods: Vec<&Method<'_>> = Vec::new();
+            for (index, member) in class.members.iter().enumerate() {
+                let ClassLikeMember::Method(method) = member else {
+                    continue;
+                };
+                let name = method.name.value;
+                if !is_private(method)
+                    || has_dynamic_method_call_on_this(method)
+                    || is_magic(name)
+                    || has_call
+                    || is_class_method_used(&facts, ancestors, &class, name)
+                {
+                    continue;
+                }
+                let named = |names: &[Vec<u8>]| names.iter().any(|n| n.eq_ignore_ascii_case(name));
+                if named(&data_providers) || named(&class_string_calls) {
+                    continue;
+                }
+                removed[index] = true;
+                methods.push(method);
+            }
+            if !removed.contains(&true) {
+                return;
+            }
+            let edits = remove_members(
+                ctx.source,
+                class.members,
+                class.left_brace,
+                class.right_brace,
+                &removed,
+            );
+            for method in methods {
+                out.push(Report {
+                    span: node_span(method),
+                    message: format!(
+                        "Remove the private method `{}()`, which nothing calls.",
+                        String::from_utf8_lossy(method.name.value)
+                    ),
+                    help: None,
+                    fix: Some(Fix {
+                        safety: Safety::Safe,
+                        edits: edits.clone(),
+                    }),
+                });
+            }
+        });
     }
 }
 

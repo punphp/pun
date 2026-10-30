@@ -5,7 +5,7 @@ use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::TObject;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
-use pun_phpstan::types::Level;
+use pun_phpstan::types::{Level, Type};
 
 use super::super::members::{self, Method};
 use super::super::{Checker, declared};
@@ -47,16 +47,15 @@ fn native_may_be_null(c: &Checker, e: &Expression) -> bool {
     f.return_type_declaration_metadata.as_ref().is_none_or(|t| !c.to_phpstan(&t.type_union).is_null().no())
 }
 
-fn check(c: &mut Checker, object: &Expression, at: Span, kind: &str) {
+fn check(c: &mut Checker, t: Type, at: Span, kind: &str, add_tip: bool) {
     if c.level < 4 {
         return;
     }
-    let Some(t) = c.phpstan_type(object) else { return };
     if !t.is_null().no() {
         return;
     }
     let described = declared::with_classes(c, || t.describe(Level::TypeOnly));
-    let tip = native_may_be_null(c, object).then_some(TIP);
+    let tip = add_tip.then_some(TIP);
     c.report(
         at,
         "nullsafe.neverNull",
@@ -69,9 +68,16 @@ pub(in super::super) fn property(c: &mut Checker, p: &NullSafePropertyAccess) {
     if super::super::property_access::undefined_allowed(c, p.span()) {
         return;
     }
-    check(c, p.object, p.property.span(), "property access");
+    let Some(t) = c.phpstan_type(p.object) else { return };
+    let add_tip = native_may_be_null(c, p.object);
+    check(c, t, p.property.span(), "property access", add_tip);
 }
 
 pub(in super::super) fn method(c: &mut Checker, m: &NullSafeMethodCall) {
-    check(c, m.object, m.method.span(), "method call");
+    // The ordinary operand artifact belongs to the ensured plain twin. The rule's virtual node
+    // instead carries the processed receiver, including originals from enclosing ensure devices.
+    let Some(full) = c.nullsafe_method_receiver_types.get(&m.span()) else { return };
+    let t = c.phpstan_type_from(m.object, full);
+    let add_tip = native_may_be_null(c, m.object);
+    check(c, t, m.method.span(), "method call", add_tip);
 }

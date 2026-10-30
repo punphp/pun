@@ -1,15 +1,14 @@
-//! NullCoalesceRule through IssetCheck::check() (`checkAdvancedIsset` from level 4) on the left side of `??` and
-//! `??=`. The variables' certainty and `hasExpressionType()` come from Mago's block context (see
+//! IssetRule and NullCoalesceRule through IssetCheck::check() (`checkAdvancedIsset` from level 4) on isset
+//! operands and the left side of `??` and `??=`. Certainty and `hasExpressionType()` come from Mago's block context (see
 //! [`super::super::infer`]).
 
-use std::collections::{HashMap, HashSet};
-
+use mago_analyzer::property_initialization::{PropertyInitializationCertainty, PropertyInitializationRequest};
 use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::metadata::property::PropertyMetadata;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use mago_syntax::walker::MutWalker;
-use pun_phpstan::types::{Level, Tri, Type, is_super_type_of, union};
+use pun_phpstan::types::{ConstArray, Level, Tri, Type, is_super_type_of, union};
 
 use super::super::{Checker, declared, types::offset_accessible};
 use super::no_discard::unparen;
@@ -17,24 +16,25 @@ use super::no_discard::unparen;
 const SUPERGLOBALS: [&[u8]; 9] =
     [b"$GLOBALS", b"$_SERVER", b"$_GET", b"$_POST", b"$_FILES", b"$_COOKIE", b"$_SESSION", b"$_REQUEST", b"$_ENV"];
 
-/// The left sides' chains (level 1): the expressions whose type the check reads, and the variables and fetches
-/// whose certainty it reads.
-pub(in super::super) fn coalesce_types(program: &Program, level: u8) -> (Vec<Span>, Vec<Span>) {
+/// Isset operands and coalescing left-side chains (level 1): the expressions whose type the check reads,
+/// and the variables and fetches whose certainty it reads.
+pub(in super::super) fn coalesce_types(program: &Program, level: u8) -> (Vec<Span>, Vec<Span>, Vec<(Span, PropertyInitializationRequest)>) {
     let mut chains = Chains::default();
     if level >= 1 {
         chains.walk_program(program, &mut ());
     }
-    (chains.typed, chains.watched)
+    (chains.typed, chains.watched, chains.initializations)
 }
 
 #[derive(Default)]
 struct Chains {
     typed: Vec<Span>,
     watched: Vec<Span>,
+    initializations: Vec<(Span, PropertyInitializationRequest)>,
 }
 
 impl Chains {
-    fn chain(&mut self, e: &Expression) {
+    fn chain(&mut self, e: &Expression, assignment: Option<Span>) {
         let e = unparen(e);
         self.typed.push(e.span());
         match e {
@@ -42,176 +42,70 @@ impl Chains {
             Expression::ArrayAccess(a) => {
                 self.watched.push(e.span());
                 self.typed.push(a.index.span());
-                self.chain(a.array);
+                self.chain(a.array, assignment);
             }
             Expression::Access(Access::Property(p)) => {
                 self.watched.push(e.span());
-                self.chain(p.object);
+                self.typed.extend(dynamic_name(&p.property));
+                // IssetabilityDescriptor reads the virtual marker only for literal `$this->name`.
+                // Aliased ThisType writes still create it in the live analyzer, not here.
+                if let ClassLikeMemberSelector::Identifier(name) = &p.property
+                    && matches!(unparen(p.object), Expression::Variable(Variable::Direct(v)) if v.name == b"$this")
+                {
+                    // `??=` visits the assignment, not its read target. Its before-position
+                    // is the rule's incoming scope; never substitute the post-write target type.
+                    self.initializations.push((e.span(), PropertyInitializationRequest {
+                        expression: assignment.unwrap_or_else(|| e.span()), property: mago_word::word(name.value),
+                    }));
+                }
+                self.chain(p.object, assignment);
             }
-            Expression::Access(Access::NullSafeProperty(p)) => self.chain(p.object),
-            Expression::Access(Access::StaticProperty(p)) => self.chain(p.class),
+            Expression::Access(Access::NullSafeProperty(p)) => self.chain(p.object, assignment),
+            Expression::Access(Access::StaticProperty(p)) => self.chain(p.class, assignment),
             _ => {}
         }
     }
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Chains {
+    fn walk_in_isset_construct(&mut self, i: &'ast IssetConstruct<'arena>, _: &mut ()) {
+        for value in &i.values {
+            self.chain(value, None);
+        }
+    }
+
     fn walk_in_binary(&mut self, b: &'ast Binary<'arena>, _: &mut ()) {
         if b.operator.is_null_coalesce() {
-            self.chain(b.lhs);
+            self.chain(b.lhs, None);
         }
     }
 
     fn walk_in_assignment(&mut self, a: &'ast Assignment<'arena>, _: &mut ()) {
         if matches!(a.operator, AssignmentOperator::Coalesce(_)) {
-            self.chain(a.lhs);
+            self.chain(a.lhs, Some(a.span()));
         }
     }
 }
 
-/// The `$this->name` fetches of initialized properties: in a method, after a statement of its body assigns it; in the
-/// constructor, the promoted ones; in the other methods, what the constructor's statements assign or promotes
-/// (rememberConstructorScope(), unless the class serializes itself).
-// ponytail: only a body's own statements assign for certain, and a constructor's calls initialize nothing
-pub(in super::super) fn initialized(program: &Program) -> HashMap<Span, bool> {
-    let mut found = Initialized::default();
-    found.walk_program(program, &mut ());
-    found.spans
-}
-
-#[derive(Default)]
-struct Initialized {
-    /// Each fetch, and whether the constructor's initialization is remembered for it.
-    spans: HashMap<Span, bool>,
-    /// What each enclosing class's constructor initializes.
-    classes: Vec<HashSet<Vec<u8>>>,
-    /// Each enclosing function-like: what is initialized from its start (remembered from the constructor or not),
-    /// and where its statements assign.
-    functions: Vec<(HashSet<Vec<u8>>, bool, Vec<(u32, Vec<u8>)>)>,
-}
-
-/// The name of a `$this->name` fetch.
-fn this_name<'e>(p: &'e PropertyAccess) -> Option<&'e [u8]> {
-    let ClassLikeMemberSelector::Identifier(name) = &p.property else { return None };
-    matches!(p.object, Expression::Variable(Variable::Direct(v)) if v.name == b"$this").then_some(name.value)
-}
-
-fn this_property<'e>(e: &'e Expression) -> Option<&'e [u8]> {
-    let Expression::Access(Access::Property(p)) = unparen(e) else { return None };
-    this_name(p)
-}
-
-/// The properties a statement assigns for certain: its own `$this->name = ...`, a block's, what every branch of an
-/// `if` with an `else` assigns.
-// ponytail: an `if` with a colon-delimited body, loops and early exits are not followed
-fn assigns(s: &Statement) -> HashSet<Vec<u8>> {
-    match s {
-        Statement::Expression(e) => match e.expression {
-            Expression::Assignment(a) if matches!(a.operator, AssignmentOperator::Assign(_)) => {
-                this_property(a.lhs).map(|n| n.to_vec()).into_iter().collect()
-            }
-            _ => HashSet::new(),
-        },
-        Statement::Block(b) => b.statements.iter().flat_map(assigns).collect(),
-        Statement::If(If { body: IfBody::Statement(b), .. }) if b.else_clause.is_some() => {
-            let branches = std::iter::once(b.statement)
-                .chain(b.else_if_clauses.iter().map(|c| c.statement))
-                .chain(b.else_clause.iter().map(|c| c.statement));
-            branches.map(assigns).reduce(|a, b| a.intersection(&b).cloned().collect()).unwrap_or_default()
-        }
-        _ => HashSet::new(),
+/// IssetRule invokes the shared check for every operand, including later multi-isset subjects.
+pub(in super::super) fn isset(c: &mut Checker, construct: &IssetConstruct) {
+    if c.level < 1 {
+        return;
     }
-}
-
-/// A body's statements assigning `$this->name`: where they end and the name.
-fn assigned(statements: &[Statement]) -> Vec<(u32, Vec<u8>)> {
-    statements.iter().flat_map(|s| assigns(s).into_iter().map(|n| (s.span().end.offset, n))).collect()
-}
-
-fn constructor<'m, 'arena>(members: &'m [ClassLikeMember<'arena>]) -> Option<&'m Method<'arena>> {
-    members.iter().find_map(|m| match m {
-        ClassLikeMember::Method(m) if m.name.value.eq_ignore_ascii_case(b"__construct") => Some(m),
-        _ => None,
-    })
-}
-
-fn promoted(m: &Method) -> HashSet<Vec<u8>> {
-    m.parameter_list.parameters.iter().filter(|p| p.is_promoted_property()).map(|p| p.variable.name[1..].to_vec()).collect()
-}
-
-fn statements<'m, 'arena>(m: &'m Method<'arena>) -> &'m [Statement<'arena>] {
-    match &m.body {
-        MethodBody::Concrete(b) => b.statements.as_slice(),
-        MethodBody::Abstract(_) => &[],
-    }
-}
-
-impl Initialized {
-    fn enter_class(&mut self, members: &[ClassLikeMember]) {
-        let remembered = match constructor(members) {
-            Some(m) => {
-                let mut names = promoted(m);
-                names.extend(assigned(statements(m)).into_iter().map(|(_, n)| n));
-                names
-            }
-            _ => HashSet::new(),
+    for value in &construct.values {
+        let check = IssetCheck {
+            c,
+            operator: "in isset()".to_string(),
+            identifier: "isset",
+            advanced: c.check_advanced_isset,
         };
-        self.classes.push(remembered);
-    }
-}
-
-impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Initialized {
-    fn walk_in_class(&mut self, k: &'ast Class<'arena>, _: &mut ()) {
-        self.enter_class(k.members.as_slice());
-    }
-
-    fn walk_out_class(&mut self, _: &'ast Class<'arena>, _: &mut ()) {
-        self.classes.pop();
-    }
-
-    fn walk_in_anonymous_class(&mut self, k: &'ast AnonymousClass<'arena>, _: &mut ()) {
-        self.enter_class(k.members.as_slice());
-    }
-
-    fn walk_out_anonymous_class(&mut self, _: &'ast AnonymousClass<'arena>, _: &mut ()) {
-        self.classes.pop();
-    }
-
-    // (a trait's methods are a class's: nothing is known for them)
-    fn walk_in_trait(&mut self, _: &'ast Trait<'arena>, _: &mut ()) {
-        self.classes.push(HashSet::new());
-    }
-
-    fn walk_out_trait(&mut self, _: &'ast Trait<'arena>, _: &mut ()) {
-        self.classes.pop();
-    }
-
-    fn walk_in_method(&mut self, m: &'ast Method<'arena>, _: &mut ()) {
-        let constructor = m.name.value.eq_ignore_ascii_case(b"__construct");
-        let from_start = if constructor { promoted(m) } else { self.classes.last().cloned().unwrap_or_default() };
-        self.functions.push((from_start, !constructor, assigned(statements(m))));
-    }
-
-    fn walk_out_method(&mut self, _: &'ast Method<'arena>, _: &mut ()) {
-        self.functions.pop();
-    }
-
-    fn walk_in_function(&mut self, _: &'ast Function<'arena>, _: &mut ()) {
-        self.functions.push(Default::default());
-    }
-
-    fn walk_out_function(&mut self, _: &'ast Function<'arena>, _: &mut ()) {
-        self.functions.pop();
-    }
-
-    fn walk_in_property_access(&mut self, p: &'ast PropertyAccess<'arena>, _: &mut ()) {
-        let Some((from_start, remembered, assignments)) = self.functions.last() else { return };
-        let Some(name) = this_name(p) else { return };
-        let start = p.span().start.offset;
-        if assignments.iter().any(|(end, n)| *end <= start && n == name) {
-            self.spans.insert(p.span(), false);
-        } else if from_start.contains(name) {
-            self.spans.insert(p.span(), *remembered);
+        match check.check(value, None) {
+            Some((identifier, message)) => {
+                // Errors without an explicit line inherit the IssetExpressionNode's line upstream.
+                let line = c.line_of(construct.span());
+                c.condition_error(value.span(), line, &identifier, true, message, None);
+            }
+            None => c.no_condition(value.span(), "isset.expr"),
         }
     }
 }
@@ -225,7 +119,7 @@ pub(in super::super) fn coalesce(c: &mut Checker, left: &Expression, right: &Exp
         c,
         operator: format!("on left side of {operator}"),
         identifier: "nullCoalesce",
-        advanced: c.level >= 4,
+        advanced: c.check_advanced_isset,
     };
     // in a trait, per class context (ConstantConditionInTraitHelper)
     let found = check.check(left, None).or_else(|| {
@@ -263,6 +157,16 @@ struct IssetCheck<'c, 'a, 'arena> {
 struct Property<'a> {
     declaring: &'a ClassLikeMetadata,
     metadata: &'a PropertyMetadata,
+    holder: Type,
+}
+
+/// The expression whose constant strings PropertyReflectionFinder reads for an instance property name.
+fn dynamic_name(name: &ClassLikeMemberSelector) -> Option<Span> {
+    match name {
+        ClassLikeMemberSelector::Variable(v) => Some(v.span()),
+        ClassLikeMemberSelector::Expression(e) => Some(e.expression.span()),
+        _ => None,
+    }
 }
 
 /// NullCoalesceRule's message for the type on the left side.
@@ -274,9 +178,8 @@ fn type_message(t: &Type) -> Option<&'static str> {
     }
 }
 
-/// `ConstantArrayType::hasOffsetValueType()` and the other types' (offsets as array keys).
+/// `hasOffsetValueType()`: arrays coerce their keys, while strings inspect the raw offset type.
 fn has_offset(t: &Type, offset: &Type) -> Tri {
-    let offset = &array_key(offset);
     match t {
         Type::Union(ts) | Type::Benevolent(ts) => {
             let all: Vec<Tri> = ts.iter().map(|t| has_offset(t, offset)).collect();
@@ -284,29 +187,20 @@ fn has_offset(t: &Type, offset: &Type) -> Tri {
         }
         Type::Intersection(ts) => {
             // a non-empty list has offset 0
-            if t.is_list().yes() && t.is_iterable_at_least_once().yes() && *offset == Type::ConstInt(0) {
+            if t.is_list().yes() && t.is_iterable_at_least_once().yes() && array_key(offset) == Type::ConstInt(0) {
                 return Tri::Yes;
             }
             ts.iter().map(|t| has_offset(t, offset)).fold(Tri::Maybe, |a, b| if a.yes() || b.yes() { Tri::Yes } else if b.no() { Tri::No } else { a })
         }
-        Type::ConstArray(a) => {
-            let mut result = Tri::No;
-            for (i, key) in a.keys.iter().enumerate() {
-                // (a decimal-integer string offset is an int key)
-                if matches!(key, Type::ConstInt(_)) && !offset.is_string().no() && !is_constant(offset) {
-                    return Tri::Maybe;
-                }
-                let has = is_super_type_of(key, offset);
-                if has.yes() {
-                    return if a.optional.contains(&i) { Tri::Maybe } else { Tri::Yes };
-                }
-                result = if has.maybe() { Tri::Maybe } else { result };
+        Type::ConstArray(a) => has_array_offset(a, &array_key(offset)),
+        Type::Array(key, _) => {
+            let offset = &array_key(offset);
+            if is_super_type_of(key, offset).no() && (offset.is_string().no() || is_constant(offset)) {
+                Tri::No
+            } else {
+                Tri::Maybe
             }
-            let unsealed = a.unsealed.as_ref().is_some_and(|(k, _)| !is_super_type_of(k, offset).no());
-            if result.no() && unsealed { Tri::Maybe } else { result }
         }
-        Type::Array(key, _) if is_super_type_of(key, offset).no() && (offset.is_string().no() || is_constant(offset)) => Tri::No,
-        Type::Array(..) => Tri::Maybe,
         // a constant string's offsets in range
         Type::ConstString(v) if is_super_type_of(&Type::Int, offset).yes() => {
             let len = v.len() as i64;
@@ -318,14 +212,58 @@ fn has_offset(t: &Type, offset: &Type) -> Tri {
     }
 }
 
+/// ConstantArrayType::recursiveHasOffsetValueType(), after the one outer toArrayKey() conversion.
+fn has_array_offset(a: &ConstArray, offset: &Type) -> Tri {
+    // IntegerRangeType::getFiniteTypes() uses CALCULATE_SCALARS_LIMIT (128) on max - min.
+    let alternatives = match offset {
+        Type::Union(ts) | Type::Benevolent(ts) => Some(ts.clone()),
+        Type::IntRange(Some(min), Some(max)) if i128::from(*max) - i128::from(*min) <= 128 => {
+            Some((*min..=*max).map(Type::ConstInt).collect())
+        }
+        _ => None,
+    };
+    if let Some(alternatives) = alternatives {
+        let all: Vec<Tri> = alternatives.iter().map(|offset| has_array_offset(a, offset)).collect();
+        return if all.iter().all(|r| *r == all[0]) { all[0] } else { Tri::Maybe };
+    }
+    let mut result = Tri::No;
+    for (i, key) in a.keys.iter().enumerate() {
+        if matches!(key, Type::ConstInt(_)) && !offset.is_string().no() && !is_constant(offset)
+            && !offset.is_decimal_int_string().no()
+        {
+            return Tri::Maybe;
+        }
+        let has = is_super_type_of(key, offset);
+        if has.yes() {
+            return if a.optional.contains(&i) { Tri::Maybe } else { Tri::Yes };
+        }
+        result = if has.maybe() { Tri::Maybe } else { result };
+    }
+    let unsealed = a.unsealed.as_ref().is_some_and(|(k, _)| !is_super_type_of(k, offset).no());
+    if result.no() && unsealed { Tri::Maybe } else { result }
+}
+
 /// `getOffsetValueType()` of an offset `t` has.
 fn offset_value(t: &Type, offset: &Type) -> Type {
-    let offset = &array_key(offset);
     match t {
         Type::Union(ts) | Type::Benevolent(ts) => {
             union(ts.iter().filter(|t| !has_offset(t, offset).no()).map(|t| offset_value(t, offset)).collect())
         }
-        Type::ConstArray(a) => a.keys.iter().position(|k| k == offset).map_or_else(|| t.iterable_value_type(), |i| a.values[i].clone()),
+        Type::ConstArray(a) => {
+            let offset = array_key(offset);
+            // getOffsetValueType() includes only matching slots, not unrelated nullable fields.
+            let mut values: Vec<Type> = a.keys.iter().zip(&a.values)
+                .filter(|(key, _)| !is_super_type_of(key, &offset).no())
+                .map(|(_, value)| value.clone()).collect();
+            if let Some((key, value)) = &a.unsealed
+                && !is_super_type_of(&union(a.keys.clone()), &offset).yes()
+                && !is_super_type_of(key, &offset).no()
+            {
+                values.push(value.clone());
+            }
+            // A nonconstant string can hit integer keys without a definite type match.
+            if values.is_empty() { t.iterable_value_type() } else { union(values) }
+        }
         t if t.is_string().yes() => Type::String,
         t => t.iterable_value_type(),
     }
@@ -335,13 +273,18 @@ fn is_constant(t: &Type) -> bool {
     matches!(t, Type::ConstInt(_) | Type::ConstString(_) | Type::ConstBool(_) | Type::ConstFloat(_) | Type::Null)
 }
 
-/// `toArrayKey()` of a constant offset.
+/// The scalar and refined-string cases of `toArrayKey()`, preserving template identity.
 fn array_key(t: &Type) -> Type {
     match t {
-        Type::ConstString(s) if s.parse::<i64>().is_ok_and(|i| i.to_string() == *s) => Type::ConstInt(s.parse().unwrap_or(0)),
+        Type::Union(ts) => union(ts.iter().map(array_key).collect()),
+        Type::Accessory(_) | Type::Intersection(_) if t.is_decimal_int_string().yes() => Type::Int,
+        Type::Accessory(_) | Type::Intersection(_) if t.is_numeric_string().yes() => union(vec![Type::Int, t.clone()]),
+        Type::ConstString(s) if std::str::from_utf8(s).ok().and_then(|s| s.parse::<i64>().ok()).is_some_and(|i| i.to_string().as_bytes() == s) => Type::ConstInt(std::str::from_utf8(s).unwrap().parse().unwrap_or(0)),
+        Type::Bool => union(vec![Type::ConstInt(0), Type::ConstInt(1)]),
+        Type::Float => Type::Int,
         Type::ConstBool(b) => Type::ConstInt(i64::from(*b)),
         Type::ConstFloat(f) => Type::ConstInt(*f as i64),
-        Type::Null => Type::ConstString(String::new()),
+        Type::Null => Type::ConstString(Vec::new()),
         t => t.clone(),
     }
 }
@@ -406,12 +349,21 @@ impl<'a> IssetCheck<'_, 'a, '_> {
     /// The property a fetch finds: a declared one of the holder's single class.
     // ponytail: a union holder's properties (UnionTypePropertyReflection) are not looked up
     fn property(&self, e: &Expression) -> Option<Property<'a>> {
-        let (class, name): (Option<&'a ClassLikeMetadata>, &[u8]) = match e {
+        let (class, name, holder) = match e {
             Expression::Access(Access::Property(p)) => {
-                let ClassLikeMemberSelector::Identifier(name) = &p.property else { return None };
-                let names = self.ty(p.object)?.object_class_names();
+                let name = match &p.property {
+                    ClassLikeMemberSelector::Identifier(name) => name.value.to_vec(),
+                    selector => {
+                        let names = self.c.phpstan_type_at(dynamic_name(selector)?)?.constant_strings();
+                        let [name] = names.as_slice() else { return None };
+                        name.clone()
+                    }
+                };
+                let holder = self.ty(p.object)?;
+                if matches!(holder.resolve_to_bounds(), Type::Union(_) | Type::Benevolent(_)) { return None }
+                let names = holder.object_class_names();
                 let [class] = names.as_slice() else { return None };
-                (self.c.codebase.get_class_like(class.as_bytes()), name.value)
+                (self.c.codebase.get_class_like(class.as_bytes()), name, holder)
             }
             // (a static fetch: the callers pass property fetches only)
             _ => {
@@ -430,28 +382,88 @@ impl<'a> IssetCheck<'_, 'a, '_> {
                         let [class] = names.as_slice() else { return None };
                         self.c.codebase.get_class_like(class.as_bytes())
                     }
-                };
-                (class, &v.name[1..])
+                }?;
+                let holder = Self::holder(e).and_then(|h| self.ty(h))
+                    .unwrap_or_else(|| Type::Object(self.c.display(class), vec![], false));
+                (Some(class), v.name[1..].to_vec(), holder)
             }
         };
         let mut variable = b"$".to_vec();
-        variable.extend_from_slice(name);
+        variable.extend_from_slice(&name);
         let declaring = self.c.codebase.get_declaring_property_class(class?.name.as_bytes(), &variable)?;
         let declaring = self.c.codebase.get_class_like(declaring.as_bytes())?;
         let metadata = declaring.properties.get(&mago_word::word(&variable))?;
         let is_static = matches!(e, Expression::Access(Access::StaticProperty(_)));
-        (metadata.flags.is_static() == is_static).then_some(Property { declaring, metadata })
+        (metadata.flags.is_static() == is_static).then_some(Property { declaring, metadata, holder })
+    }
+
+    /// PhpPropertyReflection::getWritableType(): a set hook's parameter takes precedence over the property's
+    /// readable type, including when the hook is inherited.
+    fn writable_type(&self, p: &Property) -> Type {
+        let name = &p.metadata.name.0.as_bytes()[1..];
+        let mut property = Some((p.declaring, p.metadata));
+        for _ in 0..super::super::overriding::ANCESTRY {
+            let Some((declaring, metadata)) = property else { break };
+            if let Some(parameter) = metadata.hooks.get(&mago_word::word("set")).and_then(|h| h.parameter.as_ref()) {
+                let native = parameter.type_declaration_metadata.as_ref().filter(|t| !t.from_docblock)
+                    .or(metadata.type_declaration_metadata.as_ref());
+                let native = native.map_or_else(pun_phpstan::types::mixed, |t| declared::from_tunion(self.c, &t.type_union, declaring));
+                let phpdoc = declared::property_span(self.c, metadata)
+                    .map(|at| declared::property(self.c, None, at, name, declaring))
+                    .filter(|t| !t.is_implicit_mixed());
+                return pun_phpstan::types::decide_type(native, phpdoc);
+            }
+            property = declaring.direct_parent_class.and_then(|n| self.c.codebase.get_class_like(n.as_bytes()))
+                .and_then(|k| self.c.declared_property(k, p.metadata.name.0.as_bytes()))
+                .map(|(_, origin, metadata)| (origin, metadata));
+        }
+        declared::property_of(self.c, p.declaring, p.metadata, name)
+    }
+
+    /// A reflected declaring class's active template map, not the unparameterized storage declaration.
+    fn property_args(&self, p: &Property) -> Vec<Type> {
+        let holder = p.holder.resolve_to_bounds();
+        let actual = match &holder {
+            Type::Object(_, args, _) | Type::Static(_, args) => args.clone(),
+            Type::This(name) => self.c.codebase.get_class_like(name.as_bytes()).into_iter()
+                .flat_map(|k| declared::class_templates(self.c, k)).map(|t| Type::Template(Box::new(t))).collect(),
+            _ => vec![],
+        };
+        let class = declared::original_name(p.declaring);
+        let names = p.holder.object_class_names();
+        let args = declared::with_classes(self.c, || {
+            let name = &names[0]; // property() requires exactly one class name.
+            if name.eq_ignore_ascii_case(&class) { actual }
+            else { pun_phpstan::symbols::lookup(name)
+                .and_then(|k| pun_phpstan::types::ancestor_args(&k, &class, &actual)).unwrap_or_default() }
+        });
+        declared::class_templates(self.c, p.declaring).into_iter().enumerate().map(|(i, t)| {
+            args.get(i).cloned().unwrap_or_else(|| t.default.as_ref().unwrap_or(&t.bound).clone())
+        }).collect()
     }
 
     /// PropertyDescriptor::describeProperty().
     fn describe(&self, p: &Property, e: &Expression) -> String {
-        let declaring = self.c.display(p.declaring);
+        let mut declaring = self.c.display(p.declaring);
+        let args = self.property_args(p);
+        if !args.is_empty() {
+            declaring = format!("{declaring}<{}>", args.iter().map(|t| t.describe(Level::TypeOnly)).collect::<Vec<_>>().join(","));
+        }
         match e {
             Expression::Access(Access::Property(fetch)) => {
-                let ClassLikeMemberSelector::Identifier(name) = &fetch.property else { unreachable!("a found property") };
+                let name = match &fetch.property {
+                    ClassLikeMemberSelector::Identifier(name) => String::from_utf8_lossy(name.value).into_owned(),
+                    ClassLikeMemberSelector::Variable(v) => self.c.written(v.span())[1..].to_string(),
+                    selector => {
+                        if let ClassLikeMemberSelector::Expression(e) = selector
+                            && let Expression::Variable(Variable::Direct(v)) = unparen(e.expression)
+                        { String::from_utf8_lossy(&v.name[1..]).into_owned() } else { String::new() }
+                    },
+                };
                 let on = self.ty(fetch.object).expect("a found property's holder is typed");
-                let class = if is_super_type_of(&Type::Object(declaring.clone(), vec![]), &on).yes() { declaring } else { on.describe(Level::TypeOnly) };
-                format!("Property {class}::${}", String::from_utf8_lossy(name.value))
+                let nominal = declared::with_classes(self.c, || is_super_type_of(&Type::Object(self.c.display(p.declaring), vec![], false), &on).yes());
+                let class = if nominal { declaring } else { on.describe(Level::TypeOnly) };
+                format!("Property {class}::${name}")
             }
             _ => format!("Static property {declaring}::{}", String::from_utf8_lossy(p.metadata.name.0.as_bytes())),
         }
@@ -530,9 +542,7 @@ impl<'a> IssetCheck<'_, 'a, '_> {
                 // isInitializedThisProperty()
                 if let Some(native) = &m.type_declaration_metadata
                     && !m.flags.is_virtual_property()
-                    && let Some(remembered) = self.c.conditions.initialized.get(&e.span())
-                    && let Some(class) = self.c.class_scope().filter(|k| k.name == p.declaring.name)
-                    && !(*remembered && self.serializes(class))
+                    && self.c.property_initializations.get(&e.span()) == Some(&PropertyInitializationCertainty::Yes)
                 {
                     let t = declared::from_tunion(self.c, &native.type_union, p.declaring);
                     let tail = match type_message(&t)? {
@@ -557,8 +567,8 @@ impl<'a> IssetCheck<'_, 'a, '_> {
                 if !self.advanced {
                     return undefined();
                 }
-                let name = String::from_utf8_lossy(&m.name.0.as_bytes()[1..]).into_owned();
-                let t = declared::property_of(self.c, p.declaring, m, name.as_bytes());
+                let names = declared::class_templates(self.c, p.declaring).into_iter().map(|t| t.name).collect::<Vec<_>>();
+                let t = super::super::types::with_args(&self.writable_type(&p), &format!("class {}", declared::original_name(p.declaring)), &names, &self.property_args(&p));
                 let message = format!("{} ({}) {}", self.describe(&p, e), t.describe(Level::TypeOnly), self.operator);
                 let error = self.error(&t, message, "property");
                 if error.is_some() { on(error) } else { None }
@@ -595,13 +605,6 @@ impl<'a> IssetCheck<'_, 'a, '_> {
                 ))
             }
         }
-    }
-
-    /// classHasCustomSerialization(): unserialize() rebuilds its objects without the constructor.
-    fn serializes(&self, k: &ClassLikeMetadata) -> bool {
-        let has = |method: &str| self.c.codebase.method_exists(k.name.as_bytes(), method.as_bytes());
-        ["__sleep", "__serialize", "__unserialize"].iter().any(|m| has(m))
-            || (self.c.codebase.is_instance_of(k.name.as_bytes(), b"Serializable") && has("unserialize"))
     }
 
     /// A natively typed property this fetch may read before its initialization: no default value, not assigned in

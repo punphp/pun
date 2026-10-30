@@ -155,7 +155,7 @@ impl<'arena> Checker<'_, 'arena> {
                 continue;
             };
             let class = match tag {
-                Type::Object(n, _) => Some(n.as_str()),
+                Type::Object(n, _, _) => Some(n.as_str()),
                 Type::Static(_, _) | Type::This(_) => called,
                 // Templates, conditionals, unions and intersections need full closure `$this` type propagation,
                 // not a guessed single visibility class.

@@ -1,0 +1,138 @@
+{
+    "direct": [
+        {
+            "file": "$ROOT/direct.php",
+            "message": "Call to MixedAliasDirect\\Base::MixedAlias() uses named argument for parameter $old, but MixedAliasDirect\\Child renames it to $new.",
+            "line": 8,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/direct.php",
+            "message": "Call to MixedAliasDirect\\Base::MixedAlias() uses named argument for parameter $old, but MixedAliasDirect\\Child renames it to $new.",
+            "line": 9,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/direct.php",
+            "message": "Call to MixedAliasDirect\\Base::MixedAlias() uses named argument for parameter $old, but MixedAliasDirect\\Child renames it to $new.",
+            "line": 10,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/direct.php",
+            "message": "Call to MixedAliasDirect\\Base::MixedAlias() uses named argument for parameter $old, but MixedAliasDirect\\Child renames it to $new.",
+            "line": 11,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/direct.php",
+            "message": "Parameter $old of method MixedAliasDirect\\Base::MixedAlias() expects string, int given.",
+            "line": 11,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/direct.php",
+            "message": "Parameter #1 $old (int) of method MixedAliasDirect\\InvalidChild::MIXEDALIAS() is not contravariant with parameter #1 $old (string) of method MixedAliasDirect\\Base::MixedAlias().",
+            "line": 14,
+            "ignorable": false,
+            "identifier": "method.childParameterType"
+        }
+    ],
+    "inherited": [
+        {
+            "file": "$ROOT/inherited.php",
+            "message": "Call to MixedAliasInherited\\Base::InnerAlias() uses named argument for parameter $old, but MixedAliasInherited\\Child renames it to $new.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/inherited.php",
+            "message": "Call to MixedAliasInherited\\Base::InnerAlias() uses named argument for parameter $old, but MixedAliasInherited\\Child renames it to $new.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/inherited.php",
+            "message": "Parameter $old of method MixedAliasInherited\\Base::InnerAlias() expects string, int given.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/inherited.php",
+            "message": "Call to MixedAliasInherited\\Realiased::OtherAlias() uses named argument for parameter $old, but MixedAliasInherited\\RealiasedChild renames it to $renamed.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "visibility": [
+        {
+            "file": "$ROOT/visibility.php",
+            "message": "Call to MixedAliasVisibility\\Base::OriginalMethod() uses named argument for parameter $old, but MixedAliasVisibility\\Child renames it to $new.",
+            "line": 10,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/visibility.php",
+            "message": "Call to MixedAliasVisibility\\AliasBase::PublicAlias() uses named argument for parameter $old, but MixedAliasVisibility\\AliasChild renames it to $alias.",
+            "line": 11,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/visibility.php",
+            "message": "Call to MixedAliasVisibility\\Base::OriginalMethod() uses named argument for parameter $old, but MixedAliasVisibility\\Child renames it to $new.",
+            "line": 12,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/visibility.php",
+            "message": "Parameter $old of method MixedAliasVisibility\\Base::OriginalMethod() expects string, int given.",
+            "line": 12,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/visibility.php",
+            "message": "Call to private method PrivateAlias() of class MixedAliasVisibility\\PrivateOwner.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "method.private"
+        }
+    ],
+    "original": [
+        {
+            "file": "$ROOT/original.php",
+            "message": "Parameter $old of method MixedAliasOriginal\\Base::OriginalMethod() expects string, int given.",
+            "line": 9,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/original.php",
+            "message": "Parameter $own of method MixedAliasOriginal\\OwnMethod::mixedalias() expects int, string given.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "argument.type"
+        }
+    ],
+    "strict": [
+        {
+            "file": "$ROOT/strict.php",
+            "message": "Method MixedAliasStrict\\WrongCase::mixedalias() does not match parent method name: MixedAliasStrict\\Middle::MixedAlias().",
+            "line": 8,
+            "ignorable": true,
+            "identifier": "method.nameCase"
+        }
+    ]
+}

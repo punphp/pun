@@ -1,0 +1,50 @@
+{
+    "279": {
+        "end": 285,
+        "expression": "$value",
+        "type": "*ERROR*",
+        "visits": 1
+    },
+    "295": {
+        "end": 318,
+        "expression": "$target->output($value)",
+        "type": "null",
+        "visits": 1
+    },
+    "311": {
+        "end": 317,
+        "expression": "$value",
+        "type": "0",
+        "visits": 1
+    },
+    "344": {
+        "end": 350,
+        "expression": "$value",
+        "type": "int|string",
+        "visits": 1
+    },
+    "603": {
+        "end": 609,
+        "expression": "$value",
+        "type": "*ERROR*",
+        "visits": 1
+    },
+    "659": {
+        "end": 681,
+        "expression": "$target->$name($value)",
+        "type": "null",
+        "visits": 1
+    },
+    "674": {
+        "end": 680,
+        "expression": "$value",
+        "type": "0",
+        "visits": 1
+    },
+    "707": {
+        "end": 713,
+        "expression": "$value",
+        "type": "0",
+        "visits": 1
+    }
+}

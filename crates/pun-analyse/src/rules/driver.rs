@@ -35,10 +35,19 @@ pub(crate) struct Checks {
     /// ExistingClassInInstanceOfRule, CaughtExceptionExistenceRule, ExistingClassesInPropertiesRule) report
     /// `*.nameCase` only with it on. Set from [`Project::check_class_case_sensitivity`], which the presets will set.
     check_class_case_sensitivity: bool,
+    /// [`Project::check_internal_class_case_sensitivity`].
+    check_internal_class_case_sensitivity: bool,
+    /// [`Project::check_imported_class_name_case`].
+    check_imported_class_name_case: bool,
     /// [`Project::check_function_name_case`].
     check_function_name_case: bool,
     /// [`Project::level`] and [`Project::check_generic_iterable_classes`].
     pub(super) level: u8,
+    check_argument_types: bool,
+    check_arguments_passed_by_reference: bool,
+    check_this_only: bool,
+    /// [`Project::check_advanced_isset`], otherwise config.level4.neon's default.
+    check_advanced_isset: bool,
     generic_iterable_classes: bool,
     /// [`Project::new_static_in_abstract_class_static_method`].
     new_static_in_abstract_class_static_method: bool,
@@ -54,6 +63,8 @@ pub(crate) struct Checks {
     pub(super) type_aliases: Vec<(String, String)>,
     /// [`Project::reported`].
     reported: Option<crate::project::Reported>,
+    /// [`Project::method_rules`], independent of identifier filtering.
+    method_rules: crate::MethodRules,
     /// [`Project::precise_unused_parameter_line`].
     precise_unused_parameter_line: bool,
     /// The method and property extensions of `featureToggles.internalTag`, at level 2 (config.level2.neon).
@@ -71,6 +82,9 @@ pub(crate) struct Checks {
     non_stringable_names: bool,
     cli_arguments_variables_registered: bool,
     check_maybe_undefined_variables: bool,
+    pollute_scope_with_loop_initial_assignments: bool,
+    pollute_scope_with_always_iterable_foreach: bool,
+    pollute_scope_with_block: bool,
     /// [`Project::report_method_purity_override`].
     method_purity_override: bool,
     /// [`Project::check_uninitialized_properties`].
@@ -87,7 +101,10 @@ impl Checks {
     /// Drops the errors of identifiers the run doesn't report.
     pub(crate) fn keep_reported(&self, errors: &mut Vec<Error>) {
         if let Some(reported) = &self.reported {
-            errors.retain(|e| reported(e.identifier.as_deref().unwrap_or_default()));
+            errors.retain(|e| {
+                let id = e.identifier.as_deref().unwrap_or_default();
+                id == "phpstan.parse" || reported(id)
+            });
         }
     }
 }
@@ -101,8 +118,14 @@ impl Checks {
         }
         Checks {
             check_class_case_sensitivity: project.check_class_case_sensitivity,
+            check_internal_class_case_sensitivity: project.check_internal_class_case_sensitivity,
+            check_imported_class_name_case: project.check_imported_class_name_case,
             check_function_name_case: project.check_function_name_case,
             level: project.level,
+            check_argument_types: project.check_function_argument_types.unwrap_or(project.level >= 5),
+            check_arguments_passed_by_reference: project.check_arguments_passed_by_reference.unwrap_or(project.level >= 5),
+            check_this_only: project.check_this_only.unwrap_or(project.level < 2),
+            check_advanced_isset: project.check_advanced_isset.unwrap_or(project.level >= 4),
             generic_iterable_classes: project.check_generic_iterable_classes,
             new_static_in_abstract_class_static_method: project.new_static_in_abstract_class_static_method,
             php_version: project.php_version,
@@ -115,6 +138,7 @@ impl Checks {
             internal_tag: project.internal_tag,
             type_aliases: project.type_aliases.clone(),
             reported: project.reported.clone(),
+            method_rules: project.method_rules,
             precise_unused_parameter_line: project.precise_unused_parameter_line,
             internal_members,
             deprecations: project.deprecation_rules,
@@ -125,6 +149,9 @@ impl Checks {
             non_stringable_names: project.check_non_stringable_dynamic_access,
             cli_arguments_variables_registered: project.cli_arguments_variables_registered,
             check_maybe_undefined_variables: project.check_maybe_undefined_variables,
+            pollute_scope_with_loop_initial_assignments: project.pollute_scope_with_loop_initial_assignments,
+            pollute_scope_with_always_iterable_foreach: project.pollute_scope_with_always_iterable_foreach,
+            pollute_scope_with_block: project.pollute_scope_with_block,
             method_purity_override: project.report_method_purity_override,
             uninitialized_properties: project.check_uninitialized_properties,
             missing_callable_signature: project.check_missing_callable_signature,
@@ -175,15 +202,23 @@ fn checker<'a, 'arena>(
     typed.extend(super::scope::typed_method_receivers(program));
     typed.extend(super::function_callable::typed_expressions(program, project.level));
     typed.extend(super::method_callable::typed_expressions(program, project.level));
-    typed.extend(super::types::typed_expressions(program, &file.contents, project.level));
+    typed.extend(super::types::typed_expressions(program, &file.contents, project.level,
+        project.check_argument_types || project.check_arguments_passed_by_reference, project.check_this_only));
     typed.extend(super::strict::typed_expressions(project, codebase, program));
     typed.extend(super::operators::typed_expressions(project.strict, program));
-    let (include_typed, include_state) = super::include_file::prepare(arena, file, program, names, codebase, php_version, &project.include_file);
+    let (include_typed, include_state) = super::include_file::prepare(arena, file, program, names, codebase, php_version, project.pollute_scope_with_loop_initial_assignments, project.pollute_scope_with_always_iterable_foreach, project.pollute_scope_with_block, &project.include_file);
     typed.extend(include_typed);
     let mut variables = super::variables::Observations::default();
-    let (mut types, defined, origins) = infer(arena, file, program, names, codebase, php_version, project.level, typed, &mut variables);
+    let calls = if project.method_rules.call_methods {
+        super::named_argument::requests(program)
+    } else {
+        Vec::new()
+    };
+    let mut variable_writes = HashMap::new();
+    let mut property_initializations = HashMap::new();
+    let (mut types, defined, origins, call_terminations, named_call_scopes, keep_void_types, native_types, nullsafe_method_receiver_types) = infer(arena, file, program, names, codebase, php_version, project.level, project.pollute_scope_with_loop_initial_assignments, project.pollute_scope_with_always_iterable_foreach, project.pollute_scope_with_block, typed, calls, &mut variables, &mut variable_writes, &mut property_initializations);
     if project.level >= 4 {
-        let (subjects, unknown) = super::dead_code::match_subject_types(file, program, codebase, php_version);
+        let (subjects, unknown) = super::dead_code::match_subject_types(file, program, codebase, php_version, project.pollute_scope_with_loop_initial_assignments, project.pollute_scope_with_always_iterable_foreach, project.pollute_scope_with_block);
         types.extend(subjects);
         for span in unknown {
             types.remove(&span);
@@ -194,7 +229,15 @@ fn checker<'a, 'arena>(
         property_access: property_access::state(program),
         relative_path: &project.relative_path,
         file,
+        has_compiler_halt: false,
         types,
+        keep_void_types,
+        native_types,
+        nullsafe_method_receiver_types,
+        variable_writes,
+        property_initializations,
+        call_terminations,
+        named_call_scopes,
         defined,
         variables,
         origins,
@@ -235,8 +278,14 @@ fn checker<'a, 'arena>(
         arrays: arrays::State::default(),
         standalone_throws: HashSet::new(),
         case_sensitivity: project.check_class_case_sensitivity,
+        check_internal_class_case_sensitivity: project.check_internal_class_case_sensitivity,
+        check_imported_class_name_case: project.check_imported_class_name_case,
         check_function_name_case: project.check_function_name_case,
         level: project.level,
+        check_argument_types: project.check_argument_types,
+        check_arguments_passed_by_reference: project.check_arguments_passed_by_reference,
+        check_this_only: project.check_this_only,
+        check_advanced_isset: project.check_advanced_isset,
         generic_iterable_classes: project.generic_iterable_classes,
         new_static_in_abstract_class_static_method: project.new_static_in_abstract_class_static_method,
         larastan: project.larastan.as_ref(),
@@ -244,7 +293,7 @@ fn checker<'a, 'arena>(
         internal: project.internal.as_ref(),
         internal_tag: project.internal_tag,
         precise_unused_parameter_line: project.precise_unused_parameter_line,
-        unreachable: HashSet::new(),
+        unreachable: Default::default(),
         conditions: Default::default(),
         internal_members: project.internal_members,
         deprecations: project.deprecations,
@@ -255,6 +304,9 @@ fn checker<'a, 'arena>(
         non_stringable_names: project.non_stringable_names,
         cli_arguments_variables_registered: project.cli_arguments_variables_registered,
         check_maybe_undefined_variables: project.check_maybe_undefined_variables,
+        pollute_scope_with_loop_initial_assignments: project.pollute_scope_with_loop_initial_assignments,
+        pollute_scope_with_always_iterable_foreach: project.pollute_scope_with_always_iterable_foreach,
+        pollute_scope_with_block: project.pollute_scope_with_block,
         method_purity_override: project.method_purity_override,
         uninitialized_properties: project.uninitialized_properties,
         missing_callable_signature: project.missing_callable_signature,
@@ -262,6 +314,7 @@ fn checker<'a, 'arena>(
         include_settings: &project.include_file,
         include_state,
         closure_bind: 0,
+        method_rules: project.method_rules,
         errors: Vec::new(),
     }
 }
@@ -281,6 +334,10 @@ pub(crate) fn check_file(
     };
     let arena = LocalArena::new();
     let (program, names) = parse(&arena, file);
+    let errors = crate::parser::errors(file, program, crate::codebase::php_version(project.php_version));
+    if !errors.is_empty() {
+        return errors;
+    }
     let mut checker = checker(
         &arena, file, program, &names, codebase, project, files, sources,
     );

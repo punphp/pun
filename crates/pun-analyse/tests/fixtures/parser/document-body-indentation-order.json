@@ -1,0 +1,8 @@
+{
+  "body-parts": "<?php\n$x = <<<TXT\n $value\n\twrong\n $other\n bad\n  TXT;\n",
+  "parameters-and-name": "<?php\n$x = <<<TXT\n {$object->{(function (void $v) {})()}}\n bad\n  TXT;\n#[\\self] class DocumentBodySuppressed {}\ndocument_body_indentation_suppressed();\n",
+  "nested-documents": "<?php\n$x = <<<OUT\n {$object->{<<<IN\n bad\n  IN\n}}\n bad\n  OUT;\n",
+  "namespace-and-array": "<?php\n$x = [<<<TXT\n bad\n  TXT, ,];\nnamespace DocumentBodyOrder {}\n",
+  "mixed-marker-suppression": "<?php\n$x = <<<TXT\nwrong\n\twrong\n \tTXT;\n$y = <<<'TXT'\nwrong\n\t TXT;\n",
+  "phantom-expression-attributes": "<?php\n$x = <<<TXT\n{\n$object->{(function (void $v) {})()}}\n  TXT;\n"
+}

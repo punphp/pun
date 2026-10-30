@@ -84,6 +84,9 @@ pub mod with_properties;
 pub enum TObject {
     /// Represents the generic `object` type, accepting any object instance.
     Any,
+    /// PHPStan's nameless, truthy sentinel for `parent` without a parent class.
+    /// Unlike ordinary objects, it has no members or runtime object capabilities.
+    NonexistentParent,
     /// Represents an instance of a specific named class/interface/trait,
     /// potentially with generic parameters and intersection types (`&`).
     Named(TNamedObject),
@@ -163,7 +166,11 @@ impl TObject {
     #[must_use]
     pub const fn get_name(&self) -> Option<Word> {
         match self {
-            TObject::Any | TObject::WithProperties(_) | TObject::HasMethod(_) | TObject::HasProperty(_) => None,
+            TObject::Any
+            | TObject::NonexistentParent
+            | TObject::WithProperties(_)
+            | TObject::HasMethod(_)
+            | TObject::HasProperty(_) => None,
             TObject::Enum(enum_object) => Some(enum_object.name),
             TObject::Named(named_object) => Some(named_object.name),
         }
@@ -183,7 +190,7 @@ impl TObject {
 impl TType for TObject {
     fn append_child_nodes<'types>(&'types self, children: &mut Vec<TypeRef<'types>>) {
         match self {
-            TObject::Any => (),
+            TObject::Any | TObject::NonexistentParent => (),
             TObject::HasMethod(has_method) => has_method.append_child_nodes(children),
             TObject::HasProperty(has_property) => has_property.append_child_nodes(children),
             TObject::Enum(ttype) => ttype.append_child_nodes(children),
@@ -239,7 +246,7 @@ impl TType for TObject {
 
     fn needs_population(&self) -> bool {
         match self {
-            TObject::Any => false,
+            TObject::Any | TObject::NonexistentParent => false,
             TObject::HasMethod(has_method) => has_method.needs_population(),
             TObject::HasProperty(has_property) => has_property.needs_population(),
             TObject::Enum(enum_object) => enum_object.needs_population(),
@@ -250,7 +257,7 @@ impl TType for TObject {
 
     fn is_expandable(&self) -> bool {
         match self {
-            TObject::Any => false,
+            TObject::Any | TObject::NonexistentParent => false,
             TObject::HasMethod(has_method) => has_method.is_expandable(),
             TObject::HasProperty(has_property) => has_property.is_expandable(),
             TObject::Enum(enum_object) => enum_object.is_expandable(),
@@ -261,7 +268,7 @@ impl TType for TObject {
 
     fn is_complex(&self) -> bool {
         match self {
-            TObject::Any => false,
+            TObject::Any | TObject::NonexistentParent => false,
             TObject::HasMethod(has_method) => has_method.is_complex(),
             TObject::HasProperty(has_property) => has_property.is_complex(),
             TObject::Enum(enum_object) => enum_object.is_complex(),
@@ -273,6 +280,7 @@ impl TType for TObject {
     fn get_id(&self) -> Word {
         match self {
             TObject::Any => word("object"),
+            TObject::NonexistentParent => word("parent"),
             TObject::HasMethod(has_method) => has_method.get_id(),
             TObject::HasProperty(has_property) => has_property.get_id(),
             TObject::Enum(enum_object) => enum_object.get_id(),
@@ -284,6 +292,7 @@ impl TType for TObject {
     fn get_pretty_id_with_indent(&self, indent: usize) -> Word {
         match self {
             TObject::Any => word("object"),
+            TObject::NonexistentParent => word("parent"),
             TObject::HasMethod(has_method) => has_method.get_pretty_id_with_indent(indent),
             TObject::HasProperty(has_property) => has_property.get_pretty_id_with_indent(indent),
             TObject::Enum(enum_object) => enum_object.get_pretty_id_with_indent(indent),

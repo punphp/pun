@@ -9,11 +9,12 @@ use mago_word::WordMap;
 #[derive(Clone, Debug)]
 pub struct CaseScope {
     pub break_vars: Option<WordMap<Rc<TUnion>>>,
+    pub(crate) property_breaks: foldhash::HashMap<mago_span::Span, crate::property_initialization::Markers>,
 }
 
 impl CaseScope {
     pub fn new() -> Self {
-        Self { break_vars: None }
+        Self { break_vars: None, property_breaks: foldhash::HashMap::default() }
     }
 
     pub fn record_break(&mut self, locals: &WordMap<Rc<TUnion>>, codebase: &CodebaseMetadata) {

@@ -75,10 +75,10 @@ impl Rule for AddReturnPhpdocDimAssignedObject {
         else {
             return;
         };
-        let Type::Object(class, args) = *item else {
+        let Type::Object(class, args, _) = *item else {
             return;
         };
-        if decorate_return(&mut info, &Type::array(mixed(), Type::Object(class, args))) {
+        if decorate_return(&mut info, &Type::array(mixed(), Type::Object(class, args, false))) {
             out.extend(doc_report(
                 f.name,
                 "Add the `@return` array type of the objects appended to the returned variable.",
@@ -118,7 +118,7 @@ fn is_exclusively_dim_assigned(
                         }
                         let assigned = expr_type(ctx, scope, a.rhs);
                         let known = |class: &str| facts_has_class(ctx, class);
-                        if !matches!(&assigned, Some(Type::Object(class, _)) if known(class)) {
+                        if !matches!(&assigned, Some(Type::Object(class, _, _)) if known(class)) {
                             exclusive = false;
                         }
                         // ignore lower value

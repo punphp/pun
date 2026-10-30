@@ -1,0 +1,6 @@
+{
+  "void": "class ScanBefore {} function scanFunction(): int { return 1; } const SCAN_CONSTANT = 1; class ScanAfter { public function f(void $x) {} }",
+  "variadic": "class ScanBefore {} function scanFunction(): int { return 1; } const SCAN_CONSTANT = 1; class ScanAfter { public function f(...$x = []) {} }",
+  "both": "class ScanBefore {} function scanFunction(): int { return 1; } const SCAN_CONSTANT = 1; class ScanAfter { public function f(void ...$x = null) {} }",
+  "valid": "class ScanBefore {} function scanFunction(): int { return 1; } const SCAN_CONSTANT = 1; class ScanAfter { public function f(int ...$x): void {} }"
+}

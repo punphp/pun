@@ -1,0 +1,5 @@
+4	$all = match ($flag) { true => resultVoid()/* result */, false => resultVoid()/* result */ }	void	void	void	void	void	void	82	174
+4	match ($flag) { true => resultVoid()/* result */, false => resultVoid()/* result */ }	void	void	void	void	void	void	89	174
+4	resultVoid()	null	void	void	void	void	void	113	125
+4	resultVoid()	null	void	void	void	void	void	148	160
+5	$all	void	void	void	void	void	void	192	196

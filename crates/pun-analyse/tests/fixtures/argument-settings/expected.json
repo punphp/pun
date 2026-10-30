@@ -1,0 +1,4535 @@
+{
+    "0-default-default": [
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $value (int) in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\typed invoked with 0 parameters, 1 required.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Argument for parameter $value has already been passed.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        }
+    ],
+    "0-default-this": [
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $value (int) in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\typed invoked with 0 parameters, 1 required.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Argument for parameter $value has already been passed.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        }
+    ],
+    "0-default-all": [
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 30,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $value (int) in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\typed invoked with 0 parameters, 1 required.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Argument for parameter $value has already been passed.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        }
+    ],
+    "0-TT-default": [
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() expects int, string given.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::policy() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() expects int, string given.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() is passed by reference, so it expects variables only.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter #1 $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 31,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() expects int, string given.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() is passed by reference, so it expects variables only.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed expects int, string given.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\policy invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\policy expects int, string given.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\policy is passed by reference, so it expects variables only.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $value (int) in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\typed invoked with 0 parameters, 1 required.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Argument for parameter $value has already been passed.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter #1 $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 42,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "0-TT-this": [
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() expects int, string given.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::policy() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() expects int, string given.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() is passed by reference, so it expects variables only.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter #1 $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 31,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() expects int, string given.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() is passed by reference, so it expects variables only.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed expects int, string given.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\policy invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\policy expects int, string given.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\policy is passed by reference, so it expects variables only.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $value (int) in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\typed invoked with 0 parameters, 1 required.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Argument for parameter $value has already been passed.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter #1 $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 42,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "0-TT-all": [
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() expects int, string given.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() expects int, string given.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::policy() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() expects int, string given.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() is passed by reference, so it expects variables only.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::policy() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() expects int, string given.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() is passed by reference, so it expects variables only.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 30,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Only iterables can be unpacked, int given in argument #1.",
+            "line": 31,
+            "ignorable": true,
+            "identifier": "argument.unpackNonIterable"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter #1 $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 31,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Only iterables can be unpacked, int given in argument #1.",
+            "line": 32,
+            "ignorable": true,
+            "identifier": "argument.unpackNonIterable"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter #1 $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 32,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() expects int, string given.",
+            "line": 33,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() is passed by reference, so it expects variables only.",
+            "line": 33,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() expects int, string given.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() is passed by reference, so it expects variables only.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed expects int, string given.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\policy invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\policy expects int, string given.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\policy is passed by reference, so it expects variables only.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $value (int) in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\typed invoked with 0 parameters, 1 required.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Argument for parameter $value has already been passed.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter #1 $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 42,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 43,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "0-TF-default": [
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() expects int, string given.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::policy() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() expects int, string given.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() expects int, string given.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed expects int, string given.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\policy invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\policy expects int, string given.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $value (int) in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\typed invoked with 0 parameters, 1 required.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Argument for parameter $value has already been passed.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 42,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "0-TF-this": [
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() expects int, string given.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::policy() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() expects int, string given.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() expects int, string given.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed expects int, string given.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\policy invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\policy expects int, string given.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $value (int) in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\typed invoked with 0 parameters, 1 required.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Argument for parameter $value has already been passed.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 42,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "0-TF-all": [
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() expects int, string given.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() expects int, string given.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::policy() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() expects int, string given.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::policy() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() expects int, string given.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 30,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Only iterables can be unpacked, int given in argument #1.",
+            "line": 31,
+            "ignorable": true,
+            "identifier": "argument.unpackNonIterable"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Only iterables can be unpacked, int given in argument #1.",
+            "line": 32,
+            "ignorable": true,
+            "identifier": "argument.unpackNonIterable"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() expects int, string given.",
+            "line": 33,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() expects int, string given.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed expects int, string given.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\policy invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\policy expects int, string given.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $value (int) in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\typed invoked with 0 parameters, 1 required.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Argument for parameter $value has already been passed.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 42,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 43,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "0-FT-default": [
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::policy() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() is passed by reference, so it expects variables only.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter #1 $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 31,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() is passed by reference, so it expects variables only.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\policy invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\policy is passed by reference, so it expects variables only.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $value (int) in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\typed invoked with 0 parameters, 1 required.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Argument for parameter $value has already been passed.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter #1 $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 42,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "0-FT-this": [
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::policy() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() is passed by reference, so it expects variables only.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter #1 $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 31,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() is passed by reference, so it expects variables only.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\policy invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\policy is passed by reference, so it expects variables only.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $value (int) in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\typed invoked with 0 parameters, 1 required.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Argument for parameter $value has already been passed.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter #1 $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 42,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "0-FT-all": [
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::policy() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() is passed by reference, so it expects variables only.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::policy() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() is passed by reference, so it expects variables only.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 30,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter #1 $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 31,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter #1 $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 32,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() is passed by reference, so it expects variables only.",
+            "line": 33,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() is passed by reference, so it expects variables only.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\policy invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\policy is passed by reference, so it expects variables only.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $value (int) in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\typed invoked with 0 parameters, 1 required.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Argument for parameter $value has already been passed.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter #1 $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 42,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 43,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "0-FF-default": [
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $value (int) in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\typed invoked with 0 parameters, 1 required.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Argument for parameter $value has already been passed.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        }
+    ],
+    "0-FF-this": [
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $value (int) in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\typed invoked with 0 parameters, 1 required.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Argument for parameter $value has already been passed.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        }
+    ],
+    "0-FF-all": [
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 30,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $value (int) in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\typed invoked with 0 parameters, 1 required.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Argument for parameter $value has already been passed.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        }
+    ],
+    "5-default-default": [
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() expects int, string given.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() expects int, string given.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::policy() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() expects int, string given.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() is passed by reference, so it expects variables only.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::policy() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() expects int, string given.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() is passed by reference, so it expects variables only.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 30,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Only iterables can be unpacked, int given in argument #1.",
+            "line": 31,
+            "ignorable": true,
+            "identifier": "argument.unpackNonIterable"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter #1 $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 31,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Only iterables can be unpacked, int given in argument #1.",
+            "line": 32,
+            "ignorable": true,
+            "identifier": "argument.unpackNonIterable"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter #1 $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 32,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() expects int, string given.",
+            "line": 33,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() is passed by reference, so it expects variables only.",
+            "line": 33,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() expects int, string given.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() is passed by reference, so it expects variables only.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed expects int, string given.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\policy invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\policy expects int, string given.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\policy is passed by reference, so it expects variables only.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $value (int) in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\typed invoked with 0 parameters, 1 required.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Argument for parameter $value has already been passed.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter #1 $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 42,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 43,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "5-default-this": [
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() expects int, string given.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::policy() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() expects int, string given.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() is passed by reference, so it expects variables only.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter #1 $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 31,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() expects int, string given.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() is passed by reference, so it expects variables only.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed expects int, string given.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\policy invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\policy expects int, string given.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\policy is passed by reference, so it expects variables only.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $value (int) in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\typed invoked with 0 parameters, 1 required.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Argument for parameter $value has already been passed.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter #1 $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 42,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "5-default-all": [
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() expects int, string given.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() expects int, string given.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::policy() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() expects int, string given.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() is passed by reference, so it expects variables only.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::policy() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() expects int, string given.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() is passed by reference, so it expects variables only.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 30,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Only iterables can be unpacked, int given in argument #1.",
+            "line": 31,
+            "ignorable": true,
+            "identifier": "argument.unpackNonIterable"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter #1 $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 31,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Only iterables can be unpacked, int given in argument #1.",
+            "line": 32,
+            "ignorable": true,
+            "identifier": "argument.unpackNonIterable"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter #1 $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 32,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() expects int, string given.",
+            "line": 33,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() is passed by reference, so it expects variables only.",
+            "line": 33,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() expects int, string given.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() is passed by reference, so it expects variables only.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed expects int, string given.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\policy invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\policy expects int, string given.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\policy is passed by reference, so it expects variables only.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $value (int) in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\typed invoked with 0 parameters, 1 required.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Argument for parameter $value has already been passed.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter #1 $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 42,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 43,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "5-TT-default": [
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() expects int, string given.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() expects int, string given.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::policy() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() expects int, string given.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() is passed by reference, so it expects variables only.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::policy() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() expects int, string given.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() is passed by reference, so it expects variables only.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 30,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Only iterables can be unpacked, int given in argument #1.",
+            "line": 31,
+            "ignorable": true,
+            "identifier": "argument.unpackNonIterable"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter #1 $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 31,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Only iterables can be unpacked, int given in argument #1.",
+            "line": 32,
+            "ignorable": true,
+            "identifier": "argument.unpackNonIterable"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter #1 $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 32,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() expects int, string given.",
+            "line": 33,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() is passed by reference, so it expects variables only.",
+            "line": 33,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() expects int, string given.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() is passed by reference, so it expects variables only.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed expects int, string given.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\policy invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\policy expects int, string given.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\policy is passed by reference, so it expects variables only.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $value (int) in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\typed invoked with 0 parameters, 1 required.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Argument for parameter $value has already been passed.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter #1 $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 42,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 43,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "5-TT-this": [
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() expects int, string given.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::policy() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() expects int, string given.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() is passed by reference, so it expects variables only.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter #1 $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 31,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() expects int, string given.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() is passed by reference, so it expects variables only.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed expects int, string given.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\policy invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\policy expects int, string given.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\policy is passed by reference, so it expects variables only.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $value (int) in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\typed invoked with 0 parameters, 1 required.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Argument for parameter $value has already been passed.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter #1 $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 42,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "5-TT-all": [
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() expects int, string given.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() expects int, string given.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::policy() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() expects int, string given.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() is passed by reference, so it expects variables only.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::policy() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() expects int, string given.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() is passed by reference, so it expects variables only.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 30,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Only iterables can be unpacked, int given in argument #1.",
+            "line": 31,
+            "ignorable": true,
+            "identifier": "argument.unpackNonIterable"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter #1 $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 31,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Only iterables can be unpacked, int given in argument #1.",
+            "line": 32,
+            "ignorable": true,
+            "identifier": "argument.unpackNonIterable"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter #1 $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 32,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() expects int, string given.",
+            "line": 33,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() is passed by reference, so it expects variables only.",
+            "line": 33,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() expects int, string given.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() is passed by reference, so it expects variables only.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed expects int, string given.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\policy invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\policy expects int, string given.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\policy is passed by reference, so it expects variables only.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $value (int) in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\typed invoked with 0 parameters, 1 required.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Argument for parameter $value has already been passed.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter #1 $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 42,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 43,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "5-TF-default": [
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() expects int, string given.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() expects int, string given.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::policy() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() expects int, string given.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::policy() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() expects int, string given.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 30,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Only iterables can be unpacked, int given in argument #1.",
+            "line": 31,
+            "ignorable": true,
+            "identifier": "argument.unpackNonIterable"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Only iterables can be unpacked, int given in argument #1.",
+            "line": 32,
+            "ignorable": true,
+            "identifier": "argument.unpackNonIterable"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() expects int, string given.",
+            "line": 33,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() expects int, string given.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed expects int, string given.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\policy invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\policy expects int, string given.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $value (int) in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\typed invoked with 0 parameters, 1 required.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Argument for parameter $value has already been passed.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 42,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 43,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "5-TF-this": [
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() expects int, string given.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::policy() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() expects int, string given.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() expects int, string given.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed expects int, string given.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\policy invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\policy expects int, string given.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $value (int) in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\typed invoked with 0 parameters, 1 required.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Argument for parameter $value has already been passed.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 42,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "5-TF-all": [
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() expects int, string given.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() expects int, string given.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::policy() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() expects int, string given.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::policy() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() expects int, string given.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 30,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Only iterables can be unpacked, int given in argument #1.",
+            "line": 31,
+            "ignorable": true,
+            "identifier": "argument.unpackNonIterable"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Only iterables can be unpacked, int given in argument #1.",
+            "line": 32,
+            "ignorable": true,
+            "identifier": "argument.unpackNonIterable"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() expects int, string given.",
+            "line": 33,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() expects int, string given.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed expects int, string given.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\policy invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\policy expects int, string given.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $value (int) in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\typed invoked with 0 parameters, 1 required.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Argument for parameter $value has already been passed.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 42,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 43,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "5-FT-default": [
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::policy() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() is passed by reference, so it expects variables only.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::policy() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() is passed by reference, so it expects variables only.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 30,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter #1 $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 31,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter #1 $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 32,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() is passed by reference, so it expects variables only.",
+            "line": 33,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() is passed by reference, so it expects variables only.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\policy invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\policy is passed by reference, so it expects variables only.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $value (int) in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\typed invoked with 0 parameters, 1 required.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Argument for parameter $value has already been passed.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter #1 $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 42,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 43,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "5-FT-this": [
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::policy() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() is passed by reference, so it expects variables only.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter #1 $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 31,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() is passed by reference, so it expects variables only.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\policy invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\policy is passed by reference, so it expects variables only.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $value (int) in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\typed invoked with 0 parameters, 1 required.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Argument for parameter $value has already been passed.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter #1 $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 42,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "5-FT-all": [
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::policy() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() is passed by reference, so it expects variables only.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::policy() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of method ArgumentSettings\\Base::policy() is passed by reference, so it expects variables only.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 30,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter #1 $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 31,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter #1 $old of method ArgumentSettings\\Base::method() is passed by reference, so it expects variables only.",
+            "line": 32,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() is passed by reference, so it expects variables only.",
+            "line": 33,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of static method ArgumentSettings\\Base::stat() is passed by reference, so it expects variables only.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\policy invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\policy is passed by reference, so it expects variables only.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $value (int) in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\typed invoked with 0 parameters, 1 required.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Argument for parameter $value has already been passed.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter #1 $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Parameter $value of function ArgumentSettings\\typed is passed by reference, so it expects variables only.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 42,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Call to ArgumentSettings\\Base::method() uses named argument for parameter $old, but ArgumentSettings\\Child renames it to $new.",
+            "line": 43,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "5-FF-default": [
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 30,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $value (int) in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\typed invoked with 0 parameters, 1 required.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Argument for parameter $value has already been passed.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        }
+    ],
+    "5-FF-this": [
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $value (int) in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\typed invoked with 0 parameters, 1 required.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Argument for parameter $value has already been passed.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        }
+    ],
+    "5-FF-all": [
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $old (int) in call to method ArgumentSettings\\Base::method().",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to method ArgumentSettings\\Base::method().",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Method ArgumentSettings\\Base::method() invoked with 0 parameters, 1 required.",
+            "line": 30,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Missing parameter $value (int) in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Unknown parameter $unknown in call to function ArgumentSettings\\typed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Function ArgumentSettings\\typed invoked with 0 parameters, 1 required.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/matrix.php",
+            "message": "Argument for parameter $value has already been passed.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        }
+    ]
+}

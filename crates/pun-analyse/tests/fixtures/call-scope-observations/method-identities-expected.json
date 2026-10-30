@@ -1,0 +1,114 @@
+{
+    "calls": {
+        "596": {
+            "line": 20,
+            "expression": "$o->traitMutation()",
+            "names": [
+                {
+                    "name": "traitMutation",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 596,
+                            "end": 598,
+                            "expression": "$o",
+                            "type": "IdentityChild"
+                        }
+                    ],
+                    "reflection": {
+                        "name": "traitMutation",
+                        "class": "IdentityConsumer",
+                        "sideEffects": "maybe"
+                    }
+                }
+            ]
+        },
+        "632": {
+            "line": 21,
+            "expression": "$o->aliasMutation()",
+            "names": [
+                {
+                    "name": "aliasMutation",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 632,
+                            "end": 634,
+                            "expression": "$o",
+                            "type": "IdentityChild"
+                        }
+                    ],
+                    "reflection": {
+                        "name": "aliasMutation",
+                        "class": "IdentityConsumer",
+                        "sideEffects": "yes"
+                    }
+                }
+            ]
+        },
+        "668": {
+            "line": 22,
+            "expression": "$o->ALIASMutation()",
+            "names": [
+                {
+                    "name": "ALIASMutation",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 668,
+                            "end": 670,
+                            "expression": "$o",
+                            "type": "IdentityChild"
+                        }
+                    ],
+                    "reflection": {
+                        "name": "aliasMutation",
+                        "class": "IdentityConsumer",
+                        "sideEffects": "yes"
+                    }
+                }
+            ]
+        },
+        "779": {
+            "line": 25,
+            "expression": "$o->$m()",
+            "names": [
+                {
+                    "name": "aliasMutation",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 779,
+                            "end": 781,
+                            "expression": "$o",
+                            "type": "IdentityChild"
+                        }
+                    ],
+                    "reflection": {
+                        "name": "aliasMutation",
+                        "class": "IdentityConsumer",
+                        "sideEffects": "yes"
+                    }
+                },
+                {
+                    "name": "traitMutation",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 779,
+                            "end": 781,
+                            "expression": "$o",
+                            "type": "IdentityChild"
+                        }
+                    ],
+                    "reflection": {
+                        "name": "traitMutation",
+                        "class": "IdentityConsumer",
+                        "sideEffects": "maybe"
+                    }
+                }
+            ]
+        }
+    },
+    "errors": []
+}

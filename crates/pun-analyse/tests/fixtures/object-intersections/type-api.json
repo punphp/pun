@@ -1,0 +1,913 @@
+{
+    "types": {
+        "A": {
+            "description": "A",
+            "object": "Yes",
+            "string": "No",
+            "iterable": "Maybe",
+            "names": [
+                "A"
+            ],
+            "key": "*ERROR*",
+            "value": "*ERROR*",
+            "bool": "true",
+            "stringCastError": true,
+            "traverse": "A"
+        },
+        "B": {
+            "description": "B",
+            "object": "Yes",
+            "string": "No",
+            "iterable": "Maybe",
+            "names": [
+                "B"
+            ],
+            "key": "*ERROR*",
+            "value": "*ERROR*",
+            "bool": "true",
+            "stringCastError": true,
+            "traverse": "B"
+        },
+        "C": {
+            "description": "C",
+            "object": "Yes",
+            "string": "No",
+            "iterable": "Maybe",
+            "names": [
+                "C"
+            ],
+            "key": "*ERROR*",
+            "value": "*ERROR*",
+            "bool": "true",
+            "stringCastError": true,
+            "traverse": "C"
+        },
+        "C-not-A": {
+            "description": "C~A&C",
+            "object": "Yes",
+            "string": "No",
+            "iterable": "Maybe",
+            "names": [
+                "C"
+            ],
+            "key": "*ERROR*",
+            "value": "*ERROR*",
+            "bool": "true",
+            "stringCastError": true,
+            "traverse": "C~A&C"
+        },
+        "C-not-B": {
+            "description": "C~B&C",
+            "object": "Yes",
+            "string": "No",
+            "iterable": "Maybe",
+            "names": [
+                "C"
+            ],
+            "key": "*ERROR*",
+            "value": "*ERROR*",
+            "bool": "true",
+            "stringCastError": true,
+            "traverse": "C~B&C"
+        },
+        "A-not-A": {
+            "description": "A~A",
+            "object": "Yes",
+            "string": "No",
+            "iterable": "Maybe",
+            "names": [
+                "A"
+            ],
+            "key": "*ERROR*",
+            "value": "*ERROR*",
+            "bool": "true",
+            "stringCastError": true,
+            "traverse": "A~A"
+        },
+        "C-not-A-or-B": {
+            "description": "C~((A&C)|(B&C))",
+            "object": "Yes",
+            "string": "No",
+            "iterable": "Maybe",
+            "names": [
+                "C"
+            ],
+            "key": "*ERROR*",
+            "value": "*ERROR*",
+            "bool": "true",
+            "stringCastError": true,
+            "traverse": "C~((A&C)|(B&C))"
+        },
+        "C-not-never": {
+            "description": "C",
+            "object": "Yes",
+            "string": "No",
+            "iterable": "Maybe",
+            "names": [
+                "C"
+            ],
+            "key": "*ERROR*",
+            "value": "*ERROR*",
+            "bool": "true",
+            "stringCastError": true,
+            "traverse": "C"
+        },
+        "B-and-C": {
+            "description": "B&C",
+            "object": "Yes",
+            "string": "No",
+            "iterable": "Maybe",
+            "names": [
+                "B",
+                "C"
+            ],
+            "key": "*ERROR*",
+            "value": "*ERROR*",
+            "bool": "true",
+            "stringCastError": true,
+            "traverse": "B&C"
+        },
+        "B-and-C-not-A": {
+            "description": "B&C~A&C",
+            "object": "Yes",
+            "string": "No",
+            "iterable": "Maybe",
+            "names": [
+                "B",
+                "C"
+            ],
+            "key": "*ERROR*",
+            "value": "*ERROR*",
+            "bool": "true",
+            "stringCastError": true,
+            "traverse": "B&C~A&C"
+        },
+        "not-A": {
+            "description": "mixed~A",
+            "object": "Maybe",
+            "string": "Maybe",
+            "iterable": "Maybe",
+            "names": [],
+            "key": "mixed",
+            "value": "mixed",
+            "bool": "bool",
+            "stringCastError": false,
+            "traverse": "mixed~A"
+        },
+        "not-zero": {
+            "description": "mixed~0",
+            "object": "Maybe",
+            "string": "Maybe",
+            "iterable": "Maybe",
+            "names": [],
+            "key": "mixed",
+            "value": "mixed",
+            "bool": "bool",
+            "stringCastError": false,
+            "traverse": "mixed~0"
+        },
+        "not-C-not-A": {
+            "description": "mixed~(C~A&C)",
+            "object": "Maybe",
+            "string": "Maybe",
+            "iterable": "Maybe",
+            "names": [],
+            "key": "mixed",
+            "value": "mixed",
+            "bool": "bool",
+            "stringCastError": false,
+            "traverse": "mixed~(C~A&C)"
+        }
+    },
+    "relations": {
+        "A": {
+            "A": {
+                "super": "Yes",
+                "accepts": "Yes"
+            },
+            "B": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "C": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "C-not-A": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "C-not-B": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "A-not-A": {
+                "super": "No",
+                "accepts": "Yes"
+            },
+            "C-not-A-or-B": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "C-not-never": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "B-and-C": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "B-and-C-not-A": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "not-A": {
+                "super": "No",
+                "accepts": "No"
+            },
+            "not-zero": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "not-C-not-A": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            }
+        },
+        "B": {
+            "A": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "B": {
+                "super": "Yes",
+                "accepts": "Yes"
+            },
+            "C": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "C-not-A": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "C-not-B": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "A-not-A": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "C-not-A-or-B": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "C-not-never": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "B-and-C": {
+                "super": "Yes",
+                "accepts": "Yes"
+            },
+            "B-and-C-not-A": {
+                "super": "Yes",
+                "accepts": "Yes"
+            },
+            "not-A": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "not-zero": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "not-C-not-A": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            }
+        },
+        "C": {
+            "A": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "B": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "C": {
+                "super": "Yes",
+                "accepts": "Yes"
+            },
+            "C-not-A": {
+                "super": "Yes",
+                "accepts": "Yes"
+            },
+            "C-not-B": {
+                "super": "Yes",
+                "accepts": "Yes"
+            },
+            "A-not-A": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "C-not-A-or-B": {
+                "super": "Yes",
+                "accepts": "Yes"
+            },
+            "C-not-never": {
+                "super": "Yes",
+                "accepts": "Yes"
+            },
+            "B-and-C": {
+                "super": "Yes",
+                "accepts": "Yes"
+            },
+            "B-and-C-not-A": {
+                "super": "Yes",
+                "accepts": "Yes"
+            },
+            "not-A": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "not-zero": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "not-C-not-A": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            }
+        },
+        "C-not-A": {
+            "A": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "B": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "C": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "C-not-A": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "C-not-B": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "A-not-A": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "C-not-A-or-B": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "C-not-never": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "B-and-C": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "B-and-C-not-A": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "not-A": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "not-zero": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "not-C-not-A": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            }
+        },
+        "C-not-B": {
+            "A": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "B": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "C": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "C-not-A": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "C-not-B": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "A-not-A": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "C-not-A-or-B": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "C-not-never": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "B-and-C": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "B-and-C-not-A": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "not-A": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "not-zero": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "not-C-not-A": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            }
+        },
+        "A-not-A": {
+            "A": {
+                "super": "No",
+                "accepts": "Yes"
+            },
+            "B": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "C": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "C-not-A": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "C-not-B": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "A-not-A": {
+                "super": "Yes",
+                "accepts": "Yes"
+            },
+            "C-not-A-or-B": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "C-not-never": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "B-and-C": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "B-and-C-not-A": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "not-A": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "not-zero": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "not-C-not-A": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            }
+        },
+        "C-not-A-or-B": {
+            "A": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "B": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "C": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "C-not-A": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "C-not-B": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "A-not-A": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "C-not-A-or-B": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "C-not-never": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "B-and-C": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "B-and-C-not-A": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "not-A": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "not-zero": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "not-C-not-A": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            }
+        },
+        "C-not-never": {
+            "A": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "B": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "C": {
+                "super": "Yes",
+                "accepts": "Yes"
+            },
+            "C-not-A": {
+                "super": "Yes",
+                "accepts": "Yes"
+            },
+            "C-not-B": {
+                "super": "Yes",
+                "accepts": "Yes"
+            },
+            "A-not-A": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "C-not-A-or-B": {
+                "super": "Yes",
+                "accepts": "Yes"
+            },
+            "C-not-never": {
+                "super": "Yes",
+                "accepts": "Yes"
+            },
+            "B-and-C": {
+                "super": "Yes",
+                "accepts": "Yes"
+            },
+            "B-and-C-not-A": {
+                "super": "Yes",
+                "accepts": "Yes"
+            },
+            "not-A": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "not-zero": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "not-C-not-A": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            }
+        },
+        "B-and-C": {
+            "A": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "B": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "C": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "C-not-A": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "C-not-B": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "A-not-A": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "C-not-A-or-B": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "C-not-never": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "B-and-C": {
+                "super": "Yes",
+                "accepts": "Yes"
+            },
+            "B-and-C-not-A": {
+                "super": "Yes",
+                "accepts": "Yes"
+            },
+            "not-A": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "not-zero": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "not-C-not-A": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            }
+        },
+        "B-and-C-not-A": {
+            "A": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "B": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "C": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "C-not-A": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "C-not-B": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "A-not-A": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "C-not-A-or-B": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "C-not-never": {
+                "super": "Maybe",
+                "accepts": "No"
+            },
+            "B-and-C": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "B-and-C-not-A": {
+                "super": "Yes",
+                "accepts": "Yes"
+            },
+            "not-A": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "not-zero": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "not-C-not-A": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            }
+        },
+        "not-A": {
+            "A": {
+                "super": "No",
+                "accepts": "Yes"
+            },
+            "B": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "C": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "C-not-A": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "C-not-B": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "A-not-A": {
+                "super": "Yes",
+                "accepts": "Yes"
+            },
+            "C-not-A-or-B": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "C-not-never": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "B-and-C": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "B-and-C-not-A": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "not-A": {
+                "super": "Yes",
+                "accepts": "Yes"
+            },
+            "not-zero": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "not-C-not-A": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            }
+        },
+        "not-zero": {
+            "A": {
+                "super": "Yes",
+                "accepts": "Yes"
+            },
+            "B": {
+                "super": "Yes",
+                "accepts": "Yes"
+            },
+            "C": {
+                "super": "Yes",
+                "accepts": "Yes"
+            },
+            "C-not-A": {
+                "super": "Yes",
+                "accepts": "Yes"
+            },
+            "C-not-B": {
+                "super": "Yes",
+                "accepts": "Yes"
+            },
+            "A-not-A": {
+                "super": "Yes",
+                "accepts": "Yes"
+            },
+            "C-not-A-or-B": {
+                "super": "Yes",
+                "accepts": "Yes"
+            },
+            "C-not-never": {
+                "super": "Yes",
+                "accepts": "Yes"
+            },
+            "B-and-C": {
+                "super": "Yes",
+                "accepts": "Yes"
+            },
+            "B-and-C-not-A": {
+                "super": "Yes",
+                "accepts": "Yes"
+            },
+            "not-A": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "not-zero": {
+                "super": "Yes",
+                "accepts": "Yes"
+            },
+            "not-C-not-A": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            }
+        },
+        "not-C-not-A": {
+            "A": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "B": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "C": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "C-not-A": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "C-not-B": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "A-not-A": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "C-not-A-or-B": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "C-not-never": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "B-and-C": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "B-and-C-not-A": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "not-A": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "not-zero": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            },
+            "not-C-not-A": {
+                "super": "Maybe",
+                "accepts": "Yes"
+            }
+        }
+    },
+    "unions": {
+        "C-not-A|C-not-B": "C~A&B&C",
+        "C-not-B|C-not-A": "C~A&B&C",
+        "C|C-not-A": "C",
+        "C-not-A|C": "C",
+        "A|C-not-B": "A|C~B&C",
+        "C-not-B|A": "A|C~B&C",
+        "not-A|C-not-A": "mixed~A&C",
+        "C-not-A|not-A": "mixed~A&C",
+        "not-A|A": "mixed",
+        "A|not-A": "mixed",
+        "not-A|B-and-C": "mixed",
+        "B-and-C|not-A": "mixed",
+        "not-A|B-and-C-not-A": "mixed~A&C",
+        "B-and-C-not-A|not-A": "mixed~A&C"
+    },
+    "intersections": {
+        "not-A&C": "C~A&C",
+        "not-A&C-not-B": "C~((A&C)|(B&C))",
+        "not-A&A": "*NEVER*",
+        "not-C-not-A&C": "A&C",
+        "not-zero&C": "C"
+    },
+    "compoundUnions": {
+        "two-exclusions": "mixed~((A&B)|(A&C))",
+        "iterable-conjunct": "mixed~A&C"
+    }
+}

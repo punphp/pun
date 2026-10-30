@@ -131,8 +131,11 @@ use crate::invocation::MethodInvocationKind;
 use crate::invocation::MethodTargetContext;
 
 pub const ANALYZER_PROTOCOL_MAGIC: [u8; 4] = *b"MANA";
+// Version 2.1 adds string casing tag 3 (both ASCII casing guarantees).
+// Version 2.2 appends named-object exclusions and exact-class identity; older layouts must be rejected before decoding.
+// Version 2.3 adds nonexistent-parent objects and unnamed literal class strings.
 pub const ANALYZER_PROTOCOL_MAJOR: u16 = 2;
-pub const ANALYZER_PROTOCOL_MINOR: u16 = 0;
+pub const ANALYZER_PROTOCOL_MINOR: u16 = 3;
 
 const HEADER_LENGTH: usize = 12;
 const INITIAL_MESSAGE_CAPACITY: usize = 256;
@@ -1576,11 +1579,13 @@ fn encode_scalar_snapshot<'type_info>(
             flags |= u8::from(string.is_truthy) << 1;
             flags |= u8::from(string.is_non_empty) << 2;
             flags |= u8::from(string.is_callable) << 3;
+            flags |= u8::from(string.is_non_empty_implied) << 4;
             writer.write_u8(flags);
             writer.write_u8(match string.casing {
                 TStringCasing::Unspecified => 0,
                 TStringCasing::Lowercase => 1,
                 TStringCasing::Uppercase => 2,
+                TStringCasing::Both => 3,
             });
         }
         TScalar::ClassLikeString(class_string) => {
@@ -1606,6 +1611,7 @@ fn encode_scalar_snapshot<'type_info>(
                     encode_class_like_string_kind(writer, *kind);
                     encode_atomic_snapshot(writer, constraint, types, depth + 1)?;
                 }
+                TClassLikeString::LiteralAny => writer.write_u8(5),
             }
         }
     }
@@ -1704,6 +1710,11 @@ fn encode_object_snapshot<'type_info>(
                 depth + 1,
             )?;
             writer.write_bool(named.remapped_parameters);
+            writer.write_bool(named.subtracted_type.is_some());
+            if let Some(excluded) = &named.subtracted_type {
+                encode_union_snapshot_inner(writer, excluded, types, depth + 1)?;
+            }
+            writer.write_bool(named.is_exact);
         }
         TObject::Enum(r#enum) => {
             writer.write_u8(3);
@@ -1730,6 +1741,7 @@ fn encode_object_snapshot<'type_info>(
             writer.write_bytes(property.property.as_bytes())?;
             encode_optional_atomic_snapshots(writer, property.intersection_types.as_deref(), types, depth + 1)?;
         }
+        TObject::NonexistentParent => writer.write_u8(7),
     }
 
     Ok(())
@@ -2637,13 +2649,14 @@ fn decode_complete_scalar(reader: &mut PayloadReader<'_>, depth: usize) -> Resul
                 0 => TStringCasing::Unspecified,
                 1 => TStringCasing::Lowercase,
                 2 => TStringCasing::Uppercase,
+                3 => TStringCasing::Both,
                 unknown => return Err(protocol(format!("unknown string casing {unknown}"))),
             };
             TScalar::String(TString::new(
                 literal,
                 flags & (1 << 0) != 0,
                 flags & (1 << 1) != 0,
-                flags & (1 << 2) != 0,
+                flags & (1 << 2) != 0 && flags & (1 << 4) == 0,
                 flags & (1 << 3) != 0,
                 casing,
             ))
@@ -2670,6 +2683,7 @@ fn decode_complete_class_like_string(
             kind: decode_class_like_string_kind(reader)?,
             constraint: Arc::new(decode_complete_atomic(reader, depth + 1)?),
         },
+        5 => TClassLikeString::LiteralAny,
         unknown => return Err(protocol(format!("unknown class-like string variant {unknown}"))),
     })
 }
@@ -2786,13 +2800,21 @@ fn decode_complete_object(reader: &mut PayloadReader<'_>, depth: usize) -> Resul
             let is_this = reader.read_bool("named object this flag")?;
             let intersection_types = decode_optional_complete_atomics(reader, depth + 1)?;
             let remapped_parameters = reader.read_bool("named object remapped parameters flag")?;
+            let subtracted_type = if reader.read_bool("named object exclusion presence")? {
+                Some(Arc::new(decode_complete_union(reader, depth + 1)?))
+            } else {
+                None
+            };
+            let is_exact = reader.read_bool("named object exact flag")?;
             TObject::Named(TNamedObject {
                 name,
                 type_parameters: type_parameters.map(Vec::into_boxed_slice),
                 variances: variances.map(Box::new),
                 is_static,
                 is_this,
+                is_exact,
                 intersection_types: intersection_types.map(Box::new),
+                subtracted_type,
                 remapped_parameters,
             })
         }
@@ -2822,6 +2844,7 @@ fn decode_complete_object(reader: &mut PayloadReader<'_>, depth: usize) -> Resul
             property: word(reader.read_bytes("required property name")?),
             intersection_types: decode_optional_complete_atomics(reader, depth + 1)?,
         }),
+        7 => TObject::NonexistentParent,
         unknown => return Err(protocol(format!("unknown complete object kind {unknown}"))),
     })
 }
@@ -2854,7 +2877,13 @@ fn decode_complete_array(reader: &mut PayloadReader<'_>, depth: usize) -> Result
             };
 
             let non_empty = reader.read_bool("list non-empty flag")?;
-            TArray::List(TList { element_type, known_elements: known_elements.map(Into::into), known_count, non_empty })
+            TArray::List(TList {
+                callable: None,
+                element_type,
+                known_elements: known_elements.map(Into::into),
+                known_count,
+                non_empty,
+            })
         }
         2 => {
             let known_items = if reader.read_bool("known array items presence")? {
@@ -2881,6 +2910,7 @@ fn decode_complete_array(reader: &mut PayloadReader<'_>, depth: usize) -> Result
 
             let non_empty = reader.read_bool("array non-empty flag")?;
             TArray::Keyed(TKeyedArray {
+                callable: None,
                 known_items: known_items.map(Into::into),
                 parameters,
                 non_empty,
@@ -3089,9 +3119,12 @@ pub(super) fn message_reader(payload: &[u8], expected_kind: u16) -> Result<Paylo
     }
 
     let major = reader.read_u16("analyzer protocol major")?;
-    let _minor = reader.read_u16("analyzer protocol minor")?;
+    let minor = reader.read_u16("analyzer protocol minor")?;
     if major != ANALYZER_PROTOCOL_MAJOR {
         return Err(protocol(format!("unsupported analyzer protocol major {major}")));
+    }
+    if minor != ANALYZER_PROTOCOL_MINOR {
+        return Err(protocol(format!("unsupported analyzer protocol version {major}.{minor}")));
     }
 
     let kind = reader.read_u16("analyzer message kind")?;
@@ -3199,6 +3232,62 @@ fn validate_provider_indices(
 #[allow(clippy::unwrap_used)]
 pub(super) mod testing {
     use super::*;
+
+    mod object_exclusions;
+
+    #[test]
+    fn ordinary_wire_arrays_do_not_invent_callable_constraints() {
+        // Complete keyed-array kind, absent known items, absent parameters, not non-empty.
+        let mut reader = PayloadReader::new(&[2, 0, 0, 0]);
+        let array = decode_complete_array(&mut reader, 0).unwrap();
+        reader.finish().unwrap();
+        assert!(array.is_empty());
+        assert!(array.callable().is_none());
+        assert_eq!(array, TArray::Keyed(TKeyedArray::new()));
+    }
+
+    #[test]
+    fn string_casing_tags_roundtrip_and_reject_older_peers() {
+        for (casing, tag) in [
+            (TStringCasing::Unspecified, 0),
+            (TStringCasing::Lowercase, 1),
+            (TStringCasing::Uppercase, 2),
+            (TStringCasing::Both, 3),
+        ] {
+            for (string, literal, flags) in [
+                (TString::general_with_props(false, false, false, false, casing), 0, 0),
+                (TString::unspecified_literal_with_props(true, false, true, false, casing), 1, 5),
+                (TString::general_with_props(true, false, false, false, casing), 0, 21),
+            ] {
+                let scalar = TScalar::String(string);
+                let mut writer = PayloadWriter::new();
+                let mut types = Vec::new();
+                let mut table = SnapshotTypeTable { offset: 0, types: &mut types };
+                encode_scalar_snapshot(&mut writer, &scalar, &mut table, 0).unwrap();
+                let payload = writer.finish();
+                // Legacy casing tags, literal origin, numeric and non-empty flags retain their meanings.
+                assert_eq!(payload, [7, literal, flags, tag]);
+                let mut reader = PayloadReader::new(&payload);
+                assert_eq!(decode_complete_scalar(&mut reader, 0).unwrap(), scalar);
+                reader.finish().unwrap();
+            }
+        }
+        let mut writer = message_writer(CALLABLE_SIGNATURE_RESPONSE);
+        writer.write_bool(false);
+        let payload = writer.finish();
+        assert_eq!(&payload[4..8], &[0, 2, 0, 3]);
+        assert_eq!(message_kind(&payload).unwrap(), CALLABLE_SIGNATURE_RESPONSE);
+        assert!(decode_callable_signature_response(&payload, |_| None).unwrap().is_none());
+        for minor in [0, 1, 2] {
+            let mut old = payload.clone();
+            old[4..8].copy_from_slice(&[0, 2, 0, minor]);
+            let expected = format!("unsupported analyzer protocol version 2.{minor}");
+            assert!(matches!(decode_callable_signature_response(&old, |_| None),
+                Err(ExternalAnalyzerError::Protocol(message)) if message.contains(&expected)));
+            assert!(matches!(message_kind(&old),
+                Err(ExternalAnalyzerError::Protocol(message)) if message.contains(&expected)));
+        }
+    }
 
     #[test]
     fn callable_effects_reject_old_protocol_headers() {
@@ -3671,5 +3760,84 @@ pub(super) mod testing {
         writer.write_bool(false);
         writer.write_bool(true);
         writer.finish()
+    }
+
+    #[test]
+    fn complete_object_provider_keeps_an_unsubtracted_identity_in_public_analysis() {
+        use mago_allocator::LocalArena;
+        use mago_codex::populator::populate_codebase;
+        use mago_codex::reference::SymbolReferences;
+        use mago_codex::scanner::scan_program;
+        use mago_extension::{WorkerCommand, WorkerPool, WorkerPoolOptions};
+        use mago_names::resolver::NameResolver;
+        use mago_syntax::parser::parse_file;
+        use std::num::NonZeroUsize;
+        use crate::external::{ExternalAnalyzer, ExternalAnalyzerHandle};
+        use crate::plugin::PluginRegistry;
+
+        // An ordinary provider object carries an absent negative constraint in protocol 2.2.
+        let mut writer = message_writer(RETURN_TYPE_RESPONSE);
+        writer.write_bool(true);
+        writer.write_u8(TYPE_COMPLETE);
+        writer.write_u16(0);
+        writer.write_u32(1);
+        writer.write_u8(SNAPSHOT_OBJECT);
+        writer.write_u8(2);
+        writer.write_bytes(b"WireObject").unwrap();
+        for _ in 0..8 {
+            writer.write_bool(false);
+        }
+        let hex = |bytes: Vec<u8>| bytes.iter().map(|byte| format!("{byte:02x}")).collect::<String>();
+        let command = WorkerCommand::new("php").with_arguments([
+            "-r".to_string(),
+            r#"
+function readBytes($length) {
+    $value = '';
+    while (strlen($value) < $length) {
+        $part = fread(STDIN, $length - strlen($value));
+        if ($part === false || $part === '') { return null; }
+        $value .= $part;
+    }
+    return $value;
+}
+while (($header = readBytes(32)) !== null && ord($header[8]) !== 5) {
+    $payload = readBytes(unpack('N', substr($header, 28, 4))[1]);
+    $kind = unpack('n', substr($payload, 8, 2))[1];
+    $response = hex2bin($argv[$kind === 1 ? 1 : 2]);
+    $header[8] = chr(2);
+    fwrite(STDOUT, substr($header, 0, 28).pack('N', strlen($response)).$response);
+    fflush(STDOUT);
+}
+"#.to_string(),
+            hex(registration_response()),
+            hex(writer.finish()),
+        ]);
+        let pool = Arc::new(WorkerPool::spawn(command, NonZeroUsize::new(1).unwrap(), WorkerPoolOptions::default()).unwrap());
+        let external = ExternalAnalyzer::initialize([pool], PHPVersion::PHP84, &[], false).unwrap();
+        let mut registry = PluginRegistry::default();
+        registry.set_external_analyzer(Arc::new(ExternalAnalyzerHandle::ready(external)));
+
+        let source = b"<?php class WireObject {} function demo_service() {} $value = demo_service(); $value;";
+        let arena = LocalArena::new();
+        let file = Arc::new(File::ephemeral(Cow::Borrowed(b"wire-object.php"), Cow::Borrowed(source)));
+        let program = parse_file(&arena, &file);
+        assert!(!program.has_errors());
+        let names = NameResolver::new(&arena).resolve(program);
+        let mut codebase = scan_program(&arena, &file, program, &names, PHPVersion::PHP84);
+        let mut references = SymbolReferences::new();
+        populate_codebase(&mut codebase, &mut references, Default::default(), Default::default());
+        let session = ExternalAnalysisSession::from_files([Arc::clone(&file)]);
+        let analyzer = crate::Analyzer::new(&arena, &file, &names, &codebase, &registry, Default::default())
+            .with_external_analysis_session(&session);
+        let mut result = crate::analysis_result::AnalysisResult::new(references);
+        let artifacts = analyzer.analyze_with_artifacts(program, &mut result).unwrap();
+        let end = source.len() as u32 - 1;
+        let span = mago_span::Span::new(file.id, mago_span::Position::new(end - 6), mago_span::Position::new(end));
+        let value = artifacts.get_expression_type(&span).expect("last variable type");
+        let object = value.get_single_named_object().unwrap_or_else(|| panic!("expected provider object, got {}", value.get_id()));
+        assert_eq!(object.name, word("WireObject"));
+        assert!(object.subtracted_type.is_none());
+        assert!(!object.is_static && !object.is_this);
+        assert!(!object.is_exact);
     }
 }

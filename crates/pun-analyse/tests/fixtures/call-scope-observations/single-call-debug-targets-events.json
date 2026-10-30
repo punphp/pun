@@ -1,0 +1,26 @@
+{
+    "241": {
+        "end": 243,
+        "expression": "$i",
+        "type": "*ERROR*",
+        "visits": 1
+    },
+    "265": {
+        "end": 269,
+        "expression": "++$i",
+        "type": "1",
+        "visits": 1
+    },
+    "267": {
+        "end": 269,
+        "expression": "$i",
+        "type": "0",
+        "visits": 1
+    },
+    "285": {
+        "end": 287,
+        "expression": "$i",
+        "type": "1",
+        "visits": 1
+    }
+}

@@ -1,0 +1,12 @@
+<?php
+
+namespace ReceiverInvalidation;
+
+class PatchedBox
+{
+    /** @phpstan-impure */
+    public function unknown(): int {}
+
+    /** @phpstan-pure */
+    public function impure(): int {}
+}

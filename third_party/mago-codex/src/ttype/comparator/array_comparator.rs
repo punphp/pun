@@ -91,6 +91,17 @@ pub(crate) fn is_array_contained_by_array(
     inside_assertion: bool,
     atomic_comparison_result: &mut ComparisonResult,
 ) -> bool {
+    if let Some(callable) = container_array.callable()
+        && !super::atomic_comparator::is_contained_by(
+            codebase,
+            &TAtomic::Array(input_array.clone()),
+            callable,
+            inside_assertion,
+            atomic_comparison_result,
+        )
+    {
+        return false;
+    }
     if container_array.is_sealed() && !input_array.is_sealed() {
         return false;
     }
@@ -104,6 +115,7 @@ pub(crate) fn is_array_contained_by_array(
     }
 
     if container_array.is_list()
+        && !input_array.is_list()
         && matches!(
             input_array,
             TArray::Keyed(keyed_array) if keyed_array.parameters.is_some() || keyed_array.known_non_list
@@ -113,7 +125,12 @@ pub(crate) fn is_array_contained_by_array(
     }
 
     let (container_key_type, container_value_type) = key_and_value_types(container_array);
-    let (input_key_type, input_value_type) = key_and_value_types(input_array);
+    let (input_key_type, input_value_type) = if input_array.callable().is_some() {
+        let (key, value) = crate::ttype::get_array_parameters(input_array, codebase);
+        (Some(Cow::Owned(key)), Cow::Owned(value))
+    } else {
+        key_and_value_types(input_array)
+    };
 
     let input_known_items = known_items_view(input_array);
     let container_known_items = known_items_view(container_array);
@@ -236,6 +253,7 @@ mod tests {
 
     use mago_word::word;
 
+    use crate::ttype::TType;
     use crate::ttype::atomic::TAtomic;
     use crate::ttype::atomic::array::TArray;
     use crate::ttype::atomic::array::key::ArrayKey;
@@ -249,6 +267,24 @@ mod tests {
     use crate::ttype::get_mixed;
     use crate::ttype::get_string;
     use crate::ttype::union::TUnion;
+
+    #[test]
+    fn concrete_array_comparison_requires_the_callable_conjunct() {
+        let codebase = create_test_codebase("<?php");
+        let ordinary = TArray::Keyed(TKeyedArray::new_with_parameters(
+            Arc::new(get_arraykey()), Arc::new(get_mixed()),
+        ));
+        let mut constrained = ordinary.clone();
+        constrained.add_intersection_type(crate::ttype::get_mixed_callable().get_single().clone());
+        // The combiner also calls this entry directly, without the atomic comparator's
+        // intersection dispatch: an ordinary array cannot subsume a callable intersection.
+        assert!(!super::is_array_contained_by_array(
+            &codebase, &ordinary, &constrained, false, &mut ComparisonResult::default(),
+        ));
+        assert!(super::is_array_contained_by_array(
+            &codebase, &constrained, &ordinary, false, &mut ComparisonResult::default(),
+        ));
+    }
 
     #[test]
     fn known_items_borrow_types_and_keep_cast_key_order() {
@@ -301,6 +337,25 @@ mod tests {
 
     fn t_keyed(arr: TKeyedArray) -> TUnion {
         TUnion::from_atomic(TAtomic::Array(TArray::Keyed(arr)))
+    }
+
+    #[test]
+    fn ordinary_arrays_do_not_acquire_callable_container_constraints() {
+        use crate::ttype::TType;
+
+        let codebase = create_test_codebase("<?php");
+        let array = TKeyedArray::new_with_parameters(Arc::new(get_int()), Arc::new(get_mixed()));
+        let mut constrained = TArray::Keyed(array.clone());
+        constrained.add_intersection_type(crate::ttype::get_mixed_callable().get_single().clone());
+        assert_is_contained_by(&codebase, &t_keyed(array), &TUnion::from_atomic(TAtomic::Array(constrained)),
+            false, &mut ComparisonResult::default());
+
+        let value_types = [get_int(), get_string(), crate::ttype::get_bool()];
+        let containers = TUnion::from_vec(value_types.iter().map(|value| TAtomic::Array(TArray::Keyed(
+            TKeyedArray::new_with_parameters(Arc::new(get_int()), Arc::new(value.clone()))))).collect());
+        let input = t_keyed(TKeyedArray::new_with_parameters(Arc::new(get_int()),
+            Arc::new(TUnion::from_vec(value_types.into_iter().flat_map(|value| value.types.into_owned()).collect()))));
+        assert_is_contained_by(&codebase, &input, &containers, true, &mut ComparisonResult::default());
     }
 
     #[test]

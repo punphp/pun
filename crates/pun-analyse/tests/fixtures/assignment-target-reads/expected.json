@@ -1,0 +1,3672 @@
+{
+    "0": [
+        {
+            "file": "conditional-defined.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "dynamic-read.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "function-legacy.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "function-legacy.php",
+            "line": 3,
+            "identifier": "variable.undefined",
+            "message": "Undefined variable: $item",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "function-short.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "function-short.php",
+            "line": 3,
+            "identifier": "variable.undefined",
+            "message": "Undefined variable: $item",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "isset-read.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "key-evaluation.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "key-evaluation.php",
+            "line": 4,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "keyed-legacy.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "keyed-short.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "legacy-list.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "legacy.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-does-not-write.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-does-not-write.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: mixed",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-evaluation.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-evaluation.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-key-value.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-keyed-reference.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-legacy-reference.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-reference.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "nested-legacy.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "nested-mixed.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "nested-short.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "parenthesized-legacy.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "parenthesized-short.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "read-before-write.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "rhs-defines-dynamic-name.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "rhs-first.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "rhs-return.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "rhs-return.php",
+            "line": 3,
+            "identifier": "variable.undefined",
+            "message": "Undefined variable: $item",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "short-list.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "short.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-dynamic.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 'item'",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-key-evaluation.php",
+            "line": 4,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-key-evaluation.php",
+            "line": 5,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-legacy.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-list.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-reference.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-short.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "write-before-read.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        }
+    ],
+    "1": [
+        {
+            "file": "conditional-defined.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "conditional-defined.php",
+            "line": 3,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "dynamic-read.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "dynamic-read.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $name might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "function-legacy.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "function-legacy.php",
+            "line": 3,
+            "identifier": "variable.undefined",
+            "message": "Undefined variable: $item",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "function-short.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "function-short.php",
+            "line": 3,
+            "identifier": "variable.undefined",
+            "message": "Undefined variable: $item",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "isset-read.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "key-evaluation.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "key-evaluation.php",
+            "line": 4,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "keyed-legacy.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "keyed-legacy.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "keyed-short.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "keyed-short.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "legacy-list.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "legacy-list.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "legacy.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "legacy.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-does-not-write.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-does-not-write.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-does-not-write.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: mixed",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-does-not-write.php",
+            "line": 3,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-evaluation.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-evaluation.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-evaluation.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-key-value.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-key-value.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $key might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-key-value.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $value might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-keyed-reference.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-keyed-reference.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-legacy-reference.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-legacy-reference.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-reference.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-reference.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "nested-legacy.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "nested-legacy.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "nested-mixed.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "nested-mixed.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "nested-short.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "nested-short.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "ordinary-literal.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "ordinary-reference.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "parenthesized-legacy.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "parenthesized-legacy.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "parenthesized-short.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "parenthesized-short.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "read-before-write.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "read-before-write.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "rhs-defines-dynamic-name.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "rhs-defines-dynamic-name.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "rhs-first.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "rhs-return.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "rhs-return.php",
+            "line": 3,
+            "identifier": "variable.undefined",
+            "message": "Undefined variable: $item",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "short-list.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "short-list.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "short.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "short.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "valid-dynamic.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 'item'",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-key-evaluation.php",
+            "line": 4,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-key-evaluation.php",
+            "line": 5,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-legacy.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-list.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-reference.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-short.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "write-before-read.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        }
+    ],
+    "2": [
+        {
+            "file": "conditional-defined.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "conditional-defined.php",
+            "line": 3,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "dynamic-read.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "dynamic-read.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $name might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "function-legacy.php",
+            "line": 2,
+            "identifier": "void.pure",
+            "message": "Function readLegacy() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "function-legacy.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "function-legacy.php",
+            "line": 3,
+            "identifier": "variable.undefined",
+            "message": "Undefined variable: $item",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "function-short.php",
+            "line": 2,
+            "identifier": "void.pure",
+            "message": "Function readShort() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "function-short.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "function-short.php",
+            "line": 3,
+            "identifier": "variable.undefined",
+            "message": "Undefined variable: $item",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "isset-read.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "key-evaluation.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "key-evaluation.php",
+            "line": 4,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "keyed-legacy.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "keyed-legacy.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "keyed-short.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "keyed-short.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "legacy-list.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "legacy-list.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "legacy.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "legacy.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-does-not-write.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-does-not-write.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-does-not-write.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: mixed",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-does-not-write.php",
+            "line": 3,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-evaluation.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-evaluation.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-evaluation.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-key-value.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-key-value.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $key might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-key-value.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $value might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-keyed-reference.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-keyed-reference.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-legacy-reference.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-legacy-reference.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-reference.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-reference.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "nested-legacy.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "nested-legacy.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "nested-mixed.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "nested-mixed.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "nested-short.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "nested-short.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "ordinary-literal.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "ordinary-reference.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "parenthesized-legacy.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "parenthesized-legacy.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "parenthesized-short.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "parenthesized-short.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "read-before-write.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "read-before-write.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "rhs-defines-dynamic-name.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "rhs-defines-dynamic-name.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "rhs-first.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "rhs-return.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "rhs-return.php",
+            "line": 3,
+            "identifier": "variable.undefined",
+            "message": "Undefined variable: $item",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "short-list.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "short-list.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "short.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "short.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unreachable.php",
+            "line": 2,
+            "identifier": "void.pure",
+            "message": "Function unreachableRead() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "valid-dynamic.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 'item'",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-key-evaluation.php",
+            "line": 4,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-key-evaluation.php",
+            "line": 5,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-legacy.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-list.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-reference.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-short.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "write-before-read.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        }
+    ],
+    "7": [
+        {
+            "file": "conditional-defined.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "conditional-defined.php",
+            "line": 3,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "dynamic-read.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "dynamic-read.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $name might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "function-legacy.php",
+            "line": 2,
+            "identifier": "void.pure",
+            "message": "Function readLegacy() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "function-legacy.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "function-legacy.php",
+            "line": 3,
+            "identifier": "variable.undefined",
+            "message": "Undefined variable: $item",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "function-short.php",
+            "line": 2,
+            "identifier": "void.pure",
+            "message": "Function readShort() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "function-short.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "function-short.php",
+            "line": 3,
+            "identifier": "variable.undefined",
+            "message": "Undefined variable: $item",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "isset-read.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "key-evaluation.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "key-evaluation.php",
+            "line": 4,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "keyed-legacy.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "keyed-legacy.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "keyed-short.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "keyed-short.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "legacy-list.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "legacy-list.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "legacy.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "legacy.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-does-not-write.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-does-not-write.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-does-not-write.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: mixed",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-does-not-write.php",
+            "line": 3,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-evaluation.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-evaluation.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-evaluation.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-key-value.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-key-value.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $key might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-key-value.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $value might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-keyed-reference.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-keyed-reference.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-legacy-reference.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-legacy-reference.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-reference.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-reference.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "nested-legacy.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "nested-legacy.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "nested-mixed.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "nested-mixed.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "nested-short.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "nested-short.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "ordinary-literal.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "ordinary-reference.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "parenthesized-legacy.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "parenthesized-legacy.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "parenthesized-short.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "parenthesized-short.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "read-before-write.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "read-before-write.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "rhs-defines-dynamic-name.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "rhs-defines-dynamic-name.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "rhs-first.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "rhs-return.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "rhs-return.php",
+            "line": 3,
+            "identifier": "variable.undefined",
+            "message": "Undefined variable: $item",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "short-list.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "short-list.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "short.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "short.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unreachable.php",
+            "line": 2,
+            "identifier": "void.pure",
+            "message": "Function unreachableRead() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unreachable.php",
+            "line": 4,
+            "identifier": "deadCode.unreachable",
+            "message": "Unreachable statement - code above always terminates.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "valid-dynamic.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 'item'",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-key-evaluation.php",
+            "line": 4,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-key-evaluation.php",
+            "line": 5,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-legacy.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-list.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-reference.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-short.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "write-before-read.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        }
+    ],
+    "8": [
+        {
+            "file": "conditional-defined.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "conditional-defined.php",
+            "line": 3,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "dynamic-read.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "dynamic-read.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $name might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "function-legacy.php",
+            "line": 2,
+            "identifier": "void.pure",
+            "message": "Function readLegacy() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "function-legacy.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "function-legacy.php",
+            "line": 3,
+            "identifier": "variable.undefined",
+            "message": "Undefined variable: $item",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "function-short.php",
+            "line": 2,
+            "identifier": "void.pure",
+            "message": "Function readShort() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "function-short.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "function-short.php",
+            "line": 3,
+            "identifier": "variable.undefined",
+            "message": "Undefined variable: $item",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "isset-read.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "key-evaluation.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "key-evaluation.php",
+            "line": 4,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "keyed-legacy.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "keyed-legacy.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "keyed-short.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "keyed-short.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "legacy-list.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "legacy-list.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "legacy.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "legacy.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-does-not-write.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-does-not-write.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-does-not-write.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: mixed",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-does-not-write.php",
+            "line": 3,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-evaluation.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-evaluation.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-evaluation.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-key-value.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-key-value.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $key might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-key-value.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $value might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-keyed-reference.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-keyed-reference.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-legacy-reference.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-legacy-reference.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-reference.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-reference.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "nested-legacy.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "nested-legacy.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "nested-mixed.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "nested-mixed.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "nested-short.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "nested-short.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "ordinary-literal.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "ordinary-reference.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "parenthesized-legacy.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "parenthesized-legacy.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "parenthesized-short.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "parenthesized-short.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "read-before-write.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "read-before-write.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "rhs-defines-dynamic-name.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "rhs-defines-dynamic-name.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "rhs-first.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "rhs-return.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "rhs-return.php",
+            "line": 3,
+            "identifier": "variable.undefined",
+            "message": "Undefined variable: $item",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "short-list.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "short-list.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "short.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "short.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unreachable.php",
+            "line": 2,
+            "identifier": "void.pure",
+            "message": "Function unreachableRead() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unreachable.php",
+            "line": 4,
+            "identifier": "deadCode.unreachable",
+            "message": "Unreachable statement - code above always terminates.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "valid-dynamic.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 'item'",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-key-evaluation.php",
+            "line": 4,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-key-evaluation.php",
+            "line": 5,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-legacy.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-list.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-reference.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-short.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "write-before-read.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        }
+    ],
+    "9": [
+        {
+            "file": "conditional-defined.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "conditional-defined.php",
+            "line": 3,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "dynamic-read.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "dynamic-read.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $name might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "function-legacy.php",
+            "line": 2,
+            "identifier": "void.pure",
+            "message": "Function readLegacy() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "function-legacy.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "function-legacy.php",
+            "line": 3,
+            "identifier": "variable.undefined",
+            "message": "Undefined variable: $item",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "function-short.php",
+            "line": 2,
+            "identifier": "void.pure",
+            "message": "Function readShort() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "function-short.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "function-short.php",
+            "line": 3,
+            "identifier": "variable.undefined",
+            "message": "Undefined variable: $item",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "isset-read.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "key-evaluation.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "key-evaluation.php",
+            "line": 4,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "keyed-legacy.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "keyed-legacy.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "keyed-short.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "keyed-short.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "legacy-list.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "legacy-list.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "legacy.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "legacy.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-does-not-write.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-does-not-write.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-does-not-write.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: mixed",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-does-not-write.php",
+            "line": 3,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-evaluation.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-evaluation.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-evaluation.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-key-value.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-key-value.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $key might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-key-value.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $value might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-keyed-reference.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-keyed-reference.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-legacy-reference.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-legacy-reference.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-reference.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-reference.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "nested-legacy.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "nested-legacy.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "nested-mixed.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "nested-mixed.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "nested-short.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "nested-short.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "ordinary-literal.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "ordinary-reference.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "parenthesized-legacy.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "parenthesized-legacy.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "parenthesized-short.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "parenthesized-short.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "read-before-write.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "read-before-write.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "rhs-defines-dynamic-name.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "rhs-defines-dynamic-name.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "rhs-first.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "rhs-return.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "rhs-return.php",
+            "line": 3,
+            "identifier": "variable.undefined",
+            "message": "Undefined variable: $item",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "short-list.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "short-list.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "short.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "short.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unreachable.php",
+            "line": 2,
+            "identifier": "void.pure",
+            "message": "Function unreachableRead() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unreachable.php",
+            "line": 4,
+            "identifier": "deadCode.unreachable",
+            "message": "Unreachable statement - code above always terminates.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "valid-dynamic.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 'item'",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-key-evaluation.php",
+            "line": 4,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-key-evaluation.php",
+            "line": 5,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-legacy.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-list.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-reference.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-short.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "write-before-read.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        }
+    ],
+    "10": [
+        {
+            "file": "conditional-defined.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "conditional-defined.php",
+            "line": 3,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "dynamic-read.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "dynamic-read.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $name might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "function-legacy.php",
+            "line": 2,
+            "identifier": "void.pure",
+            "message": "Function readLegacy() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "function-legacy.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "function-legacy.php",
+            "line": 3,
+            "identifier": "variable.undefined",
+            "message": "Undefined variable: $item",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "function-short.php",
+            "line": 2,
+            "identifier": "void.pure",
+            "message": "Function readShort() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "function-short.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "function-short.php",
+            "line": 3,
+            "identifier": "variable.undefined",
+            "message": "Undefined variable: $item",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "isset-read.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "key-evaluation.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "key-evaluation.php",
+            "line": 4,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "keyed-legacy.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "keyed-legacy.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "keyed-short.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "keyed-short.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "legacy-list.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "legacy-list.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "legacy.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "legacy.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-does-not-write.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-does-not-write.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-does-not-write.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: mixed",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-does-not-write.php",
+            "line": 3,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-evaluation.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-evaluation.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-evaluation.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-key-value.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-key-value.php",
+            "line": 2,
+            "identifier": "array.invalidKey",
+            "message": "Possibly invalid array key type mixed.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-key-value.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $key might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-key-value.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $value might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-keyed-reference.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-keyed-reference.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-legacy-reference.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-legacy-reference.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "literal-reference.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "literal-reference.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "nested-legacy.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "nested-legacy.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "nested-mixed.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "nested-mixed.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "nested-short.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "nested-short.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "ordinary-literal.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "ordinary-reference.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "parenthesized-legacy.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "parenthesized-legacy.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "parenthesized-short.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "parenthesized-short.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "read-before-write.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "read-before-write.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "rhs-defines-dynamic-name.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "rhs-defines-dynamic-name.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "rhs-first.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "rhs-return.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "rhs-return.php",
+            "line": 3,
+            "identifier": "variable.undefined",
+            "message": "Undefined variable: $item",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "short-list.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "short-list.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "short.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "short.php",
+            "line": 2,
+            "identifier": "variable.undefined",
+            "message": "Variable $item might not be defined.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unreachable.php",
+            "line": 2,
+            "identifier": "void.pure",
+            "message": "Function unreachableRead() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unreachable.php",
+            "line": 4,
+            "identifier": "deadCode.unreachable",
+            "message": "Unreachable statement - code above always terminates.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "valid-dynamic.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 'item'",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-key-evaluation.php",
+            "line": 4,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-key-evaluation.php",
+            "line": 5,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-legacy.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-list.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-reference.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "valid-short.php",
+            "line": 3,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "write-before-read.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        }
+    ]
+}

@@ -64,6 +64,75 @@ fn get_nullable_union_from_type(
     })
 }
 
+fn get_union_from_union_type(
+    ttype: &Type<'_>,
+    scope: &NamespaceScope,
+    type_context: &TypeResolutionContext,
+    classname: Option<Word>,
+) -> Result<TUnion, TypeError> {
+    enum Task<'node, 'arena> {
+        Build(&'node Type<'arena>),
+        Nullable(&'node Type<'arena>),
+        AsNullable,
+        Join,
+    }
+
+    // Keep each binary reduction, not just its atoms: nullable operations preserve
+    // union metadata, whereas ordinary joins normalize atoms and reset that metadata.
+    let mut pending = vec![Task::Build(ttype)];
+    let mut built = Vec::<TUnion>::new();
+    while let Some(task) = pending.pop() {
+        match task {
+            Task::Build(Type::Union(UnionType { left, right, .. })) if matches!(**left, Type::Null(_)) => {
+                pending.push(Task::Nullable(right));
+            }
+            Task::Build(Type::Union(UnionType { left, right, .. })) if matches!(**right, Type::Null(_)) => {
+                pending.push(Task::Nullable(left));
+            }
+            Task::Build(Type::Union(union_type)) => {
+                pending.push(Task::Join);
+                pending.push(Task::Build(union_type.right));
+                pending.push(Task::Build(union_type.left));
+            }
+            Task::Build(inner) => built.push(get_union_from_type(inner, scope, type_context, classname)?),
+            Task::Nullable(inner) if matches!(inner, Type::Union(_)) => {
+                pending.push(Task::AsNullable);
+                pending.push(Task::Build(inner));
+            }
+            Task::Nullable(inner) => built.push(get_nullable_union_from_type(inner, scope, type_context, classname)?),
+            Task::AsNullable => {
+                let inner = built.pop().unwrap();
+                built.push(inner.as_nullable());
+            }
+            Task::Join => {
+                let right = built.pop().unwrap();
+                let left = built.pop().unwrap();
+                let combined_types: Vec<_> = left.types.iter().chain(right.types.iter()).cloned().collect();
+                // TypeCombinator::union: unconstrained mixed absorbs other members,
+                // but an implicit mixed member still taints the explicit identity.
+                let plain_mixed = combined_types.iter().find_map(|atomic| match atomic {
+                    TAtomic::Mixed(mixed) if mixed.is_vanilla() => Some(mixed),
+                    _ => None,
+                });
+                let combined = if let Some(mixed) = plain_mixed {
+                    let explicit = combined_types.iter().filter_map(|atomic| match atomic {
+                        TAtomic::Mixed(mixed) => Some(mixed.is_explicit()),
+                        _ => None,
+                    }).all(|explicit| explicit);
+                    wrap_atomic(TAtomic::Mixed(mixed.clone().with_is_explicit(explicit)))
+                } else {
+                    TUnion::from_vec(combined_types)
+                };
+                built.push(combined.with_never_kind(
+                    left.never_kind().unwrap_or_default().max(right.never_kind().unwrap_or_default()),
+                ));
+            }
+        }
+    }
+
+    Ok(built.pop().unwrap())
+}
+
 /// Rejects a bare variable used as a docblock tag type when it cannot be resolved.
 ///
 /// Psalm-style parameter links (`@param $prototype $value`, `@return $value`) lower a
@@ -137,20 +206,7 @@ pub fn get_union_from_type(
         Type::Nullable(nullable_type) => {
             get_nullable_union_from_type(nullable_type.inner, scope, type_context, classname)?
         }
-        Type::Union(UnionType { left, right, .. }) if matches!(**left, Type::Null(_)) => {
-            get_nullable_union_from_type(right, scope, type_context, classname)?
-        }
-        Type::Union(UnionType { left, right, .. }) if matches!(**right, Type::Null(_)) => {
-            get_nullable_union_from_type(left, scope, type_context, classname)?
-        }
-        Type::Union(union_type) => {
-            let left = get_union_from_type(union_type.left, scope, type_context, classname)?;
-            let right = get_union_from_type(union_type.right, scope, type_context, classname)?;
-
-            let combined_types: Vec<TAtomic> = left.types.iter().chain(right.types.iter()).cloned().collect();
-
-            TUnion::from_vec(combined_types)
-        }
+        Type::Union(_) => get_union_from_union_type(ttype, scope, type_context, classname)?,
         Type::Intersection(intersection) => {
             let object_and_callable = (matches!(intersection.left, Type::Object(_))
                 && matches!(intersection.right, Type::Callable(_)))
@@ -350,6 +406,15 @@ pub fn get_union_from_type(
         }
         Type::Reference(reference_type) => {
             if let ReferenceKind::Identifier(identifier) = &reference_type.kind {
+                if identifier.value.eq_ignore_ascii_case(b"decimal-int-string")
+                    || identifier.value.eq_ignore_ascii_case(b"non-decimal-int-string")
+                {
+                    return Ok(wrap_atomic(TAtomic::Scalar(TScalar::String(
+                        crate::ttype::atomic::scalar::string::TString::decimal_integer(
+                            identifier.value.eq_ignore_ascii_case(b"non-decimal-int-string"),
+                        ),
+                    ))));
+                }
                 let reference_name_atom = word(identifier.value);
 
                 if let Some((source_class, original_name)) = type_context.get_imported_type_alias(reference_name_atom) {
@@ -371,11 +436,11 @@ pub fn get_union_from_type(
                 classname,
             )?)
         }
-        Type::Mixed(_) | Type::Wildcard(_) => get_mixed(),
-        Type::NonEmptyMixed(_) => get_truthy_mixed(),
+        Type::Mixed(_) | Type::Wildcard(_) => get_explicit_mixed(),
+        Type::NonEmptyMixed(_) => wrap_atomic(TAtomic::Mixed(TMixed::truthy().with_is_explicit(true))),
         Type::Null(_) => get_null(),
         Type::Void(_) => get_void(),
-        Type::Never(_) => get_never(),
+        Type::Never(_) => get_non_accepting_never(),
         Type::Resource(_) => get_resource(),
         Type::ClosedResource(_) => get_closed_resource(),
         Type::OpenResource(_) => get_open_resource(),
@@ -406,9 +471,13 @@ pub fn get_union_from_type(
         Type::UnspecifiedLiteralFloat(_) => get_unspecified_literal_float(),
         Type::LiteralFloat(lit) => get_literal_float(*lit.value),
         Type::LiteralInt(lit) => get_literal_int(lit.value as i64),
-        Type::LiteralString(lit) => get_literal_string(word(lit.value)),
+        Type::LiteralString(lit) => {
+            // PHPDoc's CST retains escapes; semantic literals must own the decoded PHP bytes,
+            // using PHPStan's escape grammar rather than PHP's different source-string grammar.
+            get_literal_string(word(pun_tokens::php_compat::unescape_phpdoc_string(lit.raw)))
+        }
         Type::Negated(negated) => match negated.operand {
-            Type::LiteralInt(lit) => get_literal_int(-(lit.value as i64)),
+            Type::LiteralInt(lit) => get_literal_int(i64::try_from(-(lit.value as i128)).unwrap_or(i64::MIN)),
             Type::LiteralFloat(lit) => get_literal_float(-(*lit.value)),
             _ => return Err(TypeError::UnsupportedType(ttype.to_string(), ttype.span())),
         },
@@ -443,13 +512,13 @@ pub fn get_union_from_type(
         Type::TrailingPipe(trailing) => get_union_from_type(trailing.inner, scope, type_context, classname)?,
         Type::IntRange(range) => {
             let min = match range.min {
-                IntOrKeyword::NegativeInt { int, .. } => Some(-(int.value as i64)),
+                IntOrKeyword::NegativeInt { int, .. } => Some(i64::try_from(-(int.value as i128)).unwrap_or(i64::MIN)),
                 IntOrKeyword::Int(literal_int_type) => Some(literal_int_type.value as i64),
                 IntOrKeyword::Keyword(_) => None,
             };
 
             let max = match range.max {
-                IntOrKeyword::NegativeInt { int, .. } => Some(-(int.value as i64)),
+                IntOrKeyword::NegativeInt { int, .. } => Some(i64::try_from(-(int.value as i128)).unwrap_or(i64::MIN)),
                 IntOrKeyword::Int(literal_int_type) => Some(literal_int_type.value as i64),
                 IntOrKeyword::Keyword(_) => None,
             };
@@ -589,7 +658,10 @@ fn get_reference_class_name(
 
 fn get_array_key_from_shape_key(key: &ShapeKey<'_>, scope: &NamespaceScope, classname: Option<Word>) -> ArrayKey {
     match key {
-        ShapeKey::String { value, .. } => ArrayKey::from_string(word(value)),
+        ShapeKey::String { value, raw, .. } => {
+            let value = raw.map_or_else(|| word(value), |raw| word(pun_tokens::php_compat::unescape_phpdoc_string(raw)));
+            ArrayKey::from_string(value)
+        }
         ShapeKey::Integer { value, .. } => ArrayKey::Integer(*value),
         ShapeKey::ClassLikeConstant { class_name, constant_name, .. } => {
             let class_like_name = if class_name.value.eq_ignore_ascii_case(b"self")
@@ -991,8 +1063,10 @@ fn get_reference_from_kind(
             type_parameters: type_parameters.map(Vec::into_boxed_slice),
             variances: type_parameter_variances.map(Box::new),
             intersection_types: None,
+            subtracted_type: None,
             is_static,
             is_this,
+            is_exact: false,
             remapped_parameters: false,
         })))
     } else {
@@ -1020,7 +1094,10 @@ fn get_array_type<'src>(
 
     let mut array = TKeyedArray::new_with_parameters(
         Arc::new(if let Some(k) = key {
-            get_union_from_type(k, scope, type_context, classname)?
+            let key_type = get_union_from_type(k, scope, type_context, classname)?;
+            // TypeNodeResolver::transformUnsafeArrayKey calls MixedType::toArrayKey;
+            // declared mixed values stay explicit, but mixed array keys do not.
+            if key_type.is_mixed() { get_arraykey() } else { key_type }
         } else {
             get_arraykey()
         }),
@@ -1053,6 +1130,7 @@ fn get_list_type(
         known_count: None,
         known_elements: None,
         non_empty,
+        callable: None,
     })))
 }
 

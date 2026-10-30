@@ -1,0 +1,7 @@
+{
+  "parameter-and-name": "<?php\n$x = <<<TXT\n{$object->{(function (void $v) {})()}}\n \tTXT;\n#[\\self] class DocClosingSuppressed {}\nmixed_document_closing_suppressed();\n",
+  "namespace": "<?php\n$x = <<<TXT\n x\n \tTXT;\nnamespace DocClosingOrder {}\n",
+  "array-postprocessing": "<?php\n$x = [<<<TXT\n x\n \tTXT, ,];\n",
+  "two-documents": "<?php\n$x = <<<ONE\n x\n \tONE;\n$y = <<<'TWO'\n y\n\t TWO;\n",
+  "nested-documents": "<?php\n$x = <<<OUT\n{$object->{<<<IN\n  body\n \tIN\n}}\n\t OUT;\n"
+}

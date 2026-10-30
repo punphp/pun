@@ -2,11 +2,16 @@ use mago_allocator::Arena;
 use mago_word::Word;
 use mago_word::word;
 
+use mago_codex::identifier::function_like::FunctionLikeIdentifier;
 use mago_codex::identifier::method::MethodIdentifier;
 use mago_codex::metadata::CodebaseMetadata;
 use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::metadata::class_like_constant::ClassLikeConstantMetadata;
 use mago_codex::metadata::property::PropertyMetadata;
+use mago_codex::ttype::atomic::TAtomic;
+use mago_codex::ttype::atomic::callable::TCallable;
+use mago_codex::ttype::atomic::scalar::TScalar;
+use mago_codex::ttype::cast::cast_atomic_to_callable;
 use mago_codex::visibility::Visibility;
 use mago_php_version::PHPVersion;
 use mago_php_version::feature::Feature;
@@ -155,6 +160,20 @@ where
     }
 
     is_visible
+}
+
+/// Array/string method acceptors use lexical visibility; already-created closures and __invoke do not.
+pub(crate) fn is_callable_method_inaccessible<'ctx, A: Arena>(
+    context: &Context<'ctx, '_, A>,
+    block_context: &BlockContext<'ctx>,
+    atomic: &TAtomic,
+) -> bool {
+    matches!(atomic, TAtomic::Array(_) | TAtomic::Scalar(TScalar::String(_)))
+        && matches!(
+            cast_atomic_to_callable(atomic, context.codebase, None).as_deref(),
+            Some(TCallable::Alias(FunctionLikeIdentifier::Method(class, method)))
+                if !is_method_visible_by_id(context, block_context, &MethodIdentifier::new(*class, *method))
+        )
 }
 
 /// Determines whether a method is visible from the current scope

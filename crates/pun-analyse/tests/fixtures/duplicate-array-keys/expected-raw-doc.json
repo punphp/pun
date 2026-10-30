@@ -1,0 +1,184 @@
+{
+    "source_hex": "3c3f7068700d0a6e616d65737061636520526177446f6342797465733b0d0a2f2a2a0d0a202a2040706172616d2061727261797b0d0a202a2027ff273a20276669727374272c2027fe273a20277365636f6e64272c2027efbfbd273a20277468697264270d0a202a207d202473686170650d0a202a2f0d0a66756e6374696f6e20736861706528617272617920247368617065293a20766f6964207b0d0a202020202461203d205b2e2e2e5b2e2e2e2473686170655d2c20225c78666622203d3e20315d3b0d0a202020202462203d205b2e2e2e5b2e2e2e2473686170655d2c20225c78666522203d3e20315d3b0d0a202020202463203d205b2e2e2e5b2e2e2e2473686170655d2c2022efbfbd22203d3e20315d3b0d0a202020206563686f20636f756e74282461293b0d0a7d0d0a2f2a2a2040706172616d2027ff2720246b6579202a2f0d0a66756e6374696f6e207363616c617228737472696e6720246b6579293a20766f6964207b0d0a202020202461203d205b246b6579203d3e20312c20225c78666622203d3e20325d3b0d0a202020202462203d205b246b6579203d3e20312c20225c78666522203d3e20322c20225c7865665c7862665c78626422203d3e20335d3b0d0a7d0d0a66756e6374696f6e20696e6c696e6528737472696e6720246b6579293a20766f6964207b0d0a202020202f2a2a20407661722027fe2720246b6579202a2f0d0a202020202461203d205b246b6579203d3e20312c20225c78666522203d3e20325d3b0d0a202020202462203d205b246b6579203d3e20312c20225c78666622203d3e20322c20225c7865665c7862665c78626422203d3e20335d3b0d0a7d0d0a2f2a2a20407068707374616e2d74797065204b6579732061727261797b27ff273a20276669727374272c20225c786666223a20276c617374272c2027fe273a20276f74686572277d202a2f0d0a636c61737320416c6961736573207b0d0a202020202f2a2a2040706172616d204b65797320247368617065202a2f0d0a202020207075626c69632066756e6374696f6e20757365416c69617328617272617920247368617065293a20766f6964207b0d0a20202020202020202461203d205b2e2e2e5b2e2e2e2473686170655d2c20225c78666622203d3e20315d3b0d0a20202020202020202462203d205b2e2e2e5b2e2e2e2473686170655d2c20225c78666522203d3e20315d3b0d0a202020207d0d0a7d0d0a2f2a2a20407068707374616e2d6173736572742027ff2720246b6579202a2f0d0a66756e6374696f6e206173736572744b657928737472696e6720246b6579293a20766f6964207b7d0d0a66756e6374696f6e20617373657274696f6e7328737472696e6720246b6579293a20766f6964207b0d0a202020206173736572744b657928246b6579293b0d0a202020202461203d205b246b6579203d3e20312c20225c78666622203d3e20325d3b0d0a202020202462203d205b246b6579203d3e20312c20225c78666522203d3e20322c20225c7865665c7862665c78626422203d3e20335d3b0d0a7d0d0a2f2a2a204072657475726e2027ff27202a2f0d0a66756e6374696f6e2072657475726e7328293a20737472696e67207b2072657475726e20225c786666223b207d0d0a2f2a2a20406d6574686f642027fe27206b65792829202a2f0d0a636c617373204d61676963207b7d0d0a66756e6374696f6e2072657475726e6564284d6167696320246d61676963293a20766f6964207b0d0a202020202461203d205b72657475726e732829203d3e20312c20225c78666622203d3e20325d3b0d0a202020202462203d205b246d616769632d3e6b65792829203d3e20312c20225c78666522203d3e20325d3b0d0a7d0d0a2f2a2a2040706172616d2027ff272027fe2720246b6579202a2f0d0a66756e6374696f6e206d616c666f726d656428737472696e6720246b6579293a20766f6964207b7d0d0a2f2a2a204074656d706c6174652054206f662027ff27203d2027fe27202a2f0d0a636c6173732054656d706c61746544656661756c74207b7d0d0a2f2a2a0d0a202a204074656d706c6174652054206f662027ff27203d2027fe270d0a202a2040706172616d205420246b65790d0a202a2f0d0a66756e6374696f6e207369676e617475726544656661756c7428246b6579293a20766f6964207b7d",
+    "levels": {
+        "0": [
+            {
+                "line": 9,
+                "identifier": "array.duplicateKey",
+                "message": "Array has 2 duplicate keys with value '\ufffd' ('\ufffd', \"\\xff\").",
+                "tip": null,
+                "ignorable": true
+            },
+            {
+                "line": 10,
+                "identifier": "array.duplicateKey",
+                "message": "Array has 2 duplicate keys with value '\ufffd' ('\ufffd', \"\\xfe\").",
+                "tip": null,
+                "ignorable": true
+            },
+            {
+                "line": 11,
+                "identifier": "array.duplicateKey",
+                "message": "Array has 2 duplicate keys with value '\ufffd' ('\ufffd', \"\ufffd\").",
+                "tip": null,
+                "ignorable": true
+            },
+            {
+                "line": 16,
+                "identifier": "array.duplicateKey",
+                "message": "Array has 2 duplicate keys with value '\ufffd' ($key, \"\\xff\").",
+                "tip": null,
+                "ignorable": true
+            },
+            {
+                "line": 21,
+                "identifier": "array.duplicateKey",
+                "message": "Array has 2 duplicate keys with value '\ufffd' ($key, \"\\xfe\").",
+                "tip": null,
+                "ignorable": true
+            },
+            {
+                "line": 28,
+                "identifier": "array.duplicateKey",
+                "message": "Array has 2 duplicate keys with value '\ufffd' ('\ufffd', \"\\xff\").",
+                "tip": null,
+                "ignorable": true
+            },
+            {
+                "line": 29,
+                "identifier": "array.duplicateKey",
+                "message": "Array has 2 duplicate keys with value '\ufffd' ('\ufffd', \"\\xfe\").",
+                "tip": null,
+                "ignorable": true
+            },
+            {
+                "line": 36,
+                "identifier": "array.duplicateKey",
+                "message": "Array has 2 duplicate keys with value '\ufffd' ($key, \"\\xff\").",
+                "tip": null,
+                "ignorable": true
+            },
+            {
+                "line": 44,
+                "identifier": "array.duplicateKey",
+                "message": "Array has 2 duplicate keys with value '\ufffd' (returns(), \"\\xff\").",
+                "tip": null,
+                "ignorable": true
+            },
+            {
+                "line": 45,
+                "identifier": "array.duplicateKey",
+                "message": "Array has 2 duplicate keys with value '\ufffd' ($magic->key(), \"\\xfe\").",
+                "tip": null,
+                "ignorable": true
+            }
+        ],
+        "2": [
+            {
+                "line": 9,
+                "identifier": "array.duplicateKey",
+                "message": "Array has 2 duplicate keys with value '\ufffd' ('\ufffd', \"\\xff\").",
+                "tip": null,
+                "ignorable": true
+            },
+            {
+                "line": 10,
+                "identifier": "array.duplicateKey",
+                "message": "Array has 2 duplicate keys with value '\ufffd' ('\ufffd', \"\\xfe\").",
+                "tip": null,
+                "ignorable": true
+            },
+            {
+                "line": 11,
+                "identifier": "array.duplicateKey",
+                "message": "Array has 2 duplicate keys with value '\ufffd' ('\ufffd', \"\ufffd\").",
+                "tip": null,
+                "ignorable": true
+            },
+            {
+                "line": 15,
+                "identifier": "void.pure",
+                "message": "Function RawDocBytes\\scalar() returns void but does not have any side effects.",
+                "tip": null,
+                "ignorable": true
+            },
+            {
+                "line": 16,
+                "identifier": "array.duplicateKey",
+                "message": "Array has 2 duplicate keys with value '\ufffd' ($key, \"\\xff\").",
+                "tip": null,
+                "ignorable": true
+            },
+            {
+                "line": 19,
+                "identifier": "void.pure",
+                "message": "Function RawDocBytes\\inline() returns void but does not have any side effects.",
+                "tip": null,
+                "ignorable": true
+            },
+            {
+                "line": 21,
+                "identifier": "array.duplicateKey",
+                "message": "Array has 2 duplicate keys with value '\ufffd' ($key, \"\\xfe\").",
+                "tip": null,
+                "ignorable": true
+            },
+            {
+                "line": 28,
+                "identifier": "array.duplicateKey",
+                "message": "Array has 2 duplicate keys with value '\ufffd' ('\ufffd', \"\\xff\").",
+                "tip": null,
+                "ignorable": true
+            },
+            {
+                "line": 29,
+                "identifier": "array.duplicateKey",
+                "message": "Array has 2 duplicate keys with value '\ufffd' ('\ufffd', \"\\xfe\").",
+                "tip": null,
+                "ignorable": true
+            },
+            {
+                "line": 36,
+                "identifier": "array.duplicateKey",
+                "message": "Array has 2 duplicate keys with value '\ufffd' ($key, \"\\xff\").",
+                "tip": null,
+                "ignorable": true
+            },
+            {
+                "line": 44,
+                "identifier": "array.duplicateKey",
+                "message": "Array has 2 duplicate keys with value '\ufffd' (returns(), \"\\xff\").",
+                "tip": null,
+                "ignorable": true
+            },
+            {
+                "line": 45,
+                "identifier": "array.duplicateKey",
+                "message": "Array has 2 duplicate keys with value '\ufffd' ($magic->key(), \"\\xfe\").",
+                "tip": null,
+                "ignorable": true
+            },
+            {
+                "line": 47,
+                "identifier": "phpDoc.parseError",
+                "message": "PHPDoc tag @param has invalid value ('\ufffd' '\ufffd' $key): Unexpected token \"'\ufffd'\", expected variable at offset 15 on line 1",
+                "tip": null,
+                "ignorable": true
+            },
+            {
+                "line": 50,
+                "identifier": "generics.templateDefaultOutOfBounds",
+                "message": "Default type string in PHPDoc tag @template T for class RawDocBytes\\TemplateDefault is not subtype of bound type string.",
+                "tip": null,
+                "ignorable": true
+            },
+            {
+                "line": 55,
+                "identifier": "generics.templateDefaultOutOfBounds",
+                "message": "Default type string in PHPDoc tag @template T for function RawDocBytes\\signatureDefault() is not subtype of bound type string.",
+                "tip": null,
+                "ignorable": true
+            }
+        ]
+    }
+}

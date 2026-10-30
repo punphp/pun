@@ -1,0 +1,56 @@
+{
+    "377": {
+        "end": 414,
+        "expression": "$target->invoke(fn($value) => $value)",
+        "type": "int|string",
+        "visits": 1
+    },
+    "407": {
+        "end": 413,
+        "expression": "$value",
+        "type": "int|string",
+        "visits": 1
+    },
+    "973": {
+        "end": 975,
+        "expression": "$i",
+        "type": "*ERROR*",
+        "visits": 1
+    },
+    "985": {
+        "end": 1028,
+        "expression": "$target->invoke(++$i, fn($value) => $value)",
+        "type": "1|array{1|T (method GenericCallbackRight::invoke(), parameter)}|T (method GenericCallbackRight::invoke(), parameter)",
+        "visits": 1
+    },
+    "1001": {
+        "end": 1005,
+        "expression": "++$i",
+        "type": "1",
+        "visits": 1
+    },
+    "1003": {
+        "end": 1005,
+        "expression": "$i",
+        "type": "0",
+        "visits": 1
+    },
+    "1021": {
+        "end": 1027,
+        "expression": "$value",
+        "type": "1|T (method GenericCallbackRight::invoke(), parameter)",
+        "visits": 1
+    },
+    "1423": {
+        "end": 1459,
+        "expression": "$target->$name(fn($value) => $value)",
+        "type": "int|string",
+        "visits": 1
+    },
+    "1452": {
+        "end": 1458,
+        "expression": "$value",
+        "type": "mixed",
+        "visits": 1
+    }
+}

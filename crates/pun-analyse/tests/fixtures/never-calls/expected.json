@@ -1,0 +1,434 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 70
+  },
+  "files": {
+    "cases.php": {
+      "errors": 70,
+      "messages": [
+        {
+          "message": "Call to function filter_input() on a separate line has no effect.",
+          "line": 50,
+          "ignorable": true,
+          "identifier": "function.resultUnused"
+        },
+        {
+          "message": "Parameter #1 $type of function filter_input expects 0|1|2|4|5, -1 given.",
+          "line": 50,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Parameter #1 $value of function NeverCalls\\acceptInt expects int, string given.",
+          "line": 51,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Parameter #1 $type of function filter_input expects 0|1|2|4|5, -1 given.",
+          "line": 56,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Dumped type: *NEVER*",
+          "line": 57,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Parameter #1 $value of function NeverCalls\\acceptInt expects int, string given.",
+          "line": 58,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Call to function filter_input() on a separate line has no effect.",
+          "line": 63,
+          "ignorable": true,
+          "identifier": "function.resultUnused"
+        },
+        {
+          "message": "Parameter #1 $type of function filter_input expects 0|1|2|4|5, -1 given.",
+          "line": 63,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Parameter #1 $value of function NeverCalls\\acceptInt expects int, string given.",
+          "line": 64,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Parameter #1 $type of function filter_input expects 0|1|2|4|5, -1 given.",
+          "line": 69,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Parameter #1 $value of function NeverCalls\\acceptInt expects int, string given.",
+          "line": 70,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Unreachable statement - code above always terminates.",
+          "line": 76,
+          "ignorable": true,
+          "identifier": "deadCode.unreachable"
+        },
+        {
+          "message": "Unreachable statement - code above always terminates.",
+          "line": 82,
+          "ignorable": true,
+          "identifier": "deadCode.unreachable"
+        },
+        {
+          "message": "Unreachable statement - code above always terminates.",
+          "line": 89,
+          "ignorable": true,
+          "identifier": "deadCode.unreachable"
+        },
+        {
+          "message": "Unreachable statement - code above always terminates.",
+          "line": 95,
+          "ignorable": true,
+          "identifier": "deadCode.unreachable"
+        },
+        {
+          "message": "Unreachable statement - code above always terminates.",
+          "line": 101,
+          "ignorable": true,
+          "identifier": "deadCode.unreachable"
+        },
+        {
+          "message": "Unreachable statement - code above always terminates.",
+          "line": 107,
+          "ignorable": true,
+          "identifier": "deadCode.unreachable"
+        },
+        {
+          "message": "Dumped type: int",
+          "line": 112,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Parameter #1 $value of function NeverCalls\\acceptInt expects int, string given.",
+          "line": 113,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Parameter #1 $type of function filter_input expects 0|1|2|4|5, -1 given.",
+          "line": 118,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Dumped type: *NEVER*",
+          "line": 119,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Parameter #1 $value of function NeverCalls\\acceptInt expects int, string given.",
+          "line": 120,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Unreachable statement - code above always terminates.",
+          "line": 127,
+          "ignorable": true,
+          "identifier": "deadCode.unreachable"
+        },
+        {
+          "message": "Unreachable statement - code above always terminates.",
+          "line": 133,
+          "ignorable": true,
+          "identifier": "deadCode.unreachable"
+        },
+        {
+          "message": "Parameter #1 $value of function NeverCalls\\acceptInt expects int, string given.",
+          "line": 139,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Parameter #1 $value of function NeverCalls\\acceptInt expects int, string given.",
+          "line": 145,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Parameter #1 $value of function NeverCalls\\acceptInt expects int, string given.",
+          "line": 151,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Parameter #1 $value of function NeverCalls\\acceptInt expects int, string given.",
+          "line": 157,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Call to function filter_input() on a separate line has no effect.",
+          "line": 163,
+          "ignorable": true,
+          "identifier": "function.resultUnused"
+        },
+        {
+          "message": "Parameter #1 $type of function filter_input expects 0|1|2|4|5, -1 given.",
+          "line": 163,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Parameter #1 $value of function NeverCalls\\acceptInt expects int, string given.",
+          "line": 164,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Parameter #1 $value of function NeverCalls\\acceptInt expects int, string given.",
+          "line": 167,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Call to function filter_input() on a separate line has no effect.",
+          "line": 175,
+          "ignorable": true,
+          "identifier": "function.resultUnused"
+        },
+        {
+          "message": "Parameter #1 $type of function filter_input expects 0|1|2|4|5, -1 given.",
+          "line": 175,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Parameter #1 $value of function NeverCalls\\acceptInt expects int, string given.",
+          "line": 176,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "This return is overwritten by a different one in the finally block below.",
+          "line": 183,
+          "ignorable": true,
+          "identifier": "finally.exitPoint"
+        },
+        {
+          "message": "The overwriting exit point is on this line.",
+          "line": 185,
+          "ignorable": true,
+          "identifier": "finally.exitPoint"
+        },
+        {
+          "message": "Unreachable statement - code above always terminates.",
+          "line": 186,
+          "ignorable": true,
+          "identifier": "deadCode.unreachable"
+        },
+        {
+          "message": "Unreachable statement - code above always terminates.",
+          "line": 193,
+          "ignorable": true,
+          "identifier": "deadCode.unreachable"
+        },
+        {
+          "message": "Parameter #1 $value of function NeverCalls\\acceptInt expects int, string given.",
+          "line": 199,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Using nullsafe method call on non-nullable type NeverCalls\\Terminator. Use -> instead.",
+          "line": 204,
+          "ignorable": true,
+          "identifier": "nullsafe.neverNull"
+        },
+        {
+          "message": "Parameter #1 $value of function NeverCalls\\acceptInt expects int, string given.",
+          "line": 205,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Unreachable statement - code above always terminates.",
+          "line": 212,
+          "ignorable": true,
+          "identifier": "deadCode.unreachable"
+        },
+        {
+          "message": "Parameter #1 $value of function NeverCalls\\acceptInt expects int, string given.",
+          "line": 214,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Parameter #1 $value of function NeverCalls\\acceptInt expects int, string given.",
+          "line": 221,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Dumped type: Closure(): never",
+          "line": 227,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Unreachable statement - code above always terminates.",
+          "line": 229,
+          "ignorable": true,
+          "identifier": "deadCode.unreachable"
+        },
+        {
+          "message": "Parameter #1 $type of function filter_input expects 0|1|2|4|5, -1 given.",
+          "line": 234,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Dumped type: Closure(): never",
+          "line": 235,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *NEVER*",
+          "line": 236,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Parameter #1 $value of function NeverCalls\\acceptInt expects int, string given.",
+          "line": 237,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Call to function filter_input() on a separate line has no effect.",
+          "line": 242,
+          "ignorable": true,
+          "identifier": "function.resultUnused"
+        },
+        {
+          "message": "Parameter #1 $type of function filter_input expects 0|1|2|4|5, -1 given.",
+          "line": 242,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Dumped type: Closure(): void",
+          "line": 243,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: void",
+          "line": 244,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Result of closure (void) is used.",
+          "line": 244,
+          "ignorable": true,
+          "identifier": "callable.void"
+        },
+        {
+          "message": "Parameter #1 $value of function NeverCalls\\acceptInt expects int, string given.",
+          "line": 245,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Dumped type: 17",
+          "line": 251,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Parameter #1 $value of function NeverCalls\\acceptInt expects int, string given.",
+          "line": 252,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Unreachable statement - code above always terminates.",
+          "line": 259,
+          "ignorable": true,
+          "identifier": "deadCode.unreachable"
+        },
+        {
+          "message": "Unreachable statement - code above always terminates.",
+          "line": 265,
+          "ignorable": true,
+          "identifier": "deadCode.unreachable"
+        },
+        {
+          "message": "Parameter #1 $value of function NeverCalls\\acceptInt expects int, string given.",
+          "line": 271,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Using nullsafe method call on non-nullable type NeverCalls\\Terminator. Use -> instead.",
+          "line": 276,
+          "ignorable": true,
+          "identifier": "nullsafe.neverNull"
+        },
+        {
+          "message": "Parameter #1 $value of function NeverCalls\\acceptInt expects int, string given.",
+          "line": 277,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Unreachable statement - code above always terminates.",
+          "line": 301,
+          "ignorable": true,
+          "identifier": "deadCode.unreachable"
+        },
+        {
+          "message": "Unreachable statement - code above always terminates.",
+          "line": 307,
+          "ignorable": true,
+          "identifier": "deadCode.unreachable"
+        },
+        {
+          "message": "Unreachable statement - code above always terminates.",
+          "line": 313,
+          "ignorable": true,
+          "identifier": "deadCode.unreachable"
+        },
+        {
+          "message": "Parameter #1 $type of function filter_input expects 0|1|2|4|5, -1 given.",
+          "line": 318,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Dumped type: *NEVER*",
+          "line": 319,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Parameter #1 $value of function NeverCalls\\acceptInt expects int, string given.",
+          "line": 320,
+          "ignorable": true,
+          "identifier": "argument.type"
+        }
+      ]
+    }
+  },
+  "errors": []
+}

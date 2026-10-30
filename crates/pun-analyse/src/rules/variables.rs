@@ -6,6 +6,8 @@ use std::collections::{HashMap, HashSet};
 use mago_analyzer::plugin::HookContext;
 use mago_analyzer::plugin::context::InvocationInfo;
 use mago_codex::identifier::function_like::FunctionLikeIdentifier;
+use mago_codex::ttype::atomic::array::key::ArrayKey;
+use mago_codex::ttype::get_literal_string;
 use mago_codex::ttype::union::TUnion;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
@@ -20,6 +22,7 @@ use super::{Checker, declared};
 pub(super) struct Observations {
     pub reads: HashMap<Span, (String, Tri, bool)>,
     pub scopes: HashMap<Span, Certainty>,
+    pub compact_scopes: HashMap<Span, Certainty>,
     pub unset_entries: HashMap<Span, TUnion>,
     pub property_selectors: HashSet<Span>,
 }
@@ -118,23 +121,27 @@ impl Certainty {
     }
 
     /// DefinedVariableRule filters each constant name's scope by `name-expression === name`.
-    pub fn for_name(guard: Option<&Variable>, context: &HookContext<'_, '_>) -> Self {
+    pub fn for_name(guard: &Expression<'_>, context: &HookContext<'_, '_>) -> Self {
         let mut result = Self::of(context);
-        if let Some(Variable::Direct(guard)) = guard
-            && let Some(ty) = context.get_variable_type(guard.name)
-        {
+        let guard = super::types::flow::unparen(guard);
+        let ty = match guard {
+            Expression::Variable(Variable::Direct(v)) => {
+                context.get_variable_type(v.name).map(std::rc::Rc::as_ref)
+            }
+            _ => context.get_expression_type(guard),
+        };
+        if let Some(ty) = ty {
             for value in ty
                 .types
                 .iter()
                 .filter_map(|atomic| atomic.get_literal_string_value())
             {
+                let literal = get_literal_string(mago_word::word(value));
+                let Some(name) = OffsetName::of(guard) else {
+                    continue;
+                };
                 let mut filtered = context.block_context().clone();
-                filtered.locals.insert(
-                    mago_word::word(guard.name),
-                    std::rc::Rc::new(mago_codex::ttype::get_literal_string(mago_word::word(
-                        value,
-                    ))),
-                );
+                filtered.locals.insert(name.id, std::rc::Rc::new(literal));
                 filtered.apply_variable_conditions(context.codebase());
                 let target = format!("${}", String::from_utf8_lossy(value));
                 let certainty = filtered.variable_certainty(mago_word::word(&target));
@@ -169,6 +176,71 @@ impl Certainty {
             .get(&format!("${name}"))
             .copied()
             .unwrap_or(Tri::No)
+    }
+}
+
+/// Only literal offsets of local arrays have stable identities without selector dependencies.
+/// Their observed types participate in Mago's existing branch merge and conditional-holder invalidation.
+#[derive(PartialEq, Eq, Hash)]
+pub(super) struct OffsetName {
+    root: mago_word::Word,
+    id: mago_word::Word,
+}
+
+impl OffsetName {
+    fn of(guard: &Expression<'_>) -> Option<Self> {
+        match super::types::flow::unparen(guard) {
+            Expression::Variable(Variable::Direct(v)) => {
+                let id = mago_word::word(v.name);
+                Some(Self { root: id, id })
+            }
+            Expression::ArrayAccess(access) => {
+                let mut name = Self::of(access.array)?;
+                let key = match super::types::flow::unparen(access.index) {
+                    Expression::Literal(Literal::String(s)) => {
+                        ArrayKey::from_string(mago_word::word(s.value?))
+                    }
+                    Expression::Literal(Literal::Integer(i)) => {
+                        ArrayKey::Integer(i64::try_from(i.value?).ok()?)
+                    }
+                    _ => return None,
+                };
+                name.id = mago_word::concat_word!(
+                    name.id.as_bytes(),
+                    b"[",
+                    key.id_word().as_bytes(),
+                    b"]"
+                );
+                Some(name)
+            }
+            _ => None,
+        }
+    }
+
+    /// Materialize only selected name offsets after a real write, never by replaying statement syntax.
+    pub fn assigned(&self, assignment: &Assignment<'_>, context: &mut HookContext<'_, '_>) {
+        let mut lhs = super::types::flow::unparen(assignment.lhs);
+        while let Expression::ArrayAccess(access) = lhs {
+            lhs = super::types::flow::unparen(access.array);
+        }
+        if !matches!(lhs, Expression::Variable(Variable::Direct(v)) if v.name == self.root.as_bytes())
+        {
+            return;
+        }
+        // Whole-root and unstable-offset writes invalidate the cached expression too. Do not create
+        // correlations from a whole array's fields: PHPStan records the actual assigned expression.
+        let ty = Self::of(assignment.lhs)
+            .filter(|name| name.id == self.id)
+            .and_then(|_| context.get_expression_type(assignment).cloned());
+        let block = context.block_context_mut();
+        match ty {
+            Some(ty) => {
+                block.locals.insert(self.id, std::rc::Rc::new(ty));
+            }
+            None => {
+                block.locals.remove(&self.id);
+            }
+        }
     }
 }
 
@@ -213,28 +285,48 @@ pub(super) fn defined(context: &HookContext<'_, '_>, name: &str) -> Tri {
 }
 
 /// This walk only selects expressions for the inference run; it never guesses their control-flow state.
-pub(super) fn typed_expressions(program: &Program) -> Vec<Span> {
-    struct Wanted(Vec<Span>);
-    impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted {
+pub(super) fn typed_expressions(
+    program: &Program,
+    names: &mago_names::ResolvedNames,
+) -> (Vec<Span>, HashSet<Span>, HashSet<OffsetName>) {
+    struct Wanted<'n, 'arena> {
+        spans: Vec<Span>,
+        compact_calls: HashSet<Span>,
+        offset_names: HashSet<OffsetName>,
+        names: &'n mago_names::ResolvedNames<'arena>,
+    }
+    impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_, '_> {
         fn walk_in_variable(&mut self, v: &'ast Variable<'arena>, _: &mut ()) {
-            self.0.push(v.span());
-            self.0
+            self.spans.push(v.span());
+            self.spans
                 .extend(super::types::dynamic_names::static_property(v));
+            if let Variable::Indirect(v) = v
+                && let Some(name) = OffsetName::of(v.expression)
+                && name.id != name.root
+            {
+                self.offset_names.insert(name);
+            }
         }
         fn walk_in_closure(&mut self, c: &'ast Closure<'arena>, _: &mut ()) {
-            self.0.push(c.span());
+            self.spans.push(c.span());
         }
         fn walk_in_function_call(&mut self, f: &'ast FunctionCall<'arena>, _: &mut ()) {
-            if is_compact(f) {
-                self.0.push(f.span());
-                self.0
+            if is_compact(f, self.names) {
+                self.compact_calls.insert(f.span());
+                self.spans.push(f.span());
+                self.spans
                     .extend(f.argument_list.arguments.iter().map(|a| a.value().span()));
             }
         }
     }
-    let mut wanted = Wanted(Vec::new());
+    let mut wanted = Wanted {
+        spans: Vec::new(),
+        compact_calls: HashSet::new(),
+        offset_names: HashSet::new(),
+        names,
+    };
     wanted.walk_program(program, &mut ());
-    wanted.0
+    (wanted.spans, wanted.compact_calls, wanted.offset_names)
 }
 
 /// NodeScopeResolver::lookForExpressionCallback() selects only the target chain, not name/index expressions.
@@ -399,8 +491,20 @@ pub(super) fn allow_arguments(
     }
 }
 
-pub(super) fn is_compact(call: &FunctionCall) -> bool {
-    matches!(call.function, Expression::Identifier(id) if id.value().eq_ignore_ascii_case(b"compact") || id.value().eq_ignore_ascii_case(b"\\compact"))
+/// CompactVariablesRule reads php-parser's post-NameResolver name, not the runtime function reflection.
+/// Only an unimported local name stays written; imports and qualified/relative names are resolved.
+fn is_compact(call: &FunctionCall, names: &mago_names::ResolvedNames) -> bool {
+    let Expression::Identifier(id) = call.function else {
+        return false;
+    };
+    let name = match id {
+        Identifier::Local(local) if !names.is_imported(&local.span) => local.value,
+        _ => names.get(&id.span()),
+    };
+    // Mago retains a leading separator for `namespace\compact` in an empty namespace.
+    name.strip_prefix(b"\\")
+        .unwrap_or(name)
+        .eq_ignore_ascii_case(b"compact")
 }
 
 /// DefinedVariableRule::processNode(). Name castability is checked even in assignment/undefined-allowed contexts.
@@ -416,7 +520,7 @@ pub(super) fn variable(c: &mut Checker, variable: &Variable) {
         {
             let given = declared::with_classes(c, || ty.describe(Level::Precise));
             c.report(
-                variable,
+                name,
                 "variable.nameNotString",
                 format!("Variable variable name must be a string, but {given} was given."),
                 None,
@@ -428,12 +532,12 @@ pub(super) fn variable(c: &mut Checker, variable: &Variable) {
         let Some(ty) = c.types.get(&name).map(|t| c.to_phpstan(t)) else {
             return;
         };
-        let mut names = Vec::new();
-        constant_strings(&ty, &mut names);
+        let names = ty.constant_strings();
         let mut seen = HashSet::new();
         let main = scope.main;
         let names: Vec<_> = names
             .into_iter()
+            .map(|name| String::from_utf8_lossy(&name).into_owned())
             .filter(|name| seen.insert(name.clone()))
             .map(|name| {
                 let certainty = scope.get(&name);
@@ -483,19 +587,17 @@ fn single_variable(
 /// CompactVariablesRule::processNode(). Its scope precedes argument evaluation, even though argument types can
 /// describe assignments made by their evaluation.
 pub(super) fn compact(c: &mut Checker, call: &FunctionCall) {
-    if !is_compact(call) {
-        return;
-    }
-    let Some(scope) = c.variables.scopes.get(&call.span()) else {
+    // Only calls selected by the name-resolution pass can have a compact scope observation.
+    let Some(scope) = c.variables.compact_scopes.get(&call.span()) else {
         return;
     };
     let mut errors = Vec::new();
     for arg in &call.argument_list.arguments {
-        let Some(ty) = c.type_of(arg.value()).map(|t| c.to_phpstan(t)) else {
+        let Some(ty) = c.phpstan_type(arg.value()) else {
             continue;
         };
         let mut names = Vec::new();
-        find_constant_strings(&ty, &mut names);
+        declared::with_classes(c, || find_constant_strings(&ty, &mut names));
         for name in names {
             let adjective = match scope.get(&name) {
                 Tri::No => "undefined",
@@ -513,78 +615,16 @@ pub(super) fn compact(c: &mut Checker, call: &FunctionCall) {
     }
 }
 
-/// Type::getConstantStrings(): template subclasses inherit extraction from their concrete parent.
-fn constant_strings(ty: &Type, out: &mut Vec<String>) {
-    match ty {
-        Type::ConstString(s) => {
-            if !out.contains(s) {
-                out.push(s.clone());
-            }
-        }
-        Type::Template(template) => {
-            let mut bound = &template.bound;
-            while let Type::Template(template) = bound {
-                bound = &template.bound;
-                // TemplateTypeFactory selects TemplateStringType before TemplateConstantStringType
-                // when the bound is itself a string template. Its inherited extraction is empty.
-                if matches!(bound, Type::ConstString(_)) {
-                    return;
-                }
-            }
-            constant_strings(bound, out);
-        }
-        Type::Union(types) | Type::Benevolent(types) => {
-            let mut strings = Vec::new();
-            for ty in types {
-                let mut inner = Vec::new();
-                constant_strings(ty, &mut inner);
-                if inner.is_empty() {
-                    return;
-                }
-                strings.extend(inner);
-            }
-            out.extend(strings);
-        }
-        Type::Intersection(types) => {
-            for ty in types {
-                constant_strings(ty, out);
-            }
-        }
-        _ => {}
-    }
-}
-
 /// CompactVariablesRule::findConstantStrings(): constant strings first, otherwise recurse through constant arrays.
 fn find_constant_strings(ty: &Type, out: &mut Vec<String>) {
-    let mut strings = Vec::new();
-    constant_strings(ty, &mut strings);
+    let strings = ty.constant_strings();
     if !strings.is_empty() {
-        out.extend(strings);
+        out.extend(strings.into_iter().map(|s| String::from_utf8_lossy(&s).into_owned()));
         return;
     }
-    for array in constant_arrays(ty) {
+    for array in ty.constant_arrays() {
         for value in &array.values {
             find_constant_strings(value, out);
         }
-    }
-}
-
-fn constant_arrays(ty: &Type) -> Vec<&pun_phpstan::types::ConstArray> {
-    match ty {
-        Type::ConstArray(a) => vec![a],
-        Type::Template(template) => constant_arrays(&template.bound),
-        Type::Union(types) | Type::Benevolent(types) => {
-            let mut arrays = Vec::new();
-            for ty in types {
-                let inner = constant_arrays(ty);
-                if inner.is_empty() {
-                    return Vec::new();
-                }
-                arrays.extend(inner);
-            }
-            arrays
-        }
-        Type::Intersection(types) => types.iter().flat_map(constant_arrays).collect(),
-        _ => Vec::new(),
     }
 }

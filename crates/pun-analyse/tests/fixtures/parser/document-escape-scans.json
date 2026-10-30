@@ -1,0 +1,8 @@
+{
+  "fatal-document": "<?php\nclass ScanBefore {}\nfunction scanFunction() {}\nconst SCAN_CONSTANT = 1;\n$x = <<<TXT\n  \\u{110000}$value\n  TXT;\nclass ScanAfter {}\n",
+  "fatal-double": "<?php\nclass ScanBefore {}\nfunction scanFunction() {}\nconst SCAN_CONSTANT = 1;\n$x = \"\\u{110000}\";\nclass ScanAfter {}\n",
+  "fatal-interpolated": "<?php\nclass ScanBefore {}\nfunction scanFunction() {}\nconst SCAN_CONSTANT = 1;\n$x = \"$value\\u{110000}\";\nclass ScanAfter {}\n",
+  "fatal-backtick": "<?php\nclass ScanBefore {}\nfunction scanFunction() {}\nconst SCAN_CONSTANT = 1;\n$x = `\\u{110000}`;\nclass ScanAfter {}\n",
+  "valid-nonfatal-none": "<?php\nclass ScanBefore {}\nfunction scanFunction() {}\nconst SCAN_CONSTANT = 1;\n$x = \"\\u{}\";\nclass ScanAfter {}\n",
+  "valid-nowdoc": "<?php\nclass ScanBefore {}\nfunction scanFunction() {}\nconst SCAN_CONSTANT = 1;\n$x = <<<'TXT'\n  \\u{110000}\n  TXT;\nclass ScanAfter {}\n"
+}

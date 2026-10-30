@@ -1,0 +1,94 @@
+{
+    "alias-positive": [
+        {
+            "file": "$ROOT/alias-positive.php",
+            "message": "Call to RenamedAliasPositive\\Base::alias() uses named argument for parameter $old, but RenamedAliasPositive\\Child renames it to $new.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/alias-positive.php",
+            "message": "Call to RenamedAliasPositive\\Base::alias() uses named argument for parameter $old, but RenamedAliasPositive\\Descendant renames it to $inherited.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/alias-positive.php",
+            "message": "Call to RenamedAliasPositive\\Base::alias() uses named argument for parameter $old, but RenamedAliasPositive\\Child renames it to $new.",
+            "line": 19,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/alias-positive.php",
+            "message": "Call to RenamedAliasPositive\\Base::alias() uses named argument for parameter $old, but RenamedAliasPositive\\Descendant renames it to $inherited.",
+            "line": 19,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "alias-original-negative": [
+        {
+            "file": "$ROOT/alias-original-negative.php",
+            "message": "Call to RenamedAliasOriginal\\Base::original() uses named argument for parameter $old, but RenamedAliasOriginal\\OriginalChild renames it to $renamed.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/alias-original-negative.php",
+            "message": "Call to RenamedAliasOriginal\\Base::original() uses named argument for parameter $old, but RenamedAliasOriginal\\OriginalChild renames it to $renamed.",
+            "line": 21,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/alias-original-negative.php",
+            "message": "Class RenamedAliasOriginal\\InvalidFinalChild extends final class RenamedAliasOriginal\\FinalOwner.",
+            "line": 27,
+            "ignorable": false,
+            "identifier": "class.extendsFinal"
+        }
+    ],
+    "alias-private": [
+        {
+            "file": "$ROOT/alias-private.php",
+            "message": "Call to RenamedAliasPrivate\\PublicOwner::exposed() uses named argument for parameter $old, but RenamedAliasPrivate\\PublicChild renames it to $new.",
+            "line": 30,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/alias-private.php",
+            "message": "Call to RenamedAliasPrivate\\ProtectedOwner::exposed() uses named argument for parameter $old, but RenamedAliasPrivate\\ProtectedChild renames it to $new.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "alias-policy": [
+        {
+            "file": "$ROOT/alias-policy.php",
+            "message": "Method RenamedAliasPolicy\\Owner::alias() invoked with named argument $old, but it's not allowed because of @no-named-arguments.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/alias-policy.php",
+            "message": "Method RenamedAliasPolicy\\ForbiddenOwner::alias() invoked with named argument $old, but it's not allowed because of @no-named-arguments.",
+            "line": 30,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/alias-policy.php",
+            "message": "Method RenamedAliasPolicy\\DocumentedOwner::alias() invoked with named argument $old, but it's not allowed because of @no-named-arguments.",
+            "line": 44,
+            "ignorable": true,
+            "identifier": "argument.named"
+        }
+    ]
+}

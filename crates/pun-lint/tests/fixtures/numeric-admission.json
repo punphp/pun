@@ -1,0 +1,13 @@
+{
+    "08": "Parse error: Invalid numeric literal on line 1.",
+    "078": "Parse error: Invalid numeric literal on line 1.",
+    "0_8": "Parse error: Invalid numeric literal on line 1.",
+    "07_9": "Parse error: Invalid numeric literal on line 1.",
+    "010000000000000000000008": "Parse error: Invalid numeric literal on line 1.",
+    "077": null,
+    "07_7": null,
+    "0o77": null,
+    "08.0": null,
+    "08e2": null,
+    "01000000000000000000000": null
+}

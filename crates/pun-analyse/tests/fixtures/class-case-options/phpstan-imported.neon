@@ -1,0 +1,4 @@
+includes: [phpstan-default.neon]
+parameters:
+    featureToggles:
+        checkImportedClassNameCase: true

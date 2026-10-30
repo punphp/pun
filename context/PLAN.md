@@ -4,21 +4,511 @@ The one file for where Pun stands: how this folder works, every decision, the bu
 open questions. Rewritten 2026-10-17 after walking through every command with Pushpak; it replaces README.md,
 DECISIONS.md, TASKS.md and REQUESTS.md (their history is in git). Finished work is not listed; `git log` has it.
 
-## 0. Resume here (2026-10-26)
+## 0. Resume here (2026-10-30)
 
 One lead agent works on `main` and spawns subagents for independent slices in worktrees (AGENTS.md "How work runs").
 Pushpak resumed all commands on 2026-10-25. CI stays disabled.
 
-- **Counts** (local mapping.toml `ported = true`): format 168 of 168, lint 306 of 703, analyse 299 of 385.
-  Pending: format 0, lint 397, analyse 86 (483 total). Ported rules still have the explicit parity gaps below.
+- **Counts** (local mapping.toml `ported = true`): format 168 of 168, lint 514 of 703, analyse 299 of 385.
+  Pending: format 0, lint 189, analyse 86 (275 total). Ported rules still have the explicit parity gaps below.
+- **Latest verified batch:** top-level unset and counterfactual `!isset` invalidate holders instead of
+  installing explicit absence; bounded native calls and unset transfers preserve independently observed values.
+  The frozen main gate passes 119 public/library tests across 21 targets, 52 original rule cases and 94
+  original level cases in 35 partitions. All 56 targeted CLI tests and forty affected lint tests pass.
+  All-dependency instrumentation passes 445 native analyser units and 29 public tests, covering all
+  109 changed executable production lines without exclusions. Seven exact-object exports are warning-free,
+  with no unmatched runtime profiles; 94 build-only profiles match twelve procedural-macro object identities.
+  Four fresh PHPStan recaptures are byte-identical. Two obsolete native-unavailability assertions are
+  corrected from independent oracle evidence, with their original failures retained. Source-matched whole-crate
+  coverage remains analyse 44,020/44,020, PHPStan 10,747/10,747 and lint 39,338/39,338 after existing exclusions.
+  The docs build passes on 1,446 pages, with ten rendered contract checks. No gap allowances change.
+  The 625 level gaps, 43 exact purity locations and fourteen rule gaps remain. Full parity is not complete.
+- **Previous live-initialization batch:** source-owned builtin signature channels, live property initialization markers,
+  constructor exit joins, bounded helper summaries and native isset/coalescing transfers are verified on main.
+  The 540-partition frozen sweep covers all 782 analyser public/library tests across 135 targets,
+  1,315 rule cases and 2,787 level cases. Its original two failures are obsolete native-unavailability
+  assertions. Fresh PHPStan captures retain all 58 compound-read diagnostics, nineteen full reads and
+  all 23 capture-feedback records, adding nineteen native reads. Both corrected targets pass all five tests
+  on main without production changes. Unsupported compound operators remain explicitly unavailable.
+  All 56 targeted CLI tests, 88 PHPStan tests and 432 lint tests pass. All-dependency instrumentation passes
+  445 native analyser units and 23 public/control tests. Source-matched coverage is analyse 44,020/44,020,
+  PHPStan 10,747/10,747 and lint 39,338/39,338 after existing exclusions; all 808 changed production lines
+  are covered. All 173 exact-object exports are warning-free, with no unmatched runtime profiles.
+  Nine compiler-only profiles are independently matched to procedural-macro libraries and archived separately.
+  The docs build passes on 1,446 pages, with eleven rendered contract checks. No gap allowances change.
+  The 625 level gaps, 43 exact purity locations and fourteen rule gaps remain. Full parity is not complete.
+- **Previous isset/initializer batch:** singleton/dynamic property names, supplied and inherited generic arguments, and
+  set-hook writable types now feed IssetCheck. Its advanced setting is independently overridable without
+  changing other rules' levels. Nonliteral class-constant initializers retain conditional alternatives and
+  array-addition order without selecting a runtime branch.
+  The frozen gate passes all 769 analyser public/library tests across 130 targets, 1,315 rule cases and
+  2,787 level cases in 520 disjoint bounded partitions. All 56 targeted CLI tests pass, including the same
+  forty format comparisons now split across four checkpointable tests. No diagnostic captures or gap
+  allowances change. Source-matched coverage is analyse 44,105/44,105, PHPStan 10,740/10,740 and lint
+  39,338/39,338 after existing exclusions. Exact-object exports are warning-free with no unmatched profiles
+  or new exclusions. The initializer fallback matches four complete fresh PHPStan CLI records byte for byte.
+  The docs build passes on 1,446 pages and all six new rendered contract checks pass.
+  Completed targets and test executables are removed only after preserving exact-object coverage evidence.
+  The 625 level gaps, 43 exact purity locations and fourteen rule gaps remain. Full parity is not complete.
+- **Previous reflected-call batch:** compound-method binding, recursive/template mixins, genuine-nullable chains and
+  required-method providers preserve declaring-class identity and supplied generic arguments. Object exclusions,
+  native argument observations, native-backed function certainty tips, reference bookkeeping, local unset effects,
+  refined isset keys, builtin-parent purity and exact unmatched-ignore reconciliation integrate on main.
+  The corrected frozen gate passes 765 public/library tests across 129 targets, all 1,315 rule cases and all
+  2,787 level cases in 288 disjoint bounded partitions. All 53 targeted CLI tests and all 432 lint tests pass.
+  The PHPUnit lint owner exceeds its first 840-second slot; its completed tests are retained and every remaining
+  test passes separately. There are no diagnostic failures. All 88 owning PHPStan tests and 445 native analyser
+  units also pass. Two obsolete generic-receiver level gaps are removed without changing their captures.
+  A fresh mixed-policy generic-proxy regression exposes variance loss during null removal and receiver
+  recombination. Its correction matches all thirty oracle records, retaining the original twenty-two; the
+  real CLI also matches PHPStan's four complete JSON records. Native unavailability assertions now distinguish
+  a real observed int from unsupported continuation. Abstract/interface defaults cover overload availability.
+  The abstract-trait control alone leaves one region uncovered; concrete-trait and unrelated-method controls
+  cover it while preserving all seven fresh PHPStan purity records. Source-matched coverage is analyse
+  43,921/43,921, PHPStan 10,740/10,740 and lint 39,338/39,338 after existing exclusions. All 131 frozen-gate
+  exact-object exports and the trait-control export are warning-free, with no unmatched profiles or new
+  exclusions. The docs build passes on 1,446 pages, with thirteen rendered contract checks.
+  There are still 625 level gaps, 43 exact purity locations and fourteen rule gaps. Full parity is not complete.
+- **Current work:** named-argument activation still needs coherent compound semantic signatures, including
+  signature-owned defaults/templates and separate native/PHPDoc return channels. Builtin metadata now passes
+  the complete combined main gate, preserving all 37,001 existing variant records. The private deferred
+  key/value identity and resolution-boundary slice matches fifteen complete query records, passes
+  89 PHPStan tests, 220 original rule cases and 440 level cases, and covers 63/63 changed production lines.
+  The queued callable assertion carrier matches thirty complete diagnostics, passes 92 PHPStan tests,
+  99 analyser tests, 409 original rule cases and 440 level cases, and covers 278/278 changed executable Rust
+  lines. Its private compound target improves to six passes/six failures, with 22 missing and no extra records.
+  The queued occurrence-position API matches 612 reference records and 25 composition entries, passes
+  93 owning-crate tests and covers 85/85 changed lines. Its resolver remains red: 12/32 identity records match.
+  Source-instance identity and retained-versus-replaced traversal have a source owner; structural equality
+  cannot substitute for identity. Native builtin callable overloads need a complete source-variant handoff,
+  not an empty-argument selector call. Void authority remains unfinished. The compound guard and mapping stay inactive.
+  Isset activation still needs native certainty configuration. Constructor exit-scope initialization and
+  bounded helper selection now pass the complete combined main gate. Tied distinct declarations and
+  ambiguous carriers remain conservative.
+  Copied class-constant ordering has a verified private correction with 76 complete oracle records.
+  Private canonical conditional array addition matches 127 diagnostic records; its exact-key
+  converter correction now matches all 92 same-value records and forty unchanged narrowing/unset controls,
+  passes 91 tests and covers 5/5 changed production lines. The queued public 256-alternative fallback preserves
+  keys, values, nonemptiness and guaranteed offsets, matching 259 complete records and passing 93 tests with
+  62/62 changed production lines covered. Native-only array insertion order has a separate queued correction.
+  Native isset/coalescing carriers now pass the complete combined main gate, including assignment handoff
+  alongside marker writes. Their original 201 supported observations and 26 unavailable controls remain.
+  The strict certainty consumer remains uncommitted: 16/24 complete comparisons pass, with 56 missing records and no false-certainty
+  extras. Bounded native call continuation, native unset, top-level unset invalidation and counterfactual
+  `!isset` invalidation now integrate on main. All four fresh PHPStan recaptures are byte-identical, and
+  the verified main gate above covers all 109 changed executable production lines. Two obsolete native-lane
+  assertions are corrected from independent oracle evidence. Their public records retain eleven supported call values,
+  31 supported unset observations, 67 top-level diagnostics and 119 counterfactual diagnostics.
+  Nullable-object parameters and nullsafe properties have a queued correction: 45 supported observations,
+  sixteen unavailable controls, 165 once-only visits and 26/26 changed lines. Its legacy `$this?->prop`
+  unavailability assertion needs its independently proven update at integration. Native/PHPDoc parameter
+  nullability clamping has a separate source owner; inconsistent selected edges remain unavailable.
+  Native-only array ordering has a queued correction: 79 complete oracle records, 90 passing tests and
+  30/30 changed production lines. Its retained consumer control matches 38 complete records without the
+  twelve callable false positives. It must use the native expression map; no full/PHPDoc fallback is accepted.
+  The retained 242 diagnostic records are oracle evidence, not consumer parity. The queued failed-reference-array
+  correction matches 43 diagnostics and 48 observations, passes 74 neighbors and covers 7/7 mapped changed lines.
+  Its broader missing-offset diagnostic still needs the level-3 read rule. Boolean-membership narrowing has
+  a source owner, as does whole-rule availability for the existing level-0 empty-offset read check. Typed-trait `instanceof`
+  descriptions have a queued correction matching all 86 constructor-expanded records and covering 1/1 changed line.
+  CI stays disabled. Next: integrate and verify the queued bounded prerequisites before resuming the strict consumer.
+- **Preceding verified batch:** overflowing integer literals retain their PHP magnitude and radix-specific
+  rounding, including values beyond `u128`. Fresh PHPStan captures match all 45 diagnostics and 171 literal
+  kind/value/raw-byte/span records. All 393 combined partitions execute: 1,315 rule cases, 2,787 level cases,
+  551 analyser public/library tests, 431 lint tests and all 78 owning PHPStan tests. The first gate finds one
+  sorted-integer-keys regression; Mago's lexical integer contract is preserved, then all 34 affected tests
+  pass in native and instrumented builds with fresh radix, clamping and ordinary-float controls. The other
+  392 partitions pass before that bounded lint-only correction. Existing expectations and gaps are unchanged.
+  Source-matched coverage is analyse 42,846/42,846, lint 39,271/39,271 and PHPStan 10,557/10,557 after
+  existing exclusions. All 50 changed executable lines are covered without new exclusions. All 51 analyse,
+  lint, migrate and init CLI tests pass. The docs build passes on 1,446 pages, with all three new rendered
+  contract checks passing. Coordinator timeouts retain successful partitions against frozen source hashes;
+  original failures, interruptions and logs remain available. Normal coverage export succeeds, with the same
+  18 warnings for unchanged inline flag methods as the previous batch. There are still 653 level gaps and
+  16 rule gaps, so this is not full parity. The preceding format gate matches 20 Pint CLI comparisons and
+  all 799 Pinkary files; its absent-dependency analyse errors are not analyse/check parity evidence.
+- **Completed integration history:** shared joins, non-plain empty-array alternatives, duplicate constant reflection,
+  forced late-shape returns, reflected call policy, trait-alias identity and immediate-interface selection are
+  integrated locally. The main pilot has no new diagnostic mismatches. Two obsolete rule gaps are removed
+  after the complete Methods and Classes sweeps pass their expectations. The 394-partition combined gate is
+  split at the 900-second coordinator budget, retaining frozen-source checkpoints. Functions level 5 identifies
+  one obsolete gap; level 9 identifies two obsolete gaps and one real callable-after-branch regression. The
+  full sweep also finds an impure-points union-declaration display regression. After dividing the unchanged
+  126-case Methods return fixture into three verified 42-case partitions, 395 of 396 partitions finish. The
+  final return partition still exceeds 900 seconds; its large sequential optional-array fixture needs a
+  source-owned join reduction check. No expectations or gap allowances are weakened. Mixed-case alias
+  spelling and reproducible codex unit prerequisites are now integrated locally, exposing one existing
+  callable/truthy-mixed union failure; the full unit target is not green yet.
+  PHPStan's reverse if-branch merge order fixes the impure-points regression: all seven fresh public
+  diagnostics, the unchanged six-case original partition and 30 neighboring tests pass. The callable and
+  slow return failures remain with independent source owners. Four proven obsolete level gaps are removed,
+  leaving 649 level gaps and 14 rule gaps locally.
+  Independent argument-type/reference and receiver-eligibility settings are integrated locally. The private
+  source port matches 639 complete records across 30 configurations; the integrated main snapshot passes
+  all 49 affected analyser tests and all 57 config tests. Arbitrary Pun TOML overrides still need option
+  ownership, so migration rejects them with a precise reason.
+  All 51 affected CLI tests pass. The 20 owning PHPStan targets pass before interface integration.
+  Independent call, override, consistent-constructor and final-join registrations are also integrated locally;
+  their private public gate matches 37 complete records and all 16 CLI owner combinations. The integrated
+  settings/registration snapshot passes all 52 affected public analyser tests and all 52 affected CLI tests.
+  All eight affected original-fixture partitions pass against unchanged source: 409 Methods rule cases,
+  11 Traits rule cases, 220 method-call cases each at levels 5 and 9, and four coverage-fixture filters.
+  Existing allowances remain unchanged. Fresh whole-crate coverage remains. Crate-wide rustfmt checks still
+  report formatting drift, also reproduced in the parent snapshot; both new registration test files pass.
+  The docs build and thirteen rendered contract checks pass. Named-argument activation still needs per-name
+  filtered scopes and complete configuration boundaries. The dynamic-name probe also fails for a literal
+  call inside an equality branch: shared inference discards differing target types when branch certainty agrees. That prerequisite
+  and callable constraints have independent source owners. Fresh PHPStan probes also show that filtered reads
+  use each operand's own pre-evaluation scope, including earlier argument writes and impurity invalidation.
+  A source-owned opt-in observation facility is assigned before the checker bridge; a single filtered
+  call-entry snapshot is insufficient. Conditional holders now integrate locally with reverse if-edge
+  order preserved. The private correction matches 207 complete records and covers 160/160 changed
+  executable lines; all 46 affected public analyser tests pass on main. Property receiver eligibility also
+  integrates locally: its private 12-case matrix matches 123 records through both Project constructors,
+  with 8/8 changed lines covered, and its controls pass in the same main gate. Template-intersection
+  array/accessory views now integrate locally, matching 78 new records and all 80 owning-crate tests.
+  The docs build passes on 1,446 pages, with nine rendered contract checks passing.
+  The requested-name API is integrated locally and all 13 affected main tests pass. The live receiver
+  correction now matches all 42 expanded PHPStan records and the two-record scanned-stub purity control,
+  including inherited aliases, native versus PHPDoc returns, constructors, readonly guards, conditional
+  holders, private-parent properties, compound clauses and ordinary/nullsafe receiver guards. The combined
+  instrumented gate passes 28 tests across eight targets, with 32 more tests across nine API-neighbor targets.
+  Fresh exact-object profiles cover 163/167 receiver/API/join executable lines since template-view integration,
+  without exclusions. Remaining API and receiver-effect paths still need coverage before delivery.
+  The private observation facility passes all seven public facility tests and 197 strict observations,
+  retaining the original 155 unchanged. Its broader gate passes 85 public tests and two source-contract tests.
+  Real event-count, live-artifact and diagnostic-isolation assertions pass; semantic providers remain active.
+  Changed coverage is 612/620 without exclusions. The eight remaining paths are assigned before integration.
+  Same-key array discrimination now matches all 58 complete oracle records and 58 neighboring public tests.
+  Fresh coverage from the exact instrumented regression executable covers all 5 changed executable lines
+  without exclusions. This restores sibling-offset correlations while retaining upstream's one-field merge.
+  The integrated sequential-join commit completes unchanged bug-12110 in 6.200 seconds with no diagnostics
+  versus a 40-second parent timeout. It matches all 36 sequential and 32 ordering records, eight template
+  controls and both direct/deferred offset-order observations. Its private gate passes 76 neighboring
+  tests and all 80 owning PHPStan tests, with 34/34 changed executable lines covered. On combined main,
+  all 17 targeted analyser tests, all 80 PHPStan tests and the complete Methods level sweep pass.
+  That sweep takes 613 seconds. Fresh combined profiles cover all 35 changed join lines and three offset
+  traversal lines. The docs build and twelve rendered contract checks pass. The private filtered named-call
+  regression retains all thirty level-5 oracle diagnostics and empty level-4 controls. Main still has three
+  missing/one extra records in the original level-5 probe, twelve missing/two extra in its added boundaries,
+  and one extra argument.duplicate in the level-4 identifier/later-impurity control. The checker bridge must
+  preserve argument evaluation positions for ordinary binding too. No expectations or allowances are weakened.
+  Receiver-guard conversion now accepts an explicit expression-type map; all twelve affected public tests
+  pass instrumented with unchanged expectations. The selected array-key dependency refactor is integrated;
+  its private gate passes 92 unchanged public tests and covers 61/61 changed executable lines. The remaining
+  conversion paths have a separate source owner and must use the same map for literal children, provenance
+  and guards. Callable-array constraints and the truthy-mixed combiner correction are also integrated locally.
+  Their private gate matches all 80 frozen oracle records, passes 298 codex units and 101 public/library tests,
+  and covers 530/530 changed executable lines. Its Functions level-9 partition has no new failures, but reports
+  two obsolete gaps already removed on main. All 80 owning PHPStan tests pass on combined main; the combined
+  analyser integration gate passes all 21 tests across seven targets. The subsequent receiver-edge gate
+  passes all 28 tests across eight targets, including 45 fresh receiver records. The Functions sweep finds
+  zero new failures and one newly obsolete level-5 bug-12847 allowance, now removed. Eleven analyser unit
+  failures also occur on the exact callable base. The observation facility is integrated locally, with
+  its coverage correction and external requested-name worker regression. The corrected private facility
+  covers 631/631 changed executable lines without exclusions, and all 15 worker-backed method-call tests
+  pass. Nullsafe ensured-scope support remains with its source owner. The checker bridge compiles, but its
+  frozen complete-record regression still has one passing and three failing tests after separating logical
+  call spans from diagnostic selectors and requesting level-4 binding scopes. Fresh oracle recaptures remain
+  byte-identical. The broader eight-target gate passes 42 tests and fails seven renamed-argument tests,
+  exposing missing nullsafe answers, template/mixed selector extraction, and historical source dependencies.
+  The parenthesized abstract-constructor receiver regression now passes its unchanged public test after
+  restoring the consumer's receiver unparenthesizing. Temporary diagnostics confirm that requested earlier
+  receiver spans are absent from selected maps; template/sealing metadata cannot be restored safely without
+  them. Those facility boundaries remain with their source owner. No global-type fallback is added.
+  Written argument evaluation order now passes all 45 owning public tests on combined main and covers
+  25/25 changed executable lines without exclusions. Both fresh PHPStan unpack captures match byte for byte.
+  The focused consumer gate improves to two passes and two failures: only the nullsafe call and the two
+  assignment-derived correlation records are missing, with no extra diagnostics. The existing collector
+  target passes 14 tests and fails six at its known nullsafe, selector and historical-dependency boundaries.
+  The docs build passes on 1,446 pages and all ten rendered contract checks pass. Independent source owners
+  continue assignment-derived conditional holders and finite array-key literal precision. No selected scope
+  uses the global type map. After the unsplit Functions sweep exceeds 900 seconds, all nine bounded level
+  partitions pass on the same frozen production snapshot, covering 693 cases. Full combined verification
+  remains open.
+  Bounded finite-key array literals integrate locally and pass their frozen 50 live-type contracts and
+  five complete level-5 diagnostics. The private gate passes 66 public tests with 188/188 changed production
+  lines covered. Fresh recapture is byte-identical. On main, all 28 tests across the observation, finite-key,
+  shared-join, sequential-join and shape-discrimination targets pass. Nullable nested-array joins reproduce
+  two raw-artifact failures before the bounded correction, retaining disjoint-field controls in both orders.
+  The final callable/list-guarded source passes the same 28 tests. Exact-object profiles cover all 30 changed
+  join lines and all 188 changed array-builder lines without exclusions or export warnings. The docs build
+  passes on 1,446 pages, with all fourteen rendered contract checks passing. Full coverage remains open.
+  The unfinished private nullsafe port preserves 228 earlier observations and matches its 24-record primary
+  probe, but three facility tests still fail on seven method-holder, copied-holder, nested-array or void-call
+  records. Its changed coverage is 350/354 without exclusions. None of that WIP is integrated. A fresh
+  historical-dependency capture independently confirms all 15 records. Selector extraction and historical
+  retention now integrate locally. Their private gate passes 18 facility tests and covers 126/126 changed
+  production lines without exclusions. With the exact consumer overlay, renamed-argument tests improve
+  from 14 passes/six failures to 16 passes/four nullsafe-only failures. The focused consumer still has
+  three missing records on that private base. On combined main, all nineteen facility tests pass and
+  exact-object profiles cover all 126 changed selector/history lines without exclusions or export warnings.
+  The focused consumer passes three tests and fails one, with only calls.php:94 missing and no extras:
+  both assignment-correlation records now match after finite-key integration. The existing collector passes
+  sixteen tests and fails four at its known nullsafe boundaries. Fresh selector/history captures remain
+  byte-identical. No global type-map fallback is added. Full combined verification and coverage remain open.
+  The receiver/API coverage gate now covers all 197 changed executable lines without exclusions or export
+  warnings. Seven receiver/API controls, the real PHP worker's requested-name control, seventeen array
+  neighbors and a deferred-intersection offset control pass. Combined profiles reuse earlier observations
+  only for byte-identical source hashes. This is changed-line evidence, not fresh whole-crate coverage.
+  The assignment matrix's missing isset.variable is a separate unimplemented IssetRule invocation: the
+  existing IssetCheck serves coalescing only. The lead owns its diagnostic invocation and operand observations;
+  the assignment owner retains the strict complete-record matrix and source-owned intersection prerequisite.
+  A fresh serial CLI build does not reproduce batch 6's reported private-method deletion: all three Pinkary
+  outputs match Rector 2.6.1 byte for byte, with receiver types present before and after the facade rewrite.
+  Isolated IncrementViews runs also match Rector with default concurrency (RAYON_NUM_THREADS unset) and
+  one process, for both the canonical input and an older whitespace-only variant. The reported deletion
+  remains a verified older combined-tree failure, not a reproduced current-main bug. That older source
+  object is unavailable, so its precise cause remains unresolved. The test-only multi-round guard passes
+  all six dead-method tests and the facade control on combined main. No production correction is applied.
+  Raw/value call-result storage is integrated locally. Its private source gate covers 336/336 changed
+  executable lines and reproduces the same ten pre-existing library failures on its unchanged base.
+  Main passes all nineteen existing facility tests and, after reconciling ordinary value getters with
+  the pinned oracle, all nineteen native-lane tests. Native void remains explicitly unavailable in the
+  partial native API. The lead is wiring snapshot transport and Checker keep-void consumers. A fresh
+  mixed-arm match control exposes generic union normalization changing 1|void to 1|null; match arm
+  and invocation-target unions now preserve void in the shared combiner. Only eligible source-call
+  result reads project void to null. No combiner or analyser setting selects that syntax-dependent rule.
+  Named-argument gates still have one focused and four collector failures at the private nullsafe boundary.
+  No expectation or existing gap allowance is weakened. Full combined coverage remains open.
+  Isset invocation, assignment-derived consequences, definite constant-array intersections and the
+  nullsafe live-scope prerequisite now integrate locally. The private assignment matrix matches all
+  200 records across 24 configurations with the exact isset source and lead dispatch. Its intersection
+  controls match 78 results in both operand orders and cover 234/234 changed production lines.
+  The private nullsafe prerequisite matches 57 type observations and seven complete diagnostics,
+  passes 69 targeted tests and covers 263/263 changed production lines. Observation registration and
+  historical nullsafe-root pricing remain separate work. Main's consumer gate passes twenty facility,
+  nineteen native-lane, five incoming-isset and three coalescing tests. Its new void diagnostic matrix
+  still misses a constant dynamic method call, whose ordinary rule currently skips dynamic selectors.
+  That source branch has an independent owner. Fresh PHPStan probes also distinguish raw int|void
+  invocation-target unions from named-call int|null values; the expanded transport regression is running.
+  Fresh matrix, match and twelve-marker transport recaptures are byte-identical, including actual
+  function-visit counts. The integrated prerequisite build completes in 767 seconds, but its 900-second
+  command budget expires inside the assignment matrix before a result. The cached retry executes all
+  54 tests: 52 pass, including the complete assignment, intersection, conditional-holder, native and
+  shape targets. One transport assertion exposes raw callable void being treated as null by coalescing.
+  One nullsafe diagnostic misses the independently owned dynamic-method branch. Explicit-null removal
+  now preserves void, with sixteen frozen transport controls under verification. All twelve earlier
+  transport records remain byte-identical. The timeout and failing assertions remain separate evidence.
+  The combined dynamic-method and transport gate now passes all 24 facility controls, four dynamic-method
+  tests and five argument-contract tests. Its sixteen transport observations match fresh byte-identical
+  PHPStan recaptures after ordering the new fixture's named keys consistently with the existing fixtures;
+  no comparison is relaxed. Native, generic-default and coalescing neighbors also pass. The complete
+  six-target consumer gate passes 54 tests and retains six nullsafe-only failures: one focused collector,
+  four existing collector modes and one nested dynamic void-use diagnostic. Nullsafe observation work
+  remains private, and the mappings stay inactive. The docs build and all fifteen rendered contract
+  checks pass. Full combined verification and coverage remain open.
+  The refined isset offset gap also needs a decimal-integer-string producer: `(string) $int` currently
+  becomes numeric-string. Its frozen ten-configuration capture retains 59 complete records, and the
+  producer owner is porting the representation before shared offset coercion. The mapping stays inactive.
+  The first fresh combined build finds a stale test-only Checker initializer; its six missing fields now
+  use level-0 defaults. The first bounded level-9 Methods partition finds two new false positives:
+  dynamic method_exists checks lose their original-selector guarantee, and function-entry conditional
+  parameter relationships never reach selected-name pricing or closure captures. Both level-5 and level-9
+  void-conditional allowances are proven obsolete and removed, leaving 647 level gaps. Strict nullsafe
+  observation tests expose fifteen absent assignment-target answers, six absent cached-property receiver
+  answers and duplicate argument evaluation for multiple method targets. Those producer boundaries have independent owners. The private
+  nullsafe consumer passes four focused and twenty collector tests, but its facility and public diagnostic
+  targets still fail. No incomplete subset is treated as parity or pushed.
+  Original-selector method_exists guarantees now match all 55 frozen records across three levels, including
+  first-call impurity invalidation and early-return continuation. All five argument contracts and three
+  nullsafe diagnostic tests pass in that gate. Expanded dynamic nullsafe controls still miss one diagnostic
+  before observation registration. Nullsafe registration and its strict facility tests now integrate as
+  local WIP. The main six-target gate passes 63 tests and fails six: the same five facility producer
+  boundaries and one dynamic void-null control. All four focused consumers, twenty original collectors,
+  five argument contracts and three original nullsafe diagnostics pass. The expanded void-null control
+  now finds the previously missing record but exposes two false positives from short-circuit provenance.
+  All six frozen nullsafe observation captures match PHPStan again, including method-visit counts.
+  The docs build passes on 1,446 pages. Full combined verification and coverage remain open.
+  Decimal-integer string production and array-only key coercion now integrate locally. Their private
+  gate matches 95 complete diagnostics and covers 95/95 changed production lines. The sequential
+  string-offset probe still exposes an unrelated coalesce placeholder/holder identity error, now with
+  a source owner. Corrected unpack-overload selection also integrates: all 120 private oracle records
+  match, retaining the earlier 114 unchanged; unknown unpacks overwrite collided keys while constant
+  alternatives union. Main reproduces shared mixed subtraction's missing exclusion before correction,
+  with 65 fresh public type-API records and every earlier oracle record unchanged. The nine-line
+  shared correction passes all 298 Codex unit tests. Native condition transport and the PHPDoc certainty
+  tip are under verification against eight fresh complete records; the unchanged baseline misses exactly
+  two tips. Both focused main targets now pass all thirty tests, with all six changed executable
+  subtraction lines and all seven changed If-consumer lines covered without exclusions or export warnings.
+  The eighteen-target aggregate completes eight targets before its 900-second budget: 71 tests pass and
+  five facility tests fail at the known prepared-read and repeated-invocation boundaries. The interrupted
+  conditional target is not counted as complete. All 14,247 source hashes remain unchanged for that run.
+  Prepared assignment/property positions and declared-null return provenance now integrate locally.
+  The private prepared port restores all 237 frozen answers and covers 229/229 changed production lines.
+  Conditional formal holders and read-only reference feedback also integrate, with 59/59 changed lines
+  covered privately. Their type records and original bug-12875 match after the shared subtraction port.
+  Strict remaining diagnostic producers are If purity and unused-capture value flow. The latter's 158
+  fresh records expose semantic exception, alias and nested-scope requirements, now assigned to a source
+  producer instead of a lexical workaround. No failing expectations are removed. Combined verification
+  of these integrations remains. The docs build and the three new rendered contract checks pass.
+  The frozen seventeen-target gate now completes: 141 tests pass and five fail across three targets.
+  All 220 unchanged original level-9 method-call cases pass. Exact-object coverage exports all eighteen
+  built executables and twenty-one fresh profiles without warnings, retaining the failing results.
+  Prepared positions and conditional types pass; remaining failures are repeated argument evaluation,
+  ten declaration-purity/two unused-capture diagnostics, and an original nullsafe receiver diagnostic.
+  The branch-effect source delivery now integrates locally, with its private 138 complete records and
+  79/79 changed lines covered. A dedicated original-receiver artifact is under combined verification;
+  it must distinguish the same nullable receiver from independent non-null and assigned receivers.
+  Main now passes the complete branch-effect, declaration-purity and dead-code targets. The parameter
+  matrix improves from two to four passes, retaining only the two unused-capture diagnostics.
+  The first receiver-artifact control exposes missing function-body transport; that transfer is now
+  explicit. Coalesce holder identity and absent-offset certainty also integrate locally: the private
+  source gate matches 126 new diagnostics, 26 holder snapshots and sixty reads in each native mode,
+  passes 39 tests and covers 82/82 changed executable lines. Combined verification remains open.
+  The corrected seventeen-target gate completes on unchanged source: 95 tests pass and three fail.
+  All eight original nullsafe-method cases and six expanded dynamic-method controls pass. The three
+  strict remaining failures are a repeated argument visit, two unused-capture diagnostics and an
+  absent-offset coalesce assignment widened from 5 to mixed after prepared-target integration.
+  The unsplit original level-9 method-call partition passes all 220 cases; the 900-second coordinator
+  interrupts the return and level-5 partitions, which are not counted as complete. Exact-object
+  coverage exports seventeen executables and eighteen profiles without warnings. Half-open case
+  bounds are being added to the level harness so large fixtures can run without rewriting captures.
+  The multiple-target invocation candidate fixes the repeated visit but still loses one union-bound
+  closure-this type and has uncovered paths; it is not integrated. Unit-failure classification also
+  separates stale NoValue/termination expectations from genuine ErrorType, interface-result and
+  foreach-certainty consumers. Independent source owners retain those strict boundaries.
+  The foreach certainty and direct-property target corrections pass their original unit controls.
+  Together with the ErrorType assignment delivery, the fresh unit gate improves from 432/443 to
+  441/444. The remaining interface and two Closure::getCurrent failures are not accepted as inherited
+  failures. The interface signature delivery and frontend argument-check continuation now pass all
+  four strict public interface controls. The ErrorType assignment regression and four prepared-read
+  controls also pass on main. A bounded 42-case return partition and 40-case level-5 method-call
+  partition pass without changing any oracle record or gap. Exact-object profiles export without
+  warnings. The semantic capture-flow delivery is integrated, preserving native and original-receiver
+  transport; all fourteen combined parameter and capture tests pass. The coalesce integration gate also
+  passes all nine tests, including the original absent-offset assignment and strict holder observations.
+  Fresh getCurrent captures retain all
+  55 existing producer records and add six implicit-never/ErrorType records plus three continuing
+  statement controls. Their baseline fails on the missing dynamic-call result. The once-only invocation
+  and mixed-addition deliveries now integrate locally, preserving the actual-walk capture-reference hook.
+  Their private gates pass 154 call tests and 44 addition/neighbor tests, with 618/618 and 22/22 changed
+  production lines covered without exclusions. The native return consumer independently reproduces
+  rejected benevolent int returns; its correction passes all sixteen public Analyzer combinations,
+  retaining strict-union and incompatible-return controls from fresh PHPStan acceptance results.
+  The current frozen fifteen-target main gate passes all 141 test functions, including all 36 facility
+  tests, fifteen once-only invocation tests, nine capture-flow tests and five conditional-parameter tests.
+  Fresh standalone units pass 423/444: all 21 remaining failures expect ImpossibleAssignment, but fresh
+  PHPStan proves their constant, instantiation and first-class callable producers also return incorrect
+  never values. Three independent source corrections retain strict public value and diagnostic controls;
+  no warning is restored and no expectation-only cleanup is accepted. All 120 integration executables
+  link, and the cached library build succeeds with all six units passing. The frozen level sweep executes
+  all 2,787 cases in 226 partitions. Thirteen partitions fail: obsolete case/purity allowances account for
+  all but two new diagnostic regressions, nested array reference writes and a generic-array compound
+  assignment whose prepared input is overwritten by the write. Both have source owners. The public gate
+  also exposes duplicate class-constant editor targets after memoized receiver evaluation and three false
+  void-use cascades for inaccessible callables. Original captures stay unchanged. Rule partitions now
+  select individual fixture files after the full Methods group exceeds the coordinator budget. Public
+  and rule sweeps continue against the same frozen source hashes. Full combined verification and coverage
+  remain open; the coalesce written-holder delivery is verified privately but not integrated yet.
+  The rule sweep also exposes a DatePeriod missing-parameter description narrowed to int instead of
+  int|TEnd of DateTimeInterface, and a foreach-correlated dynamic method checked against the wrong name.
+  The failed-method public control distinguishes genuine unknown mixed/object callees from invalid
+  callees: the former must retain mixed rather than the new invalid-call ErrorType fallback. All three
+  regressions remain exposed. Fresh callable visibility captures reproduce private/protected signature
+  leakage while preserving accessible calls and escaped closures. Whole-crate coverage export now succeeds
+  with an explicit primary object; the unfinished public sweep and owning PHPStan tests still need to
+  contribute before its counts are complete.
+  That frozen sweep is complete: 118 public targets execute 703 tests, with 699 passing and four failing;
+  all six library tests pass. The rule sweep executes all 1,315 cases in 143 partitions, with only the
+  DatePeriod and foreach partitions failing. The owning PHPStan sweep passes 79 tests and fails one
+  because its fixture decoder lacks explicit-mixed; that decoder is corrected locally. Coverage before
+  these follow-ups is analyse 43,468/43,532 and PHPStan 10,552/10,565 after existing exclusions, with no
+  export warnings. This is not 100% coverage. Eleven proven obsolete level gaps and eight exact purity
+  locations are removed, leaving 636 case gaps and 43 exact purity locations. Original captures remain.
+  Coalesce written-holder certainty now integrates locally, with its private 60-test gate and all 87
+  pinned diagnostic records retained. Memoized receiver editor identity, unconditional overload operand
+  requests, unknown dynamic callees and inaccessible callable results have local corrections. Fresh
+  captures retain all 120 earlier overload records and add four constructor records per configuration;
+  the callable matrix has 36 complete records. The combined instrumented main gate passes all 47 tests
+  across eight targets, including negative-callable mixed, native capture availability and the integrated
+  nested-reference write correction. All four owning PHPStan mixed-subtraction tests and all 298 codex
+  units pass. The standalone codex gate uses both maintained parser patches. Full combined fixture and
+  coverage gates remain open. All thirteen previously failing level partitions are rerun: twelve pass,
+  leaving the compound-input producer regression. The first-class-callable delivery passes thirty public
+  controls with 19/19 changed production lines covered, but exposes a native bare-Closure argument
+  compatibility failure. That source correction remains assigned without changing the failing assertion.
+  Independent worktrees retain the compound-input, failed-constant, instantiation and foreach-holder
+  corrections. Restored receiver operand publication also permits removal of historical receiver and
+  synthetic `$this` fallbacks; their combined main gate is running. The cancelled mixed-object coverage
+  slice contributes no tests or source changes. Its independent oracle evidence is retained.
+  The receiver fallback removal passes all 46 affected tests across six targets. First-class callable,
+  invalid-instantiation and failed-constant value deliveries now integrate locally; the combined four-target
+  gate passes fifteen tests and retains one strict complete-diagnostic instantiation failure. Constants
+  match all five public controls, including real selector failure. Constructor purity and statement
+  traversal after termination own the remaining diagnostics. All 80 PHPStan tests pass across 21 current
+  executables, with source-matched coverage 10,565/10,565 and no export warnings. Compound-assignment
+  completed reads now integrate locally; all four public controls and ten coverage/dead-code neighbors
+  pass. The statement walker separates reported unreachable nodes from skipped statements, retaining
+  independent declarations and labels. Its first gate removes the six unused-result cascades but exposes
+  the distinction between a constructor's never value and nested expression termination; root statement
+  value requests now preserve that distinction, with a fresh gate running. Constructor-purity, foreach
+  conditional-holder and bare-Closure comparator corrections retain independent source owners.
+  The next frozen gate reaches its 900-second coordinator budget after 23 public targets (111 tests),
+  466 level cases and 39 rule cases. All completed public and rule targets pass. Its only two level failures
+  prove obsolete StringableStrictTypes markers at levels 5 and 9; both are removed, leaving 634 case gaps.
+  No new diagnostic mismatch is found in the completed partitions. Interrupted partitions remain unverified.
+  All 127 old executables and exact-source profiles are preserved before integrating the three remaining
+  deliveries: constant-foreach conditional holders, declaration-owned constructor effects and opaque-Closure
+  argument compatibility. Their combined main verification and whole-crate coverage remain open.
+  The integrated seven-target main gate now passes all 28 tests, including complete failed-instantiation
+  diagnostics, the original foreach regression and asymmetric constructor/callable controls. All four fresh
+  PHPStan recaptures match byte for byte. The docs build passes, all six new DOM contracts pass, and the three
+  final paragraph captures are inspected. The whole analyser sweep and whole-crate coverage remain open.
+  The fresh combined native suite passes all 444 tests. The broader public gate exposes two existing
+  callable-branch regressions: opaque-Closure argument acceptance also erases constrained Closure signatures
+  during narrowing. Its comparator owner is separating those contracts. The lint gate independently finds
+  an incorrect `: null` after a member read on an unknown instantiated class; the native-facts guard must
+  recognize missing named-object metadata as well as unresolved references. Original expectations stay
+  unchanged. The level sweep proves two more obsolete allowances (ImpossibleInstanceOf bug-13975#1 and
+  ParameterCastableToString bug-3946), retained until the frozen sweep finishes. The scratch coordinator now
+  proves that its path filters select every fixture case exactly once, without parent-directory overlap.
+  Partial source-matched coverage reaches analyse 43,422/43,566 and PHPStan 10,565/10,565 without export
+  warnings. This is not a completed whole-analyser gate or full PHPStan parity.
+  The frozen sweep now executes all 1,315 rule cases, all 2,787 level cases and all 736 public/library
+  tests across 126 targets. Rule partitions pass. Level partitions find no new mismatches and prove four
+  obsolete allowances, now removed: ImpossibleInstanceOf bug-13975#1, ParameterCastableToString bug-3946
+  and CallStaticMethods bug-8296 at levels 5 and 9. There are 630 level-case gaps and 14 rule-case gaps.
+  Public tests pass 734/736, retaining the two constrained-Closure regressions with the comparator owner.
+  All 53 targeted CLI tests pass, including all thirteen analyse tests; the earlier 300-second timeout
+  was an interrupted check, not an assertion failure. Complete exact-object exports cover analyse
+  43,533/43,566 and PHPStan 10,565/10,565 without export warnings. The lint named-object guard restores
+  its 28 type-rule tests. Its broader gate finds a native-void read regression in the unchanged PHPUnit
+  oracle: the native facts getter now keeps void rather than reading the projected full null value.
+  The original assert-equals test passes, and a fresh Rector 2.6.1 recapture matches its unchanged expected
+  bytes. The complete lint rerun, comparator integration, retired-gap rerun and remaining coverage stay open.
+  None of these unfinished follow-ups is pushed.
+  The complete lint rerun now passes all 432 tests across 26 disjoint partitions. Exact build-ID-paired
+  exports are warning-free: the sixteen inline-method warnings came from mixing executable maps, not
+  stale sources or failed tests. Twenty-five uncovered lint lines are obsolete integer-overflow fallbacks
+  after the parser's Float normalization; their source owner is removing them. One real atomic-Never
+  assertion control remains. Existing converter and native-artifact exclusions move to their current
+  physical lines without broadening their reasons.
+  The nullsafe-chain receiver correction passes all twelve targeted groups, including the strict builtin
+  probe and genuine null-return control. Original failures remain preserved. Inherited first-class
+  callable policies and unavailable-unpack controls now integrate with fresh PHPStan expectations.
+  The opaque-Closure subtype correction also integrates locally; it separates assignment acceptance
+  from the definite proofs used by intersections and unions. The fresh complete analyser build passes,
+  together with all 444 native analyser tests, all 298 codex tests and all five callable-branch controls.
+  Source-owned callable restoration controls also integrate: all five array-metadata tests pass against
+  69 complete PHPStan records, retaining the original 53 unchanged. Redundant iterable intersections and
+  recovered template bounds prove the converter fallbacks remain publicly reachable.
+  The private lint cleanup passes 122 tests and covers all 859 owned whole-file lines after existing
+  exclusions, with warning-free exact-object exports. Its fresh Rector capture retains throw, never
+  and null assertion arguments while changing only the finite control. The combined main follow-up
+  passes all 52 affected tests with matching source hashes.
+  The final combined gate and coverage now pass as recorded above. The two proven CallMethods
+  allowances are retired, leaving 628 level-case gaps and fourteen rule-case gaps. Rule counts are
+  unchanged; none of these fixture inventories is a compatibility percentage. CI stays disabled.
 - **Rule docs:** steps 1–5 built locally: all 1,256 rule pages, 67 command/group pages, 8 presets, 8 sets, six
   migration mappings and the URL-filtered directory. CLI links need the public docs origin; none is configured.
   The docs build passes on Linux (1,446 pages); public deployment has not been verified.
-- **Last full batch:** 277 public and library analyser tests pass on Rust 1.99/Linux, together with the full rule
-  harness (734 seconds) and all 2,787 level-fixture cases run in 19 filtered groups. The fixture checks compare
-  ported identifiers against PHPStan with the remaining explicit gaps; they are not full level parity. Fresh
-  profiles cover 39,701/39,701 analyser production lines and 10,259/10,259 owning PHPStan lines after the existing
-  exclusions. All 12 analyse CLI tests pass. Coverage cleanup removes stale example executables as well as tests
+- **Earlier full batch:** 375 public and library analyser tests pass on Rust 1.99/Linux, together with the unfiltered
+  rule harness (1,315 cases, 775 seconds) and all 2,787 level-fixture cases in bounded partitions. The fixture
+  checks retain 680 level gaps and 18 rule gaps; they are not full upstream parity. Fresh profiles cover
+  41,146/41,146 analyser production lines and 10,406/10,406 owning PHPStan lines after existing exclusions.
+  All CLI executables pass, including all 166 Pint rule fixtures (646 seconds), 14 lint tests and 13 analyse
+  tests. Coverage cleanup removes stale example executables as well as tests
   and binaries, so old source mappings cannot contribute phantom lines. Harness coverage remains 235/235 lines,
   with all five tests passing in its last full measurement.
 - **Local integration gate:** the variable, named-argument and callable snapshot passes the full level-0 rule
@@ -70,8 +560,30 @@ Pushpak resumed all commands on 2026-10-25. CI stays disabled.
   batch above, with eight obsolete level gaps removed. Negative mixed guards match all 92 strict oracle records
   in isolation, including declared versus inferred assertions and subtraction descriptions. Their current-base
   replay also preserves explicit inferred mixed metadata: 105 public tests pass and 114/114 changed production
-  lines are covered. This replay and the returned class-case, native-property and initializer slices still need
-  combined integration gates.
+  lines are covered. Parser validation, imported compact names, source-only alias rejection, canonical global
+  initializers and required native unset reflection are now integrated locally. Their 87 combined library and
+  public tests pass. Genuine checked StrictMixed copies now preserve source-owned explicitness, template
+  identity and defaults without changing ordinary inference. All 66 PHPStan tests, 53 strict-mixed and unset
+  controls, and the four-level mixed-property regression pass on main. Ten stale coverage exceptions are removed.
+  Native annotation writable-type selection is also integrated; all 27 unset tests and 60 combined library and
+  public controls pass. All 13 analyse CLI tests pass. Member-modifier parser validation is integrated; all seven
+  parser tests pass and both original property fixtures match, removing two rule gaps. Parameter parser checks
+  are also integrated; all 11 parser tests pass. Class-modifier checks are integrated from the isolated 14-test
+  parser gate, with 525/525 parser lines covered there. Fresh combined gates are running.
+  All level-fixture groups pass the preceding integration snapshot, including all 12 Methods classes after
+  splitting the 900-second aggregate timeout. Both Properties
+  rule and level sweeps pass the latest native-writable/member-parser snapshot. Filtered gates now retire
+  gaps only for executed cases; the 33 previously misreported skipped cases remain in the gap list. One real
+  stale Methods gap is removed after its complete fixture passes. The focused filter regressions pass, and
+  unfiltered gates still reject orphaned gap entries, verified against controlled fixture roots before/after.
+  The combined rule sweeps cover all 1,315 cases with 18 retained gaps; Functions and Methods now pass the
+  parameter-parser snapshot (380 and 366 seconds).
+  The strict-mixed integration also passes constant-initializer, generic-default, coverage and native-lane
+  controls. The PHP 8.0 readonly parser-admission correction is now integrated, matching the three original
+  diagnostics without changing expectations or gap allowances. Its isolated parser and statements suites pass
+  16/16 and 18/18, with 602/602 parser lines covered; both suites also pass on main. The latest Properties
+  level sweep passes after removing one verified stale gap, leaving 696 level gaps and 18 rule gaps.
+  Full combined fixture gates and fresh owning-crate coverage remain before delivery.
   Local phar:// archive checks and PHP's two-layer gzip restart limit are integrated: all seven include tests
   and 43 combined argument, array and unset controls pass. Fresh archive expectations match the real PHPStan
   public Analyser byte for byte. Runtime wrappers, PHAR aliases/mounts, OpenSSL signatures and bzip2 remain
@@ -83,6 +595,116 @@ Pushpak resumed all commands on 2026-10-25. CI stays disabled.
   fresh owning-crate coverage is 9,735/9,735 after the public class-name compound-query controls.
   Full combined analyser fixture gates and coverage still need measurement. The 1,446-page docs build and
   rendered call, unpacking and archive-contract paragraphs pass inspection.
+- **Current batch:** lint batch 1 is integrated locally: 325/703 lint rules, with config, fixer and all 243 lint
+  tests passing on the merged snapshot. Generic callable specialization, class variance, compact extraction,
+  class-initializer unions, passive native branches and accepted try/hook/nested-namespace validation are also
+  integrated. The generic correction passes 50 fresh PHPStan comparison records and 73 combined public/type
+  tests. All 363 analyser public/library tests pass after trait-context integration. Two direct-executable
+  checks initially used the wrong working directory; both pass from the owning crate, matching Cargo.
+  The NaN default-parameter regression now passes unchanged after matching PHPStan's constant-float identity;
+  all 69 owning-crate tests and six fresh
+  scalar/shape oracle controls pass. Every one of the 2,787 level cases and 1,315 rule cases passes in bounded
+  partitions, with 680 level gaps and 18 rule gaps retained. The unfiltered rule run exceeds 900 seconds; the
+  partitions execute every case, not an unfiltered success. Sixteen stale level gaps are removed without changing
+  expectations. Fresh coverage is 10,406/10,406 PHPStan lines and 40,972/40,972 analyser lines after existing
+  exclusions. Trait initializer caches preserve implementing-class selection across inheritance and explicit
+  trait reuse; consuming declaration checks remain separate. Whole-union conflicts, keyed source order and
+  reflected magic contexts match six fresh captures with 143 diagnostics and an independent ten-dump control.
+  All five public trait tests and scoped Classes, Constants, Traits, Arrays and Properties gates pass on main.
+  A fresh negative control confirms unsupported call initializers do not create false trait-value conflicts.
+  Dynamic holders, calls/new precision, expanded cycles and general mixed/spread array order remain incomplete.
+  Coverage also found a static-receiver bug: class-string object bounds must be unwrapped before method-capability
+  checks. Fresh ordinary-call and first-class-callable controls fail before the correction and pass afterward,
+  including stdClass and unchecked mixed bounds. Its 26 public neighbors, complete Methods rule sweep and static
+  method level sweep pass. All 13 analyse CLI tests also pass after the receiver correction.
+  The CLI rule fixture loop now uses bounded Rayon parallelism:
+  all 166 fixtures pass in 776 seconds with two threads, preserving every assertion and expectation.
+  All other CLI executables pass, including all 13 analyse machine-format tests. The Pinkary format comparison
+  matches all 799 files; its absent-dependency analysis errors are not analyse/check parity evidence.
+  All 20 format CLI-parity argument sets match. Mutation parity matches Pint on 272 Pinkary app/test files
+  (seed 7) and 117 Laravel Support files with forced CRLF (seed 3), using the fresh batch binary.
+  The 1,446-page docs build and rendered contract paragraphs pass inspection. The combined coverage gate is
+  closed. No new analyse rules or CI workflows were activated.
+- **Latest integration:** attributed global constants, namespace postprocessing, leading-shebang token admission
+  and compilation-unit entry brace rejection pass the full batch above. Four fresh PHPStan public captures are
+  byte-identical to their expectations. Lint batch 2 also passes: Composer class lookup, native
+  type corrections and the affected oracle fixtures follow Rector with PHPStan 2.2.7, matching both Pinkary
+  and the corpus gate. Both Rector oracle locks now pin that version; the analyse oracle stays at 2.3.1.
+  Documented constant return types and anonymous-class finality match a fresh Rector capture without changing
+  expectations. All 249 lint tests and four Prettier worker tests pass. Fresh Pinkary lint comparison: 33 agree,
+  zero Rector-only and zero Pun-only. The framework Rector capture completed with one existing malformed fixture.
+  Both instrumented and native-debug Pun runs timed out at 900 seconds without JSON; bounded positional-file
+  splits preserve the full configured ProjectCodebase. The lint-batch-2 snapshot covers 3,024/3,027 files:
+  6,304 agreeing pairs, 75 Rector-only and 93 Pun-only. This is a partial comparison, not current-main parity.
+  Eloquent/Builder.php, Http/Client/Batch.php and Validation/ValidationRuleParser.php each exceed 300 seconds.
+  The full source digest remains unchanged. A nine-line Builder-shaped condition reproduces redundant object
+  intersections growing inside mixed exclusions; a source-owned correction is assigned in isolation.
+  Existing fixtures cover implicit magic debug returns and overloaded native overrides, with byte-identical fresh PHPStan recaptures.
+  Combined coverage is closed without new exclusions. No mappings or CI workflows were enabled.
+- **Initializer and parser batch:** canonical unsupported-initializer fallback independently matches all 19
+  PHPStan diagnostics. Its snapshot with PHP 8.5 pipe-parentheses admission passes 380 public/library tests
+  and the complete 1,315-case rule harness (868 seconds), retaining the same 18 gaps. Reference-to-new rejection
+  also passes 77 combined public controls and three freshly rebuilt constant-override tests. Current main passes
+  Classes, Constants, Traits and Operators level sweeps and five assignment/instantiation/pipe rule gates.
+  Fresh owning coverage is 41,201/41,201 analyser lines without new exclusions. The 1,446-page docs build and
+  rendered fallback, pipe and reference contracts pass inspection. Raw `new` identities and for/echo comma checks
+  are now integrated with empty-array admission: 397 public/library analyser tests and all 249 lint tests pass.
+  The complete 1,315-case rule harness passes in 829 seconds; Classes, Constants, Traits, Arrays and Operators
+  level sweeps pass with the same 680 level gaps and 18 rule gaps. Fresh coverage is 41,291/41,291 analyser
+  lines, including 938/938 parser lines, without new exclusions. Fresh oracle recaptures match the object,
+  reader, comma and empty-array captures. The 1,446-page docs build and final rendered contracts pass.
+  An additional relative-object member probe exposes eight missing diagnostics for raw self/parent/static
+  receivers; failed invocation types and ordinary method unknown-class reporting remain a separate source-owned
+  follow-up. Finite conditional holders with ordered canonical joins are integrated locally.
+  Destructuring target roles are also integrated: 127 public tests, 69 affected rule cases and 146 Variables/Arrays
+  level cases pass. Fresh assignment expectations are byte-identical to PHPStan. The unfiltered rule run timed
+  out at 900 seconds; only the affected fixture groups are counted as passing for this subsequent correction.
+  Fresh owning coverage is 41,302/41,302 analyser lines, including 505/505 assignment lines and all 47 changed
+  executable lines, without new exclusions. The docs build and rendered assignment contract pass inspection.
+  Finite holders and literal-array read observations now pass all 409 public/library analyser tests, all 249
+  lint tests and all 13 analyse CLI tests. The fresh normal binaries build. Independent cold PHPStan recaptures
+  match all 99 holder diagnostics and the complete seven-level assignment-read capture. The 1,446-page docs
+  build and both rendered contract paragraphs pass. Complete bounded rule partitions execute all 1,315 cases;
+  Variables, Arrays, Constants, Classes and Traits level sweeps pass with the same documented gaps. Fresh owning
+  coverage is 41,434/41,434 analyser lines. All 370 changed executable lines, including the maintained Codex and
+  Analyzer dependencies, are covered without new exclusions. No mappings or CI workflows changed.
+  Mixed document closing-marker rejection and failed named method results pass 418 public/library tests,
+  all 1,315 rule cases, 1,508 Functions/Methods/Operators level cases, all 249 lint tests and all 13 analyse
+  CLI tests. Cold PHPStan recaptures match all 81 method records and the complete closing-marker capture.
+  The active PHP-worker/Rust-provider control passes. Fresh owning coverage is 41,448/41,448 lines, with all
+  32 changed executable lines covered across Pun and the maintained analyzer, without new exclusions.
+  Fresh normal binaries and the 1,446-page docs build pass; both rendered contract paragraphs pass inspection.
+  The same 680 level gaps and 18 rule gaps remain. No mappings or CI workflows changed.
+- **Document bodies and named functions:** 428 public/library analyser tests, all 1,315 rule cases and all
+  2,787 level cases pass in bounded partitions. Both 220-case CallMethods replacements pass after the combined
+  partition reached 900 seconds. All 249 lint tests, 13 analyse CLI tests and the PHP-worker/Rust-provider
+  control pass. Fresh PHPStan captures match all 56 named-function records and the complete document-body
+  capture. Dynamic-call match conditions retain their primary callable error without spurious comparisons.
+  Fresh profiles cover 41,656/41,656 analyser lines, including 1,155/1,155 parser lines and all 212 changed
+  executable lines across Pun and the maintained analyzer, without new exclusions or earlier profiles.
+  Real CLI JSON and exit codes match PHPStan for severe parser failures and failed-function argument writes.
+  Normal binaries and the 1,446-page docs build pass; both rendered paragraphs pass inspection. The same
+  680 level gaps and 18 rule gaps remain. No mappings or CI workflows changed.
+- **Numeric, purity and string batch:** malformed legacy-octal admission, conservative `void.pure`, precise
+  `strlen()` returns, lint batch 3 and embedded PHPStan API PHPDoc imports pass 438 public/library analyser tests,
+  all 253 lint tests, all 1,315 rule cases and all 2,787 level cases in bounded partitions. All 28 affected CLI
+  tests pass in bounded runs, including the four purity configuration controls. The API correction retires one
+  rule gap, leaving 680 level gaps and 17 rule gaps. Full purity mappings stay inactive: 24 dedicated upstream
+  diagnostics are strictly supported, while 51 level-fixture locations remain explicit diagnostic allowances.
+  The broad coverage-fixture run first failed at six additional unsupported `void.pure` locations; recording
+  those exact locations makes its complete three-test rerun pass without changing oracle expectations.
+  Fresh profiles cover 42,173/42,173 analyser lines, 22,064/22,064 lint lines and all 663 changed executable lines
+  across Pun and maintained syntax, without new exclusions. Normal binaries, the provider control and the
+  1,446-page docs build pass. All four rendered contract paragraphs pass DOM checks. Pinkary format matches
+  all 799 files; absent-dependency analyse errors are not analyse/check parity evidence. The fixture run still
+  catches an empty-union panic in native intersection scanning; its backtrace is retained for the follow-up.
+  No mappings or CI workflows changed.
+- **Flat PHPDoc unions:** iterative lowering removes the normal-stack 129-arm overflow while retaining every
+  binary normalization and nullable boundary. All 119 combined public tests, four Types/PhpDoc rule cases and
+  148 Generics/PhpDoc level cases pass with unchanged gap contracts. A fresh PHPStan recapture matches all
+  38 records; fresh profiles cover 40/40 changed engine lines and 33/33 test lines without exclusions.
+  The 1,446-page docs build and both rendered contract sentences pass. Parsing and nested non-union types
+  retain their existing stack limits; no stack-size or provider-budget changes were made.
 - **Native scalar casts:** the subsequent default-off slice passes 37 combined native, callback, slice, debug
   and arithmetic tests, including 133 actual PHPStan native dumps. Its changed engine lines are 152/152 covered.
   It models 64-bit PHP with default `precision=14`; unsupported transfers stay unavailable and native-dependent
@@ -92,10 +714,13 @@ Pushpak resumed all commands on 2026-10-25. CI stays disabled.
   43 PHPStan diagnostics; the full batch above includes it and a byte-exact literal-key regression. All 12
   analyse CLI tests pass. Forward/scanned initializer resolution is integrated locally against 29 further
   PHPStan diagnostics; combined verification is running.
-- **CLI coverage:** fresh full-registry measurement is 5,397/5,397 lines, with 147 tests passing. Non-ignorable
+- **CLI coverage:** fresh full-registry measurement is 5,457/5,457 lines, with all executables passing. Non-ignorable
   errors retain their rule's flag in reports and cannot be hidden by ignore comments or baselines.
-- **Lint coverage:** Linux full-registry measurement is 21,786/21,786 lines, with 243 tests passing on main.
-- **Fixer coverage:** Linux full-registry measurement is 34,895/34,895 lines, with 106 tests passing on main.
+- **Lint coverage:** the Pest/Mago integration snapshot measures 29,413/29,413 Linux full-registry lines,
+  with 352 lint tests passing. Fresh source-matched LLVM data restores the facts.rs:684 upstream-analyzer
+  failure exclusion already present on origin/main and removed during the Pest coverage pass.
+  No deterministic public failure input is known.
+- **Fixer coverage:** Linux full-registry measurement is 36,563/36,563 lines, with 106 tests passing on main.
 - **Laravel alias groundwork:** installed defaults, literal app configuration, config/package caches and Composer
   discovery feed shared alias metadata without PHP. Pinkary level 0 matches all eight oracle diagnostics for
   ported identifiers; dynamic bootstrap and runtime lookup order remain unported.
@@ -123,11 +748,180 @@ Pushpak resumed all commands on 2026-10-25. CI stays disabled.
   patch and move all pins together.
 - **Earlier parked work:** `wt-lint-rules2`, `wt-lint-types` and `wt-check` are absent from this checkout and origin's
   current refs. Inspect history before recreating any of their work.
-- **PHPStan parity metric:** context/reference/phpstan-identifiers.txt: the 947 identifiers phpstan.org/error-identifiers lists for phpstan/phpstan-src 2.3.x (latest release 2.3.1); `pun_analyse::reports()` recognizes 670 (2026-10-25), checked against the compiled public API. This is identifier coverage, not full behavioral parity. Extensions are tracked apart: phpstan-strict-rules-identifiers.txt (29 of 53) and phpstan-deprecation-rules-identifiers.txt (72 of 120). The oracle is PHPStan 2.3.1 (wt-oracle-23).
-- **Priorities, in order:** (1) done (levels test green, with documented gaps); (2) done (lint vs Rector: `scripts/lint-vs-rector.py`, residuals in §3); (3) done (pun-lint at 100% on Linux); (4) analyse level 0, then the
+- **PHPStan parity metric:** context/reference/phpstan-identifiers.txt: the 947 identifiers phpstan.org/error-identifiers lists for phpstan/phpstan-src 2.3.x (latest release 2.3.1); `pun_analyse::reports()` recognizes 690 (2026-10-26), checked against the freshly compiled public API. This is identifier coverage, not full behavioral parity. Extensions are tracked apart: phpstan-strict-rules-identifiers.txt (29 of 53) and phpstan-deprecation-rules-identifiers.txt (72 of 120). The oracle is PHPStan 2.3.1 (wt-oracle-23).
+- **Pest batch 4:** all 13 delegated commits are integrated locally, providing 62 native Pest rules and 58 newly
+  ported mapping entries. Mapping validation has zero errors and all 1,424 generated files are in sync under
+  Python 3.13. Combined gates pass 352 lint tests, 56 config tests and all 41 affected CLI tests. Fresh Pinkary
+  comparison matches all 33 file/rule pairs with no residuals; fresh lint coverage is closed above. Delivery
+  is covered by the corrected combined gate below. Documented exceptions remain
+  fixpoint rewrites, whole-file inline-HTML reprinting, rejected invalid Rector output, and the untracked
+  `tests/Pest.php` cache dependency. The lint mixed filter is unchanged.
+- **Mago batch 5:** the three functional/doc/test commits are integrated locally, adding 33 native rules.
+  The direct `mago-phpdoc-syntax = "=1.57.0"` and `regex = "1"` dependencies reuse existing locked packages.
+  The delegated coverage-only commit is omitted: its facts.rs exclusion refers to a different source revision,
+  and the fresh combined-main result replaces its figures. Mago rule-level options defer to
+  pun.toml levels; the optional Drupal function-name convention remains unsupported.
+  Mail transfer stripped CRLF from two upstream byte-offset fixtures; their exact mailbox bytes are restored
+  and protected from checkout newline conversion. All 34 Mago-batch tests now pass with unchanged expectations.
+  The 1,446-page docs build and rendered callback, explicit-mixed, filter and option-boundary paragraphs pass.
+- **Lint batch 6 provenance:** both mailboxes are present and their sizes and SHA-256 digests match delivery:
+  297,168 bytes for the five dead-method rules, and 5,479 bytes for the mixed-receiver follow-up.
+  Fresh independent Rector research confirms its ordinary-call mixed normalization; do not add an explicit-mixed
+  exclusion to the fluent fallback. The follow-up fixes the stale explanation and pins six asymmetric receiver
+  controls to actual Rector output. Both mailboxes are now integrated locally with the PHPUnit replay below;
+  their combined-main gate remains open.
+  The reported facade-fix/private-method deletion is verified on the older combined tree d025d6ea, not
+  reproduced on current main. Fresh serial checks of all three reported Pinkary files match Rector 2.6.1.
+  Isolated IncrementViews runs match Rector with default concurrency and one process, for both the canonical
+  input and the older whitespace-only variant. Receiver types remain present after the facade fix.
+  The failed combined tree's source object is unavailable here, so its precise cause remains unresolved;
+  missing post-fix analysis is not established. A test-only public Linter::fix guard now checks called and
+  unused private methods together with nested facade rewrites. Its private six-test owner suite and facade
+  control also pass on combined main. No production correction is applied. The replayed rule
+  is already on origin/main through 6817472e; do not reapply the old mailboxes.
+- **Explicit-mixed and never batch:** the initial baseline passed 443 public/library analyser tests,
+  253 preceding lint tests, 28 CLI tests and all 1,315 rule cases. Its 2,787-case level sweep exposed four genuine
+  Functions regressions and twelve obsolete gaps. The filter repair is now integrated: fresh PHPStan recaptures
+  match 111 observations and four level-9 diagnostics. The callback repair passes 33 neighboring public tests,
+  including the original fixture and fifteen fresh PHPStan observations, with 32/32 changed engine lines covered.
+  Nested foreach keyed writes are integrated independently of the queued object-intersection changes: all 55
+  affected public tests pass, and all 35 fresh oracle diagnostics match after canonicalizing worktree paths.
+  The original bug-13643 fixture now reports zero errors, as PHPStan does. The twelve obsolete gaps are removed;
+  corrected Methods levels 5/9, static-method level 9 and increment/decrement level 9 partitions pass. The
+  first Functions level-9 rerun exposed one failure: implicit `never` from invalid filter input incorrectly
+  terminates the call and suppresses unused-result/next-statement diagnostics. PHPStan preserves that return
+  observation but derives termination from the resolved acceptor's explicit declaration, not the dynamic
+  extension. The source-owned repair now separates call facts from value types, including speculative
+  checkpoints and nested evaluation. The never-kind prerequisite is integrated. The fresh 70-diagnostic
+  PHPStan capture also checks forwarded implicit values and PHPDoc never over object, array and void native
+  declarations. Residual template extraction now retains bottom identity. All 70 public records and the
+  complete 246-case Functions level-9 fixture pass without new gaps. The neighboring public controls pass,
+  except four coalesce messages that also fail on the retained pre-repair executable. Their source-owned
+  required-offset correction is now integrated, with all 20 fresh PHPStan records matching on main.
+  Public replay controls reproduce stale terminating facts after hook skips and unresolved targets;
+  expression-entry defaults fix all twelve condition/increment, hook and native-tracking combinations.
+  All 81 combined public tests pass across twelve suites. The broad sweep also verifies four newly passing
+  coalesce, nullsafe and random-integer gap entries, which are removed. The pre-repair broad run finishes
+  all 1,315 rule and 2,787 level cases with only those stale gaps and the two repaired coalesce suites failing.
+  The template-offset control also passes on corrected main. Fresh combined fixture, public, CLI and coverage
+  verification passes, including the token suite. All 799 Pinkary format files and 20 CLI argument sets
+  match Pint; mutation runs match 272 Pinkary files and 117 Laravel Support files with forced CRLF.
+  Do not replace never with mixed or hide the mismatch. The 1,446-page docs build and rendered never,
+  coalesce and option-boundary paragraphs pass.
+  The corrected gate passes all 328 jobs: 1,315 rule and 2,787 level cases, 468 public/library analyser tests,
+  352 lint tests, 69 PHPStan tests, 33 token tests and all 14 affected CLI tests. The obsolete intersection retry
+  is removed, and all 19 native-lane controls pass, including observer-free convergence and special returns.
+  Fresh source-matched coverage is 42,527/42,527 analyser lines, 29,413/29,413 lint lines,
+  10,406/10,406 PHPStan lines and 3,901/3,901 token lines after existing exclusions. Token coverage combines
+  the full system-PCRE2 10.42 suite with the pinned supporting-engine controls on static PCRE2 10.46;
+  the sources are byte-identical. All 8,117 changed production lines since the preceding pushed main are covered.
+  The 16 zero-hash LLVM warnings name unchanged inline flag methods, each with positive matching profile data.
+  An existing callable exclusion is removed, the symbolic-key exclusion moves with its unchanged branch,
+  and the lint facts exclusion already present on origin/main is restored. No new exclusions are introduced.
+  The combined gate is closed; 664 level gaps and 17 rule gaps remain. CI stays disabled.
+- **Native intersections:** the empty-intersection scanner correction is integrated. Seven freshly
+  recaptured signatures match all 14 PHPStan parameter/return types and five public diagnostics. The isolated
+  gate passes 96 focused tests with 3/3 changed scanner lines covered; all 36 combined-main native, callback,
+  filter and explicit-mixed controls pass. Removing the obsolete masked-source retry also passes 101 combined
+  parser, initializer and native-intersection controls on main.
+- **Inference batch verified:** current-file closure and anonymous-class metadata, clone results, receiver-aware
+  native properties, nonaccepting exit/die/throw, simultaneous ASCII casing, lossless constant-string bytes and
+  str_repeat inference pass the combined gate. All 1,315 rule cases, 2,787 level cases, 503 analyser tests,
+  353 lint tests, 70 PHPStan tests, 33 token tests and 28 affected CLI tests pass. The original 350-job run found
+  an anonymous-class finality regression in lint's refresh scan. Its correction passes a fresh 37-job complete
+  lint and affected CLI/analyser rerun. The initial failure is retained in the evidence, not overwritten.
+  Source-matched profiles cover analyse 42,624/42,624, lint 29,444/29,444, PHPStan 10,414/10,414 and tokens
+  3,956/3,956 lines after existing exclusions. All 1,025 changed executable source lines are covered without
+  new exclusions. Nineteen standalone protocol controls pass with protocol 2.1. Three fresh main PHPStan
+  captures match byte for byte. Pinkary format is identical on 799/799 files; all 20 format CLI parity sets
+  and mutation checks on 272 Pinkary and 117 framework files pass. The docs build passes on 1,446 pages,
+  including six rendered contract paragraphs. The existing 664 level gaps and 17 rule gaps remain unchanged.
+- **Queued batches:** object-intersection normalization is integrated locally. Its 351-job gate finished with four
+  regressions: fluent receivers, exact instantiated-class alternatives, short-circuit output certainty and
+  initializer null removal. Existing expectations and gap allowances are unchanged. The initializer repair
+  follows PHPStan's explicit-null-only removal; its fresh capture matches all 19 existing diagnostic records.
+  The boolean-certainty repair is integrated from its isolated 51-test gate and 40/40 changed-line coverage.
+  Receiver identity and exact-instantiation repairs are integrated; 57 combined-main object, native and string
+  controls pass. Exactness remains absent from Pun's separate converted PHPStan object types, so debug-type
+  conversion can still collapse exact alternatives. The concatenation repair matches
+  all 29 fresh PHPStan observations, including the partly-nonempty and repeat controls. String-union retention
+  now matches all 52 further observations after preserving implied versus independent nonempty accessories.
+  The dedicated numeric capture matches all 17 records; existing expectations remain unchanged.
+  Nested variable-name reads and multiline name-error locations pass all four oracle configurations and
+  50 combined-main public controls. All 164 earlier variable records remain unchanged; 8/8 changed production
+  lines are covered. The dead-method callback refactor passes its five public tests and 1,327/1,327 owned
+  lines in isolation without exclusions. A fresh combined fixture, CLI and whole-crate coverage gate is running.
+  The controlled performance probe and all three previously stalled framework files
+  now finish. The five-rule dead-method and 93-rule PHPUnit batches are integrated locally from the verified
+  isolated replay and still need combined-main verification. The current-main fixer fixture target passes;
+  the independent replay counts 15,474 cases. All 1,424 generated docs files are in sync, the 1,446-page build
+  passes, and browser DOM checks confirm the 981-port directory count and new dead-method/PHPUnit statuses.
+  The lint count is 514/703, not 514/699: the PHPUnit report omitted four unported mappings from its denominator,
+  not from the catalogue.
+  The repaired snapshot matches all 799 Pinkary format files and all 20 format CLI argument sets. Fresh mutation
+  runs match 272 Pinkary files and 117 framework files with forced CRLF. The 553-job gate executed all 1,315 rule
+  and 2,787 level cases without new fixture mismatches. It found a native object-union declaration-order
+  regression in two named-argument public tests. Removing constructor sorting preserves written receiver
+  order while leaving equality, hashing and printed IDs order-independent; the isolated public suite passes
+  15/15. This correction is now integrated. Four executed, obsolete Methods gap markers are removed, leaving
+  660 level gaps and 17 rule gaps; their full groups are running again. The complete fixer fixture retry passes
+  all 15,474 observations after the matrix's 900-second timeout. The all-rule CLI test also exceeded 900 seconds
+  twice; an unchanged-executable retry passes all 166 cases with four Rayon threads in 735 seconds. Original failures and supplemental results are
+  retained separately. Fresh raw coverage reaches all 13,477 changed executable production lines, but whole-crate
+  coverage still misses four truthy-initializer lines and four fluent-return lines. Those branches are isolated
+  work, not new exclusions. Reports apply cargo-llvm-cov's normal test-file filter; the existing facts exclusion
+  moves with its unchanged closing-brace region.
+  The fluent-return branch is reachable: one fresh Rector fixture returning `$this` and `new self()` requires
+  `self`, covers all four missing lines, and passes all 28 public type-rule tests privately. Its fixture-only
+  commit is integrated after the preceding frozen gate's coverage export. A second integrated fixture-only
+  commit covers all four truthy-initializer lines and passes 33 public neighbors. Removing materialization makes its
+  nonempty-array assertion fail; restoring the unchanged production block makes it pass.
+  Parsed compiler-halt detection is integrated: it matches 20 fresh PHPStan cases and covers 19/19 changed lines.
+  Stable array-offset name filtering matches 236 four-mode records and covers 75/75 changed lines; literal
+  string-byte offsets extend that capture to 318 records, with all 26 affected public tests passing and 15/15
+  further changed lines covered. Both are integrated and pass the complete combined analyse/lint gate.
+  The docs build passes all 1,446 pages; rendered DOM checks confirm the six updated contract paragraphs.
+  All 109 analyser/lint targets compile after repairing one existing unit-test Checker initializer. The new
+  normal binaries build and match all 20 Pint CLI argument sets. All 13 analyse CLI tests pass in bounded
+  runs: twelve tests together and the machine-format test separately. The original combined compile/test
+  command exceeded 900 seconds; that timeout remains explicit evidence.
+  The new combined gate found one real regression in level-3 Methods/ReturnTypeRuleTest::testBug12984:
+  an extra ArrayIterator return-type error whose expected and actual descriptions print identically.
+  Positional compound equality rejects differently ordered alternatives inside invariant generic arguments.
+  A private source-owned repair matches PHPStan's one-use member comparison without sorting stored types;
+  all 71 PHPStan tests, 21 object-intersection tests and 15 named-argument controls pass, with 7/7 changed
+  production lines covered. The repair is integrated, and all 71 owning PHPStan tests also pass freshly on main.
+  The original PHP fixture and empty upstream expectation stay unchanged; the complete Methods level sweep
+  passes inside the fresh combined gate.
+  The complete lint type target exposes two declaration-order regressions after shared union sorting was
+  removed: an arrow return writes `array|int|bool` instead of `array|bool|int`, and a closure writes `string|float`
+  instead of `float|string`. A PHPUnit callback writes `string|int` instead of `int|string` through the same
+  declaration helper. The lint inference/declaration correction is integrated from its passing private gate;
+  upstream fixtures and receiver-order controls stay unchanged. The fresh 372-job combined gate passes
+  against the repaired sources, including all 1,315 rule cases and 2,787 level cases. Five verified obsolete
+  gap markers are removed, leaving 659 level gaps and 17 rule gaps. Coverage exports verify unchanged inputs
+  across the entire run; source-matched whole-crate and changed-line coverage are closed.
+  General integer/range string offsets pass 340 variable records and 78 dump records privately, with 55/55
+  changed lines covered. Cached failed reads before coalescing remain an isolated follow-up.
+  Static-property inc/dec checks the stored new value independently of postfix's old expression value.
+  All 23 statement tests and 431 supported oracle records pass on the combined snapshot. The original upstream
+  fixture is unchanged; two existing unsupported protected-set diagnostics per level remain in its raw captures.
+  Properties sweeps have no new mismatches. The complete combined gate verifies removal of one obsolete rule
+  gap and three level gaps. Resolved loop settings match all 292 fresh oracle records, and normal/late PHPDoc
+  shape keys retain decoded bytes. Per-value object exactness still needs to survive conversion into Pun's
+  PHPStan types; that source-owned correction is isolated. Rule activation, the worker protocol and
+  declaration-level finality stay unchanged.
+  The fresh Pinkary lint comparison selects all 306 ported Rector classes. Its parallel Rector run omitted
+  changes in twelve test files despite reporting no errors. A single-file control and a complete sequential
+  `--debug --clear-cache` rerun recover them: all 33 file/rule pairs agree, with zero residuals. Applying both
+  tools' JSON diffs with zero fuzz produces byte-identical output for all 29 changed files, before and after
+  pinned Pint normalization. All 342 original source digests remain unchanged. The original parallel result
+  remains in the evidence; it is not evidence of a rule bug. The reason for its incomplete output is unresolved.
+- **Priorities, in order:** (1) done: restore the combined level, rule and coverage gate after call-flow integration, retaining documented older gaps; (2) done (lint vs Rector: `scripts/lint-vs-rector.py`, residuals in §3); (3) done (lint declaration-order regressions and source-matched coverage); (4) doing: finish analyse level 0 after the exact nonexistent-parent batch, the
   Larastan groundwork and levels 1-10; (5) lint rules by usage; (6) `pun check` in one pass; (7) perf rounds with
   `scripts/bench.py`.
-- **Waiting on Pushpak:** audit 26 (agent-mode `OnceLock`), `style/prefer-class-constant`, CI re-enable.
+- **Waiting on Pushpak:** audit 26 (agent-mode `OnceLock`), `style/prefer-class-constant`, independent batch-8
+  integration, CI re-enable. Batch 8 remains queued while the approved work continues.
 
 
 ## 1. This folder
@@ -350,6 +1144,7 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 
 | Work | Status |
 | --- | --- |
+| lint normalized integer consumers: remove oversized-Integer fallbacks superseded by the parser's Float normalization and cover real atomic-Never assertion arguments | doing (private bounded refactor passes 122 tests across eleven disjoint partitions; fresh Rector output is byte-identical; exact-source coverage is 859/859 owned whole-file lines and 9/9 changed executable lines after only existing exclusions, with five warning-free exact-object exports; main integration remains) |
 | lint 1-2 follow-up (from perf lint 2): when `pun lint` is wired into pun-cli, check files while pun-workspace's finder is still walking (shared LIFO work stack, as in examples/check.rs) instead of discovering every file first, and take the entry type from `DirEntry::file_type` instead of a stat per entry | todo |
 | lint 1-2 follow-up (from perf lint 4): when `pun lint` is wired into pun-cli, read files on a few threads of their own (3 in examples/check.rs) and parse on all cores, instead of opening on every core; opens on more than 4 threads contend on macOS | todo |
 | pun-lint: replace `syntax::same_code` with a structural node comparator (Rector's NodeComparator), shared by rules | todo |
@@ -362,12 +1157,16 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | pun-analyse: a `run` that takes the analysed files' sources, so `pun check` reads each file once instead of again after format and lint | todo |
 | platform bug (found by salvage-cli): a token lint rule at `warn` (e.g. `style/no-alias-function`) makes `pun lint` agent output say `fail, 1 file with fixes` and the human summary mark the file with ✖, while the exit code is 0 (warnings pass); report such files as warnings (`pass, 1 warning`, `[warn]` on the line) as native warnings are | todo |
 | lint vs Rector follow-up (scripts/lint-vs-rector.py, laravel-framework: 5427 (file, rule) pairs agree, 336 Rector only, 146 Pun only; pinkary: 0 differences): the `types` rules' residuals. Rector only: add-return-type-from-new 67, add-closure-never-return 54, add-array-return-type 41, add-return-type-from-constant 26, add-string-return-type 17, add-arrow-function-return-type 15, add-numeric-return-type 13, add-return-type-from-param 11, add-fluent-return-type 9, 4 each add-string-return-type-from-scalar/add-return-type-from-property/add-bool-return-type. Pun only: add-string-return-type 31, add-return-type-from-cast 26 (e.g. `PhpRedisLock::release()`, which overrides the untyped `RedisLock::release()`: port `ClassMethodReturnTypeOverrideGuard`'s parent and child checks now that the codebase has the project's classes), add-closure-void-return 14, add-closure-return-type 7 | todo |
-| lint vs Rector follow-up: `pun lint` scans the project's files into the `types` rules' codebase (run.rs `project_codebase`), but not vendor/, so a class from a package stays unknown (a member of one gets no native type, facts.rs). Scan Composer's autoload on demand, as pun-analyse's project.rs does (scanning all of pinkary's vendor/ up front takes about 30 s on one thread) | todo |
+| lint framework batch-2 comparison: finish bounded positional-file runs against the captured Rector output without changing the full configured ProjectCodebase | doing (3,024/3,027 files compared on the lint-batch-2 binary: 6,304 agreeing pairs, 75 Rector-only and 93 Pun-only; normalized main now completes the three previously stalled files in 174–206 seconds, with 22 agreeing pairs and one Pun-only cast-return finding; all 3,027 inputs remain byte-identical; this mixed-snapshot evidence does not establish full current-main parity) |
+| shared object-intersection normalization: remove redundant proven supertypes and duplicate nested conjunctions without dropping mixed exclusions | doing (all four regressions from the initial 351-job gate now have integrated source-owned repairs; 57 combined-main object, native and string controls pass without changing existing expectations; exactness is retained by shared Analyzer artifacts but not Pun's converted PHPStan object types; the nine-line analyser probe improves from a 300-second timeout at 5,957,032 KiB to 3.48 seconds at 137,852 KiB, matching PHPStan's empty diagnostics; fresh combined gates and whole-crate coverage are running) |
+| shared explicit-mixed native inference: feed existing TMixed explicitness from native/PHPDoc declarations, builtin results and offset reads into lint's native facts | doing (receiver-aware native property/copy/offset/capture inference passes the complete combined fixture/public/CLI gate and source-matched coverage; dual-version PHPStan captures are byte-identical; conditional overwrite and array_pop(string) remain boundaries; no lint consumer change yet) |
 | lint vs Rector follow-up (needs Pushpak): `style/require-statement-padding` reports 60 laravel-framework files Rector leaves: Rector runs every rule in one traversal, so `NewlineAfterStatementRector` never sees the statements `RemoveAlwaysElseRector` moves out of an `else`; Pun's later fix round does and adds the blank line (a second `rector process` would too). Kept: rounds as in Ruff (lint.md); the other option is to stop a rule from reporting on code an earlier round's fix wrote | needs Pushpak |
 | lint vs Rector follow-up: `complexity/prefer-empty-array-identical` misses 34 laravel-framework files where PHPStan knows a written parameter is still an array (`$credentials = array_filter($credentials, ...)`, then `empty($credentials)`): syntax_types.rs `parameter` gives up on any write before the code; take the written value's type from facts.rs instead | todo |
 | lint vs Rector follow-up: one laravel-framework file each, Rector only: php-8.4/prefer-round-mode-enum, php-8.4/prefer-array-any, dead-code/no-useless-ternary, dead-code/no-unused-expression, dead-code/no-unreachable-code, dead-code/no-return-in-constructor, complexity/prefer-min-max, complexity/no-sole-value-sprintf, complexity/no-boolean-literal-compare, classes/no-protected-method-in-final, types/add-numeric-return-type-from-scalar, types/add-never-return-type; Pun only: types/add-function-void-return (`scripts/lint-vs-rector.py laravel-framework` lists the files) | todo |
 | coverage: context/reports/COVERAGE.md has 75 exclusions (about 55 from the pun-lint coverage pass: non-target node guards, no-Program-ancestor and impossible-scope lines); AGENTS.md wants them rare: turn each guard into a `let ... else { unreachable }`-free shape (match on the target node in the rule's visitor, or delete the guard) so the line disappears instead of being excluded | todo |
-| lint 7: all 703 lint rules native, in usage order. 306 of 703 mapping.toml lint rules ported (count: `python3 -c` over `[rules.lint]` `ported`). Next, most-used groups first: types n-z, style n-z, dead-code n-z, the rest of `laravel` (65 of 79 rector-laravel mappings, most need types), then whatever group has the most unported rules | todo |
+| lint 7: all 703 lint rules native, in usage order. 514 of 703 mapping.toml lint rules ported (count: `python3 -c` over `[rules.lint]` `ported`). Next, most-used groups first: types n-z, style n-z, dead-code n-z, the rest of `laravel` (65 of 79 rector-laravel mappings, most need types), then whatever group has the most unported rules | todo |
+| lint Laravel attributes batch 8 (needs Pushpak): authorize integration of the independently produced 32-rule mailbox; keep strict upstream parity as the default | needs Pushpak (read-only audit complete; both mailbox digests match; all 154 upstream fixtures and 67 Illuminate stubs are byte-identical, with 23 Oracle and six Pun controls; source changes must replace the tab-indentation and `new static` skips with upstream output; malformed-array parser outcomes need a separate check; batch 8 remains unapplied and excluded from counts) |
+| lint Pest cache dependency: invalidate no-redundant-uses results when the applicable tests/Pest.php changes | todo |
 | lint 7 types: `add-return-type-from-ternary`, `add-nullable-return-type`, `add-union-return-type` (src/rules/types, out of `all()`) pass Rector's fixtures but differ on laravel-framework; port Rector's `TypeFactory::uniquateTypes` and PHPStan's arithmetic result types, then add them to `types::all()`; then typed-call, native-call, new-array, private-method-array, try-catch, from-parent, then the param, property and phpdoc rules. Corpus residuals come from Rector's cross-file effects, vendor classes, declared-only `mixed`, docblock shapes and Mago's truthy narrowing | todo |
 | lint 7 next small rules: classes/add-dynamic-properties (property types and docblocks), phpdoc/no-useless-{param,return,var} (TypeComparator), functions/no-extra-arguments and require-strict-in-array (types), arrays/no-implicit-array-creation (needs PHPStan's maybe-defined scope through loops), functions/require-array-filter-callback and the six style/no-dynamic-* strict rules (messages print PHPStan type descriptions), dead-code/no-unused-private-method and no-empty-method (CallCollectionAnalyzer and ArrayCallableMethodMatcher are type-based), laravel/prefer-latest-oldest (QueryBuilderAnalyzer needs Laravel types). Type-led ones (ExplicitReturnNull, SimplifyIfReturnBool, InlineArrayReturnAssign, SimplifyIfNullableReturn, VariableConstFetchToClassConstFetch, ThrowWithPreviousException, SafeDeclareStrictTypes) wait for Build 8 | todo |
 | lint 7 follow-up (from next small rules): no-for-init-overwrite and no-loop-variable-overwrite read definedness from the syntax: a by-reference argument (`preg_match($p, $s, $m)`) and a `try` whose body cannot throw do not define a variable in Pun, as PHPStan's signatures and throw points make them | todo |
@@ -406,17 +1205,32 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | Work | Status |
 | --- | --- |
 | analyse 3: finish level 0 and the level-2 class rules; the current rule counts are in §0. Not yet: DebugScopeRule, DumpNativeTypeRule and FileAssertRule | todo |
-| analyse level 0 named arguments: port MethodCallWithPossiblyRenamedNamedArgumentRule's analysed call/override collectors and cross-file join, preserving named-argument acceptance and private/final controls | doing (collector, provenance and template-offset corrections integrated locally; combined verification running) |
-| analyse level 0 arrays: complete DuplicateKeysInLiteralArraysRule beyond the verified scalar/constant keys, sealed unpacking and byte-exact literal keys; inferred binary-string metadata still uses UTF-8 strings | doing (numeric and literal-byte corrections verified on main; whole rule remains unported) |
-| analyse constant inference: retain compound initializer precision when the constant follows its consuming function or lives in a scanned-only file; duplicate-key checks already recover these values, but copied-variable type dumps remain too broad | doing (integrated locally against 29 PHPStan diagnostics; shared production initializer inference; combined verification running) |
-| analyse level 0 variables: port DefinedVariableRule and CompactVariablesRule on shared variable-certainty observations, including assign/undefined-allowed contexts, dynamic names and the CLI/maybe-undefined switches | doing (strict Functions and Variables sweeps pass; literal-template and late-type variable names integrated with scalar buckets and exact Zend ordering; four public variable-name tests pass; combined gates remain) |
-| analyse level 0 unset: port UnsetRule's readonly and hooked-property checks, recursive offset checks and definitely-undefined local checks through shared reflection, types and certainty | doing (16 integrated public tests and ten exported cases pass; negative guards match 92 oracle records in isolation; native annotation overlays, readonly aliases and declaration modifiers are being corrected separately; require-extends property reflection remains; mapping stays unported) |
+| analyse level 0 named arguments: complete MethodCallWithPossiblyRenamedNamedArgumentRule before activating its mapping | doing (the corrected snapshot passes all 2,787 level cases, 1,315 rule cases and 782 public/library tests; the expanded mixed-policy generic-proxy regression matches all thirty records and the CLI matches all four JSON records; source-matched coverage is complete; ordinary compound semantic argument/reference/template checks remain explicitly guarded, so the mapping stays inactive) |
+| analyse compound method signatures: retain combined semantic parameter, reference, template and return metadata through the ordinary shared argument checker | doing (the builtin metadata slice passes the preceding complete combined main gate and all 88 owning PHPStan tests; deferred identities cover 63/63 changed lines; the queued predicate carrier matches thirty diagnostics, passes 92 PHPStan and 99 analyser tests, 409 rule cases and 440 level cases, and covers 278/278 changed lines; the queued position API matches 612 reference records and 25 composition entries, passes 93 owning tests and covers 85/85 changed lines; its resolver remains red at 12/32 identity records, with source identity/traversal assigned; native builtin overloads need a source-variant handoff, and void authority remains unfinished; two privately removed gaps remain on main; eleven of the original thirteen private signature lines remain uncovered; the compound guard and inactive mapping stay intact) |
+| analyse isset diagnostics: complete IssetCheck and whole-rule activation | doing (live markers, the corrected checker bridge and bounded helper summaries pass the complete combined main fixture, CLI and source-matched coverage gate; private facility coverage is 250/250 changed lines; the corrected bridge matches 129 complete records, passes all six library tests and covers 41/41 changed executable lines; direct-helper captures match 159 diagnostic records; the compound-selection follow-up passes 79 tests, matches 31 marker and 114 diagnostic records, and brings cumulative helper production coverage to 220/220; tied distinct declarations and ambiguous carriers remain conservative; a pruning-only failure was not reproduced; native certainty configuration remains separate; mapping stays inactive) |
+| analyse by-reference capture feedback: complete local and escaped invocation semantics | doing (read-only captured values, reference feedback and unused-capture flow pass the complete combined gate and coverage; all 23 freshly recaptured full/native records now pass without the obsolete scalar/array unavailability allowances; broader escaped invocation semantics remain) |
+| analyse native certainty observations: preserve native argument values through checking calls, native object returns and diagnostic-only dumps before completing PHPDoc-certainty tips | doing (bounded call continuation and native unset pass 119 public/library tests, 52 rule cases, 94 level cases and 56 CLI tests on main; all 109 combined native-scope changed lines are covered; the strict certainty consumer remains uncommitted with 56 missing records and no false-certainty extras; queued native-only array ordering matches 79 oracle records and covers 30/30 changed lines; its consumer control matches 38 complete records without callable false positives; queued nullable/nullsafe support matches 45 supported observations, preserves sixteen unavailable controls and covers 26/26 changed lines, with one proven legacy availability update pending; no replay or full/PHPDoc fallback; broader certainty/tip options remain deferred) |
+| analyse nonliteral initializer order: retain insertion order through array-union and conditional class-constant initializers | doing (the direct correction passes the complete combined main gate and coverage; the queued scoped provenance correction matches 76 complete records and covers 206/206 changed lines; private conditional addition matches 127 records and covers 160/160 changed production lines; its exact-key correction matches 92 same-value records and forty unchanged controls, passing 91 tests with 5/5 changed lines covered; the queued public 256-alternative fallback matches 259 complete records, passes 93 tests and covers 62/62 changed production lines, with its generic return reached 27 times by passing public inputs; its owner now handles native-only insertion order; global order, numeric-string arithmetic, dynamic PHP_OS keys and broader oversized/open arrays remain separate) |
+| analyse trait instanceof descriptions: preserve the shared PHPStan type description for typed receivers, not only this and mixed | doing (queued source correction matches all 86 constructor-expanded records, passes the six original rule cases and fourteen neighboring tests, and covers 1/1 changed production line; main integration remains) |
+| analyse reference-array and boolean-membership boundaries: preserve failed read types inside reference-valued literals and avoid extra narrowing diagnostics for a bool in a complete true/false array | doing (queued reference-array correction matches 43 diagnostic records and 48 observations, passes 74 neighbors and covers 7/7 LLVM-mapped changed lines; all 26 broader native observations remain unchanged; the missing reference-offset diagnostic needs the separate level-3 read rule; boolean-membership narrowing remains with its source owner; complete broader failures stay retained) |
+| analyse parameter native/PHPDoc nullability: clamp documented nullable objects against nonnullable native parameters before nullsafe observations | doing (native Box plus documented Box-or-null currently retains null in the selected scope unlike PHPStan; an isolated source owner is porting parameter production; the native lane keeps that inconsistent edge unavailable instead of repairing selected state) |
+| analyse native-object PHPDoc shapes: retain object-shape refinements on parameters declared `object` | todo (the untyped shape controls retain the shape, but native-object inputs erase it; independently captured dumps remain in /tmp/pun-sentinel-verification-evidence) |
+| analyse pure-void diagnostics: report void.pure for pure functions whose bodies only unset values and dump types | doing (the declaration-effects port integrates and all three owning public tests pass on main; its private regression matches 98 complete PHPStan records across seven levels and covers 31/31 changed production lines; nested/property roots, reference-aware offset writes and complete PureFunctionRule/PureMethodRule activation remain deferred) |
+| analyse exit match conditions: report match.alwaysFalse when an exit expression terminates a match condition | todo (the yielded-condition delivery control passes, while the exit-condition probe misses the upstream record; failing comparisons remain in /tmp/pun-sentinel-verification-evidence/refined.log) |
+| analyse destructuring diagnostics: port ArrayDestructuringRule's four failed-offset diagnostics independently of ErrorType assignment recovery | todo |
+| analyse config shape offsets: resolve implicit and class-constant PHPDoc keys before Config::collection lookup | todo (pinned Larastan source and real PHPStan type resolution establish integer key 0; reproduce the current lookup gap through the public Project API before correction) |
+| analyse invalid-generator recovery: preserve mixed property values when erroneous PHPDoc prevents a yield send type | todo (PHPStan's public probe returns mixed; source predicts a never fallback, but combined Pun reproduction remains) |
+| analyse independent argument options (needs Pushpak): choose Pun option ownership for checkFunctionArgumentTypes, checkArgumentsPassedByReference and checkThisOnly without coupling their values to one aggregate rule level | needs Pushpak (default: preserve independent analyser API overrides and level-derived preset defaults; reject unrepresentable migration overrides explicitly rather than changing the level or silently losing settings) |
+| analyse level 0 empty-offset reads: verify and activate OffsetAccessWithoutDimForReadingRule through the existing assignment-context checker | doing (isolated owner is auditing original fixtures, virtual/destructuring/reference contexts and exact nonignorable CLI selection before whole-rule availability) |
+| analyse level 0 arrays: complete DuplicateKeysInLiteralArraysRule beyond the verified scalar/constant keys, sealed unpacking and byte-exact literal keys; identifier boundaries still use UTF-8 text | doing (shared quoted-key decoding, byte-based tokenization and comment ingestion pass the complete combined gate and coverage; identifier handling and whole-rule activation remain incomplete) |
+| analyse level 0 variables: port DefinedVariableRule and CompactVariablesRule on shared variable-certainty observations, including assign/undefined-allowed contexts, dynamic names and the CLI/maybe-undefined switches | doing (top-level unset and counterfactual !isset invalidation match 67 and 119 complete diagnostics on main; the combined native-scope gate passes 119 public/library tests, 52 rule cases and 94 level cases with 109/109 changed lines covered; genuine absence and local behavior remain; general scope joins and compact's independent selector decision remain separate; no whole-rule activation) |
+| analyse level 0 unset: port UnsetRule's readonly and hooked-property checks, recursive offset checks and definitely-undefined local checks through shared reflection, types and certainty | doing (27 integrated public tests and ten exported cases pass; required-interface native reflection and annotation writable types are integrated; fresh captures cover the bounded reflection contracts; complete rule activation and combined coverage remain) |
 | analyse level 0 attributes: complete the twelve existing attribute-rule contracts against AttributesCheck, including constructor types and version/named-argument controls, before activating their mappings | doing (explicit aliases, parenthesized flags and shared trait-constructor reflection integrated; isolated reflection controls match 9/41/45 oracle diagnostics at levels 0/5/6; conditional/coalesce initializer inference remains isolated; combined gates running; mapping stays unported) |
 | analyse shared class names: carry imported-name and internal-class case options through the shared ClassCaseSensitivityCheck, preserving explicit aliases and written-name distinctions | doing (isolated source port against fresh PHPStan controls; qualified special-name parser validation and source-only class_alias provenance remain separate attribute boundaries) |
-| analyse parser name validation: reject qualified special class names with PHPStan's non-ignorable parse diagnostic and suppress ordinary analysis of the erroneous file | doing (isolated shared pre-scan and file-analysis gate, reserved-name checks and duplicate imports; CLI severe-error presentation remains separate from public analysis; arbitrary syntax-error translation remains unported) |
-| analyse initializer reflection: resolve global dependencies before ternary/coalesce filtering and retain canonical reflection values separately from file-local flow values | doing (isolated global-only source port; class-constant union storage and declaring-scope resolution remain a separate follow-up) |
+| analyse compact rule selection (needs Pushpak): variable.undefined has one canonical Pun rule, so compact findings cannot be independently enabled, disabled or ignored by analyse/undefined/compact-variable | needs Pushpak (default: preserve the existing canonical identifier decision; keep compact unported while its extraction and public selector boundaries remain) |
+| analyse initializer dependency cycles: extend canonical resolution beyond the currently supported global, ordinary-class and trait dependencies | todo |
+| analyse dynamic initializer selectors: preserve PHPStan's mixed fallback for expression constant names such as `A::{'V'}`, separately from ordinary expression flow | todo |
 | analyse class constants: extend ClassConstantRule's receiver checks beyond named classes and self/static/parent to inferred expression receivers at higher levels | doing (named-call identities and bounded purity invalidation integrated; nine public tests pass; dynamic/nullsafe calls, indirect variables, dynamic property selectors and general type-dependent comparisons remain; mapping stays unported) |
-| analyse call termination: distinguish implicit empty-domain inference from explicitly never-returning calls, preserving nested evaluation and PHPStan reachability | doing (array_rand count bounds and random-integer returns integrated locally; 17 neighboring controls and Functions/DeadCode sweeps pass; general generic-bottom termination remains unported) |
 | analyse level 0 includes: extend integrated RequireFileExistsRule and IncludedFilePathResolver beyond local files to supported stream paths before whole-rule activation | doing (local phar:// archive members and gzip restart boundary integrated; seven include tests and fresh PHPStan capture pass; runtime wrappers, aliases/mounts, OpenSSL signatures and bzip2 remain unsupported) |
 | analyse native types (needs Pushpak): exact `getNativeType()` needs full/native state on the same control-flow walk; Mago 1.57 exposes one lane and no PHPDoc-disable setting. Choose a maintained Mago source patch or a Pun-native scope engine. Default: preserve PHPStan's paired-state contract and leave native-dependent debug rules unported rather than substitute a comments-disabled second pass | needs Pushpak |
 | analyse callable inference: backport Mago 1.59.0's `Closure::fromCallable()` provider through Pun's production registry, preserving PHPStan signatures through assignment and invocation | doing (integrated locally; combined verification running; unknown/static-closure spelling and unresolved-string union fallback remain documented boundaries) |
@@ -451,7 +1265,6 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | analyse 3 follow-up (from 3g): names.rs hint_classes misses PHPStan's class.notFound for a `?parent` return (`self` and `static` outside a class done) | doing (independent worktree) |
 | analyse 3 follow-up (from 3g): run the signatures.rs checks on anonymous-class methods beyond parameter defaults, with the anonymous-class naming follow-up below | todo |
 | analyse 3 follow-up (from 3g): replace the TypehintHelper::decideType approximation (pun-phpstan is_super_type_of, Mago is_instance_of on Maybe) with a port once analyse 4 maps Mago types to PHPStan's | todo |
-| analyse 3 follow-up (from 3g): codebase.rs rescans with intersections masked to `mixed` when Mago 1.57.0 panics (TUnion::from_vec empty) on an intersection with keyword types; drop the retry when the Mago pin fixes it | todo |
 | analyse 3 follow-up (from 3f): describe the expression type of `instanceof.trait` beyond `$this` and `mixed` (needs analyse 4's Mago-to-PHPStan type descriptions) | todo |
 | analyse 3 follow-up (from 3e): port FunctionCallParametersCheck's argument.* identifiers for attribute constructors (argument.unknown appears at level 0 in ClassAttributesRuleTest::testRule) | todo |
 | analyse 3 follow-up (from 3e): `#[NoDiscard]` reads a PHPDoc return type only without a native one; port TypehintHelper::decideType for a PHPDoc subtype of a native type | todo |
@@ -459,9 +1272,9 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | analyse 3 follow-up (from 3d): apply the ArrayAccess exemption of InvalidVariableAssignRule inside anonymous classes (Pun has no class metadata there) | todo |
 | analyse 3 follow-up (from 3d): resolve by-reference callees for OffsetAccessWithoutDimForReadingRule beyond named functions, closure/arrow literals, $this or single-named-object method calls, static calls and new; pick the matching variant of multi-variant built-ins instead of the first | todo |
 | analyse 3 follow-up (from 3c, 3f): name anonymous classes (`class@anonymous/<path>:<line>`) in DuplicateDeclarationRule, FinalPrivateMethodRule and FinalPrivateConstantRule too, with the 3b follow-up above; then lift 3f's anonymous-class skips (method.abstract, method.nonAbstract, property.callableType, class.serializable) and the MissingMethodImplementationRuleTest::testRule gap | todo |
-| analyse 3 follow-up (from 3c): emulate php-parser's modifier parse errors (`abstract final` property) as `phpstan.parse` so such files report nothing else (2 PropertyInClassRule cases in gaps.txt) | todo |
+| analyse parser semantic checks: complete php-parser's remaining semantic validation before name resolution and callbacks | doing (accepted try, property-hook, nested-namespace, attributed constants, namespace postprocessing, pipe parentheses, reference-to-new, for/echo commas and empty-array checks pass combined public, fixture and coverage gates; general recovered grammar still needs provenance) |
+| analyse pure declarations: complete PureFunctionRule/PureMethodRule through FunctionPurityCheck beyond the integrated conservative void.pure branch | doing (combined public, fixture, CLI and coverage gates pass; 51 level-fixture and six coverage-fixture locations remain explicit unsupported diagnostics; complete mappings stay inactive) |
 | analyse 3 follow-up (from 3b): pass the analysed paths and cwd into `Checks` so ConstructorReturnTypeRule names anonymous classes as FuzzyRelativePathHelper does (`class@anonymous/<path>:<line>`) | todo |
-| analyse 3 follow-up (from 3b): skip statements after a terminating one in the rule walk, as PHPStan does (unreachable statements; later never-returning calls from inference) | todo |
 | analyse 3 follow-up (from 3b): examples/analyse in a debug build overflows the default thread stack on laravel-framework (ran with RUST_MIN_STACK=268435456); find the deep recursion or raise the stack in the corpus script | todo |
 | analyse 3 follow-up (from 3b): re-export the Cast/VoidCastRule fixtures with a PHP 8.5 oracle to confirm cast.void against a live run (the 8.4 oracle cannot parse `(void)`) | todo |
 | analyse 3 follow-up: nested abstract-trait prototype messages can name the source trait rather than its importing trait; competing overriding prototypes use lexical rather than source order | todo |

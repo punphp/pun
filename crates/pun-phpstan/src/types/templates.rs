@@ -142,7 +142,7 @@ pub fn infer_template_types(pattern: &Type, received: &Type) -> TemplateMap {
         | Type::Closure(_)
         | Type::ClassString(Some(_))
         | Type::ObjectShape(_) => on_received(pattern, received).unwrap_or_else(|| generic(pattern, received)),
-        Type::Object(_, args) if !args.is_empty() => {
+        Type::Object(_, args, _) if !args.is_empty() => {
             on_received(pattern, received).unwrap_or_else(|| generic(pattern, received))
         }
         // ponytail: a conditional type (a late-resolvable one, inferred as what it resolves to) infers nothing; its
@@ -151,8 +151,32 @@ pub fn infer_template_types(pattern: &Type, received: &Type) -> TemplateMap {
     }
 }
 
+/// `TemplateTypeHelper::removeFinalByKeywordOverrides()`: inference substitutes into PHPDoc, which cannot
+/// express constructor exactness. Ordinary traversal keeps the override.
+pub fn remove_final_by_keyword_overrides(t: &Type) -> Type {
+    fn without_overrides(t: &Type) -> (Type, bool) {
+        let changed = std::cell::Cell::new(matches!(t, Type::Object(_, _, true)));
+        let mut t = t.clone();
+        if let Type::Object(_, _, exact) = &mut t { *exact = false; }
+        let t = t.traverse(&|inner| {
+            let (inner, erased) = without_overrides(inner);
+            changed.set(changed.get() || erased);
+            inner
+        });
+        // equals() deliberately ignores overrides; their removal still changes traversal identity.
+        // Recombine only changed intersections, as IntersectionType::traverse() does for new members.
+        let t = match t {
+            Type::Intersection(parts) if changed.get() => intersect(parts),
+            t => t,
+        };
+        (t, changed.get())
+    }
+    without_overrides(t).0
+}
+
 /// TemplateTypeTrait::inferTemplateTypes()
 fn template(t: &Template, received: &Type) -> TemplateMap {
+    let received = &remove_final_by_keyword_overrides(received);
     if let Type::Template(r) = received
         && is_super_type_of(&t.bound, &r.bound).yes()
     {
@@ -181,7 +205,7 @@ fn in_union(ts: &[Type], received: &Type) -> TemplateMap {
         // `toArrayOrTraversable()`
         Type::Iterable(k, v) => union(vec![
             Type::array((**k).clone(), (**v).clone()),
-            Type::Object("Traversable".into(), vec![(**k).clone(), (**v).clone()]),
+            Type::Object("Traversable".into(), vec![(**k).clone(), (**v).clone()], false),
         ]),
         r => r.clone(),
     };
@@ -258,7 +282,7 @@ fn generic(pattern: &Type, received: &Type) -> TemplateMap {
         Type::Closure(s) if let Type::Closure(theirs) = received => on_signature(s, theirs),
         Type::ClassString(Some(inner)) => {
             let object = match received {
-                Type::ConstString(class) => Type::Object(class.clone(), vec![]),
+                Type::ConstString(class) => Type::Object(String::from_utf8_lossy(class).into_owned(), vec![], false),
                 Type::ClassString(Some(t)) => (**t).clone(),
                 r if r.is_class_string().yes() => {
                     let inner = match &**inner {
@@ -271,10 +295,10 @@ fn generic(pattern: &Type, received: &Type) -> TemplateMap {
             };
             infer_template_types(inner, &object)
         }
-        Type::Object(class, args) => {
+        Type::Object(class, args, _) => {
             // ponytail: `$this` and enum cases (TypeWithClassName too) infer nothing
             let other = match received {
-                Type::Object(name, other) | Type::Static(name, other) => ancestor(name, other, class),
+                Type::Object(name, other, _) | Type::Static(name, other) => ancestor(name, other, class),
                 _ => None,
             };
             let Some(other) = other else {

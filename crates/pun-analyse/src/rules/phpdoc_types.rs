@@ -112,7 +112,7 @@ fn class_context(c: &Checker, k: &mago_codex::metadata::class_like::ClassLikeMet
 // ponytail: PHPStan checks these too (e.g. a `T['k']` against the native type); Pun skips the PHPDoc type
 fn late(t: &Type) -> bool {
     let found = std::cell::Cell::new(
-        matches!(t, Type::Object(n, _) if n == "key-of" || n == "value-of") || matches!(t, Type::OffsetAccess(..)),
+        matches!(t, Type::Object(n, _, _) if n == "key-of" || n == "value-of") || matches!(t, Type::OffsetAccess(..)),
     );
     t.traverse(&|i| {
         found.set(found.get() || late(i));
@@ -167,7 +167,7 @@ fn check(raw: &[u8], doc: &Doc, scope: &NameScope, native: &Native) -> Errors {
             }
             "@param" => native_check("parameter.phpDocType", &what, &ty, native_type, true, &mut errors),
             _ => {
-                if is_super_type_of(&Type::Object("Closure".into(), vec![]), native_type).no() {
+                if is_super_type_of(&Type::Object("Closure".into(), vec![], false), native_type).no() {
                     errors.push((
                         "paramClosureThis.nonClosure",
                         format!(
@@ -182,7 +182,7 @@ fn check(raw: &[u8], doc: &Doc, scope: &NameScope, native: &Native) -> Errors {
     }
     // (a `@return` whose value does not parse is an InvalidTagValueNode, no return tag)
     // ponytail: Doc::parse's approximate reader still reads it; PLAN.md "move doc::Doc::parse ... onto phpdoc::tags"
-    let invalid_return = pun_phpstan::phpdoc::tags(&String::from_utf8_lossy(raw))
+    let invalid_return = pun_phpstan::phpdoc::tags(raw)
         .unwrap_or_default()
         .iter()
         .any(|t| t.name.ends_with("return") && matches!(t.value, pun_phpstan::phpdoc::TagValue::Invalid(..)));

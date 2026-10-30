@@ -69,7 +69,9 @@ pub(crate) fn get_constant_value(
 
 fn get_literal_value(literal: &Literal<'_>) -> Option<ConstantValue> {
     match literal {
-        Literal::Integer(integer) => integer.value.map(integer_to_value),
+        Literal::Integer(integer) => integer
+            .value
+            .map(|value| ConstantValue::Integer(value as i64)),
         Literal::Float(float) => Some(ConstantValue::Float(float.value.0)),
         Literal::String(string) => string.value.map(|v| ConstantValue::String(v.to_vec())),
         Literal::True(_) => Some(ConstantValue::Boolean(true)),
@@ -371,13 +373,6 @@ fn compare(left: &ConstantValue, right: &ConstantValue) -> Option<Ordering> {
             .as_numeric()?
             .as_float()
             .partial_cmp(&right.as_numeric()?.as_float()),
-    }
-}
-
-fn integer_to_value(value: u64) -> ConstantValue {
-    match i64::try_from(value) {
-        Ok(value) => ConstantValue::Integer(value),
-        Err(_) => ConstantValue::Float(value as f64),
     }
 }
 

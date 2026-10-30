@@ -212,7 +212,11 @@ where
         );
     }
 
+    conditional::apply_boolean_branch(condition, true, artifacts, &mut if_block_context);
+
     let mut else_block_context = block_context.clone();
+    else_block_context.native_locals =
+        crate::native::branch(condition, &block_context.native_locals, artifacts, false, context.codebase);
 
     if let Some(then) = then.as_ref() {
         then.analyze(context, &mut if_block_context, artifacts)?;
@@ -246,12 +250,27 @@ where
     }
 
     // Extract function_exists/defined assertions for the "else" branch.
+    conditional::apply_boolean_branch(condition, false, artifacts, &mut else_block_context);
     extract_function_constant_existence(condition, artifacts, &mut else_block_context, true);
 
     let was_inside_general_use = else_block_context.flags.inside_general_use();
     else_block_context.flags.set_inside_general_use(true);
     r#else.analyze(context, &mut else_block_context, artifacts)?;
     else_block_context.flags.set_inside_general_use(was_inside_general_use);
+
+    // PHPStan chooses continuation edges only for full literal booleans, not truthy scalars.
+    // The native expression's value below instead selects arms using native truthiness.
+    let full_condition = artifacts.get_expression_type(condition);
+    block_context.native_locals = if full_condition.is_some_and(|ty| ty.is_true()) {
+        if_block_context.native_locals.clone()
+    } else if full_condition.is_some_and(|ty| ty.is_false()) {
+        else_block_context.native_locals.clone()
+    } else {
+        crate::native::join(
+            &[if_block_context.native_locals.clone(), else_block_context.native_locals.clone()],
+            context.codebase,
+        )
+    };
 
     let if_assigned_variables = if_block_context.assigned_variable_ids.keys().copied().collect::<WordSet>();
     let else_assigned_variables = else_block_context.assigned_variable_ids.keys().copied().collect::<WordSet>();
@@ -496,6 +515,10 @@ where
             Rc::new(get_mixed())
         },
     );
+
+    if let Some(native) = crate::native::conditional_value(condition, then, r#else, artifacts, context.codebase) {
+        artifacts.set_rc_native_expression_type(&span, Rc::new(native));
+    }
 
     Ok(())
 }

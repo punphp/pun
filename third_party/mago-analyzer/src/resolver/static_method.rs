@@ -86,6 +86,13 @@ where
     }
 
     for resolved_classname in &class_resolutions {
+        if matches!(resolved_classname.origin, ResolutionOrigin::NonexistentParent) {
+            // The class-string/object projection is ErrorType; its permissive reflection returns mixed.
+            result.has_ambiguous_target = true;
+            result.has_invalid_target = true;
+            continue;
+        }
+
         if resolved_classname.is_possibly_invalid() {
             result.has_ambiguous_target = true;
             if resolved_classname.origin == ResolutionOrigin::Invalid {
@@ -150,7 +157,7 @@ where
          from_class_string: bool,
          method_name: Word,
          has_magic_static_call: bool,
-         result: Option<&mut MethodResolutionResult>| {
+         mut result: Option<&mut MethodResolutionResult>| {
             let Some(defining_class_metadata) = context.codebase.get_class_like_by_name(fq_class_id) else {
                 return (false, None);
             };
@@ -163,12 +170,10 @@ where
                     from_class_string,
                 );
 
-                if !from_class_string {
-                    if let Some(result) = result {
-                        result.has_invalid_target = true;
-                    }
-                    return (true, None);
+                if !from_class_string && let Some(result) = result.as_deref_mut() {
+                    result.has_invalid_target = true;
                 }
+                // StaticMethodCallCheck keeps the reflection after reporting an abstract call.
             }
 
             let Some(method) = resolve_method_from_metadata(
@@ -479,6 +484,7 @@ where
         // Use the original name of the class it was called on
         // This is important for first-class callables with static return types
         classname: called_on_class_metadata.original_name,
+        requested_name: method_name.to_ascii_lowercase(),
         method_identifier: declaring_method_id,
         static_class_type,
         declaring_object: None,
@@ -617,7 +623,9 @@ where
         variances: None,
         is_static: true,
         is_this: true,
+        is_exact: false,
         intersection_types: if intersections.is_empty() { None } else { Some(Box::new(intersections)) },
+        subtracted_type: None,
         remapped_parameters: false,
     })
 }
@@ -907,6 +915,7 @@ where
 
     Some(ResolvedMethod {
         classname: mixin_metadata.original_name,
+        requested_name: method_name.to_ascii_lowercase(),
         method_identifier: declaring_method_id,
         static_class_type,
         declaring_object: None,

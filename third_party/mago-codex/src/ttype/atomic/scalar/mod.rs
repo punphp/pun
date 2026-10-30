@@ -389,7 +389,11 @@ impl TScalar {
     #[inline]
     #[must_use]
     pub const fn is_literal_origin_string(&self) -> bool {
-        matches!(self, TScalar::String(s) if s.is_literal_origin())
+        match self {
+            TScalar::String(s) => s.is_literal_origin(),
+            TScalar::ClassLikeString(TClassLikeString::LiteralAny | TClassLikeString::Literal { .. }) => true,
+            _ => false,
+        }
     }
 
     /// Gets the value if this is a literal `string` with a known value.
@@ -474,6 +478,7 @@ impl TScalar {
             TScalar::Integer(int_scalar) => int_scalar.is_unspecified(),
             TScalar::Float(float_scalar) => float_scalar.is_general(),
             TScalar::String(string_scalar) => string_scalar.is_boring(),
+            TScalar::ClassLikeString(TClassLikeString::LiteralAny) => false,
             TScalar::ClassLikeString(class_like_string_scalar) => !class_like_string_scalar.has_constraint(),
             _ => false,
         }

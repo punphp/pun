@@ -1,0 +1,5 @@
+{
+  "bare": "class ScanBefore {}\n1 |> fn($x) => $x;\nclass ScanAfter {}\nfunction scanFunction() {}\nconst SCAN_CONSTANT = 1;",
+  "body": "class ScanBefore {}\nfunction scanFunction() { 1 |> fn($x) => $x; }\nclass ScanAfter {}\nconst SCAN_CONSTANT = 1;",
+  "valid": "class ScanBefore {}\n1 |> (fn($x) => $x);\nclass ScanAfter {}\nfunction scanFunction() {}\nconst SCAN_CONSTANT = 1;"
+}

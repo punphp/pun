@@ -1,0 +1,3 @@
+includes: [phpstan-writes.neon]
+parameters:
+    level: 8

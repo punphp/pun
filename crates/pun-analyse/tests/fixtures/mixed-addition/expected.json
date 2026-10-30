@@ -1,0 +1,413 @@
+{
+    "plus": [
+        {
+            "left": "mixed",
+            "right": "mixed",
+            "type": "(array|float|int)",
+            "benevolent": true
+        },
+        {
+            "left": "explicit",
+            "right": "explicit",
+            "type": "(array|float|int)",
+            "benevolent": true
+        },
+        {
+            "left": "explicit",
+            "right": "mixed",
+            "type": "(array|float|int)",
+            "benevolent": true
+        },
+        {
+            "left": "mixed",
+            "right": "explicit",
+            "type": "(array|float|int)",
+            "benevolent": true
+        },
+        {
+            "left": "error",
+            "right": "error",
+            "type": "(array|float|int)",
+            "benevolent": true
+        },
+        {
+            "left": "error",
+            "right": "mixed",
+            "type": "(array|float|int)",
+            "benevolent": true
+        },
+        {
+            "left": "mixed",
+            "right": "error",
+            "type": "(array|float|int)",
+            "benevolent": true
+        },
+        {
+            "left": "not-array",
+            "right": "not-array",
+            "type": "(float|int)",
+            "benevolent": true
+        },
+        {
+            "left": "not-iterable",
+            "right": "not-array",
+            "type": "(float|int)",
+            "benevolent": true
+        },
+        {
+            "left": "not-array",
+            "right": "not-iterable",
+            "type": "(float|int)",
+            "benevolent": true
+        },
+        {
+            "left": "not-array-null",
+            "right": "not-array",
+            "type": "(float|int)",
+            "benevolent": true
+        },
+        {
+            "left": "not-array",
+            "right": "not-array-null",
+            "type": "(float|int)",
+            "benevolent": true
+        },
+        {
+            "left": "not-array",
+            "right": "mixed",
+            "type": "(array|float|int)",
+            "benevolent": true
+        },
+        {
+            "left": "mixed",
+            "right": "not-array",
+            "type": "(array|float|int)",
+            "benevolent": true
+        },
+        {
+            "left": "not-array",
+            "right": "error",
+            "type": "(array|float|int)",
+            "benevolent": true
+        },
+        {
+            "left": "error",
+            "right": "not-array",
+            "type": "(array|float|int)",
+            "benevolent": true
+        },
+        {
+            "left": "not-array",
+            "right": "not-empty-array",
+            "type": "(array|float|int)",
+            "benevolent": true
+        },
+        {
+            "left": "not-empty-array",
+            "right": "not-array",
+            "type": "(array|float|int)",
+            "benevolent": true
+        },
+        {
+            "left": "not-array",
+            "right": "not-int-array",
+            "type": "(array|float|int)",
+            "benevolent": true
+        },
+        {
+            "left": "not-int-array",
+            "right": "not-array",
+            "type": "(array|float|int)",
+            "benevolent": true
+        },
+        {
+            "left": "not-array",
+            "right": "not-nonempty-array",
+            "type": "(array|float|int)",
+            "benevolent": true
+        },
+        {
+            "left": "not-nonempty-array",
+            "right": "not-array",
+            "type": "(array|float|int)",
+            "benevolent": true
+        },
+        {
+            "left": "not-string",
+            "right": "not-string",
+            "type": "(array|float|int)",
+            "benevolent": true
+        },
+        {
+            "left": "int",
+            "right": "int",
+            "type": "int",
+            "benevolent": false
+        },
+        {
+            "left": "float",
+            "right": "int",
+            "type": "float",
+            "benevolent": false
+        },
+        {
+            "left": "empty-array",
+            "right": "empty-array",
+            "type": "array{}",
+            "benevolent": false
+        },
+        {
+            "left": "never",
+            "right": "mixed",
+            "type": "*NEVER*",
+            "benevolent": false
+        },
+        {
+            "left": "mixed",
+            "right": "never",
+            "type": "*NEVER*",
+            "benevolent": false
+        }
+    ],
+    "diagnostics": {
+        "0": [],
+        "8": [
+            [
+                "frontend.php",
+                10,
+                "missingType.parameter",
+                "Function MixedAddition\\implicitMixed() has parameter $left with no type specified.",
+                null,
+                true
+            ],
+            [
+                "frontend.php",
+                10,
+                "missingType.parameter",
+                "Function MixedAddition\\implicitMixed() has parameter $right with no type specified.",
+                null,
+                true
+            ],
+            [
+                "frontend.php",
+                17,
+                "callable.nonCallable",
+                "Trying to invoke stdClass but it might not be a callable.",
+                null,
+                true
+            ],
+            [
+                "frontend.php",
+                22,
+                "callable.nonCallable",
+                "Trying to invoke stdClass but it might not be a callable.",
+                null,
+                true
+            ],
+            [
+                "frontend.php",
+                27,
+                "callable.nonCallable",
+                "Trying to invoke stdClass but it might not be a callable.",
+                null,
+                true
+            ],
+            [
+                "frontend.php",
+                27,
+                "callable.nonCallable",
+                "Trying to invoke stdClass but it might not be a callable.",
+                null,
+                true
+            ],
+            [
+                "frontend.php",
+                43,
+                "missingType.iterableValue",
+                "Function MixedAddition\\arrayControl() return type has no value type specified in iterable type array.",
+                "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+                true
+            ]
+        ],
+        "9": [
+            [
+                "frontend.php",
+                7,
+                "binaryOp.invalid",
+                "Binary operation \"+\" between mixed and mixed results in an error.",
+                null,
+                true
+            ],
+            [
+                "frontend.php",
+                10,
+                "missingType.parameter",
+                "Function MixedAddition\\implicitMixed() has parameter $left with no type specified.",
+                null,
+                true
+            ],
+            [
+                "frontend.php",
+                10,
+                "missingType.parameter",
+                "Function MixedAddition\\implicitMixed() has parameter $right with no type specified.",
+                null,
+                true
+            ],
+            [
+                "frontend.php",
+                17,
+                "callable.nonCallable",
+                "Trying to invoke stdClass but it might not be a callable.",
+                null,
+                true
+            ],
+            [
+                "frontend.php",
+                22,
+                "callable.nonCallable",
+                "Trying to invoke stdClass but it might not be a callable.",
+                null,
+                true
+            ],
+            [
+                "frontend.php",
+                27,
+                "callable.nonCallable",
+                "Trying to invoke stdClass but it might not be a callable.",
+                null,
+                true
+            ],
+            [
+                "frontend.php",
+                27,
+                "callable.nonCallable",
+                "Trying to invoke stdClass but it might not be a callable.",
+                null,
+                true
+            ],
+            [
+                "frontend.php",
+                35,
+                "binaryOp.invalid",
+                "Binary operation \"+\" between mixed and mixed results in an error.",
+                null,
+                true
+            ],
+            [
+                "frontend.php",
+                43,
+                "missingType.iterableValue",
+                "Function MixedAddition\\arrayControl() return type has no value type specified in iterable type array.",
+                "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+                true
+            ]
+        ],
+        "10": [
+            [
+                "frontend.php",
+                7,
+                "binaryOp.invalid",
+                "Binary operation \"+\" between mixed and mixed results in an error.",
+                null,
+                true
+            ],
+            [
+                "frontend.php",
+                10,
+                "missingType.parameter",
+                "Function MixedAddition\\implicitMixed() has parameter $left with no type specified.",
+                null,
+                true
+            ],
+            [
+                "frontend.php",
+                10,
+                "missingType.parameter",
+                "Function MixedAddition\\implicitMixed() has parameter $right with no type specified.",
+                null,
+                true
+            ],
+            [
+                "frontend.php",
+                12,
+                "binaryOp.invalid",
+                "Binary operation \"+\" between mixed and mixed results in an error.",
+                null,
+                true
+            ],
+            [
+                "frontend.php",
+                17,
+                "binaryOp.invalid",
+                "Binary operation \"+\" between mixed and mixed results in an error.",
+                null,
+                true
+            ],
+            [
+                "frontend.php",
+                17,
+                "callable.nonCallable",
+                "Trying to invoke stdClass but it might not be a callable.",
+                null,
+                true
+            ],
+            [
+                "frontend.php",
+                22,
+                "binaryOp.invalid",
+                "Binary operation \"+\" between mixed and mixed results in an error.",
+                null,
+                true
+            ],
+            [
+                "frontend.php",
+                22,
+                "callable.nonCallable",
+                "Trying to invoke stdClass but it might not be a callable.",
+                null,
+                true
+            ],
+            [
+                "frontend.php",
+                27,
+                "binaryOp.invalid",
+                "Binary operation \"+\" between mixed and mixed results in an error.",
+                null,
+                true
+            ],
+            [
+                "frontend.php",
+                27,
+                "callable.nonCallable",
+                "Trying to invoke stdClass but it might not be a callable.",
+                null,
+                true
+            ],
+            [
+                "frontend.php",
+                27,
+                "callable.nonCallable",
+                "Trying to invoke stdClass but it might not be a callable.",
+                null,
+                true
+            ],
+            [
+                "frontend.php",
+                35,
+                "binaryOp.invalid",
+                "Binary operation \"+\" between mixed and mixed results in an error.",
+                null,
+                true
+            ],
+            [
+                "frontend.php",
+                43,
+                "missingType.iterableValue",
+                "Function MixedAddition\\arrayControl() return type has no value type specified in iterable type array.",
+                "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+                true
+            ]
+        ]
+    }
+}

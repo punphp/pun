@@ -10,12 +10,17 @@ use mago_syntax::walker::MutWalker;
 use super::super::Checker;
 use super::finally;
 
-/// The statements UnreachableStatementRule reports in `program`, by span.
-pub(in super::super) fn find(c: &Checker, program: &Program) -> HashSet<Span> {
+#[derive(Default)]
+pub(in super::super) struct Statements {
+    pub(in super::super) reported: HashSet<Span>,
+    pub(in super::super) skipped: HashSet<Span>,
+}
+
+/// UnreachableStatementNode positions and statements the source walker never processes.
+pub(in super::super) fn find(c: &Checker, program: &Program) -> Statements {
     let mut finder = Finder {
         c,
-        dead: Vec::new(),
-        out: HashSet::new(),
+        out: Statements::default(),
     };
     if c.level >= 4 {
         finder.walk_program(program, &mut ());
@@ -25,20 +30,11 @@ pub(in super::super) fn find(c: &Checker, program: &Program) -> HashSet<Span> {
 
 struct Finder<'c, 'a, 'arena> {
     c: &'c Checker<'a, 'arena>,
-    /// The statements never processed: from an unreachable one to the end of its list.
-    dead: Vec<(u32, u32)>,
-    out: HashSet<Span>,
+    out: Statements,
 }
 
 impl Finder<'_, '_, '_> {
-    fn list(&mut self, span: Span, statements: &[Statement], early_binding: bool) {
-        if self
-            .dead
-            .iter()
-            .any(|(a, b)| *a <= span.start.offset && span.end.offset <= *b)
-        {
-            return;
-        }
+    fn list(&mut self, statements: &[Statement], early_binding: bool) {
         let mut terminated = false;
         for (i, s) in statements.iter().enumerate() {
             // ponytail: a label always ends the dead part, as if a goto reached it
@@ -46,7 +42,21 @@ impl Finder<'_, '_, '_> {
                 terminated = false;
                 continue;
             }
-            if terminated || !finally::always_terminates(self.c, s) {
+            if terminated {
+                // StatementsHandler::processStatementStep still analyses declarations after termination.
+                if !matches!(
+                    s,
+                    Statement::Function(_)
+                        | Statement::Class(_)
+                        | Statement::Interface(_)
+                        | Statement::Trait(_)
+                        | Statement::Enum(_)
+                ) {
+                    self.out.skipped.insert(s.span());
+                }
+                continue;
+            }
+            if !finally::always_terminates(self.c, s) {
                 continue;
             }
             terminated = true;
@@ -73,78 +83,78 @@ impl Finder<'_, '_, '_> {
                         ))
                 });
             if let Some(next) = next {
-                self.out.insert(next.span());
-                let end = rest
-                    .iter()
-                    .take_while(|s| !matches!(s, Statement::Label(_)))
-                    .last()
-                    .map_or(next.span().end.offset, |s| s.span().end.offset);
-                self.dead.push((next.span().start.offset, end));
+                self.out.reported.insert(next.span());
             }
         }
     }
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Finder<'_, '_, '_> {
+    fn walk_statement(&mut self, s: &'ast Statement<'arena>, context: &mut ()) {
+        if !self.out.skipped.contains(&s.span()) {
+            mago_syntax::walker::walk_statement_mut(self, s, context);
+        }
+    }
+
     fn walk_in_program(&mut self, p: &'ast Program<'arena>, _: &mut ()) {
-        self.list(p.span(), p.statements.as_slice(), true);
+        self.list(p.statements.as_slice(), true);
     }
     fn walk_in_namespace(&mut self, n: &'ast Namespace<'arena>, _: &mut ()) {
-        self.list(n.span(), n.statements().as_slice(), true);
+        self.list(n.statements().as_slice(), true);
     }
     fn walk_in_block(&mut self, b: &'ast Block<'arena>, _: &mut ()) {
-        self.list(b.span(), b.statements.as_slice(), false);
+        self.list(b.statements.as_slice(), false);
     }
     fn walk_in_if_colon_delimited_body(
         &mut self,
         b: &'ast IfColonDelimitedBody<'arena>,
         _: &mut (),
     ) {
-        self.list(b.span(), b.statements.as_slice(), false);
+        self.list(b.statements.as_slice(), false);
     }
     fn walk_in_if_colon_delimited_body_else_if_clause(
         &mut self,
         b: &'ast IfColonDelimitedBodyElseIfClause<'arena>,
         _: &mut (),
     ) {
-        self.list(b.span(), b.statements.as_slice(), false);
+        self.list(b.statements.as_slice(), false);
     }
     fn walk_in_if_colon_delimited_body_else_clause(
         &mut self,
         b: &'ast IfColonDelimitedBodyElseClause<'arena>,
         _: &mut (),
     ) {
-        self.list(b.span(), b.statements.as_slice(), false);
+        self.list(b.statements.as_slice(), false);
     }
     fn walk_in_while_colon_delimited_body(
         &mut self,
         b: &'ast WhileColonDelimitedBody<'arena>,
         _: &mut (),
     ) {
-        self.list(b.span(), b.statements.as_slice(), false);
+        self.list(b.statements.as_slice(), false);
     }
     fn walk_in_for_colon_delimited_body(
         &mut self,
         b: &'ast ForColonDelimitedBody<'arena>,
         _: &mut (),
     ) {
-        self.list(b.span(), b.statements.as_slice(), false);
+        self.list(b.statements.as_slice(), false);
     }
     fn walk_in_foreach_colon_delimited_body(
         &mut self,
         b: &'ast ForeachColonDelimitedBody<'arena>,
         _: &mut (),
     ) {
-        self.list(b.span(), b.statements.as_slice(), false);
+        self.list(b.statements.as_slice(), false);
     }
     fn walk_in_declare_colon_delimited_body(
         &mut self,
         b: &'ast DeclareColonDelimitedBody<'arena>,
         _: &mut (),
     ) {
-        self.list(b.span(), b.statements.as_slice(), false);
+        self.list(b.statements.as_slice(), false);
     }
     fn walk_in_switch_case(&mut self, b: &'ast SwitchCase<'arena>, _: &mut ()) {
-        self.list(b.span(), b.statements(), false);
+        self.list(b.statements(), false);
     }
 }

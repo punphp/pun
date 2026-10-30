@@ -1,0 +1,61 @@
+{
+  "general": [],
+  "errors": [
+    {
+      "file": "global-initializer-dependencies.php",
+      "line": 11,
+      "identifier": "constant.notFound",
+      "message": "Used constant Missing\\NO_SUCH_CONSTANT not found.",
+      "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      "ignorable": true
+    },
+    {
+      "file": "global-initializer-dependencies.php",
+      "line": 30,
+      "identifier": "attribute.notAttribute",
+      "message": "Class GlobalInitializerDependencies\\AliasDoesNotFallBack is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "global-initializer-dependencies.php",
+      "line": 30,
+      "identifier": "attribute.notAttribute",
+      "message": "Class GlobalInitializerDependencies\\ExistingStopsFallback is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "global-initializer-dependencies.php",
+      "line": 30,
+      "identifier": "attribute.notAttribute",
+      "message": "Class GlobalInitializerDependencies\\QualifiedDoesNotFallBack is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "global-initializer-dependencies.php",
+      "line": 30,
+      "identifier": "attribute.notAttribute",
+      "message": "Class GlobalInitializerDependencies\\ZeroIsNotNull is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "global-initializer-dependencies.php",
+      "line": 31,
+      "identifier": "attribute.notAttribute",
+      "message": "Class GlobalInitializerDependencies\\UnsupportedCall is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "global-initializer-dependencies.php",
+      "line": 31,
+      "identifier": "attribute.notAttribute",
+      "message": "Class GlobalInitializerDependencies\\UnsupportedConstruction is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    }
+  ]
+}

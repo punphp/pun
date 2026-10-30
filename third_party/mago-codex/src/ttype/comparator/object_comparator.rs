@@ -1,55 +1,11 @@
 use crate::metadata::CodebaseMetadata;
 use crate::misc::GenericParent;
-use crate::ttype::TType;
 use crate::ttype::atomic::TAtomic;
 use crate::ttype::atomic::generic::TGenericParameter;
 use crate::ttype::atomic::object::TObject;
 use crate::ttype::comparator::ComparisonResult;
 use crate::ttype::comparator::union_comparator;
 use crate::ttype::wrap_atomic;
-
-pub(crate) fn is_shallowly_contained_by(
-    codebase: &CodebaseMetadata,
-    input_type_part: &TAtomic,
-    container_type_part: &TAtomic,
-    inside_assertion: bool,
-    atomic_comparison_result: &mut ComparisonResult,
-) -> bool {
-    // `T <= A & B`
-    if let Some(container_intersection_types) = container_type_part.get_intersection_types()
-        && !container_intersection_types.is_empty()
-    {
-        for part in container_intersection_types {
-            if !is_shallowly_contained_by(codebase, input_type_part, part, inside_assertion, atomic_comparison_result) {
-                return false;
-            }
-        }
-    }
-    // `A & B <= T`
-    else if let Some(input_intersection_types) = input_type_part.get_intersection_types()
-        && !input_intersection_types.is_empty()
-    {
-        for part in input_intersection_types {
-            if is_shallowly_contained_by(
-                codebase,
-                part,
-                container_type_part,
-                inside_assertion,
-                atomic_comparison_result,
-            ) {
-                return true;
-            }
-        }
-    }
-
-    is_intersection_shallowly_contained_by(
-        codebase,
-        input_type_part,
-        container_type_part,
-        inside_assertion,
-        atomic_comparison_result,
-    )
-}
 
 pub(super) fn is_intersection_shallowly_contained_by(
     codebase: &CodebaseMetadata,
@@ -146,21 +102,32 @@ pub(super) fn is_intersection_shallowly_contained_by(
         );
     }
 
-    let (container_name, container_is_static, container_is_this) = match intersection_container_type {
-        TAtomic::Object(TObject::Named(o)) => (o.name, o.is_static, o.is_this),
-        TAtomic::Object(TObject::Enum(e)) => (e.name, false, false),
+    let (container_name, container_is_static, container_is_this, container_is_exact) = match intersection_container_type {
+        TAtomic::Object(TObject::Named(o)) => (o.name, o.is_static, o.is_this, o.is_exact),
         _ => {
             return false;
         }
     };
 
-    let (input_name, input_is_static, input_is_this) = match intersection_input_type {
-        TAtomic::Object(TObject::Named(o)) => (o.name, o.is_static, o.is_this),
-        TAtomic::Object(TObject::Enum(e)) => (e.name, false, false),
+    let (input_name, input_is_static, input_is_this, input_is_exact) = match intersection_input_type {
+        TAtomic::Object(TObject::Named(o)) => (o.name, o.is_static, o.is_this, o.is_exact),
+        TAtomic::Object(TObject::Enum(e)) => (e.name, false, false, false),
         _ => {
             return false;
         }
     };
+
+    let same_class = input_name.as_bytes().eq_ignore_ascii_case(container_name.as_bytes());
+    let input_is_final = input_is_exact
+        || codebase.get_class_like_by_name(input_name).is_some_and(|metadata| metadata.flags.is_final());
+    // ObjectType's final reflection override excludes descendants and broad same-class values.
+    // This is per-value metadata: the declaration and the shared hierarchy remain unchanged.
+    if container_is_exact && (!same_class || !input_is_final) {
+        if codebase.is_instance_of(container_name.as_bytes(), input_name.as_bytes()) {
+            atomic_comparison_result.type_coerced = Some(true);
+        }
+        return false;
+    }
 
     if !inside_assertion {
         if container_is_this && !input_is_this {
@@ -168,7 +135,7 @@ pub(super) fn is_intersection_shallowly_contained_by(
             return false;
         }
 
-        if container_is_static && !input_is_static {
+        if container_is_static && !input_is_static && !input_is_final {
             atomic_comparison_result.type_coerced = Some(true);
             return false;
         }

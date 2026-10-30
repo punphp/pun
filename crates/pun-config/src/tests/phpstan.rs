@@ -334,6 +334,47 @@ fn migrates_maybe_undefined_variables() {
     }
 }
 
+/// Defaults follow PHPStan's level presets. Until Pun has independent product options, changed settings must
+/// be reported as unsupported rather than silently collapsing both argument checks into the argument rule.
+#[test]
+fn argument_settings_preserve_defaults_and_report_unmapped_overrides() {
+    use pun_phpstan::Value as V;
+
+    for level in [0, 5] {
+        for types in [false, true] {
+            for references in [false, true] {
+                for this_only in [false, true] {
+                    let neon = format!("parameters:\n    level: {level}\n    checkFunctionArgumentTypes: {types}\n    checkArgumentsPassedByReference: {references}\n    checkThisOnly: {this_only}\n");
+                    let d = project(&neon, &[]);
+                    let p = from_phpstan(&d, &d.join("phpstan.neon")).unwrap();
+                    let settings = [("checkFunctionArgumentTypes", types, level >= 5),
+                        ("checkArgumentsPassedByReference", references, level >= 5),
+                        ("checkThisOnly", this_only, level < 2)];
+                    let mut unsupported: Vec<_> = settings.iter().filter(|(_, value, default)| value != default)
+                        .map(|(name, _, _)| (format!("parameter {name}"), if *name == "checkThisOnly" {
+                            "independent receiver eligibility has no pun.toml option yet".to_string()
+                        } else {
+                            "independent argument-check overrides have no pun.toml option yet".to_string()
+                        })).collect();
+                    unsupported.sort();
+                    assert_eq!(p.unsupported, unsupported, "{neon}");
+                    assert!(p.changed.is_empty(), "{neon}: {:?}", p.changed);
+                    let mut parts = Parts::default();
+                    compose(&d, &mut parts, &p).unwrap();
+                    let text = parts.render();
+                    let a = crate::from_toml(&d, &text).unwrap().analyse;
+                    assert_eq!(a.level(), level, "{neon}\n{text}");
+                    let parameters = a.parameters(&d);
+                    for (name, _, default) in settings {
+                        assert_eq!(parameters.get_str(name), Some(&V::Bool(default)), "{neon}\n{text}");
+                    }
+                    std::fs::remove_dir_all(d).unwrap();
+                }
+            }
+        }
+    }
+}
+
 /// `level: max` is 10; a level PHPStan rejects stops the migration with PHPStan's message.
 #[test]
 fn reads_max_and_rejects_bad_levels() {

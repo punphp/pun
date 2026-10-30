@@ -121,6 +121,7 @@ impl FunctionReturnTypeProvider for ArrayPadProvider {
         };
 
         Some(TUnion::from_atomic(TAtomic::Array(TArray::List(TList {
+            callable: None,
             element_type: Arc::new(element_type),
             known_elements: Some(result_elements.into()),
             known_count,

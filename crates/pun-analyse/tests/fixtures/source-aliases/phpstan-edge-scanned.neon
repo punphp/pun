@@ -1,0 +1,4 @@
+includes: [phpstan.neon]
+parameters:
+    paths: [edge-uses.php]
+    scanFiles: [edge-definitions.php, edge-aliases.php]

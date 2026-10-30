@@ -263,8 +263,8 @@ where
             if let Some(default_arm) = first_default_arm {
                 self.report_only_default_arm();
                 default_arm.expression.analyze(self.context, self.block_context, self.artifacts)?;
-                if let Some(expr_type) = self.artifacts.get_rc_expression_type(&default_arm.expression).cloned() {
-                    self.artifacts.set_rc_expression_type(self.stmt, expr_type);
+                if let Some(expr_type) = self.artifacts.get_keep_void_expression_type(&default_arm.expression).cloned() {
+                    self.artifacts.set_expression_type(self.stmt, expr_type);
                 }
             } else {
                 self.report_empty_match();
@@ -478,6 +478,7 @@ where
                 "All possible types for the subject have been handled by previous arms.",
             );
 
+            self.analyze_unreachable_arm(expression_arm.conditions.as_slice(), expression_arm.expression, running_else_context)?;
             return Ok((ArmExecutionStatus::Never, Vec::new()));
         }
 
@@ -513,6 +514,7 @@ where
         };
 
         if arm_status == ArmExecutionStatus::Never {
+            self.analyze_unreachable_arm(&[], expression_arm.expression, running_else_context)?;
             return Ok((ArmExecutionStatus::Never, Vec::new()));
         }
 
@@ -609,8 +611,8 @@ where
         expression_arm.expression.analyze(self.context, &mut arm_body_context, self.artifacts)?;
         arm_body_types.push(
             self.artifacts
-                .get_rc_expression_type(&expression_arm.expression)
-                .cloned()
+                .get_keep_void_expression_type(&expression_arm.expression)
+                .map(|ty| Rc::new(ty.clone()))
                 .unwrap_or_else(|| Rc::new(get_mixed())),
         );
 
@@ -646,6 +648,24 @@ where
         Ok((arm_status, negated_arm_clauses))
     }
 
+    // MatchHandler retains every arm's semantic expression result for value flow, including
+    // impossible arms. As in IfAnalyzer, their diagnostic walk must not publish real exit edges.
+    fn analyze_unreachable_arm(
+        &mut self,
+        conditions: &[&'arena Expression<'arena>],
+        expression: &'arena Expression<'arena>,
+        entry: &BlockContext<'ctx>,
+    ) -> Result<(), AnalysisError> {
+        let flow = self.artifacts.branch_flow();
+        let mut scope = entry.clone();
+        for condition in conditions {
+            condition.analyze(self.context, &mut scope, self.artifacts)?;
+        }
+        expression.analyze(self.context, &mut scope, self.artifacts)?;
+        self.artifacts.restore_branch_flow(flow);
+        Ok(())
+    }
+
     #[allow(clippy::needless_pass_by_ref_mut)]
     fn analyze_default_arm(
         &mut self,
@@ -663,6 +683,7 @@ where
         if is_exhaustive {
             self.report_unreachable_default_arm(default_arm);
 
+            self.analyze_unreachable_arm(&[], default_arm.expression, running_else_context)?;
             return Ok(());
         }
 
@@ -671,8 +692,8 @@ where
 
         arm_body_types.push(
             self.artifacts
-                .get_rc_expression_type(&default_arm.expression)
-                .cloned()
+                .get_keep_void_expression_type(&default_arm.expression)
+                .map(|ty| Rc::new(ty.clone()))
                 .unwrap_or_else(|| Rc::new(get_mixed())),
         );
         arm_exit_contexts.push(default_context);
@@ -689,6 +710,9 @@ where
         let block_context = block_context.unwrap_or(self.block_context);
 
         block_context.possibly_thrown_exceptions.entry(word("UnhandledMatchError")).or_default().insert(span);
+        self.artifacts.variable_throw_scopes
+            .entry((span, crate::artifacts::VariableThrowKind::Expression)).or_default()
+            .insert(word("UnhandledMatchError"), block_context.variable_scope());
 
         if always_throws {
             block_context.flags.set_has_returned(true);

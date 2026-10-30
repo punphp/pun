@@ -1,0 +1,38 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 4
+  },
+  "files": {
+    "flow.php": {
+      "errors": 4,
+      "messages": [
+        {
+          "message": "Parameter #1 $value of function FilterProvidersFlow\\needs_int expects int, mixed given.",
+          "line": 14,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Parameter #1 $value of function FilterProvidersFlow\\needs_int expects int, int|false given.",
+          "line": 15,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Parameter #1 $value of function FilterProvidersFlow\\needs_int expects int, mixed given.",
+          "line": 18,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Parameter #1 $value of function FilterProvidersFlow\\needs_int expects int, mixed given.",
+          "line": 19,
+          "ignorable": true,
+          "identifier": "argument.type"
+        }
+      ]
+    }
+  },
+  "errors": []
+}

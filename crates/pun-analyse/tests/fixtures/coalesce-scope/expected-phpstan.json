@@ -196,6 +196,356 @@
    "identifier": "phpstan.dumpType",
    "message": "Dumped type: *ERROR*",
    "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 109,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: int|null",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 110,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: int|null",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 117,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: string",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 118,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: string",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 125,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: null",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 126,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: int|null",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 127,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: array{first: int}|array{first: null}",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 133,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: array{}",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 134,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: *ERROR*",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 135,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: int",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 136,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: array{}|array{first: int}",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 142,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: array{first?: int|null}",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 143,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: int|null",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 144,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: int|null",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 145,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: array{first?: int|null}",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 152,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: null",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 153,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: int|null",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 160,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: int",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 167,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: 'written'|int",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 168,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: array{first: 'written'}|array{first: int}",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 175,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: 'written'",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 176,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: array{first: 'written'}",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 184,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: string|null",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 193,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: 9|string",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 202,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: int|string|null",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 211,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: int|string|null",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 219,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: int",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 220,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: array{first: int}",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 228,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: 1",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 229,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: 1",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 230,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: null",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 236,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: *NEVER*",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 237,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: int",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 243,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: array{int}",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 244,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: array{0: int, 1?: int}",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 250,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: array{0: int, 1?: int|null}",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 251,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: array{0: int, 1?: int|null}",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 257,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: array{kind: 'absent'}",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 258,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: array{kind: 'absent'}|array{kind: 'present', first: int}",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 264,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: array{kind: 'nonnull', first?: int}|array{kind: 'nullable', first?: null}",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 265,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: array{kind: 'nonnull', first?: int}|array{kind: 'nullable', first?: null}",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 271,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: array{nested?: array{first: int|null}}",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 272,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: array{nested?: array{first: int|null}}",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 278,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: int",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 279,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: int",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 280,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: array<int, int|null>",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 286,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: array{1}",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 287,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: array{0: 1, 1?: 2}",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 293,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: array{}",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 294,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: array{}|array{1}",
+   "tip": null
   }
  ]
 }

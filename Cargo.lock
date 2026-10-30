@@ -887,6 +887,7 @@ dependencies = [
  "mago-word",
  "memchr",
  "ordered-float",
+ "punphp-tokens",
  "rayon",
  "ryu",
  "serde",
@@ -983,8 +984,6 @@ dependencies = [
 [[package]]
 name = "mago-phpdoc-syntax"
 version = "1.57.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0eeb52927d77253f3467d696bddf9dce88349b3ed4917baf7408d46ba6733437"
 dependencies = [
  "mago-allocator",
  "mago-database",
@@ -1052,8 +1051,6 @@ dependencies = [
 [[package]]
 name = "mago-syntax"
 version = "1.57.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c9f8e390954afaad9f6d5138b9f67449de8c99e125bf046fafcdda4a1abd8d0a"
 dependencies = [
  "mago-allocator",
  "mago-database",
@@ -1431,6 +1428,7 @@ dependencies = [
  "mago-analyzer",
  "mago-codex",
  "mago-database",
+ "mago-extension",
  "mago-names",
  "mago-php-version",
  "mago-prelude",

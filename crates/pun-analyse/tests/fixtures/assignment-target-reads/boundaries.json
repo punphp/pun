@@ -1,0 +1,10 @@
+{
+  "unreachable": {
+    "source": "<?php\nfunction unreachableRead(): void {\n    return;\n    list([$item]) = [[1]];\n}\n",
+    "read_lines": [4]
+  },
+  "valid-dynamic": {
+    "source": "<?php\n[$$name] = [$name = 'item'];\n\\PHPStan\\dumpType($item);\n",
+    "read_lines": [2]
+  }
+}

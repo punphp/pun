@@ -16,7 +16,6 @@ use mago_codex::populator::populate_codebase;
 use mago_codex::reference::SymbolReferences;
 use mago_codex::scanner::scan_program;
 use mago_codex::ttype::TType;
-use mago_codex::ttype::atomic::scalar::string::TStringCasing;
 use mago_codex::ttype::union::TUnion;
 use mago_database::file::{File, FileType};
 use mago_names::resolver::NameResolver;
@@ -74,6 +73,19 @@ fn analyze(
     native: bool,
     mut registry: PluginRegistry,
 ) -> (AnalysisArtifacts, Observed, String) {
+    let observed = Arc::<Mutex<Observed>>::default();
+    registry.register_expression_hook(Observer(Arc::clone(&observed)));
+    let (artifacts, result) = analyze_with_registry(code, native, registry);
+    let found = std::mem::take(&mut *observed.lock().unwrap());
+    (artifacts, found, format!("{:?}", result.issues))
+}
+
+// Unlike analyze(), this path does not install a custom observer that disables convergence.
+fn analyze_with_registry(
+    code: &[u8],
+    native: bool,
+    registry: PluginRegistry,
+) -> (AnalysisArtifacts, AnalysisResult) {
     let file = File::new(
         Cow::Borrowed(b"native.php"),
         FileType::Host,
@@ -94,15 +106,12 @@ fn analyze(
         Default::default(),
         Default::default(),
     );
-    let observed = Arc::<Mutex<Observed>>::default();
-    registry.register_expression_hook(Observer(Arc::clone(&observed)));
     let analyzer = Analyzer::new(&arena, &file, &names, &codebase, &registry, settings);
     let mut result = AnalysisResult::new(references);
     let artifacts = analyzer
         .analyze_with_artifacts(program, &mut result)
         .unwrap();
-    let found = std::mem::take(&mut *observed.lock().unwrap());
-    (artifacts, found, format!("{:?}", result.issues))
+    (artifacts, result)
 }
 
 fn marked_ranges(code: &[u8], marker: &str) -> Vec<(usize, (u32, u32))> {
@@ -129,24 +138,30 @@ fn span(range: (u32, u32)) -> mago_span::Span {
 }
 
 fn native_id(ty: &TUnion) -> String {
-    let mut id = oracle_mago_id(&ty.get_id().to_string());
-    // TString stores casing on numeric strings, but its display omits that property.
-    if ty.get_single_string().is_some_and(|string| {
-        string.literal.is_none() && string.is_numeric && string.casing == TStringCasing::Uppercase
-    }) {
-        id.push_str("&uppercase-string");
-    }
-    id
+    oracle_mago_id(&ty.get_id().to_string())
 }
 
-// Only adapt the two tools' scalar display syntax, not their inferred types.
+// Only adapt the two tools' display syntax, not their inferred types.
 fn oracle_mago_id(phpstan: &str) -> String {
     let phpstan = if phpstan.starts_with('(') && phpstan.ends_with(')') && phpstan.contains('|') {
         &phpstan[1..phpstan.len() - 1]
     } else {
         phpstan
     };
-    if phpstan.contains('|') {
+    if let Some(shape) = phpstan
+        .strip_prefix("array{")
+        .or_else(|| phpstan.strip_prefix("list{"))
+        .and_then(|shape| shape.strip_suffix('}'))
+    {
+        format!(
+            "array{{{}}}",
+            shape
+                .split(',')
+                .map(|item| oracle_mago_id(item.trim()))
+                .collect::<Vec<_>>()
+                .join(",")
+        )
+    } else if phpstan.contains('|') {
         let mut types: Vec<_> = phpstan.split('|').map(oracle_mago_id).collect();
         types.sort();
         types.join("|")
@@ -161,9 +176,18 @@ fn oracle_mago_id(phpstan: &str) -> String {
         format!("int({phpstan})")
     } else if let Ok(value) = phpstan.parse::<f64>() {
         format!("float({value})")
+    } else if let Some(range) = match phpstan {
+        "positive-int" => Some("int<1,max>"),
+        "negative-int" => Some("int<min,-1>"),
+        "non-positive-int" => Some("int<min,0>"),
+        "non-negative-int" => Some("int<0,max>"),
+        _ => None,
+    } {
+        range.to_owned()
     } else {
         phpstan
             .replace("non-falsy-string", "truthy-string")
+            .replace("*NEVER*", "never")
             .replace(", ", ",")
     }
 }
@@ -193,8 +217,50 @@ fn cast_native_values_match_phpstan_and_do_not_change_the_full_walk() {
     );
 }
 
+#[test]
+fn conditional_native_values_and_continuations_match_phpstan_without_another_walk() {
+    check_native_fixture(
+        include_bytes!("fixtures/native-lane/conditions.php"),
+        include_str!("fixtures/native-lane/expected-conditions-phpstan.json"),
+    );
+}
+
+#[test]
+fn scalar_native_guards_match_phpstan_without_changing_full_assertions() {
+    check_native_fixture(
+        include_bytes!("fixtures/native-lane/condition-guards.php"),
+        include_str!("fixtures/native-lane/expected-condition-guards-phpstan.json"),
+    );
+}
+
+#[test]
+fn scalar_native_conditional_edges_match_phpstan() {
+    check_native_fixture(
+        include_bytes!("fixtures/native-lane/condition-edges.php"),
+        include_str!("fixtures/native-lane/expected-condition-edges-phpstan.json"),
+    );
+}
+
+#[test]
+fn conditional_native_unavailability_is_edge_local_and_does_not_recover_by_assignment() {
+    check_native_fixture(
+        include_bytes!("fixtures/native-lane/condition-boundaries.php"),
+        include_str!("fixtures/native-lane/expected-condition-boundaries-phpstan.json"),
+    );
+}
+
+#[test]
+fn pure_condition_wrappers_retain_the_full_walks_existing_visits() {
+    let observed = check_native_fixture_walk(
+        include_bytes!("fixtures/native-lane/condition-wrappers.php"),
+        include_str!("fixtures/native-lane/expected-condition-wrappers-phpstan.json"),
+    );
+    assert!(observed.visits.values().any(|count| *count > 1));
+}
+
 fn assert_full_artifacts_equal(enabled: &AnalysisArtifacts, disabled: &AnalysisArtifacts) {
     assert_eq!(enabled.expression_types, disabled.expression_types);
+    assert_eq!(enabled.call_terminations, disabled.call_terminations);
     assert_eq!(enabled.if_true_assertions, disabled.if_true_assertions);
     assert_eq!(enabled.if_false_assertions, disabled.if_false_assertions);
     assert_eq!(
@@ -271,13 +337,17 @@ fn assert_full_artifacts_equal(enabled: &AnalysisArtifacts, disabled: &AnalysisA
 }
 
 fn check_native_fixture(code: &[u8], oracle: &str) {
+    let observed = check_native_fixture_walk(code, oracle);
+    assert!(observed.visits.values().all(|count| *count == 1));
+}
+
+fn check_native_fixture_walk(code: &[u8], oracle: &str) -> Observed {
     let expected: serde_json::Value = serde_json::from_str(oracle).unwrap();
     let (enabled, observed, issues) = analyze(code, true, PluginRegistry::new());
     let (disabled, off_observed, off_issues) = analyze(code, false, PluginRegistry::new());
     assert_eq!(issues, off_issues);
     assert_full_artifacts_equal(&enabled, &disabled);
     assert_eq!(observed.visits, off_observed.visits);
-    assert!(observed.visits.values().all(|count| *count == 1));
     let marked = marked_ranges(code, "// native");
     assert_eq!(marked.len(), expected.as_array().unwrap().len());
     for ((line, range), expected) in marked.into_iter().zip(expected.as_array().unwrap()) {
@@ -303,12 +373,25 @@ fn check_native_fixture(code: &[u8], oracle: &str) {
         );
         assert!(disabled.get_native_expression_type(&span(range)).is_none());
     }
+    for (line, range) in marked_ranges(code, "// unavailable") {
+        assert!(
+            enabled.get_native_expression_type(&span(range)).is_none(),
+            "line {line}"
+        );
+        assert!(
+            observed.native.get(&range).is_none_or(Option::is_none),
+            "observer line {line}"
+        );
+    }
+    observed
 }
 
 #[test]
 fn unsupported_transfers_poison_the_scope_before_children_and_never_recover_by_assignment() {
     let bodies = [
-        "if ($flag) { $value = 2; } else { $value = 3; }",
+        "if ($flag && true) { $value = 2; } else { $value = 3; }",
+        "if ($value === ($value + 1)) { $value = 2; }",
+        "if ($value + 1) { $value = 2; }",
         "while ($flag) { $value = 2; break; }",
         "for (; $flag;) { $value = 2; break; }",
         "do { $value = 2; } while ($flag);",
@@ -317,20 +400,19 @@ fn unsupported_transfers_poison_the_scope_before_children_and_never_recover_by_a
         "try { $value = 2; } finally { $value = 3; }",
         "$alias =& $value; $alias = 2;",
         "$value += 2;",
-        "$array = [2];",
         "$object = new stdClass();",
         "$value = $object->property;",
         "$object->method();",
         "Unknown::method();",
-        "$callback = fn () => $value;",
-        "$callback = function () use ($value) { return $value; };",
+        // Creation now preserves the outer holders, but native callable values remain unsupported.
+        "$callback = fn () => $value; $callback;",
+        "$callback = function () use ($value) { return $value; }; $callback;",
         "$value = $value << 1;",
-        "$value = $flag ? 2 : 3;",
+        "$value = ($flag && true) ? 2 : 3;",
         "$value = missingFunction();",
         "$name = 'missingFunction'; $value = $name();",
         "$value = $missing;",
         "static $cached = 2;",
-        "unset($value);",
         "/** @var positive-int */ $value;",
         "$GLOBALS = 2;",
         "$_SESSION = 2;",
@@ -385,8 +467,8 @@ fn unsupported_operator_shapes_invalidate_without_changing_the_full_walk() {
         "1e308 * 1e308",
         "+1e999",
         "$unknown === 2",
-        "$nullable === 2",
-        "($integer % 2) === 1",
+        "$nullable == 2",
+        "($integer % 2) == 1",
         "('prefix' . $text) === '0'",
         "$text == '1'",
         "$text < 2",
@@ -405,12 +487,9 @@ fn unsupported_operator_shapes_invalidate_without_changing_the_full_walk() {
         "$flag || $flag",
         "$flag and $flag",
         "$flag or $flag",
-        "$nullable ?? 2",
         "($integer % 2) + 1",
-        // Decimal-integer-string has no exact Mago scalar representation. Other casts below
+        // Integer-string casts are covered by decimal_string_producers. These casts still
         // deliberately exclude union operands, non-finite literals, and non-scalar syntax.
-        "(string) $integer",
-        "(string) ($integer % 2)",
         "(int) $nullable",
         "(float) $nullable",
         "(bool) $nullable",
@@ -462,7 +541,6 @@ fn unsupported_function_scopes_and_named_call_contracts_are_not_widened() {
     for parameters in [
         "int &$value",
         "int ...$value",
-        "array $value",
         "object $value",
         "callable $value",
         "int $value = 1 << 2",
@@ -678,10 +756,19 @@ fn dynamic_full_return_providers_are_called_once_and_do_not_replace_native_decla
     let calls = Arc::new(AtomicUsize::new(0));
     let mut registry = PluginRegistry::new();
     registry.register_function_provider(Return(Arc::clone(&calls)));
-    let code = b"<?php function documented(): string { return 'body'; }\n$value = documented();\n$value; // native\n";
-    let (artifacts, _, _) = analyze(code, true, registry);
+    let code = b"<?php function documented(): string { return 'body'; }\n$value = documented();\n$value; // native\nfunction branches(bool $flag): void {\nif ($flag) { $value = documented(); } else { $value = documented(); }\n$flag ? documented() : documented();\n}\n";
+    let (artifacts, observed, issues) = analyze(code, true, registry);
+    let off_calls = Arc::new(AtomicUsize::new(0));
+    let mut registry = PluginRegistry::new();
+    registry.register_function_provider(Return(Arc::clone(&off_calls)));
+    let (disabled, off_observed, off_issues) = analyze(code, false, registry);
+    assert_full_artifacts_equal(&artifacts, &disabled);
+    assert_eq!(issues, off_issues);
+    assert_eq!(observed.visits, off_observed.visits);
     let value = span(marked_ranges(code, "// native")[0].1);
-    assert_eq!(calls.load(Ordering::SeqCst), 1);
+    // One straight-line call and two calls in each conditional, on the existing full walk.
+    assert_eq!(calls.load(Ordering::SeqCst), 5);
+    assert_eq!(off_calls.load(Ordering::SeqCst), 5);
     assert_eq!(
         artifacts
             .get_expression_type(&value)
@@ -777,4 +864,447 @@ fn hook_skips_do_not_leave_native_values_from_before_the_skipped_transfer() {
             "mode {mode}"
         );
     }
+}
+
+#[test]
+fn replayed_calls_do_not_retain_termination_after_a_hook_replaces_the_evaluation() {
+    use std::sync::atomic::{AtomicUsize, Ordering};
+
+    use mago_analyzer::plugin::ExpressionHookResult;
+    use mago_codex::ttype::get_literal_int;
+
+    struct Rewrite {
+        visits: Arc<AtomicUsize>,
+        mode: u8,
+    }
+    impl Provider for Rewrite {
+        fn meta() -> &'static ProviderMeta {
+            static META: ProviderMeta =
+                ProviderMeta::new("call-replay", "call-replay", "replace a replayed call");
+            &META
+        }
+    }
+    impl ExpressionHook for Rewrite {
+        fn before_expression(
+            &self,
+            expression: &Expression<'_>,
+            context: &mut HookContext<'_, '_>,
+        ) -> HookResult<ExpressionHookResult> {
+            if !matches!(expression, Expression::Call(_))
+                || self.visits.fetch_add(1, Ordering::SeqCst) == 0
+            {
+                return Ok(ExpressionHookResult::Continue);
+            }
+            Ok(match self.mode {
+                0 => ExpressionHookResult::Skip,
+                1 => ExpressionHookResult::SkipWithType(get_literal_int(123)),
+                _ => {
+                    context.set_variable_type(b"$f", get_literal_int(0));
+                    ExpressionHookResult::Continue
+                }
+            })
+        }
+    }
+
+    for loop_body in [
+        "for (; $more; $f()) { $a = 's'; }",
+        "do { $a = 's'; } while ($f());",
+    ] {
+        let code = format!(
+            "<?php function stop(): never {{ throw new Exception(); }}\n\
+             $a = 0; $more = true; $f = 'stop'; {loop_body}"
+        );
+        let start = code.rfind("$f()").unwrap() as u32;
+        let range = (start, start + 4);
+        for mode in 0..3 {
+            for native in [false, true] {
+                let visits = Arc::new(AtomicUsize::new(0));
+                let mut registry = PluginRegistry::new();
+                registry.register_expression_hook(Rewrite {
+                    visits: Arc::clone(&visits),
+                    mode,
+                });
+                let (artifacts, _, _) = analyze(code.as_bytes(), native, registry);
+                assert!(visits.load(Ordering::SeqCst) > 1, "{loop_body}");
+                assert_eq!(
+                    artifacts.call_terminations.get(&range),
+                    Some(&false),
+                    "{loop_body}, mode {mode}, native {native}"
+                );
+                if mode == 1 {
+                    assert_eq!(
+                        artifacts.get_expression_type(&span(range)),
+                        Some(&get_literal_int(123))
+                    );
+                }
+            }
+        }
+    }
+}
+
+#[test]
+fn inspection_and_confirmation_report_types_without_terminating_the_call_flow() {
+    use mago_reporting::Level;
+
+    let code = br"<?php
+namespace Mago {
+    function inspect(mixed ...$values): void {}
+    function confirm(mixed $value, string $expected): void {}
+}
+namespace {
+    Mago\inspect($value = 7); // call
+    echo
+        $value; // value
+    Mago\confirm($value, 'int(7)'); // call
+    echo
+        $value; // value
+    Mago\confirm($value, 'string'); // call
+    echo
+        $value; // value
+}
+";
+    let (enabled, result) =
+        analyze_with_registry(code, true, PluginRegistry::with_library_providers());
+    let (disabled, off_result) =
+        analyze_with_registry(code, false, PluginRegistry::with_library_providers());
+    assert_full_artifacts_equal(&enabled, &disabled);
+    assert_eq!(result.issues, off_result.issues);
+    let diagnostics = result
+        .issues
+        .iter()
+        .map(|issue| (issue.level, issue.code.as_deref(), issue.message.as_ref()))
+        .collect::<Vec<_>>();
+    assert_eq!(
+        diagnostics,
+        [
+            (
+                Level::Help,
+                Some("type-inspection"),
+                "Type information for arguments of `Mago\\inspect()` call."
+            ),
+            (
+                Level::Help,
+                Some("type-confirmation"),
+                "Type of expression is `int(7)` as expected."
+            ),
+            (
+                Level::Error,
+                Some("type-confirmation"),
+                "Type of expression is `int(7)`, but expected `string`."
+            ),
+        ]
+    );
+    assert!(
+        result
+            .issues
+            .iter()
+            .next()
+            .unwrap()
+            .annotations
+            .iter()
+            .any(|annotation| annotation.message.as_deref() == Some("Argument #1 type: `int(7)`"))
+    );
+    for (_, range) in marked_ranges(code, "// call") {
+        assert_eq!(enabled.call_terminations.get(&range), Some(&false));
+        // PHPStan 2.3.1: named void calls have full null and raw/keep-void void.
+        assert_eq!(
+            enabled
+                .get_expression_type(&span(range))
+                .map(native_id)
+                .as_deref(),
+            Some("null")
+        );
+        assert_eq!(
+            enabled
+                .get_raw_expression_type(&span(range))
+                .map(native_id)
+                .as_deref(),
+            Some("void")
+        );
+        assert_eq!(
+            enabled
+                .get_keep_void_expression_type(&span(range))
+                .map(native_id)
+                .as_deref(),
+            Some("void")
+        );
+        assert_eq!(
+            enabled
+                .get_native_expression_type(&span(range))
+                .map(native_id)
+                .as_deref(),
+            None, // Void is outside the current partial native lane; do not fill it from full.
+        );
+    }
+    for (_, range) in marked_ranges(code, "// value") {
+        assert_eq!(
+            enabled
+                .get_expression_type(&span(range))
+                .map(native_id)
+                .as_deref(),
+            Some("int(7)")
+        );
+    }
+}
+
+#[test]
+fn converged_loops_preserve_continuing_and_terminating_call_facts() {
+    let code = br"<?php
+function keep(): int { return 7; }
+function stop(): never { while (true) {} }
+function example(bool $more, bool $halt): void {
+    $a = 0; // before
+    $b = 0; $c = 0;
+    while ($more) {
+        $a = 'a';
+        while ($more) {
+            $b = 'b';
+            while ($more) {
+                $c = 'c';
+                keep(); // continuing
+                if ($halt) {
+                    stop(); // terminating
+                }
+                echo
+                    $c; // inside
+            }
+        }
+    }
+    echo
+        $a; // after
+    echo
+        $b; // after
+    echo
+        $c; // after
+}
+";
+    let registry = PluginRegistry::with_library_providers();
+    assert!(!registry.has_custom_plugins());
+    let (enabled, result) = analyze_with_registry(code, true, registry);
+    let (disabled, off_result) =
+        analyze_with_registry(code, false, PluginRegistry::with_library_providers());
+    let (unoptimized, _, unoptimized_issues) =
+        analyze(code, false, PluginRegistry::with_library_providers());
+    assert_full_artifacts_equal(&enabled, &disabled);
+    assert_full_artifacts_equal(&disabled, &unoptimized);
+    assert_eq!(result.issues, off_result.issues);
+    assert_eq!(format!("{:?}", result.issues), unoptimized_issues);
+    assert!(result.issues.is_empty(), "{:?}", result.issues);
+    for (marker, terminates, ty) in [
+        ("// continuing", false, "int"),
+        ("// terminating", true, "never"),
+        ("// inside", false, "string('c')"),
+    ] {
+        let range = marked_ranges(code, marker)[0].1;
+        assert_eq!(
+            enabled
+                .get_expression_type(&span(range))
+                .map(native_id)
+                .as_deref(),
+            Some(ty),
+            "{marker}"
+        );
+        if marker != "// inside" {
+            assert_eq!(enabled.call_terminations.get(&range), Some(&terminates));
+        }
+    }
+    for ((_, range), ty) in marked_ranges(code, "// after").into_iter().zip([
+        "int(0)|string('a')",
+        "int(0)|string('b')",
+        "int(0)|string('c')",
+    ]) {
+        assert_eq!(
+            enabled
+                .get_expression_type(&span(range))
+                .map(native_id)
+                .as_deref(),
+            Some(ty)
+        );
+        assert!(enabled.get_native_expression_type(&span(range)).is_none());
+    }
+    let before = span(marked_ranges(code, "// before")[0].1);
+    assert_eq!(
+        enabled
+            .get_native_expression_type(&before)
+            .map(native_id)
+            .as_deref(),
+        Some("int(0)")
+    );
+    assert!(disabled.get_native_expression_type(&before).is_none());
+}
+
+#[test]
+fn if_certainty_tips_distinguish_documented_and_native_constants() {
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/native-conditions");
+    let expected: serde_json::Value =
+        serde_json::from_str(include_str!("fixtures/native-conditions/expected.json")).unwrap();
+    let mut project = pun_analyse::Project::new(vec![root.join("conditions.php")], vec![]);
+    project.level = 9;
+    project.php_version = 80500;
+    let mut actual: Vec<_> = pun_analyse::run(&project)
+        .unwrap()
+        .into_iter()
+        .map(|error| (error.line, error.identifier, error.message, error.tip, error.can_be_ignored))
+        .collect();
+    actual.sort();
+    assert_eq!(serde_json::to_value(actual).unwrap(), expected);
+}
+
+#[test]
+fn native_call_arguments_returns_and_continuations_match_phpstan() {
+    let oracle: serde_json::Value =
+        serde_json::from_str(include_str!("fixtures/native-calls/expected.json")).unwrap();
+    let mut failures = Vec::new();
+    for (case, code) in [
+        (
+            "certainty",
+            include_bytes!("fixtures/native-calls/certainty.php").as_slice(),
+        ),
+        (
+            "boundaries",
+            include_bytes!("fixtures/native-calls/boundaries.php").as_slice(),
+        ),
+    ] {
+        let (enabled, observed, issues) = analyze_native_calls(code, true);
+        let (disabled, off_observed, off_issues) = analyze_native_calls(code, false);
+        assert_full_artifacts_equal(&enabled, &disabled);
+        assert_eq!(issues, off_issues, "{case}");
+        assert_eq!(observed.visits, off_observed.visits, "{case}");
+        assert!(observed.visits.values().all(|count| *count == 1), "{case}");
+        for (range, expected) in oracle["types"][case].as_object().unwrap() {
+            let (start, end) = range.split_once(':').unwrap();
+            let range = (start.parse().unwrap(), end.parse().unwrap());
+            assert_eq!(observed.visits.get(&range), Some(&1), "{case}: {expected}");
+            let want = expected["available"]
+                .as_bool()
+                .unwrap()
+                .then(|| oracle_mago_id(expected["native"].as_str().unwrap()));
+            let got = observed.native.get(&range).cloned().flatten();
+            if got != want {
+                failures.push(serde_json::json!({"case":case, "expected":expected, "actual":got}));
+            }
+            assert!(disabled.get_native_expression_type(&span(range)).is_none());
+            // Reference writeback may replace the final artifact, not the completed input observation.
+            if let Some(final_type) = enabled.get_native_expression_type(&span(range)) {
+                assert_eq!(Some(native_id(final_type)), got, "{case}: {expected}");
+            }
+        }
+    }
+    assert!(
+        failures.is_empty(),
+        "{}",
+        serde_json::to_string_pretty(&failures).unwrap()
+    );
+}
+
+fn analyze_native_calls(code: &[u8], native: bool) -> (AnalysisArtifacts, Observed, String) {
+    let file = File::ephemeral(
+        Cow::Borrowed(b"native-calls.php"),
+        Cow::Owned(code.to_vec()),
+    );
+    let arena = LocalArena::new();
+    let program = parse_file(&arena, &file);
+    assert!(!program.has_errors());
+    let names = NameResolver::new(&arena).resolve(program);
+    let settings = Settings {
+        track_native_types: native,
+        ..Settings::default()
+    };
+    let mut codebase = mago_prelude::Prelude::build().metadata;
+    codebase.extend(scan_program(
+        &arena,
+        &file,
+        program,
+        &names,
+        settings.version,
+    ));
+    let mut references = SymbolReferences::new();
+    populate_codebase(
+        &mut codebase,
+        &mut references,
+        Default::default(),
+        Default::default(),
+    );
+    let observed = Arc::<Mutex<Observed>>::default();
+    let mut registry = PluginRegistry::new();
+    registry.register_expression_hook(Observer(Arc::clone(&observed)));
+    let mut result = AnalysisResult::new(references);
+    let artifacts = Analyzer::new(&arena, &file, &names, &codebase, &registry, settings)
+        .analyze_with_artifacts(program, &mut result)
+        .unwrap();
+    let found = std::mem::take(&mut *observed.lock().unwrap());
+    (artifacts, found, format!("{:?}", result.issues))
+}
+
+#[test]
+fn argument_hook_effects_do_not_restore_a_pre_call_native_scope() {
+    struct Write;
+    impl Provider for Write {
+        fn meta() -> &'static ProviderMeta {
+            static META: ProviderMeta = ProviderMeta::new(
+                "native-argument-write",
+                "native-argument-write",
+                "semantic argument effect",
+            );
+            &META
+        }
+    }
+    impl ExpressionHook for Write {
+        fn after_expression(
+            &self,
+            expression: &Expression<'_>,
+            context: &mut HookContext<'_, '_>,
+        ) -> HookResult<()> {
+            if matches!(expression, Expression::Literal(mago_syntax::cst::Literal::Integer(value))
+                if value.value == Some(777))
+            {
+                context.set_variable_type(b"$value", mago_codex::ttype::get_string());
+            }
+            Ok(())
+        }
+    }
+    let code = br"<?php
+function target(mixed $first, mixed $second): int { return 1; }
+function example(int $value): void {
+    target(
+        $value, // argument
+        777
+    ); // call
+    $value; // unavailable
+}
+";
+    let mut registry = PluginRegistry::new();
+    registry.register_expression_hook(Write);
+    let (enabled, observed, issues) = analyze(code, true, registry);
+    let mut registry = PluginRegistry::new();
+    registry.register_expression_hook(Write);
+    let (disabled, off_observed, off_issues) = analyze(code, false, registry);
+    assert_full_artifacts_equal(&enabled, &disabled);
+    assert_eq!(issues, off_issues);
+    assert_eq!(observed.visits, off_observed.visits);
+    let argument = code
+        .windows(b"$value, // argument".len())
+        .position(|source| source == b"$value, // argument")
+        .unwrap() as u32;
+    assert_eq!(
+        observed.native[&(argument, argument + 6)].as_deref(),
+        Some("int")
+    );
+    let after = span(marked_ranges(code, "// unavailable")[0].1);
+    assert!(enabled.get_native_expression_type(&after).is_none());
+    assert_eq!(
+        observed.native[&(after.start.offset, after.end.offset)],
+        None
+    );
+    let call = code
+        .windows(b"target(\n".len())
+        .position(|source| source == b"target(\n")
+        .unwrap() as u32;
+    let end = code
+        .windows(b"); // call".len())
+        .position(|source| source == b"); // call")
+        .unwrap() as u32
+        + 1;
+    assert_eq!(observed.native[&(call, end)], None);
 }

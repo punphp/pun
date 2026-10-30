@@ -49,7 +49,7 @@ pub(super) use read_only_write::assignment;
 pub(super) use access::{property_fetch, static_property_fetch};
 pub(super) use offsets::accessible as offset_accessible;
 pub(super) use offsets::offset_set as offset_types;
-pub(super) use properties::native_unset_property;
+pub(super) use properties::{native_unset_property, with_args};
 pub(super) use receivers::{check_method, check_static, method_call, static_call};
 pub(super) use regex::function_call;
 pub(super) use callables::{call as callable_call, call_user_func, pipe as callable_pipe, pipe_by_ref};
@@ -81,10 +81,12 @@ pub const IDENTIFIERS: &[&[&str]] = &[callables::IDENTIFIERS, regex::IDENTIFIERS
 /// The expressions whose type the statement results read, in the function-likes whose missing return could be
 /// reported: those with a non-void return type whose body, by syntax alone, does not always terminate (types only
 /// ever make a body terminate: a `never` call, a condition always true, a non-empty array iterated).
-pub(super) fn typed_expressions(program: &Program, contents: &[u8], level: u8) -> Vec<Span> {
+pub(super) fn typed_expressions(program: &Program, contents: &[u8], level: u8, check_arguments: bool, check_this_only: bool) -> Vec<Span> {
     let mut w = Wanted {
         contents,
         level,
+        check_arguments,
+        check_this_only,
         spans: Vec::new(),
     };
     w.walk_program(program, &mut ());
@@ -94,6 +96,8 @@ pub(super) fn typed_expressions(program: &Program, contents: &[u8], level: u8) -
 struct Wanted<'c> {
     contents: &'c [u8],
     level: u8,
+    check_arguments: bool,
+    check_this_only: bool,
     spans: Vec<Span>,
 }
 
@@ -112,6 +116,7 @@ impl Wanted<'_> {
         let empty = HashMap::new();
         let results = flow::Results {
             types: &empty,
+            call_terminations: None,
             contents: self.contents,
             codebase: None,
         };
@@ -168,39 +173,40 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_> {
         }
     }
     fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, _: &mut ()) {
-        if self.level >= 2 || super::bind_scope::has_inline_closure(&call.argument_list) {
+        if !self.check_this_only || super::bind_scope::has_inline_closure(&call.argument_list) {
             receivers::typed(call.object, &mut self.spans);
         }
     }
     fn walk_in_null_safe_method_call(&mut self, call: &'ast NullSafeMethodCall<'arena>, _: &mut ()) {
-        if self.level >= 2 || super::bind_scope::has_inline_closure(&call.argument_list) {
+        if !self.check_this_only || super::bind_scope::has_inline_closure(&call.argument_list) {
             receivers::typed(call.object, &mut self.spans);
         }
     }
     fn walk_in_property_access(&mut self, p: &'ast PropertyAccess<'arena>, _: &mut ()) {
-        if self.level >= 2 {
+        if !self.check_this_only {
             access::typed(p.object, &mut self.spans);
         }
     }
     fn walk_in_null_safe_property_access(&mut self, p: &'ast NullSafePropertyAccess<'arena>, _: &mut ()) {
-        if self.level >= 2 {
-            access::typed(p.object, &mut self.spans);
+        if !self.check_this_only || super::Checker::is_this_expression(p.object) {
+            self.spans.push(p.object.span());
         }
     }
     fn walk_in_static_property_access(&mut self, p: &'ast StaticPropertyAccess<'arena>, _: &mut ()) {
-        if self.level >= 2 {
+        if !self.check_this_only || super::Checker::is_this_expression(p.class) {
             access::typed_class(p.class, &mut self.spans);
         }
     }
     fn walk_in_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, _: &mut ()) {
-        if self.level >= 2 || super::bind_scope::has_inline_closure(&call.argument_list) {
+        if !self.check_this_only || super::bind_scope::has_inline_closure(&call.argument_list) {
             receivers::typed_class(call.class, &mut self.spans);
         }
     }
     fn walk_in_argument_list(&mut self, l: &'ast ArgumentList<'arena>, _: &mut ()) {
-        if self.level >= 5 {
-            for a in l.arguments.iter() {
-                self.spans.push(a.value().span());
+        for a in l.arguments.iter() {
+            // Overload selection reads operands even when argument diagnostics are disabled.
+            self.spans.push(a.value().span());
+            if self.check_arguments {
                 match a.value() {
                     Expression::Array(arr) => self.spans.extend(arr.elements.iter().map(element)),
                     Expression::LegacyArray(arr) => self.spans.extend(arr.elements.iter().map(element)),
@@ -210,7 +216,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_> {
         }
     }
     fn walk_in_partial_argument_list(&mut self, l: &'ast PartialArgumentList<'arena>, _: &mut ()) {
-        if self.level >= 5 {
+        if self.check_arguments {
             for a in l.arguments.iter() {
                 match a {
                     PartialArgument::Positional(p) => self.spans.push(p.value.span()),
@@ -305,6 +311,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_> {
             let empty = HashMap::new();
             let results = flow::Results {
                 types: &empty,
+                call_terminations: None,
                 contents: self.contents,
                 codebase: None,
             };

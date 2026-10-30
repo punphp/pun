@@ -184,7 +184,7 @@ pub fn resolve_in(node: &Node, scope: &dyn Scope) -> Type {
                         continue;
                     }
                     *t = match t {
-                        Type::Object(_, args) if args.is_empty() => Type::Intersection(vec![
+                        Type::Object(_, args, _) if args.is_empty() => Type::Intersection(vec![
                             t.clone(),
                             Type::Iterable(Box::new(mixed()), Box::new(array_item.clone())),
                         ]),
@@ -280,7 +280,7 @@ pub fn resolve_in(node: &Node, scope: &dyn Scope) -> Type {
             let sig = Box::new(Signature { params, ret, templates });
             match main {
                 Type::Callable(_) => Type::Callable(Some(sig)),
-                Type::Object(c, args) if args.is_empty() && c == "Closure" => Type::Closure(sig),
+                Type::Object(c, args, _) if args.is_empty() && c == "Closure" => Type::Closure(sig),
                 _ => Type::Error,
             }
         }
@@ -296,7 +296,7 @@ pub fn resolve_in(node: &Node, scope: &dyn Scope) -> Type {
                 return crate::types::LateArrayShape {
                     items: items.iter().map(|i| {
                         let key = i.key.as_ref().map(|k| match k {
-                            ShapeKey::Ident(n) => scope.template(n).filter(|t| matches!(t, Type::Template(_))).unwrap_or_else(|| Type::ConstString(n.clone())),
+                            ShapeKey::Ident(n) => scope.template(n).filter(|t| matches!(t, Type::Template(_))).unwrap_or_else(|| Type::ConstString(n.as_bytes().to_vec())),
                             ShapeKey::Str(n) => Type::ConstString(n.clone()),
                             ShapeKey::Int(n) => Type::ConstInt(int_value(n)),
                             ShapeKey::Fetch(c, n) => constant(&ConstExpr::Fetch(c.clone(), n.clone()), scope),
@@ -314,12 +314,13 @@ pub fn resolve_in(node: &Node, scope: &dyn Scope) -> Type {
             for item in items {
                 let key = item.key.as_ref().map(|k| match k {
                     ShapeKey::Int(i) => Type::ConstInt(int_value(i)),
-                    ShapeKey::Str(s) | ShapeKey::Ident(s) => Type::ConstString(s.clone()),
+                    ShapeKey::Str(s) => Type::ConstString(s.clone()),
+                    ShapeKey::Ident(s) => Type::ConstString(s.as_bytes().to_vec()),
                     ShapeKey::Fetch(class, name) => {
                         constant(&ConstExpr::Fetch(class.clone(), name.clone()), scope)
                     }
                 });
-                explicit.extend(key.clone());
+                explicit.extend(key.as_ref().map(to_array_key));
                 builder.set(key, r(&item.value), item.optional);
             }
             let is_list = kind.ends_with("list");
@@ -416,11 +417,12 @@ pub(crate) fn to_array_key(t: &Type) -> Type {
         },
         Type::Float => Type::Int,
         Type::Bool => Type::Union(vec![Type::ConstInt(0), Type::ConstInt(1)]),
-        Type::Null => Type::ConstString(String::new()),
+        Type::Null => Type::ConstString(Vec::new()),
         Type::ConstBool(b) => Type::ConstInt(*b as i64),
         // ObjectTypeTrait, ArrayTypeTrait, ResourceType, CallableType, IterableType, VoidType: an ErrorType (a mixed)
         Type::Void
         | Type::Resource
+        | Type::NonexistentParent
         | Type::ObjectWithoutClass
         | Type::Object(..)
         | Type::Static(..)
@@ -432,8 +434,8 @@ pub(crate) fn to_array_key(t: &Type) -> Type {
         | Type::Array(..)
         | Type::ConstArray(_)
         | Type::Iterable(..) => Type::Error,
-        Type::ConstString(s) if s.parse::<i64>().is_ok_and(|i| i.to_string() == *s) => {
-            Type::ConstInt(s.parse().expect("int"))
+        Type::ConstString(s) if std::str::from_utf8(s).ok().and_then(|s| s.parse::<i64>().ok()).is_some_and(|i| i.to_string().as_bytes() == s) => {
+            Type::ConstInt(std::str::from_utf8(s).unwrap().parse().expect("int"))
         }
         _ => t.clone(),
     }
@@ -442,13 +444,13 @@ pub(crate) fn to_array_key(t: &Type) -> Type {
 /// `tryResolvePseudoTypeClassType()`: a keyword imported by `use`, or naming a class of the namespace, is that class.
 fn pseudo_type_class(name: &str, scope: &dyn Scope) -> Option<Type> {
     if scope.has_use_alias(name) {
-        return Some(Type::Object(scope.resolve_name(name), vec![]));
+        return Some(Type::Object(scope.resolve_name(name), vec![], false));
     }
     if !scope.in_namespace() {
         return None;
     }
     let class = scope.resolve_name(name);
-    symbols::lookup(&class).map(|_| Type::Object(class, vec![]))
+    symbols::lookup(&class).map(|_| Type::Object(class, vec![], false))
 }
 
 fn identifier(name: &str, scope: &dyn Scope) -> Type {
@@ -495,7 +497,7 @@ fn identifier(name: &str, scope: &dyn Scope) -> Type {
         "literal-string" => return accessory(string(), &[A::LiteralString]),
         "class-string" | "interface-string" | "trait-string" => return Type::ClassString(None),
         "enum-string" => {
-            return Type::ClassString(Some(Box::new(Type::Object("UnitEnum".into(), vec![]))));
+            return Type::ClassString(Some(Box::new(Type::Object("UnitEnum".into(), vec![], false))));
         }
         "callable-string" => return Type::Intersection(vec![string(), Type::Callable(None)]),
         "array-key" => return Type::Benevolent(vec![Type::Int, Type::String]),
@@ -529,7 +531,7 @@ fn identifier(name: &str, scope: &dyn Scope) -> Type {
         "non-empty-array" => return accessory(Type::array(mixed(), mixed()), &[A::NonEmptyArray]),
         "iterable" => return Type::Iterable(Box::new(mixed()), Box::new(mixed())),
         "callable" | "pure-callable" => return Type::Callable(None),
-        "pure-closure" | "static-closure" | "static-pure-closure" => return Type::Object("Closure".into(), vec![]),
+        "pure-closure" | "static-closure" | "static-pure-closure" => return Type::Object("Closure".into(), vec![], false),
         "resource" | "open-resource" | "closed-resource" => return Type::Resource,
         "mixed" => return explicit_mixed(),
         "void" => return Type::Void,
@@ -557,13 +559,11 @@ fn identifier(name: &str, scope: &dyn Scope) -> Type {
     }
     if let Some(class) = scope.class() {
         match name.to_ascii_lowercase().as_str() {
-            "self" => return Type::Object(class.to_string(), vec![]),
+            "self" => return Type::Object(class.to_string(), vec![], false),
             "parent" => {
                 return match scope.parent() {
-                    Some(parent) => Type::Object(parent, vec![]),
-                    // NonexistentParentClassType, described as `parent`
-                    // ponytail: it is an object of a class that does not exist; add its own type if a rule asks more
-                    None => Type::Object("parent".to_string(), vec![]),
+                    Some(parent) => Type::Object(parent, vec![], false),
+                    None => Type::NonexistentParent,
                 };
             }
             "static" => {
@@ -610,7 +610,7 @@ fn identifier(name: &str, scope: &dyn Scope) -> Type {
             },
         };
     }
-    Type::Object(name.to_string(), vec![])
+    Type::Object(name.to_string(), vec![], false)
 }
 
 /// `(?:^|\\)[A-Z_][A-Z0-9_]*$`
@@ -636,7 +636,7 @@ fn generic(base: &str, args: &[Node], scope: &dyn Scope) -> Type {
     {
         return Type::Template(Box::new(Template {
             name: name.clone(),
-            scope: described.clone(),
+            scope: String::from_utf8_lossy(described).into_owned(),
             bound: resolve_in(bound, scope),
             default: rest.first().map(|d| resolve_in(d, scope)),
             argument: false,
@@ -690,7 +690,7 @@ fn generic(base: &str, args: &[Node], scope: &dyn Scope) -> Type {
         },
         "class-string" | "interface-string" => match types.as_slice() {
             // (a `TemplateMixedType` is a `MixedType`)
-            [g] if g.is_object_yes()
+            [g] if g.is_object().yes()
                 // (an `ErrorType` is a `MixedType`)
                 || matches!(g, Type::Mixed { .. } | Type::Error)
                 || matches!(g, Type::Template(t) if matches!(t.bound, Type::Mixed { .. })) =>
@@ -732,7 +732,7 @@ fn generic(base: &str, args: &[Node], scope: &dyn Scope) -> Type {
         "key-of" | "value-of" => match types.as_slice() {
             // ponytail: a KeyOfType/ValueOfType of a template (resolved late) is not modelled; kept as a
             // `key-of` / `value-of` class the checks skip
-            [t] if crate::types::contains_template(t) => Type::Object(lower.clone(), types),
+            [t] if crate::types::contains_template(t) => Type::Object(lower.clone(), types, false),
             [t] => key_or_value_of(t, lower == "value-of"),
             _ => Type::Error,
         },
@@ -798,7 +798,7 @@ fn offset_value(t: &Type, o: &Type) -> Option<Type> {
             Type::ConstInt(_) | Type::Int => intersect(vec![Type::String, Type::Accessory(Accessory::NonEmptyString)]),
             _ => Type::Error,
         },
-        Type::Int | Type::ConstInt(_) | Type::Float | Type::ConstFloat(_) | Type::Bool | Type::ConstBool(_) | Type::Null => {
+        Type::NonexistentParent | Type::Int | Type::ConstInt(_) | Type::Float | Type::ConstFloat(_) | Type::Bool | Type::ConstBool(_) | Type::Null => {
             Type::Error
         }
         Type::Union(types) => {
@@ -817,13 +817,13 @@ pub fn key_or_value_of(t: &Type, value: bool) -> Type {
         let backed = |c: &symbols::Class| {
             !c.is_enum && (c.name.eq_ignore_ascii_case("BackedEnum") || c.ancestors.iter().any(|a| a.eq_ignore_ascii_case("BackedEnum")))
         };
-        if value && matches!(&tt.bound, Type::Object(n, _) if symbols::lookup(n).is_some_and(|c| backed(&c))) {
+        if value && matches!(&tt.bound, Type::Object(n, _, _) if symbols::lookup(n).is_some_and(|c| backed(&c))) {
             return Type::Union(vec![Type::Int, Type::String]);
         }
         return key_or_value_of(&tt.bound, value);
     }
     let cases = match t {
-        Type::Object(class, _) => symbols::lookup(class)
+        Type::Object(class, _, _) => symbols::lookup(class)
             .filter(|c| c.is_enum)
             .map(|c| (c.case_values.clone(), c.name.clone())),
         Type::EnumCase(class, case) => symbols::lookup(class).map(|c| {
@@ -846,41 +846,19 @@ pub fn key_or_value_of(t: &Type, value: bool) -> Type {
     if value { t.iterable_value_type() } else { t.iterable_key_type() }
 }
 
-impl Type {
-    fn is_object_yes(&self) -> bool {
-        match self {
-            Type::Object(..)
-            | Type::ObjectWithoutClass
-            | Type::Static(..)
-            | Type::This(_)
-            | Type::ObjectShape(_)
-            | Type::Closure(_) => true,
-            Type::Template(t) => t.bound.is_object_yes(),
-            Type::Union(types) | Type::Intersection(types) => {
-                if matches!(self, Type::Union(_)) {
-                    types.iter().all(Type::is_object_yes)
-                } else {
-                    types.iter().any(Type::is_object_yes)
-                }
-            }
-            _ => false,
-        }
-    }
-}
-
 fn generic_object(base: &str, mut types: Vec<Type>, scope: &dyn Scope) -> Type {
     let main = identifier(base, scope);
     let class_name = match &main {
-        Type::Object(name, _) => name.clone(),
+        Type::Object(name, _, _) => name.clone(),
         // a template's `getObjectClassNames()`: its object bound's class (`T<U>` is `Bound<U>`)
         Type::Template(t) => match &t.bound {
-            Type::Object(name, _) => name.clone(),
+            Type::Object(name, _, _) => name.clone(),
             _ => return Type::Error,
         },
         _ => return Type::Error,
     };
     let Some(reflection) = symbols::lookup(&class_name) else {
-        return Type::Object(class_name, types);
+        return Type::Object(class_name, types, false);
     };
     let iterable = main.is_iterable().yes();
     // the defaults of the templates after the given arguments (a required one is skipped, not filled)
@@ -899,6 +877,7 @@ fn generic_object(base: &str, mut types: Vec<Type>, scope: &dyn Scope) -> Type {
             return Type::Object(
                 class_name,
                 vec![explicit_mixed(), types.pop().expect("one type")],
+                false,
             );
         }
         if class_name == "Generator" && (types.len() == 1 || types.len() == 2) {
@@ -906,10 +885,10 @@ fn generic_object(base: &str, mut types: Vec<Type>, scope: &dyn Scope) -> Type {
                 types.insert(0, explicit_mixed());
             }
             types.extend([explicit_mixed(), explicit_mixed()]);
-            return Type::Object(class_name, types);
+            return Type::Object(class_name, types, false);
         }
         if !iterable || types.len() != 1 || reflection.templates.len() == 1 {
-            return Type::Object(class_name, types);
+            return Type::Object(class_name, types, false);
         }
     }
     if iterable {
@@ -931,7 +910,7 @@ fn generic_object(base: &str, mut types: Vec<Type>, scope: &dyn Scope) -> Type {
             _ => {}
         }
     }
-    Type::Object(class_name, types)
+    Type::Object(class_name, types, false)
 }
 
 /// `expandIntMaskToType()`
@@ -984,10 +963,14 @@ fn constant(c: &ConstExpr, scope: &dyn Scope) -> Type {
         ConstExpr::Fetch(class_name, name) => {
             let is_static = class.is_some() && class_name.eq_ignore_ascii_case("static");
             let class_name = match (class, class_name.to_ascii_lowercase().as_str()) {
-                (Some(c), "self" | "static") => c,
-                _ => &scope.resolve_name(class_name),
+                (Some(c), "self" | "static") => c.to_string(),
+                (Some(c), "parent") if symbols::lookup(c).is_some() => match scope.parent() {
+                    Some(parent) => parent,
+                    None => return Type::Error,
+                },
+                _ => scope.resolve_name(class_name),
             };
-            let Some(reflection) = symbols::lookup(class_name) else {
+            let Some(reflection) = symbols::lookup(&class_name) else {
                 return Type::Error;
             };
             if name.eq_ignore_ascii_case("class") {
@@ -997,7 +980,7 @@ fn constant(c: &ConstExpr, scope: &dyn Scope) -> Type {
                         vec![],
                     ))));
                 }
-                return Type::ConstString(reflection.name.clone());
+                return Type::ConstString(reflection.name.as_bytes().to_vec());
             }
             let matches = |constant: &str| match name.split_once('*') {
                 None => constant == name,

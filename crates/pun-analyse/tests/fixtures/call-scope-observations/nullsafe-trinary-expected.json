@@ -1,0 +1,174 @@
+{
+    "calls": {
+        "166": {
+            "line": 7,
+            "expression": "$sink?->foo($born = 1)",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 166,
+                            "end": 171,
+                            "expression": "$sink",
+                            "type": "mixed"
+                        },
+                        {
+                            "start": 178,
+                            "end": 187,
+                            "expression": "$born = 1",
+                            "type": "1"
+                        },
+                        {
+                            "start": 178,
+                            "end": 183,
+                            "expression": "$born",
+                            "type": "*ERROR*"
+                        },
+                        {
+                            "start": 186,
+                            "end": 187,
+                            "expression": "1",
+                            "type": "1"
+                        }
+                    ]
+                }
+            ]
+        },
+        "247": {
+            "line": 9,
+            "expression": "$inspect->inspect($born)",
+            "names": [
+                {
+                    "name": "inspect",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 247,
+                            "end": 255,
+                            "expression": "$inspect",
+                            "type": "NullsafeTrinarySink"
+                        },
+                        {
+                            "start": 265,
+                            "end": 270,
+                            "expression": "$born",
+                            "type": "1"
+                        }
+                    ]
+                }
+            ]
+        },
+        "369": {
+            "line": 13,
+            "expression": "nullsafeVoidReceiver()?->foo($born = 2)",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 369,
+                            "end": 391,
+                            "expression": "nullsafeVoidReceiver()",
+                            "type": "null"
+                        },
+                        {
+                            "start": 398,
+                            "end": 407,
+                            "expression": "$born = 2",
+                            "type": "2"
+                        },
+                        {
+                            "start": 398,
+                            "end": 403,
+                            "expression": "$born",
+                            "type": "*ERROR*"
+                        },
+                        {
+                            "start": 406,
+                            "end": 407,
+                            "expression": "2",
+                            "type": "2"
+                        }
+                    ]
+                }
+            ]
+        },
+        "467": {
+            "line": 15,
+            "expression": "$inspect->inspect($born)",
+            "names": [
+                {
+                    "name": "inspect",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 467,
+                            "end": 475,
+                            "expression": "$inspect",
+                            "type": "NullsafeTrinarySink"
+                        },
+                        {
+                            "start": 485,
+                            "end": 490,
+                            "expression": "$born",
+                            "type": "*ERROR*"
+                        }
+                    ]
+                }
+            ]
+        },
+        "705": {
+            "line": 23,
+            "expression": "$inspect->inspect($born)",
+            "names": [
+                {
+                    "name": "inspect",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 705,
+                            "end": 713,
+                            "expression": "$inspect",
+                            "type": "NullsafeTrinarySink"
+                        },
+                        {
+                            "start": 723,
+                            "end": 728,
+                            "expression": "$born",
+                            "type": "3"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "errors": [
+        [
+            13,
+            "function.void",
+            "Result of function nullsafeVoidReceiver (void) is used.",
+            null,
+            true
+        ],
+        [
+            13,
+            "method.nonObject",
+            "Cannot call method foo() on null.",
+            null,
+            true
+        ],
+        [
+            15,
+            "variable.undefined",
+            "Undefined variable: $born",
+            null,
+            true
+        ]
+    ],
+    "function_events": {
+        "369": 1
+    }
+}

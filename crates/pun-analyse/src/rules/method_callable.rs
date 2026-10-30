@@ -38,7 +38,15 @@ pub(super) fn literal_guard(
 impl Checker<'_, '_> {
     /// The original receiver, and whether the condition promises the method. For `is_callable`, PHPStan only
     /// delegates to method_exists when the original constant array is not definitely non-callable.
-    pub(super) fn method_guard_source(&self, key: &str) -> Option<(Type, bool)> {
+    pub(super) fn method_guard_source_in(
+        &self,
+        key: &str,
+        types: &std::collections::HashMap<
+            Span,
+            mago_codex::ttype::union::TUnion,
+            impl std::hash::BuildHasher,
+        >,
+    ) -> Option<(Type, bool)> {
         let wanted = scope::Guard::Method(key.to_string());
         let span = self.guards.iter().find_map(|g| match g {
             scope::Guard::MethodSource(k, span) if scope::Guard::Method(k.clone()) == wanted => {
@@ -46,7 +54,7 @@ impl Checker<'_, '_> {
             }
             _ => None,
         })?;
-        let source = self.to_phpstan(self.types.get(span)?);
+        let source = self.to_phpstan(types.get(span)?);
         if let Type::ConstArray(array) = &source {
             let receiver = array.values.first()?.clone();
             let specified = !declared::with_classes(self, || source.is_callable().no());
@@ -57,9 +65,21 @@ impl Checker<'_, '_> {
     }
 
     pub(super) fn has_method_guard(&self, key: &str) -> bool {
+        self.has_method_guard_in(key, &self.types)
+    }
+
+    pub(super) fn has_method_guard_in(
+        &self,
+        key: &str,
+        types: &std::collections::HashMap<
+            Span,
+            mago_codex::ttype::union::TUnion,
+            impl std::hash::BuildHasher,
+        >,
+    ) -> bool {
         self.guards.contains(&scope::Guard::Method(key.to_string()))
             && self
-                .method_guard_source(key)
+                .method_guard_source_in(key, types)
                 .is_none_or(|(_, specified)| specified)
     }
 }

@@ -160,6 +160,7 @@ pub fn check<'arena>(
             params::Call {
                 kind: params::CallKind::Attribute,
                 subject: &format!("Attribute class {} constructor", k.display()),
+                scope: None,
                 void_message: None,
             },
             false,

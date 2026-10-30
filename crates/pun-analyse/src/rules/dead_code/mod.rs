@@ -20,7 +20,7 @@ pub(super) use sort::call as sort_call;
 pub(crate) use conditions::conditions_in_traits;
 pub(crate) use impure_points::resolve as impure_points;
 pub(super) use impure_points::{function as impure_function, method as impure_method};
-pub(super) use unreachable::find as unreachable_statements;
+pub(super) use unreachable::{Statements as UnreachableStatements, find as unreachable_statements};
 
 use std::collections::HashSet;
 
@@ -48,7 +48,7 @@ pub(super) fn flow_types(program: &Program, level: u8) -> Vec<Span> {
 }
 
 pub(super) use unused_private::class as unused_private;
-pub(super) use null_coalesce::{coalesce as null_coalesce, coalesce_types};
+pub(super) use null_coalesce::{coalesce as null_coalesce, coalesce_types, isset};
 
 pub(super) fn statement(c: &mut Checker, s: &ExpressionStatement) {
     no_discard::statement(c, s);
@@ -143,7 +143,7 @@ pub(super) fn function_call(c: &mut Checker, call: &FunctionCall) {
     }
 }
 
-/// UnusedClosureUsesRule, with UnusedFunctionParametersCheck's lexical variable walk.
+/// UnusedClosureUsesRule consumes the semantic producer's VariableWritesNode.
 pub(super) fn closure(c: &mut Checker, closure: &Closure) {
     if c.level < 1 {
         return;
@@ -151,24 +151,36 @@ pub(super) fn closure(c: &mut Checker, closure: &Closure) {
     let Some(uses) = &closure.use_clause else {
         return;
     };
-    let used = used_variables(c, &closure.body);
-    for capture in uses.variables.iter() {
-        if !used.contains(capture.variable.name) && !used.contains(b"*".as_slice()) {
-            let at = if c.precise_unused_parameter_line {
-                capture.variable.span()
+    let Some(writes) = c.variable_writes.get(&closure.span()) else {
+        return;
+    };
+    if writes.opaque {
+        return;
+    }
+    let unused: Vec<_> = uses.variables.iter()
+        .filter(|capture| {
+            if writes.writes.contains_key(&capture.variable.span()) {
+                !writes.all_names && !writes.read.contains(&capture.variable.span())
             } else {
-                closure.span()
-            };
-            c.report(
-                at,
-                "closure.unusedUse",
-                format!(
-                    "Anonymous function has an unused use {}.",
-                    String::from_utf8_lossy(capture.variable.name)
-                ),
-                None,
-            );
-        }
+                !writes.is_variable_referenced(mago_word::word(capture.variable.name))
+            }
+        })
+        .collect();
+    for capture in unused {
+        let at = if c.precise_unused_parameter_line {
+            capture.variable.span()
+        } else {
+            closure.span()
+        };
+        c.report(
+            at,
+            "closure.unusedUse",
+            format!(
+                "Anonymous function has an unused use {}.",
+                String::from_utf8_lossy(capture.variable.name)
+            ),
+            None,
+        );
     }
 }
 

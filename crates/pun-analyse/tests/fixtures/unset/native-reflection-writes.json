@@ -1,0 +1,33 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 3
+  },
+  "files": {
+    "/home/user/workspace/pun-unset-writable-reflection/crates/pun-analyse/tests/fixtures/unset/native-reflection-writes.php": {
+      "errors": 3,
+      "messages": [
+        {
+          "message": "Property UnsetNativeReflectionWrites\\WritableOverlay::$p (string) does not accept int.",
+          "line": 16,
+          "ignorable": true,
+          "identifier": "assign.propertyType"
+        },
+        {
+          "message": "Access to an undefined property UnsetNativeReflectionWrites\\AnnotationOnly::$p.",
+          "line": 19,
+          "ignorable": true,
+          "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+          "identifier": "property.notFound"
+        },
+        {
+          "message": "Property UnsetNativeReflectionWrites\\ReadOverlay::$p (string) does not accept int.",
+          "line": 20,
+          "ignorable": true,
+          "identifier": "assign.propertyType"
+        }
+      ]
+    }
+  },
+  "errors": []
+}

@@ -27,7 +27,6 @@ use crate::context::block::BlockContext;
 use crate::context::block::ReferenceConstraint;
 use crate::context::block::ReferenceConstraintSource;
 use crate::error::AnalysisError;
-use crate::expression::closure::widen_by_reference_type;
 use crate::statement::analyze_statements;
 use crate::utils::docblock::check_docblock_type_incompatibility;
 use crate::utils::docblock::get_type_from_var_docblock;
@@ -204,8 +203,8 @@ where
 /// Sets the types of the variables a closure captures by reference before its
 /// body is analyzed.
 ///
-/// These are the inferred types, widened because the enclosing scope can also
-/// write to the variables between two calls.
+/// processClosureScope retains equal holders; generalization happens only when
+/// convergence changes them. Capturing a variable is not itself a widening.
 pub(super) fn add_captured_types<A>(
     context: &Context<'_, '_, A>,
     block_context: &mut BlockContext<'_>,
@@ -214,12 +213,6 @@ pub(super) fn add_captured_types<A>(
     A: Arena,
 {
     add_inferred_captured_types(context, block_context, inferred_types);
-
-    for variable in &block_context.static_locals {
-        if let Some(variable_type) = block_context.locals.get_mut(variable) {
-            widen_by_reference_type(Rc::make_mut(variable_type));
-        }
-    }
 }
 
 /// Adds the inferred types to the static locals that are already in scope when

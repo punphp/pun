@@ -1,6 +1,7 @@
 use mago_word::Word;
 use mago_word::concat_word;
 use mago_word::word;
+use std::sync::Arc;
 
 use crate::ttype::TType;
 use crate::ttype::TypeRef;
@@ -28,9 +29,14 @@ pub struct TNamedObject {
     /// `true` if this specifically represents the `$this` variable (same instance).
     /// Implies `is_static`. Only `return $this` satisfies a `$this` return type.
     pub is_this: bool,
+    /// A per-type final reflection override from an exact instantiation, not a class declaration.
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub is_exact: bool,
     /// Represents additional types in an intersection type (`&B&S` part of `A&B&S`).
     /// Contains other *atomic* types (boxed due to potential recursion).
     pub intersection_types: Option<Box<Vec<TAtomic>>>,
+    /// ObjectType's excluded set, distinct from its positive intersection constraints.
+    pub subtracted_type: Option<Arc<TUnion>>,
     /// Internal analysis flag: `true` if the type parameters have been remapped.
     pub remapped_parameters: bool,
 }
@@ -46,8 +52,10 @@ impl TNamedObject {
             variances: None,
             is_static: false,
             is_this: false,
+            is_exact: false,
             remapped_parameters: false,
             intersection_types: None,
+            subtracted_type: None,
         }
     }
 
@@ -70,6 +78,14 @@ impl TNamedObject {
     #[must_use]
     pub fn new_this(name: Word) -> Self {
         Self { is_this: true, ..Self::new_static(name) }
+    }
+
+    /// Sets the per-type exact-class identity without changing receiver flags or class metadata.
+    #[inline]
+    #[must_use]
+    pub fn with_is_exact(mut self, is_exact: bool) -> Self {
+        self.is_exact = is_exact;
+        self
     }
 
     /// Returns the `Word` for the primary class/interface name.
@@ -128,6 +144,13 @@ impl TNamedObject {
         self
     }
 
+    /// ObjectType::changeSubtractedType(), preserving generic and receiver identity.
+    #[must_use]
+    pub fn with_subtracted_type(mut self, excluded: Option<TUnion>) -> Self {
+        self.subtracted_type = excluded.filter(|t| !t.is_never()).map(Arc::new);
+        self
+    }
+
     #[inline]
     #[must_use]
     pub fn get_variance(&self, offset: usize) -> Option<Variance> {
@@ -158,6 +181,9 @@ impl TType for TNamedObject {
             for atomic in intersection_types.iter() {
                 children.push(TypeRef::Atomic(atomic));
             }
+        }
+        if let Some(excluded) = &self.subtracted_type {
+            children.push(TypeRef::Union(excluded));
         }
     }
 
@@ -221,6 +247,10 @@ impl TType for TNamedObject {
             result = append_intersection_ids(result, intersection_types, None);
         }
 
+        if let Some(excluded) = &self.subtracted_type {
+            result = concat_word!(result, b"~(", excluded.get_id(), b")");
+        }
+
         if self.is_this {
             concat_word!(b"$this(", result, b")")
         } else if self.is_static {
@@ -265,6 +295,15 @@ impl TType for TNamedObject {
 
         if let Some(intersection_types) = self.get_intersection_types() {
             result = append_intersection_ids(result, intersection_types, Some(indent));
+        }
+
+        if let Some(excluded) = &self.subtracted_type {
+            result = concat_word!(
+                result,
+                b"~(",
+                excluded.get_pretty_id_with_indent(indent),
+                b")"
+            );
         }
 
         if self.is_this {

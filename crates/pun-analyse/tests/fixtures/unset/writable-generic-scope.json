@@ -1,0 +1,38 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 4
+  },
+  "files": {
+    "/home/user/workspace/pun-unset-writable-reflection/crates/pun-analyse/tests/fixtures/unset/writable-generic-scope.php": {
+      "errors": 4,
+      "messages": [
+        {
+          "message": "Property UnsetWritableGenericScope\\GenericScope<T of string,U of int>::$p (T of string) does not accept int.",
+          "line": 13,
+          "ignorable": true,
+          "identifier": "assign.propertyType"
+        },
+        {
+          "message": "Property UnsetWritableGenericScope\\GenericScope<string,int<1, max>>::$p (non-empty-string) does not accept 1.",
+          "line": 20,
+          "ignorable": true,
+          "identifier": "assign.propertyType"
+        },
+        {
+          "message": "Property UnsetWritableGenericScope\\GenericScope<string,int<1, max>>::$p (non-empty-string) does not accept ''.",
+          "line": 21,
+          "ignorable": true,
+          "identifier": "assign.propertyType"
+        },
+        {
+          "message": "Property UnsetWritableGenericScope\\GenericScope<string,int>::$p (string) does not accept int.",
+          "line": 26,
+          "ignorable": true,
+          "identifier": "assign.propertyType"
+        }
+      ]
+    }
+  },
+  "errors": []
+}

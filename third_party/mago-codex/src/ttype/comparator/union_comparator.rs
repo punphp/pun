@@ -191,6 +191,7 @@ fn is_contained_by_atomic(
     let container_atomic_types = container_type.types.as_ref();
     let input_from_template_fallback = input_type.from_template_fallback();
     let mut type_match_found = false;
+    let mut definite_match_found = false;
     let mut some_type_coerced = false;
     let mut some_type_coerced_from_nested_mixed = false;
 
@@ -280,6 +281,7 @@ fn is_contained_by_atomic(
                 .push((*name, TemplateBound::new(input_type.clone(), 0, None)));
 
             type_match_found = true;
+            definite_match_found = true;
 
             continue;
         }
@@ -321,10 +323,12 @@ fn is_contained_by_atomic(
 
         if is_atomic_contained_by {
             type_match_found = true;
+            definite_match_found |= !atomic_comparison_result.is_only_accepted;
         }
     }
 
     if type_match_found {
+        union_comparison_result.is_only_accepted |= !definite_match_found;
         return true;
     }
 
@@ -340,6 +344,7 @@ fn is_contained_by_atomic(
             inside_assertion,
             &mut atomic_comparison_result,
         ) {
+            union_comparison_result.is_only_accepted |= atomic_comparison_result.is_only_accepted;
             if let Some(replacement_atomic_type) = atomic_comparison_result.replacement_atomic_type {
                 if let Some(replacement_union_type) = &mut union_comparison_result.replacement_union_type {
                     replacement_union_type.replace_type(input_type_part, replacement_atomic_type);
@@ -398,7 +403,9 @@ fn get_combined_keyed_array_union_container(
         };
 
         let (key, value) = array.parameters.as_ref()?;
-        (array.known_items.is_none() && (Arc::ptr_eq(input_key, key) || input_key.as_ref() == key.as_ref()))
+        (array.callable == input.callable
+            && array.known_items.is_none()
+            && (Arc::ptr_eq(input_key, key) || input_key.as_ref() == key.as_ref()))
             .then_some((array, value.as_ref()))
     });
 
@@ -419,6 +426,7 @@ fn get_combined_keyed_array_union_container(
         parameters: Some((Arc::clone(input_key), Arc::new(value))),
         non_empty,
         known_non_list,
+        callable: input.callable.clone(),
     })))
 }
 

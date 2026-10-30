@@ -1,0 +1,264 @@
+{
+    "types": {
+        "direct.php": [
+            {
+                "start": 126,
+                "end": 147,
+                "expression": "Example::doTheThing()",
+                "type": "null",
+                "error": false,
+                "raw_type": "void",
+                "raw_error": false
+            },
+            {
+                "start": 155,
+                "end": 178,
+                "expression": "Example::getSomeValue()",
+                "type": "int",
+                "error": false,
+                "raw_type": "int",
+                "raw_error": false
+            }
+        ],
+        "neighbors.php": [
+            {
+                "start": 325,
+                "end": 348,
+                "expression": "$class::getSomeValue(1)",
+                "type": "int",
+                "error": false,
+                "raw_type": "int",
+                "raw_error": false
+            },
+            {
+                "start": 354,
+                "end": 371,
+                "expression": "$class::missing()",
+                "type": "*ERROR*",
+                "error": true,
+                "raw_type": "*ERROR*",
+                "raw_error": true
+            },
+            {
+                "start": 376,
+                "end": 407,
+                "expression": "StaticConcrete::getSomeValue(1)",
+                "type": "int",
+                "error": false,
+                "raw_type": "int",
+                "raw_error": false
+            },
+            {
+                "start": 409,
+                "end": 434,
+                "expression": "StaticConcrete::missing()",
+                "type": "*ERROR*",
+                "error": true,
+                "raw_type": "*ERROR*",
+                "raw_error": true
+            },
+            {
+                "start": 436,
+                "end": 473,
+                "expression": "StaticContract::getSomeValue('wrong')",
+                "type": "int",
+                "error": false,
+                "raw_type": "int",
+                "raw_error": false
+            },
+            {
+                "start": 475,
+                "end": 500,
+                "expression": "StaticContract::missing()",
+                "type": "*ERROR*",
+                "error": true,
+                "raw_type": "*ERROR*",
+                "raw_error": true
+            }
+        ]
+    },
+    "errors": {
+        "0": [
+            [
+                "direct.php",
+                11,
+                "staticMethod.callToAbstract",
+                "Cannot call abstract static method Example::getSomeValue().",
+                null,
+                true
+            ],
+            [
+                "direct.php",
+                9,
+                "staticMethod.callToAbstract",
+                "Cannot call abstract static method Example::doTheThing().",
+                null,
+                true
+            ],
+            [
+                "neighbors.php",
+                14,
+                "staticMethod.notFound",
+                "Call to an undefined static method StaticContract::missing().",
+                null,
+                true
+            ],
+            [
+                "neighbors.php",
+                18,
+                "staticMethod.notFound",
+                "Call to an undefined static method StaticConcrete::missing().",
+                null,
+                true
+            ],
+            [
+                "neighbors.php",
+                19,
+                "staticMethod.callToAbstract",
+                "Cannot call abstract static method StaticContract::getSomeValue().",
+                null,
+                true
+            ],
+            [
+                "neighbors.php",
+                20,
+                "staticMethod.notFound",
+                "Call to an undefined static method StaticContract::missing().",
+                null,
+                true
+            ]
+        ],
+        "5": [
+            [
+                "direct.php",
+                11,
+                "staticMethod.callToAbstract",
+                "Cannot call abstract static method Example::getSomeValue().",
+                null,
+                true
+            ],
+            [
+                "direct.php",
+                9,
+                "staticMethod.callToAbstract",
+                "Cannot call abstract static method Example::doTheThing().",
+                null,
+                true
+            ],
+            [
+                "neighbors.php",
+                14,
+                "staticMethod.notFound",
+                "Call to an undefined static method StaticContract::missing().",
+                null,
+                true
+            ],
+            [
+                "neighbors.php",
+                17,
+                "staticMethod.resultUnused",
+                "Call to StaticConcrete::getSomeValue() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "neighbors.php",
+                18,
+                "staticMethod.notFound",
+                "Call to an undefined static method StaticConcrete::missing().",
+                null,
+                true
+            ],
+            [
+                "neighbors.php",
+                19,
+                "argument.type",
+                "Parameter #1 $value of static method StaticContract::getSomeValue() expects int, string given.",
+                null,
+                true
+            ],
+            [
+                "neighbors.php",
+                19,
+                "staticMethod.callToAbstract",
+                "Cannot call abstract static method StaticContract::getSomeValue().",
+                null,
+                true
+            ],
+            [
+                "neighbors.php",
+                20,
+                "staticMethod.notFound",
+                "Call to an undefined static method StaticContract::missing().",
+                null,
+                true
+            ]
+        ],
+        "9": [
+            [
+                "direct.php",
+                11,
+                "staticMethod.callToAbstract",
+                "Cannot call abstract static method Example::getSomeValue().",
+                null,
+                true
+            ],
+            [
+                "direct.php",
+                9,
+                "staticMethod.callToAbstract",
+                "Cannot call abstract static method Example::doTheThing().",
+                null,
+                true
+            ],
+            [
+                "neighbors.php",
+                14,
+                "staticMethod.notFound",
+                "Call to an undefined static method StaticContract::missing().",
+                null,
+                true
+            ],
+            [
+                "neighbors.php",
+                17,
+                "staticMethod.resultUnused",
+                "Call to StaticConcrete::getSomeValue() on a separate line has no effect.",
+                null,
+                true
+            ],
+            [
+                "neighbors.php",
+                18,
+                "staticMethod.notFound",
+                "Call to an undefined static method StaticConcrete::missing().",
+                null,
+                true
+            ],
+            [
+                "neighbors.php",
+                19,
+                "argument.type",
+                "Parameter #1 $value of static method StaticContract::getSomeValue() expects int, string given.",
+                null,
+                true
+            ],
+            [
+                "neighbors.php",
+                19,
+                "staticMethod.callToAbstract",
+                "Cannot call abstract static method StaticContract::getSomeValue().",
+                null,
+                true
+            ],
+            [
+                "neighbors.php",
+                20,
+                "staticMethod.notFound",
+                "Call to an undefined static method StaticContract::missing().",
+                null,
+                true
+            ]
+        ]
+    }
+}

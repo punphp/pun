@@ -1,0 +1,8 @@
+{
+  "body-short": "<?php\n$x = <<<TXT\n body\n  TXT;\n",
+  "body-mixed": "<?php\n$x = <<<TXT\n\tbody\n  TXT;\n",
+  "unicode-fatal": "<?php\n$x = \"\\u{110000}\";\n",
+  "numeric-lexical": "<?php\n$x = 0_8;\n",
+  "recovered-expression": "<?php\n$x = <<<TXT\n body\n \tTXT;\n$broken = ;\n",
+  "unclosed-document": "<?php\n$x = <<<TXT\n body\n"
+}

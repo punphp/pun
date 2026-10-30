@@ -72,10 +72,70 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Expression<'arena> {
     where
         A: Arena,
     {
+        if crate::observations::consume(self, context, block_context, artifacts) {
+            return Ok(());
+        }
+        crate::observations::before(self, context, block_context);
+        let result = self.analyze_inner(context, block_context, artifacts);
+        if result.is_ok() {
+            // Semantic hooks can finish an expression without the normal after hooks.
+            // Its retained result and the following selector position still exist.
+            crate::observations::after(self, context, block_context, artifacts);
+            crate::variable_flow::expression(self, context, block_context, artifacts);
+        }
+        result
+    }
+}
+
+// The CST is owned by mago-syntax. Keep the successful-completion wrapper above
+// separate from the native walk, including semantic hooks' early returns.
+trait ExpressionAnalysis<'ast, 'arena> {
+    fn analyze_inner<'ctx, A: Arena>(
+        &'ast self,
+        context: &mut Context<'ctx, 'arena, A>,
+        block_context: &mut BlockContext<'ctx>,
+        artifacts: &mut AnalysisArtifacts,
+    ) -> Result<(), AnalysisError>;
+}
+
+impl<'ast, 'arena> ExpressionAnalysis<'ast, 'arena> for Expression<'arena> {
+    fn analyze_inner<'ctx, A: Arena>(
+        &'ast self,
+        context: &mut Context<'ctx, 'arena, A>,
+        block_context: &mut BlockContext<'ctx>,
+        artifacts: &mut AnalysisArtifacts,
+    ) -> Result<(), AnalysisError> {
+        // Capture a whole-call holder at its own before-position. Evaluation and effects
+        // still run; the own raw return must not overwrite this effective value.
+        let id = get_block_expression_id(self, context, block_context)
+            .filter(|id| block_context.variable_certainty(*id).is_defined());
+        let holder = id.and_then(|id| block_context.locals.get(&id).cloned());
+        let native_holder = id.and_then(|id| block_context.native_locals.as_ref()?.get(&id).cloned());
+        artifacts.begin_expression_result(self, holder, native_holder);
         crate::native::before_expression(self, block_context);
         let span = self.span();
+        for request in &context.settings.property_initialization_observations {
+            if request.expression == span && !context.observations.pricing && context.raw_callback_gather_depth == 0 {
+                let certainty = block_context
+                    .variable_state
+                    .property_initializations
+                    .get(&request.property)
+                    .copied()
+                    .unwrap_or(crate::property_initialization::PropertyInitializationCertainty::No);
+                artifacts
+                    .property_initialization_observations
+                    .entry(span)
+                    .or_default()
+                    .entry(request.property)
+                    .and_modify(|previous| *previous = previous.join(certainty))
+                    .or_insert(certainty);
+            }
+        }
         artifacts.remove_native_expression_type(&(span.start.offset, span.end.offset));
         artifacts.record_variable_definedness(Node::Expression(self), block_context);
+        if matches!(self, Expression::Call(_) | Expression::Pipe(_)) {
+            artifacts.set_call_termination(self, false);
+        }
 
         if context.plugin_registry.has_expression_hooks() {
             let mut hook_context = HookContext::new(context.codebase, context.source_file, block_context, artifacts);
@@ -252,7 +312,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Expression<'arena> {
 
         result?;
 
-        crate::native::after_expression(self, block_context, artifacts);
+        crate::native::after_expression(self, context, block_context, artifacts);
 
         if context.plugin_registry.has_expression_hooks() {
             let previous_type = artifacts.get_rc_expression_type(self).cloned();
@@ -308,8 +368,8 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Parenthesized<'arena> {
         A: Arena,
     {
         self.expression.analyze(context, block_context, artifacts)?;
-        if let Some(u) = artifacts.get_expression_type(&self.expression) {
-            artifacts.set_expression_type(&self, u.clone());
+        if let Some(result) = artifacts.get_expression_result(self.expression) {
+            artifacts.set_expression_result(self, result);
         }
 
         Ok(())

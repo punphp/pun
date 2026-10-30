@@ -1,0 +1,110 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 16
+  },
+  "files": {
+    "main.php": {
+      "errors": 16,
+      "messages": [
+        {
+          "message": "Dumped type: HolderEdges\\GenericObject",
+          "line": 27,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{value: HolderEdges\\GenericObject, token: HolderEdges\\Token::First}",
+          "line": 28,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: HolderEdges\\Token::First",
+          "line": 29,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 30,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 'HolderEdges\\\\A'",
+          "line": 31,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 1|4",
+          "line": 32,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{0: 1, value: 1|4}",
+          "line": 33,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{0: 1|4, next: 7}",
+          "line": 34,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 4|7",
+          "line": 35,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 1.5|3.5",
+          "line": 36,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: bool",
+          "line": 37,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 38,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Constant HolderEdges\\DifferentUnion::V with value 1|7 overriding constant HolderEdges\\UnionSource::V with different value 1|4 should have the same value.",
+          "line": 41,
+          "ignorable": false,
+          "identifier": "classConstant.value"
+        },
+        {
+          "message": "Constant HolderEdges\\LongerUnion::V with value 1|4|7 overriding constant HolderEdges\\UnionSource::V with different value 1|4 should have the same value.",
+          "line": 42,
+          "ignorable": false,
+          "identifier": "classConstant.value"
+        },
+        {
+          "message": "Dumped type: HolderEdges\\GenericObject|true",
+          "line": 47,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: HolderEdges\\GenericObject|false",
+          "line": 48,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        }
+      ]
+    }
+  },
+  "errors": []
+}

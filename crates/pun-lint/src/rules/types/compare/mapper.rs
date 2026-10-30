@@ -594,7 +594,7 @@ pub(crate) fn expr_type(
             .iter()
             .any(|k| written.eq_ignore_ascii_case(k))
         {
-            return Type::Object(resolve_class_name(ancestors, class), vec![]);
+            return Type::Object(resolve_class_name(ancestors, class), vec![], false);
         }
     }
     t
@@ -624,7 +624,7 @@ fn from_atomic(a: &TAtomic) -> Type {
             TScalar::Float(TFloat::Literal(f)) => Type::ConstFloat(f.0),
             TScalar::Float(_) => Type::Float,
             TScalar::String(s) => match s.get_known_literal_value() {
-                Some(v) => Type::ConstString(text(v)),
+                Some(v) => Type::ConstString(v.to_vec()),
                 None => Type::String,
             },
             TScalar::ClassLikeString(_) => Type::ClassString(None),
@@ -655,7 +655,7 @@ fn from_atomic(a: &TAtomic) -> Type {
                 for (key, (optional, v)) in items.iter() {
                     let key = match key {
                         ArrayKey::Integer(i) => Type::ConstInt(*i),
-                        ArrayKey::String(s) => Type::ConstString(text(s.as_bytes())),
+                        ArrayKey::String(s) => Type::ConstString(s.as_bytes().to_vec()),
                         _ => continue,
                     };
                     builder.set(Some(key), from_mago(v), *optional);
@@ -670,7 +670,7 @@ fn from_atomic(a: &TAtomic) -> Type {
             Box::new(from_mago(i.get_value_type())),
         ),
         TAtomic::Callable(TCallable::Signature(s)) if s.is_closure() => {
-            Type::Object("Closure".to_string(), vec![])
+            Type::Object("Closure".to_string(), vec![], false)
         }
         TAtomic::Callable(_) => Type::Callable(None),
         TAtomic::Object(TObject::Named(n)) => {
@@ -680,12 +680,12 @@ fn from_atomic(a: &TAtomic) -> Type {
             } else if n.is_static {
                 Type::Static(name, vec![])
             } else {
-                Type::Object(name, vec![])
+                Type::Object(name, vec![], false)
             }
         }
         TAtomic::Object(TObject::Enum(e)) => match &e.case {
             Some(case) => Type::EnumCase(text(e.name.as_bytes()), text(case.as_bytes())),
-            None => Type::Object(text(e.name.as_bytes()), vec![]),
+            None => Type::Object(text(e.name.as_bytes()), vec![], false),
         },
         TAtomic::Object(_) => Type::ObjectWithoutClass,
         TAtomic::Resource(_) => Type::Resource,

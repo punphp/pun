@@ -1,0 +1,423 @@
+{
+    "phar_sha256": "85157dba3d95d77ca603d2b7303aa78a538f9e3b56ccad07dd794c53aa96d1ae",
+    "source_sha256": "25dae74de6251d2af5450b5981c9c5b83b598eab65bcf628a936a36d5b223090",
+    "errors": {
+        "0": [
+            [
+                37,
+                "phpstan.dumpType",
+                "Dumped type #1: array{m: 3, b: 4}|array{z: 1, a: 2}",
+                null,
+                false
+            ],
+            [
+                37,
+                "phpstan.dumpType",
+                "Dumped type #2: array{m: 3, b: 4}|array{z: 1, a: 2}",
+                null,
+                false
+            ],
+            [
+                38,
+                "phpstan.dumpType",
+                "Dumped type #1: array{a: 20, z: 10}|array{z: 1, a: 2}",
+                null,
+                false
+            ],
+            [
+                38,
+                "phpstan.dumpType",
+                "Dumped type #2: array{a: 2, z: 1}",
+                null,
+                false
+            ],
+            [
+                38,
+                "phpstan.dumpType",
+                "Dumped type #3: array{z?: 1, a: 2}",
+                null,
+                false
+            ],
+            [
+                39,
+                "phpstan.dumpType",
+                "Dumped type #1: array{z: 1, a: 2}",
+                null,
+                false
+            ],
+            [
+                39,
+                "phpstan.dumpType",
+                "Dumped type #2: array{m: 3, b: 4}|array{z: 1, a: 2}",
+                null,
+                false
+            ],
+            [
+                40,
+                "phpstan.dumpType",
+                "Dumped type #1: array{z: 1, a: 2}",
+                null,
+                false
+            ],
+            [
+                40,
+                "phpstan.dumpType",
+                "Dumped type #2: array{z: 1, a: 2}",
+                null,
+                false
+            ],
+            [
+                40,
+                "phpstan.dumpType",
+                "Dumped type #3: array{m: 3, b: 4, z: 1, a: 2}",
+                null,
+                false
+            ],
+            [
+                41,
+                "phpstan.dumpType",
+                "Dumped type #1: array{m: 3, z: array{left: 1}, b: 4, a: 2}",
+                null,
+                false
+            ],
+            [
+                41,
+                "phpstan.dumpType",
+                "Dumped type #2: array{m: array{z: 4, a: 5}, z: array{y: 1, b: 2}, a: 3}",
+                null,
+                false
+            ],
+            [
+                42,
+                "phpstan.dumpType",
+                "Dumped type #1: array{q: 5, z?: 1, a: 2}",
+                null,
+                false
+            ],
+            [
+                42,
+                "phpstan.dumpType",
+                "Dumped type #2: array{2: 1, 0: 2}",
+                null,
+                false
+            ],
+            [
+                43,
+                "phpstan.dumpType",
+                "Dumped type #1: array{z: array{x: 3, a: 4}|array{y: 1, b: 2}, a: array{y: 5, b: 6}}",
+                null,
+                false
+            ],
+            [
+                43,
+                "phpstan.dumpType",
+                "Dumped type #2: array{z: 3, a: 2}",
+                null,
+                false
+            ],
+            [
+                44,
+                "phpstan.dumpType",
+                "Dumped type #1: mixed",
+                null,
+                false
+            ],
+            [
+                44,
+                "phpstan.dumpType",
+                "Dumped type #2: mixed~(0|0.0|''|'0'|array{}|false|null)",
+                null,
+                false
+            ],
+            [
+                44,
+                "phpstan.dumpType",
+                "Dumped type #3: array{z: mixed, a: 2}",
+                null,
+                false
+            ],
+            [
+                44,
+                "phpstan.dumpType",
+                "Dumped type #4: 3",
+                null,
+                false
+            ],
+            [
+                45,
+                "phpstan.dumpType",
+                "Dumped type #1: array{m: 3, b: 4}|array{z: 1, a: 2}",
+                null,
+                false
+            ],
+            [
+                45,
+                "phpstan.dumpType",
+                "Dumped type #2: array{m: 3, z: array{left: 1}, b: 4, a: 2}",
+                null,
+                false
+            ],
+            [
+                45,
+                "phpstan.dumpType",
+                "Dumped type #3: array{m: 3, b: 4}|array{z: 1, a: 2}",
+                null,
+                false
+            ],
+            [
+                46,
+                "phpstan.dumpType",
+                "Dumped type: array{a?: 1, b?: 1, z: 2}",
+                null,
+                false
+            ]
+        ],
+        "4": [
+            [
+                10,
+                "ternary.alwaysFalse",
+                "Ternary operator condition is always false.",
+                null,
+                true
+            ],
+            [
+                11,
+                "ternary.alwaysTrue",
+                "Ternary operator condition is always true.",
+                null,
+                true
+            ],
+            [
+                12,
+                "ternary.alwaysTrue",
+                "Ternary operator condition is always true.",
+                null,
+                true
+            ],
+            [
+                13,
+                "ternary.alwaysTrue",
+                "Ternary operator condition is always true.",
+                null,
+                true
+            ],
+            [
+                14,
+                "ternary.alwaysTrue",
+                "Ternary operator condition is always true.",
+                null,
+                true
+            ],
+            [
+                15,
+                "ternary.alwaysTrue",
+                "Ternary operator condition is always true.",
+                null,
+                true
+            ],
+            [
+                24,
+                "ternary.alwaysTrue",
+                "Ternary operator condition is always true.",
+                null,
+                true
+            ],
+            [
+                27,
+                "ternary.alwaysTrue",
+                "Ternary operator condition is always true.",
+                null,
+                true
+            ],
+            [
+                33,
+                "ternary.alwaysTrue",
+                "Ternary operator condition is always true.",
+                null,
+                true
+            ],
+            [
+                37,
+                "phpstan.dumpType",
+                "Dumped type #1: array{m: 3, b: 4}|array{z: 1, a: 2}",
+                null,
+                false
+            ],
+            [
+                37,
+                "phpstan.dumpType",
+                "Dumped type #2: array{m: 3, b: 4}|array{z: 1, a: 2}",
+                null,
+                false
+            ],
+            [
+                38,
+                "phpstan.dumpType",
+                "Dumped type #1: array{a: 20, z: 10}|array{z: 1, a: 2}",
+                null,
+                false
+            ],
+            [
+                38,
+                "phpstan.dumpType",
+                "Dumped type #2: array{a: 2, z: 1}",
+                null,
+                false
+            ],
+            [
+                38,
+                "phpstan.dumpType",
+                "Dumped type #3: array{z?: 1, a: 2}",
+                null,
+                false
+            ],
+            [
+                39,
+                "phpstan.dumpType",
+                "Dumped type #1: array{z: 1, a: 2}",
+                null,
+                false
+            ],
+            [
+                39,
+                "phpstan.dumpType",
+                "Dumped type #2: array{m: 3, b: 4}|array{z: 1, a: 2}",
+                null,
+                false
+            ],
+            [
+                40,
+                "phpstan.dumpType",
+                "Dumped type #1: array{z: 1, a: 2}",
+                null,
+                false
+            ],
+            [
+                40,
+                "phpstan.dumpType",
+                "Dumped type #2: array{z: 1, a: 2}",
+                null,
+                false
+            ],
+            [
+                40,
+                "phpstan.dumpType",
+                "Dumped type #3: array{m: 3, b: 4, z: 1, a: 2}",
+                null,
+                false
+            ],
+            [
+                41,
+                "phpstan.dumpType",
+                "Dumped type #1: array{m: 3, z: array{left: 1}, b: 4, a: 2}",
+                null,
+                false
+            ],
+            [
+                41,
+                "phpstan.dumpType",
+                "Dumped type #2: array{m: array{z: 4, a: 5}, z: array{y: 1, b: 2}, a: 3}",
+                null,
+                false
+            ],
+            [
+                42,
+                "phpstan.dumpType",
+                "Dumped type #1: array{q: 5, z?: 1, a: 2}",
+                null,
+                false
+            ],
+            [
+                42,
+                "phpstan.dumpType",
+                "Dumped type #2: array{2: 1, 0: 2}",
+                null,
+                false
+            ],
+            [
+                43,
+                "phpstan.dumpType",
+                "Dumped type #1: array{z: array{x: 3, a: 4}|array{y: 1, b: 2}, a: array{y: 5, b: 6}}",
+                null,
+                false
+            ],
+            [
+                43,
+                "phpstan.dumpType",
+                "Dumped type #2: array{z: 3, a: 2}",
+                null,
+                false
+            ],
+            [
+                44,
+                "phpstan.dumpType",
+                "Dumped type #1: mixed",
+                null,
+                false
+            ],
+            [
+                44,
+                "phpstan.dumpType",
+                "Dumped type #2: mixed~(0|0.0|''|'0'|array{}|false|null)",
+                null,
+                false
+            ],
+            [
+                44,
+                "phpstan.dumpType",
+                "Dumped type #3: array{z: mixed, a: 2}",
+                null,
+                false
+            ],
+            [
+                44,
+                "phpstan.dumpType",
+                "Dumped type #4: 3",
+                null,
+                false
+            ],
+            [
+                45,
+                "phpstan.dumpType",
+                "Dumped type #1: array{m: 3, b: 4}|array{z: 1, a: 2}",
+                null,
+                false
+            ],
+            [
+                45,
+                "phpstan.dumpType",
+                "Dumped type #2: array{m: 3, z: array{left: 1}, b: 4, a: 2}",
+                null,
+                false
+            ],
+            [
+                45,
+                "phpstan.dumpType",
+                "Dumped type #3: array{m: 3, b: 4}|array{z: 1, a: 2}",
+                null,
+                false
+            ],
+            [
+                46,
+                "phpstan.dumpType",
+                "Dumped type: array{a?: 1, b?: 1, z: 2}",
+                null,
+                false
+            ],
+            [
+                6,
+                "ternary.alwaysTrue",
+                "Ternary operator condition is always true.",
+                null,
+                true
+            ],
+            [
+                9,
+                "ternary.alwaysTrue",
+                "Ternary operator condition is always true.",
+                null,
+                true
+            ]
+        ]
+    }
+}

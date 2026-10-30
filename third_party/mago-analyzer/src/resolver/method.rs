@@ -21,6 +21,7 @@ use mago_codex::ttype::get_mixed;
 use mago_codex::ttype::get_specialized_template_type;
 use mago_codex::ttype::template::GenericTemplate;
 use mago_codex::ttype::template::TemplateResult;
+use mago_codex::ttype::union::TUnion;
 use mago_reporting::Annotation;
 use mago_reporting::Issue;
 use mago_span::HasSpan;
@@ -48,6 +49,8 @@ pub struct ResolvedMethod {
     /// The name of the class this method is called on, not necessarily the same
     /// as the class of the method itself, especially in cases of inheritance.
     pub classname: Word,
+    /// The selector's case-folded name, before trait/ancestor storage lookup.
+    pub requested_name: Word,
     /// The method identifiers that were successfully resolved.
     pub method_identifier: MethodIdentifier,
     /// The type of `$this` or the static class type if it's a static method.
@@ -133,6 +136,9 @@ pub struct MethodResolutionResult {
     pub template_result: TemplateResult,
     /// A list of resolved methods, each with its template result and identifiers.
     pub resolved_methods: Vec<ResolvedMethod>,
+    /// Ordered union / uniquely widest intersection reflection for virtual markers.
+    /// Different declarations tied on width need a shared ordered-intersection carrier.
+    pub(crate) property_initialization_method: Option<MethodIdentifier>,
     /// Undocumented calls handled by `__call` or `__callStatic` whose diagnostics
     /// must wait until return-type providers have had an opportunity to resolve them.
     pub undocumented_methods: Vec<UndocumentedMethod>,
@@ -170,13 +176,38 @@ pub fn resolve_method_targets<'ctx, 'ast, 'arena, A>(
 where
     A: Arena,
 {
-    let mut result = MethodResolutionResult::default();
-    let mut asserted_descendant_method_references = Vec::new();
-
     let was_inside_general_use = block_context.flags.inside_general_use();
     block_context.flags.set_inside_general_use(true);
-    object.analyze(context, block_context, artifacts)?;
+    let result = object.analyze(context, block_context, artifacts);
     block_context.flags.set_inside_general_use(was_inside_general_use);
+    result?;
+
+    resolve_method_targets_after_receiver(
+        context,
+        block_context,
+        artifacts,
+        object,
+        selector,
+        is_null_safe,
+        access_span,
+        None,
+    )
+}
+
+/// Resolve a receiver that has already been evaluated, optionally using its
+/// ensured scope view without replacing its own stored expression result.
+pub(crate) fn resolve_method_targets_after_receiver<'ctx, 'ast, 'arena, A: Arena>(
+    context: &mut Context<'ctx, 'arena, A>,
+    block_context: &mut BlockContext<'ctx>,
+    artifacts: &mut AnalysisArtifacts,
+    object: &'ast Expression<'arena>,
+    selector: &'ast ClassLikeMemberSelector<'arena>,
+    is_null_safe: bool,
+    access_span: Span,
+    receiver_type: Option<&TUnion>,
+) -> Result<MethodResolutionResult, AnalysisError> {
+    let mut result = MethodResolutionResult::default();
+    let mut asserted_descendant_method_references = Vec::new();
 
     let resolved_selectors = resolve_member_selector(context, block_context, artifacts, selector, false)?;
     let mut method_names = Vec::new();
@@ -193,7 +224,7 @@ where
         }
     }
 
-    if let Some(object_type) = artifacts.get_expression_type(object) {
+    if let Some(object_type) = receiver_type.or_else(|| artifacts.get_expression_type(object)) {
         let mut object_atomics = object_type.types.iter().collect::<Vec<_>>();
 
         while let Some(object_atomic) = object_atomics.pop() {
@@ -232,6 +263,11 @@ where
 
             let closure_object;
             let obj_type = match object_atomic {
+                TAtomic::Object(TObject::NonexistentParent) => {
+                    result.has_invalid_target = true;
+                    report_call_on_non_object(context, object_atomic, object.span(), selector.span());
+                    continue;
+                }
                 TAtomic::Object(obj_type) => obj_type,
                 TAtomic::Callable(callable) if callable.is_closure() => {
                     closure_object = TObject::new_named(word("Closure"));
@@ -285,6 +321,11 @@ where
                 }
 
                 if resolved_methods.is_empty() {
+                    if type_has_method_assertion(obj_type, method_name.as_ref()) {
+                        // PHPStan's HasMethodType reflects a permissive dummy method, not a failed lookup.
+                        result.encountered_mixed = true;
+                    }
+
                     if let Some(classname) = obj_type.get_name() {
                         let method_name_bytes: &[u8] = method_name.as_ref();
                         let has_method_assertion = type_has_method_assertion(obj_type, method_name_bytes);
@@ -366,6 +407,35 @@ where
                     }
                 }
 
+                if !context.settings.property_initialization_observations.is_empty()
+                    && matches!(selector, ClassLikeMemberSelector::Identifier(_))
+                    && object_type.types.iter().all(|atomic| matches!(atomic, TAtomic::Object(_)) || atomic.is_null() || atomic.is_never())
+                    && let Some(first) = resolved_methods.first()
+                {
+                    // The work stack visits union members in reverse semantic order.
+                    // Overwrite with each nonempty member: PHPStan filters missing
+                    // methods, then UnionTypeMethodReflection uses its first member.
+                    // Within one member, variadic wins, then parameter count. The
+                    // candidates already have duplicate method identifiers removed.
+                    let rank = |id: MethodIdentifier| {
+                        let metadata = context.codebase.get_method_by_id(&id).unwrap();
+                        (metadata.parameters.iter().any(|parameter| parameter.flags.is_variadic()), metadata.parameters.len())
+                    };
+                    let mut selected = Some(first.method_identifier);
+                    let mut widest = rank(first.method_identifier);
+                    for method in resolved_methods.iter().skip(1) {
+                        let width = rank(method.method_identifier);
+                        if width > widest {
+                            widest = width;
+                            selected = Some(method.method_identifier);
+                        } else if width == widest {
+                            // Mago can reverse the root/intersection order relative
+                            // to PHPStan. Do not invent the first declaration on a tie.
+                            selected = None;
+                        }
+                    }
+                    result.property_initialization_method = selected;
+                }
                 result.resolved_methods.extend(resolved_methods);
             }
         }
@@ -511,6 +581,7 @@ where
 
         resolved_methods.push(ResolvedMethod {
             method_identifier: declaring_method_id,
+            requested_name: method_name.to_ascii_lowercase(),
             static_class_type,
             declaring_object,
             classname,

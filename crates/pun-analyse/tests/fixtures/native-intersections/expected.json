@@ -1,0 +1,111 @@
+{
+    "types": {
+        "right": {
+            "parameter": {
+                "type": "*NEVER*",
+                "hint": "Contract&int"
+            },
+            "return": {
+                "type": "*NEVER*",
+                "hint": "Contract&int"
+            }
+        },
+        "left": {
+            "parameter": {
+                "type": "*NEVER*",
+                "hint": "int&Contract"
+            },
+            "return": {
+                "type": "*NEVER*",
+                "hint": "int&Contract"
+            }
+        },
+        "nullable": {
+            "parameter": {
+                "type": "null",
+                "hint": "(Contract&int)|null"
+            },
+            "return": {
+                "type": "null",
+                "hint": "(Contract&int)|null"
+            }
+        },
+        "otherArm": {
+            "parameter": {
+                "type": "string",
+                "hint": "(Contract&int)|string"
+            },
+            "return": {
+                "type": "string",
+                "hint": "(Contract&int)|string"
+            }
+        },
+        "nested": {
+            "parameter": {
+                "type": "null",
+                "hint": "(Contract&int&Countable)|null"
+            },
+            "return": {
+                "type": "null",
+                "hint": "(Contract&int&Countable)|null"
+            }
+        },
+        "valid": {
+            "parameter": {
+                "type": "Contract&Countable",
+                "hint": "Contract&Countable"
+            },
+            "return": {
+                "type": "Contract&Countable",
+                "hint": "Contract&Countable"
+            }
+        },
+        "after": {
+            "parameter": {
+                "type": "int",
+                "hint": "int"
+            },
+            "return": {
+                "type": "string",
+                "hint": "string"
+            }
+        }
+    },
+    "errors": [
+        [
+            3,
+            "parameter.unresolvableNativeType",
+            "Parameter $value of function right() has unresolvable native type.",
+            null,
+            false
+        ],
+        [
+            3,
+            "return.unresolvableNativeType",
+            "Function right() has unresolvable native return type.",
+            null,
+            false
+        ],
+        [
+            4,
+            "parameter.unresolvableNativeType",
+            "Parameter $value of function left() has unresolvable native type.",
+            null,
+            false
+        ],
+        [
+            4,
+            "return.unresolvableNativeType",
+            "Function left() has unresolvable native return type.",
+            null,
+            false
+        ],
+        [
+            9,
+            "function.notFound",
+            "Function missing_control not found.",
+            "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            true
+        ]
+    ]
+}

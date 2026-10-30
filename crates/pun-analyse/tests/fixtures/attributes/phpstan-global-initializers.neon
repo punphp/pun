@@ -1,0 +1,5 @@
+parameters:
+    level: 0
+    phpVersion: 80400
+    paths: [global-initializers.php]
+    scanFiles: [global-initializers-scanned.php, global-initializers-attributes.php]

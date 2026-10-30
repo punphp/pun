@@ -9,6 +9,193 @@ use pun_analyse::{Project, run};
 use serde_json::Value;
 
 #[test]
+fn block_pollution_matches_resolved_phpstan_configuration() {
+    use pun_phpstan::config::{Options, resolve};
+
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/block-pollution");
+    let expected: Value = serde_json::from_slice(&std::fs::read(root.join("expected.json")).unwrap()).unwrap();
+    let selected = |id: &str| matches!(id, "variable.undefined" | "phpstan.dumpType" | "include.fileNotFound" | "match.alwaysTrue" | "match.alwaysFalse" | "match.unhandled" | "deadCode.unreachable");
+    let mut failures = Vec::new();
+    for mode in ["default", "enabled", "disabled", "quiet", "independent", "loops-only", "secondary", "secondary-enabled"] {
+        let config = resolve(&Options {
+            config: Some(root.join(format!("{mode}.neon")).to_string_lossy().into_owned()),
+            ..Options::for_project(&root.to_string_lossy())
+        }).unwrap();
+        let project = Project::from_config(&root, &config.parameters);
+        let mut actual: Vec<_> = run(&project).unwrap().into_iter()
+            .filter(|e| selected(&e.identifier))
+            .map(|e| (Path::new(&e.file).file_name().unwrap().to_string_lossy().into_owned(), e.line, e.identifier, e.message, e.tip, e.can_be_ignored))
+            .collect();
+        actual.sort();
+        let wanted: Vec<_> = expected[mode].as_array().unwrap().iter()
+            .filter(|e| selected(e[2].as_str().unwrap())).cloned().collect();
+        let actual = serde_json::to_value(actual).unwrap();
+        if actual != serde_json::to_value(&wanted).unwrap() {
+            let actual = actual.as_array().unwrap();
+            let missing: Vec<_> = wanted.iter().filter(|e| !actual.contains(e)).collect();
+            let extra: Vec<_> = actual.iter().filter(|e| !wanted.contains(e)).collect();
+            failures.push(format!("{mode}: {}/{} exact\nmissing {missing:?}\nextra {extra:?}", wanted.len() - missing.len(), wanted.len()));
+        }
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+}
+
+#[test]
+fn block_pollution_preserves_paired_native_types_and_single_walk() {
+    use std::collections::BTreeMap;
+    use std::sync::{Arc, Mutex};
+
+    use mago_allocator::LocalArena;
+    use mago_analyzer::Analyzer;
+    use mago_analyzer::analysis_result::AnalysisResult;
+    use mago_analyzer::plugin::{ExpressionHook, HookContext, HookResult, PluginRegistry, Provider, ProviderMeta};
+    use mago_analyzer::settings::Settings;
+    use mago_codex::populator::populate_codebase;
+    use mago_codex::reference::SymbolReferences;
+    use mago_codex::scanner::scan_program;
+    use mago_codex::ttype::TType;
+    use mago_database::file::File;
+    use mago_names::resolver::NameResolver;
+    use mago_span::HasSpan;
+    use mago_syntax::cst::Expression;
+    use mago_syntax::parser::parse_file;
+
+    struct Observe {
+        marked: BTreeMap<u32, i64>,
+        found: Arc<Mutex<BTreeMap<i64, Option<String>>>>,
+    }
+    impl Provider for Observe {
+        fn meta() -> &'static ProviderMeta {
+            static META: ProviderMeta = ProviderMeta::new("block-native", "block-native", "paired block exit types");
+            &META
+        }
+    }
+    impl ExpressionHook for Observe {
+        fn after_expression(&self, expression: &Expression<'_>, context: &mut HookContext<'_, '_>) -> HookResult<()> {
+            if let Some(line) = self.marked.get(&expression.span().start.offset) {
+                let ty = context.get_native_expression_type(expression).map(|ty| {
+                    let id = ty.get_id().to_string();
+                    let mut types: Vec<_> = id.split('|').collect();
+                    types.sort();
+                    types.join("|")
+                });
+                assert!(self.found.lock().unwrap().insert(*line, ty).is_none(), "body read visited twice");
+            }
+            Ok(())
+        }
+    }
+
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/block-pollution");
+    let source = std::fs::read_to_string(root.join("native.php")).unwrap();
+    let oracle: Value = serde_json::from_slice(&std::fs::read(root.join("expected.json")).unwrap()).unwrap();
+    let mut marked = BTreeMap::new();
+    let mut offset = 0;
+    for (line, text) in source.split_inclusive('\n').enumerate() {
+        if text.contains("// native") {
+            marked.insert((offset + text.len() - text.trim_start().len()) as u32, line as i64 + 1);
+        }
+        offset += text.len();
+    }
+    let file = File::ephemeral(b"native.php".as_slice().into(), source.as_bytes().to_vec().into());
+    let arena = LocalArena::new();
+    let program = parse_file(&arena, &file);
+    assert!(!program.has_errors());
+    let names = NameResolver::new(&arena).resolve(program);
+    let mut codebase = scan_program(&arena, &file, program, &names, Settings::default().version);
+    let mut references = SymbolReferences::new();
+    populate_codebase(&mut codebase, &mut references, Default::default(), Default::default());
+    for (mode, pollution) in [("enabled", true), ("disabled", false)] {
+        let expected: BTreeMap<_, _> = oracle[mode].as_array().unwrap().iter()
+            .filter(|e| e[0] == "native.php" && e[2] == "phpstan.dumpNativeType")
+            .map(|e| {
+                let mut types: Vec<_> = e[3].as_str().unwrap().strip_prefix("Dumped type: ").unwrap()
+                    .split('|').map(|t| format!("int({})", t.parse::<i64>().unwrap())).collect();
+                types.sort();
+                (e[1].as_i64().unwrap(), Some(types.join("|")))
+            }).collect();
+        assert_eq!(expected.len(), marked.len());
+        let mut previous = None;
+        for native in [false, true] {
+            let found = Arc::new(Mutex::new(BTreeMap::new()));
+            let mut registry = PluginRegistry::new();
+            registry.register_expression_hook(Observe { marked: marked.clone(), found: Arc::clone(&found) });
+            let settings = Settings { track_native_types: native, pollute_scope_with_block: pollution, ..Settings::default() };
+            let mut result = AnalysisResult::new(references.clone());
+            let artifacts = Analyzer::new(&arena, &file, &names, &codebase, &registry, settings)
+                .analyze_with_artifacts(program, &mut result).unwrap();
+            let wanted = if native { expected.clone() } else { expected.keys().map(|line| (*line, None)).collect() };
+            assert_eq!(*found.lock().unwrap(), wanted, "{mode}, native={native}");
+            let full = (artifacts.expression_types, format!("{:?}", result.issues));
+            if let Some(previous) = &previous { assert_eq!(&full, previous); } else { previous = Some(full); }
+        }
+    }
+}
+
+#[test]
+fn foreach_pollution_matches_resolved_phpstan_configuration() {
+    use pun_phpstan::config::{Options, resolve};
+
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/foreach-pollution");
+    let expected: Value = serde_json::from_slice(&std::fs::read(root.join("expected.json")).unwrap()).unwrap();
+    let selected = |id: &str| matches!(id, "variable.undefined" | "phpstan.dumpType");
+    let mut failures = Vec::new();
+    for mode in ["default", "enabled", "disabled", "quiet", "independent"] {
+        let config = resolve(&Options {
+            config: Some(root.join(format!("{mode}.neon")).to_string_lossy().into_owned()),
+            ..Options::for_project(&root.to_string_lossy())
+        }).unwrap();
+        let project = Project::from_config(&root, &config.parameters);
+        let mut actual: Vec<_> = run(&project).unwrap().into_iter()
+            .filter(|e| selected(&e.identifier))
+            .map(|e| (Path::new(&e.file).file_name().unwrap().to_string_lossy().into_owned(), e.line, e.identifier, e.message, e.tip, e.can_be_ignored))
+            .collect();
+        actual.sort();
+        let wanted: Vec<_> = expected[mode].as_array().unwrap().iter()
+            .filter(|e| selected(e[2].as_str().unwrap())).cloned().collect();
+        let actual = serde_json::to_value(actual).unwrap();
+        if actual != serde_json::to_value(&wanted).unwrap() {
+            let actual = actual.as_array().unwrap();
+            let missing: Vec<_> = wanted.iter().filter(|e| !actual.contains(e)).collect();
+            let extra: Vec<_> = actual.iter().filter(|e| !wanted.contains(e)).collect();
+            failures.push(format!("{mode}: {}/{} exact\nmissing {missing:?}\nextra {extra:?}", wanted.len() - missing.len(), wanted.len()));
+        }
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+}
+
+#[test]
+fn loop_initial_pollution_matches_resolved_phpstan_configuration() {
+    use pun_phpstan::config::{Options, resolve};
+
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/loop-pollution");
+    let expected: Value = serde_json::from_slice(&std::fs::read(root.join("expected.json")).unwrap()).unwrap();
+    let selected = |id: &str| matches!(id, "variable.undefined" | "phpstan.dumpType");
+    let mut failures = Vec::new();
+    for mode in ["default", "enabled", "disabled", "quiet"] {
+        let config = resolve(&Options {
+            config: Some(root.join(format!("{mode}.neon")).to_string_lossy().into_owned()),
+            ..Options::for_project(&root.to_string_lossy())
+        }).unwrap();
+        let project = Project::from_config(&root, &config.parameters);
+        let mut actual: Vec<_> = run(&project).unwrap().into_iter()
+            .filter(|e| selected(&e.identifier))
+            .map(|e| (Path::new(&e.file).file_name().unwrap().to_string_lossy().into_owned(), e.line, e.identifier, e.message, e.tip, e.can_be_ignored))
+            .collect();
+        actual.sort();
+        let wanted: Vec<_> = expected[mode].as_array().unwrap().iter()
+            .filter(|e| selected(e[2].as_str().unwrap())).cloned().collect();
+        let actual = serde_json::to_value(actual).unwrap();
+        if actual != serde_json::to_value(&wanted).unwrap() {
+            let actual = actual.as_array().unwrap();
+            let missing: Vec<_> = wanted.iter().filter(|e| !actual.contains(e)).collect();
+            let extra: Vec<_> = actual.iter().filter(|e| !wanted.contains(e)).collect();
+            failures.push(format!("{mode}: {}/{} exact\nmissing {missing:?}\nextra {extra:?}", wanted.len() - missing.len(), wanted.len()));
+        }
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+}
+
+#[test]
 fn variable_contexts_and_configuration_match_phpstan() {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures");
     let expected: Value =
@@ -169,12 +356,71 @@ function budget(bool $flag): void {
     echo $before;
     echo $after;
 }";
+    const BOOLEAN_AND: &str = "<?php
+function transfer(bool $flag, string $input): void {
+    if ($flag && preg_match('/x/', $input, $matches)) {
+        echo $matches;
+    } else {
+        echo $matches;
+    }
+}";
+    const BOOLEAN_OR: &str = "<?php
+function transfer(bool $flag, string $input): void {
+    $matches = [];
+    unset($matches);
+    if ($flag || preg_match('/x/', $input, $matches)) {
+        echo $matches;
+    } else {
+        echo $matches;
+    }
+}";
+    const BOOLEAN_POST: &str = "<?php
+function transfer(bool $flag, string $input): void {
+    $flag && preg_match('/x/', $input, $matches);
+    echo $matches;
+    preg_match('/x/', $input, $matches);
+    echo $matches;
+}";
+    const BOOLEAN_NESTED: &str = "<?php
+function transfer(bool $flag, bool $other, string $input): void {
+    if ($flag && ($other || preg_match('/x/', $input, $matches))) {
+        echo $matches;
+    } else {
+        echo $matches;
+    }
+}";
     let prelude = mago_prelude::Prelude::build();
     for (source, check_throws, threshold, expected) in [
         (THROWS, false, 200, Some([(true, false), (false, true)])),
         (THROWS, true, 200, Some([(true, false), (false, true)])),
         // Exhausting the condition algebra budget cannot discard the continuing implicit else edge.
         (BRANCH, false, 0, Some([(false, false), (true, false)])),
+        // Fresh PHPStan 2.3.1 reads: &&'s true edge and ||'s false edge ran the output
+        // argument; the opposite edge and the post-expression join may have skipped it.
+        (
+            BOOLEAN_AND,
+            false,
+            200,
+            Some([(true, false), (false, false)]),
+        ),
+        (
+            BOOLEAN_OR,
+            false,
+            200,
+            Some([(false, false), (true, false)]),
+        ),
+        (
+            BOOLEAN_POST,
+            false,
+            200,
+            Some([(false, false), (true, false)]),
+        ),
+        (
+            BOOLEAN_NESTED,
+            false,
+            200,
+            Some([(false, false), (false, false)]),
+        ),
         (
             "<?php switch (true) { case 777: echo 'unreachable'; }",
             false,
@@ -182,7 +428,19 @@ function budget(bool $flag): void {
             None,
         ),
         (
+            "<?php { switch (true) { case 777: echo 'unreachable'; } }",
+            false,
+            200,
+            None,
+        ),
+        (
             "<?php function abortArguments($value): void {} abortArguments($argument);",
+            false,
+            200,
+            None,
+        ),
+        (
+            "<?php function abortArguments($value): void {} { abortArguments($argument); }",
             false,
             200,
             None,
@@ -199,6 +457,7 @@ function budget(bool $flag): void {
         let settings = Settings {
             check_throws,
             formula_size_threshold: threshold,
+            pollute_scope_with_block: false,
             ..Settings::default()
         };
         let mut codebase = prelude.metadata.clone();

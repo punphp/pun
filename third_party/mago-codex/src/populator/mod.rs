@@ -108,6 +108,20 @@ pub fn populate_codebase_after_body_edit(
     )
 }
 
+/// Populate just a fresh scan's anonymous signatures against an existing project.
+/// Reference attribution uses the fresh scan's named scopes and file signature; no
+/// project hierarchy or already-populated declaration needs to be mutated or copied.
+pub(crate) fn populate_file_closures(scanned: &mut CodebaseMetadata, symbols: &Symbols) {
+    let sources = closures::reference_sources(scanned, true);
+    let mut references = SymbolReferences::new();
+    for (key, metadata) in &mut scanned.function_likes {
+        if metadata.kind.is_closure() || metadata.kind.is_arrow_function() {
+            let source = sources.get(key).copied().unwrap_or(ReferenceSource::Symbol(true, key.1));
+            signatures::populate_function_like_metadata(metadata, symbols, &source, &mut references, false);
+        }
+    }
+}
+
 fn populate_codebase_inner(
     codebase: &mut CodebaseMetadata,
     symbol_references: &mut SymbolReferences,
@@ -407,8 +421,8 @@ fn populate_codebase_inner(
             }
         }
 
-        codebase.all_class_like_descendants = all_classlike_descendants;
-        codebase.direct_classlike_descendants = direct_classlike_descendants;
+        codebase.all_class_like_descendants = all_classlike_descendants.into();
+        codebase.direct_classlike_descendants = direct_classlike_descendants.into();
     }
     trace_phase!("descendants");
 
@@ -420,8 +434,8 @@ fn populate_codebase_inner(
     }
     trace_phase!("docblocks");
 
-    codebase.safe_symbols = safe_symbols;
-    codebase.safe_symbol_members = safe_symbol_members;
+    codebase.safe_symbols = safe_symbols.into();
+    codebase.safe_symbol_members = safe_symbol_members.into();
 }
 
 fn populate_entries<I>(

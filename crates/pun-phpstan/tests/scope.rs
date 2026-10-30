@@ -225,7 +225,7 @@ fn project_scope() {
                 Some("resolved") => resolve_late(&resolve_in(&node, &InNamespace)),
                 // `LateResolvableType::resolve()`
                 Some("late") => match resolve_in(&node, &Late) {
-                    Type::Object(name, args) => key_or_value_of(&args[0], name == "value-of"),
+                    Type::Object(name, args, _) => key_or_value_of(&args[0], name == "value-of"),
                     t => t,
                 },
                 Some(class) => resolve_in(&node, &InClass(class)),
@@ -306,13 +306,13 @@ fn project_iterables_and_ancestors() {
             let ty = resolve_in(&phpdoc::parse(input).unwrap(), &InNamespace);
             let ancestor = match &ty {
                 // a class is its own ancestor
-                Type::Object(name, _) if name == "PunProbe\\Coll" => {
+                Type::Object(name, _, _) if name == "PunProbe\\Coll" => {
                     Some(ty.describe(Level::Precise))
                 }
-                Type::Object(name, args) => symbols::lookup(name)
+                Type::Object(name, args, _) => symbols::lookup(name)
                     .and_then(|c| ancestor_args(&c, "PunProbe\\Coll", args))
                     .map(|args| {
-                        Type::Object("PunProbe\\Coll".to_string(), args).describe(Level::Precise)
+                        Type::Object("PunProbe\\Coll".to_string(), args, false).describe(Level::Precise)
                     }),
                 _ => None,
             };
@@ -490,7 +490,7 @@ fn global_type_aliases() {
 /// `ConstantStringType::isCallable()` of a project function's name: `ReflectionProvider::hasFunction()` answers it.
 #[test]
 fn project_function_names_are_callable() {
-    let callable = |s: &str| Type::ConstString(s.to_string()).is_callable();
+    let callable = |s: &str| Type::ConstString(s.as_bytes().to_vec()).is_callable();
     let provider = |name: &str| name == "PunProbe\\f";
     symbols::with_functions(&provider, || {
         assert!(callable("PunProbe\\f").yes());

@@ -1,0 +1,12 @@
+lazy-void	null	void	void	void	int	string	int	string	void	void	null
+eager-void	void	void	void	void	null	void	void	void	void	void	null
+held-void	int	void	void	string	int	string	int	string	void	void	null
+held-mixed	int	mixed	mixed	string	int	string	int	string	mixed	mixed	null
+held-nonvoid	int	string	int	string	int	string	int	string	string	string	null
+held-void-value	void	int	void	string	int	string	int	string	int	string	null
+union	int|null	int|void|null	int|void|null	int|void|null	int	string	int	string	int|void|null	int|void|null	null
+nested	array<int, void>	array<int, void>	array<int, void>	array<int, void>	int	string	int	string	array<int, void>	array<int, void>	null
+mixed-minus-void	int	mixed~void	int	string	int	string	int	string	mixed~void	string	null
+template-mixed	int	T (function sample(), parameter)	T (function sample(), parameter)	string	int	string	int	string	T (function sample(), parameter)	T (function sample(), parameter)	null
+mixed-minus-template	int	mixed~T (function sample(), parameter)	mixed~T (function sample(), parameter)	string	int	string	int	string	mixed~T (function sample(), parameter)	mixed~T (function sample(), parameter)	null
+mixed-minus-mixed-minus-void	int	mixed~(mixed~void)	mixed~(mixed~void)	string	int	string	int	string	mixed~(mixed~void)	mixed~(mixed~void)	null

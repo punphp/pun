@@ -1,0 +1,19 @@
+{
+  "totals": { "errors": 0, "file_errors": 3 },
+  "files": {
+    "neighbors.php": {
+      "errors": 1,
+      "messages": [
+        { "message": "Array has 2 duplicate keys with value 2 (\\InitializerNeighbors\\UsingKeys::SECOND, 2).", "line": 9, "ignorable": true, "identifier": "array.duplicateKey" }
+      ]
+    },
+    "neighbors.php (in context of class InitializerNeighbors\\UsingRequired)": {
+      "errors": 2,
+      "messages": [
+        { "message": "Dumped type: 1|4", "line": 18, "ignorable": false, "identifier": "phpstan.dumpType" },
+        { "message": "Dumped type: int", "line": 19, "ignorable": false, "identifier": "phpstan.dumpType" }
+      ]
+    }
+  },
+  "errors": []
+}

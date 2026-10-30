@@ -366,8 +366,13 @@ fn apply_inheritance_work(codebase: &mut CodebaseMetadata, mut inheritance_work:
         let parent_template_types = &parent_method.template_types;
         let parent_thrown_types = &parent_method.thrown_types;
         let parent_assertions = &parent_method.assertions;
-        let parent_if_true_assertions = &parent_method.if_true_assertions;
-        let parent_if_false_assertions = &parent_method.if_false_assertions;
+        // A parent's body predicate is not an inheritable PHPDoc contract.
+        let empty_assertions = BTreeMap::new();
+        let (parent_if_true_assertions, parent_if_false_assertions) = if parent_method.assertions_inferred {
+            (&empty_assertions, &empty_assertions)
+        } else {
+            (&parent_method.if_true_assertions, &parent_method.if_false_assertions)
+        };
 
         let Some(child_class) = codebase.class_likes.get(&class_name) else {
             continue;

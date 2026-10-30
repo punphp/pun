@@ -1,0 +1,88 @@
+{
+    "native-receiver-controls.php": {
+        "430": {
+            "line": 18,
+            "expression": "$this->integer",
+            "full": {
+                "type": "int",
+                "explicit": null
+            },
+            "native": {
+                "type": "int",
+                "explicit": null
+            }
+        },
+        "488": {
+            "line": 19,
+            "expression": "$ordinary->documentedOnly",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "570": {
+            "line": 20,
+            "expression": "$this->documentedReturn()",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "638": {
+            "line": 21,
+            "expression": "$ordinary->documentedReturn()",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "714": {
+            "line": 22,
+            "expression": "$this->documentedInt()",
+            "full": {
+                "type": "int",
+                "explicit": null
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "797": {
+            "line": 23,
+            "expression": "$this->scalarReturn()",
+            "full": {
+                "type": "int",
+                "explicit": null
+            },
+            "native": {
+                "type": "int",
+                "explicit": null
+            }
+        },
+        "860": {
+            "line": 24,
+            "expression": "(new NativeReceiverControls())->prop",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        }
+    }
+}

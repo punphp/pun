@@ -1,0 +1,36 @@
+{
+    "unset:array": {
+        "nonempty": true,
+        "item-explicit": true
+    },
+    "unset:list": {
+        "nonempty": true,
+        "item-explicit": true
+    },
+    "union:implicit:implicit": false,
+    "intersect:implicit:implicit": false,
+    "union:implicit:explicit": false,
+    "intersect:implicit:explicit": true,
+    "union:implicit:int": false,
+    "intersect:implicit:int": null,
+    "union:implicit:excluded": false,
+    "intersect:implicit:excluded": true,
+    "union:explicit:implicit": false,
+    "intersect:explicit:implicit": true,
+    "union:explicit:explicit": true,
+    "intersect:explicit:explicit": true,
+    "union:explicit:int": true,
+    "intersect:explicit:int": null,
+    "union:explicit:excluded": true,
+    "intersect:explicit:excluded": true,
+    "union:excluded:implicit": false,
+    "intersect:excluded:implicit": true,
+    "union:excluded:explicit": true,
+    "intersect:excluded:explicit": true,
+    "union:excluded:int": true,
+    "intersect:excluded:int": null,
+    "union:excluded:excluded": true,
+    "intersect:excluded:excluded": true,
+    "subtract-explicit": true,
+    "unset-explicit": true
+}

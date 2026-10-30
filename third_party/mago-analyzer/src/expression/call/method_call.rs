@@ -10,6 +10,7 @@ use mago_codex::ttype::add_optional_union_type;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::expander::StaticClassType;
+use mago_codex::ttype::get_error;
 use mago_codex::ttype::get_mixed;
 use mago_codex::ttype::get_never;
 use mago_codex::ttype::get_null;
@@ -29,6 +30,7 @@ use crate::analyzable::Analyzable;
 use crate::artifacts::AnalysisArtifacts;
 use crate::context::Context;
 use crate::context::block::BlockContext;
+use crate::context::non_nullability::EnsuredNonNullability;
 use crate::error::AnalysisError;
 use crate::expression::call::analyze_invocation_targets;
 use crate::expression::call::record_external_method_call;
@@ -38,7 +40,8 @@ use crate::invocation::InvocationArgumentsSource;
 use crate::invocation::InvocationTarget;
 use crate::invocation::MethodInvocationKind;
 use crate::invocation::MethodTargetContext;
-use crate::invocation::analyzer::analyze_invocation;
+use crate::invocation::analyzer::EvaluatedArguments;
+use crate::invocation::analyzer::analyze_invocation_with_arguments;
 use crate::invocation::analyzer::apply_callable_signature;
 use crate::invocation::post_process::post_invocation_process;
 use crate::invocation::return_type_fetcher::fetch_declared_invocation_return_type;
@@ -52,6 +55,7 @@ use crate::resolver::method::UnresolvedMethod;
 use crate::resolver::method::report_non_documented_method;
 use crate::resolver::method::report_non_existent_method;
 use crate::resolver::method::resolve_method_targets;
+use crate::resolver::method::resolve_method_targets_after_receiver;
 use crate::utils::availability;
 use crate::utils::expression::get_block_expression_id;
 use crate::visibility::check_method_visibility_by_id;
@@ -66,6 +70,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for MethodCall<'arena> {
     where
         A: Arena,
     {
+        let observation = crate::observations::begin_call(self, context, block_context);
         if context.plugin_registry.has_method_call_hooks() {
             let mut hook_context = HookContext::new(context.codebase, context.source_file, block_context, artifacts);
             let result = context.plugin_registry.before_method_call(self, &mut hook_context)?;
@@ -94,6 +99,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for MethodCall<'arena> {
             &self.argument_list,
             false, // is_nullsafe
             self.span(),
+            None,
         )?;
 
         if context.plugin_registry.has_method_call_hooks() {
@@ -104,6 +110,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for MethodCall<'arena> {
             }
         }
 
+        crate::observations::finish_call(observation, context, artifacts)?;
         Ok(())
     }
 }
@@ -118,6 +125,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for NullSafeMethodCall<'arena> {
     where
         A: Arena,
     {
+        artifacts.nullsafe_method_receiver_types.remove(&self.span());
         if context.plugin_registry.has_nullsafe_method_call_hooks() {
             let mut hook_context = HookContext::new(context.codebase, context.source_file, block_context, artifacts);
             let result = context.plugin_registry.before_nullsafe_method_call(self, &mut hook_context)?;
@@ -137,16 +145,51 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for NullSafeMethodCall<'arena> {
             }
         }
 
-        analyze_method_call(
-            context,
-            block_context,
-            artifacts,
-            self.object,
-            &self.method,
-            &self.argument_list,
-            true, // is_nullsafe
-            self.span(),
-        )?;
+        let observation = crate::observations::begin_nullsafe_call(self, context, block_context);
+        // PHPStan's NullsafeMethodCallHandler always returns a non-terminating expression result.
+        let has_returned = block_context.flags.has_returned();
+        let control_actions = block_context.control_actions.clone();
+        let before = block_context.clone();
+        let inside_general_use = block_context.flags.inside_general_use();
+        block_context.flags.set_inside_general_use(true);
+        let receiver_result = self.object.analyze(context, block_context, artifacts);
+        block_context.flags.set_inside_general_use(inside_general_use);
+        receiver_result?;
+        let ensured = crate::context::non_nullability::ensure(self.object, context, block_context, artifacts);
+        let receiver_type = ensured.original_type.clone();
+        artifacts.nullsafe_method_receiver_types.insert(self.span(), receiver_type.clone());
+        let previous_consume = context.consume_stored_expression_results;
+        context.consume_stored_expression_results = true;
+        crate::observations::enter_nullsafe_twin(
+            self, &ensured.receiver_type, ensured.scope_authoritative, context, block_context,
+        );
+        let result = (|| {
+            analyze_method_call(
+                context,
+                block_context,
+                artifacts,
+                self.object,
+                &self.method,
+                &self.argument_list,
+                true, // is_nullsafe
+                self.span(),
+                Some(&ensured),
+            )?;
+            crate::observations::finish_call(observation, context, artifacts)
+        })();
+        context.consume_stored_expression_results = previous_consume;
+        ensured.revert(context, block_context, artifacts);
+        result?;
+        if receiver_type.is_null() {
+            *block_context = before;
+            let mut return_type = get_null();
+            return_type.set_nullsafe_null(true);
+            artifacts.set_resolved_expression_type(&self.span(), return_type);
+        } else if crate::context::non_nullability::may_be_null(&receiver_type) {
+            crate::context::non_nullability::merge_short_circuit(block_context, &before, context);
+        }
+        block_context.flags.set_has_returned(has_returned);
+        block_context.control_actions = control_actions;
 
         if context.plugin_registry.has_nullsafe_method_call_hooks() {
             let mut hook_context = HookContext::new(context.codebase, context.source_file, block_context, artifacts);
@@ -198,6 +241,7 @@ pub fn analyze_implicit_method_call<'ctx, 'arena, A>(
     artifacts: &mut AnalysisArtifacts,
     object_type: &TObject,
     object_variable: Option<&[u8]>,
+    requested_name: Word,
     method_identifier: MethodIdentifier,
     class_like_metadata: &'ctx ClassLikeMetadata,
     method_metadata: &'ctx FunctionLikeMetadata,
@@ -221,6 +265,7 @@ where
 
     let method_target_context = MethodTargetContext {
         invocation_kind: MethodInvocationKind::Instance,
+        requested_name: requested_name.to_ascii_lowercase(),
         declaring_method_id: Some(method_identifier),
         class_like_metadata,
         class_type: StaticClassType::Object(object_type.clone()),
@@ -265,7 +310,7 @@ where
         false,
     )?;
 
-    Ok(result)
+    Ok(result.ty)
 }
 
 #[allow(clippy::expect_used)]
@@ -278,10 +323,12 @@ fn analyze_method_call<'ctx, 'ast, 'arena, A>(
     argument_list: &'ast ArgumentList<'arena>,
     is_null_safe: bool,
     span: Span,
+    receiver: Option<&EnsuredNonNullability<'arena>>,
 ) -> Result<(), AnalysisError>
 where
     A: Arena,
 {
+    let reflection_scope = block_context.clone();
     if block_context.flags.collect_initializations()
         && let ClassLikeMemberSelector::Identifier(method_ident) = selector
         && is_this_or_self_returning_chain(object, context, block_context)
@@ -291,14 +338,55 @@ where
         block_context.called_methods.insert(method_name);
     }
 
-    let mut method_resolution =
-        resolve_method_targets(context, block_context, artifacts, object, selector, is_null_safe, span)?;
+    let mut method_resolution = if let Some(receiver) = receiver {
+        let mut resolution = resolve_method_targets_after_receiver(
+            context,
+            block_context,
+            artifacts,
+            object,
+            selector,
+            is_null_safe,
+            span,
+            Some(&receiver.receiver_type),
+        )?;
+        // The plain twin resolves on a non-null device. Only the receiver's
+        // original value determines the nullsafe expression's short-circuit.
+        resolution.encountered_null = receiver.original_type.is_nullable();
+        resolution
+    } else {
+        resolve_method_targets(context, block_context, artifacts, object, selector, is_null_safe, span)?
+    };
 
-    if artifacts.get_expression_type(object).is_some_and(|ty| ty.is_null() && (is_null_safe || ty.has_nullsafe_null()))
+    // MethodCallHandler: capture the already-evaluated receiver before arguments
+    // can overwrite an alias. Only a same-declaring-class constructor call qualifies.
+    let initializing_method = if !context.settings.property_initialization_observations.is_empty()
+        && matches!(selector, ClassLikeMemberSelector::Identifier(_))
+        && matches!(block_context.scope.get_function_like_identifier(),
+            Some(FunctionLikeIdentifier::Method(_, name)) if name.as_bytes().eq_ignore_ascii_case(b"__construct"))
+        && artifacts.get_expression_type(object).is_some_and(crate::property_initialization::has_this_type)
+    {
+        method_resolution.property_initialization_method.or_else(|| {
+            // Preserve the old unambiguous boundary for carriers whose compound
+            // reflection order is not available (for example array-containing unions).
+            method_resolution.resolved_methods.first().map(|method| method.method_identifier)
+                .filter(|id| method_resolution.resolved_methods.iter().all(|method| method.method_identifier == *id))
+        }).filter(|id| {
+            block_context.scope.get_class_like_name().is_some_and(|class| {
+                class.as_bytes().eq_ignore_ascii_case(id.get_class_name().as_bytes())
+            })
+        })
+    } else {
+        None
+    };
+
+    // The ensured nullsafe twin still walks its arguments when the original
+    // receiver is null. Its handler discards those effects afterwards.
+    if receiver.is_none()
+        && artifacts.get_expression_type(object).is_some_and(|ty| ty.is_null() && (is_null_safe || ty.has_nullsafe_null()))
     {
         let mut return_type = get_null();
         return_type.set_nullsafe_null(true);
-        artifacts.set_expression_type(&span, return_type);
+        artifacts.set_resolved_expression_type(&span, return_type);
 
         return Ok(());
     }
@@ -331,6 +419,7 @@ where
 
         let method_target_context = MethodTargetContext {
             invocation_kind: MethodInvocationKind::Instance,
+            requested_name: resolved_method.requested_name,
             declaring_method_id: Some(resolved_method.method_identifier),
             class_like_metadata: metadata,
             class_type: resolved_method.static_class_type,
@@ -389,6 +478,7 @@ where
         analyze_invocation_targets(
             context,
             block_context,
+            &reflection_scope,
             artifacts,
             method_resolution.template_result,
             invocation_targets,
@@ -398,6 +488,8 @@ where
             method_resolution.encountered_mixed,
             is_null_safe && method_resolution.encountered_null,
             artifacts.get_expression_type(object).is_some_and(|t| t.has_nullsafe_null()),
+            is_null_safe,
+            matches!(selector, ClassLikeMemberSelector::Identifier(_)),
         )?;
     }
 
@@ -413,6 +505,19 @@ where
             MethodInvocationKind::Instance,
             !has_resolved_methods,
         )?;
+    }
+
+    // MethodCallHandler::resolveReturnType(): no reflected method is ErrorType, not an absent result.
+    // Dynamic selectors remain mixed; resolved, magic and provider results have already been stored.
+    if artifacts.get_expression_type(&span).is_none() {
+        let return_type = if method_resolution.has_dynamic_selector { get_mixed() } else { get_error() };
+        artifacts.set_resolved_expression_type(&span, return_type);
+    }
+
+    if let Some(id) = initializing_method
+        && let Some(summary) = crate::property_initialization::called_method(context, id)?
+    {
+        crate::property_initialization::merge_initialized(&mut block_context.variable_state.property_initializations, &summary);
     }
 
     Ok(())
@@ -457,6 +562,7 @@ where
             effective_signature: None,
             method_context: MethodTargetContext {
                 invocation_kind,
+                requested_name: unresolved.method_name.to_ascii_lowercase(),
                 declaring_method_id: None,
                 class_like_metadata,
                 class_type: unresolved.class_type,
@@ -502,6 +608,7 @@ where
     A: Arena,
 {
     let mut arguments_analyzed = !analyze_arguments;
+    let mut evaluated_arguments = EvaluatedArguments::new(argument_list.arguments.len());
     let mut resulting_type: Option<TUnion> = None;
     for undocumented_method in undocumented_methods {
         let magic_call_method = undocumented_method.magic_method;
@@ -529,6 +636,7 @@ where
             effective_signature: None,
             method_context: Some(MethodTargetContext {
                 invocation_kind,
+                requested_name: magic_call_method.requested_name,
                 declaring_method_id: Some(magic_call_method.method_identifier),
                 class_like_metadata,
                 class_type: magic_call_method.static_class_type,
@@ -549,7 +657,7 @@ where
         let mut invocation_template_result = template_result.clone();
         let mut parameter_types = WordMap::default();
         if signature_handled && analyze_arguments {
-            analyze_invocation(
+            analyze_invocation_with_arguments(
                 context,
                 block_context,
                 artifacts,
@@ -558,11 +666,13 @@ where
                 None,
                 &mut invocation_template_result,
                 &mut parameter_types,
+                &mut evaluated_arguments,
             )?;
 
             arguments_analyzed = true;
         } else if !arguments_analyzed {
             argument_list.analyze(context, block_context, artifacts)?;
+            evaluated_arguments.remember(&InvocationArgumentsSource::ArgumentList(argument_list), artifacts);
             arguments_analyzed = true;
         }
 
@@ -598,11 +708,11 @@ where
     }
 
     let mut resulting_type = resulting_type.unwrap_or_else(get_mixed);
-    if let Some(existing_type) = artifacts.get_expression_type(&span) {
+    if let Some(existing_type) = artifacts.get_raw_expression_type(&span) {
         resulting_type = add_optional_union_type(resulting_type, Some(existing_type), context.codebase);
     }
 
-    artifacts.set_expression_type(&span, resulting_type);
+    artifacts.set_resolved_expression_type(&span, resulting_type);
 
     Ok(())
 }
@@ -692,6 +802,159 @@ mod tests {
 
     use crate::code::IssueCode;
     use crate::test_analysis;
+
+    #[test]
+    fn failed_method_fallback_preserves_active_signature_and_return_providers() {
+        use std::borrow::Cow;
+        use std::num::NonZeroUsize;
+        use std::sync::{Arc, Mutex};
+
+        use mago_allocator::LocalArena;
+        use mago_codex::populator::populate_codebase;
+        use mago_codex::reference::SymbolReferences;
+        use mago_codex::scanner::scan_program;
+        use mago_codex::ttype::{TType, get_literal_int};
+        use mago_database::file::{File, FileType};
+        use mago_extension::{WorkerCommand, WorkerPool, WorkerPoolOptions};
+        use mago_names::resolver::NameResolver;
+        use mago_php_version::PHPVersion;
+        use mago_span::{Position, Span};
+        use mago_syntax::parser::parse_file;
+
+        use crate::Analyzer;
+        use crate::analysis_result::AnalysisResult;
+        use crate::external::protocol::{ANALYZER_PROTOCOL_MAJOR, ANALYZER_PROTOCOL_MINOR};
+        use crate::external::{ExternalAnalyzer, ExternalAnalyzerHandle};
+        use crate::invocation::{InvocationTarget, MethodInvocationKind};
+        use crate::plugin::PluginRegistry;
+        use crate::plugin::context::{HookContext, InvocationInfo, ProviderContext};
+        use crate::plugin::hook::{ExpressionHook, HookResult};
+        use crate::plugin::provider::{MethodReturnTypeProvider, MethodTarget, Provider, ProviderMeta};
+        use crate::settings::Settings;
+
+        #[derive(Clone, Default)]
+        struct LookupNames(Arc<Mutex<Vec<(String, String, String)>>>);
+        impl ExpressionHook for LookupNames {
+            fn is_observer(&self) -> bool {
+                true
+            }
+
+            fn before_arguments(
+                &self,
+                call: &InvocationInfo<'_, '_, '_>,
+                _: &mut HookContext<'_, '_>,
+            ) -> HookResult<()> {
+                if call.function_name() == "SignatureTarget::provided" {
+                    let target = &call.inner().target;
+                    assert!(matches!(target, InvocationTarget::ExternalMethod { effective_signature: Some(_), .. }));
+                    assert!(target.get_function_like_metadata().is_none());
+                    let method = target.get_method_context().unwrap();
+                    assert_eq!(method.invocation_kind, MethodInvocationKind::Instance);
+                    assert!(method.declaring_method_id.is_none());
+                    self.0.lock().unwrap().push((
+                        call.function_name(),
+                        method.requested_name.to_string(),
+                        method.class_like_metadata.original_name.to_string(),
+                    ));
+                }
+                Ok(())
+            }
+        }
+
+        struct Return;
+        impl Provider for Return {
+            fn meta() -> &'static ProviderMeta {
+                static META: ProviderMeta = ProviderMeta::new("failed-method-return", "Return", "Real method return");
+                &META
+            }
+        }
+        impl MethodReturnTypeProvider for Return {
+            fn targets() -> &'static [MethodTarget] {
+                static TARGETS: [MethodTarget; 1] = [MethodTarget::exact(b"ProviderTarget", b"real")];
+                &TARGETS
+            }
+
+            fn get_return_type(
+                &self,
+                _: &ProviderContext<'_, '_, '_>,
+                _: &[u8],
+                _: &[u8],
+                _: &InvocationInfo<'_, '_, '_>,
+            ) -> Option<mago_codex::ttype::union::TUnion> {
+                Some(get_literal_int(91))
+            }
+        }
+
+        let worker = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/failed-method-provider.php");
+        // Keep the existing worker's payloads, but use the current public protocol version in its header.
+        let worker = std::fs::read_to_string(worker).unwrap().replace(
+            "pack('nnnn', 2, 1, $kind, 0)",
+            &format!("pack('nnnn', {ANALYZER_PROTOCOL_MAJOR}, {ANALYZER_PROTOCOL_MINOR}, $kind, 0)"),
+        );
+        let pool = WorkerPool::spawn(
+            WorkerCommand::new("php").with_argument("-r").with_argument(worker.strip_prefix("<?php").unwrap()),
+            NonZeroUsize::new(1).unwrap(),
+            WorkerPoolOptions::default(),
+        ).unwrap();
+        let external = ExternalAnalyzer::initialize([Arc::new(pool)], PHPVersion::PHP84, &[], false).unwrap();
+        let mut plugins = PluginRegistry::new();
+        plugins.set_external_analyzer(Arc::new(ExternalAnalyzerHandle::ready(external)));
+        let lookup_names = LookupNames::default();
+        plugins.register_expression_hook(lookup_names.clone());
+        plugins.register_method_provider(Return);
+        plugins.prepare_external_analyzer().unwrap();
+        let code = indoc! {r#"
+            <?php
+            class SignatureTarget {}
+            class ProviderTarget {
+                public function real(): string { return 'native'; }
+                public function __call(string $name, array $arguments): string { return 'magic'; }
+            }
+            $signature = new SignatureTarget();
+            $signature->PrOvIdEd();
+            $object = new ProviderTarget();
+            $object->provided();
+            ProviderTarget::provided();
+            $object->magic();
+            $object->real();
+            $callable = $object->real(...);
+            $callable();
+            $object->withoutProvider();
+        "#};
+        let arena = LocalArena::new();
+        let file = Arc::new(File::new(
+            Cow::Borrowed(b"failed-method-providers.php"), FileType::Host, None, Cow::Borrowed(code.as_bytes()),
+        ));
+        let program = parse_file(&arena, &file);
+        let names = NameResolver::new(&arena).resolve(program);
+        let mut codebase = scan_program(&arena, &file, program, &names, PHPVersion::PHP84);
+        let mut references = SymbolReferences::new();
+        populate_codebase(&mut codebase, &mut references, Default::default(), Default::default());
+        let session = plugins.create_external_analysis_session([Arc::clone(&file)]).unwrap();
+        let analyzer = Analyzer::new(&arena, &file, &names, &codebase, &plugins, Settings::new(PHPVersion::PHP84))
+            .with_external_analysis_session(&session);
+        let mut result = AnalysisResult::new(references);
+        let artifacts = analyzer.analyze_with_artifacts(program, &mut result).unwrap();
+        for (call, expected) in [
+            ("$signature->PrOvIdEd()", "int(73)"),
+            ("$object->provided()", "int(73)"),
+            ("ProviderTarget::provided()", "int(73)"),
+            ("$object->magic()", "int(73)"),
+            ("$object->real()", "int(91)"),
+            ("$callable()", "int(91)"),
+            ("$object->withoutProvider()", "string"),
+        ] {
+            let start = code.find(call).unwrap() as u32;
+            let span = Span::new(file.id, Position::new(start), Position::new(start + call.len() as u32));
+            let ty = artifacts.get_expression_type(&span).unwrap();
+            assert_eq!(ty.get_id().as_str(), Some(expected), "{call}");
+            assert!(!ty.is_error(), "the fallback must not replace {call}");
+        }
+        assert_eq!(
+            *lookup_names.0.lock().unwrap(),
+            [("SignatureTarget::provided".to_string(), "provided".to_string(), "SignatureTarget".to_string())],
+        );
+    }
 
     test_analysis! {
         name = nullsafe_method_call_on_null,

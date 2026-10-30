@@ -3,7 +3,8 @@
 //!
 //! A call's condition reports through FunctionCallConstantConditionRule's collector, unless an ImpossibleCheckType rule
 //! owns the call. Not ported: ConstantConditionInTraitRule (nothing reports in a trait) and the
-//! `treatPhpDocTypesAsCertain` and possibly impure tips.
+//! global `treatPhpDocTypesAsCertain` options and possibly impure tips. Default function-call certainty tips
+//! use the available native argument observations; unavailable transfers are not inconclusive decisions.
 
 use std::borrow::Cow;
 use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
@@ -34,6 +35,30 @@ use super::no_discard::unparen;
 use super::noop::{self, asserts, function_of};
 
 const REMOVE_TIP: &str = "Remove remaining cases below this one and this error will disappear too.";
+const PHPDOC_TIP: &str = "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.";
+
+#[derive(Clone, Copy)]
+enum CheckTypes {
+    Full,
+    Native,
+}
+
+impl CheckTypes {
+    fn map<'a>(self, c: &'a Checker<'_, '_>) -> &'a HashMap<Span, TUnion> {
+        match self {
+            Self::Full => &c.types,
+            Self::Native => &c.native_types,
+        }
+    }
+
+    fn argument(self, c: &Checker, expression: &Expression) -> Option<Type> {
+        match self {
+            Self::Full => c.phpstan_type(expression),
+            // Selected conversion must not recover a dependency from the full expression map.
+            Self::Native => c.phpstan_type_in(expression, &c.native_types),
+        }
+    }
+}
 
 /// The functions with a TypeSpecifier extension or a `($value is T ? true : false)` stub return. The stubs with
 /// `@phpstan-assert-if-true =T` (is_resource(), ctype_alpha(), file functions...) set the call as the root
@@ -112,8 +137,6 @@ pub(in super::super) struct Facts {
     throws: HashSet<Span>,
     /// The variables holding only `new` objects of named classes, whose classes NewHandler makes final.
     pub(in super::super) exact: HashSet<Span>,
-    /// The `$this->name` fetches of initialized properties (PropertyInitializationExpr).
-    pub(in super::super) initialized: HashMap<Span, bool>,
 }
 
 pub(in super::super) fn facts(c: &Checker, program: &Program) -> Facts {
@@ -126,9 +149,6 @@ pub(in super::super) fn facts(c: &Checker, program: &Program) -> Facts {
     if c.level >= 4 {
         pass.walk_program(program, &mut ());
         pass.facts.exact = super::impure_points::exact_variables(program);
-    }
-    if c.level >= 1 {
-        pass.facts.initialized = super::null_coalesce::initialized(program);
     }
     pass.facts
 }
@@ -340,6 +360,9 @@ pub(super) fn typed(program: &Program) -> Vec<Span> {
         spans: Vec<Span>,
     }
     impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted {
+        fn walk_in_if(&mut self, i: &'ast If<'arena>, _: &mut ()) {
+            self.spans.push(i.condition.span());
+        }
         fn walk_in_conditional(&mut self, t: &'ast Conditional<'arena>, _: &mut ()) {
             self.spans.push(t.condition.span());
         }
@@ -471,6 +494,11 @@ impl Checker<'_, '_> {
     /// determineContext() asks a void function for its `@phpstan-assert` tags, anything else in a truthy context
     /// for its `@phpstan-assert-if-true` tags. An unresolved template makes the call the root expression.
     fn asserted(&self, f: &FunctionLikeMetadata, args: &ArgumentList) -> Option<bool> {
+        self.asserted_with(f, args, CheckTypes::Full).flatten()
+    }
+
+    /// Outer None is an unsupported assertion or unavailable input, not a maybe comparison.
+    fn asserted_with(&self, f: &FunctionLikeMetadata, args: &ArgumentList, types: CheckTypes) -> Option<Option<bool>> {
         let void = f.return_type_metadata.as_ref().is_some_and(|r| r.type_union.is_void());
         let assertions = if void { &f.assertions } else { &f.if_true_assertions };
         if !void && f.assertions_inferred
@@ -489,7 +517,7 @@ impl Checker<'_, '_> {
                 Argument::Named(a) if name.as_bytes()[1..] == *a.name.value => Some(a.value),
                 _ => None,
             })?;
-            let given = self.type_of(arg)?;
+            let given = types.map(self).get(&arg.span())?;
             for assertion in assertions {
                 let (Assertion::IsType(a) | Assertion::IsNotType(a)) = assertion else {
                     return None;
@@ -518,7 +546,7 @@ impl Checker<'_, '_> {
                 };
             }
         }
-        all
+        Some(all)
     }
 
     fn asserting(&self, on: &Expression, method: &ClassLikeMemberSelector) -> bool {
@@ -565,12 +593,15 @@ pub(in super::super) fn if_statement(c: &mut Checker, i: &If) {
     if !c.conditions_checked() {
         return;
     }
+    let tip = c.native_types.get(&i.condition.span())
+        .filter(|ty| !ty.is_never() && !ty.is_always_truthy() && !ty.is_always_falsy())
+        .map(|_| "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.");
     c.constant_condition(
         i.condition,
         unparen(i.condition).span(),
         "If condition",
         "if.always",
-        None,
+        tip,
     );
     for (cond, _) in i.body.else_if_clauses() {
         let last = c.last_condition(unparen(cond).span());
@@ -737,8 +768,8 @@ fn compare(c: &mut Checker, b: &Binary) {
     let value = c.exact(b.span());
     let right = match (kind, b.rhs) {
         // ImpossibleInstanceOfRule: a class name, as ObjectType
-        ("Instanceof", Expression::Identifier(id)) => Some(Type::Object(c.resolved(id), vec![])),
-        ("Instanceof", Expression::Self_(_) | Expression::Static(_)) => c.class_scope().map(|k| Type::Object(c.display(k), vec![])),
+        ("Instanceof", Expression::Identifier(id)) => Some(Type::Object(c.resolved(id), vec![], false)),
+        ("Instanceof", Expression::Self_(_) | Expression::Static(_)) => c.class_scope().map(|k| Type::Object(c.display(k), vec![], false)),
         _ => c.phpstan_type(b.rhs),
     };
     let (Some(value), Some(left), Some(right)) = (value, c.phpstan_type(b.lhs), right) else {
@@ -769,6 +800,18 @@ fn compare(c: &mut Checker, b: &Binary) {
         format!("{kind} comparison using {sigil} between {l} and {r} will always evaluate to {text}.")
     };
     let mut tips = Vec::new();
+    // CountFunctionReturnTypeExtension refines PHPStan's PHPDoc return, not its native
+    // int return. A comparison depending on that exact size needs the certainty tip.
+    if kind == "Strict"
+        && [(b.lhs, &right), (b.rhs, &left)].iter().any(|(expression, other)| {
+            let Expression::Call(Call::Function(call)) = unparen(expression) else { return false };
+            !other.is_integer().no()
+                && matches!(function_of(c, call.function), Some(noop::Function::Builtin(function))
+            if function.name.eq_ignore_ascii_case("count") || function.name.eq_ignore_ascii_case("sizeof"))
+        })
+    {
+        tips.push("Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%.");
+    }
     if value && last == Some(false) && !kind.is_empty() {
         tips.push(REMOVE_TIP);
     }
@@ -873,20 +916,11 @@ pub(in super::super) fn function_check(c: &mut Checker, call: &FunctionCall) {
     }
     let name = noop::source(c, call.function.span());
     let subject = format!("function {}", name.trim_start_matches('\\'));
-    // ImpossibleCheckTypeHelper: assert() is decided by its argument
-    let value = if name.trim_start_matches('\\').eq_ignore_ascii_case("assert") {
-        call.argument_list.arguments.first().and_then(|a| c.truthiness(a.value()))
-    } else {
-        let asserted = match function_of(c, call.function) {
-            Some(noop::Function::User(f)) => c.asserted(f, &call.argument_list),
-            Some(noop::Function::Builtin(b)) if let Some(value) = c.special(&b.name.to_ascii_lowercase(), &call.argument_list) => {
-                return impossible_check(c, call.span(), value, "function", subject, &call.argument_list);
-            }
-            _ => None,
-        };
-        c.exact(call.span()).or(asserted)
-    };
-    impossible_check(c, call.span(), value, "function", subject, &call.argument_list);
+    let value = c.function_decision(call, CheckTypes::Full).flatten();
+    // ImpossibleCheckTypeFunctionCallRule reruns the same helper without PHPDoc certainty.
+    // Either native polarity suppresses the tip. Only an available but undecided answer adds it.
+    let phpdoc = value.is_some() && c.function_decision(call, CheckTypes::Native) == Some(None);
+    impossible_check(c, call.span(), value, "function", subject, &call.argument_list, phpdoc);
 }
 
 pub(in super::super) fn method_check(c: &mut Checker, call: &MethodCall) {
@@ -917,7 +951,7 @@ fn method_report(
         _ => return,
     };
     let value = c.exact(span).or(asserted);
-    impossible_check(c, span, value, identifier, subject, args);
+    impossible_check(c, span, value, identifier, subject, args, false);
 }
 
 fn impossible_check(
@@ -927,6 +961,7 @@ fn impossible_check(
     identifier: &str,
     subject: String,
     args: &ArgumentList,
+    phpdoc: bool,
 ) {
     let last = c.last_condition(span);
     let Some(value) = value.filter(|v| !(*v && last == Some(true))) else {
@@ -946,7 +981,8 @@ fn impossible_check(
         }
     };
     let (text, suffix) = if value { ("true", "alreadyNarrowedType") } else { ("false", "impossibleType") };
-    let tip = (value && last == Some(false)).then_some(REMOVE_TIP);
+    // RuleErrorBuilder::tip replaces the certainty tip with the remaining-cases tip.
+    let tip = if value && last == Some(false) { Some(REMOVE_TIP) } else { phpdoc.then_some(PHPDOC_TIP) };
     let line = c.line_of(span);
     c.condition_error(
         span,
@@ -1013,7 +1049,7 @@ impl Checker<'_, '_> {
     fn subtractable(&self, t: &Type) -> bool {
         match t {
             Type::Union(ts) => ts.iter().all(|t| self.subtractable(t)),
-            Type::Object(class, _) | Type::Static(class, _) => self.enum_cases(class).is_some(),
+            Type::Object(class, _, _) | Type::Static(class, _) => self.enum_cases(class).is_some(),
             t => matches!(
                 t,
                 Type::Int
@@ -1033,7 +1069,7 @@ impl Checker<'_, '_> {
     fn expand_enums(&self, t: Type) -> Type {
         match t {
             Type::Union(ts) => union(ts.into_iter().map(|t| self.expand_enums(t)).collect()),
-            Type::Object(ref class, _) | Type::Static(ref class, _) => {
+            Type::Object(ref class, _, _) | Type::Static(ref class, _) => {
                 let cases = self.enum_cases(class);
                 cases.map_or(t, union)
             }
@@ -1060,7 +1096,7 @@ impl Checker<'_, '_> {
                     Type::int_range(n.checked_add(1), max),
                 ])
             }
-            Type::Object(ref class, _) | Type::Static(ref class, _)
+            Type::Object(ref class, _, _) | Type::Static(ref class, _)
                 if matches!(value, Type::EnumCase(c, _) if c.eq_ignore_ascii_case(class)) =>
             {
                 let cases = self.enum_cases(class);
@@ -1087,7 +1123,7 @@ fn finite(c: &Checker, t: &Type) -> Vec<Type> {
 /// `getConstantStrings()`
 fn constant_strings(t: &Type) -> Vec<String> {
     match t {
-        Type::ConstString(s) => vec![s.clone()],
+        Type::ConstString(s) => vec![String::from_utf8_lossy(s).into_owned()],
         Type::Union(ts) => ts.iter().map(constant_strings).try_fold(Vec::new(), |mut all, s| {
             (!s.is_empty()).then(|| {
                 all.extend(s);
@@ -1117,17 +1153,58 @@ fn decided(t: Tri) -> Option<bool> {
 }
 
 impl Checker<'_, '_> {
+    /// The bounded ImpossibleCheckTypeHelper decision, with identical expression positions in both lanes.
+    /// None is unavailable/unported. Some(None) means the supported helper genuinely cannot decide.
+    fn function_decision(&self, call: &FunctionCall, types: CheckTypes) -> Option<Option<bool>> {
+        let args = &call.argument_list;
+        if noop::source(self, call.function.span())
+            .trim_start_matches('\\')
+            .eq_ignore_ascii_case("assert")
+        {
+            let ty = types
+                .map(self)
+                .get(&args.arguments.first()?.value().span())
+                .filter(|ty| !ty.types.is_empty() && !ty.is_never())?;
+            return Some(if ty.is_always_truthy() {
+                Some(true)
+            } else if ty.is_always_falsy() {
+                Some(false)
+            } else {
+                None
+            });
+        }
+        match function_of(self, call.function)? {
+            noop::Function::User(function) => {
+                let asserted = self.asserted_with(function, args, types);
+                match types {
+                    CheckTypes::Full => Some(self.exact(call.span()).or(asserted.flatten())),
+                    CheckTypes::Native => asserted,
+                }
+            }
+            noop::Function::Builtin(function) => {
+                self.special(&function.name.to_ascii_lowercase(), args, types, call.span())
+            }
+        }
+    }
+
     /// ImpossibleCheckTypeHelper's own answers for in_array(), method_exists(), property_exists() and the
-    /// class_exists() family, with what their TypeSpecifying extensions narrow; `None` for the other functions.
-    fn special(&self, name: &str, args: &ArgumentList) -> Option<Option<bool>> {
-        let arg = |i: usize| args.arguments.get(i).and_then(|a| self.phpstan_type(a.value()));
+    /// class_exists() family, plus the sure-type entries of ordinary type predicates.
+    fn special(&self, name: &str, args: &ArgumentList, types: CheckTypes, call: Span) -> Option<Option<bool>> {
+        let arg = |i: usize| args.arguments.get(i).and_then(|a| types.argument(self, a.value()));
         Some(match name {
-            "in_array" => super::super::declared::with_classes(self, || self.in_array(arg(0)?, arg(1)?, arg(2))),
-            "method_exists" => (|| self.method_exists(arg(0)?, arg(1)?))(),
-            "property_exists" => (|| self.property_exists(arg(0)?, arg(1)?))(),
+            // getArgumentType(..., phpDocFlavour: true) retains the full strict flag in either lane.
+            "in_array" => {
+                let needle = arg(0)?;
+                let haystack = arg(1)?;
+                super::super::declared::with_classes(self, || self.in_array(
+                    needle, haystack, args.arguments.get(2).and_then(|a| self.phpstan_type(a.value())),
+                ))
+            }
+            "method_exists" => self.method_exists(arg(0)?, arg(1)?),
+            "property_exists" => self.property_exists(arg(0)?, arg(1)?),
             // the always true result is suppressed: autoloading can fail
             "class_exists" | "interface_exists" | "trait_exists" | "enum_exists" => {
-                let strings = arg(0).map(|t| constant_strings(&t)).unwrap_or_default();
+                let strings = constant_strings(&arg(0)?);
                 let wrong_kind = |s: &String| {
                     self.codebase.get_class_like(s.trim_start_matches('\\').as_bytes()).is_some_and(|k| match name {
                         "class_exists" => matches!(k.kind, SymbolKind::Interface | SymbolKind::Trait),
@@ -1138,7 +1215,24 @@ impl Checker<'_, '_> {
                 };
                 (!strings.is_empty() && strings.iter().all(wrong_kind)).then_some(false)
             }
-            _ => return None,
+            _ => {
+                let query: fn(&Type) -> Tri = match name {
+                    "is_int" | "is_integer" | "is_long" => Type::is_integer,
+                    "is_string" => Type::is_string,
+                    "is_bool" => Type::is_boolean,
+                    "is_float" | "is_double" | "is_real" => Type::is_float,
+                    "is_null" => Type::is_null,
+                    "is_array" => Type::is_array,
+                    "is_object" => Type::is_object,
+                    "is_iterable" => Type::is_iterable,
+                    _ => return match types {
+                        CheckTypes::Full => Some(self.exact(call)),
+                        CheckTypes::Native => None,
+                    },
+                };
+                let argument = arg(0)?;
+                super::super::declared::with_classes(self, || decided(query(&argument)))
+            }
         })
     }
 
@@ -1214,19 +1308,19 @@ impl Checker<'_, '_> {
 
     fn method_exists(&self, object: Type, method: Type) -> Option<bool> {
         if let Type::ConstString(class) = &object
-            && self.codebase.get_class_like(class.as_bytes()).is_none()
+            && self.codebase.get_class_like(class).is_none()
         {
             return Some(false);
         }
         let Type::ConstString(method) = method else { return None };
         let object = match object {
-            Type::ConstString(class) => Type::Object(class, Vec::new()),
+            Type::ConstString(class) => Type::Object(String::from_utf8_lossy(&class).into_owned(), Vec::new(), false),
             t => t,
         };
         // ponytail: a generic class-string's object (`class-string<T>&literal-string`) is not decided, Mago's
         // class-string types lose it
         let found: Vec<_> =
-            object.object_class_names().iter().map(|class| self.object_has_method(class, &method)).collect();
+            object.object_class_names().iter().map(|class| self.object_has_method(class, &String::from_utf8_lossy(&method))).collect();
         match extreme(found.iter().map(|f| f.0)) {
             Tri::Yes => found.iter().all(|f| f.1).then_some(true),
             Tri::No => Some(false),
@@ -1238,6 +1332,7 @@ impl Checker<'_, '_> {
     /// isn't native (an object shape's, an `@property` tag's) narrows the call instead.
     fn property_exists(&self, object: Type, property: Type) -> Option<bool> {
         let Type::ConstString(property) = property else { return None };
+        let property = String::from_utf8_lossy(&property);
         if property.is_empty() {
             return None;
         }
@@ -1255,7 +1350,7 @@ impl Checker<'_, '_> {
                     }
                     Tri::No
                 }
-                Type::Object(class, _) | Type::Static(class, _) | Type::This(class) => {
+                Type::Object(class, _, _) | Type::Static(class, _) | Type::This(class) => {
                     let Some(k) = self.codebase.get_class_like(class.as_bytes()) else { return None };
                     if self.declared_property(k, dollar.as_bytes()).is_some() {
                         Tri::Yes
@@ -1348,7 +1443,7 @@ impl Checker<'_, '_> {
         match t {
             Type::Union(ts) => ts.iter().all(|t| self.is_enum(t)),
             Type::EnumCase(..) => true,
-            Type::Object(class, _) | Type::Static(class, _) => self.enum_cases(class).is_some(),
+            Type::Object(class, _, _) | Type::Static(class, _) => self.enum_cases(class).is_some(),
             _ => false,
         }
     }
@@ -1399,7 +1494,7 @@ fn unequal(c: &Checker, subject: &Type, value: Option<&Type>, cond: &Expression)
 fn truthy(t: &Type) -> Option<bool> {
     match t {
         t if scalar(t) => Some(loose_scalars(t, &Type::ConstBool(true))),
-        Type::Object(..) | Type::EnumCase(..) => Some(true),
+        Type::Object(..) | Type::EnumCase(..) | Type::NonexistentParent => Some(true),
         _ => None,
     }
 }
@@ -1432,7 +1527,7 @@ fn numeric(s: &str) -> bool {
 /// `isString()->yes() && isNumericString()->no()`.
 fn non_numeric_string(t: &Type) -> bool {
     match t {
-        Type::ConstString(s) => !numeric(s),
+        Type::ConstString(s) => !std::str::from_utf8(s).is_ok_and(numeric),
         Type::Union(ts) => ts.iter().all(non_numeric_string),
         _ => false,
     }
@@ -1443,27 +1538,27 @@ fn loose_scalars(a: &Type, b: &Type) -> bool {
     let truthy = |t: &Type| match t {
         Type::ConstInt(i) => *i != 0,
         Type::ConstFloat(f) => *f != 0.0,
-        Type::ConstString(s) => !s.is_empty() && s != "0",
+        Type::ConstString(s) => !s.is_empty() && s.as_slice() != b"0",
         Type::ConstBool(b) => *b,
         _ => false,
     };
     let number = |t: &Type| match t {
         Type::ConstInt(i) => Some(*i as f64),
         Type::ConstFloat(f) => Some(*f),
-        Type::ConstString(s) if numeric(s) => s.trim_matches([' ', '\t', '\n', '\r', '\x0b', '\x0c']).parse().ok(),
+        Type::ConstString(s) if std::str::from_utf8(s).is_ok_and(numeric) => std::str::from_utf8(s).ok()?.trim_matches([' ', '\t', '\n', '\r', '\x0b', '\x0c']).parse().ok(),
         _ => None,
     };
     let string = |t: &Type| match t {
         Type::ConstString(s) => s.clone(),
-        Type::ConstInt(i) => i.to_string(),
-        t => float_to_string(number(t).unwrap_or_default()),
+        Type::ConstInt(i) => i.to_string().into_bytes(),
+        t => float_to_string(number(t).unwrap_or_default()).into_bytes(),
     };
     match (a, b) {
         (Type::Null, Type::Null) => true,
         (Type::ConstBool(_), _) | (_, Type::ConstBool(_)) => truthy(a) == truthy(b),
         (Type::Null, Type::ConstString(s)) | (Type::ConstString(s), Type::Null) => s.is_empty(),
         (Type::Null, t) | (t, Type::Null) => !truthy(t),
-        (Type::ConstString(x), Type::ConstString(y)) if !(numeric(x) && numeric(y)) => x == y,
+        (Type::ConstString(x), Type::ConstString(y)) if !(std::str::from_utf8(x).is_ok_and(numeric) && std::str::from_utf8(y).is_ok_and(numeric)) => x == y,
         _ => match (number(a), number(b)) {
             (Some(x), Some(y)) => x == y,
             _ => string(a) == string(b),
@@ -1540,8 +1635,8 @@ fn loose(a: &Type, b: &Type) -> Tri {
                     }
                 }
                 Accessory::NumericString | Accessory::DecimalIntString { inverse: false } => *b == Type::Null || non_numeric_string(b),
-                Accessory::LowercaseString => matches!(b, Type::ConstString(s) if s.to_lowercase() != *s && !numeric(s)),
-                Accessory::UppercaseString => matches!(b, Type::ConstString(s) if s.to_uppercase() != *s && !numeric(s)),
+                Accessory::LowercaseString => matches!(b, Type::ConstString(s) if s.to_ascii_lowercase() != *s && !std::str::from_utf8(s).is_ok_and(numeric)),
+                Accessory::UppercaseString => matches!(b, Type::ConstString(s) if s.to_ascii_uppercase() != *s && !std::str::from_utf8(s).is_ok_and(numeric)),
                 Accessory::NonEmptyArray => empty_array(b),
                 _ => false,
             };
@@ -1729,6 +1824,9 @@ pub(in super::super) fn match_subject_types(
     program: &Program,
     codebase: &CodebaseMetadata,
     php_version: u32,
+    pollute_scope_with_loop_initial_assignments: bool,
+    pollute_scope_with_always_iterable_foreach: bool,
+    pollute_scope_with_block: bool,
 ) -> (HashMap<Span, TUnion>, Vec<Span>) {
     /// The matches with arms: subject, the start and end between their braces, nesting depth.
     struct Matches(Vec<(Span, usize, usize, usize)>, usize);
@@ -1781,7 +1879,7 @@ pub(in super::super) fn match_subject_types(
         let copy = File::new(file.name.clone(), file.file_type, file.path.clone(), Cow::Owned(contents));
         let arena = LocalArena::new();
         let (program, names) = parse(&arena, &copy);
-        types.extend(super::super::infer::analyse(&arena, &copy, program, &names, codebase, php_version, subjects, Vec::new()).0);
+        types.extend(super::super::infer::analyse(&arena, &copy, program, &names, codebase, php_version, pollute_scope_with_loop_initial_assignments, pollute_scope_with_always_iterable_foreach, pollute_scope_with_block, subjects, Vec::new()).0);
     }
     (types, unknown)
 }

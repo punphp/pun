@@ -1,0 +1,35 @@
+{
+    "calls": {
+        "442": {
+            "line": 20,
+            "expression": "$target->invoke(++$i)",
+            "names": [
+                {
+                    "name": "invoke",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 442,
+                            "end": 449,
+                            "expression": "$target",
+                            "type": "DistinctLeft|DistinctRight"
+                        },
+                        {
+                            "start": 458,
+                            "end": 462,
+                            "expression": "++$i",
+                            "type": "1"
+                        },
+                        {
+                            "start": 460,
+                            "end": 462,
+                            "expression": "$i",
+                            "type": "0"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "errors": []
+}

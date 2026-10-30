@@ -122,7 +122,7 @@ impl Rule for NoRedundantNullableCheck {
         let [first, second] = types.as_slice() else {
             return;
         };
-        let ((Type::Object(object, _), Type::Null) | (Type::Null, Type::Object(object, _))) =
+        let ((Type::Object(object, _, _), Type::Null) | (Type::Null, Type::Object(object, _, _))) =
             (first, second)
         else {
             return;

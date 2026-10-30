@@ -1,0 +1,971 @@
+{
+    "analysed": {
+        "errors": [
+            {
+                "file": "echo-closing-tag.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "A trailing comma is not allowed here on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "echo-comma-line.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "A trailing comma is not allowed here on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "echo-nested-call.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "A trailing comma is not allowed here on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "echo-semicolon.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "A trailing comma is not allowed here on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "for-all-clauses.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "A trailing comma is not allowed here on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "for-all-clauses.php",
+                "line": 5,
+                "identifier": "phpstan.parse",
+                "message": "A trailing comma is not allowed here on line 5",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "for-all-clauses.php",
+                "line": 7,
+                "identifier": "phpstan.parse",
+                "message": "A trailing comma is not allowed here on line 7",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "for-colon-body.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "A trailing comma is not allowed here on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "for-colon-body.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "A trailing comma is not allowed here on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "for-colon-body.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "A trailing comma is not allowed here on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "for-colon-body.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "A trailing comma is not allowed here on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "for-condition.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "A trailing comma is not allowed here on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "for-increment.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "A trailing comma is not allowed here on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "for-init.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "A trailing comma is not allowed here on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "for-resolver-suppression.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "A trailing comma is not allowed here on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "for-separated-commas.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "A trailing comma is not allowed here on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "for-separated-commas.php",
+                "line": 5,
+                "identifier": "phpstan.parse",
+                "message": "A trailing comma is not allowed here on line 5",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "for-separated-commas.php",
+                "line": 7,
+                "identifier": "phpstan.parse",
+                "message": "A trailing comma is not allowed here on line 7",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "resolver-and-rule-suppression.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "A trailing comma is not allowed here on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "short-echo-closing-tag.php",
+                "line": 1,
+                "identifier": "phpstan.parse",
+                "message": "A trailing comma is not allowed here on line 1",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "short-echo-comma-line.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "A trailing comma is not allowed here on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "short-echo-semicolon.php",
+                "line": 1,
+                "identifier": "phpstan.parse",
+                "message": "A trailing comma is not allowed here on line 1",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "valid-neighbor-diagnostic.php",
+                "line": 3,
+                "identifier": "function.notFound",
+                "message": "Function missing_valid_comma_neighbor not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            }
+        ],
+        "general": []
+    },
+    "scanned": {
+        "initialization": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "condition": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "increment": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "echo": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "short-echo": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "valid-for": {
+            "errors": [],
+            "general": []
+        },
+        "valid-echo": {
+            "errors": [],
+            "general": []
+        },
+        "valid-short-echo": {
+            "errors": [],
+            "general": []
+        }
+    },
+    "order": {
+        "errors": [
+            {
+                "file": "order.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "A trailing comma is not allowed here on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "order.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "order.php",
+                "line": 5,
+                "identifier": "phpstan.parse",
+                "message": "A trailing comma is not allowed here on line 5",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "order.php",
+                "line": 5,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 5",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "order.php",
+                "line": 7,
+                "identifier": "phpstan.parse",
+                "message": "A trailing comma is not allowed here on line 7",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "order.php",
+                "line": 7,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 7",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "order.php",
+                "line": 9,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 9",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "order.php",
+                "line": 10,
+                "identifier": "phpstan.parse",
+                "message": "A trailing comma is not allowed here on line 10",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "order.php",
+                "line": 14,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 14",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "order.php",
+                "line": 15,
+                "identifier": "phpstan.parse",
+                "message": "A trailing comma is not allowed here on line 15",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "order.php",
+                "line": 18,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declaration statement has to be the very first statement in the script on line 18",
+                "tip": null,
+                "ignorable": false
+            }
+        ],
+        "general": [
+            "Error message \"void cannot be used as a parameter type on line 3\" cannot be ignored, use excludePaths instead.",
+            "Error message \"A trailing comma is not allowed here on line 3\" cannot be ignored, use excludePaths instead.",
+            "Error message \"void cannot be used as a parameter type on line 5\" cannot be ignored, use excludePaths instead.",
+            "Error message \"A trailing comma is not allowed here on line 5\" cannot be ignored, use excludePaths instead.",
+            "Error message \"void cannot be used as a parameter type on line 7\" cannot be ignored, use excludePaths instead.",
+            "Error message \"A trailing comma is not allowed here on line 7\" cannot be ignored, use excludePaths instead.",
+            "Error message \"void cannot be used as a parameter type on line 9\" cannot be ignored, use excludePaths instead.",
+            "Error message \"A trailing comma is not allowed here on line 10\" cannot be ignored, use excludePaths instead.",
+            "Error message \"void cannot be used as a parameter type on line 14\" cannot be ignored, use excludePaths instead.",
+            "Error message \"A trailing comma is not allowed here on line 15\" cannot be ignored, use excludePaths instead.",
+            "Error message \"Namespace declaration statement has to be the very first statement in the script on line 18\" cannot be ignored, use excludePaths instead."
+        ]
+    },
+    "versions": {
+        "70100": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 3",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 4,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 4",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 6,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 6",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 9,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 9",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "70400": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 3",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 4,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 4",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 6,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 6",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 9,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 9",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "80000": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 3",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 4,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 4",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 6,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 6",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 9,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 9",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "80100": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 3",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 4,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 4",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 6,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 6",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 9,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 9",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "80200": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 3",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 4,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 4",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 6,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 6",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 9,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 9",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "80400": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 3",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 4,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 4",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 6,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 6",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 9,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 9",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "80500": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 3",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 4,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 4",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 6,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 6",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 9,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 9",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        }
+    },
+    "boundaries": {
+        "echo-eof": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected EOF, expecting ';' on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "short-echo-eof": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 1,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 1",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 1,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected EOF, expecting ';' on line 1",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "echo-double-comma": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected ',', expecting ';' on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "for-double-comma": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected ')' on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected ',', expecting ';' on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "empty-echo": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected ';' on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "empty-short-echo": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 1,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected ';' on line 1",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "constant-list": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "class-constant-list": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "use-list": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        }
+    }
+}

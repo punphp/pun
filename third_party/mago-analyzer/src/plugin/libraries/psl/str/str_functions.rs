@@ -135,11 +135,7 @@ impl FunctionReturnTypeProvider for StrProvider {
                         string_type.is_truthy || replacement_type.is_truthy,
                         string_type.is_non_empty || replacement_type.is_non_empty,
                         false,
-                        match (string_type.casing, replacement_type.casing) {
-                            (TStringCasing::Lowercase, TStringCasing::Lowercase) => TStringCasing::Lowercase,
-                            (TStringCasing::Uppercase, TStringCasing::Uppercase) => TStringCasing::Uppercase,
-                            _ => TStringCasing::Unspecified,
-                        },
+                        string_type.casing.join(replacement_type.casing),
                     ))))
                 } else {
                     TUnion::from_atomic(TAtomic::Scalar(TScalar::String(TString::general_with_props(
@@ -147,11 +143,7 @@ impl FunctionReturnTypeProvider for StrProvider {
                         string_type.is_truthy || replacement_type.is_truthy,
                         string_type.is_non_empty || replacement_type.is_non_empty,
                         false,
-                        match (string_type.casing, replacement_type.casing) {
-                            (TStringCasing::Lowercase, TStringCasing::Lowercase) => TStringCasing::Lowercase,
-                            (TStringCasing::Uppercase, TStringCasing::Uppercase) => TStringCasing::Uppercase,
-                            _ => TStringCasing::Unspecified,
-                        },
+                        string_type.casing.join(replacement_type.casing),
                     ))))
                 })
             }

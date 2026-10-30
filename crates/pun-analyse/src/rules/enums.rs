@@ -10,6 +10,7 @@ use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::atomic::scalar::class_like_string::TClassLikeString;
 use mago_codex::ttype::atomic::scalar::int::TInteger;
 use mago_codex::ttype::atomic::scalar::string::{TString, TStringLiteral};
+use mago_codex::ttype::union::TUnion;
 use mago_span::HasSpan;
 use mago_syntax::cst::*;
 use pun_phpstan::types::{Level, Type, is_super_type_of};
@@ -160,7 +161,7 @@ pub fn sanity<'arena>(c: &mut Checker<'_, 'arena>, e: &Enum<'arena>) {
         // getConstantScalarValues(): the int or string the case has
         let key = match &t {
             Type::ConstInt(i) => Some(i.to_string()),
-            Type::ConstString(s) => Some(s.clone()),
+            Type::ConstString(s) => Some(String::from_utf8_lossy(s).into_owned()),
             _ => None,
         };
         if let Some(key) = key.filter(|_| is_super_type_of(&scalar_type, &t).yes()) {
@@ -252,10 +253,10 @@ fn constant(c: &Checker, a: &TAtomic, value_of: bool, depth: usize) -> Option<Ty
             literal: Some(TStringLiteral::Value(v)),
             ..
         })) => Some(Type::ConstString(
-            String::from_utf8_lossy(v.as_bytes()).into_owned(),
+            v.as_bytes().to_vec(),
         )),
         TAtomic::Scalar(TScalar::ClassLikeString(TClassLikeString::Literal { value })) => Some(
-            Type::ConstString(String::from_utf8_lossy(value.as_bytes()).into_owned()),
+            Type::ConstString(value.as_bytes().to_vec()),
         ),
         TAtomic::Scalar(TScalar::Bool(b)) => b.value.map(Type::ConstBool),
         TAtomic::Null => Some(Type::Null),
@@ -271,6 +272,8 @@ fn constant(c: &Checker, a: &TAtomic, value_of: bool, depth: usize) -> Option<Ty
                     .get_class_constant(class, name)?
                     .inferred_type
                     .as_ref()
+                    .filter(|value| value.is_single())
+                    .map(TUnion::get_single)
             };
             constant(c, value?, false, depth + 1)
         }

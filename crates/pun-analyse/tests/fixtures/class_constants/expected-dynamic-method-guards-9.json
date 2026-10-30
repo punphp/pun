@@ -1,0 +1,314 @@
+{
+  "general": [],
+  "errors": [
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Constant ConstantDynamicMethodGuards\\Receiver::PRIVATE_NAME is unused.",
+      "line": 6,
+      "ignorable": true,
+      "tip": "See: https://phpstan.org/developing-extensions/always-used-class-constants",
+      "identifier": "classConstant.unused"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::LITERAL.",
+      "line": 31,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::LITERAL.",
+      "line": 34,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::IMPURE.",
+      "line": 36,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::IMPURE.",
+      "line": 38,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::CASE_NAME.",
+      "line": 40,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::CASE_NAME.",
+      "line": 41,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to private constant PRIVATE_NAME of class ConstantDynamicMethodGuards\\Receiver.",
+      "line": 44,
+      "ignorable": true,
+      "identifier": "classConstant.private"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::VARIABLE.",
+      "line": 51,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::VARIABLE.",
+      "line": 53,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::VARIABLE.",
+      "line": 54,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::REVERSE.",
+      "line": 56,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::SELECTOR_WRITE.",
+      "line": 59,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::SELECTOR_WRITE.",
+      "line": 61,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::RECEIVER_WRITE.",
+      "line": 63,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::RECEIVER_WRITE.",
+      "line": 65,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::CONSTANT_SELECTOR.",
+      "line": 70,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::CONSTANT_SELECTOR.",
+      "line": 72,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::ARRAY_SELECTOR.",
+      "line": 75,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::ARRAY_SELECTOR.",
+      "line": 78,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::ARGUMENT_WRITE.",
+      "line": 80,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::ARGUMENT_WRITE.",
+      "line": 82,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::ARGUMENT_SYNTAX.",
+      "line": 84,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::ARGUMENT_SYNTAX.",
+      "line": 86,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::STATIC_LITERAL.",
+      "line": 91,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::STATIC_LITERAL.",
+      "line": 93,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::STATIC_REVERSE.",
+      "line": 95,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::STATIC_REVERSE.",
+      "line": 96,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::STATIC_CASE.",
+      "line": 98,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::STATIC_CASE.",
+      "line": 99,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::STATIC_VARIABLE.",
+      "line": 105,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::STATIC_REVERSE_VARIABLE.",
+      "line": 108,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::STATIC_SELECTOR_WRITE.",
+      "line": 111,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::STATIC_SELECTOR_WRITE.",
+      "line": 113,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::STATIC_CONSTANT_SELECTOR.",
+      "line": 115,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::STATIC_CONSTANT_SELECTOR.",
+      "line": 117,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::STATIC_RECEIVER_WRITE.",
+      "line": 120,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::STATIC_RECEIVER_WRITE.",
+      "line": 122,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::ONE_PATH.",
+      "line": 129,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::ONE_PATH.",
+      "line": 131,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::BOTH_PATHS.",
+      "line": 133,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::BOTH_PATHS.",
+      "line": 135,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::OTHER_RECEIVER.",
+      "line": 138,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "dynamic-method-guards.php",
+      "message": "Access to undefined constant ConstantDynamicMethodGuards\\Receiver::OTHER_RECEIVER.",
+      "line": 143,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    }
+  ]
+}

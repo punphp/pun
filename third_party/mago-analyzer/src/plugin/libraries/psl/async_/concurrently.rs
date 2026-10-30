@@ -62,6 +62,7 @@ impl FunctionReturnTypeProvider for ConcurrentlyProvider {
 fn unwrap_closure_return_array(array: &TArray, context: &ProviderContext<'_, '_, '_>) -> Option<TUnion> {
     match array {
         TArray::List(list) => Some(TUnion::from_atomic(TAtomic::Array(TArray::List(TList {
+            callable: None,
             element_type: Arc::new(if list.element_type.is_never() {
                 get_never()
             } else {
@@ -90,6 +91,7 @@ fn unwrap_closure_return_array(array: &TArray, context: &ProviderContext<'_, '_,
                 }
 
                 return Some(TUnion::from_atomic(TAtomic::Array(TArray::Keyed(TKeyedArray {
+                    callable: None,
                     parameters: keyed.parameters.as_ref().map(|(k, v)| {
                         let unwrapped_v = extract_closure_return_type(v).unwrap_or_else(|| (**v).clone());
                         (Arc::clone(k), Arc::new(unwrapped_v))
@@ -104,6 +106,7 @@ fn unwrap_closure_return_array(array: &TArray, context: &ProviderContext<'_, '_,
             let inner = extract_closure_return_type(&value_type)?;
 
             Some(TUnion::from_atomic(TAtomic::Array(TArray::Keyed(TKeyedArray {
+                callable: None,
                 parameters: Some((Arc::new(key_type), Arc::new(inner))),
                 non_empty: keyed.non_empty,
                 known_items: None,

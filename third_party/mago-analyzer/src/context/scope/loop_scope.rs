@@ -10,11 +10,14 @@ use mago_codex::ttype::union::TUnion;
 use mago_span::Span;
 
 use crate::context::scope::control_action::ControlActionSet;
+use crate::context::block::VariableScope;
 
 #[derive(Clone, Debug)]
 pub struct LoopScope {
     pub span: Span,
     pub iteration_count: usize,
+    /// Product of constant-array entries on the speculative foreach chain.
+    pub foreach_unroll_factor: usize,
     pub parent_context_variables: WordMap<Rc<TUnion>>,
     pub redefined_loop_variables: WordMap<Rc<TUnion>>,
     pub possibly_redefined_loop_variables: WordMap<Rc<TUnion>>,
@@ -22,7 +25,9 @@ pub struct LoopScope {
     pub possibly_defined_loop_parent_variables: WordMap<Rc<TUnion>>,
     /// Actual states at loop exits, separate from the back edge and the entry state.
     pub break_locals: Option<WordMap<Rc<TUnion>>>,
+    pub break_scopes: Vec<VariableScope>,
     pub continue_locals: Option<WordMap<Rc<TUnion>>>,
+    pub(crate) property_continues: Vec<VariableScope>,
     pub by_reference_loop_mutations: WordMap<Rc<TUnion>>,
     pub assignment_targets: WordSet,
     pub tracks_assignment_targets: bool,
@@ -30,6 +35,15 @@ pub struct LoopScope {
     pub final_actions: ControlActionSet,
     pub truthy_pre_conditions: bool,
     pub condition_always_false: bool,
+    /// Actual first header evaluation, before truthy reconciliation; for/while only.
+    pub entry_scope: Option<VariableScope>,
+    pub first_falsey_scope: Option<VariableScope>,
+    pub pre_update_scope: Option<VariableScope>,
+    pub back_edge_dead: bool,
+    /// Foreach's entry and actual body/continue exits; separate from for/while headers.
+    pub foreach_entry_scope: Option<VariableScope>,
+    pub foreach_body_scope: Option<VariableScope>,
+    pub foreach_continue_scopes: Vec<VariableScope>,
     pub parent_loop: Option<Box<LoopScope>>,
 }
 
@@ -39,12 +53,15 @@ impl LoopScope {
             span,
             parent_context_variables: parent_context_vars,
             iteration_count: 0,
+            foreach_unroll_factor: 1,
             redefined_loop_variables: WordMap::default(),
             possibly_redefined_loop_variables: WordMap::default(),
             possibly_redefined_loop_parent_variables: WordMap::default(),
             possibly_defined_loop_parent_variables: WordMap::default(),
             break_locals: None,
+            break_scopes: Vec::new(),
             continue_locals: None,
+            property_continues: Vec::new(),
             by_reference_loop_mutations: WordMap::default(),
             assignment_targets: WordSet::default(),
             tracks_assignment_targets: false,
@@ -53,6 +70,13 @@ impl LoopScope {
             parent_loop,
             truthy_pre_conditions: true,
             condition_always_false: false,
+            entry_scope: None,
+            first_falsey_scope: None,
+            pre_update_scope: None,
+            back_edge_dead: false,
+            foreach_entry_scope: None,
+            foreach_body_scope: None,
+            foreach_continue_scopes: Vec::new(),
         }
     }
 

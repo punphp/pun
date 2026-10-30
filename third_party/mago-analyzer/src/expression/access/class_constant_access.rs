@@ -1,10 +1,7 @@
 use mago_allocator::Arena;
 use mago_codex::ttype::add_optional_union_type;
-use mago_codex::ttype::expander::StaticClassType;
-use mago_codex::ttype::expander::TypeExpansionOptions;
-use mago_codex::ttype::expander::expand_union;
+use mago_codex::ttype::get_error;
 use mago_codex::ttype::get_mixed;
-use mago_codex::ttype::get_never;
 use mago_syntax::cst::ClassConstantAccess;
 
 use crate::analyzable::Analyzable;
@@ -24,33 +21,37 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for ClassConstantAccess<'arena> {
     where
         A: Arena,
     {
-        let resolution = resolve_class_constants(context, block_context, artifacts, self.class, &self.constant, false)?;
+        let resolution = resolve_class_constants(
+            context,
+            block_context,
+            artifacts,
+            self.class,
+            &self.constant,
+            false,
+        )?;
 
-        let mut resulting_type = if resolution.has_ambiguous_path { Some(get_mixed()) } else { None };
+        let mut resulting_type = None;
         for resolved_constant in resolution.constants {
-            resulting_type =
-                Some(add_optional_union_type(resolved_constant.const_type, resulting_type.as_ref(), context.codebase));
-        }
-
-        if let Some(resulting_type) = &mut resulting_type {
-            expand_union(
+            resulting_type = Some(add_optional_union_type(
+                resolved_constant.const_type,
+                resulting_type.as_ref(),
                 context.codebase,
-                resulting_type,
-                &TypeExpansionOptions {
-                    self_class: block_context.scope.get_class_like_name(),
-                    static_class_type: if let Some(calling_class) = block_context.scope.get_class_like_name() {
-                        StaticClassType::Name(calling_class)
-                    } else {
-                        StaticClassType::None
-                    },
-                    ..Default::default()
-                },
-            );
+            ));
         }
 
+        // ClassConstFetchHandler prices every dynamic selector as mixed, including literal names.
+        // InitializerExprTypeResolver keeps resolved union arms before its ErrorType fallback.
         artifacts.set_expression_type(
             self,
-            if resolution.has_invalid_path { get_never() } else { resulting_type.unwrap_or_else(get_mixed) },
+            if !self.constant.is_identifier() {
+                get_mixed()
+            } else if let Some(resulting_type) = resulting_type {
+                resulting_type
+            } else if resolution.has_invalid_path {
+                get_error()
+            } else {
+                get_mixed()
+            },
         );
 
         Ok(())
@@ -73,7 +74,6 @@ mod tests {
         "},
         issues = [
             IssueCode::NonExistentClassLike,
-            IssueCode::ImpossibleAssignment,
         ]
     }
 
@@ -86,7 +86,6 @@ mod tests {
         "},
         issues = [
             IssueCode::SelfOutsideClassScope,
-            IssueCode::ImpossibleAssignment,
         ]
     }
 
@@ -99,7 +98,6 @@ mod tests {
         "},
         issues = [
             IssueCode::StaticOutsideClassScope,
-            IssueCode::ImpossibleAssignment,
         ]
     }
 
@@ -112,7 +110,6 @@ mod tests {
         "},
         issues = [
             IssueCode::ParentOutsideClassScope,
-            IssueCode::ImpossibleAssignment,
         ]
     }
 
@@ -176,7 +173,6 @@ mod tests {
         "},
         issues = [
             IssueCode::InvalidConstantSelector,
-            IssueCode::ImpossibleAssignment,
         ]
     }
 
@@ -189,7 +185,6 @@ mod tests {
         "#},
         issues = [
             IssueCode::InvalidClassConstantOnString,
-            IssueCode::ImpossibleAssignment,
         ]
     }
 
@@ -245,7 +240,6 @@ mod tests {
         "},
         issues = [
             IssueCode::NonExistentClassConstant,
-            IssueCode::ImpossibleAssignment,
         ]
     }
 

@@ -1,0 +1,18 @@
+[
+    [
+        "patched.php",
+        11,
+        "phpstan.dumpType",
+        "Dumped type: int|null",
+        null,
+        false
+    ],
+    [
+        "patched.php",
+        15,
+        "phpstan.dumpType",
+        "Dumped type: int",
+        null,
+        false
+    ]
+]

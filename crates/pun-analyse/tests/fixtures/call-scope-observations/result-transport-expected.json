@@ -1,0 +1,254 @@
+{
+    "calls": {
+        "636": {
+            "line": 23,
+            "expression": "$inspect->$name([\n        'callable' => $callable()/* result */,\n        'integer' => transportInt()/* result */,\n        'name' => $name,\n        'named' => transportVoid()/* result */,\n    ])",
+            "names": [
+                {
+                    "name": "left",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 636,
+                            "end": 644,
+                            "expression": "$inspect",
+                            "type": "TransportInspect"
+                        },
+                        {
+                            "start": 652,
+                            "end": 828,
+                            "expression": "[\n        'callable' => $callable()/* result */,\n        'integer' => transportInt()/* result */,\n        'name' => $name,\n        'named' => transportVoid()/* result */,\n    ]",
+                            "type": "array{callable: void, integer: int, name: 'left', named: null}"
+                        }
+                    ]
+                },
+                {
+                    "name": "right",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 636,
+                            "end": 644,
+                            "expression": "$inspect",
+                            "type": "TransportInspect"
+                        },
+                        {
+                            "start": 652,
+                            "end": 828,
+                            "expression": "[\n        'callable' => $callable()/* result */,\n        'integer' => transportInt()/* result */,\n        'name' => $name,\n        'named' => transportVoid()/* result */,\n    ]",
+                            "type": "array{callable: void, integer: int, name: 'right', named: null}"
+                        }
+                    ]
+                }
+            ]
+        },
+        "846": {
+            "line": 29,
+            "expression": "$inspect->$name([\n        'all' => match ($flag) { true => transportVoid(), false => transportVoid() }/* result */,\n        'name' => $name,\n        'some' => match ($flag) { true => transportVoid(), false => 1 }/* result */,\n    ])",
+            "names": [
+                {
+                    "name": "left",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 846,
+                            "end": 854,
+                            "expression": "$inspect",
+                            "type": "TransportInspect"
+                        },
+                        {
+                            "start": 862,
+                            "end": 1077,
+                            "expression": "[\n        'all' => match ($flag) { true => transportVoid(), false => transportVoid() }/* result */,\n        'name' => $name,\n        'some' => match ($flag) { true => transportVoid(), false => 1 }/* result */,\n    ]",
+                            "type": "array{all: void, name: 'left', some: 1|void}"
+                        }
+                    ]
+                },
+                {
+                    "name": "right",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 846,
+                            "end": 854,
+                            "expression": "$inspect",
+                            "type": "TransportInspect"
+                        },
+                        {
+                            "start": 862,
+                            "end": 1077,
+                            "expression": "[\n        'all' => match ($flag) { true => transportVoid(), false => transportVoid() }/* result */,\n        'name' => $name,\n        'some' => match ($flag) { true => transportVoid(), false => 1 }/* result */,\n    ]",
+                            "type": "array{all: void, name: 'right', some: 1|void}"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1299": {
+            "line": 38,
+            "expression": "$inspect->$name([\n        'callable' => $mixedCallable()/* result */,\n        'instance' => $returns->$method()/* result */,\n        'name' => $name,\n        'static' => TransportReturns::$staticMethod()/* result */,\n    ])",
+            "names": [
+                {
+                    "name": "left",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 1299,
+                            "end": 1307,
+                            "expression": "$inspect",
+                            "type": "TransportInspect"
+                        },
+                        {
+                            "start": 1315,
+                            "end": 1521,
+                            "expression": "[\n        'callable' => $mixedCallable()/* result */,\n        'instance' => $returns->$method()/* result */,\n        'name' => $name,\n        'static' => TransportReturns::$staticMethod()/* result */,\n    ]",
+                            "type": "array{callable: int|void, instance: int|null, name: 'left', static: int|null}"
+                        }
+                    ]
+                },
+                {
+                    "name": "right",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 1299,
+                            "end": 1307,
+                            "expression": "$inspect",
+                            "type": "TransportInspect"
+                        },
+                        {
+                            "start": 1315,
+                            "end": 1521,
+                            "expression": "[\n        'callable' => $mixedCallable()/* result */,\n        'instance' => $returns->$method()/* result */,\n        'name' => $name,\n        'static' => TransportReturns::$staticMethod()/* result */,\n    ]",
+                            "type": "array{callable: int|void, instance: int|null, name: 'right', static: int|null}"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1570": {
+            "line": 45,
+            "expression": "$inspect->$name([\n        'branch' => [$flag ? $callable() : 13]/* result */,\n        'coalesce' => [$callable() ?? 17]/* result */,\n        'name' => $name,\n        'named' => [$flag ? transportVoid() : 19]/* result */,\n        'remembered' => $remembered/* result */,\n    ])",
+            "names": [
+                {
+                    "name": "left",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 1570,
+                            "end": 1578,
+                            "expression": "$inspect",
+                            "type": "TransportInspect"
+                        },
+                        {
+                            "start": 1586,
+                            "end": 1845,
+                            "expression": "[\n        'branch' => [$flag ? $callable() : 13]/* result */,\n        'coalesce' => [$callable() ?? 17]/* result */,\n        'name' => $name,\n        'named' => [$flag ? transportVoid() : 19]/* result */,\n        'remembered' => $remembered/* result */,\n    ]",
+                            "type": "array{branch: array{13|void}, coalesce: array{void}, name: 'left', named: array{19|null}, remembered: void}"
+                        }
+                    ]
+                },
+                {
+                    "name": "right",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 1570,
+                            "end": 1578,
+                            "expression": "$inspect",
+                            "type": "TransportInspect"
+                        },
+                        {
+                            "start": 1586,
+                            "end": 1845,
+                            "expression": "[\n        'branch' => [$flag ? $callable() : 13]/* result */,\n        'coalesce' => [$callable() ?? 17]/* result */,\n        'name' => $name,\n        'named' => [$flag ? transportVoid() : 19]/* result */,\n        'remembered' => $remembered/* result */,\n    ]",
+                            "type": "array{branch: array{13|void}, coalesce: array{void}, name: 'right', named: array{19|null}, remembered: void}"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1930": {
+            "line": 53,
+            "expression": "$inspect->$name([\n        'name' => $name,\n        'named' => [transportVoid() ?? 37]/* result */,\n        'nonnullable' => [$mixedCallable() ?? 29]/* result */,\n        'null' => [transportNull() ?? 31]/* result */,\n        'nullable' => [$nullableCallable() ?? 23]/* result */,\n    ])",
+            "names": [
+                {
+                    "name": "left",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 1930,
+                            "end": 1938,
+                            "expression": "$inspect",
+                            "type": "TransportInspect"
+                        },
+                        {
+                            "start": 1946,
+                            "end": 2215,
+                            "expression": "[\n        'name' => $name,\n        'named' => [transportVoid() ?? 37]/* result */,\n        'nonnullable' => [$mixedCallable() ?? 29]/* result */,\n        'null' => [transportNull() ?? 31]/* result */,\n        'nullable' => [$nullableCallable() ?? 23]/* result */,\n    ]",
+                            "type": "array{name: 'left', named: array{37}, nonnullable: array{int|void}, null: array{31}, nullable: array{23|void}}"
+                        }
+                    ]
+                },
+                {
+                    "name": "right",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 1930,
+                            "end": 1938,
+                            "expression": "$inspect",
+                            "type": "TransportInspect"
+                        },
+                        {
+                            "start": 1946,
+                            "end": 2215,
+                            "expression": "[\n        'name' => $name,\n        'named' => [transportVoid() ?? 37]/* result */,\n        'nonnullable' => [$mixedCallable() ?? 29]/* result */,\n        'null' => [transportNull() ?? 31]/* result */,\n        'nullable' => [$nullableCallable() ?? 23]/* result */,\n    ]",
+                            "type": "array{name: 'right', named: array{37}, nonnullable: array{int|void}, null: array{31}, nullable: array{23|void}}"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "errors": [
+        [
+            27,
+            "function.void",
+            "Result of function transportVoid (void) is used.",
+            null,
+            true
+        ],
+        [
+            49,
+            "function.void",
+            "Result of function transportVoid (void) is used.",
+            null,
+            true
+        ],
+        [
+            55,
+            "function.void",
+            "Result of function transportVoid (void) is used.",
+            null,
+            true
+        ]
+    ],
+    "function_events": {
+        "676": 1,
+        "722": 1,
+        "794": 1,
+        "905": 1,
+        "931": 1,
+        "1029": 1,
+        "1339": 1,
+        "1553": 1,
+        "1617": 1,
+        "1671": 1,
+        "1756": 1,
+        "1993": 1,
+        "2055": 1,
+        "2111": 1,
+        "2170": 1
+    }
+}

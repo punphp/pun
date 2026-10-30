@@ -205,16 +205,16 @@ fn phpstan_atomic(atomic: &TAtomic) -> Option<Type> {
             None => Type::Float,
         },
         TAtomic::Scalar(TScalar::String(s)) => match s.get_known_literal_value() {
-            Some(v) => Type::ConstString(String::from_utf8_lossy(v).into_owned()),
+            Some(v) => Type::ConstString(v.to_vec()),
             None => Type::String,
         },
         TAtomic::Scalar(TScalar::ClassLikeString(c)) => Type::ClassString(match c {
-            TClassLikeString::Literal { value } => Some(Box::new(Type::Object(value.to_string(), vec![]))),
+            TClassLikeString::Literal { value } => Some(Box::new(Type::Object(value.to_string(), vec![], false))),
             TClassLikeString::OfType { constraint, .. }
                 if let TAtomic::Object(TObject::Named(n)) = &**constraint
                     && n.type_parameters.is_none() =>
             {
-                Some(Box::new(Type::Object(n.name.to_string(), vec![])))
+                Some(Box::new(Type::Object(n.name.to_string(), vec![], false)))
             }
             _ => None,
         }),
@@ -231,7 +231,7 @@ fn phpstan_atomic(atomic: &TAtomic) -> Option<Type> {
                     // (a constant's key, not yet resolved, is neither)
                     let key = match key.get_integer() {
                         Some(i) => Type::ConstInt(i),
-                        None => Type::ConstString(String::from_utf8_lossy(key.get_string()?).into_owned()),
+                        None => Type::ConstString(key.get_string()?.to_vec()),
                     };
                     b.set(Some(key), phpstan_type(value)?, *optional);
                 }
@@ -267,11 +267,11 @@ fn phpstan_atomic(atomic: &TAtomic) -> Option<Type> {
                 Some(params) => params.iter().map(phpstan_type).collect::<Option<_>>()?,
                 None => vec![],
             };
-            Type::Object(n.name.to_string(), args)
+            Type::Object(n.name.to_string(), args, false)
         }
         TAtomic::Object(TObject::Enum(e)) => match &e.case {
             Some(case) => Type::EnumCase(e.name.to_string(), case.to_string()),
-            None => Type::Object(e.name.to_string(), vec![]),
+            None => Type::Object(e.name.to_string(), vec![], false),
         },
         TAtomic::Object(TObject::Any) => Type::ObjectWithoutClass,
         TAtomic::Resource(_) => Type::Resource,
@@ -302,7 +302,7 @@ pub fn expr_type(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], expr: &Expressio
         Expression::LegacyArray(a) => array_type(ctx, ancestors, a.elements.iter())
             .or_else(|| facts(ctx).full_type(node_span(expr)).and_then(phpstan_type)),
         Expression::Literal(Literal::String(s)) => {
-            s.value.map(|v| Type::ConstString(String::from_utf8_lossy(v).into_owned()))
+            s.value.map(|v| Type::ConstString(v.to_vec()))
         }
         Expression::Literal(Literal::Integer(i)) => match i.value {
             Some(v) if v <= i64::MAX as u64 => Some(Type::ConstInt(v as i64)),
@@ -319,6 +319,7 @@ pub fn expr_type(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], expr: &Expressio
                 Expression::Identifier(id) => Some(Type::ClassString(Some(Box::new(Type::Object(
                     resolve_written_class_name(ancestors, &String::from_utf8_lossy(id.value())),
                     vec![],
+                    false,
                 ))))),
                 _ => facts(ctx).full_type(node_span(expr)).and_then(phpstan_type),
             }
@@ -337,9 +338,9 @@ pub fn expr_type(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], expr: &Expressio
             if let Expression::Identifier(id) = c.function
                 && String::from_utf8_lossy(id.value()).trim_start_matches('\\').eq_ignore_ascii_case("get_class")
                 && let [Argument::Positional(arg)] = &c.argument_list.arguments.nodes[..]
-                && let Some(Type::Object(name, _)) = expr_type(ctx, ancestors, arg.value) =>
+                && let Some(Type::Object(name, _, _)) = expr_type(ctx, ancestors, arg.value) =>
         {
-            Some(Type::ClassString(Some(Box::new(Type::Object(name, vec![])))))
+            Some(Type::ClassString(Some(Box::new(Type::Object(name, vec![], false)))))
         }
         // a function PHPStan does not know gives an `ErrorType`
         Expression::Call(Call::Function(c))
@@ -353,7 +354,7 @@ pub fn expr_type(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], expr: &Expressio
             let t = facts(ctx).full_type(node_span(expr)).and_then(phpstan_type);
             match i.class {
                 Expression::Identifier(id) if t.as_ref().is_none_or(|t| matches!(t, Type::Never(_))) => Some(
-                    Type::Object(resolve_written_class_name(ancestors, &String::from_utf8_lossy(id.value())), vec![]),
+                    Type::Object(resolve_written_class_name(ancestors, &String::from_utf8_lossy(id.value())), vec![], false),
                 ),
                 _ => t,
             }
@@ -411,9 +412,9 @@ fn array_type<'a>(
         match element {
             ArrayElement::KeyValue(kv) => {
                 let key = match expr_type(ctx, ancestors, kv.key)? {
-                    Type::ConstString(s) => match s.parse::<i64>() {
+                    Type::ConstString(s) => match std::str::from_utf8(&s).map(str::parse::<i64>) {
                         // a decimal integer string key is an integer key (`toArrayKey()`)
-                        Ok(i) if i.to_string() == s => Type::ConstInt(i),
+                        Ok(Ok(i)) if i.to_string().as_bytes() == s => Type::ConstInt(i),
                         _ => Type::ConstString(s),
                     },
                     key @ Type::ConstInt(_) => key,

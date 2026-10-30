@@ -1,0 +1,456 @@
+{
+    "0": [
+        [
+            "guards.php",
+            3,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            6,
+            "function.notFound",
+            "Function pun_guarded_case_function not found.",
+            "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            true
+        ],
+        [
+            "guards.php",
+            6,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            9,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            4,
+            "function.notFound",
+            "Used function AbsentFunctionLibrary\\missing not found.",
+            "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            true
+        ],
+        [
+            "matrix.php",
+            9,
+            "function.notFound",
+            "Function missing not found.",
+            "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            true
+        ],
+        [
+            "matrix.php",
+            9,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            10,
+            "function.notFound",
+            "Function missing_with_arguments not found.",
+            "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            true
+        ],
+        [
+            "matrix.php",
+            11,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            12,
+            "phpstan.dumpType",
+            "Dumped type: 3",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            13,
+            "function.notFound",
+            "Function pun_missing_global_function not found.",
+            "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            true
+        ],
+        [
+            "matrix.php",
+            13,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            14,
+            "function.notFound",
+            "Function AbsentFunctionLibrary\\missing not found.",
+            "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            true
+        ],
+        [
+            "matrix.php",
+            14,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            15,
+            "phpstan.dumpType",
+            "Dumped type: int",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            16,
+            "phpstan.dumpType",
+            "Dumped type: int<0, max>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            17,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            19,
+            "phpstan.dumpType",
+            "Dumped type: 'closure'",
+            null,
+            false
+        ]
+    ],
+    "2": [
+        [
+            "guards.php",
+            3,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            6,
+            "function.notFound",
+            "Function pun_guarded_case_function not found.",
+            "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            true
+        ],
+        [
+            "guards.php",
+            6,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            9,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            4,
+            "function.notFound",
+            "Used function AbsentFunctionLibrary\\missing not found.",
+            "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            true
+        ],
+        [
+            "matrix.php",
+            9,
+            "function.notFound",
+            "Function missing not found.",
+            "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            true
+        ],
+        [
+            "matrix.php",
+            9,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            10,
+            "function.notFound",
+            "Function missing_with_arguments not found.",
+            "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            true
+        ],
+        [
+            "matrix.php",
+            11,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            12,
+            "phpstan.dumpType",
+            "Dumped type: 3",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            13,
+            "function.notFound",
+            "Function pun_missing_global_function not found.",
+            "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            true
+        ],
+        [
+            "matrix.php",
+            13,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            14,
+            "function.notFound",
+            "Function AbsentFunctionLibrary\\missing not found.",
+            "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            true
+        ],
+        [
+            "matrix.php",
+            14,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            15,
+            "phpstan.dumpType",
+            "Dumped type: int",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            16,
+            "phpstan.dumpType",
+            "Dumped type: int<0, max>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            17,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            19,
+            "phpstan.dumpType",
+            "Dumped type: 'closure'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            24,
+            "callable.nonCallable",
+            "Trying to invoke 'FailedNamedFunction\u2026' but it's not a callable.",
+            null,
+            true
+        ]
+    ],
+    "10": [
+        [
+            "guards.php",
+            3,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            6,
+            "function.notFound",
+            "Function pun_guarded_case_function not found.",
+            "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            true
+        ],
+        [
+            "guards.php",
+            6,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            9,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            4,
+            "function.notFound",
+            "Used function AbsentFunctionLibrary\\missing not found.",
+            "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            true
+        ],
+        [
+            "matrix.php",
+            9,
+            "function.notFound",
+            "Function missing not found.",
+            "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            true
+        ],
+        [
+            "matrix.php",
+            9,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            10,
+            "function.notFound",
+            "Function missing_with_arguments not found.",
+            "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            true
+        ],
+        [
+            "matrix.php",
+            11,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            12,
+            "phpstan.dumpType",
+            "Dumped type: 3",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            13,
+            "function.notFound",
+            "Function pun_missing_global_function not found.",
+            "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            true
+        ],
+        [
+            "matrix.php",
+            13,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            14,
+            "function.notFound",
+            "Function AbsentFunctionLibrary\\missing not found.",
+            "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            true
+        ],
+        [
+            "matrix.php",
+            14,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            15,
+            "phpstan.dumpType",
+            "Dumped type: int",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            16,
+            "phpstan.dumpType",
+            "Dumped type: int<0, max>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            17,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            19,
+            "phpstan.dumpType",
+            "Dumped type: 'closure'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            24,
+            "callable.nonCallable",
+            "Trying to invoke 'FailedNamedFunction\u2026' but it's not a callable.",
+            null,
+            true
+        ]
+    ]
+}

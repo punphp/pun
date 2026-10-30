@@ -14,9 +14,9 @@ use mago_syntax::cst::*;
 use pun_problem::{Edit, Fix, Safety, Span};
 
 use super::class_method::{
-    ClassInfo, class_info, doc_tags, has_parent_method_or_interface_method, is_class_method_used,
+    ClassInfo, doc_tags, has_parent_method_or_interface_method, is_class_method_used,
     is_controller_class_method, is_final, is_magic, is_named_constructor, is_private, is_public,
-    member_doc,
+    member_doc, with_class_info,
 };
 use super::rector_batch5::{has_attribute, remove_members};
 use super::rector_stmts::line_indent;
@@ -44,75 +44,74 @@ impl Rule for NoEmptyMethod {
         out: &mut Vec<Report>,
     ) {
         let facts = facts(ctx);
-        let Some(class) = class_info(node, ancestors, &facts) else {
-            return;
-        };
-        let mut removed = vec![false; class.members.len()];
-        let mut methods: Vec<&Method<'_>> = Vec::new();
-        for (index, member) in class.members.iter().enumerate() {
-            let ClassLikeMember::Method(method) = member else {
-                continue;
+        with_class_info(node, ancestors, &facts, |class| {
+            let mut removed = vec![false; class.members.len()];
+            let mut methods: Vec<&Method<'_>> = Vec::new();
+            for (index, member) in class.members.iter().enumerate() {
+                let ClassLikeMember::Method(method) = member else {
+                    continue;
+                };
+                let MethodBody::Concrete(body) = &method.body else {
+                    continue;
+                };
+                if statement_count(ctx.source, body) > 0
+                    || method
+                        .modifiers
+                        .iter()
+                        .any(|m| matches!(m, Modifier::Abstract(_)))
+                {
+                    continue;
+                }
+                if is_final(method) && !class.is_final {
+                    continue;
+                }
+                // `shouldSkipNonFinalNonPrivateClassMethod`.
+                if !class.is_final && !is_magic(method.name.value) && !is_private(method) {
+                    continue;
+                }
+                if should_skip(ctx, ancestors, &facts, &class, method, index) {
+                    continue;
+                }
+                removed[index] = true;
+                methods.push(method);
+            }
+            if !removed.contains(&true) {
+                return;
+            }
+            let edits = if removed.iter().all(|r| *r) && class.is_anonymous {
+                // php-parser prints an anonymous class whose body it empties anew: `{` on a line of its own at the indent
+                // of the line the class starts on.
+                let open = class.left_brace.start.offset as usize;
+                let from = ctx.source[..open].trim_end().len();
+                let indent = line_indent(ctx.source, node_span(&node).start);
+                vec![Edit::new(
+                    Span::new(from, class.right_brace.end.offset as usize),
+                    format!("\n{indent}{{\n{indent}}}"),
+                )]
+            } else {
+                remove_members(
+                    ctx.source,
+                    class.members,
+                    class.left_brace,
+                    class.right_brace,
+                    &removed,
+                )
             };
-            let MethodBody::Concrete(body) = &method.body else {
-                continue;
-            };
-            if statement_count(ctx.source, body) > 0
-                || method
-                    .modifiers
-                    .iter()
-                    .any(|m| matches!(m, Modifier::Abstract(_)))
-            {
-                continue;
+            for method in methods {
+                out.push(Report {
+                    span: node_span(method),
+                    message: format!(
+                        "Remove the empty method `{}()`, which nothing requires.",
+                        String::from_utf8_lossy(method.name.value)
+                    ),
+                    help: None,
+                    fix: Some(Fix {
+                        safety: Safety::Safe,
+                        edits: edits.clone(),
+                    }),
+                });
             }
-            if is_final(method) && !class.is_final {
-                continue;
-            }
-            // `shouldSkipNonFinalNonPrivateClassMethod`.
-            if !class.is_final && !is_magic(method.name.value) && !is_private(method) {
-                continue;
-            }
-            if should_skip(ctx, ancestors, &facts, &class, method, index) {
-                continue;
-            }
-            removed[index] = true;
-            methods.push(method);
-        }
-        if !removed.contains(&true) {
-            return;
-        }
-        let edits = if removed.iter().all(|r| *r) && class.is_anonymous {
-            // php-parser prints an anonymous class whose body it empties anew: `{` on a line of its own at the indent
-            // of the line the class starts on.
-            let open = class.left_brace.start.offset as usize;
-            let from = ctx.source[..open].trim_end().len();
-            let indent = line_indent(ctx.source, node_span(&node).start);
-            vec![Edit::new(
-                Span::new(from, class.right_brace.end.offset as usize),
-                format!("\n{indent}{{\n{indent}}}"),
-            )]
-        } else {
-            remove_members(
-                ctx.source,
-                class.members,
-                class.left_brace,
-                class.right_brace,
-                &removed,
-            )
-        };
-        for method in methods {
-            out.push(Report {
-                span: node_span(method),
-                message: format!(
-                    "Remove the empty method `{}()`, which nothing requires.",
-                    String::from_utf8_lossy(method.name.value)
-                ),
-                help: None,
-                fix: Some(Fix {
-                    safety: Safety::Safe,
-                    edits: edits.clone(),
-                }),
-            });
-        }
+        });
     }
 }
 

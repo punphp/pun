@@ -232,8 +232,10 @@ pub fn reconcile_keyed_types<'ctx, A>(
             .map(Rc::new)
         });
 
-        // IssetHandler's non-true narrowing unsets a non-nullable direct variable. A nullable
-        // value can instead be null, so its existing definition certainty must survive.
+        // IssetHandler's non-true narrowing unsets a non-nullable direct variable. Where any
+        // variable can exist, that means no holder, not an explicit No refinement. Preserve
+        // genuine absence and local diagnostic-only No edges. Nullable values can instead be null.
+        let mut invalidate_isset_holder = false;
         if has_inverted_isset
             && key_str.starts_with(b"$")
             && borrow_path_parts(key_str).len() == 1
@@ -242,8 +244,13 @@ pub fn reconcile_keyed_types<'ctx, A>(
                 part.iter().all(|assertion| matches!(assertion, Assertion::IsNotIsset))
             })
         {
-            block_context.variable_state.impossible |= block_context.variable_certainty(*key).is_defined();
-            block_context.variable_state.absent.insert(*key);
+            let certainty = block_context.variable_certainty(*key);
+            block_context.variable_state.impossible |= certainty.is_defined();
+            if block_context.can_any_variable_exist() && !certainty.is_absent() {
+                invalidate_isset_holder = true;
+            } else {
+                block_context.variable_state.absent.insert(*key);
+            }
         }
 
         let mut result_type = before_adjustment.as_deref().map(Cow::Borrowed);
@@ -358,15 +365,24 @@ pub fn reconcile_keyed_types<'ctx, A>(
                     false,
                 );
             } else if key_str.ends_with(b"]") && (has_inverted_isset || has_inverted_key_exists) {
-                let optional_entry_type = reconcile_optional_entry_type(
-                    context,
-                    new_type_parts,
-                    before_adjustment.as_deref(),
-                    key_str,
-                    inside_loop,
-                    span,
-                    negated,
-                );
+                // Fallback offset reads can synthesize null; they do not prove a stored nullable entry.
+                let nullable_isset = has_inverted_isset
+                    && !has_inverted_key_exists
+                    && before_adjustment.as_deref().is_some_and(TUnion::can_be_null);
+                let optional_entry_type =
+                    if nullable_isset && has_required_offset_for_path(&borrow_path_parts(key_str), block_context) {
+                        Some(result_type.clone())
+                    } else {
+                        reconcile_optional_entry_type(
+                            context,
+                            new_type_parts,
+                            before_adjustment.as_deref(),
+                            key_str,
+                            inside_loop,
+                            span,
+                            negated,
+                        )
+                    };
 
                 if let Some(entry_type) = optional_entry_type {
                     adjust_array_type(
@@ -377,7 +393,7 @@ pub fn reconcile_keyed_types<'ctx, A>(
                         context.codebase,
                         true,
                     );
-                } else {
+                } else if !nullable_isset {
                     adjust_array_type_remove_key(
                         borrow_path_parts(key_str),
                         block_context,
@@ -475,22 +491,16 @@ pub fn reconcile_keyed_types<'ctx, A>(
             && !has_empty
         {
             let key_parts = borrow_path_parts(key_str);
-            let offset = key_parts[key_parts.len() - 2];
-            let array_key = if offset.starts_with(b"'") || offset.starts_with(b"\"") {
-                Some(ArrayKey::String(word(&offset[1..offset.len() - 1])))
-            } else {
-                std::str::from_utf8(offset).ok().and_then(|s| s.parse::<i64>().ok()).map(ArrayKey::Integer)
-            };
-            let parent: Vec<u8> =
-                key_parts[..key_parts.len() - 3].iter().flat_map(|part| part.iter()).copied().collect();
-            if array_key.is_some_and(|key| {
-                block_context.locals.get(&word(&parent)).is_some_and(|parent| has_required_offset(parent, &key))
-            }) {
+            if has_required_offset_for_path(&key_parts, block_context) {
                 adjust_array_type(key_parts, block_context, changed_var_ids, &result_type, context.codebase, false);
             }
         }
 
-        if !has_object_array_access {
+        if invalidate_isset_holder {
+            block_context.remove_variable(key_str, true, context);
+            block_context.invalidate_variable_certainty(*key);
+            block_context.variables_possibly_in_scope.remove(key);
+        } else if !has_object_array_access {
             block_context.locals.insert(*key, Rc::new(result_type));
         }
 
@@ -510,7 +520,9 @@ pub fn reconcile_keyed_types<'ctx, A>(
             }
         }
     }
-    block_context.apply_variable_conditions(context.codebase);
+    // Parent-container updates are side effects of specification, not extra specified expressions.
+    let specified = new_types.keys().copied().collect();
+    block_context.apply_specified_variable_conditions(context.codebase, &specified);
 }
 
 fn reconcile_optional_entry_type<A>(
@@ -574,6 +586,19 @@ where
     result.filter(|entry_type| !entry_type.is_never() && !entry_type.is_mixed())
 }
 
+fn has_required_offset_for_path(key_parts: &[&[u8]], context: &BlockContext<'_>) -> bool {
+    let offset = resolve_array_key(key_parts[key_parts.len() - 2], context);
+    let offset = offset.as_bytes();
+    let array_key = if offset.starts_with(b"'") || offset.starts_with(b"\"") {
+        Some(ArrayKey::String(word(&offset[1..offset.len() - 1])))
+    } else {
+        std::str::from_utf8(offset).ok().and_then(|s| s.parse::<i64>().ok()).map(ArrayKey::Integer)
+    };
+    let parent: Vec<u8> = key_parts[..key_parts.len() - 3].iter().flat_map(|part| part.iter()).copied().collect();
+    array_key
+        .is_some_and(|key| context.locals.get(&word(&parent)).is_some_and(|parent| has_required_offset(parent, &key)))
+}
+
 fn has_required_offset(value: &TUnion, key: &ArrayKey) -> bool {
     !value.possibly_undefined()
         && !value.possibly_undefined_from_try()
@@ -589,6 +614,18 @@ fn has_required_offset(value: &TUnion, key: &ArrayKey) -> bool {
                 .is_some_and(|(optional, _)| !optional),
             _ => false,
         })
+}
+
+/// MutatingScope::specifyExpressionTypeInPlace resolves an offset from its current scope.
+/// A union-valued selector is not evidence that every named offset has the asserted value.
+fn resolve_array_key(key: &[u8], context: &BlockContext<'_>) -> Word {
+    if key.starts_with(b"$")
+        && let Some(value) = context.locals.get(&word(key)).and_then(|ty| ty.get_single_array_key())
+    {
+        value.id_word()
+    } else {
+        word(key)
+    }
 }
 
 fn adjust_array_type(
@@ -608,6 +645,8 @@ fn adjust_array_type(
     let base_key: Vec<u8> = key_parts.iter().flat_map(|part| part.iter()).copied().collect();
     let base_key_atom = word(&base_key);
 
+    let array_key = resolve_array_key(array_key, context);
+    let array_key = array_key.as_bytes();
     if array_key.starts_with(b"$") {
         // When the key is a variable, we can't narrow to a specific key,
         // but we CAN remove empty array variants since isset proves the array is non-empty.
@@ -738,6 +777,7 @@ fn adjust_array_offset(
                 };
 
                 base_atomic_type = TAtomic::Array(TArray::Keyed(TKeyedArray {
+                    callable: None,
                     known_items: Some(BTreeMap::from([(key, (optional, result_type.clone()))]).into()),
                     parameters: Some((Arc::new(get_arraykey()), Arc::new(get_mixed()))),
                     non_empty: !optional,
@@ -867,6 +907,8 @@ fn adjust_array_type_remove_key(
 
     key_parts.pop();
 
+    let array_key = resolve_array_key(array_key, context);
+    let array_key = array_key.as_bytes();
     if array_key.starts_with(b"$") {
         return;
     }
@@ -1137,6 +1179,8 @@ fn add_nested_assertions(
                 new_base_key.push(b']');
                 let base_key_atom = word(&base_key);
                 let entry = new_types.entry(base_key_atom).or_default();
+                let array_key = resolve_array_key(array_key, context);
+                let array_key = array_key.as_bytes();
                 let new_key = if array_key.starts_with(b"'") || array_key.starts_with(b"\"") {
                     Some(ArrayKey::String(word(&array_key[1..(array_key.len() - 1)])))
                 } else if array_key.starts_with(b"$") {
@@ -1367,16 +1411,18 @@ where
 
             key_parts.pop();
 
-            let array_key_offset = std::str::from_utf8(array_key)
+            let resolved_key = resolve_array_key(array_key, block_context);
+            let resolved_key = resolved_key.as_bytes();
+            let array_key_offset = std::str::from_utf8(resolved_key)
                 .ok()
                 .and_then(|s| if INTEGER_REGEX.is_match(s) { s.parse::<usize>().ok() } else { None });
 
             let array_key_type = if let Some(array_key_offset) = array_key_offset {
                 ArrayKey::Integer(array_key_offset as i64)
-            } else if array_key.starts_with(b"'") || array_key.starts_with(b"\"") {
-                ArrayKey::String(word(&array_key[1..(array_key.len() - 1)]))
+            } else if resolved_key.starts_with(b"'") || resolved_key.starts_with(b"\"") {
+                ArrayKey::String(word(&resolved_key[1..(resolved_key.len() - 1)]))
             } else {
-                ArrayKey::String(word(array_key))
+                ArrayKey::String(word(resolved_key))
             };
 
             let mut new_base_key = base_key.clone();
@@ -1403,7 +1449,7 @@ where
                             return None;
                         }
 
-                        let known_item = if !array_key.starts_with(b"$")
+                        let known_item = if !resolved_key.starts_with(b"$")
                             && let Some(known_items) = known_items
                         {
                             known_items.get(&array_key_type)

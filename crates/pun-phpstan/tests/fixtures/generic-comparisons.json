@@ -1,0 +1,406 @@
+[
+    [
+        "callable(int): int",
+        "callable<A>(A): A",
+        false,
+        "Yes",
+        "Yes",
+        []
+    ],
+    [
+        "callable(int): int",
+        "callable<A>(A): A",
+        true,
+        "Yes",
+        "Yes",
+        []
+    ],
+    [
+        "callable(int): string",
+        "callable<A>(A): A",
+        false,
+        "No",
+        "No",
+        []
+    ],
+    [
+        "callable(int): string",
+        "callable<A>(A): A",
+        true,
+        "No",
+        "No",
+        []
+    ],
+    [
+        "Closure(int): int",
+        "Closure<A>(A): A",
+        false,
+        "Yes",
+        "Yes",
+        []
+    ],
+    [
+        "Closure(int): int",
+        "Closure<A>(A): A",
+        true,
+        "Yes",
+        "Yes",
+        []
+    ],
+    [
+        "Closure(int): string",
+        "Closure<A>(A): A",
+        false,
+        "No",
+        "No",
+        []
+    ],
+    [
+        "Closure(int): string",
+        "Closure<A>(A): A",
+        true,
+        "No",
+        "No",
+        []
+    ],
+    [
+        "callable(): int",
+        "callable<A = int>(): A",
+        false,
+        "Yes",
+        "Yes",
+        []
+    ],
+    [
+        "callable(): int",
+        "callable<A = int>(): A",
+        true,
+        "Yes",
+        "Yes",
+        []
+    ],
+    [
+        "callable(): string",
+        "callable<A = int>(): A",
+        false,
+        "No",
+        "No",
+        []
+    ],
+    [
+        "callable(): string",
+        "callable<A = int>(): A",
+        true,
+        "No",
+        "No",
+        []
+    ],
+    [
+        "callable(int, string): int|string",
+        "callable<A>(A ...): A",
+        false,
+        "Maybe",
+        "Maybe",
+        []
+    ],
+    [
+        "callable(int, string): int|string",
+        "callable<A>(A ...): A",
+        true,
+        "Maybe",
+        "Maybe",
+        []
+    ],
+    [
+        "callable(int, string): int",
+        "callable<A>(A ...): A",
+        false,
+        "Maybe",
+        "Maybe",
+        []
+    ],
+    [
+        "callable(int, string): int",
+        "callable<A>(A ...): A",
+        true,
+        "Maybe",
+        "Maybe",
+        []
+    ],
+    [
+        "callable(): mixed",
+        "callable<A>(A ...): A",
+        false,
+        "Yes",
+        "Yes",
+        []
+    ],
+    [
+        "callable(): mixed",
+        "callable<A>(A ...): A",
+        true,
+        "Yes",
+        "Yes",
+        []
+    ],
+    [
+        "callable(int): int",
+        "callable<A of string>(A): A",
+        false,
+        "No",
+        "No",
+        []
+    ],
+    [
+        "callable(int): int",
+        "callable<A of string>(A): A",
+        true,
+        "No",
+        "No",
+        []
+    ],
+    [
+        "callable(): mixed",
+        "callable<A>(A): A",
+        false,
+        "No",
+        "No",
+        [
+            "Parameter #1 of passed callable is required but accepting callable does not have that parameter. It will be called without it."
+        ]
+    ],
+    [
+        "callable(): mixed",
+        "callable<A>(A): A",
+        true,
+        "No",
+        "No",
+        [
+            "Parameter #1 of passed callable is required but accepting callable does not have that parameter. It will be called without it."
+        ]
+    ],
+    [
+        "callable(int, int): int",
+        "callable<A>(A): A",
+        false,
+        "Maybe",
+        "Yes",
+        []
+    ],
+    [
+        "callable(int, int): int",
+        "callable<A>(A): A",
+        true,
+        "Maybe",
+        "Yes",
+        []
+    ],
+    [
+        "Traversable<mixed, DateTime>",
+        "ArrayIterator<int, DateTime>",
+        false,
+        "Yes",
+        "Yes",
+        []
+    ],
+    [
+        "Traversable<mixed, DateTime>",
+        "ArrayIterator<int, DateTime>",
+        true,
+        "Yes",
+        "Yes",
+        []
+    ],
+    [
+        "Traversable<int, DateTime>",
+        "ArrayIterator<int, DateTimeImmutable>",
+        false,
+        "No",
+        "No",
+        []
+    ],
+    [
+        "Traversable<int, DateTime>",
+        "ArrayIterator<int, DateTimeImmutable>",
+        true,
+        "No",
+        "No",
+        []
+    ],
+    [
+        "Traversable<int, object>",
+        "ArrayIterator<int, DateTime>",
+        false,
+        "Yes",
+        "Yes",
+        []
+    ],
+    [
+        "Traversable<int, object>",
+        "ArrayIterator<int, DateTime>",
+        true,
+        "Yes",
+        "Yes",
+        []
+    ],
+    [
+        "Generator<int, string, int, void>",
+        "Generator<int, string, mixed, void>",
+        false,
+        "Maybe",
+        "Yes",
+        []
+    ],
+    [
+        "Generator<int, string, int, void>",
+        "Generator<int, string, mixed, void>",
+        true,
+        "No",
+        "No",
+        []
+    ],
+    [
+        "Generator<int, string, mixed, void>",
+        "Generator<int, string, int, void>",
+        false,
+        "Yes",
+        "Yes",
+        []
+    ],
+    [
+        "Generator<int, string, mixed, void>",
+        "Generator<int, string, int, void>",
+        true,
+        "Yes",
+        "Yes",
+        []
+    ],
+    [
+        "ArrayObject<int, int>",
+        "ArrayObject<int, mixed>",
+        false,
+        "Maybe",
+        "Yes",
+        []
+    ],
+    [
+        "ArrayObject<int, int>",
+        "ArrayObject<int, mixed>",
+        true,
+        "No",
+        "No",
+        []
+    ],
+    [
+        "ArrayObject<int, mixed>",
+        "ArrayObject<int, int>",
+        false,
+        "Yes",
+        "Yes",
+        []
+    ],
+    [
+        "ArrayObject<int, mixed>",
+        "ArrayObject<int, int>",
+        true,
+        "Yes",
+        "Yes",
+        []
+    ],
+    [
+        "ArrayObject<int, __benevolent<int|string>>",
+        "ArrayObject<int, int>",
+        false,
+        "Yes",
+        "Yes",
+        []
+    ],
+    [
+        "ArrayObject<int, __benevolent<int|string>>",
+        "ArrayObject<int, int>",
+        true,
+        "Yes",
+        "Yes",
+        []
+    ],
+    [
+        "ArrayObject<int, int>",
+        "ArrayObject<int, __benevolent<int|string>>",
+        false,
+        "Maybe",
+        "Yes",
+        []
+    ],
+    [
+        "ArrayObject<int, int>",
+        "ArrayObject<int, __benevolent<int|string>>",
+        true,
+        "Maybe",
+        "Yes",
+        []
+    ],
+    [
+        "ArrayObject<int, int>",
+        "ArrayObject<int, never>",
+        false,
+        "Yes",
+        "Yes",
+        []
+    ],
+    [
+        "ArrayObject<int, int>",
+        "ArrayObject<int, never>",
+        true,
+        "Yes",
+        "Yes",
+        []
+    ],
+    [
+        "ArrayObject<int, covariant int>",
+        "ArrayObject<int, mixed>",
+        false,
+        "Maybe",
+        "Yes",
+        []
+    ],
+    [
+        "ArrayObject<int, covariant int>",
+        "ArrayObject<int, mixed>",
+        true,
+        "Maybe",
+        "Maybe",
+        []
+    ],
+    [
+        "ArrayObject<int, contravariant int>",
+        "ArrayObject<int, mixed>",
+        false,
+        "Yes",
+        "Yes",
+        []
+    ],
+    [
+        "ArrayObject<int, contravariant int>",
+        "ArrayObject<int, mixed>",
+        true,
+        "Yes",
+        "Yes",
+        []
+    ],
+    [
+        "ArrayObject<int, covariant mixed>",
+        "ArrayObject<int, int>",
+        false,
+        "Yes",
+        "Yes",
+        []
+    ],
+    [
+        "ArrayObject<int, covariant mixed>",
+        "ArrayObject<int, int>",
+        true,
+        "Yes",
+        "Yes",
+        []
+    ]
+]

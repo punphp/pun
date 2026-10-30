@@ -1,0 +1,1327 @@
+{
+    "analysed": {
+        "80000": [
+            {
+                "file": "anonymous-argument-prefixed.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Syntax error, unexpected T_STRING, expecting T_ABSTRACT or T_FINAL or T_READONLY or T_CLASS on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "anonymous-assignment.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Syntax error, unexpected T_CLASS on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "anonymous-attribute.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Syntax error, unexpected T_STRING, expecting T_ABSTRACT or T_FINAL or T_READONLY or T_CLASS on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "anonymous-duplicate.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Syntax error, unexpected T_STRING on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "anonymous-final.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Syntax error, unexpected T_STRING, expecting T_ABSTRACT or T_FINAL or T_READONLY or T_CLASS on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "anonymous-readonly-final.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Syntax error, unexpected T_FINAL on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "anonymous-return-final.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Syntax error, unexpected T_STRING, expecting T_ABSTRACT or T_FINAL or T_READONLY or T_CLASS on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "anonymous-return-lines.php",
+                "line": 5,
+                "identifier": "phpstan.parse",
+                "message": "Syntax error, unexpected T_CLASS, expecting ';' on line 5",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "anonymous-return.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Syntax error, unexpected T_CLASS, expecting ';' on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "anonymous-statement.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Syntax error, unexpected T_CLASS on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "attribute-final.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Syntax error, unexpected T_STRING, expecting T_ABSTRACT or T_FINAL or T_READONLY or T_CLASS on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "attribute.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Syntax error, unexpected T_STRING, expecting T_TRAIT or T_INTERFACE or T_ENUM on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "body-collection.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use 'self' as class name as it is reserved on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "body-collection.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Constructor __construct() cannot be static on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "body-collection.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Syntax error, unexpected T_CLASS on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "body-collection.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "case-and-comments.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Syntax error, unexpected T_CLASS on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "conflict-before-readonly.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use the final modifier on an abstract class on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "conflict-before-readonly.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Syntax error, unexpected T_STRING, expecting T_ABSTRACT or T_FINAL or T_READONLY or T_CLASS on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "duplicate-before-readonly.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Multiple final modifiers are not allowed on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "duplicate-before-readonly.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Syntax error, unexpected T_STRING, expecting T_ABSTRACT or T_FINAL or T_READONLY or T_CLASS on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "duplicate-readonly.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Syntax error, unexpected T_STRING on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "final-body-collection.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use 'self' as class name as it is reserved on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "final-body-collection.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Constructor __construct() cannot be static on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "final-body-collection.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Syntax error, unexpected T_STRING, expecting T_ABSTRACT or T_FINAL or T_READONLY or T_CLASS on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "final-body-collection.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "final-token-lines.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "Syntax error, unexpected T_STRING, expecting T_ABSTRACT or T_FINAL or T_READONLY or T_CLASS on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "flags-after-readonly.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Multiple final modifiers are not allowed on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "flags-after-readonly.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Syntax error, unexpected T_FINAL on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "flags-reset.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Syntax error, unexpected T_STRING, expecting T_ABSTRACT or T_FINAL or T_READONLY or T_CLASS on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "named-abstract.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Syntax error, unexpected T_STRING, expecting T_ABSTRACT or T_FINAL or T_READONLY or T_CLASS on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "named-final.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Syntax error, unexpected T_STRING, expecting T_ABSTRACT or T_FINAL or T_READONLY or T_CLASS on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "named.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Syntax error, unexpected T_CLASS on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "nested-declaration.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Syntax error, unexpected T_CLASS on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "positive-ordinary-error.php",
+                "line": 3,
+                "identifier": "function.notFound",
+                "message": "Function missing_readonly_version_control not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "file": "readonly-abstract.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Syntax error, unexpected T_ABSTRACT on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "readonly-final.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Syntax error, unexpected T_FINAL on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "readonly-recovery-shifts.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Multiple final modifiers are not allowed on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "readonly-recovery-shifts.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Multiple final modifiers are not allowed on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "readonly-recovery-shifts.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Syntax error, unexpected T_FINAL on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "readonly-recovery-shifts.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Syntax error, unexpected T_STRING, expecting T_ABSTRACT or T_FINAL or T_READONLY or T_CLASS on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "recovered-readonly.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Syntax error, unexpected T_STRING, expecting T_ABSTRACT or T_FINAL or T_READONLY or T_CLASS on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "resolver-precedence.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Syntax error, unexpected T_CLASS on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "return-context-restored.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Syntax error, unexpected T_CLASS on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "token-lines.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "Syntax error, unexpected T_CLASS on line 4",
+                "tip": null,
+                "ignorable": false
+            }
+        ],
+        "80100": [
+            {
+                "file": "anonymous-argument-prefixed.php",
+                "line": 3,
+                "identifier": "classConstant.nativeTypeNotSupported",
+                "message": "Anonymous readonly classes are supported only on PHP 8.3 and later.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "anonymous-assignment.php",
+                "line": 3,
+                "identifier": "classConstant.nativeTypeNotSupported",
+                "message": "Anonymous readonly classes are supported only on PHP 8.3 and later.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "anonymous-attribute.php",
+                "line": 3,
+                "identifier": "classConstant.nativeTypeNotSupported",
+                "message": "Anonymous readonly classes are supported only on PHP 8.3 and later.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "anonymous-duplicate.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Multiple readonly modifiers are not allowed on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "anonymous-final.php",
+                "line": 3,
+                "identifier": "classConstant.nativeTypeNotSupported",
+                "message": "Anonymous readonly classes are supported only on PHP 8.3 and later.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "anonymous-readonly-final.php",
+                "line": 3,
+                "identifier": "classConstant.nativeTypeNotSupported",
+                "message": "Anonymous readonly classes are supported only on PHP 8.3 and later.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "anonymous-return-final.php",
+                "line": 3,
+                "identifier": "classConstant.nativeTypeNotSupported",
+                "message": "Anonymous readonly classes are supported only on PHP 8.3 and later.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "anonymous-return-lines.php",
+                "line": 4,
+                "identifier": "classConstant.nativeTypeNotSupported",
+                "message": "Anonymous readonly classes are supported only on PHP 8.3 and later.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "anonymous-return.php",
+                "line": 3,
+                "identifier": "classConstant.nativeTypeNotSupported",
+                "message": "Anonymous readonly classes are supported only on PHP 8.3 and later.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "anonymous-statement.php",
+                "line": 3,
+                "identifier": "classConstant.nativeTypeNotSupported",
+                "message": "Anonymous readonly classes are supported only on PHP 8.3 and later.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "attribute-final.php",
+                "line": 3,
+                "identifier": "classConstant.nativeTypeNotSupported",
+                "message": "Readonly classes are supported only on PHP 8.2 and later.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "attribute.php",
+                "line": 3,
+                "identifier": "classConstant.nativeTypeNotSupported",
+                "message": "Readonly classes are supported only on PHP 8.2 and later.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "body-collection.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use 'self' as class name as it is reserved on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "body-collection.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Constructor __construct() cannot be static on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "body-collection.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "case-and-comments.php",
+                "line": 3,
+                "identifier": "classConstant.nativeTypeNotSupported",
+                "message": "Readonly classes are supported only on PHP 8.2 and later.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "conflict-before-readonly.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use the final modifier on an abstract class on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "duplicate-before-readonly.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Multiple final modifiers are not allowed on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "duplicate-readonly.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Multiple readonly modifiers are not allowed on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "final-body-collection.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use 'self' as class name as it is reserved on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "final-body-collection.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Constructor __construct() cannot be static on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "final-body-collection.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "final-token-lines.php",
+                "line": 3,
+                "identifier": "classConstant.nativeTypeNotSupported",
+                "message": "Readonly classes are supported only on PHP 8.2 and later.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "flags-after-readonly.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Multiple final modifiers are not allowed on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "flags-reset.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use the final modifier on an abstract class on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "named-abstract.php",
+                "line": 3,
+                "identifier": "classConstant.nativeTypeNotSupported",
+                "message": "Readonly classes are supported only on PHP 8.2 and later.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "named-final.php",
+                "line": 3,
+                "identifier": "classConstant.nativeTypeNotSupported",
+                "message": "Readonly classes are supported only on PHP 8.2 and later.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "named.php",
+                "line": 3,
+                "identifier": "classConstant.nativeTypeNotSupported",
+                "message": "Readonly classes are supported only on PHP 8.2 and later.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "nested-declaration.php",
+                "line": 3,
+                "identifier": "classConstant.nativeTypeNotSupported",
+                "message": "Readonly classes are supported only on PHP 8.2 and later.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "positive-ordinary-error.php",
+                "line": 3,
+                "identifier": "function.notFound",
+                "message": "Function missing_readonly_version_control not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "file": "readonly-abstract.php",
+                "line": 3,
+                "identifier": "classConstant.nativeTypeNotSupported",
+                "message": "Readonly classes are supported only on PHP 8.2 and later.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "readonly-final.php",
+                "line": 3,
+                "identifier": "classConstant.nativeTypeNotSupported",
+                "message": "Readonly classes are supported only on PHP 8.2 and later.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "readonly-recovery-shifts.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Multiple final modifiers are not allowed on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "readonly-recovery-shifts.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Multiple final modifiers are not allowed on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "readonly-recovery-shifts.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Multiple readonly modifiers are not allowed on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "recovered-readonly.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Multiple readonly modifiers are not allowed on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "resolver-precedence.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "'\\self' is an invalid class name on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "return-context-restored.php",
+                "line": 3,
+                "identifier": "classConstant.nativeTypeNotSupported",
+                "message": "Anonymous readonly classes are supported only on PHP 8.3 and later.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "token-lines.php",
+                "line": 3,
+                "identifier": "classConstant.nativeTypeNotSupported",
+                "message": "Readonly classes are supported only on PHP 8.2 and later.",
+                "tip": null,
+                "ignorable": false
+            }
+        ],
+        "80200": [
+            {
+                "file": "anonymous-argument-prefixed.php",
+                "line": 3,
+                "identifier": "classConstant.nativeTypeNotSupported",
+                "message": "Anonymous readonly classes are supported only on PHP 8.3 and later.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "anonymous-assignment.php",
+                "line": 3,
+                "identifier": "classConstant.nativeTypeNotSupported",
+                "message": "Anonymous readonly classes are supported only on PHP 8.3 and later.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "anonymous-attribute.php",
+                "line": 3,
+                "identifier": "classConstant.nativeTypeNotSupported",
+                "message": "Anonymous readonly classes are supported only on PHP 8.3 and later.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "anonymous-duplicate.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Multiple readonly modifiers are not allowed on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "anonymous-final.php",
+                "line": 3,
+                "identifier": "classConstant.nativeTypeNotSupported",
+                "message": "Anonymous readonly classes are supported only on PHP 8.3 and later.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "anonymous-readonly-final.php",
+                "line": 3,
+                "identifier": "classConstant.nativeTypeNotSupported",
+                "message": "Anonymous readonly classes are supported only on PHP 8.3 and later.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "anonymous-return-final.php",
+                "line": 3,
+                "identifier": "classConstant.nativeTypeNotSupported",
+                "message": "Anonymous readonly classes are supported only on PHP 8.3 and later.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "anonymous-return-lines.php",
+                "line": 4,
+                "identifier": "classConstant.nativeTypeNotSupported",
+                "message": "Anonymous readonly classes are supported only on PHP 8.3 and later.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "anonymous-return.php",
+                "line": 3,
+                "identifier": "classConstant.nativeTypeNotSupported",
+                "message": "Anonymous readonly classes are supported only on PHP 8.3 and later.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "anonymous-statement.php",
+                "line": 3,
+                "identifier": "classConstant.nativeTypeNotSupported",
+                "message": "Anonymous readonly classes are supported only on PHP 8.3 and later.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "body-collection.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use 'self' as class name as it is reserved on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "body-collection.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Constructor __construct() cannot be static on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "body-collection.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "conflict-before-readonly.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use the final modifier on an abstract class on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "duplicate-before-readonly.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Multiple final modifiers are not allowed on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "duplicate-readonly.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Multiple readonly modifiers are not allowed on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "final-body-collection.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use 'self' as class name as it is reserved on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "final-body-collection.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Constructor __construct() cannot be static on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "final-body-collection.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "flags-after-readonly.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Multiple final modifiers are not allowed on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "flags-reset.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use the final modifier on an abstract class on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "positive-ordinary-error.php",
+                "line": 3,
+                "identifier": "function.notFound",
+                "message": "Function missing_readonly_version_control not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "file": "readonly-recovery-shifts.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Multiple final modifiers are not allowed on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "readonly-recovery-shifts.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Multiple final modifiers are not allowed on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "readonly-recovery-shifts.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Multiple readonly modifiers are not allowed on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "recovered-readonly.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Multiple readonly modifiers are not allowed on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "resolver-precedence.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "'\\self' is an invalid class name on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "return-context-restored.php",
+                "line": 3,
+                "identifier": "classConstant.nativeTypeNotSupported",
+                "message": "Anonymous readonly classes are supported only on PHP 8.3 and later.",
+                "tip": null,
+                "ignorable": false
+            }
+        ],
+        "80400": [
+            {
+                "file": "anonymous-duplicate.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Multiple readonly modifiers are not allowed on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "body-collection.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use 'self' as class name as it is reserved on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "body-collection.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Constructor __construct() cannot be static on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "body-collection.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "conflict-before-readonly.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use the final modifier on an abstract class on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "duplicate-before-readonly.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Multiple final modifiers are not allowed on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "duplicate-readonly.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Multiple readonly modifiers are not allowed on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "final-body-collection.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use 'self' as class name as it is reserved on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "final-body-collection.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Constructor __construct() cannot be static on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "final-body-collection.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "flags-after-readonly.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Multiple final modifiers are not allowed on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "flags-reset.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use the final modifier on an abstract class on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "positive-ordinary-error.php",
+                "line": 3,
+                "identifier": "function.notFound",
+                "message": "Function missing_readonly_version_control not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "file": "readonly-recovery-shifts.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Multiple final modifiers are not allowed on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "readonly-recovery-shifts.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Multiple final modifiers are not allowed on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "readonly-recovery-shifts.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Multiple readonly modifiers are not allowed on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "recovered-readonly.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Multiple readonly modifiers are not allowed on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "resolver-precedence.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "'\\self' is an invalid class name on line 3",
+                "tip": null,
+                "ignorable": false
+            }
+        ],
+        "80500": [
+            {
+                "file": "anonymous-duplicate.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Multiple readonly modifiers are not allowed on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "body-collection.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use 'self' as class name as it is reserved on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "body-collection.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Constructor __construct() cannot be static on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "body-collection.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "conflict-before-readonly.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use the final modifier on an abstract class on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "duplicate-before-readonly.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Multiple final modifiers are not allowed on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "duplicate-readonly.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Multiple readonly modifiers are not allowed on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "final-body-collection.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use 'self' as class name as it is reserved on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "final-body-collection.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Constructor __construct() cannot be static on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "final-body-collection.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "flags-after-readonly.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Multiple final modifiers are not allowed on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "flags-reset.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use the final modifier on an abstract class on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "positive-ordinary-error.php",
+                "line": 3,
+                "identifier": "function.notFound",
+                "message": "Function missing_readonly_version_control not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "file": "readonly-recovery-shifts.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Multiple final modifiers are not allowed on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "readonly-recovery-shifts.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Multiple final modifiers are not allowed on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "readonly-recovery-shifts.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Multiple readonly modifiers are not allowed on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "recovered-readonly.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Multiple readonly modifiers are not allowed on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "resolver-precedence.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "'\\self' is an invalid class name on line 3",
+                "tip": null,
+                "ignorable": false
+            }
+        ]
+    },
+    "scanned": {
+        "named": {
+            "80000": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "80100": [],
+            "80200": [],
+            "80400": [],
+            "80500": []
+        },
+        "final": {
+            "80000": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "80100": [],
+            "80200": [],
+            "80400": [],
+            "80500": []
+        },
+        "anonymous-return": {
+            "80000": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "80100": [],
+            "80200": [],
+            "80400": [],
+            "80500": []
+        },
+        "positive": {
+            "80000": [],
+            "80100": [],
+            "80200": [],
+            "80400": [],
+            "80500": []
+        }
+    }
+}

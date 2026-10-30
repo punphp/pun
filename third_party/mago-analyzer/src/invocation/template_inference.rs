@@ -205,7 +205,7 @@ fn infer_templates_from_input_and_container_types<A>(
     let residual_input_type = if residual_input_types.is_empty() {
         return;
     } else {
-        TUnion::from_vec(residual_input_types)
+        TUnion::from_vec(residual_input_types).with_never_kind(input_type.never_kind().unwrap_or_default())
     };
 
     let mut potential_template_violations = HashMap::default();

@@ -1,0 +1,550 @@
+{
+    "analysed": {
+        "errors": [
+            {
+                "file": "body-name.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Unknown hook \"MeOw\", expected \"get\" or \"set\" on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "earlier-name.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "get hook must not have a parameter list on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "empty-brace-line.php",
+                "line": 5,
+                "identifier": "phpstan.parse",
+                "message": "Property hook list cannot be empty on line 5",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "empty-parameter-outside-constructor.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Property hook list cannot be empty on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "empty-promoted-anonymous.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Property hook list cannot be empty on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "empty-promoted-brace-line.php",
+                "line": 5,
+                "identifier": "phpstan.parse",
+                "message": "Property hook list cannot be empty on line 5",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "empty-promoted-default.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Property hook list cannot be empty on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "empty-promoted.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Property hook list cannot be empty on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "empty.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Property hook list cannot be empty on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "get-abstract-body.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "get hook must not have a parameter list on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "get-empty-parameters.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "get hook must not have a parameter list on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "get-nonempty-parameters.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "get hook must not have a parameter list on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "get-parenthesis-line.php",
+                "line": 5,
+                "identifier": "phpstan.parse",
+                "message": "get hook must not have a parameter list on line 5",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "get-promoted.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "get hook must not have a parameter list on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "hook-body-before-hook.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Unknown hook \"MeOw\", expected \"get\" or \"set\" on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "hook-body-before-hook.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "hook-parameter-before-hook.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "get hook must not have a parameter list on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "hook-parameter-before-hook.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "independent-hooks.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "Unknown hook \"MeOw\", expected \"get\" or \"set\" on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "independent-hooks.php",
+                "line": 5,
+                "identifier": "phpstan.parse",
+                "message": "get hook must not have a parameter list on line 5",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "independent-hooks.php",
+                "line": 6,
+                "identifier": "phpstan.parse",
+                "message": "Property hook list cannot be empty on line 6",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "positive-ordinary-error.php",
+                "line": 3,
+                "identifier": "function.notFound",
+                "message": "Function missing_hook_parser_control not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "file": "same-file-rules.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Unknown hook \"MeOw\", expected \"get\" or \"set\" on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "unknown-abstract-body.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Unknown hook \"WoOf\", expected \"get\" or \"set\" on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "unknown-expression.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Unknown hook \"WoOf\", expected \"get\" or \"set\" on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "unknown-name-line.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "Unknown hook \"WoOf\", expected \"get\" or \"set\" on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "unknown-parameter-list.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Unknown hook \"MeOw\", expected \"get\" or \"set\" on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "unknown-promoted.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Unknown hook \"MeOw\", expected \"get\" or \"set\" on line 3",
+                "tip": null,
+                "ignorable": false
+            }
+        ],
+        "general": []
+    },
+    "scanned": {
+        "empty": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "unknown": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "get-parameters": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "promoted-empty": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "promoted-unknown": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "promoted-get-parameters": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "positive-get-set": {
+            "errors": [],
+            "general": []
+        },
+        "positive-promoted": {
+            "errors": [],
+            "general": []
+        }
+    },
+    "order": {
+        "errors": [
+            {
+                "file": "hook-order.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "Unknown hook \"MeOw\", expected \"get\" or \"set\" on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "hook-order.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "hook-order.php",
+                "line": 5,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 5",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "hook-order.php",
+                "line": 8,
+                "identifier": "phpstan.parse",
+                "message": "get hook must not have a parameter list on line 8",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "hook-order.php",
+                "line": 9,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 9",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "hook-order.php",
+                "line": 11,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use try without catch or finally on line 11",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "hook-order.php",
+                "line": 16,
+                "identifier": "phpstan.parse",
+                "message": "Property hook list cannot be empty on line 16",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "hook-order.php",
+                "line": 16,
+                "identifier": "phpstan.parse",
+                "message": "Variadic parameter cannot have a default value on line 16",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "hook-order.php",
+                "line": 16,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 16",
+                "tip": null,
+                "ignorable": false
+            }
+        ],
+        "general": [
+            "Error message \"void cannot be used as a parameter type on line 4\" cannot be ignored, use excludePaths instead.",
+            "Error message \"void cannot be used as a parameter type on line 5\" cannot be ignored, use excludePaths instead.",
+            "Error message \"Unknown hook \"MeOw\", expected \"get\" or \"set\" on line 4\" cannot be ignored, use excludePaths instead.",
+            "Error message \"void cannot be used as a parameter type on line 9\" cannot be ignored, use excludePaths instead.",
+            "Error message \"Cannot use try without catch or finally on line 11\" cannot be ignored, use excludePaths instead.",
+            "Error message \"get hook must not have a parameter list on line 8\" cannot be ignored, use excludePaths instead.",
+            "Error message \"Property hook list cannot be empty on line 16\" cannot be ignored, use excludePaths instead.",
+            "Error message \"Variadic parameter cannot have a default value on line 16\" cannot be ignored, use excludePaths instead.",
+            "Error message \"void cannot be used as a parameter type on line 16\" cannot be ignored, use excludePaths instead."
+        ]
+    }
+}

@@ -168,41 +168,82 @@ fn conflicting_trait_constants<'arena>(
             let Some(theirs) = t.constants.get(&name) else {
                 continue;
             };
-            // the constant declared here: the class's own, or in a trait walked in its context that trait's
-            let owner = c.in_trait().unwrap_or(class_name.as_str());
-            // ponytail: values the codex cannot reduce to a constant scalar (arrays, floats, expressions) are not
-            // compared
-            // ponytail: of duplicate declarations (a PHP error) the codex keeps the first, PHP's reflection the last
-            let ours = c
-                .codebase
-                .get_class_constant(owner.as_bytes(), item.name.value)
-                .and_then(|m| super::enums::constant_value(c, m.inferred_type.as_ref()?));
-            let (Some(ours), Some(theirs)) = (
-                ours,
-                theirs
-                    .inferred_type
-                    .as_ref()
-                    .and_then(|v| super::enums::constant_value(c, v)),
-            ) else {
-                continue;
-            };
-            if ours == theirs {
-                continue;
+            // Both expressions belong to the consuming context, including a trait expression hidden
+            // by an own declaration. Reflected Consumer::VALUE cannot stand in for that source.
+            if let (Some(ours), Some(theirs)) = (
+                source_value(c, item.span(), class),
+                source_value(c, theirs.span, class),
+            ) && !initializer_values_equal(&ours, &theirs)
+            {
+                let name = text(item.name.value);
+                c.report_non_ignorable(
+                    k,
+                    "classConstant.value",
+                    format!(
+                        "Constant {display}::{name} with value {} overriding constant {}::{name} with different value {} should have the same value.",
+                        ours.describe(Level::Value),
+                        c.display(t),
+                        theirs.describe(Level::Value),
+                    ),
+                    None,
+                );
             }
-            let name = text(item.name.value);
-            c.report_non_ignorable(
-                k,
-                "classConstant.value",
-                format!(
-                    "Constant {display}::{name} with value {} overriding constant {}::{name} with different value {} should have the same value.",
-                    ours.describe(Level::Value),
-                    c.display(t),
-                    theirs.describe(Level::Value),
-                ),
-                None,
-            );
         }
     }
+}
+
+/// UnionType::equals is unordered, including inside ordered ConstantArrayType values. Reflection's
+/// member order is observable during getConstant(), but is not a trait initializer inequality.
+fn initializer_values_equal(left: &Type, right: &Type) -> bool {
+    match (left, right) {
+        (Type::Union(left), Type::Union(right)) => {
+            let mut unmatched: Vec<_> = right.iter().collect();
+            left.len() == right.len()
+                && left.iter().all(|value| {
+                    if let Some(index) = unmatched
+                        .iter()
+                        .position(|other| initializer_values_equal(value, other))
+                    {
+                        unmatched.remove(index);
+                        true
+                    } else {
+                        false
+                    }
+                })
+        }
+        (Type::ConstArray(left), Type::ConstArray(right)) => {
+            left.keys == right.keys
+                && left.optional == right.optional
+                && left.unsealed == right.unsealed
+                && left.values.len() == right.values.len()
+                && left
+                    .values
+                    .iter()
+                    .zip(&right.values)
+                    .all(|(left, right)| initializer_values_equal(left, right))
+        }
+        _ => left == right,
+    }
+}
+
+fn source_value(c: &Checker, at: Span, class: &ClassLikeMetadata) -> Option<Type> {
+    let contents = c.file_contents(at.file_id)?;
+    let mut file = mago_database::file::File::ephemeral(
+        b"trait-initializer.php".as_slice().into(),
+        contents.into_owned().into(),
+    );
+    file.id = at.file_id;
+    file.path = c.files.get(&at.file_id).cloned();
+    crate::codebase::source_initializer(
+        c.codebase,
+        &file,
+        at,
+        class.name,
+        c.php_version,
+        c.include_settings.path_constants,
+        c.files.get(&class.span.file_id).cloned(),
+    )
+    .map(|value| super::arrays::initializer_order(c, at, class, c.to_phpstan(&value)))
 }
 
 /// ConflictingTraitConstantsRule::processSingleConstant().
@@ -312,12 +353,14 @@ fn overriding_constant<'arena>(
     k: &ClassLikeConstant<'arena>,
 ) {
     let display = c.display(class);
-    let ours = visibility(k.modifiers.as_slice());
     for item in k.items.iter() {
         let Some((prototype, ancestor)) = find_prototype(c, class, item.name.value) else {
             continue;
         };
-        let name = text(item.name.value);
+        let key = mago_word::word(item.name.value);
+        let (current, context) =
+            reflected_constant(c, class, key).expect("a class constant walked in its class");
+        let name = text(current.name.as_bytes());
         // an interface's constants are final before PHP 8.1 (BetterReflection's isFinal())
         let interface_final = ancestor.kind.is_interface() && c.php_version < 80100;
         let declaring = c.display(ancestor);
@@ -329,6 +372,8 @@ fn overriding_constant<'arena>(
                 None,
             );
         }
+        let display = c.display(context);
+        let ours = current.visibility;
         if prototype.visibility == Visibility::Public {
             if ours != Visibility::Public {
                 let label = if ours == Visibility::Private {
@@ -360,10 +405,6 @@ fn overriding_constant<'arena>(
         }
         let errors = declared::with_classes(c, || {
             let theirs = constant_native(c, prototype, ancestor);
-            let key = mago_word::word(item.name.value);
-            let (current, context) =
-                reflected_constant(c, class, key).expect("a class constant walked in its class");
-            let display = c.display(context);
             let ours = constant_native(c, current, context);
             let mut errors = Vec::new();
             if let Some(theirs) = &theirs {

@@ -1,0 +1,1128 @@
+{
+    "relations": {
+        "parent-sentinel": {
+            "equals": [
+                true,
+                true
+            ],
+            "super": [
+                "Yes",
+                "Yes"
+            ],
+            "accepts": [
+                [
+                    "Yes",
+                    "Yes"
+                ],
+                [
+                    "Yes",
+                    "Yes"
+                ]
+            ],
+            "names": [],
+            "isObject": "Yes"
+        },
+        "named-parent": {
+            "equals": [
+                false,
+                false
+            ],
+            "super": [
+                "No",
+                "No"
+            ],
+            "accepts": [
+                [
+                    "No",
+                    "No"
+                ],
+                [
+                    "No",
+                    "No"
+                ]
+            ],
+            "names": [
+                "parent"
+            ],
+            "isObject": "Yes"
+        },
+        "stdClass": {
+            "equals": [
+                false,
+                false
+            ],
+            "super": [
+                "No",
+                "No"
+            ],
+            "accepts": [
+                [
+                    "No",
+                    "No"
+                ],
+                [
+                    "No",
+                    "No"
+                ]
+            ],
+            "names": [
+                "stdClass"
+            ],
+            "isObject": "Yes"
+        },
+        "object": {
+            "equals": [
+                false,
+                false
+            ],
+            "super": [
+                "No",
+                "No"
+            ],
+            "accepts": [
+                [
+                    "No",
+                    "No"
+                ],
+                [
+                    "No",
+                    "No"
+                ]
+            ],
+            "names": [],
+            "isObject": "Yes"
+        },
+        "generic-object": {
+            "equals": [
+                false,
+                false
+            ],
+            "super": [
+                "No",
+                "No"
+            ],
+            "accepts": [
+                [
+                    "No",
+                    "No"
+                ],
+                [
+                    "No",
+                    "No"
+                ]
+            ],
+            "names": [
+                "ArrayObject"
+            ],
+            "isObject": "Yes"
+        },
+        "shape-empty": {
+            "equals": [
+                false,
+                false
+            ],
+            "super": [
+                "No",
+                "Yes"
+            ],
+            "accepts": [
+                [
+                    "No",
+                    "Yes"
+                ],
+                [
+                    "No",
+                    "Yes"
+                ]
+            ],
+            "names": [],
+            "isObject": "Yes"
+        },
+        "shape-optional": {
+            "equals": [
+                false,
+                false
+            ],
+            "super": [
+                "No",
+                "Yes"
+            ],
+            "accepts": [
+                [
+                    "No",
+                    "Yes"
+                ],
+                [
+                    "No",
+                    "Yes"
+                ]
+            ],
+            "names": [],
+            "isObject": "Yes"
+        },
+        "shape-required": {
+            "equals": [
+                false,
+                false
+            ],
+            "super": [
+                "No",
+                "No"
+            ],
+            "accepts": [
+                [
+                    "No",
+                    "No"
+                ],
+                [
+                    "No",
+                    "No"
+                ]
+            ],
+            "names": [],
+            "isObject": "Yes"
+        },
+        "callable": {
+            "equals": [
+                false,
+                false
+            ],
+            "super": [
+                "No",
+                "No"
+            ],
+            "accepts": [
+                [
+                    "No",
+                    "No"
+                ],
+                [
+                    "No",
+                    "No"
+                ]
+            ],
+            "names": [],
+            "isObject": "Maybe"
+        },
+        "iterable": {
+            "equals": [
+                false,
+                false
+            ],
+            "super": [
+                "No",
+                "No"
+            ],
+            "accepts": [
+                [
+                    "No",
+                    "No"
+                ],
+                [
+                    "No",
+                    "No"
+                ]
+            ],
+            "names": [],
+            "isObject": "Maybe"
+        },
+        "error": {
+            "equals": [
+                false,
+                false
+            ],
+            "super": [
+                "Maybe",
+                "Yes"
+            ],
+            "accepts": [
+                [
+                    "Yes",
+                    "Yes"
+                ],
+                [
+                    "Yes",
+                    "Yes"
+                ]
+            ],
+            "names": [],
+            "isObject": "Maybe"
+        },
+        "mixed-implicit": {
+            "equals": [
+                false,
+                false
+            ],
+            "super": [
+                "Maybe",
+                "Yes"
+            ],
+            "accepts": [
+                [
+                    "Yes",
+                    "Yes"
+                ],
+                [
+                    "Yes",
+                    "Yes"
+                ]
+            ],
+            "names": [],
+            "isObject": "Maybe"
+        },
+        "mixed-explicit": {
+            "equals": [
+                false,
+                false
+            ],
+            "super": [
+                "Maybe",
+                "Yes"
+            ],
+            "accepts": [
+                [
+                    "Yes",
+                    "Yes"
+                ],
+                [
+                    "Yes",
+                    "Yes"
+                ]
+            ],
+            "names": [],
+            "isObject": "Maybe"
+        },
+        "strict-mixed": {
+            "equals": [
+                false,
+                false
+            ],
+            "super": [
+                "Maybe",
+                "Yes"
+            ],
+            "accepts": [
+                [
+                    "Maybe",
+                    "Yes"
+                ],
+                [
+                    "Maybe",
+                    "Yes"
+                ]
+            ],
+            "names": [],
+            "isObject": "No"
+        },
+        "never-implicit": {
+            "equals": [
+                false,
+                false
+            ],
+            "super": [
+                "Yes",
+                "No"
+            ],
+            "accepts": [
+                [
+                    "Yes",
+                    "Yes"
+                ],
+                [
+                    "Yes",
+                    "Yes"
+                ]
+            ],
+            "names": [],
+            "isObject": "No"
+        },
+        "never-explicit": {
+            "equals": [
+                false,
+                false
+            ],
+            "super": [
+                "Yes",
+                "No"
+            ],
+            "accepts": [
+                [
+                    "Yes",
+                    "Yes"
+                ],
+                [
+                    "Yes",
+                    "Yes"
+                ]
+            ],
+            "names": [],
+            "isObject": "No"
+        },
+        "never-nonaccepting": {
+            "equals": [
+                false,
+                false
+            ],
+            "super": [
+                "Yes",
+                "No"
+            ],
+            "accepts": [
+                [
+                    "Yes",
+                    "No"
+                ],
+                [
+                    "Yes",
+                    "No"
+                ]
+            ],
+            "names": [],
+            "isObject": "No"
+        },
+        "null": {
+            "equals": [
+                false,
+                false
+            ],
+            "super": [
+                "No",
+                "No"
+            ],
+            "accepts": [
+                [
+                    "No",
+                    "No"
+                ],
+                [
+                    "No",
+                    "No"
+                ]
+            ],
+            "names": [],
+            "isObject": "No"
+        },
+        "union-null": {
+            "equals": [
+                false,
+                false
+            ],
+            "super": [
+                "Maybe",
+                "Yes"
+            ],
+            "accepts": [
+                [
+                    "Maybe",
+                    "Yes"
+                ],
+                [
+                    "Maybe",
+                    "Yes"
+                ]
+            ],
+            "names": [],
+            "isObject": "Maybe"
+        },
+        "benevolent-null": {
+            "equals": [
+                false,
+                false
+            ],
+            "super": [
+                "Maybe",
+                "Yes"
+            ],
+            "accepts": [
+                [
+                    "Yes",
+                    "Yes"
+                ],
+                [
+                    "Yes",
+                    "Yes"
+                ]
+            ],
+            "names": [],
+            "isObject": "Yes"
+        },
+        "intersection-method": {
+            "equals": [
+                false,
+                false
+            ],
+            "super": [
+                "Yes",
+                "No"
+            ],
+            "accepts": [
+                [
+                    "Yes",
+                    "No"
+                ],
+                [
+                    "Yes",
+                    "No"
+                ]
+            ],
+            "names": [],
+            "isObject": "Yes"
+        },
+        "union-object": {
+            "equals": [
+                false,
+                false
+            ],
+            "super": [
+                "Maybe",
+                "Yes"
+            ],
+            "accepts": [
+                [
+                    "Maybe",
+                    "Yes"
+                ],
+                [
+                    "Maybe",
+                    "Yes"
+                ]
+            ],
+            "names": [],
+            "isObject": "Yes"
+        },
+        "benevolent-object": {
+            "equals": [
+                false,
+                false
+            ],
+            "super": [
+                "Maybe",
+                "Yes"
+            ],
+            "accepts": [
+                [
+                    "Yes",
+                    "Yes"
+                ],
+                [
+                    "Yes",
+                    "Yes"
+                ]
+            ],
+            "names": [],
+            "isObject": "Yes"
+        },
+        "template-union": {
+            "equals": [
+                false,
+                false
+            ],
+            "super": [
+                "Maybe",
+                "Maybe"
+            ],
+            "accepts": [
+                [
+                    "Maybe",
+                    "Yes"
+                ],
+                [
+                    "Maybe",
+                    "Yes"
+                ]
+            ],
+            "names": [],
+            "isObject": "Maybe"
+        }
+    },
+    "leaf": {
+        "queries": {
+            "isObject": "Yes",
+            "isString": "No",
+            "isInteger": "No",
+            "isFloat": "No",
+            "isBoolean": "No",
+            "isArray": "No",
+            "isList": "No",
+            "isIterable": "No",
+            "isIterableAtLeastOnce": "No",
+            "isCloneable": "No",
+            "isCallable": "No",
+            "isNull": "No",
+            "isVoid": "No"
+        },
+        "descriptions": [
+            "parent",
+            "parent",
+            "parent"
+        ],
+        "phpdoc": "parent",
+        "constantStrings": [],
+        "constantArrays": 0,
+        "hasMethod": "No",
+        "iterableKey": [
+            "*ERROR*",
+            "mixed",
+            "mixed"
+        ],
+        "iterableValue": [
+            "*ERROR*",
+            "mixed",
+            "mixed"
+        ],
+        "traverse": [
+            true,
+            0
+        ],
+        "generalize": true,
+        "inference": 0
+    },
+    "casts": {
+        "parent-sentinel": [
+            true,
+            true,
+            true,
+            true,
+            false,
+            true
+        ],
+        "named-parent": [
+            true,
+            true,
+            true,
+            true,
+            false,
+            true
+        ],
+        "object": [
+            true,
+            true,
+            true,
+            true,
+            false,
+            true
+        ],
+        "error": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            true
+        ],
+        "mixed-implicit": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            true
+        ],
+        "never-implicit": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+        ]
+    },
+    "combinators": {
+        "named-parent": [
+            {
+                "union": [
+                    "parent#1|parent#2",
+                    "parent",
+                    "parent"
+                ],
+                "intersection": [
+                    "*NEVER*",
+                    "*NEVER*",
+                    "*NEVER*"
+                ]
+            },
+            {
+                "union": [
+                    "parent#1|parent#2",
+                    "parent",
+                    "parent"
+                ],
+                "intersection": [
+                    "*NEVER*",
+                    "*NEVER*",
+                    "*NEVER*"
+                ]
+            }
+        ],
+        "object": [
+            {
+                "union": [
+                    "object|parent",
+                    "object|parent",
+                    "object|parent"
+                ],
+                "intersection": [
+                    "*NEVER*",
+                    "*NEVER*",
+                    "*NEVER*"
+                ]
+            },
+            {
+                "union": [
+                    "object|parent",
+                    "object|parent",
+                    "object|parent"
+                ],
+                "intersection": [
+                    "*NEVER*",
+                    "*NEVER*",
+                    "*NEVER*"
+                ]
+            }
+        ],
+        "null": [
+            {
+                "union": [
+                    "parent|null",
+                    "parent|null",
+                    "parent|null"
+                ],
+                "intersection": [
+                    "*NEVER*",
+                    "*NEVER*",
+                    "*NEVER*"
+                ]
+            },
+            {
+                "union": [
+                    "parent|null",
+                    "parent|null",
+                    "parent|null"
+                ],
+                "intersection": [
+                    "*NEVER*",
+                    "*NEVER*",
+                    "*NEVER*"
+                ]
+            }
+        ],
+        "error": [
+            {
+                "union": [
+                    "*ERROR*",
+                    "mixed",
+                    "mixed"
+                ],
+                "intersection": [
+                    "parent",
+                    "parent",
+                    "parent"
+                ]
+            },
+            {
+                "union": [
+                    "*ERROR*",
+                    "mixed",
+                    "mixed"
+                ],
+                "intersection": [
+                    "parent",
+                    "parent",
+                    "parent"
+                ]
+            }
+        ],
+        "mixed-implicit": [
+            {
+                "union": [
+                    "mixed",
+                    "mixed",
+                    "mixed"
+                ],
+                "intersection": [
+                    "parent",
+                    "parent",
+                    "parent"
+                ]
+            },
+            {
+                "union": [
+                    "mixed",
+                    "mixed",
+                    "mixed"
+                ],
+                "intersection": [
+                    "parent",
+                    "parent",
+                    "parent"
+                ]
+            }
+        ],
+        "never-implicit": [
+            {
+                "union": [
+                    "parent",
+                    "parent",
+                    "parent"
+                ],
+                "intersection": [
+                    "*NEVER*",
+                    "*NEVER*",
+                    "*NEVER*"
+                ]
+            },
+            {
+                "union": [
+                    "parent",
+                    "parent",
+                    "parent"
+                ],
+                "intersection": [
+                    "*NEVER*",
+                    "*NEVER*",
+                    "*NEVER*"
+                ]
+            }
+        ]
+    },
+    "resolution": [
+        {
+            "class": "stdClass",
+            "input": "parent",
+            "descriptions": [
+                "parent",
+                "parent",
+                "parent"
+            ],
+            "names": [],
+            "sentinel": true
+        },
+        {
+            "class": "stdClass",
+            "input": "class-string<parent>",
+            "descriptions": [
+                "class-string<parent>",
+                "class-string<parent>",
+                "class-string<parent>"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": "stdClass",
+            "input": "array<parent, int>",
+            "descriptions": [
+                "array<int|string, int>",
+                "array<int|string, int>",
+                "array<int|string, int>"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": "stdClass",
+            "input": "parent<int>",
+            "descriptions": [
+                "*ERROR*",
+                "mixed",
+                "mixed"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": "stdClass",
+            "input": "parent[0]",
+            "descriptions": [
+                "*ERROR*",
+                "mixed",
+                "mixed"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": "stdClass",
+            "input": "key-of<parent>",
+            "descriptions": [
+                "*ERROR*",
+                "mixed",
+                "mixed"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": "stdClass",
+            "input": "value-of<parent>",
+            "descriptions": [
+                "*ERROR*",
+                "mixed",
+                "mixed"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": "RuntimeException",
+            "input": "parent",
+            "descriptions": [
+                "Exception",
+                "Exception",
+                "Exception"
+            ],
+            "names": [
+                "Exception"
+            ],
+            "sentinel": false
+        },
+        {
+            "class": "RuntimeException",
+            "input": "class-string<parent>",
+            "descriptions": [
+                "class-string<Exception>",
+                "class-string<Exception>",
+                "class-string<Exception>"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": "RuntimeException",
+            "input": "array<parent, int>",
+            "descriptions": [
+                "array<int|string, int>",
+                "array<int|string, int>",
+                "array<int|string, int>"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": "RuntimeException",
+            "input": "parent<int>",
+            "descriptions": [
+                "Exception<int>",
+                "Exception<int>",
+                "Exception<int>"
+            ],
+            "names": [
+                "Exception"
+            ],
+            "sentinel": false
+        },
+        {
+            "class": "RuntimeException",
+            "input": "parent[0]",
+            "descriptions": [
+                "Exception[0]",
+                "Exception[0]",
+                "Exception[0]"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": "RuntimeException",
+            "input": "key-of<parent>",
+            "descriptions": [
+                "*ERROR*",
+                "mixed",
+                "mixed"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": "RuntimeException",
+            "input": "value-of<parent>",
+            "descriptions": [
+                "*ERROR*",
+                "mixed",
+                "mixed"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": null,
+            "input": "parent",
+            "descriptions": [
+                "parent",
+                "parent",
+                "parent"
+            ],
+            "names": [
+                "parent"
+            ],
+            "sentinel": false
+        },
+        {
+            "class": null,
+            "input": "class-string<parent>",
+            "descriptions": [
+                "class-string<parent>",
+                "class-string<parent>",
+                "class-string<parent>"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": null,
+            "input": "array<parent, int>",
+            "descriptions": [
+                "array<int|string, int>",
+                "array<int|string, int>",
+                "array<int|string, int>"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": null,
+            "input": "parent<int>",
+            "descriptions": [
+                "parent<int>",
+                "parent<int>",
+                "parent<int>"
+            ],
+            "names": [
+                "parent"
+            ],
+            "sentinel": false
+        },
+        {
+            "class": null,
+            "input": "parent[0]",
+            "descriptions": [
+                "parent[0]",
+                "parent[0]",
+                "parent[0]"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": null,
+            "input": "key-of<parent>",
+            "descriptions": [
+                "*ERROR*",
+                "mixed",
+                "mixed"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": null,
+            "input": "value-of<parent>",
+            "descriptions": [
+                "*ERROR*",
+                "mixed",
+                "mixed"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": "UnknownClass",
+            "input": "parent",
+            "descriptions": [
+                "parent",
+                "parent",
+                "parent"
+            ],
+            "names": [],
+            "sentinel": true
+        },
+        {
+            "class": "UnknownClass",
+            "input": "class-string<parent>",
+            "descriptions": [
+                "class-string<parent>",
+                "class-string<parent>",
+                "class-string<parent>"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": "UnknownClass",
+            "input": "array<parent, int>",
+            "descriptions": [
+                "array<int|string, int>",
+                "array<int|string, int>",
+                "array<int|string, int>"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": "UnknownClass",
+            "input": "parent<int>",
+            "descriptions": [
+                "*ERROR*",
+                "mixed",
+                "mixed"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": "UnknownClass",
+            "input": "parent[0]",
+            "descriptions": [
+                "*ERROR*",
+                "mixed",
+                "mixed"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": "UnknownClass",
+            "input": "key-of<parent>",
+            "descriptions": [
+                "*ERROR*",
+                "mixed",
+                "mixed"
+            ],
+            "names": [],
+            "sentinel": false
+        },
+        {
+            "class": "UnknownClass",
+            "input": "value-of<parent>",
+            "descriptions": [
+                "*ERROR*",
+                "mixed",
+                "mixed"
+            ],
+            "names": [],
+            "sentinel": false
+        }
+    ],
+    "templateBound": [
+        [
+            "mixed",
+            "mixed",
+            "mixed"
+        ],
+        true
+    ],
+    "objectQueries": {
+        "null": "No",
+        "callable": "Maybe",
+        "iterable": "Maybe",
+        "object{}": "Yes",
+        "Closure": "Yes",
+        "string": "No",
+        "stdClass": "Yes",
+        "mixed~object": "No",
+        "hasMethod": "Maybe"
+    },
+    "nativeParent": [
+        "parent"
+    ]
+}

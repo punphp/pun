@@ -69,6 +69,9 @@ pub struct EffectiveCallableSignature {
 pub struct MethodTargetContext<'ctx> {
     /// Whether the source invocation uses instance-method or static-method syntax.
     pub invocation_kind: MethodInvocationKind,
+    /// The case-folded lookup name before declaring/storage selection, including trait aliases.
+    /// Synthetic invocations retain the constructor or magic method actually invoked.
+    pub requested_name: Word,
     /// The method identifier, if statically resolved.
     pub declaring_method_id: Option<MethodIdentifier>,
     /// Metadata for the class the method is being called on (not necessarily where it's declared).

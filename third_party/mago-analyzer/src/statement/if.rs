@@ -79,7 +79,8 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for If<'arena> {
 
         let if_conditional_scope =
             conditional::analyze(context, block_context, artifacts, &mut if_scope, self.condition, true)?;
-        if_scope.else_is_unreachable = artifacts.get_expression_type(self.condition).is_some_and(|ty| ty.is_always_truthy());
+        if_scope.else_is_unreachable =
+            artifacts.get_expression_type(self.condition).is_some_and(|ty| ty.is_always_truthy());
 
         if needs_post_leaving_context {
             if_scope.post_leaving_if_context = Some(block_context.clone());
@@ -236,6 +237,29 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for If<'arena> {
             );
         }
 
+        let transferred = conditional::apply_boolean_branch(
+            self.condition,
+            false,
+            artifacts,
+            &mut temporary_else_context,
+        );
+        if_scope
+            .negated_types
+            .retain(|key, _| !transferred.contains(key));
+        if_scope.negated_clauses = BlockContext::remove_reconciled_clause_refs(
+            &if_scope
+                .negated_clauses
+                .iter()
+                .cloned()
+                .map(Rc::new)
+                .collect::<Vec<_>>(),
+            &transferred,
+        )
+        .0
+        .into_iter()
+        .map(Rc::unwrap_or_clone)
+        .collect();
+
         let pre_assignment_else_redefined_locals: WordMap<Rc<TUnion>> = temporary_else_context
             .locals
             .iter()
@@ -270,6 +294,19 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for If<'arena> {
         } else {
             post_if_block_context
         };
+        conditional::apply_boolean_branch(
+            self.condition,
+            false,
+            artifacts,
+            &mut else_block_context,
+        );
+        else_block_context.native_locals = crate::native::branch(
+            self.condition,
+            &else_block_context.native_locals,
+            artifacts,
+            false,
+            context.codebase,
+        );
         else_block_context
             .stable_method_call_assertions
             .clone_from(&temporary_else_context.stable_method_call_assertions);
@@ -484,8 +521,18 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for If<'arena> {
             block_context.definitely_uninitialized_property_ids = property_ids;
         }
 
-        block_context.merge_variable_scopes(&if_scope.variable_branches, context.codebase);
-        block_context.apply_variable_conditions(context.codebase);
+        // IfHandler merges each later branch into the accumulated earlier scopes.
+        // Union member order is observable when resolving collected method calls.
+        if_scope.variable_branches.reverse();
+        if_scope.native_branches.reverse();
+        block_context.merge_variable_scope_types(&if_scope.variable_branches, context.codebase);
+        block_context.native_locals = crate::native::join(&if_scope.native_branches, context.codebase);
+        if context.called_method_properties.processing {
+            if self.body.else_statements().is_none() && !if_scope.else_is_unreachable {
+                if_scope.property_ends.push(block_context.variable_state.property_initializations.clone());
+            }
+            artifacts.property_statement_ends.insert(self.span(), if_scope.property_ends);
+        }
         Ok(())
     }
 }
@@ -579,6 +626,13 @@ where
         if_scope.conditionally_changed_variable_ids = changed_variable_ids;
     }
 
+    conditional::apply_boolean_branch(
+        if_statement.condition,
+        true,
+        artifacts,
+        &mut if_block_context,
+    );
+
     if_block_context.reconciled_expression_clauses = vec![];
     outer_block_context
         .variables_possibly_in_scope
@@ -588,12 +642,19 @@ where
     let assigned_variable_ids = std::mem::take(&mut if_block_context.assigned_variable_ids);
     let possibly_assigned_variable_ids = std::mem::take(&mut if_block_context.possibly_assigned_variable_ids);
 
-    let discarded_flow = artifacts.get_expression_type(if_statement.condition)
-        .is_some_and(|ty| ty.is_always_falsy()).then(|| artifacts.branch_flow());
+    let discarded_flow = artifacts
+        .get_expression_type(if_statement.condition)
+        .is_some_and(|ty| ty.is_always_falsy())
+        .then(|| artifacts.branch_flow());
     analyze_statements(if_statement.body.statements(), context, &mut if_block_context, artifacts)?;
     if let Some(flow) = discarded_flow {
         artifacts.restore_branch_flow(flow);
         return Ok(());
+    }
+    if context.called_method_properties.processing {
+        if_scope.property_ends.extend(crate::property_initialization::statement_ends(
+            if_statement.body.statements(), &if_block_context, artifacts,
+        ));
     }
 
     for variable_id in &if_block_context.parent_conflicting_clause_variables {
@@ -626,6 +687,7 @@ where
 
     if !has_leaving_statements {
         if_scope.variable_branches.push(if_block_context.variable_scope());
+        if_scope.native_branches.push(if_block_context.native_locals.clone());
         let new_assigned_variable_ids_keys = new_assigned_variable_ids.keys().copied().collect::<Vec<Word>>();
 
         update_if_scope(
@@ -722,9 +784,17 @@ where
 {
     let if_conditional_scope =
         conditional::analyze(context, else_block_context, artifacts, if_scope, else_if_clause.0, true)?;
+    else_block_context.native_locals = crate::native::branch(
+        else_if_clause.0,
+        &if_conditional_scope.post_if_context.native_locals,
+        artifacts,
+        false,
+        context.codebase,
+    );
     let unreachable = if_scope.else_is_unreachable
         || artifacts.get_expression_type(else_if_clause.0).is_some_and(|ty| ty.is_always_falsy());
-    if_scope.else_is_unreachable |= artifacts.get_expression_type(else_if_clause.0).is_some_and(|ty| ty.is_always_truthy());
+    if_scope.else_is_unreachable |=
+        artifacts.get_expression_type(else_if_clause.0).is_some_and(|ty| ty.is_always_truthy());
 
     let mut else_if_block_context = if_conditional_scope.if_body_context;
     let mut conditionally_referenced_variable_ids = if_conditional_scope.conditionally_referenced_variable_ids;
@@ -953,6 +1023,11 @@ where
         artifacts.restore_branch_flow(flow);
         return Ok(());
     }
+    if context.called_method_properties.processing {
+        if_scope.property_ends.extend(crate::property_initialization::statement_ends(
+            else_if_clause.1, &else_if_block_context, artifacts,
+        ));
+    }
 
     for variable_id in &else_if_block_context.parent_conflicting_clause_variables {
         outer_block_context.remove_variable_from_conflicting_clauses(context, *variable_id, None);
@@ -976,6 +1051,7 @@ where
 
     if !has_leaving_statements {
         if_scope.variable_branches.push(else_if_block_context.variable_scope());
+        if_scope.native_branches.push(else_if_block_context.native_locals.clone());
     }
     if has_leaving_statements {
         if_scope.reasonable_clauses = vec![];
@@ -1086,6 +1162,7 @@ where
         && else_block_context.clauses.is_empty()
     {
         if_scope.variable_branches.push(else_block_context.variable_scope());
+        if_scope.native_branches.push(else_block_context.native_locals.clone());
         if_scope.final_actions.insert(ControlAction::None);
         if_scope.assigned_variable_ids = None;
         if_scope.new_variables = None;
@@ -1193,6 +1270,8 @@ where
 
         if_scope.final_actions.insert(ControlAction::None);
 
+        // The full walk skipped this edge. Do not invent native observations or a live state.
+        if_scope.native_branches.push(None);
         return Ok(());
     }
 
@@ -1202,6 +1281,11 @@ where
 
     if let Some(statements) = else_statements {
         analyze_statements(statements, context, else_block_context, artifacts)?;
+        if context.called_method_properties.processing {
+            if_scope.property_ends.extend(crate::property_initialization::statement_ends(
+                statements, else_block_context, artifacts,
+            ));
+        }
     }
 
     for variable_id in &else_block_context.parent_conflicting_clause_variables {
@@ -1231,6 +1315,7 @@ where
 
     if !has_leaving_statements {
         if_scope.variable_branches.push(else_block_context.variable_scope());
+        if_scope.native_branches.push(else_block_context.native_locals.clone());
         update_if_scope(
             context,
             if_scope,

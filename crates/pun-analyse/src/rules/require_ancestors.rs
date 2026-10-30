@@ -46,7 +46,7 @@ pub fn check(c: &mut Checker, at: Span, k: &ClassLikeMetadata) {
     for t in &traits {
         for ty in tags(c, t, "require-implements") {
             // `instanceof ObjectType`, generic or not
-            if let Type::Object(name, _) = &ty
+            if let Type::Object(name, _, _) = &ty
                 && !k.all_parent_interfaces.iter().any(|i| i.as_bytes().eq_ignore_ascii_case(name.as_bytes()))
             {
                 let message = format!(
@@ -90,7 +90,7 @@ fn tags(c: &Checker, k: &ClassLikeMetadata, kind: &str) -> Vec<Type> {
 /// `getObjectClassNames()`.
 fn object_class_names(t: &Type) -> Vec<String> {
     match t {
-        Type::Object(name, _) => vec![name.clone()],
+        Type::Object(name, _, _) => vec![name.clone()],
         Type::Union(members) => members.iter().flat_map(object_class_names).collect(),
         _ => Vec::new(),
     }

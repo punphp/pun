@@ -1,0 +1,900 @@
+{
+    "diagnostics": {
+        "0": [
+            [
+                "written.php",
+                14,
+                "phpstan.dumpType",
+                "Dumped type: mixed~null",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                18,
+                "function.notFound",
+                "Function missingReadReceiver not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ],
+            [
+                "written.php",
+                24,
+                "function.notFound",
+                "Function missingWriteReceiver not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ],
+            [
+                "written.php",
+                27,
+                "phpstan.dumpType",
+                "Dumped type: mixed~null",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                33,
+                "phpstan.dumpType",
+                "Dumped type: mixed",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                46,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                61,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                65,
+                "function.notFound",
+                "Function missingValue not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ],
+            [
+                "written.php",
+                73,
+                "phpstan.dumpType",
+                "Dumped type: mixed~null",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                95,
+                "phpstan.dumpType",
+                "Dumped type: non-empty-string",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                99,
+                "phpstan.dumpType",
+                "Dumped type: mixed~null",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                104,
+                "function.notFound",
+                "Function missingValueReceiver not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ],
+            [
+                "written.php",
+                105,
+                "phpstan.dumpType",
+                "Dumped type: mixed~null",
+                null,
+                false
+            ]
+        ],
+        "1": [
+            [
+                "written.php",
+                14,
+                "phpstan.dumpType",
+                "Dumped type: mixed~null",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                18,
+                "function.notFound",
+                "Function missingReadReceiver not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ],
+            [
+                "written.php",
+                24,
+                "function.notFound",
+                "Function missingWriteReceiver not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ],
+            [
+                "written.php",
+                27,
+                "phpstan.dumpType",
+                "Dumped type: mixed~null",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                33,
+                "phpstan.dumpType",
+                "Dumped type: mixed",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                46,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                61,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                65,
+                "function.notFound",
+                "Function missingValue not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ],
+            [
+                "written.php",
+                73,
+                "phpstan.dumpType",
+                "Dumped type: mixed~null",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                95,
+                "phpstan.dumpType",
+                "Dumped type: non-empty-string",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                99,
+                "phpstan.dumpType",
+                "Dumped type: mixed~null",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                104,
+                "function.notFound",
+                "Function missingValueReceiver not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ],
+            [
+                "written.php",
+                105,
+                "phpstan.dumpType",
+                "Dumped type: mixed~null",
+                null,
+                false
+            ]
+        ],
+        "4": [
+            [
+                "written.php",
+                7,
+                "expr.resultUnused",
+                "Expression \"$items['foo'] ?? 5\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "written.php",
+                14,
+                "phpstan.dumpType",
+                "Dumped type: mixed~null",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                18,
+                "function.notFound",
+                "Function missingReadReceiver not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ],
+            [
+                "written.php",
+                19,
+                "expr.resultUnused",
+                "Expression \"$items['foo'] ?? 5\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "written.php",
+                24,
+                "function.notFound",
+                "Function missingWriteReceiver not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ],
+            [
+                "written.php",
+                27,
+                "phpstan.dumpType",
+                "Dumped type: mixed~null",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                33,
+                "phpstan.dumpType",
+                "Dumped type: mixed",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                38,
+                "expr.resultUnused",
+                "Expression \"$items['foo'] ?? 5\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "written.php",
+                46,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                51,
+                "expr.resultUnused",
+                "Expression \"$items['foo'] ?? 5\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "written.php",
+                61,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                65,
+                "function.notFound",
+                "Function missingValue not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ],
+            [
+                "written.php",
+                73,
+                "phpstan.dumpType",
+                "Dumped type: mixed~null",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                88,
+                "expr.resultUnused",
+                "Expression \"$text[0] ?? 'x'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "written.php",
+                95,
+                "phpstan.dumpType",
+                "Dumped type: non-empty-string",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                99,
+                "phpstan.dumpType",
+                "Dumped type: mixed~null",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                104,
+                "function.notFound",
+                "Function missingValueReceiver not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ],
+            [
+                "written.php",
+                105,
+                "phpstan.dumpType",
+                "Dumped type: mixed~null",
+                null,
+                false
+            ]
+        ],
+        "5": [
+            [
+                "written.php",
+                7,
+                "expr.resultUnused",
+                "Expression \"$items['foo'] ?? 5\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "written.php",
+                14,
+                "phpstan.dumpType",
+                "Dumped type: mixed~null",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                18,
+                "function.notFound",
+                "Function missingReadReceiver not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ],
+            [
+                "written.php",
+                19,
+                "expr.resultUnused",
+                "Expression \"$items['foo'] ?? 5\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "written.php",
+                24,
+                "function.notFound",
+                "Function missingWriteReceiver not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ],
+            [
+                "written.php",
+                27,
+                "phpstan.dumpType",
+                "Dumped type: mixed~null",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                33,
+                "phpstan.dumpType",
+                "Dumped type: mixed",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                38,
+                "expr.resultUnused",
+                "Expression \"$items['foo'] ?? 5\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "written.php",
+                46,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                51,
+                "expr.resultUnused",
+                "Expression \"$items['foo'] ?? 5\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "written.php",
+                61,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                65,
+                "function.notFound",
+                "Function missingValue not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ],
+            [
+                "written.php",
+                73,
+                "phpstan.dumpType",
+                "Dumped type: mixed~null",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                88,
+                "expr.resultUnused",
+                "Expression \"$text[0] ?? 'x'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "written.php",
+                95,
+                "phpstan.dumpType",
+                "Dumped type: non-empty-string",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                99,
+                "phpstan.dumpType",
+                "Dumped type: mixed~null",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                104,
+                "function.notFound",
+                "Function missingValueReceiver not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ],
+            [
+                "written.php",
+                105,
+                "phpstan.dumpType",
+                "Dumped type: mixed~null",
+                null,
+                false
+            ]
+        ],
+        "9": [
+            [
+                "written.php",
+                6,
+                "missingType.parameter",
+                "Function RefinedWrittenCoalesce\\unknownRead() has parameter $items with no type specified.",
+                null,
+                true
+            ],
+            [
+                "written.php",
+                7,
+                "expr.resultUnused",
+                "Expression \"$items['foo'] ?? 5\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "written.php",
+                11,
+                "missingType.parameter",
+                "Function RefinedWrittenCoalesce\\unknownWrite() has parameter $items with no type specified.",
+                null,
+                true
+            ],
+            [
+                "written.php",
+                14,
+                "phpstan.dumpType",
+                "Dumped type: mixed~null",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                18,
+                "function.notFound",
+                "Function missingReadReceiver not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ],
+            [
+                "written.php",
+                19,
+                "expr.resultUnused",
+                "Expression \"$items['foo'] ?? 5\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "written.php",
+                24,
+                "function.notFound",
+                "Function missingWriteReceiver not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ],
+            [
+                "written.php",
+                27,
+                "phpstan.dumpType",
+                "Dumped type: mixed~null",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                30,
+                "missingType.parameter",
+                "Function RefinedWrittenCoalesce\\nullableWrite() has parameter $items with no type specified.",
+                null,
+                true
+            ],
+            [
+                "written.php",
+                33,
+                "phpstan.dumpType",
+                "Dumped type: mixed",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                38,
+                "expr.resultUnused",
+                "Expression \"$items['foo'] ?? 5\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "written.php",
+                46,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                51,
+                "expr.resultUnused",
+                "Expression \"$items['foo'] ?? 5\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "written.php",
+                61,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                65,
+                "function.notFound",
+                "Function missingValue not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ],
+            [
+                "written.php",
+                70,
+                "missingType.parameter",
+                "Function RefinedWrittenCoalesce\\nestedUnknown() has parameter $items with no type specified.",
+                null,
+                true
+            ],
+            [
+                "written.php",
+                73,
+                "phpstan.dumpType",
+                "Dumped type: mixed~null",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                76,
+                "missingType.parameter",
+                "Function RefinedWrittenCoalesce\\rawKey() has parameter $items with no type specified.",
+                null,
+                true
+            ],
+            [
+                "written.php",
+                81,
+                "missingType.parameter",
+                "Function RefinedWrittenCoalesce\\indexOnce() has parameter $items with no type specified.",
+                null,
+                true
+            ],
+            [
+                "written.php",
+                88,
+                "expr.resultUnused",
+                "Expression \"$text[0] ?? 'x'\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                "written.php",
+                95,
+                "phpstan.dumpType",
+                "Dumped type: non-empty-string",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                98,
+                "missingType.parameter",
+                "Function RefinedWrittenCoalesce\\unknownReadValue() has parameter $items with no type specified.",
+                null,
+                true
+            ],
+            [
+                "written.php",
+                99,
+                "phpstan.dumpType",
+                "Dumped type: mixed~null",
+                null,
+                false
+            ],
+            [
+                "written.php",
+                104,
+                "function.notFound",
+                "Function missingValueReceiver not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ],
+            [
+                "written.php",
+                105,
+                "phpstan.dumpType",
+                "Dumped type: mixed~null",
+                null,
+                false
+            ]
+        ]
+    },
+    "producer": [
+        {
+            "line": 8,
+            "reads": [
+                {
+                    "expression": "$items['foo']",
+                    "certainty": "No"
+                }
+            ]
+        },
+        {
+            "line": 12,
+            "error": false
+        },
+        {
+            "line": 13,
+            "reads": [
+                {
+                    "expression": "$items['foo']",
+                    "certainty": "Yes"
+                }
+            ]
+        },
+        {
+            "line": 20,
+            "reads": [
+                {
+                    "expression": "$items['foo']",
+                    "certainty": "No"
+                }
+            ]
+        },
+        {
+            "line": 25,
+            "error": false
+        },
+        {
+            "line": 26,
+            "reads": [
+                {
+                    "expression": "$items['foo']",
+                    "certainty": "Yes"
+                }
+            ]
+        },
+        {
+            "line": 32,
+            "reads": [
+                {
+                    "expression": "$items['foo']",
+                    "certainty": "Yes"
+                }
+            ]
+        },
+        {
+            "line": 39,
+            "reads": [
+                {
+                    "expression": "$items['foo']",
+                    "certainty": "No"
+                }
+            ]
+        },
+        {
+            "line": 45,
+            "reads": [
+                {
+                    "expression": "$items['foo']",
+                    "certainty": "Yes"
+                }
+            ]
+        },
+        {
+            "line": 52,
+            "reads": [
+                {
+                    "expression": "$items['foo']",
+                    "certainty": "No"
+                }
+            ]
+        },
+        {
+            "line": 58,
+            "reads": [
+                {
+                    "expression": "$items['foo']",
+                    "certainty": "Yes"
+                }
+            ]
+        },
+        {
+            "line": 60,
+            "reads": [
+                {
+                    "expression": "$items[$key]",
+                    "certainty": "Yes"
+                }
+            ]
+        },
+        {
+            "line": 66,
+            "error": true
+        },
+        {
+            "line": 67,
+            "reads": [
+                {
+                    "expression": "$items['foo']",
+                    "certainty": "Yes",
+                    "error": true
+                }
+            ]
+        },
+        {
+            "line": 72,
+            "reads": [
+                {
+                    "expression": "$items['parent']['leaf']",
+                    "certainty": "Yes"
+                }
+            ]
+        },
+        {
+            "line": 78,
+            "reads": [
+                {
+                    "expression": "$items['0']",
+                    "certainty": "Yes"
+                },
+                {
+                    "expression": "$items[0]",
+                    "certainty": "No"
+                }
+            ]
+        },
+        {
+            "line": 84,
+            "reads": [
+                {
+                    "expression": "$items[$index++]",
+                    "certainty": "Yes"
+                },
+                {
+                    "expression": "$items[0]",
+                    "certainty": "No"
+                },
+                {
+                    "expression": "$index",
+                    "certainty": "Yes",
+                    "value": "1"
+                }
+            ]
+        },
+        {
+            "line": 89,
+            "reads": [
+                {
+                    "expression": "$text[0]",
+                    "certainty": "No"
+                }
+            ]
+        },
+        {
+            "line": 94,
+            "reads": [
+                {
+                    "expression": "$text[0]",
+                    "certainty": "Yes"
+                }
+            ]
+        },
+        {
+            "line": 100,
+            "reads": [
+                {
+                    "expression": "$items['foo']",
+                    "certainty": "No"
+                }
+            ]
+        },
+        {
+            "line": 106,
+            "reads": [
+                {
+                    "expression": "$items['foo']",
+                    "certainty": "No"
+                }
+            ]
+        }
+    ]
+}

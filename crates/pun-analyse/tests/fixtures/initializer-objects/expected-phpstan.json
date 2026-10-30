@@ -1,0 +1,171 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 26
+  },
+  "files": {
+    "objects.php": {
+      "errors": 26,
+      "messages": [
+        {
+          "message": "Dumped type: InitializerObjectIdentity\\Plain",
+          "line": 15,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: InitializerObjectIdentity\\Box",
+          "line": 16,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: InitializerObjectIdentity\\DefaultBox",
+          "line": 17,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: InitializerObjectIdentity\\Plain",
+          "line": 21,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: InitializerObjectIdentity\\Box<int>",
+          "line": 22,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: InitializerObjectIdentity\\DefaultBox<int>",
+          "line": 23,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: InitializerObjectIdentity\\Plain",
+          "line": 34,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: InitializerObjectIdentity\\Box",
+          "line": 35,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: InitializerObjectIdentity\\DefaultBox",
+          "line": 36,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{box: InitializerObjectIdentity\\Box}",
+          "line": 37,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: InitializerObjectIdentity\\Box|InitializerObjectIdentity\\Other",
+          "line": 38,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: object",
+          "line": 39,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: InitializerObjectIdentity\\Box",
+          "line": 40,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: InitializerObjectIdentity\\Box",
+          "line": 41,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: mixed",
+          "line": 42,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: string",
+          "line": 43,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: InitializerObjectIdentity\\Box<int>",
+          "line": 45,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: InitializerObjectIdentity\\DefaultBox<int>",
+          "line": 46,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Constant InitializerObjectIdentity\\WrongGeneric::VALUE with value InitializerObjectIdentity\\Other overriding constant InitializerObjectIdentity\\GenericInput::VALUE with different value InitializerObjectIdentity\\Box should have the same value.",
+          "line": 50,
+          "ignorable": false,
+          "identifier": "classConstant.value"
+        },
+        {
+          "message": "Constant InitializerObjectIdentity\\WrongShape::VALUE with value array{box: InitializerObjectIdentity\\Other} overriding constant InitializerObjectIdentity\\ShapeInput::VALUE with different value array{box: InitializerObjectIdentity\\Box} should have the same value.",
+          "line": 52,
+          "ignorable": false,
+          "identifier": "classConstant.value"
+        },
+        {
+          "message": "Unsafe usage of new static().",
+          "line": 56,
+          "ignorable": true,
+          "tip": "See: https://phpstan.org/blog/solving-phpstan-error-unsafe-usage-of-new-static",
+          "identifier": "new.static"
+        },
+        {
+          "message": "Dumped type: self",
+          "line": 58,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: parent",
+          "line": 59,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: static",
+          "line": 60,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: InitializerObjectIdentity\\Box",
+          "line": 61,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: InitializerObjectIdentity\\Box",
+          "line": 62,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        }
+      ]
+    }
+  },
+  "errors": []
+}

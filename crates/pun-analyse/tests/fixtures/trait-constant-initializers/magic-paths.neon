@@ -1,0 +1,8 @@
+includes:
+    - magic.neon
+parameters:
+    level: 6
+    usePathConstantsAsConstantString: true
+    paths:
+        - trait-source/inputs.php
+    tmpDir: cache-magic-paths

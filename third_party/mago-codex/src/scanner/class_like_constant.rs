@@ -85,16 +85,16 @@ where
             }
 
             meta.attributes.clone_from(&attributes);
-            meta.inferred_type = infer(context, scope, item.value, classname).map(TUnion::get_single_owned);
+            meta.inferred_type = infer(context, scope, item.value, classname);
 
             if let Some(TAtomic::Reference(TReference::Member {
                 class_like_name,
                 member_selector: TReferenceMemberSelector::Identifier(member_name),
-            })) = meta.inferred_type.as_ref()
+            })) = meta.inferred_type.as_ref().filter(|value| value.is_single()).map(TUnion::get_single)
                 && classname.is_some_and(|c| c.as_bytes().eq_ignore_ascii_case(class_like_name.as_bytes()))
                 && member_name.as_bytes() == item.name.value
             {
-                meta.inferred_type = Some(TAtomic::Never);
+                meta.inferred_type = Some(TUnion::from_atomic(TAtomic::Never));
             }
 
             if let Some(document) = document.as_ref() {

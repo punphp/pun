@@ -21,19 +21,17 @@ const GAPS: &[(&str, &str, i64, &str)] = &[
     ("var_names", "vars.php", 84, "varTag.variableNotFound"),
     // Mago types an int mixed after an invalid `$i += 'x'`, so NullCoalesceRule cannot tell it is not nullable
     ("types", "offsets.php", 216, "nullCoalesce.variable"),
-    // Mago loses `$this` after `$this?->$this?->$name`, so the nullsafe rule misses this fetch
-    ("dynamic-names", "dynamic-stringable-nullsafe-access.php", 16, "nullsafe.neverNull"),
-    // a native `mixed` parameter is explicit mixed, which level 9 checks; Mago's mixed does not tell it apart
-    ("dynamic-names", "dynamic-constant-stringable-access.php", 14, "classConstant.nameNotString"),
-    ("dynamic-names", "dynamic-constant-stringable-access.php", 14, "classConstant.nameType"),
-    ("dynamic-names", "dynamic-constant-stringable-access.php", 32, "classConstant.nameNotString"),
-    ("dynamic-names", "dynamic-constant-stringable-access.php", 32, "classConstant.nameType"),
-    ("dynamic-names", "dynamic-constant-stringable-access.php", 33, "classConstant.nameNotString"),
-    ("dynamic-names", "dynamic-constant-stringable-access.php", 33, "classConstant.nameType"),
-    ("dynamic-names", "dynamic-constant-stringable-access.php", 38, "classConstant.nameNotString"),
-    ("dynamic-names", "dynamic-constant-stringable-access.php", 38, "classConstant.nameType"),
-    ("dynamic-names", "dynamic-constant-stringable-access.php", 39, "classConstant.nameNotString"),
-    ("dynamic-names", "dynamic-constant-stringable-access.php", 39, "classConstant.nameType"),
+    // The conservative declaration-effects producer does not follow labels/goto or general branches.
+    ("level4-unused", "src/labels.php", 5, "void.pure"),
+    // Arithmetic expression effects and branch joins remain unknown, not proven empty.
+    ("strict-operators", "operators.php", 95, "void.pure"),
+    ("strict-operators", "operators.php", 105, "void.pure"),
+    // First-class callable creation has no declaration-effects producer yet.
+    ("types", "types.php", 72, "void.pure"),
+    // Foreach scope/effect joins remain unported for declaration purity.
+    ("types", "types.php", 281, "void.pure"),
+    // Local class declarations need their own producer, separate from their methods' bodies.
+    ("types-level4", "checks.php", 203, "void.pure"),
 ];
 
 fn check(dir: &Path, neon: &str) -> Result<(), String> {
@@ -118,6 +116,43 @@ fn coverage_fixtures() {
         }
     }
     assert!(failures.is_empty(), "{}", failures.join("\n\n"));
+}
+
+/// The original level-0 rule case must match without consulting or changing its gap allowance.
+#[test]
+fn array_shape_template_key_original_rule_fixture() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/rules");
+    let oracle: Value = serde_json::from_slice(
+        &std::fs::read(root.join("Methods/CallMethodsRuleTest.json")).unwrap(),
+    )
+    .unwrap();
+    let case = oracle["cases"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|case| case["method"] == "testArrayShapeTemplateKey")
+        .unwrap();
+    let data = root.join("data");
+    let paths = case["files"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|file| data.join(file.as_str().unwrap()))
+        .collect();
+    let actual: Vec<_> = pun_analyse::run(&pun_analyse::Project::new(paths, Vec::new()))
+        .unwrap()
+        .into_iter()
+        .map(|error| {
+            serde_json::json!({
+                "file": Path::new(&error.file).strip_prefix(&data).unwrap(),
+                "line": error.line,
+                "identifier": error.identifier,
+                "message": error.message,
+                "tip": error.tip,
+            })
+        })
+        .collect();
+    assert_eq!(serde_json::json!(actual), case["errors"]);
 }
 
 /// A circular class hierarchy stops PHPStan with "Reflection error: Circular reference to class" (no file errors to

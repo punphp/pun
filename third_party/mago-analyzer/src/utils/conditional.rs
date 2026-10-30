@@ -18,6 +18,7 @@ use mago_word::WordSet;
 
 use crate::analyzable::Analyzable;
 use crate::artifacts::AnalysisArtifacts;
+use crate::artifacts::BooleanExpressionScope;
 use crate::assertion::get_class_type_relations;
 use crate::code::IssueCode;
 use crate::context::Context;
@@ -26,6 +27,221 @@ use crate::context::scope::conditional_scope::IfConditionalScope;
 use crate::context::scope::if_scope::IfScope;
 use crate::error::AnalysisError;
 use crate::reconciler::reconcile_keyed_types;
+
+pub(crate) fn boolean_scopes<'a>(
+    expression: &Expression,
+    artifacts: &'a AnalysisArtifacts,
+) -> Option<&'a crate::artifacts::BooleanExpressionScopes> {
+    let expression = crate::utils::misc::unwrap_expression(expression);
+    let span = expression.span();
+    artifacts
+        .boolean_expression_scopes
+        .get(&(span.start.offset, span.end.offset))
+}
+
+/// ExpressionHandler applies the walked result's null-context specification after its scope join.
+pub(crate) fn apply_null_context_specifications<'ctx, A: Arena>(
+    context: &mut Context<'ctx, '_, A>,
+    block_context: &mut BlockContext<'ctx>,
+    artifacts: &AnalysisArtifacts,
+    expression: &Expression,
+) {
+    let clauses = null_context_specifications(context, block_context, artifacts, expression);
+    if clauses.is_empty() {
+        return;
+    }
+    block_context.clauses.extend(clauses.into_iter().map(Rc::new));
+    let clauses =
+        mago_algebra::saturate_shared_clauses(block_context.clauses.clone(), &context.settings.algebra_thresholds());
+    let (assertions, active) = mago_algebra::find_satisfying_assignments_iter(
+        clauses.iter().map(Rc::as_ref),
+        None,
+        &mut WordSet::default(),
+    );
+    let referenced = assertions.keys().copied().collect();
+    block_context
+        .stable_method_calls
+        .extend(assertions.keys().filter(|name| name.as_bytes().ends_with(b"()")).copied());
+    reconcile_keyed_types(
+        context,
+        &assertions,
+        active,
+        block_context,
+        &mut WordSet::default(),
+        &referenced,
+        &expression.span(),
+        true,
+        false,
+    );
+}
+
+fn null_context_specifications<A: Arena>(
+    context: &Context<'_, '_, A>,
+    block_context: &BlockContext<'_>,
+    artifacts: &AnalysisArtifacts,
+    expression: &Expression,
+) -> Vec<mago_algebra::clause::Clause> {
+    let expression = crate::utils::misc::unwrap_expression(expression);
+    match expression {
+        Expression::Binary(binary)
+            if matches!(
+                binary.operator,
+                BinaryOperator::And(_) | BinaryOperator::LowAnd(_) | BinaryOperator::Or(_) | BinaryOperator::LowOr(_)
+            ) =>
+        {
+            let mut left = null_context_specifications(context, block_context, artifacts, binary.lhs);
+            let right = null_context_specifications(context, block_context, artifacts, binary.rhs);
+            if matches!(binary.operator, BinaryOperator::And(_) | BinaryOperator::LowAnd(_)) {
+                // SpecifiedTypes::intersectWith: unconstrained on either side is unconstrained.
+                if left.is_empty() || right.is_empty() {
+                    return vec![];
+                }
+                mago_algebra::disjoin_clauses(left, right, binary.span(), &context.settings.algebra_thresholds())
+            } else {
+                // SpecifiedTypes::unionWith: both operands' specifications hold, even in null context.
+                left.extend(right);
+                left
+            }
+        }
+        Expression::Assignment(assignment) if assignment.operator.is_assign() => {
+            let mut clauses = null_context_specifications(context, block_context, artifacts, assignment.rhs);
+            if let Some(target) =
+                crate::utils::expression::get_block_expression_id(assignment.lhs, context, block_context)
+            {
+                clauses.retain(|clause| !clause.possibilities.contains_key(&target));
+            }
+            clauses
+        }
+        _ => {
+            let span = expression.span();
+            artifacts
+                .null_context_clauses
+                .get(&(span.start.offset, span.end.offset))
+                .cloned()
+                .unwrap_or_default()
+        }
+    }
+}
+
+/// Transfer the actual operand scope after specifications, which must not re-select
+/// a pre-evaluation value when a short-circuiting expression has changed its type.
+pub(crate) fn apply_boolean_branch(
+    expression: &Expression,
+    truthy: bool,
+    artifacts: &AnalysisArtifacts,
+    block_context: &mut BlockContext<'_>,
+) -> WordSet {
+    let mut changed = WordSet::default();
+    if let Some(scopes) = boolean_scopes(expression, artifacts) {
+        let scope = if truthy {
+            &scopes.truthy
+        } else {
+            &scopes.falsey
+        };
+        for (key, value) in &scope.locals {
+            if block_context.locals.get(key) != Some(value) {
+                changed.insert(*key);
+                block_context.locals.insert(*key, Rc::clone(value));
+            }
+        }
+        scope.restore_certainty(block_context);
+        BlockContext::retain_unreconciled_clauses(&mut block_context.clauses, &changed);
+    }
+    changed
+}
+
+pub(crate) fn record_boolean_scopes<'ctx, A: Arena>(
+    context: &mut Context<'ctx, '_, A>,
+    artifacts: &mut AnalysisArtifacts,
+    binary: &mago_syntax::cst::Binary<'_>,
+    left: &BlockContext<'ctx>,
+    right: &BlockContext<'ctx>,
+) -> BooleanExpressionScope {
+    // BooleanAndHandler/BooleanOrHandler join the actual walked scopes. A false &&
+    // (or true ||) can have evaluated either one or both operands.
+    let mut post = left.clone();
+    if let Some(scopes) = boolean_scopes(binary.lhs, artifacts) {
+        post.locals.clone_from(&scopes.post.locals);
+        scopes.post.restore_certainty(&mut post);
+    }
+    let mut right = right.clone();
+    if let Some(scopes) = boolean_scopes(binary.rhs, artifacts) {
+        right.locals.clone_from(&scopes.post.locals);
+        scopes.post.restore_certainty(&mut right);
+    }
+    let operand_scopes = [post.variable_scope(), right.variable_scope()];
+    post.merge_variable_scope_types(&operand_scopes, context.codebase);
+    let expression = Expression::Binary(binary.clone());
+    let is_and = matches!(
+        binary.operator,
+        BinaryOperator::And(_) | BinaryOperator::LowAnd(_)
+    );
+    let branch = |context: &mut Context<'ctx, '_, A>, truthy: bool| {
+        let (subject, mut scope) = if is_and == truthy {
+            (binary.rhs, right.clone())
+        } else {
+            (&expression, post.clone())
+        };
+        let mut clauses = crate::formula::get_formula(
+            subject.span(),
+            subject.span(),
+            subject,
+            context.get_assertion_context_from_block(&scope),
+            artifacts,
+            &context.settings.algebra_thresholds(),
+            context.settings.formula_size_threshold,
+        )
+        .unwrap_or_default();
+        if !truthy {
+            clauses = crate::formula::negate_or_synthesize(
+                clauses,
+                subject,
+                context.get_assertion_context_from_block(&scope),
+                artifacts,
+                &context.settings.algebra_thresholds(),
+                context.settings.formula_size_threshold,
+            );
+        }
+        let (assertions, _) =
+            mago_algebra::find_satisfying_assignments(&clauses, None, &mut WordSet::default());
+        reconcile_keyed_types(
+            context,
+            &assertions,
+            AssertionMap::default(),
+            &mut scope,
+            &mut WordSet::default(),
+            &WordSet::default(),
+            &subject.span(),
+            false,
+            false,
+        );
+        if is_and == truthy {
+            apply_boolean_branch(subject, truthy, artifacts, &mut scope);
+        }
+        BooleanExpressionScope {
+            locals: scope.locals,
+            variable_state: scope.variable_state,
+            variables_possibly_in_scope: scope.variables_possibly_in_scope,
+        }
+    };
+    let truthy = branch(context, true);
+    let falsey = branch(context, false);
+    let post = BooleanExpressionScope {
+        locals: post.locals,
+        variable_state: post.variable_state,
+        variables_possibly_in_scope: post.variables_possibly_in_scope,
+    };
+    let span = binary.span();
+    artifacts.boolean_expression_scopes.insert(
+        (span.start.offset, span.end.offset),
+        crate::artifacts::BooleanExpressionScopes {
+            post: post.clone(),
+            truthy,
+            falsey,
+        },
+    );
+    post
+}
 
 pub(crate) fn analyze<'ctx, 'arena, A>(
     context: &mut Context<'ctx, 'arena, A>,
@@ -38,6 +254,9 @@ pub(crate) fn analyze<'ctx, 'arena, A>(
 where
     A: Arena,
 {
+    if !crate::native::condition_shape(condition, true) {
+        outer_context.native_locals = None;
+    }
     let mut entry_clauses = vec![];
 
     if !if_scope.negated_clauses.is_empty() {
@@ -106,7 +325,7 @@ where
     externally_applied_context.flags.set_inside_conditional(was_inside_conditional);
 
     let if_body_context = if_body_context.unwrap_or_else(|| externally_applied_context.clone());
-    let post_if_context = externally_applied_context.clone();
+    let mut post_if_context = externally_applied_context.clone();
     let mut conditionally_referenced_variable_ids;
     let assigned_in_conditional_variable_ids;
     let newish_var_ids;
@@ -164,6 +383,13 @@ where
         if_body_context
     };
 
+    if let Some(scopes) = boolean_scopes(condition, artifacts) {
+        post_if_context.locals.clone_from(&scopes.post.locals);
+        scopes.post.restore_certainty(&mut post_if_context);
+        externally_applied_context.locals.clone_from(&scopes.post.locals);
+        scopes.post.restore_certainty(externally_applied_context);
+    }
+
     if check_for_paradoxes && let Some(condition_type) = artifacts.get_rc_expression_type(condition) {
         handle_paradoxical_condition(context, condition, condition_type);
     }
@@ -208,6 +434,9 @@ where
     {
         if_body_context.add_class_type_relation(source, target);
     }
+
+    if_body_context.native_locals =
+        crate::native::branch(condition, &post_if_context.native_locals, artifacts, true, context.codebase);
 
     Ok(IfConditionalScope {
         if_body_context,

@@ -550,7 +550,7 @@ impl TAtomic {
         matches!(
             self,
             TAtomic::Callable(_)
-                | TAtomic::Scalar(TScalar::String(_))
+                | TAtomic::Scalar(TScalar::String(_) | TScalar::ClassLikeString(TClassLikeString::LiteralAny))
                 | TAtomic::Array(TArray::List(_) | TArray::Keyed(_))
                 | TAtomic::Object(TObject::Named(_))
         )
@@ -861,6 +861,11 @@ pub fn populate_atomic_type(
         };
     }
 
+    if let TAtomic::Array(array) = unpopulated_atomic
+        && let Some(callable) = array.callable_mut()
+    {
+        populate!(atomic callable);
+    }
     match unpopulated_atomic {
         TAtomic::Array(array) => match array {
             TArray::List(list) => {

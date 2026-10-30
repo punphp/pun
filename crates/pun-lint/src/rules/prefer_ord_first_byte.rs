@@ -51,12 +51,11 @@ impl Rule for PreferOrdFirstByte {
                 return;
             }
             Expression::Literal(Literal::Integer(i)) => {
-                match i.value.and_then(|v| i64::try_from(v).ok()) {
-                    Some(v) if v.to_string().len() == 1 => return,
-                    Some(v) => Some(v),
-                    // Too big for `int`: php-parser reads a float.
-                    None => return,
+                let value = i.value.unwrap();
+                if value.to_string().len() == 1 {
+                    return;
                 }
+                Some(value)
             }
             _ => None,
         };

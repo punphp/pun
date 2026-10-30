@@ -133,21 +133,22 @@ pub(super) fn late(c: &Checker, t: &Type, class: Option<&ClassLikeMetadata>, php
         !scope.starts_with("class ") || class.is_some_and(|k| scope == format!("class {}", declared::original_name(k)))
     };
     match t {
+        Type::LateArrayShape(shape) => go(&shape.resolve()),
         Type::Conditional(cd) => union(vec![go(&cd.then), go(&cd.otherwise)]),
         Type::Template(tt) if !own(&tt.scope) => go(&tt.bound),
         Type::Intersection(ts) => intersect(ts.iter().map(go).collect()),
         // ponytail: a template's OffsetAccessType is not resolved to its bound's offset type
         Type::OffsetAccess(..) => Type::Error,
         // a KeyOfType / ValueOfType of a template, resolved now
-        Type::Object(name, args) if (name == "key-of" || name == "value-of") && args.len() == 1 => {
+        Type::Object(name, args, _) if (name == "key-of" || name == "value-of") && args.len() == 1 => {
             pun_phpstan::resolve::key_or_value_of(&go(&args[0]), name == "value-of")
         }
-        Type::Object(name, args) => Type::Object(c.reflected_name(name.as_bytes()), args.iter().map(go).collect()),
+        Type::Object(name, args, exact) => Type::Object(c.reflected_name(name.as_bytes()), args.iter().map(go).collect(), *exact),
         Type::Static(_, args) if phpdoc && let Some(k) = class => {
             let args = args.iter().map(go).collect();
             let name = c.reflected_name(k.name.as_bytes());
             if k.flags.is_final() || k.kind == SymbolKind::Enum {
-                Type::Object(name, args)
+                Type::Object(name, args, false)
             } else {
                 Type::Static(name, args)
             }
@@ -177,7 +178,7 @@ fn contains_null(t: &Type) -> bool {
 /// `getTemplateType(Generator::class, 'TReturn')`, `None` for ErrorType.
 pub(super) fn generator_return(t: &Type) -> Option<Type> {
     match t {
-        Type::Object(name, args) if name.eq_ignore_ascii_case("Generator") => {
+        Type::Object(name, args, _) if name.eq_ignore_ascii_case("Generator") => {
             Some(args.get(3).cloned().unwrap_or_else(pun_phpstan::types::mixed))
         }
         Type::Never(_) => Some(Type::Never(NeverKind::Implicit)),
@@ -189,6 +190,7 @@ fn check(c: &mut Checker, b: &Block, parent: Span, d: Declared) {
     let ret = d.ret;
     let results = super::flow::Results {
         types: &c.types,
+        call_terminations: Some(&c.call_terminations),
         contents: &c.file.contents,
         codebase: Some(c.codebase),
     };

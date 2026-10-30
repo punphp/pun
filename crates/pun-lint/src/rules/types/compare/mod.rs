@@ -156,7 +156,7 @@ impl RType {
     pub(crate) fn class_name(&self) -> Option<&str> {
         match self {
             RType::Object(o) => o.class_name(),
-            RType::T(Type::Object(n, _) | Type::Static(n, _) | Type::This(n)) => Some(n),
+            RType::T(Type::Object(n, _, _) | Type::Static(n, _) | Type::This(n)) => Some(n),
             _ => None,
         }
     }
@@ -178,12 +178,12 @@ impl RType {
             RType::T(t) => t.clone(),
             RType::Object(o) => match o {
                 Object::Shortened { short, full } => {
-                    Type::Object(if supertype { full } else { short }.clone(), vec![])
+                    Type::Object(if supertype { full } else { short }.clone(), vec![], false)
                 }
                 Object::FullyQualified(n) | Object::NonExisting(n) | Object::SelfObject(n) => {
-                    Type::Object(n.clone(), vec![])
+                    Type::Object(n.clone(), vec![], false)
                 }
-                Object::Aliased { alias, .. } => Type::Object(alias.clone(), vec![]),
+                Object::Aliased { alias, .. } => Type::Object(alias.clone(), vec![], false),
                 Object::SelfStatic(n) => Type::This(n.clone()),
                 Object::ParentStatic(n) => Type::Static(n.clone(), vec![]),
                 Object::ParentWithoutClass => Type::ObjectWithoutClass,
@@ -287,7 +287,7 @@ fn object_equals(o: &Object, b: &RType) -> bool {
     // `$type instanceof self || $type::class === ObjectType::class`
     let self_or_plain = |b: &RType| match b {
         RType::Object(p) => std::mem::discriminant(o) == std::mem::discriminant(p),
-        RType::T(Type::Object(_, args)) => args.is_empty(),
+        RType::T(Type::Object(_, args, _)) => args.is_empty(),
         _ => false,
     };
     match o {
@@ -333,7 +333,7 @@ pub(crate) fn type_hash(t: &RType) -> String {
             type_hash(&RType::T((**key).clone())),
             value.describe(Level::Precise)
         ),
-        RType::T(Type::Object(_, args)) if !args.is_empty() => t.to_sub().describe(Level::Precise),
+        RType::T(Type::Object(_, args, _)) if !args.is_empty() => t.to_sub().describe(Level::Precise),
         RType::Object(Object::Shortened { full, .. } | Object::Aliased { full, .. }) => {
             full.clone()
         }
@@ -341,7 +341,7 @@ pub(crate) fn type_hash(t: &RType) -> String {
             o.class_name().unwrap_or_default().to_string()
         }
         RType::T(
-            Type::Object(n, _) | Type::Static(n, _) | Type::This(n) | Type::EnumCase(n, _),
+            Type::Object(n, _, _) | Type::Static(n, _) | Type::This(n) | Type::EnumCase(n, _),
         ) => n.clone(),
         RType::T(Type::Closure(_)) => "Closure".to_string(),
         _ if is_constant_value(t) => php_class(t).to_string(),
@@ -354,7 +354,7 @@ pub(crate) fn type_hash(t: &RType) -> String {
 fn normalized(t: &RType) -> Type {
     fn plain(t: &Type) -> Type {
         match t {
-            Type::Object(n, args) if args.is_empty() && n != "Iterator" && n != "iterable" => {
+            Type::Object(n, args, _) if args.is_empty() && n != "Iterator" && n != "iterable" => {
                 t.clone()
             }
             _ => t.traverse(&plain),
@@ -363,7 +363,7 @@ fn normalized(t: &RType) -> Type {
     match t {
         RType::T(t) => plain(t),
         RType::Object(Object::Shortened { full, .. } | Object::Aliased { full, .. }) => {
-            Type::Object(full.clone(), vec![])
+            Type::Object(full.clone(), vec![], false)
         }
         RType::Object(_) => plain(&t.to_sub()),
         RType::Union(types) => {
@@ -437,7 +437,7 @@ fn php_class(t: &RType) -> &'static str {
             Type::Accessory(_) => "AccessoryType",
             Type::Array(..) => "ArrayType",
             Type::ConstArray(_) => "ConstantArrayType",
-            Type::Object(_, args) if args.is_empty() => "ObjectType",
+            Type::Object(_, args, _) if args.is_empty() => "ObjectType",
             Type::Object(..) => "GenericObjectType",
             Type::ObjectWithoutClass => "ObjectWithoutClassType",
             Type::Static(..) => "StaticType",

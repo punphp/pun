@@ -1,0 +1,10 @@
+{
+  "empty": "class ScanBefore { public int $p {} } function scanFunction() {} const SCAN_CONSTANT = 1; class ScanAfter {}",
+  "unknown": "class ScanBefore { public int $p { WoOf => 1; } } function scanFunction() {} const SCAN_CONSTANT = 1; class ScanAfter {}",
+  "get-parameters": "class ScanBefore { public int $p { get() => 1; } } function scanFunction() {} const SCAN_CONSTANT = 1; class ScanAfter {}",
+  "promoted-empty": "class ScanBefore { function __construct(public int $p {}) {} } function scanFunction() {} const SCAN_CONSTANT = 1; class ScanAfter {}",
+  "promoted-unknown": "class ScanBefore { function __construct(public int $p { MeOw => 1; }) {} } function scanFunction() {} const SCAN_CONSTANT = 1; class ScanAfter {}",
+  "promoted-get-parameters": "class ScanBefore { function __construct(public int $p { get() => 1; }) {} } function scanFunction() {} const SCAN_CONSTANT = 1; class ScanAfter {}",
+  "positive-get-set": "class ScanBefore { public int $p { GET => 1; SET(int $value) {} } } function scanFunction() {} const SCAN_CONSTANT = 1; class ScanAfter {}",
+  "positive-promoted": "class ScanBefore { function __construct(public int $p = 1 { get => 1; }) {} } function scanFunction() {} const SCAN_CONSTANT = 1; class ScanAfter {}"
+}

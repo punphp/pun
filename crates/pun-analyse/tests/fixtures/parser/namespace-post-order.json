@@ -1,0 +1,6 @@
+{
+  "placement-and-outside": "<?php\nfunction before(void $value) {}\nnamespace OrderOuter {\n    namespace OrderInner {\n        function inner(void $value) {}\n    }\n}\nfunction after(void $value) {}\n#[\\self] class ResolverError {}\n",
+  "mixed-suppression": "<?php\nfunction before(void $value) {}\nnamespace OrderMixedOuter {\n    namespace OrderMixedInner {}\n}\nfunction outside(void $value) {}\nnamespace OrderMixedSemi;\nfunction last(void $value) {}\nnamespace OrderMixedLast {}\n",
+  "outside-attributed-values": "<?php\nnamespace OrderAttributes {}\n#[\\self]\nconst A = new class { function first(void $value) {} }, B = 2;\n#[\\self]\nfunction after(void $value) {}\n",
+  "body-before-postprocessing": "<?php\necho 1;\nnamespace OrderBody { try {} }\necho 2;\nnamespace OrderBodyAgain { function bad(void $value) {} }\n"
+}

@@ -89,7 +89,7 @@ impl Rule for PreferSpecificReturnType {
                 return;
             }
             let generic = info.as_ref().and_then(|i| i.return_tag()).is_some_and(|tag| {
-                matches!(DocTarget::doc_type(tag, ancestors, class.as_deref()), Type::Object(_, args) if !args.is_empty())
+                matches!(DocTarget::doc_type(tag, ancestors, class.as_deref()), Type::Object(_, args, _) if !args.is_empty())
             });
             if generic {
                 return;
@@ -119,7 +119,7 @@ impl Rule for PreferSpecificReturnType {
                 let old = type_scope.map_doc(parsed);
                 old.is_object_type()
                     && old.class_name().is_some()
-                    && are_types_equal(&old, &RType::T(Type::Object(actual.clone(), vec![])))
+                    && are_types_equal(&old, &RType::T(Type::Object(actual.clone(), vec![], false)))
             });
             if !same {
                 info.set_return_type(TypeNode::Identifier(format!("\\{actual}")));

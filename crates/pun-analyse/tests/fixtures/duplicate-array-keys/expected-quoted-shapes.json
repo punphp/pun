@@ -1,0 +1,212 @@
+{
+    "shapes": {
+        "binary": [
+            [
+                [
+                    "string",
+                    "efbfbd"
+                ],
+                "7265706c6163656d656e74"
+            ],
+            [
+                [
+                    "string",
+                    "fe"
+                ],
+                "6665"
+            ],
+            [
+                [
+                    "string",
+                    "ff"
+                ],
+                "6666"
+            ]
+        ],
+        "quotes": [
+            [
+                [
+                    "string",
+                    "0a"
+                ],
+                "6e65776c696e65"
+            ],
+            [
+                [
+                    "string",
+                    "5c6e"
+                ],
+                "736c617368"
+            ],
+            [
+                [
+                    "string",
+                    "5c786666"
+                ],
+                "73696e676c65"
+            ],
+            [
+                [
+                    "string",
+                    "ff"
+                ],
+                "646f75626c65"
+            ]
+        ],
+        "equal": [
+            [
+                [
+                    "string",
+                    "61"
+                ],
+                "6c617374"
+            ]
+        ],
+        "numeric": [
+            [
+                [
+                    "int",
+                    0
+                ],
+                "7a65726f"
+            ],
+            [
+                [
+                    "int",
+                    1
+                ],
+                "696e7465676572"
+            ],
+            [
+                [
+                    "string",
+                    "3031"
+                ],
+                "6c656164696e67"
+            ],
+            [
+                [
+                    "string",
+                    "5c783331"
+                ],
+                "73696e676c65"
+            ],
+            [
+                [
+                    "string",
+                    "6e616d65"
+                ],
+                "62617265"
+            ]
+        ],
+        "ascii": [
+            [
+                [
+                    "string",
+                    "61"
+                ],
+                "65736361706564"
+            ],
+            [
+                [
+                    "string",
+                    "6c6162656c"
+                ],
+                "62617265"
+            ]
+        ]
+    },
+    "errors": [
+        {
+            "line": 8,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value '\ufffd' ('\ufffd', \"\\xff\").",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 9,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value '\ufffd' ('\ufffd', \"\\xfe\").",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 10,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value '\ufffd' ('\ufffd', \"\ufffd\").",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 16,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value '\\\\xff' ('\\\\xff', '\\xff').",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 17,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value '\ufffd' ('\ufffd', \"\\xff\").",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 23,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value 'a' ('a', 'a').",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 29,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value 2 (2, 2).",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 30,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value '01' ('01', '01').",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 31,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value 'name' ('name', 'name').",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 37,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value '\ufffd' ($key, \"\\xff\").",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 44,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value '\ufffd' ($key, \"\\xfe\").",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 51,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value 1 (1, 1).",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 57,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value 'a' ('a', 'a').",
+            "tip": null,
+            "ignorable": true
+        }
+    ]
+}

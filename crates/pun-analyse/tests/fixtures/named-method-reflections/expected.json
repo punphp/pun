@@ -1,0 +1,1584 @@
+{
+    "intersection-4": [],
+    "intersection-5": [
+        {
+            "file": "$ROOT/intersection.php",
+            "message": "Call to AuditVariants\\HasSet::set() uses named argument for parameter $year, but AuditVariants\\Renamed renames it to $renamed.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "union-4": [
+        {
+            "file": "$ROOT/union.php",
+            "message": "Unknown parameter $extra in call to method ArrayObject<(int|string),mixed>::offsetSet().",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        }
+    ],
+    "union-5": [
+        {
+            "file": "$ROOT/union.php",
+            "message": "Call to AuditCombined\\User::offsetSet() uses named argument for parameter $key, but AuditCombined\\Renamed renames it to $renamed.",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/union.php",
+            "message": "Call to AuditCombined\\User::offsetSet() uses named argument for parameter $key, but AuditCombined\\Renamed renames it to $renamed.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/union.php",
+            "message": "Unknown parameter $extra in call to method ArrayObject<(int|string),mixed>::offsetSet().",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/union.php",
+            "message": "Call to ArrayObject::offsetSet() uses named argument for parameter $key, but AuditCombined\\RenamedArray renames it to $renamed.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "structural-4": [
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left|right (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $left in call to method CompoundBinding\\Wide::run().",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $right|left (mixed) in call to method CompoundBinding\\Narrow::run().",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $right in call to method CompoundBinding\\Narrow::run().",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Method CompoundBinding\\Wide::run() invoked with 0 parameters, 1-2 required.",
+            "line": 19,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Method CompoundBinding\\Narrow::run() invoked with 3 parameters, 1-2 required.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $right in call to method CompoundBinding\\Wide::run().",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $right in call to method CompoundBinding\\Wide::run().",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Argument for parameter $left|right has already been passed.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Argument for parameter $left has already been passed.",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left|right (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $bogus in call to method CompoundBinding\\Wide::run().",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Call to private method run() of class CompoundBinding\\Open.",
+            "line": 66,
+            "ignorable": true,
+            "identifier": "method.private"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Call to private method run() of class CompoundBinding\\Hidden.",
+            "line": 67,
+            "ignorable": true,
+            "identifier": "method.private"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Call to protected method run() of class CompoundBinding\\Open.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "method.protected"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $value (int|string) in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 109,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $extra in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 109,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $value (int|string) in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 110,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $extra in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 110,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left|right (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 124,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $left in call to method CompoundBinding\\Wide::run().",
+            "line": 124,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 125,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $right in call to method CompoundBinding\\Wide::run().",
+            "line": 125,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $value (int|string) in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 128,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $extra in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 128,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left|right (mixed) in call to method CompoundBinding\\Wide::RUN().",
+            "line": 136,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $extra in call to method CompoundBinding\\Wide::RUN().",
+            "line": 136,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        }
+    ],
+    "structural-5": [
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left|right (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $left in call to method CompoundBinding\\Wide::run().",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $right|left (mixed) in call to method CompoundBinding\\Narrow::run().",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $right in call to method CompoundBinding\\Narrow::run().",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Method CompoundBinding\\Wide::run() invoked with 0 parameters, 1-2 required.",
+            "line": 19,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Method CompoundBinding\\Narrow::run() invoked with 3 parameters, 1-2 required.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $right in call to method CompoundBinding\\Wide::run().",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $right in call to method CompoundBinding\\Wide::run().",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Argument for parameter $left|right has already been passed.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Argument for parameter $left has already been passed.",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left|right (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $bogus in call to method CompoundBinding\\Wide::run().",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Call to private method run() of class CompoundBinding\\Open.",
+            "line": 66,
+            "ignorable": true,
+            "identifier": "method.private"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Call to private method run() of class CompoundBinding\\Hidden.",
+            "line": 67,
+            "ignorable": true,
+            "identifier": "method.private"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Call to protected method run() of class CompoundBinding\\Open.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "method.protected"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Method CompoundBinding\\Open::run() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 81,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Method CompoundBinding\\Closed::run() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 82,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $value (int|string) in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 109,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $extra in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 109,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $value (int|string) in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 110,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $extra in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 110,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left|right (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 124,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $left in call to method CompoundBinding\\Wide::run().",
+            "line": 124,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 125,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $right in call to method CompoundBinding\\Wide::run().",
+            "line": 125,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $value (int|string) in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 128,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $extra in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 128,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left|right (mixed) in call to method CompoundBinding\\Wide::RUN().",
+            "line": 136,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $extra in call to method CompoundBinding\\Wide::RUN().",
+            "line": 136,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Parameter #1 $newThis of method Closure::bindTo() expects stdClass, CompoundBinding\\Text given.",
+            "line": 143,
+            "ignorable": true,
+            "identifier": "argument.type"
+        }
+    ],
+    "structural-8": [
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left|right (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $left in call to method CompoundBinding\\Wide::run().",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $right|left (mixed) in call to method CompoundBinding\\Narrow::run().",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $right in call to method CompoundBinding\\Narrow::run().",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Method CompoundBinding\\Wide::run() invoked with 0 parameters, 1-2 required.",
+            "line": 19,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Method CompoundBinding\\Narrow::run() invoked with 3 parameters, 1-2 required.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $right in call to method CompoundBinding\\Wide::run().",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $right in call to method CompoundBinding\\Wide::run().",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Argument for parameter $left|right has already been passed.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Argument for parameter $left has already been passed.",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left|right (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $bogus in call to method CompoundBinding\\Wide::run().",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Call to private method run() of class CompoundBinding\\Open.",
+            "line": 66,
+            "ignorable": true,
+            "identifier": "method.private"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Call to private method run() of class CompoundBinding\\Hidden.",
+            "line": 67,
+            "ignorable": true,
+            "identifier": "method.private"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Call to protected method run() of class CompoundBinding\\Open.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "method.protected"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Method CompoundBinding\\Open::run() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 81,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Method CompoundBinding\\Closed::run() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 82,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $value (int|string) in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 109,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $extra in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 109,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $value (int|string) in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 110,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $extra in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 110,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left|right (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 124,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $left in call to method CompoundBinding\\Wide::run().",
+            "line": 124,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 125,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $right in call to method CompoundBinding\\Wide::run().",
+            "line": 125,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $value (int|string) in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 128,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $extra in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 128,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left|right (mixed) in call to method CompoundBinding\\Wide::RUN().",
+            "line": 136,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $extra in call to method CompoundBinding\\Wide::RUN().",
+            "line": 136,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Parameter #1 $newThis of method Closure::bindTo() expects stdClass, CompoundBinding\\Text given.",
+            "line": 143,
+            "ignorable": true,
+            "identifier": "argument.type"
+        }
+    ],
+    "structural-5-TT": [
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left|right (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $left in call to method CompoundBinding\\Wide::run().",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $right|left (mixed) in call to method CompoundBinding\\Narrow::run().",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $right in call to method CompoundBinding\\Narrow::run().",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Method CompoundBinding\\Wide::run() invoked with 0 parameters, 1-2 required.",
+            "line": 19,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Method CompoundBinding\\Narrow::run() invoked with 3 parameters, 1-2 required.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $right in call to method CompoundBinding\\Wide::run().",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $right in call to method CompoundBinding\\Wide::run().",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Argument for parameter $left|right has already been passed.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Argument for parameter $left has already been passed.",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left|right (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $bogus in call to method CompoundBinding\\Wide::run().",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Call to private method run() of class CompoundBinding\\Open.",
+            "line": 66,
+            "ignorable": true,
+            "identifier": "method.private"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Call to private method run() of class CompoundBinding\\Hidden.",
+            "line": 67,
+            "ignorable": true,
+            "identifier": "method.private"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Call to protected method run() of class CompoundBinding\\Open.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "method.protected"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Method CompoundBinding\\Open::run() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 81,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Method CompoundBinding\\Closed::run() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 82,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $value (int|string) in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 109,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $extra in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 109,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $value (int|string) in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 110,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $extra in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 110,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left|right (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 124,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $left in call to method CompoundBinding\\Wide::run().",
+            "line": 124,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 125,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $right in call to method CompoundBinding\\Wide::run().",
+            "line": 125,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $value (int|string) in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 128,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $extra in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 128,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left|right (mixed) in call to method CompoundBinding\\Wide::RUN().",
+            "line": 136,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $extra in call to method CompoundBinding\\Wide::RUN().",
+            "line": 136,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Parameter #1 $newThis of method Closure::bindTo() expects stdClass, CompoundBinding\\Text given.",
+            "line": 143,
+            "ignorable": true,
+            "identifier": "argument.type"
+        }
+    ],
+    "structural-5-TF": [
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left|right (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $left in call to method CompoundBinding\\Wide::run().",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $right|left (mixed) in call to method CompoundBinding\\Narrow::run().",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $right in call to method CompoundBinding\\Narrow::run().",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Method CompoundBinding\\Wide::run() invoked with 0 parameters, 1-2 required.",
+            "line": 19,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Method CompoundBinding\\Narrow::run() invoked with 3 parameters, 1-2 required.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $right in call to method CompoundBinding\\Wide::run().",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $right in call to method CompoundBinding\\Wide::run().",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Argument for parameter $left|right has already been passed.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Argument for parameter $left has already been passed.",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left|right (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $bogus in call to method CompoundBinding\\Wide::run().",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Call to private method run() of class CompoundBinding\\Open.",
+            "line": 66,
+            "ignorable": true,
+            "identifier": "method.private"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Call to private method run() of class CompoundBinding\\Hidden.",
+            "line": 67,
+            "ignorable": true,
+            "identifier": "method.private"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Call to protected method run() of class CompoundBinding\\Open.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "method.protected"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Method CompoundBinding\\Open::run() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 81,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Method CompoundBinding\\Closed::run() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 82,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $value (int|string) in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 109,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $extra in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 109,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $value (int|string) in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 110,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $extra in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 110,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left|right (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 124,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $left in call to method CompoundBinding\\Wide::run().",
+            "line": 124,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 125,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $right in call to method CompoundBinding\\Wide::run().",
+            "line": 125,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $value (int|string) in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 128,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $extra in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 128,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left|right (mixed) in call to method CompoundBinding\\Wide::RUN().",
+            "line": 136,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $extra in call to method CompoundBinding\\Wide::RUN().",
+            "line": 136,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Parameter #1 $newThis of method Closure::bindTo() expects stdClass, CompoundBinding\\Text given.",
+            "line": 143,
+            "ignorable": true,
+            "identifier": "argument.type"
+        }
+    ],
+    "structural-5-FT": [
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left|right (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $left in call to method CompoundBinding\\Wide::run().",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $right|left (mixed) in call to method CompoundBinding\\Narrow::run().",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $right in call to method CompoundBinding\\Narrow::run().",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Method CompoundBinding\\Wide::run() invoked with 0 parameters, 1-2 required.",
+            "line": 19,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Method CompoundBinding\\Narrow::run() invoked with 3 parameters, 1-2 required.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $right in call to method CompoundBinding\\Wide::run().",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $right in call to method CompoundBinding\\Wide::run().",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Argument for parameter $left|right has already been passed.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Argument for parameter $left has already been passed.",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left|right (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $bogus in call to method CompoundBinding\\Wide::run().",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Call to private method run() of class CompoundBinding\\Open.",
+            "line": 66,
+            "ignorable": true,
+            "identifier": "method.private"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Call to private method run() of class CompoundBinding\\Hidden.",
+            "line": 67,
+            "ignorable": true,
+            "identifier": "method.private"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Call to protected method run() of class CompoundBinding\\Open.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "method.protected"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Method CompoundBinding\\Open::run() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 81,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Method CompoundBinding\\Closed::run() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 82,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $value (int|string) in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 109,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $extra in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 109,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $value (int|string) in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 110,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $extra in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 110,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left|right (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 124,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $left in call to method CompoundBinding\\Wide::run().",
+            "line": 124,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 125,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $right in call to method CompoundBinding\\Wide::run().",
+            "line": 125,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $value (int|string) in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 128,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $extra in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 128,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left|right (mixed) in call to method CompoundBinding\\Wide::RUN().",
+            "line": 136,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $extra in call to method CompoundBinding\\Wide::RUN().",
+            "line": 136,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        }
+    ],
+    "structural-5-FF": [
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left|right (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $left in call to method CompoundBinding\\Wide::run().",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $right|left (mixed) in call to method CompoundBinding\\Narrow::run().",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $right in call to method CompoundBinding\\Narrow::run().",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Method CompoundBinding\\Wide::run() invoked with 0 parameters, 1-2 required.",
+            "line": 19,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Method CompoundBinding\\Narrow::run() invoked with 3 parameters, 1-2 required.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $right in call to method CompoundBinding\\Wide::run().",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $right in call to method CompoundBinding\\Wide::run().",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Argument for parameter $left|right has already been passed.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Argument for parameter $left has already been passed.",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.duplicate"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left|right (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $bogus in call to method CompoundBinding\\Wide::run().",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Call to private method run() of class CompoundBinding\\Open.",
+            "line": 66,
+            "ignorable": true,
+            "identifier": "method.private"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Call to private method run() of class CompoundBinding\\Hidden.",
+            "line": 67,
+            "ignorable": true,
+            "identifier": "method.private"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Call to protected method run() of class CompoundBinding\\Open.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "method.protected"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $value (int|string) in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 109,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $extra in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 109,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $value (int|string) in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 110,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $extra in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 110,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left|right (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 124,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $left in call to method CompoundBinding\\Wide::run().",
+            "line": 124,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left (mixed) in call to method CompoundBinding\\Wide::run().",
+            "line": 125,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $right in call to method CompoundBinding\\Wide::run().",
+            "line": 125,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $value (int|string) in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 128,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $extra in call to method CompoundBinding\\Generic<int>::run().",
+            "line": 128,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Missing parameter $left|right (mixed) in call to method CompoundBinding\\Wide::RUN().",
+            "line": 136,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/structural.php",
+            "message": "Unknown parameter $extra in call to method CompoundBinding\\Wide::RUN().",
+            "line": 136,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        }
+    ]
+}

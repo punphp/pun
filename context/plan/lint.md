@@ -447,14 +447,19 @@ Lint 7 dead-code class-method rules (2026-10-26; `no-empty-method`, `no-unused-p
   parses the trait's file again (`Facts::source_of`), as Rector's `AstResolver` does. The CLI scans the project for
   these rules as for every rule that reads facts (`facts::set_project_scan`), so parents, interfaces and traits in
   other files count.
-- **Assistant's call: Mago's `mixed` is PHPStan's implicit one.** A call through a fluent `$this` chain keeps its
-  method even after a method declared `: mixed`, as the oracle shows. PHPStan's `ArrayMapArgVisitor` stores a list
-  where `isInArrayMap` asks for one `Arg`, so that check never matches upstream and is left out (oracle: a private
-  method named in `array_map([$x, 'm'], ...)` goes).
+- **Assistant's call: only the fluent-call fallback treats `mixed` as implicit.** Rector 2.6.1 on PHPStan 2.2.7 keeps
+  calls through a fluent `$this` chain after a method declared `: mixed` or documented `@return mixed`.
+  Explicit-mixed variables, documented receivers of another class, and nullsafe roots do not enter this fallback
+  (`Oracle/mixed_receivers.php.inc`). The global mixed filter and native type contracts are unchanged.
+  PHPStan's `ArrayMapArgVisitor` stores a list where `isInArrayMap` asks for one `Arg`, so that check never matches
+  upstream and is left out (oracle: a private method named in `array_map([$x, 'm'], ...)` goes).
 - **Matched the oracle where it surprises:** `no-unused-private-method` leaves a class that declares a named class in a
-  method body alone; in `no-empty-method`, `self::class` inside such a nested class is the outer class; a `never`
-  return type never matches in `no-useless-override`; a constant argument `FOO` equals a parent default `'FOO'` in
-  `no-redundant-default-argument` (`ValueResolver` gives an unknown constant's name).
+  method body alone; a `never` return type never matches in `no-useless-override`; a constant argument `FOO` equals
+  a parent default `'FOO'` in `no-redundant-default-argument` (`ValueResolver` gives an unknown constant's name).
+- **Fresh oracle boundary (2026-10-27):** 26 of the 27 additional captures match Rector's bytes, including the mixed
+  fluent receivers. `RemoveEmptyClassMethodRector/Oracle/nested_named_class.php.inc` remains unchanged, but Rector
+  exits 1 with a class-parent resolution error. That capture is not verified oracle parity. The project-level CLI
+  regression matches a separate successful Rector run with all five rules and an external parent and trait.
 - **Known differences, left for later:** union types in `no-useless-override` and `no-useless-constructor` count as
   different (PHPStan prints its own order), and intersections compare in declared order; a default or argument that is a
   non-empty array or a class constant is not read by `no-redundant-default-argument` and

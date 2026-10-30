@@ -1,0 +1,362 @@
+[
+    [
+        "receivers.php",
+        10,
+        "property.uninitializedReadonly",
+        "Class ReceiverInvalidation\\Box has an uninitialized readonly property $fixed. Assign it in the constructor.",
+        null,
+        true
+    ],
+    [
+        "receivers.php",
+        35,
+        "phpstan.dumpType",
+        "Dumped type: int|null",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        36,
+        "phpstan.dumpType",
+        "Dumped type: int",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        40,
+        "phpstan.dumpType",
+        "Dumped type: int",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        44,
+        "phpstan.dumpType",
+        "Dumped type: int",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        48,
+        "phpstan.dumpType",
+        "Dumped type: int|null",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        52,
+        "phpstan.dumpType",
+        "Dumped type: int",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        56,
+        "phpstan.dumpType",
+        "Dumped type: int",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        71,
+        "phpstan.dumpType",
+        "Dumped type: int|null",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        75,
+        "phpstan.dumpType",
+        "Dumped type: int",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        79,
+        "phpstan.dumpType",
+        "Dumped type: int|null",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        88,
+        "phpstan.dumpType",
+        "Dumped type: int|null",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        89,
+        "phpstan.dumpType",
+        "Dumped type: int",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        96,
+        "property.uninitializedReadonly",
+        "Class ReceiverInvalidation\\Wrapper has an uninitialized readonly property $fixed. Assign it in the constructor.",
+        null,
+        true
+    ],
+    [
+        "receivers.php",
+        103,
+        "phpstan.dumpType",
+        "Dumped type: int|null",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        104,
+        "phpstan.dumpType",
+        "Dumped type: ReceiverInvalidation\\Box",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        108,
+        "phpstan.dumpType",
+        "Dumped type: int|null",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        109,
+        "phpstan.dumpType",
+        "Dumped type: ReceiverInvalidation\\Box",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        119,
+        "phpstan.dumpType",
+        "Dumped type: int",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        120,
+        "phpstan.dumpType",
+        "Dumped type: int|null",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        143,
+        "phpstan.dumpType",
+        "Dumped type: int|null",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        147,
+        "phpstan.dumpType",
+        "Dumped type: int",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        151,
+        "phpstan.dumpType",
+        "Dumped type: int|null",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        165,
+        "phpstan.dumpType",
+        "Dumped type: int|null",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        175,
+        "phpstan.dumpType",
+        "Dumped type: int|null",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        190,
+        "phpstan.dumpType",
+        "Dumped type: int",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        194,
+        "phpstan.dumpType",
+        "Dumped type: int|null",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        214,
+        "phpstan.dumpType",
+        "Dumped type: int",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        218,
+        "phpstan.dumpType",
+        "Dumped type: int|null",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        233,
+        "phpstan.dumpType",
+        "Dumped type: int",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        237,
+        "phpstan.dumpType",
+        "Dumped type: int",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        241,
+        "phpstan.dumpType",
+        "Dumped type: int",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        252,
+        "phpstan.dumpType",
+        "Dumped type: 'bar'|'foo'",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        282,
+        "phpstan.dumpType",
+        "Dumped type: int",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        286,
+        "phpstan.dumpType",
+        "Dumped type: int|null",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        290,
+        "phpstan.dumpType",
+        "Dumped type: int",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        294,
+        "phpstan.dumpType",
+        "Dumped type: int|null",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        298,
+        "phpstan.dumpType",
+        "Dumped type: int",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        302,
+        "phpstan.dumpType",
+        "Dumped type: int|null",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        313,
+        "phpstan.dumpType",
+        "Dumped type: int|null",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        325,
+        "phpstan.dumpType",
+        "Dumped type: 'bar'|'foo'",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        335,
+        "phpstan.dumpType",
+        "Dumped type: 'bar'|'foo'",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        349,
+        "phpstan.dumpType",
+        "Dumped type: int",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        364,
+        "phpstan.dumpType",
+        "Dumped type: int",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        365,
+        "phpstan.dumpType",
+        "Dumped type: int|null",
+        null,
+        false
+    ]
+]

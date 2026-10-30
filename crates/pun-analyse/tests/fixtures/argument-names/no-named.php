@@ -150,3 +150,71 @@ function unionCallable(bool $flag): void
     $callback = $flag ? __NAMESPACE__ . '\\forbidden' : __NAMESPACE__ . '\\allowed';
     $callback(value: 1);
 }
+
+// Invoked first-class method callables retain the overriding method's inherited PHPDoc policy.
+$callback = $child->instance(...);
+$callback(value: 1);
+$callback(1);
+// A parent's class-only tag still does not prohibit the child's overriding method callable.
+$callback = (new UntaggedChild())->instance(...);
+$callback(value: 1);
+$callback(1);
+
+trait CallableRequirements
+{
+    /** @no-named-arguments */
+    abstract public function required(int $value = 0): void;
+    abstract public function untagged(int $value = 0): void;
+    /** @return void */
+    abstract public function documented(int $value = 0): void;
+    /** @no-named-arguments */
+    public function concrete(int $value = 0): void {}
+}
+class CallableTraitImplementation
+{
+    use CallableRequirements;
+
+    /** @return void */
+    public function required(int $value = 0): void {}
+    public function untagged(int $value = 0): void {}
+    public function documented(int $value = 0): void {}
+    public function concrete(int $value = 0): void {}
+}
+$requirements = new CallableTraitImplementation();
+$callback = $requirements->required(...);
+$callback(value: 1);
+$callback(1);
+// Neither an untagged abstract requirement nor an overridden concrete trait method forbids names.
+$callback = $requirements->untagged(...);
+$callback(value: 1);
+$callback = $requirements->documented(...);
+$callback(value: 1);
+$callback = $requirements->concrete(...);
+$callback(value: 1);
+
+interface CallableRoot
+{
+    public function run(int $value = 0): void;
+}
+interface CallableLeft extends CallableRoot {}
+interface CallableRight extends CallableRoot {}
+interface CallableForbidden
+{
+    /** @no-named-arguments */
+    public function run(int $value = 0): void;
+}
+class CallableDiamond implements CallableLeft, CallableRight, CallableForbidden
+{
+    public function run(int $value = 0): void {}
+}
+class CallableAllowedDiamond implements CallableLeft, CallableRight
+{
+    public function run(int $value = 0): void {}
+}
+// Revisiting Root through Right must not hide the later Forbidden interface's policy.
+$callback = (new CallableDiamond())->run(...);
+$callback(value: 1);
+$callback(1);
+$callback = (new CallableAllowedDiamond())->run(...);
+$callback(value: 1);
+$callback(1);

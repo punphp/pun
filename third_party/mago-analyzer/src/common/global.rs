@@ -68,6 +68,7 @@ std::thread_local! {
                 parameters: Some((Arc::new(get_non_empty_string()), Arc::new(get_mixed()))),
                 non_empty: true,
                 known_non_list: false,
+                callable: None,
             })))
         }));
 
@@ -221,6 +222,7 @@ std::thread_local! {
                 parameters: Some((Arc::new(get_non_empty_string()), Arc::new(get_string()))),
                 non_empty: true,
                 known_non_list: false,
+                callable: None,
             })))
         }));
 
@@ -257,14 +259,17 @@ std::thread_local! {
                 parameters: Some((Arc::new(get_non_empty_string()), Arc::new(get_string()))),
                 non_empty: true,
                 known_non_list: false,
+                callable: None,
             })))
         }));
 
         map.insert(word("$_FILES"), Rc::new(TUnion::from_atomic(TAtomic::Array(TArray::Keyed(TKeyedArray {
+            callable: None,
             known_items: None,
             parameters: Some((
                 Arc::new(get_non_empty_string()),
                 Arc::new(TUnion::from_atomic(TAtomic::Array(TArray::Keyed(TKeyedArray {
+                    callable: None,
                     known_items: Some(BTreeMap::from([
                         (
                             ArrayKey::String(word("name")),

@@ -7,9 +7,9 @@ use mago_syntax::cst::{Access, Expression, Literal, Node, NodeKind};
 
 use super::declare::{return_declaration, union_order};
 use super::facts::facts;
-use super::native::native_type;
 use super::silent_void::Place;
 use super::{add_return_type, class_scope, has_only_return_with_expr, returns_scoped, untyped};
+use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
 
 pub struct AddReturnTypeFromConstant;
@@ -56,7 +56,8 @@ impl Rule for AddReturnTypeFromConstant {
             ) {
                 return;
             }
-            let Some(t) = native_type(&facts, value) else {
+            // Rector's matchAlwaysReturnConstFetch reads getType(), including a constant's @var declaration.
+            let Some(t) = facts.full_type(node_span(value)) else {
                 return;
             };
             types.extend(union_order(t.types.as_ref()));

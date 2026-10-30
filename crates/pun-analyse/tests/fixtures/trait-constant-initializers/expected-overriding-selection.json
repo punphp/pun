@@ -1,0 +1,254 @@
+{
+    "totals": {
+        "errors": 0,
+        "file_errors": 30
+    },
+    "files": {
+        "trait-constant-initializers/overriding-selection.php": {
+            "messages": [
+                {
+                    "message": "Cannot redeclare constant SelectedConstantOverrides\\LastPublic::VALUE.",
+                    "line": 9,
+                    "ignorable": false,
+                    "identifier": "class.duplicateConstant",
+                    "tip": null
+                },
+                {
+                    "message": "Private constant SelectedConstantOverrides\\LastPrivate::VALUE overriding public constant SelectedConstantOverrides\\PublicParent::VALUE should also be public.",
+                    "line": 12,
+                    "ignorable": false,
+                    "identifier": "classConstant.visibility",
+                    "tip": null
+                },
+                {
+                    "message": "Cannot redeclare constant SelectedConstantOverrides\\LastPrivate::VALUE.",
+                    "line": 13,
+                    "ignorable": false,
+                    "identifier": "class.duplicateConstant",
+                    "tip": null
+                },
+                {
+                    "message": "Private constant SelectedConstantOverrides\\LastPrivate::VALUE overriding public constant SelectedConstantOverrides\\PublicParent::VALUE should also be public.",
+                    "line": 13,
+                    "ignorable": false,
+                    "identifier": "classConstant.visibility",
+                    "tip": null
+                },
+                {
+                    "message": "Protected constant SelectedConstantOverrides\\LastProtected::VALUE overriding public constant SelectedConstantOverrides\\PublicParent::VALUE should also be public.",
+                    "line": 16,
+                    "ignorable": false,
+                    "identifier": "classConstant.visibility",
+                    "tip": null
+                },
+                {
+                    "message": "Cannot redeclare constant SelectedConstantOverrides\\LastProtected::VALUE.",
+                    "line": 17,
+                    "ignorable": false,
+                    "identifier": "class.duplicateConstant",
+                    "tip": null
+                },
+                {
+                    "message": "Protected constant SelectedConstantOverrides\\LastProtected::VALUE overriding public constant SelectedConstantOverrides\\PublicParent::VALUE should also be public.",
+                    "line": 17,
+                    "ignorable": false,
+                    "identifier": "classConstant.visibility",
+                    "tip": null
+                },
+                {
+                    "message": "Cannot redeclare constant SelectedConstantOverrides\\ProtectedToPublic::VALUE.",
+                    "line": 21,
+                    "ignorable": false,
+                    "identifier": "class.duplicateConstant",
+                    "tip": null
+                },
+                {
+                    "message": "Private constant SelectedConstantOverrides\\ProtectedToPrivate::VALUE overriding protected constant SelectedConstantOverrides\\ProtectedParent::VALUE should be protected or public.",
+                    "line": 24,
+                    "ignorable": false,
+                    "identifier": "classConstant.visibility",
+                    "tip": null
+                },
+                {
+                    "message": "Cannot redeclare constant SelectedConstantOverrides\\ProtectedToPrivate::VALUE.",
+                    "line": 25,
+                    "ignorable": false,
+                    "identifier": "class.duplicateConstant",
+                    "tip": null
+                },
+                {
+                    "message": "Private constant SelectedConstantOverrides\\ProtectedToPrivate::VALUE overriding protected constant SelectedConstantOverrides\\ProtectedParent::VALUE should be protected or public.",
+                    "line": 25,
+                    "ignorable": false,
+                    "identifier": "classConstant.visibility",
+                    "tip": null
+                },
+                {
+                    "message": "Cannot redeclare constant SelectedConstantOverrides\\ProtectedToProtected::VALUE.",
+                    "line": 29,
+                    "ignorable": false,
+                    "identifier": "class.duplicateConstant",
+                    "tip": null
+                }
+            ],
+            "errors": 12
+        },
+        "trait-constant-initializers/overriding-selection.php (in context of class SelectedConstantOverrides\\PrivateTraitBase)": {
+            "messages": [
+                {
+                    "message": "Constant SelectedConstantOverrides\\PrivateTraitBase::VALUE with value 23 overriding constant SelectedConstantOverrides\\PrivateLast::VALUE with different value 29 should have the same value.",
+                    "line": 40,
+                    "ignorable": false,
+                    "identifier": "classConstant.value",
+                    "tip": null
+                },
+                {
+                    "message": "Public constant SelectedConstantOverrides\\PrivateTraitBase::VALUE overriding private constant SelectedConstantOverrides\\PrivateLast::VALUE should also be private.",
+                    "line": 40,
+                    "ignorable": false,
+                    "identifier": "classConstant.visibility",
+                    "tip": null
+                },
+                {
+                    "message": "Cannot redeclare constant SelectedConstantOverrides\\PrivateLast::VALUE.",
+                    "line": 41,
+                    "ignorable": false,
+                    "identifier": "trait.duplicateConstant",
+                    "tip": null
+                }
+            ],
+            "errors": 3
+        },
+        "trait-constant-initializers/overriding-selection.php (in context of class SelectedConstantOverrides\\PrivateTraitReuse)": {
+            "messages": [
+                {
+                    "message": "Constant SelectedConstantOverrides\\PrivateTraitReuse::VALUE with value 23 overriding constant SelectedConstantOverrides\\PrivateLast::VALUE with different value 29 should have the same value.",
+                    "line": 40,
+                    "ignorable": false,
+                    "identifier": "classConstant.value",
+                    "tip": null
+                },
+                {
+                    "message": "Public constant SelectedConstantOverrides\\PrivateTraitReuse::VALUE overriding private constant SelectedConstantOverrides\\PrivateLast::VALUE should also be private.",
+                    "line": 40,
+                    "ignorable": false,
+                    "identifier": "classConstant.visibility",
+                    "tip": null
+                },
+                {
+                    "message": "Cannot redeclare constant SelectedConstantOverrides\\PrivateLast::VALUE.",
+                    "line": 41,
+                    "ignorable": false,
+                    "identifier": "trait.duplicateConstant",
+                    "tip": null
+                }
+            ],
+            "errors": 3
+        },
+        "trait-constant-initializers/overriding-selection.php (in context of class SelectedConstantOverrides\\ProtectedTraitBase)": {
+            "messages": [
+                {
+                    "message": "Constant SelectedConstantOverrides\\ProtectedTraitBase::VALUE with value 31 overriding constant SelectedConstantOverrides\\ProtectedLast::VALUE with different value 37 should have the same value.",
+                    "line": 47,
+                    "ignorable": false,
+                    "identifier": "classConstant.value",
+                    "tip": null
+                },
+                {
+                    "message": "Private constant SelectedConstantOverrides\\ProtectedTraitBase::VALUE overriding protected constant SelectedConstantOverrides\\ProtectedLast::VALUE should also be protected.",
+                    "line": 47,
+                    "ignorable": false,
+                    "identifier": "classConstant.visibility",
+                    "tip": null
+                },
+                {
+                    "message": "Cannot redeclare constant SelectedConstantOverrides\\ProtectedLast::VALUE.",
+                    "line": 48,
+                    "ignorable": false,
+                    "identifier": "trait.duplicateConstant",
+                    "tip": null
+                }
+            ],
+            "errors": 3
+        },
+        "trait-constant-initializers/overriding-selection.php (in context of class SelectedConstantOverrides\\ProtectedTraitReuse)": {
+            "messages": [
+                {
+                    "message": "Constant SelectedConstantOverrides\\ProtectedTraitReuse::VALUE with value 31 overriding constant SelectedConstantOverrides\\ProtectedLast::VALUE with different value 37 should have the same value.",
+                    "line": 47,
+                    "ignorable": false,
+                    "identifier": "classConstant.value",
+                    "tip": null
+                },
+                {
+                    "message": "Private constant SelectedConstantOverrides\\ProtectedTraitReuse::VALUE overriding protected constant SelectedConstantOverrides\\ProtectedLast::VALUE should also be protected.",
+                    "line": 47,
+                    "ignorable": false,
+                    "identifier": "classConstant.visibility",
+                    "tip": null
+                },
+                {
+                    "message": "Cannot redeclare constant SelectedConstantOverrides\\ProtectedLast::VALUE.",
+                    "line": 48,
+                    "ignorable": false,
+                    "identifier": "trait.duplicateConstant",
+                    "tip": null
+                }
+            ],
+            "errors": 3
+        },
+        "trait-constant-initializers/overriding-selection.php (in context of class SelectedConstantOverrides\\PublicTraitBase)": {
+            "messages": [
+                {
+                    "message": "Constant SelectedConstantOverrides\\PublicTraitBase::VALUE with value 17 overriding constant SelectedConstantOverrides\\PublicLast::VALUE with different value 19 should have the same value.",
+                    "line": 33,
+                    "ignorable": false,
+                    "identifier": "classConstant.value",
+                    "tip": null
+                },
+                {
+                    "message": "Private constant SelectedConstantOverrides\\PublicTraitBase::VALUE overriding public constant SelectedConstantOverrides\\PublicLast::VALUE should also be public.",
+                    "line": 33,
+                    "ignorable": false,
+                    "identifier": "classConstant.visibility",
+                    "tip": null
+                },
+                {
+                    "message": "Cannot redeclare constant SelectedConstantOverrides\\PublicLast::VALUE.",
+                    "line": 34,
+                    "ignorable": false,
+                    "identifier": "trait.duplicateConstant",
+                    "tip": null
+                }
+            ],
+            "errors": 3
+        },
+        "trait-constant-initializers/overriding-selection.php (in context of class SelectedConstantOverrides\\PublicTraitReuse)": {
+            "messages": [
+                {
+                    "message": "Constant SelectedConstantOverrides\\PublicTraitReuse::VALUE with value 17 overriding constant SelectedConstantOverrides\\PublicLast::VALUE with different value 19 should have the same value.",
+                    "line": 33,
+                    "ignorable": false,
+                    "identifier": "classConstant.value",
+                    "tip": null
+                },
+                {
+                    "message": "Private constant SelectedConstantOverrides\\PublicTraitReuse::VALUE overriding public constant SelectedConstantOverrides\\PublicLast::VALUE should also be public.",
+                    "line": 33,
+                    "ignorable": false,
+                    "identifier": "classConstant.visibility",
+                    "tip": null
+                },
+                {
+                    "message": "Cannot redeclare constant SelectedConstantOverrides\\PublicLast::VALUE.",
+                    "line": 34,
+                    "ignorable": false,
+                    "identifier": "trait.duplicateConstant",
+                    "tip": null
+                }
+            ],
+            "errors": 3
+        }
+    },
+    "errors": []
+}

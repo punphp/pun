@@ -1,0 +1,742 @@
+{
+    "expressions": {
+        "181": {
+            "line": 7,
+            "expression": "clone $m",
+            "type": "object",
+            "explicit": null,
+            "operand": {
+                "offset": 187,
+                "length": 2,
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "223": {
+            "line": 8,
+            "expression": "clone $m",
+            "type": "object",
+            "explicit": null,
+            "operand": {
+                "offset": 229,
+                "length": 2,
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "290": {
+            "line": 10,
+            "expression": "clone $m",
+            "type": "object",
+            "explicit": null,
+            "operand": {
+                "offset": 296,
+                "length": 2,
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "340": {
+            "line": 11,
+            "expression": "clone $m",
+            "type": "object",
+            "explicit": null,
+            "operand": {
+                "offset": 346,
+                "length": 2,
+                "type": "object",
+                "explicit": null
+            }
+        },
+        "384": {
+            "line": 12,
+            "expression": "clone $m",
+            "type": "CloneControls\\Item",
+            "explicit": null,
+            "operand": {
+                "offset": 390,
+                "length": 2,
+                "type": "CloneControls\\Item",
+                "explicit": null
+            }
+        },
+        "438": {
+            "line": 13,
+            "expression": "clone $m",
+            "type": "CloneControls\\Item",
+            "explicit": null,
+            "operand": {
+                "offset": 444,
+                "length": 2,
+                "type": "CloneControls\\Item|int",
+                "explicit": null
+            }
+        },
+        "497": {
+            "line": 14,
+            "expression": "clone $m",
+            "type": "object",
+            "explicit": null,
+            "operand": {
+                "offset": 503,
+                "length": 2,
+                "type": "object|string",
+                "explicit": null
+            }
+        },
+        "545": {
+            "line": 15,
+            "expression": "clone $m",
+            "type": "CloneControls\\Item",
+            "explicit": null,
+            "operand": {
+                "offset": 551,
+                "length": 2,
+                "type": "CloneControls\\Item|null",
+                "explicit": null
+            }
+        },
+        "589": {
+            "line": 16,
+            "expression": "clone $m",
+            "type": "*NEVER*",
+            "explicit": null,
+            "operand": {
+                "offset": 595,
+                "length": 2,
+                "type": "int",
+                "explicit": null
+            }
+        },
+        "628": {
+            "line": 17,
+            "expression": "clone 1",
+            "type": "*NEVER*",
+            "explicit": null,
+            "operand": {
+                "offset": 634,
+                "length": 1,
+                "type": "1",
+                "explicit": null
+            }
+        },
+        "677": {
+            "line": 18,
+            "expression": "clone $m",
+            "type": "*NEVER*",
+            "explicit": null,
+            "operand": {
+                "offset": 683,
+                "length": 2,
+                "type": "array",
+                "explicit": null
+            }
+        },
+        "729": {
+            "line": 19,
+            "expression": "clone $m",
+            "type": "CloneControls\\Choice",
+            "explicit": null,
+            "operand": {
+                "offset": 735,
+                "length": 2,
+                "type": "CloneControls\\Choice",
+                "explicit": null
+            }
+        },
+        "779": {
+            "line": 20,
+            "expression": "clone $m",
+            "type": "Closure",
+            "explicit": null,
+            "operand": {
+                "offset": 785,
+                "length": 2,
+                "type": "Closure",
+                "explicit": null
+            }
+        },
+        "835": {
+            "line": 21,
+            "expression": "clone $m",
+            "type": "callable-object",
+            "explicit": null,
+            "operand": {
+                "offset": 841,
+                "length": 2,
+                "type": "callable(): mixed",
+                "explicit": null
+            }
+        },
+        "921": {
+            "line": 23,
+            "expression": "clone $m",
+            "type": "callable(int): string&object",
+            "explicit": null,
+            "operand": {
+                "offset": 927,
+                "length": 2,
+                "type": "callable(int): string",
+                "explicit": null
+            }
+        },
+        "976": {
+            "line": 24,
+            "expression": "clone $m",
+            "type": "CloneControls\\Item&CloneControls\\Tag",
+            "explicit": null,
+            "operand": {
+                "offset": 982,
+                "length": 2,
+                "type": "CloneControls\\Item&CloneControls\\Tag",
+                "explicit": null
+            }
+        },
+        "1056": {
+            "line": 29,
+            "expression": "clone $m",
+            "type": "object&T (function CloneControls\\template(), argument)",
+            "explicit": null,
+            "operand": {
+                "offset": 1062,
+                "length": 2,
+                "type": "T (function CloneControls\\template(), argument)",
+                "explicit": true
+            }
+        },
+        "1152": {
+            "line": 34,
+            "expression": "clone $m",
+            "type": "T of object (function CloneControls\\objectTemplate(), argument)",
+            "explicit": null,
+            "operand": {
+                "offset": 1158,
+                "length": 2,
+                "type": "T of object (function CloneControls\\objectTemplate(), argument)",
+                "explicit": null
+            }
+        },
+        "1245": {
+            "line": 39,
+            "expression": "clone $m",
+            "type": "T of CloneControls\\Item (function CloneControls\\namedTemplate(), argument)",
+            "explicit": null,
+            "operand": {
+                "offset": 1251,
+                "length": 2,
+                "type": "T of CloneControls\\Item (function CloneControls\\namedTemplate(), argument)",
+                "explicit": null
+            }
+        },
+        "1342": {
+            "line": 44,
+            "expression": "clone $m",
+            "type": "T of CloneControls\\Item (function CloneControls\\unionTemplate(), argument)",
+            "explicit": null,
+            "operand": {
+                "offset": 1348,
+                "length": 2,
+                "type": "T of CloneControls\\Item|int (function CloneControls\\unionTemplate(), argument)",
+                "explicit": null
+            }
+        },
+        "1435": {
+            "line": 49,
+            "expression": "clone $m",
+            "type": "*NEVER*",
+            "explicit": null,
+            "operand": {
+                "offset": 1441,
+                "length": 2,
+                "type": "T of int (function CloneControls\\scalarTemplate(), argument)",
+                "explicit": null
+            }
+        },
+        "1489": {
+            "line": 51,
+            "expression": "clone $this",
+            "type": "static(CloneControls\\Owner)",
+            "explicit": null,
+            "operand": {
+                "offset": 1495,
+                "length": 5,
+                "type": "$this(CloneControls\\Owner)",
+                "explicit": null
+            }
+        },
+        "1605": {
+            "line": 54,
+            "expression": "clone $m",
+            "type": "CloneControls\\Item|static(CloneControls\\Owner)",
+            "explicit": null,
+            "operand": {
+                "offset": 1611,
+                "length": 2,
+                "type": "$this(CloneControls\\Owner)|CloneControls\\Item",
+                "explicit": null
+            }
+        },
+        "1663": {
+            "line": 58,
+            "expression": "clone ($m = new Item())",
+            "type": "CloneControls\\Item",
+            "explicit": null,
+            "operand": {
+                "offset": 1670,
+                "length": 15,
+                "type": "CloneControls\\Item",
+                "explicit": null
+            }
+        },
+        "1692": {
+            "line": 59,
+            "expression": "$m",
+            "type": "CloneControls\\Item",
+            "explicit": null
+        },
+        "1736": {
+            "line": 61,
+            "expression": "clone missing_operand()",
+            "type": "object",
+            "explicit": null,
+            "operand": {
+                "offset": 1742,
+                "length": 17,
+                "type": "*ERROR*",
+                "explicit": false
+            }
+        },
+        "1822": {
+            "line": 62,
+            "expression": "clone $m",
+            "type": "*NEVER*",
+            "explicit": null,
+            "operand": {
+                "offset": 1828,
+                "length": 2,
+                "type": "mixed~object",
+                "explicit": true
+            }
+        },
+        "1922": {
+            "line": 64,
+            "expression": "clone terminate()",
+            "type": "never",
+            "explicit": null,
+            "operand": {
+                "offset": 1928,
+                "length": 11,
+                "type": "never",
+                "explicit": null
+            }
+        }
+    },
+    "errors": [
+        [
+            7,
+            "void.pure",
+            "Function CloneControls\\declared() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            8,
+            "expr.resultUnused",
+            "Expression \"clone $m\" on a separate line does not do anything.",
+            null,
+            true
+        ],
+        [
+            8,
+            "missingType.parameter",
+            "Function CloneControls\\implicit() has parameter $m with no type specified.",
+            null,
+            true
+        ],
+        [
+            8,
+            "void.pure",
+            "Function CloneControls\\implicit() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            10,
+            "expr.resultUnused",
+            "Expression \"clone $m\" on a separate line does not do anything.",
+            null,
+            true
+        ],
+        [
+            10,
+            "void.pure",
+            "Function CloneControls\\documented() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            11,
+            "expr.resultUnused",
+            "Expression \"clone $m\" on a separate line does not do anything.",
+            null,
+            true
+        ],
+        [
+            11,
+            "void.pure",
+            "Function CloneControls\\anyObject() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            12,
+            "expr.resultUnused",
+            "Expression \"clone $m\" on a separate line does not do anything.",
+            null,
+            true
+        ],
+        [
+            12,
+            "void.pure",
+            "Function CloneControls\\named() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            13,
+            "clone.nonObject",
+            "Cannot clone non-object variable $m of type CloneControls\\Item|int.",
+            null,
+            true
+        ],
+        [
+            13,
+            "expr.resultUnused",
+            "Expression \"clone $m\" on a separate line does not do anything.",
+            null,
+            true
+        ],
+        [
+            13,
+            "void.pure",
+            "Function CloneControls\\unionScalar() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            14,
+            "clone.nonObject",
+            "Cannot clone non-object variable $m of type object|string.",
+            null,
+            true
+        ],
+        [
+            14,
+            "expr.resultUnused",
+            "Expression \"clone $m\" on a separate line does not do anything.",
+            null,
+            true
+        ],
+        [
+            14,
+            "void.pure",
+            "Function CloneControls\\unionObject() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            15,
+            "expr.resultUnused",
+            "Expression \"clone $m\" on a separate line does not do anything.",
+            null,
+            true
+        ],
+        [
+            15,
+            "void.pure",
+            "Function CloneControls\\nullable() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            16,
+            "clone.nonObject",
+            "Cannot clone non-object variable $m of type int.",
+            null,
+            true
+        ],
+        [
+            16,
+            "expr.resultUnused",
+            "Expression \"clone $m\" on a separate line does not do anything.",
+            null,
+            true
+        ],
+        [
+            16,
+            "void.pure",
+            "Function CloneControls\\scalar() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            17,
+            "clone.nonObject",
+            "Cannot clone int.",
+            null,
+            true
+        ],
+        [
+            17,
+            "expr.resultUnused",
+            "Expression \"clone 1\" on a separate line does not do anything.",
+            null,
+            true
+        ],
+        [
+            17,
+            "void.pure",
+            "Function CloneControls\\literal() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            18,
+            "clone.nonObject",
+            "Cannot clone non-object variable $m of type array.",
+            null,
+            true
+        ],
+        [
+            18,
+            "expr.resultUnused",
+            "Expression \"clone $m\" on a separate line does not do anything.",
+            null,
+            true
+        ],
+        [
+            18,
+            "missingType.iterableValue",
+            "Function CloneControls\\arrayValue() has parameter $m with no value type specified in iterable type array.",
+            "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+            true
+        ],
+        [
+            18,
+            "void.pure",
+            "Function CloneControls\\arrayValue() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            19,
+            "expr.resultUnused",
+            "Expression \"clone $m\" on a separate line does not do anything.",
+            null,
+            true
+        ],
+        [
+            19,
+            "void.pure",
+            "Function CloneControls\\enumeration() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            20,
+            "expr.resultUnused",
+            "Expression \"clone $m\" on a separate line does not do anything.",
+            null,
+            true
+        ],
+        [
+            20,
+            "void.pure",
+            "Function CloneControls\\closure() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            21,
+            "clone.nonObject",
+            "Cannot clone non-object variable $m of type callable.",
+            null,
+            true
+        ],
+        [
+            21,
+            "expr.resultUnused",
+            "Expression \"clone $m\" on a separate line does not do anything.",
+            null,
+            true
+        ],
+        [
+            21,
+            "void.pure",
+            "Function CloneControls\\callableValue() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            23,
+            "clone.nonObject",
+            "Cannot clone non-object variable $m of type callable.",
+            null,
+            true
+        ],
+        [
+            23,
+            "expr.resultUnused",
+            "Expression \"clone $m\" on a separate line does not do anything.",
+            null,
+            true
+        ],
+        [
+            23,
+            "void.pure",
+            "Function CloneControls\\typedCallable() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            24,
+            "expr.resultUnused",
+            "Expression \"clone $m\" on a separate line does not do anything.",
+            null,
+            true
+        ],
+        [
+            24,
+            "void.pure",
+            "Function CloneControls\\intersection() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            29,
+            "expr.resultUnused",
+            "Expression \"clone $m\" on a separate line does not do anything.",
+            null,
+            true
+        ],
+        [
+            29,
+            "void.pure",
+            "Function CloneControls\\template() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            34,
+            "expr.resultUnused",
+            "Expression \"clone $m\" on a separate line does not do anything.",
+            null,
+            true
+        ],
+        [
+            34,
+            "void.pure",
+            "Function CloneControls\\objectTemplate() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            39,
+            "expr.resultUnused",
+            "Expression \"clone $m\" on a separate line does not do anything.",
+            null,
+            true
+        ],
+        [
+            39,
+            "void.pure",
+            "Function CloneControls\\namedTemplate() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            44,
+            "clone.nonObject",
+            "Cannot clone non-object variable $m of type CloneControls\\Item|int.",
+            null,
+            true
+        ],
+        [
+            44,
+            "expr.resultUnused",
+            "Expression \"clone $m\" on a separate line does not do anything.",
+            null,
+            true
+        ],
+        [
+            44,
+            "void.pure",
+            "Function CloneControls\\unionTemplate() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            49,
+            "clone.nonObject",
+            "Cannot clone non-object variable $m of type T of int.",
+            null,
+            true
+        ],
+        [
+            49,
+            "expr.resultUnused",
+            "Expression \"clone $m\" on a separate line does not do anything.",
+            null,
+            true
+        ],
+        [
+            49,
+            "void.pure",
+            "Function CloneControls\\scalarTemplate() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            51,
+            "expr.resultUnused",
+            "Expression \"clone $this\" on a separate line does not do anything.",
+            null,
+            true
+        ],
+        [
+            54,
+            "expr.resultUnused",
+            "Expression \"clone $m\" on a separate line does not do anything.",
+            null,
+            true
+        ],
+        [
+            57,
+            "void.pure",
+            "Function CloneControls\\evaluate() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            59,
+            "expr.resultUnused",
+            "Expression \"$m\" on a separate line does not do anything.",
+            null,
+            true
+        ],
+        [
+            61,
+            "function.notFound",
+            "Function missing_operand not found.",
+            "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            true
+        ],
+        [
+            62,
+            "expr.resultUnused",
+            "Expression \"clone $m\" on a separate line does not do anything.",
+            null,
+            true
+        ]
+    ]
+}

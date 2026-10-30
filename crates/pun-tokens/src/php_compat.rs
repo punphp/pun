@@ -12,6 +12,74 @@ pub fn strtolower(s: &[u8]) -> Vec<u8> {
     s.to_ascii_lowercase()
 }
 
+/// PHPStan PhpDocParser's StringUnescaper, including non-UTF-8 byte and codepoint escapes.
+/// `quoted` is a complete single- or double-quoted PHPDoc literal, not a PHP source literal.
+pub fn unescape_phpdoc_string(quoted: &[u8]) -> Vec<u8> {
+    let inner = &quoted[1..quoted.len() - 1];
+    if quoted[0] == b'\'' {
+        return str_replace(b"\\'", b"'", &str_replace(b"\\\\", b"\\", inner));
+    }
+    let inner = str_replace(b"\\\"", b"\"", inner);
+    static ESCAPES: std::sync::OnceLock<pcre2::bytes::Regex> = std::sync::OnceLock::new();
+    let escapes = ESCAPES.get_or_init(|| {
+        pcre2::bytes::Regex::new(
+            r#"\\([\\nrtfve]|[xX][0-9a-fA-F]{1,2}|[0-7]{1,3}|u\{([0-9a-fA-F]+)\})"#,
+        )
+        .unwrap()
+    });
+    let mut out = Vec::with_capacity(inner.len());
+    let mut from = 0;
+    for found in escapes.captures_iter(&inner) {
+        let found = found.unwrap();
+        let full = found.get(0).unwrap();
+        let escape = found.get(1).unwrap().as_bytes();
+        out.extend_from_slice(&inner[from..full.start()]);
+        match escape {
+            b"\\" => out.push(b'\\'),
+            b"n" => out.push(b'\n'),
+            b"r" => out.push(b'\r'),
+            b"t" => out.push(b'\t'),
+            b"f" => out.push(0x0c),
+            b"v" => out.push(0x0b),
+            b"e" => out.push(0x1b),
+            hex if matches!(hex[0], b'x' | b'X') => {
+                out.push(u8::from_str_radix(std::str::from_utf8(&hex[1..]).unwrap(), 16).unwrap());
+            }
+            unicode if unicode[0] == b'u' => {
+                let code = u32::from_str_radix(
+                    std::str::from_utf8(found.get(2).unwrap().as_bytes()).unwrap(),
+                    16,
+                )
+                .unwrap_or(u32::MAX);
+                // PHPStan permits surrogate and extended four-byte codepoints, unlike Rust char.
+                match code {
+                    0..=0x7f => out.push(code as u8),
+                    0x80..=0x7ff => out
+                        .extend_from_slice(&[(code >> 6) as u8 + 0xc0, (code & 0x3f) as u8 + 0x80]),
+                    0x800..=0xffff => out.extend_from_slice(&[
+                        (code >> 12) as u8 + 0xe0,
+                        ((code >> 6) & 0x3f) as u8 + 0x80,
+                        (code & 0x3f) as u8 + 0x80,
+                    ]),
+                    0x10000..=0x1fffff => out.extend_from_slice(&[
+                        (code >> 18) as u8 + 0xf0,
+                        ((code >> 12) & 0x3f) as u8 + 0x80,
+                        ((code >> 6) & 0x3f) as u8 + 0x80,
+                        (code & 0x3f) as u8 + 0x80,
+                    ]),
+                    _ => out.extend_from_slice("�".as_bytes()),
+                }
+            }
+            octal => {
+                out.push(u32::from_str_radix(std::str::from_utf8(octal).unwrap(), 8).unwrap() as u8)
+            }
+        }
+        from = full.end();
+    }
+    out.extend_from_slice(&inner[from..]);
+    out
+}
+
 /// `mb_strtolower($s)` (UTF-8): full Unicode lowercasing, with each maximal invalid UTF-8 subpart replaced by `?`.
 pub fn mb_strtolower(s: &[u8]) -> Vec<u8> {
     mb_convert_case(s, str::to_lowercase)
@@ -334,6 +402,8 @@ pub struct PregModifiers {
     pub dup_names: bool,
     /// `n`
     pub no_auto_capture: bool,
+    /// `r` (PCRE2 10.43+)
+    pub caseless_restrict: bool,
 }
 
 /// `pcre_get_compiled_regex_cache` up to the compile: the pattern's body between its delimiters (a bracket pair
@@ -377,6 +447,9 @@ pub fn preg_parse(pattern: &[u8]) -> Result<(&[u8], PregModifiers), String> {
             format!("No ending matching delimiter '{end}' found")
         });
     }
+    // PHP accepts `r` only with PCRE2_EXTRA_CASELESS_RESTRICT. Probe the linked engine:
+    // pcre2::version() returns generated binding constants, not the system library's version.
+    static SUPPORTS_R: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
     let mut m = PregModifiers::default();
     for &c in &pattern[p + 1..] {
         match c {
@@ -390,8 +463,11 @@ pub fn preg_parse(pattern: &[u8]) -> Result<(&[u8], PregModifiers), String> {
             b'u' => m.utf = true,
             b'J' => m.dup_names = true,
             b'n' => m.no_auto_capture = true,
-            // `S` and `X` are no-ops since PCRE2; `r` (PCRE2_EXTRA_CASELESS_RESTRICT) has no PCRE2 crate option.
-            b'S' | b'X' | b'r' | b' ' | b'\n' | b'\r' => {}
+            b'r' if *SUPPORTS_R.get_or_init(|| pcre2::bytes::Regex::new("(?r)").is_ok()) => {
+                m.caseless_restrict = true;
+            }
+            // `S` and `X` are no-ops since PCRE2.
+            b'S' | b'X' | b' ' | b'\n' | b'\r' => {}
             0 => return Err("NUL byte is not a valid modifier".into()),
             c => {
                 let c = String::from_utf8_lossy(&[c]).into_owned();
@@ -421,6 +497,7 @@ pub fn preg_compile(pattern: &str) -> Result<pcre2::bytes::Regex, String> {
         (m.ungreedy, "(?U)"),
         (m.dup_names, "(?J)"),
         (m.no_auto_capture, "(?n)"),
+        (m.caseless_restrict, "(?r)"),
     ]
     .iter()
     .filter(|f| f.0)

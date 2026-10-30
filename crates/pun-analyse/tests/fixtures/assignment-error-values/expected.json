@@ -1,0 +1,92 @@
+{
+    "totals": {
+        "errors": 0,
+        "file_errors": 13
+    },
+    "files": {
+        "values.php": {
+            "errors": 13,
+            "messages": [
+                {
+                    "message": "Function AssignmentErrorValues\\assignments() returns void but does not have any side effects.",
+                    "line": 5,
+                    "ignorable": true,
+                    "identifier": "void.pure"
+                },
+                {
+                    "message": "Offset 0 does not exist on array{}.",
+                    "line": 7,
+                    "ignorable": true,
+                    "identifier": "offsetAccess.notFound"
+                },
+                {
+                    "message": "Offset 1 does not exist on array{}.",
+                    "line": 7,
+                    "ignorable": true,
+                    "identifier": "offsetAccess.notFound"
+                },
+                {
+                    "message": "Offset 'age' does not exist on array{name: 'kept'}.",
+                    "line": 8,
+                    "ignorable": true,
+                    "identifier": "offsetAccess.notFound"
+                },
+                {
+                    "message": "Offset 1 does not exist on array{1}.",
+                    "line": 9,
+                    "ignorable": true,
+                    "identifier": "offsetAccess.notFound"
+                },
+                {
+                    "message": "Dumped type: *ERROR*",
+                    "line": 10,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: *ERROR*",
+                    "line": 11,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: *ERROR*",
+                    "line": 12,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: *ERROR*",
+                    "line": 13,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: *ERROR*",
+                    "line": 14,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: 1",
+                    "line": 15,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: null",
+                    "line": 16,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                },
+                {
+                    "message": "Dumped type: mixed",
+                    "line": 17,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType"
+                }
+            ]
+        }
+    },
+    "errors": []
+}

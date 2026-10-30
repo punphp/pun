@@ -11,12 +11,6 @@ use serde_json::Value;
 
 type Key = (String, i64, String, String, Option<String>);
 
-/// PHPStan 2.3 errors Pun does not report yet (file, line, identifier); one Pun reports fails the test as extra.
-const GAPS: &[(&str, i64, &str)] = &[
-    // a `for` loop whose body always exits checks its condition once, on the initial values (`$i = 0; $i < 1`)
-    ("src/conditions.php", 602, "smaller.alwaysTrue"),
-];
-
 fn check(neon: &str) {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/dead_code");
     let dir = root.to_string_lossy().into_owned();
@@ -49,11 +43,6 @@ fn check(neon: &str) {
         .unwrap()
         .iter()
         .filter(|e| reports(e["identifier"].as_str().unwrap_or("")))
-        .filter(|e| {
-            !GAPS.iter().any(|(file, line, id)| {
-                e["file"] == *file && e["line"] == *line && e["identifier"] == *id
-            })
-        })
         .map(|e| {
             (
                 e["file"]
@@ -70,6 +59,47 @@ fn check(neon: &str) {
             )
         })
         .collect();
+    want.sort();
+    assert_eq!(got, want);
+}
+
+/// PHPStan 2.3.1 --level=4: skip terminated statements, but keep labels and declarations live.
+#[test]
+fn unreachable_walk_preserves_labels_and_independent_declarations() {
+    let path =
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/dead_code/unreachable-walk.php");
+    let mut project = Project::new(vec![path], vec![]);
+    project.level = 4;
+    let mut got: Vec<_> = run(&project)
+        .unwrap()
+        .into_iter()
+        .map(|error| {
+            (
+                error.line,
+                error.identifier,
+                error.message,
+                error.tip,
+                error.can_be_ignored,
+            )
+        })
+        .collect();
+    got.sort();
+    let unreachable = "Unreachable statement - code above always terminates.";
+    let mut want: Vec<_> = [
+        (6, "deadCode.unreachable", unreachable),
+        (12, "deadCode.unreachable", unreachable),
+        (14, "expr.resultUnused", "Expression \"'reachable'\" on a separate line does not do anything."),
+        (20, "deadCode.unreachable", unreachable),
+        (20, "function.inner", "Inner named functions are not supported by PHPStan. Consider refactoring to an anonymous function, class method, or a top-level-defined function. See issue #165 (https://github.com/phpstan/phpstan/issues/165) for more details."),
+        (21, "expr.resultUnused", "Expression \"'nested-reachable'\" on a separate line does not do anything."),
+        (23, "deadCode.unreachable", unreachable),
+        (30, "expr.resultUnused", "Expression \"'early-bound-reachable'\" on a separate line does not do anything."),
+        (35, "expr.resultUnused", "Expression \"'class-reachable'\" on a separate line does not do anything."),
+        (39, "deadCode.unreachable", unreachable),
+    ]
+    .into_iter()
+    .map(|(line, identifier, message)| (line, identifier.to_owned(), message.to_owned(), None, true))
+    .collect();
     want.sort();
     assert_eq!(got, want);
 }
@@ -144,4 +174,80 @@ fn callback_purity_requires_a_flagged_parameter() {
     got.sort();
     want.sort();
     assert_eq!(got, want);
+}
+
+/// Native continuation survives inference's reference bookkeeping, not semantic reference writes.
+#[test]
+fn native_continuation_through_project_inference_matches_phpstan() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/dead_code");
+    let expected: Value =
+        serde_json::from_str(include_str!("fixtures/dead_code/native-inference.json")).unwrap();
+    let mut project = Project::new(vec![root.join("native-inference.php")], vec![]);
+    project.level = 4;
+    project.php_version = 80500;
+    let mut actual: Vec<_> = run(&project)
+        .unwrap()
+        .into_iter()
+        .map(|error| {
+            (
+                error.line,
+                error.identifier,
+                error.message,
+                error.tip,
+                error.can_be_ignored,
+            )
+        })
+        .collect();
+    actual.sort();
+    assert_eq!(serde_json::to_value(actual).unwrap(), expected["errors"]);
+}
+
+/// Default ImpossibleCheckTypeFunctionCallRule tips use native argument decisions, not PHPDoc syntax.
+#[test]
+fn function_certainty_tips_match_phpstan_full_records() {
+    let fixtures = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures");
+    let expected: Value =
+        serde_json::from_str(include_str!("fixtures/dead_code/certainty/expected.json")).unwrap();
+    let mut differences = Vec::new();
+    for (case, file) in [
+        ("shapes", "dead_code/certainty/shapes.php"),
+        ("certainty", "native-calls/certainty.php"),
+        ("controls", "dead_code/certainty/controls.php"),
+    ] {
+        for level in [0, 4, 5] {
+            let mut project = Project::new(vec![fixtures.join(file)], vec![]);
+            project.level = level;
+            project.php_version = 80500;
+            let mut actual: Vec<_> = run(&project)
+                .unwrap()
+                .into_iter()
+                .map(|error| {
+                    (
+                        Path::new(&error.file)
+                            .file_name()
+                            .unwrap()
+                            .to_str()
+                            .unwrap()
+                            .to_owned(),
+                        error.line,
+                        error.identifier,
+                        error.message,
+                        error.tip,
+                        error.can_be_ignored,
+                    )
+                })
+                .collect();
+            actual.sort();
+            let key = format!("{case}-{level}");
+            let actual = serde_json::to_value(actual).unwrap();
+            if actual != expected["cases"][&key] {
+                differences.push(serde_json::json!({"case": key, "actual": actual, "expected": expected["cases"][&key]}));
+            }
+        }
+    }
+    assert!(
+        differences.is_empty(),
+        "{}",
+        serde_json::to_string_pretty(&differences).unwrap()
+    );
 }

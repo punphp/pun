@@ -1,0 +1,92 @@
+[
+  {
+    "message": "Dumped type: ConditionalCallbackGather\\First",
+    "line": 50,
+    "ignorable": false,
+    "identifier": "phpstan.dumpType"
+  },
+  {
+    "message": "Dumped type: ConditionalCallbackGather\\Second",
+    "line": 51,
+    "ignorable": false,
+    "identifier": "phpstan.dumpType"
+  },
+  {
+    "message": "Dumped type: mixed",
+    "line": 52,
+    "ignorable": false,
+    "identifier": "phpstan.dumpType"
+  },
+  {
+    "message": "Dumped type: ConditionalCallbackGather\\Second",
+    "line": 53,
+    "ignorable": false,
+    "identifier": "phpstan.dumpType"
+  },
+  {
+    "message": "Dumped type: ConditionalCallbackGather\\First",
+    "line": 54,
+    "ignorable": false,
+    "identifier": "phpstan.dumpType"
+  },
+  {
+    "message": "Dumped type: mixed",
+    "line": 55,
+    "ignorable": false,
+    "identifier": "phpstan.dumpType"
+  },
+  {
+    "message": "Dumped type: ConditionalCallbackGather\\First",
+    "line": 56,
+    "ignorable": false,
+    "identifier": "phpstan.dumpType"
+  },
+  {
+    "message": "Dumped type: ConditionalCallbackGather\\Second",
+    "line": 57,
+    "ignorable": false,
+    "identifier": "phpstan.dumpType"
+  },
+  {
+    "message": "Dumped type: non-empty-list<ConditionalCallbackGather\\First|ConditionalCallbackGather\\Second>",
+    "line": 59,
+    "ignorable": false,
+    "identifier": "phpstan.dumpType"
+  },
+  {
+    "message": "Dumped type: non-empty-list<ConditionalCallbackGather\\First|ConditionalCallbackGather\\Second>",
+    "line": 60,
+    "ignorable": false,
+    "identifier": "phpstan.dumpType"
+  },
+  {
+    "message": "Dumped type: non-empty-list<ConditionalCallbackGather\\First|ConditionalCallbackGather\\Second>",
+    "line": 61,
+    "ignorable": false,
+    "identifier": "phpstan.dumpType"
+  },
+  {
+    "message": "Dumped type: non-empty-list<ConditionalCallbackGather\\First|ConditionalCallbackGather\\Second>",
+    "line": 62,
+    "ignorable": false,
+    "identifier": "phpstan.dumpType"
+  },
+  {
+    "message": "Dumped type: ConditionalCallbackGather\\Second",
+    "line": 66,
+    "ignorable": false,
+    "identifier": "phpstan.dumpType"
+  },
+  {
+    "message": "Dumped type: mixed",
+    "line": 67,
+    "ignorable": false,
+    "identifier": "phpstan.dumpType"
+  },
+  {
+    "message": "Dumped type: 17",
+    "line": 68,
+    "ignorable": false,
+    "identifier": "phpstan.dumpType"
+  }
+]

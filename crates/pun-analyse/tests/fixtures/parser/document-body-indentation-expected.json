@@ -1,0 +1,2116 @@
+{
+    "analysed": {
+        "errors": [
+            {
+                "file": "adjacent-interpolations.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "bare-cr-in-body-short.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "binary-short.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "blank-wrong-character.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Invalid indentation - tabs and spaces cannot be mixed on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "braced-first-variable-line.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "braced-first-variable-line.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "braced-first.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "crlf-short.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "crlf-short.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "dollar-braced-first.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "interpolation-first.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "literal-part-location.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "literal-part-location.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "mixed-space-heredoc.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Invalid indentation - tabs and spaces cannot be mixed on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "mixed-tab-nowdoc.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Invalid indentation - tabs and spaces cannot be mixed on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "nowdoc-later-lines.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "nowdoc-later-lines.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Invalid indentation - tabs and spaces cannot be mixed on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "prefix-priority.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Invalid indentation - tabs and spaces cannot be mixed on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "short-after-interpolation.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "short-before-interpolation.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "short-between-interpolations.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "short-between-interpolations.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "short-heredoc.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "short-later-lines.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "short-later-lines.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "short-nowdoc.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "valid-diagnostic.php",
+                "line": 2,
+                "identifier": "function.notFound",
+                "message": "Function document_body_indentation_missing_control not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            }
+        ],
+        "general": []
+    },
+    "scanned": {
+        "short-heredoc": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "mixed-nowdoc": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "interpolation": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "valid-spaces": {
+            "errors": [],
+            "general": []
+        },
+        "valid-tabs": {
+            "errors": [],
+            "general": []
+        },
+        "valid-short-blank": {
+            "errors": [],
+            "general": []
+        }
+    },
+    "order": {
+        "body-parts": {
+            "errors": [
+                {
+                    "file": "order.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 3",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 3",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid indentation - tabs and spaces cannot be mixed on line 3",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 5,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 5",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid body indentation level (expecting an indentation level of at least 2) on line 3\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid indentation - tabs and spaces cannot be mixed on line 3\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid body indentation level (expecting an indentation level of at least 2) on line 3\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid body indentation level (expecting an indentation level of at least 2) on line 5\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "parameters-and-name": {
+            "errors": [
+                {
+                    "file": "order.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 3",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 3",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "void cannot be used as a parameter type on line 3",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"void cannot be used as a parameter type on line 3\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid body indentation level (expecting an indentation level of at least 2) on line 3\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid body indentation level (expecting an indentation level of at least 2) on line 3\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "nested-documents": {
+            "errors": [
+                {
+                    "file": "order.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 3",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 3",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 6,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 6",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid body indentation level (expecting an indentation level of at least 2) on line 3\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid body indentation level (expecting an indentation level of at least 2) on line 3\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid body indentation level (expecting an indentation level of at least 2) on line 6\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "namespace-and-array": {
+            "errors": [
+                {
+                    "file": "order.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 4,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot use empty array elements in arrays on line 4",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 5,
+                    "identifier": "phpstan.parse",
+                    "message": "Namespace declaration statement has to be the very first statement in the script on line 5",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid body indentation level (expecting an indentation level of at least 2) on line 2\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Namespace declaration statement has to be the very first statement in the script on line 5\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Cannot use empty array elements in arrays on line 4\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "mixed-marker-suppression": {
+            "errors": [
+                {
+                    "file": "order.php",
+                    "line": 5,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid indentation - tabs and spaces cannot be mixed on line 5",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 8,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid indentation - tabs and spaces cannot be mixed on line 8",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid indentation - tabs and spaces cannot be mixed on line 5\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid indentation - tabs and spaces cannot be mixed on line 8\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "phantom-expression-attributes": {
+            "errors": [
+                {
+                    "file": "order.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 3",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 3",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid body indentation level (expecting an indentation level of at least 2) on line 3\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid body indentation level (expecting an indentation level of at least 2) on line 3\" cannot be ignored, use excludePaths instead."
+            ]
+        }
+    },
+    "versions": {
+        "70100": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 5,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid indentation - tabs and spaces cannot be mixed on line 5",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "70300": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 5,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid indentation - tabs and spaces cannot be mixed on line 5",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "70400": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 5,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid indentation - tabs and spaces cannot be mixed on line 5",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "80000": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 5,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid indentation - tabs and spaces cannot be mixed on line 5",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "80100": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 5,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid indentation - tabs and spaces cannot be mixed on line 5",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "80200": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 5,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid indentation - tabs and spaces cannot be mixed on line 5",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "80400": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 5,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid indentation - tabs and spaces cannot be mixed on line 5",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "80500": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 5,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid indentation - tabs and spaces cannot be mixed on line 5",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        }
+    },
+    "boundaries": {
+        "unicode-fatal": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 5,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 5",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "unicode-before-later-part": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 5,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 5",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "unicode-after-invalid-prefix": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 3",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 5,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 5",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "nonfatal-unicode-before-later-part": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 3",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "numeric-lexical": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid numeric literal on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 3",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "recovered-expression": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 5,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected ';' on line 5",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "bare-cr-short": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "valid-bare-cr-after-text": {
+            "errors": [],
+            "general": []
+        },
+        "unclosed-document": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 4,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected EOF, expecting T_VARIABLE or T_DOLLAR_OPEN_CURLY_BRACES or T_CURLY_OPEN on line 4",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        }
+    },
+    "escapes": {
+        "errors": [
+            {
+                "file": "escape-backtick-earlier-part-fatal.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "escape-backtick-escaped-delimiter.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "escape-backtick-fatal.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "escape-backtick-interpolated-fatal.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "escape-backtick-later-line-fatal.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "escape-binary-double-fatal.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "escape-document-fatal-last-part.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "escape-document-fatal-last-part.php",
+                "line": 5,
+                "identifier": "phpstan.parse",
+                "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 5",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "escape-document-fatal-whole-part.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "escape-document-fatal-whole-part.php",
+                "line": 5,
+                "identifier": "phpstan.parse",
+                "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 5",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "escape-document-fatal.php",
+                "line": 5,
+                "identifier": "phpstan.parse",
+                "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 5",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "escape-document-nonfatal-none.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "escape-document-prior-body-error.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "escape-document-prior-body-error.php",
+                "line": 5,
+                "identifier": "phpstan.parse",
+                "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 5",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "escape-double-fatal.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "escape-double-multiline-fatal.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "escape-interpolated-double-fatal.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "escape-interpolated-earlier-part-fatal.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "escape-interpolated-first-part-fatal.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "escape-interpolated-later-line-fatal.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "escape-malformed-and-oversized.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "escape-malformed-before-fatal.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "escape-mixed-marker-fatal.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "escape-mixed-marker-fatal.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "Invalid indentation - tabs and spaces cannot be mixed on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "escape-overflow-fatal.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "escape-valid-backtick.php",
+                "line": 2,
+                "identifier": "backtick.deprecated",
+                "message": "Backtick operator is deprecated in PHP 8.5. Use shell_exec() function call instead.",
+                "tip": null,
+                "ignorable": true
+            },
+            {
+                "file": "escape-valid-malformed-backtick.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "escape-valid-malformed-before-resolver.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "'\\self' is an invalid class name on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "escape-valid-malformed-interpolation.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "escape-valid-malformed-multiline.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 3",
+                "tip": null,
+                "ignorable": false
+            }
+        ],
+        "general": []
+    },
+    "escape_order": {
+        "earlier-and-later-siblings": {
+            "errors": [
+                {
+                    "file": "order.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "void cannot be used as a parameter type on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 6,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 6",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"void cannot be used as a parameter type on line 2\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 6\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "enclosing-declaration": {
+            "errors": [
+                {
+                    "file": "order.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot use the final modifier on an abstract class on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "void cannot be used as a parameter type on line 3",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 4,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 4",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Cannot use the final modifier on an abstract class on line 2\" cannot be ignored, use excludePaths instead.",
+                "Error message \"void cannot be used as a parameter type on line 3\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 4\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "outer-document-suppression": {
+            "errors": [
+                {
+                    "file": "order.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 3",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 3\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "inner-document-order": {
+            "errors": [
+                {
+                    "file": "order.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 3",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 5,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 5",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid body indentation level (expecting an indentation level of at least 2) on line 3\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 5\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "whole-part-indentation-before-decoding": {
+            "errors": [
+                {
+                    "file": "order.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid body indentation level (expecting an indentation level of at least 2) on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 6,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 6",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid body indentation level (expecting an indentation level of at least 2) on line 2\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid body indentation level (expecting an indentation level of at least 2) on line 2\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid body indentation level (expecting an indentation level of at least 2) on line 2\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 6\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "mixed-marker-before-fatal": {
+            "errors": [
+                {
+                    "file": "order.php",
+                    "line": 4,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 4",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 4,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid indentation - tabs and spaces cannot be mixed on line 4",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid indentation - tabs and spaces cannot be mixed on line 4\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 4\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "later-fatal-keeps-first": {
+            "errors": [
+                {
+                    "file": "order.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "children-before-encapsed-decoding": {
+            "errors": [
+                {
+                    "file": "order.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "void cannot be used as a parameter type on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"void cannot be used as a parameter type on line 2\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "children-after-oversized-line-count": {
+            "errors": [
+                {
+                    "file": "order.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "void cannot be used as a parameter type on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 3",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"void cannot be used as a parameter type on line 2\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 3\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "children-after-malformed-line-count": {
+            "errors": [
+                {
+                    "file": "order.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "void cannot be used as a parameter type on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"void cannot be used as a parameter type on line 2\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "namespace-suppression": {
+            "errors": [
+                {
+                    "file": "order.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "earlier-array-postprocessing": {
+            "errors": [
+                {
+                    "file": "order.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot use empty array elements in arrays on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 3",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 3\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Cannot use empty array elements in arrays on line 2\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "inner-array-before-aborted-array": {
+            "errors": [
+                {
+                    "file": "order.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot use empty array elements in arrays on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Cannot use empty array elements in arrays on line 2\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "short-assignment-root-not-registered": {
+            "errors": [
+                {
+                    "file": "order.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "nested-assignment-awaits-fixup": {
+            "errors": [
+                {
+                    "file": "order.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot use empty array elements in arrays on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Cannot use empty array elements in arrays on line 2\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "completed-destructuring": {
+            "errors": [
+                {
+                    "file": "order.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 3",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 3\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "fatal-in-lhs": {
+            "errors": [
+                {
+                    "file": "order.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "fatal-in-later-for-clause": {
+            "errors": [
+                {
+                    "file": "order.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "A trailing comma is not allowed here on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"A trailing comma is not allowed here on line 2\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "outer-parameter-suppression": {
+            "errors": [
+                {
+                    "file": "order.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "global-constant-suppression": {
+            "errors": [
+                {
+                    "file": "order.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2\" cannot be ignored, use excludePaths instead."
+            ]
+        }
+    },
+    "escape_scanned": {
+        "fatal-document": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "fatal-double": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "fatal-interpolated": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "fatal-backtick": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "valid-nonfatal-none": {
+            "errors": [],
+            "general": []
+        },
+        "valid-nowdoc": {
+            "errors": [],
+            "general": []
+        }
+    },
+    "escape_versions": {
+        "70100": {
+            "double": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "interpolated": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "backtick": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "document": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 4,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 4",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            }
+        },
+        "70300": {
+            "double": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "interpolated": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "backtick": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "document": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 4,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 4",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            }
+        },
+        "70400": {
+            "double": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "interpolated": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "backtick": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "document": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 4,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 4",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            }
+        },
+        "80000": {
+            "double": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "interpolated": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "backtick": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "document": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 4,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 4",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            }
+        },
+        "80100": {
+            "double": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "interpolated": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "backtick": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "document": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 4,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 4",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            }
+        },
+        "80200": {
+            "double": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "interpolated": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "backtick": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "document": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 4,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 4",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            }
+        },
+        "80400": {
+            "double": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "interpolated": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "backtick": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "document": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 4,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 4",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            }
+        },
+        "80500": {
+            "double": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "interpolated": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "backtick": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "document": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 4,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 4",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            }
+        }
+    }
+}

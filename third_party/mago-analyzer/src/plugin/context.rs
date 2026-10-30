@@ -85,6 +85,19 @@ impl<'codebase, 'artifacts, 'block> ProviderContext<'codebase, 'artifacts, 'bloc
         self.artifacts.get_rc_expression_type(expr)
     }
 
+    /// Own unprojected full return, before holders and expression overrides.
+    pub fn get_raw_expression_type<T: HasSpan>(&self, expr: &T) -> Option<&TUnion> {
+        self.artifacts.get_raw_expression_type(expr)
+    }
+
+    pub fn get_keep_void_expression_type<T: HasSpan>(&self, expr: &T) -> Option<&TUnion> {
+        self.artifacts.get_keep_void_expression_type(expr)
+    }
+
+    pub fn get_expression_result<T: HasSpan>(&self, expr: &T) -> Option<crate::artifacts::ExpressionResult> {
+        self.artifacts.get_expression_result(expr)
+    }
+
     #[inline]
     pub fn get_variable_type(&self, name: &[u8]) -> Option<&Rc<TUnion>> {
         self.block_context.locals.get(&word(name))
@@ -216,6 +229,7 @@ pub struct HookContext<'ctx, 'block> {
     pub(crate) reported_issues: RefCell<Vec<ReportedIssue>>,
     expression_type_checkpoints: Option<DetachedExpressionTypeCheckpoints>,
     pub(crate) raw_callback_gather: bool,
+    pub(crate) isolated_type_pricing: bool,
 }
 
 impl<'ctx, 'block> HookContext<'ctx, 'block> {
@@ -225,6 +239,7 @@ impl<'ctx, 'block> HookContext<'ctx, 'block> {
         block_context: &'block mut BlockContext<'ctx>,
         artifacts: &'block mut AnalysisArtifacts,
     ) -> Self {
+        let isolated_type_pricing = crate::plugin::registry::is_isolated_type_pricing();
         Self {
             codebase,
             source_file,
@@ -233,6 +248,7 @@ impl<'ctx, 'block> HookContext<'ctx, 'block> {
             reported_issues: RefCell::new(Vec::new()),
             expression_type_checkpoints: None,
             raw_callback_gather: false,
+            isolated_type_pricing,
         }
     }
 
@@ -269,6 +285,19 @@ impl<'ctx, 'block> HookContext<'ctx, 'block> {
         self.artifacts.get_rc_expression_type(expr)
     }
 
+    /// Own unprojected full return, before holders and expression overrides.
+    pub fn get_raw_expression_type<T: HasSpan>(&self, expr: &T) -> Option<&TUnion> {
+        self.artifacts.get_raw_expression_type(expr)
+    }
+
+    pub fn get_keep_void_expression_type<T: HasSpan>(&self, expr: &T) -> Option<&TUnion> {
+        self.artifacts.get_keep_void_expression_type(expr)
+    }
+
+    pub fn get_expression_result<T: HasSpan>(&self, expr: &T) -> Option<crate::artifacts::ExpressionResult> {
+        self.artifacts.get_expression_result(expr)
+    }
+
     /// Get the type of a variable.
     #[inline]
     pub fn get_variable_type(&self, name: &[u8]) -> Option<&Rc<TUnion>> {
@@ -282,6 +311,12 @@ impl<'ctx, 'block> HookContext<'ctx, 'block> {
 
     pub fn get_native_variable_type(&self, name: &[u8]) -> Option<&TUnion> {
         self.block_context.native_locals.as_ref()?.get(&word(name)).map(Rc::as_ref)
+    }
+
+    /// Mark argument targets whose reference reads must not create undefined variables.
+    /// This records definedness policy, not a value write. Actual reference/out effects still invalidate native state.
+    pub fn mark_non_creating_references(&mut self, targets: impl IntoIterator<Item = Span>) {
+        self.block_context.variable_state.non_creating_references.extend(targets);
     }
 
     /// Get the current scope context.

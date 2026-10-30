@@ -1,0 +1,271 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "controls.php",
+   "line": 19,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: 100|101|null",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 20,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: 100|101|null",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 21,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: 100|101|null",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 22,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: 100|101|null",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 23,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: 100|101|null",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 24,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: 100|101|null",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 25,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: 100|101|null",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 26,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: 100|null",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 27,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: 0|3",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 28,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: 0|3",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 29,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: 0|3",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 30,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: 0|3",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 31,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: 0|3",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 32,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: 0|3",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 33,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: 0|3",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 34,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: 0|3",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 53,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: string|null",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 54,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: int|null",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 55,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: float|null",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 56,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: object|null",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 57,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: bool|float|int|string|null",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 58,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: null",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 59,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: null",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 60,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: null",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 61,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: mixed",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 62,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: mixed",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 63,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: float|int|null",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 74,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: (T of 'a'|'ccc' (function PhpdocUnions\\templates(), argument))|null",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 75,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: (T of 'a'|'ccc' (function PhpdocUnions\\templates(), argument))|null",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 76,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: (T of 'a'|'ccc' (function PhpdocUnions\\templates(), argument))|null",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 77,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: 0|1|3",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 78,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: 0|1|3",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 79,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: 0|1|3",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 97,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: 13",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 100,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: 13",
+   "tip": null
+  },
+  {
+   "file": "controls.php",
+   "line": 103,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: 13",
+   "tip": null
+  },
+  {
+   "file": "flat.php",
+   "line": 11,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: 100|101|102|103|104|105|106|107|108|109|110|111|112|113|114|115|116|117|118|119|120|121|122|123|124|125|126|127|128|129|130|131|132|133|134|135|136|137|138|139|140|141|142|143|144|145|146|147|148|149|150|151|152|153|154|155|156|157|158|159|160|161|162|163|164|165|166|167|168|169|170|171|172|173|174|175|176|177|178|179|180|181|182|183|184|185|186|187|188|189|190|191|192|193|194|195|196|197|198|199|200|201|202|203|204|205|206|207|208|209|210|211|212|213|214|215|216|217|218|219|220|221|222|223|224|225|226|227|228",
+   "tip": null
+  },
+  {
+   "file": "flat.php",
+   "line": 12,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: 3",
+   "tip": null
+  }
+ ]
+}

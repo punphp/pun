@@ -1,0 +1,104 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 15
+  },
+  "files": {
+    "/home/user/workspace/pun-unset-writable-reflection/crates/pun-analyse/tests/fixtures/unset/writable-overlays.php": {
+      "errors": 15,
+      "messages": [
+        {
+          "message": "Property UnsetWritableOverlays\\ProtectedOverlay::$p (int|string) does not accept false.",
+          "line": 45,
+          "ignorable": true,
+          "identifier": "assign.propertyType"
+        },
+        {
+          "message": "Property UnsetWritableOverlays\\Compatible::$p (string) does not accept int.",
+          "line": 73,
+          "ignorable": true,
+          "identifier": "assign.propertyType"
+        },
+        {
+          "message": "Property UnsetWritableOverlays\\Incompatible::$p (int) does not accept string.",
+          "line": 76,
+          "ignorable": true,
+          "identifier": "assign.propertyType"
+        },
+        {
+          "message": "Property UnsetWritableOverlays\\Nullable::$p (string|null) does not accept int.",
+          "line": 77,
+          "ignorable": true,
+          "identifier": "assign.propertyType"
+        },
+        {
+          "message": "Property UnsetWritableOverlays\\Untyped::$p (string) does not accept int.",
+          "line": 80,
+          "ignorable": true,
+          "identifier": "assign.propertyType"
+        },
+        {
+          "message": "Property UnsetWritableOverlays\\VarOverlay::$p (string) does not accept int.",
+          "line": 82,
+          "ignorable": true,
+          "identifier": "assign.propertyType"
+        },
+        {
+          "message": "Property UnsetWritableOverlays\\PrivateOverlay::$p is not writable.",
+          "line": 84,
+          "ignorable": true,
+          "identifier": "assign.propertyReadOnly"
+        },
+        {
+          "message": "Property UnsetWritableOverlays\\PrivateOverlay::$p is not writable.",
+          "line": 85,
+          "ignorable": true,
+          "identifier": "assign.propertyReadOnly"
+        },
+        {
+          "message": "Property UnsetWritableOverlays\\ProtectedOverlay::$p (bool) does not accept int.",
+          "line": 86,
+          "ignorable": true,
+          "identifier": "assign.propertyType"
+        },
+        {
+          "message": "Property UnsetWritableOverlays\\AnnotationOnly::$p is not writable.",
+          "line": 88,
+          "ignorable": true,
+          "identifier": "assign.propertyReadOnly"
+        },
+        {
+          "message": "Property UnsetWritableOverlays\\AnnotationOnly::$p is not writable.",
+          "line": 89,
+          "ignorable": true,
+          "identifier": "assign.propertyReadOnly"
+        },
+        {
+          "message": "Property UnsetWritableOverlays\\WritablePrivate::$p (string) does not accept int.",
+          "line": 90,
+          "ignorable": true,
+          "identifier": "assign.propertyType"
+        },
+        {
+          "message": "Property UnsetWritableOverlays\\SplitOverlay::$p (int) does not accept string.",
+          "line": 103,
+          "ignorable": true,
+          "identifier": "assign.propertyType"
+        },
+        {
+          "message": "Property UnsetWritableOverlays\\Compatible::$p (string) does not accept int.",
+          "line": 108,
+          "ignorable": true,
+          "identifier": "assign.propertyType"
+        },
+        {
+          "message": "Property UnsetWritableOverlays\\WriteOnly::$p (string) does not accept int.",
+          "line": 117,
+          "ignorable": true,
+          "identifier": "assign.propertyType"
+        }
+      ]
+    }
+  },
+  "errors": []
+}

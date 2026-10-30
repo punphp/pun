@@ -90,6 +90,7 @@ impl FunctionReturnTypeProvider for ShapeProvider {
                 Some(TUnion::from_atomic(TAtomic::Object(TObject::Named(TNamedObject::new_with_type_parameters(
                     word("Psl\\Type\\TypeInterface"),
                     Some(vec![TUnion::from_atomic(TAtomic::Array(TArray::List(TList {
+                        callable: None,
                         element_type: if allows_unknown_elements {
                             Arc::new(get_mixed())
                         } else {
@@ -119,6 +120,7 @@ impl FunctionReturnTypeProvider for ShapeProvider {
                 Some(TUnion::from_atomic(TAtomic::Object(TObject::Named(TNamedObject::new_with_type_parameters(
                     word("Psl\\Type\\TypeInterface"),
                     Some(vec![TUnion::from_atomic(TAtomic::Array(TArray::Keyed(TKeyedArray {
+                        callable: None,
                         parameters: if allows_unknown_elements {
                             Some((Arc::new(get_arraykey()), Arc::new(get_mixed())))
                         } else {

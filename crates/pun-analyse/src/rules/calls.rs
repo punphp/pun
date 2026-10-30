@@ -16,7 +16,7 @@ use super::{Checker, DISCOVERING_SYMBOLS_TIP};
 pub fn function_call<'arena>(c: &mut Checker<'_, 'arena>, call: &FunctionCall<'arena>) {
     if let Expression::Identifier(id) = call.function {
         let first_level = c.is_top_level(call.span());
-        named_call(c, id, params::count(&call.argument_list), first_level);
+        named_call(c, id, params::count(&call.argument_list), first_level, call.span());
     }
 }
 
@@ -42,6 +42,7 @@ pub fn pipe<'arena>(c: &mut Checker<'_, 'arena>, pipe: &Pipe<'arena>) {
                 ..params::Counts::default()
             },
             first_level,
+            pipe.span(),
         );
     }
 }
@@ -51,6 +52,7 @@ fn named_call<'arena>(
     id: &Identifier<'arena>,
     counts: params::Counts,
     first_level: bool,
+    call_span: mago_span::Span,
 ) {
     let fallback = match id {
         Identifier::Local(l) if !c.names.is_imported(&l.span) => Some(l.value),
@@ -73,6 +75,7 @@ fn named_call<'arena>(
             params::Call {
                 kind: params::CallKind::Function,
                 subject: &format!("Function {display}"),
+                scope: Some(call_span),
                 void_message: Some(format!("Result of function {display} (void) is used.")),
             },
             first_level,
@@ -241,6 +244,7 @@ fn arguments<'arena>(
         params::Call {
             kind: params::CallKind::Method,
             subject: &format!("Method {subject}"),
+            scope: Some(call.span()),
             void_message: Some(format!("Result of method {subject} (void) is used.")),
         },
         first_level,
@@ -441,7 +445,7 @@ pub(super) fn check_static_method<'arena>(
             format!("Cannot call abstract{s} method {declaring}::{declared}()."),
             None,
         );
-        return;
+        checked = true;
     }
     let Some(call) = call else {
         if !checked {
@@ -472,6 +476,7 @@ pub(super) fn check_static_method<'arena>(
         params::Call {
             kind: params::CallKind::StaticMethod,
             subject: &format!("{display_kind} {subject}"),
+            scope: Some(call.span()),
             void_message: Some(format!("Result of {kind} {subject} (void) is used.")),
         },
         first_level,

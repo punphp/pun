@@ -29,6 +29,8 @@ pub enum Guard {
     Method(String),
     /// The precondition's source: method_exists's receiver, or is_callable's literal array.
     MethodSource(String, Span),
+    /// A true method_exists call whose selector is not a single written name.
+    MethodExists(String),
     /// `!($this instanceof Foo)`: in a class that is a Foo, the code here is unreachable.
     ThisNotInstanceOf(String),
     /// `PHP_VERSION_ID` compared with an integer: its range here, bounds inclusive (`None` unbounded).
@@ -58,6 +60,7 @@ impl PartialEq for Guard {
             | (Self::Function(a), Self::Function(b))
             | (Self::ClassConstant(a), Self::ClassConstant(b))
             | (Self::Constant(a), Self::Constant(b))
+            | (Self::MethodExists(a), Self::MethodExists(b))
             | (Self::ThisNotInstanceOf(a), Self::ThisNotInstanceOf(b))
             | (Self::Expr(a), Self::Expr(b))
             | (Self::ConstantFetch(a), Self::ConstantFetch(b)) => a == b,
@@ -71,11 +74,11 @@ impl PartialEq for Guard {
 }
 
 fn expression_guard(g: &Guard) -> bool {
-    matches!(g, Guard::Expr(_) | Guard::ConstantFetch(..) | Guard::ExprStrings(..) | Guard::ExprWhen(..))
+    matches!(g, Guard::Expr(_) | Guard::MethodExists(_) | Guard::ConstantFetch(..) | Guard::ExprStrings(..) | Guard::ExprWhen(..))
 }
 
 pub(super) fn definite_expression(g: &Guard) -> bool {
-    matches!(g, Guard::Expr(_) | Guard::ConstantFetch(..))
+    matches!(g, Guard::Expr(_) | Guard::MethodExists(_) | Guard::ConstantFetch(..))
 }
 
 /// Remember existence predicates in a boolean variable, not the source expression's type holder. Merely
@@ -158,6 +161,17 @@ fn truthy_of(
         Expression::Variable(Variable::Direct(v)) => var(v.name),
         Expression::Assignment(a) => truthy(a.rhs, var, resolve, function),
         Expression::Call(Call::Function(call)) => {
+            if let Expression::Identifier(id) = call.function
+                && function(id).trim_start_matches('\\').eq_ignore_ascii_case("method_exists")
+                && call.argument_list.arguments.len() >= 2
+                && constant_string(call.argument_list.arguments.get(1).expect("two arguments").value(), resolve).is_none()
+                && let Some(key) = expression_key(expr, resolve, &|id| {
+                    let name = function(id);
+                    if name.trim_start_matches('\\').eq_ignore_ascii_case("method_exists") { "\\method_exists".into() } else { name }
+                })
+            {
+                return vec![Guard::MethodExists(key)];
+            }
             let Some(guard) = exists_call(call, resolve) else { return Vec::new(); };
             let mut guards = Vec::new();
             if let Guard::Method(key) = &guard {
@@ -200,8 +214,8 @@ fn contains_call(e: &Expression) -> bool {
 /// ExprPrinter identities for the value expressions used as class-constant receivers/selectors. Unlike
 /// inferred types, these identities distinguish two variables holding the same class and a dynamic selector
 /// from its current finite values. Parentheses and imported names do not change the identity.
-/// Named calls keep ExprPrinter's resolved names and argument syntax, not their return types or acceptors.
-/// Dynamic callees, indirect variables and dynamic property selectors remain unavailable identities.
+/// Calls keep ExprPrinter's selector and argument syntax, not their return types or acceptors. Dynamic
+/// function callees, nullsafe calls, indirect variables and dynamic property selectors remain unavailable.
 fn expression_key(e: &Expression, resolve: &dyn Fn(&Identifier) -> String, function: &dyn Fn(&Identifier) -> String) -> Option<String> {
     let key = |e| expression_key(e, resolve, function);
     Some(match super::types::flow::unparen(e) {
@@ -224,12 +238,27 @@ fn expression_key(e: &Expression, resolve: &dyn Fn(&Identifier) -> String, funct
                     (function(id), &f.argument_list)
                 }
                 Call::Method(m) => {
-                    let ClassLikeMemberSelector::Identifier(id) = &m.method else { return None };
-                    (format!("{}->{}", key(m.object)?, String::from_utf8_lossy(id.value)), &m.argument_list)
+                    let method = match &m.method {
+                        ClassLikeMemberSelector::Identifier(id) => String::from_utf8_lossy(id.value).into_owned(),
+                        ClassLikeMemberSelector::Variable(Variable::Direct(v)) => format!("{{{}}}", String::from_utf8_lossy(v.name)),
+                        ClassLikeMemberSelector::Expression(e) => object_property_key(e.expression, resolve, function)?,
+                        _ => return None,
+                    };
+                    (format!("{}->{method}", key(m.object)?), &m.argument_list)
                 }
                 Call::StaticMethod(m) => {
-                    let ClassLikeMemberSelector::Identifier(id) = &m.method else { return None };
-                    (format!("{}::{}", key(m.class)?, String::from_utf8_lossy(id.value)), &m.argument_list)
+                    // Standard::pExpr_StaticCall does not use pObjectProperty: literal strings keep their
+                    // braces, but a variable prints without them, even when the source used `::{$method}`.
+                    let method = match &m.method {
+                        ClassLikeMemberSelector::Identifier(id) => String::from_utf8_lossy(id.value).into_owned(),
+                        ClassLikeMemberSelector::Variable(Variable::Direct(v)) => String::from_utf8_lossy(v.name).into_owned(),
+                        ClassLikeMemberSelector::Expression(e) => match super::types::flow::unparen(e.expression) {
+                            Expression::Variable(Variable::Direct(v)) => String::from_utf8_lossy(v.name).into_owned(),
+                            e => format!("{{{}}}", key(e)?),
+                        },
+                        _ => return None,
+                    };
+                    (format!("{}::{method}", key(m.class)?), &m.argument_list)
                 }
                 _ => return None,
             };
@@ -256,22 +285,24 @@ fn expression_key(e: &Expression, resolve: &dyn Fn(&Identifier) -> String, funct
     })
 }
 
+/// Printer::pObjectProperty(): only identifier-shaped literal strings become barewords. Neither a variable
+/// nor a class constant with that inferred string value is the same expression as the literal selector.
+fn object_property_key(e: &Expression, resolve: &dyn Fn(&Identifier) -> String, function: &dyn Fn(&Identifier) -> String) -> Option<String> {
+    static IDENTIFIER: std::sync::LazyLock<pcre2::bytes::Regex> = std::sync::LazyLock::new(|| {
+        pcre2::bytes::Regex::new(r"^[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*$").expect("identifier regexp")
+    });
+    Some(match super::types::flow::unparen(e) {
+        Expression::Literal(Literal::String(s)) if IDENTIFIER.is_match(s.value?).expect("byte regexp") => {
+            String::from_utf8_lossy(s.value?).into_owned()
+        }
+        e => format!("{{{}}}", expression_key(e, resolve, function)?),
+    })
+}
+
 fn constant_key(a: &ClassConstantAccess, resolve: &dyn Fn(&Identifier) -> String, function: &dyn Fn(&Identifier) -> String) -> Option<String> {
     let name = match &a.constant {
         ClassLikeConstantSelector::Identifier(id) => String::from_utf8_lossy(id.value).into_owned(),
-        ClassLikeConstantSelector::Expression(e) => {
-            // PHPStan's Printer::pObjectProperty() normalizes only identifier-shaped literal strings, not a
-            // variable or a class constant which happens to have that same inferred value.
-            static IDENTIFIER: std::sync::LazyLock<pcre2::bytes::Regex> = std::sync::LazyLock::new(|| {
-                pcre2::bytes::Regex::new(r"^[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*$").expect("identifier regexp")
-            });
-            match super::types::flow::unparen(e.expression) {
-                Expression::Literal(Literal::String(s)) if IDENTIFIER.is_match(s.value?).expect("byte regexp") => {
-                    String::from_utf8_lossy(s.value?).into_owned()
-                }
-                _ => format!("{{{}}}", expression_key(e.expression, resolve, function)?),
-            }
-        }
+        ClassLikeConstantSelector::Expression(e) => object_property_key(e.expression, resolve, function)?,
         ClassLikeConstantSelector::Missing(_) => return None,
     };
     Some(format!("{}::{name}", expression_key(a.class, resolve, function)?))
@@ -657,6 +688,20 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             .contains(&Guard::Function(name.trim_start_matches('\\').to_string()))
     }
 
+    /// MethodCallCheck asks about the original selector expression, not each selected constant name.
+    pub(super) fn in_dynamic_method_exists(&self, receiver: &Expression, selector: &Expression, name: &str) -> bool {
+        let key = |e| expression_key(e, &|id| self.resolved(id), &|id| self.guard_function_name(id));
+        let (Some(receiver), Some(selector)) = (key(receiver), key(selector)) else { return false; };
+        let call = format!("\\method_exists({receiver}, {selector})");
+        self.guards.iter().any(|guard| match guard {
+            Guard::MethodExists(key) => *key == call,
+            Guard::ExprWhen(key, missing) if *key == call => missing.iter().all(|path| {
+                path.iter().any(|(key, values)| *key == selector && !values.iter().any(|value| value == name))
+            }),
+            _ => false,
+        })
+    }
+
     /// Walks `body` with `extra` guards on top of the current ones.
     pub(super) fn with_guards(&mut self, extra: Vec<Guard>, body: impl FnOnce(&mut Self)) {
         let saved = self.guards.clone();
@@ -713,7 +758,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             Expression::Self_(_) | Expression::Static(_) => self.class_scope()?.name.to_string(),
             Expression::Parent(_) => self.class_scope()?.direct_parent_class?.to_string(),
             e => match self.phpstan_type(e)? {
-                Type::Object(n, _) | Type::Static(n, _) | Type::This(n) | Type::EnumCase(n, _) => n,
+                Type::Object(n, _, _) | Type::Static(n, _) | Type::This(n) | Type::EnumCase(n, _) => n,
                 _ => return None,
             },
         };
@@ -787,7 +832,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         });
         self.retain_guards(|guard| {
             let key = match guard {
-                Guard::ConstantFetch(key) | Guard::ExprWhen(key, _) => key,
+                Guard::ConstantFetch(key) | Guard::MethodExists(key) | Guard::ExprWhen(key, _) => key,
                 _ => return true,
             };
             !key_contains(key, receiver)
@@ -839,7 +884,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         // filterByTruthyValue($selector === 'NAME') may make that holder definite again.
         for guard in paths.iter().flatten() {
             let key = match guard {
-                Guard::Expr(key) | Guard::ConstantFetch(key) => key,
+                Guard::Expr(key) | Guard::MethodExists(key) | Guard::ConstantFetch(key) => key,
                 _ => continue,
             };
             let missing: Vec<_> = paths.iter().filter(|p| !p.contains(guard)).map(|path| {
@@ -881,7 +926,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         let Some(key) = expression_key(e, &|id| self.resolved(id), &|id| self.guard_function_name(id)) else { return };
         let contains_key = |expr: &str| key_contains(expr, &key);
         let contains = |guard: &Guard| match guard {
-            Guard::Expr(expr) | Guard::ConstantFetch(expr) | Guard::ExprStrings(expr, _) => contains_key(expr),
+            Guard::Expr(expr) | Guard::MethodExists(expr) | Guard::ConstantFetch(expr) | Guard::ExprStrings(expr, _) => contains_key(expr),
             Guard::ExprWhen(expr, missing) => contains_key(expr) || missing.iter().flatten().any(|(key, _)| contains_key(key)),
             _ => false,
         };

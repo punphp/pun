@@ -1,0 +1,139 @@
+{
+    "calls": {
+        "987": {
+            "line": 37,
+            "expression": "$sink->$name($worker->read(function ($value) {\n        function pricingLocalFunction($input) { return $input; }\n        class PricingLocalClass {}\n        interface PricingLocalInterface {}\n        trait PricingLocalTrait {}\n        enum PricingLocalEnum { case A; }\n        return $value;\n    }))",
+            "names": [
+                {
+                    "name": "bar",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 987,
+                            "end": 992,
+                            "expression": "$sink",
+                            "type": "DeclarationSink"
+                        },
+                        {
+                            "start": 1000,
+                            "end": 1283,
+                            "expression": "$worker->read(function ($value) {\n        function pricingLocalFunction($input) { return $input; }\n        class PricingLocalClass {}\n        interface PricingLocalInterface {}\n        trait PricingLocalTrait {}\n        enum PricingLocalEnum { case A; }\n        return $value;\n    })",
+                            "type": "string"
+                        }
+                    ]
+                },
+                {
+                    "name": "foo",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 987,
+                            "end": 992,
+                            "expression": "$sink",
+                            "type": "DeclarationSink"
+                        },
+                        {
+                            "start": 1000,
+                            "end": 1283,
+                            "expression": "$worker->read(function ($value) {\n        function pricingLocalFunction($input) { return $input; }\n        class PricingLocalClass {}\n        interface PricingLocalInterface {}\n        trait PricingLocalTrait {}\n        enum PricingLocalEnum { case A; }\n        return $value;\n    })",
+                            "type": "int"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1301": {
+            "line": 45,
+            "expression": "$sink->$name(declarationMap($value, fn ($input) => $input))",
+            "names": [
+                {
+                    "name": "bar",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 1301,
+                            "end": 1306,
+                            "expression": "$sink",
+                            "type": "DeclarationSink"
+                        },
+                        {
+                            "start": 1314,
+                            "end": 1359,
+                            "expression": "declarationMap($value, fn ($input) => $input)",
+                            "type": "'value'"
+                        }
+                    ]
+                },
+                {
+                    "name": "foo",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 1301,
+                            "end": 1306,
+                            "expression": "$sink",
+                            "type": "DeclarationSink"
+                        },
+                        {
+                            "start": 1314,
+                            "end": 1359,
+                            "expression": "declarationMap($value, fn ($input) => $input)",
+                            "type": "1"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1377": {
+            "line": 46,
+            "expression": "$sink->$name(declarationMap(1, fn (int $input) => 1))",
+            "names": [
+                {
+                    "name": "bar",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 1377,
+                            "end": 1382,
+                            "expression": "$sink",
+                            "type": "DeclarationSink"
+                        },
+                        {
+                            "start": 1390,
+                            "end": 1429,
+                            "expression": "declarationMap(1, fn (int $input) => 1)",
+                            "type": "1"
+                        }
+                    ]
+                },
+                {
+                    "name": "foo",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 1377,
+                            "end": 1382,
+                            "expression": "$sink",
+                            "type": "DeclarationSink"
+                        },
+                        {
+                            "start": 1390,
+                            "end": 1429,
+                            "expression": "declarationMap(1, fn (int $input) => 1)",
+                            "type": "1"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "errors": [
+        [
+            38,
+            "function.inner",
+            "Inner named functions are not supported by PHPStan. Consider refactoring to an anonymous function, class method, or a top-level-defined function. See issue #165 (https://github.com/phpstan/phpstan/issues/165) for more details.",
+            null,
+            true
+        ]
+    ]
+}

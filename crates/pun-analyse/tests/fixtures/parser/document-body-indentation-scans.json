@@ -1,0 +1,8 @@
+{
+  "short-heredoc": "<?php\nclass ScanBefore {}\nfunction scanFunction() {}\nconst SCAN_CONSTANT = 1;\n$x = <<<TXT\n bad\n  TXT;\nclass ScanAfter {}\n",
+  "mixed-nowdoc": "<?php\nclass ScanBefore {}\nfunction scanFunction() {}\nconst SCAN_CONSTANT = 1;\n$x = <<<'TXT'\n\tbad\n  TXT;\nclass ScanAfter {}\n",
+  "interpolation": "<?php\nclass ScanBefore {}\nfunction scanFunction() {}\nconst SCAN_CONSTANT = 1;\n$x = <<<TXT\n$value\n  TXT;\nclass ScanAfter {}\n",
+  "valid-spaces": "<?php\nclass ScanBefore {}\nfunction scanFunction() {}\nconst SCAN_CONSTANT = 1;\n$x = <<<TXT\n  body\n  TXT;\nclass ScanAfter {}\n",
+  "valid-tabs": "<?php\nclass ScanBefore {}\nfunction scanFunction() {}\nconst SCAN_CONSTANT = 1;\n$x = <<<'TXT'\n\tbody\n\tTXT;\nclass ScanAfter {}\n",
+  "valid-short-blank": "<?php\nclass ScanBefore {}\nfunction scanFunction() {}\nconst SCAN_CONSTANT = 1;\n$x = <<<TXT\n \n\n  body\n  TXT;\nclass ScanAfter {}\n"
+}

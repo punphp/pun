@@ -1,0 +1,138 @@
+[
+  [
+    "numeric.php",
+    15,
+    "phpstan.dumpType",
+    "Dumped type: numeric-string",
+    null,
+    false
+  ],
+  [
+    "numeric.php",
+    16,
+    "phpstan.dumpType",
+    "Dumped type: non-empty-string&numeric-string",
+    null,
+    false
+  ],
+  [
+    "numeric.php",
+    19,
+    "phpstan.dumpType",
+    "Dumped type: numeric-string",
+    null,
+    false
+  ],
+  [
+    "numeric.php",
+    20,
+    "phpstan.dumpType",
+    "Dumped type: non-empty-string&numeric-string",
+    null,
+    false
+  ],
+  [
+    "numeric.php",
+    21,
+    "phpstan.dumpType",
+    "Dumped type: numeric-string|uppercase-string",
+    null,
+    false
+  ],
+  [
+    "numeric.php",
+    22,
+    "phpstan.dumpType",
+    "Dumped type: (non-empty-string&numeric-string)|uppercase-string",
+    null,
+    false
+  ],
+  [
+    "numeric.php",
+    23,
+    "phpstan.dumpType",
+    "Dumped type: lowercase-string|numeric-string",
+    null,
+    false
+  ],
+  [
+    "numeric.php",
+    24,
+    "phpstan.dumpType",
+    "Dumped type: lowercase-string|(non-empty-string&numeric-string)",
+    null,
+    false
+  ],
+  [
+    "numeric.php",
+    25,
+    "phpstan.dumpType",
+    "Dumped type: literal-string|numeric-string",
+    null,
+    false
+  ],
+  [
+    "numeric.php",
+    26,
+    "phpstan.dumpType",
+    "Dumped type: literal-string|(non-empty-string&numeric-string)",
+    null,
+    false
+  ],
+  [
+    "numeric.php",
+    34,
+    "phpstan.dumpType",
+    "Dumped type: numeric-string|uppercase-string",
+    null,
+    false
+  ],
+  [
+    "numeric.php",
+    35,
+    "phpstan.dumpType",
+    "Dumped type: (non-empty-string&numeric-string)|uppercase-string",
+    null,
+    false
+  ],
+  [
+    "numeric.php",
+    43,
+    "phpstan.dumpType",
+    "Dumped type: numeric-string|uppercase-string",
+    null,
+    false
+  ],
+  [
+    "numeric.php",
+    44,
+    "phpstan.dumpType",
+    "Dumped type: (non-empty-string&numeric-string)|uppercase-string",
+    null,
+    false
+  ],
+  [
+    "numeric.php",
+    47,
+    "argument.type",
+    "Parameter #1 $value of function NumericAccessories\\needNonempty expects non-empty-string, '' given.",
+    null,
+    true
+  ],
+  [
+    "numeric.php",
+    49,
+    "phpstan.dumpType",
+    "Dumped type: numeric-string",
+    null,
+    false
+  ],
+  [
+    "numeric.php",
+    53,
+    "phpstan.dumpType",
+    "Dumped type: non-empty-string&numeric-string",
+    null,
+    false
+  ]
+]

@@ -539,7 +539,7 @@ pub fn allowed_subtypes(c: &mut Checker, at: Span, k: &ClassLikeMetadata) {
             continue;
         };
         if allowed.iter().any(|t| match t {
-            pun_phpstan::types::Type::Object(n, _) => *n == class_name,
+            pun_phpstan::types::Type::Object(n, _, _) => *n == class_name,
             _ => false,
         }) {
             continue;
@@ -576,7 +576,7 @@ fn allowed_sub_types(c: &Checker, k: &ClassLikeMetadata) -> Option<Vec<pun_phpst
         t => vec![t],
     };
     if k.kind == SymbolKind::Class && !k.flags.is_abstract() {
-        types.push(Type::Object(super::declared::original_name(k), Vec::new()));
+        types.push(Type::Object(super::declared::original_name(k), Vec::new(), false));
     }
     Some(types)
 }

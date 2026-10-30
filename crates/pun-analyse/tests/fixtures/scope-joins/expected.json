@@ -1,0 +1,1058 @@
+{
+    "default": [
+        [
+            "matrix.php",
+            13,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'left', value: 1}|array{tag: 'right', value: null}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            14,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            25,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'left', value: 1}|array{tag: 'right', value: null}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            26,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            36,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'only', value: 1}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            46,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'after', value: null}|array{tag: 'before', value: 1}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            47,
+            "phpstan.dumpType",
+            "Dumped type: int|string",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            48,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            58,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'after', value: null}|array{tag: 'before', value: 1}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            59,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            60,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            76,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'after', value: null}|array{tag: 'before', value: 1}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            77,
+            "phpstan.dumpType",
+            "Dumped type: int|string",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            89,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            101,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'before', value: 1}|array{tag: 'catch', value: null}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            112,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'before', value: 1}|array{tag: 'catch', value: null}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            124,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'before', value: 1}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            135,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'before', value: 1}|array{tag: 'body', value: null}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            136,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            147,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'before', value: 1}|array{tag: 'body', value: null}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            148,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            163,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'before', value: 1}|array{tag: 'break', value: null}|array{tag: 'continue', value: false}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            178,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'final', value: null}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            179,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            193,
+            "phpstan.dumpType",
+            "Dumped type: int|string",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            203,
+            "phpstan.dumpType",
+            "Dumped type: T (function SharedScopeJoins\\templateIterator(), argument)",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            215,
+            "phpstan.dumpType",
+            "Dumped type: (list{}&T of list<int> (function SharedScopeJoins\\replacedTemplateIterator(), argument))|array{'final'}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            225,
+            "phpstan.dumpType",
+            "Dumped type: T of stdClass (function SharedScopeJoins\\objectTemplateIterator(), argument)",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            232,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            235,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            239,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            240,
+            "variable.undefined",
+            "Call to function compact() contains undefined variable $value.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            252,
+            "phpstan.dumpType",
+            "Dumped type: array{}|array{'final'}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            264,
+            "phpstan.dumpType",
+            "Dumped type: array{'final'}",
+            null,
+            false
+        ]
+    ],
+    "quiet": [
+        [
+            "matrix.php",
+            13,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'left', value: 1}|array{tag: 'right', value: null}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            25,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'left', value: 1}|array{tag: 'right', value: null}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            36,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'only', value: 1}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            46,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'after', value: null}|array{tag: 'before', value: 1}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            47,
+            "phpstan.dumpType",
+            "Dumped type: int|string",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            58,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'after', value: null}|array{tag: 'before', value: 1}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            59,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            76,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'after', value: null}|array{tag: 'before', value: 1}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            77,
+            "phpstan.dumpType",
+            "Dumped type: int|string",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            89,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            101,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'before', value: 1}|array{tag: 'catch', value: null}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            112,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'before', value: 1}|array{tag: 'catch', value: null}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            124,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'before', value: 1}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            135,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'before', value: 1}|array{tag: 'body', value: null}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            147,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'before', value: 1}|array{tag: 'body', value: null}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            163,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'before', value: 1}|array{tag: 'break', value: null}|array{tag: 'continue', value: false}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            178,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'final', value: null}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            179,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            193,
+            "phpstan.dumpType",
+            "Dumped type: int|string",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            203,
+            "phpstan.dumpType",
+            "Dumped type: T (function SharedScopeJoins\\templateIterator(), argument)",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            215,
+            "phpstan.dumpType",
+            "Dumped type: (list{}&T of list<int> (function SharedScopeJoins\\replacedTemplateIterator(), argument))|array{'final'}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            225,
+            "phpstan.dumpType",
+            "Dumped type: T of stdClass (function SharedScopeJoins\\objectTemplateIterator(), argument)",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            232,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            239,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            240,
+            "variable.undefined",
+            "Call to function compact() contains undefined variable $value.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            252,
+            "phpstan.dumpType",
+            "Dumped type: array{}|array{'final'}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            264,
+            "phpstan.dumpType",
+            "Dumped type: array{'final'}",
+            null,
+            false
+        ]
+    ],
+    "foreach-off": [
+        [
+            "matrix.php",
+            13,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'left', value: 1}|array{tag: 'right', value: null}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            14,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            25,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'left', value: 1}|array{tag: 'right', value: null}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            26,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            36,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'only', value: 1}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            46,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'after', value: null}|array{tag: 'before', value: 1}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            47,
+            "phpstan.dumpType",
+            "Dumped type: int|string",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            48,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            58,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'after', value: null}|array{tag: 'before', value: 1}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            59,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            60,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            76,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'after', value: null}|array{tag: 'before', value: 1}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            77,
+            "phpstan.dumpType",
+            "Dumped type: int|string",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            89,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            101,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'before', value: 1}|array{tag: 'catch', value: null}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            112,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'before', value: 1}|array{tag: 'catch', value: null}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            124,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'before', value: 1}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            135,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'before', value: 1}|array{tag: 'body', value: null}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            136,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            147,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'before', value: 1}|array{tag: 'body', value: null}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            148,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            163,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'before', value: 1}|array{tag: 'break', value: null}|array{tag: 'continue', value: false}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            178,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'final', value: null}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            179,
+            "phpstan.dumpType",
+            "Dumped type: int|string",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            180,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            193,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            203,
+            "phpstan.dumpType",
+            "Dumped type: T (function SharedScopeJoins\\templateIterator(), argument)",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            215,
+            "phpstan.dumpType",
+            "Dumped type: (list{}&T of list<int> (function SharedScopeJoins\\replacedTemplateIterator(), argument))|array{'final'}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            225,
+            "phpstan.dumpType",
+            "Dumped type: T of stdClass (function SharedScopeJoins\\objectTemplateIterator(), argument)",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            232,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            235,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            239,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            240,
+            "variable.undefined",
+            "Call to function compact() contains undefined variable $value.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            252,
+            "phpstan.dumpType",
+            "Dumped type: array{}|array{'final'}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            264,
+            "phpstan.dumpType",
+            "Dumped type: array{'final'}",
+            null,
+            false
+        ]
+    ],
+    "loop-off": [
+        [
+            "matrix.php",
+            13,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'left', value: 1}|array{tag: 'right', value: null}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            14,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            25,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'left', value: 1}|array{tag: 'right', value: null}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            26,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            36,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'only', value: 1}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            46,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'after', value: null}|array{tag: 'before', value: 1}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            47,
+            "phpstan.dumpType",
+            "Dumped type: int|string",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            48,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            58,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'after', value: null}|array{tag: 'before', value: 1}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            59,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            60,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            76,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'after', value: null}|array{tag: 'before', value: 1}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            77,
+            "phpstan.dumpType",
+            "Dumped type: int|string",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            89,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            101,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'before', value: 1}|array{tag: 'catch', value: null}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            112,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'before', value: 1}|array{tag: 'catch', value: null}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            124,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'before', value: 1}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            135,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'before', value: 1}|array{tag: 'body', value: null}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            136,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            136,
+            "variable.undefined",
+            "Variable $initial might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            147,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'before', value: 1}|array{tag: 'body', value: null}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            148,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            163,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'before', value: 1}|array{tag: 'break', value: null}|array{tag: 'continue', value: false}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            178,
+            "phpstan.dumpType",
+            "Dumped type: array{tag: 'final', value: null}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            179,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            193,
+            "phpstan.dumpType",
+            "Dumped type: int|string",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            203,
+            "phpstan.dumpType",
+            "Dumped type: T (function SharedScopeJoins\\templateIterator(), argument)",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            215,
+            "phpstan.dumpType",
+            "Dumped type: (list{}&T of list<int> (function SharedScopeJoins\\replacedTemplateIterator(), argument))|array{'final'}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            225,
+            "phpstan.dumpType",
+            "Dumped type: T of stdClass (function SharedScopeJoins\\objectTemplateIterator(), argument)",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            232,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            235,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            239,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            240,
+            "variable.undefined",
+            "Call to function compact() contains undefined variable $value.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            252,
+            "phpstan.dumpType",
+            "Dumped type: array{}|array{'final'}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            264,
+            "phpstan.dumpType",
+            "Dumped type: array{'final'}",
+            null,
+            false
+        ]
+    ]
+}

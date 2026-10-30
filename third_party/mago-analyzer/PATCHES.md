@@ -249,7 +249,8 @@ types, constructors, and truthiness queries.
 
 Implicit arithmetic coercion from strings, booleans, or null is unsupported. So are arithmetic on ranges
 or unions, float modulo, modulo with an unknown divisor, comparisons of refined non-literal strings or
-unions, and non-numeric loose comparisons. Short-circuit operators, coalesce, exponentiation, bitwise operators,
+unions except the literal guards below, and non-numeric loose comparisons. Short-circuit operators,
+coalesce, exponentiation, bitwise operators,
 increments, decrements, and compound assignments remain unsupported. These cases return no native
 value and invalidate the live native scope. They never fall back to the full value or guessed `mixed`.
 Explicit scalar casts have the separate bounded contract below.
@@ -262,7 +263,7 @@ Completed operand artifacts remain valid records of their earlier evaluations. S
 do not recover that scope. This scope-wide rule avoids claiming that an unsupported operation left
 aliases or locals unchanged. Each separately analyzed named function can initialize its own native scope.
 
-Branches, loops, joins, exceptional control flow, references, arrays, members, class scopes, methods,
+Loops, exceptional control flow, references, arrays, members, class scopes, methods,
 closures, arrows, captures, globals, statics, unset, dynamic calls, and undefined local reads
 are unsupported. Functions with by-reference returns or parameters, variadics, output parameters,
 assertions, generators, accessed globals, or non-scalar parameter declarations do not initialize native
@@ -275,7 +276,7 @@ native availability and cached native values. Their effects have no native trans
 Opaque mutation preserves the paired checkpoint history even when a hook replaces all artifacts.
 The existing limitation on speculative stateful statement, declaration, and call hooks still applies.
 
-These choices leave condition filtering and joining, reference effects, member state, callback scope
+These choices leave general condition filtering and joining, reference effects, member state, callback scope
 entry, native invocation specialization, and explicit native-aware semantic hook contracts for later
 slices. They do not settle the separate architecture choice between a maintained Mago patch and a
 separate scope engine.
@@ -459,6 +460,86 @@ Fresh LCOV export from those five executables, intersected with added or replace
 `11a57541`, measures **152/152 changed analyzer executable lines** and **39/39 changed test executable
 lines**. There are no exclusions, gap entries, or private-helper tests. This is changed-line coverage,
 not branch coverage or whole-analyzer coverage.
+
+### Scalar conditional state
+
+The conditional slice supports `if`, `elseif`, `else`, and ternaries with direct scalar guards,
+negation, strict literal comparisons, and ordered integer comparisons. It uses the existing body walk.
+`utils/conditional.rs` supplies native true-branch state after that walk visits the condition.
+`statement/if.rs` carries false-branch state through the ordered `elseif` chain and records native
+snapshots beside the existing continuing variable scopes. Bare and scalar-valued returns do not
+contribute a continuing snapshot. Missing variables on one edge retain their when-defined type.
+An unsupported contributing edge makes the joined native state unavailable.
+
+Full PHPDoc-aware types still choose which `if` edges continue, including pruned branches that the
+full walk visits for diagnostics. Those visits retain their native observations. A body skipped by
+the full reconciler does not acquire synthetic observations or a guessed native continuation.
+The supported policy is PHPStan's default `treatPhpDocTypesAsCertain=true`.
+
+Ternaries have two distinct rules. Their native result selects values by native condition truthiness.
+Their continuation selects one edge only for a full literal boolean, not for a truthy integer or string.
+For native `false` with PHPDoc `true`, `flag ? (value = 1) : (value = 2)` therefore has native result
+`2` but continuing native `value` equal to `1`. `expression/conditional.rs` publishes the native result
+after the full result setter, which invalidates any previous native artifact at that span.
+
+`native.rs` filters the bounded scalar maps without changing full locals or assertions. Strict integer
+and string comparisons preserve PHPStan's decided-comparison behavior: an equal edge intersects with
+the literal, while a full-decided unequal edge becomes `never` or leaves native state unchanged.
+Ordered integer guards intersect ranges using checked boundaries. Native joins normalize the complete
+truthy and falsy string partition without changing Mago's full-type combiner.
+
+The authority is PHPStan 2.3.1 at `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`:
+`Analyser/StmtHandler/IfHandler.php`, `Analyser/ExprHandler/TernaryHandler.php`,
+`Analyser/ExprHandler/Helper/IdenticalNarrowingHelper.php`, `MutatingScope::applySpecifiedTypes()`,
+and `ScopeOps::finishMerge()`. The `native-lane/conditions.php`, `condition-guards.php`,
+`condition-edges.php`, `condition-boundaries.php`, and `condition-wrappers.php` fixtures have fresh
+`dumpNativeType` captures.
+Public Analyzer tests compare artifact and observer queries against those captures. They also compare
+full artifacts, diagnostics, observer visits, and return-provider counts with native tracking disabled.
+Pure wrappers retain any repeated operand visits already made by the full conditional analyzer.
+
+Mixed truthiness, floating-point guard subtraction, additional numeric or casing refinements on native
+string guards, effectful wrapped conditions, short-circuit conditions, general arithmetic conditions,
+loops, arrays, objects, and exceptional effects remain unsupported. Existing supported named-call
+transfers are unchanged. No second walk, provider call,
+observer call, native-dependent rule activation, or coverage exclusion is added.
+
+On unchanged native source `632c633a`, the first public regression fails at `conditions.php:6`:
+the true branch reports no native type instead of PHPStan's `true`. The five new fixtures retain
+**178 actual PHPStan native records**. The original scalar, operator, and cast captures are unchanged.
+For each fixture, the oracle replaces only `expression; // native` with
+`\PHPStan\dumpNativeType(expression);`, preserving source lines. From the repository root, its command is:
+
+```sh
+timeout 900 nice php .oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar analyse \
+	--configuration=/tmp/pun-native-conditional-research/phpstan.neon --level=3 \
+	--error-format=json --no-progress --memory-limit=1G --debug \
+	/tmp/pun-native-conditions-evidence/conditions.php
+```
+
+The disposable configuration sets `phpVersion: 80400` and a scratch `tmpDir` only.
+The final JSON line supplies unmodified `phpstan.dumpNativeType` records. Exit 1 is expected.
+The other four fixtures use the same command with their respective scratch filenames.
+
+The clean-profile run passes **60 focused public tests**: native lane 16, callback gather 10,
+array slice 6, debug 10, variables 4, dead code 4, mixed subtraction 9, and integer-division overflow 1.
+Scoped rule sweeps pass Operators (12 cases) and Variables (51 cases). Scoped level sweeps pass
+Comparison (404 cases), DeadCode (114 cases), and Variables (94 cases), retaining their existing gaps.
+These sweeps are regression checks, not complete PHPStan parity.
+
+The instrumented native command above also selects `--test variables --test dead_code
+--test mixed_subtraction`. The separate arithmetic command selects
+`--test coverage -- literal_integer_division_overflow_matches_php_and_phpstan`.
+Rule and level runs select `--test rules` or `--test levels`, with `PUN_RULES_FILTER` or
+`PUN_LEVELS_FILTER` set to the named directory and a trailing slash. All use the private target
+`/home/user/workspace/target-native-conditions`, one Cargo job, two Rayon threads, and
+`cargo llvm-cov --dep-coverage mago-analyzer --no-report` under `timeout 900 nice`.
+
+Fresh LCOV export from those executables covers **397/397 changed analyzer executable lines**
+against `632c633a`: native transfers 356, if statements 22, ternaries 13, conditional utility 5,
+and if-scope initialization 1. Changed public test executable lines are **61/61**.
+The measurement uses fresh profiles and unfiltered LLVM records, with no exclusions or private-helper
+tests. This is changed-line coverage, not branch coverage or whole-analyzer coverage.
 
 ## Literal integer division overflow
 
@@ -1361,3 +1442,1904 @@ exclusions: 9 in array assignment and 64 in foreach. The generic-array accessory
 constant-shape widening control both execute. The dependency is instrumented explicitly with
 `cargo llvm-cov --dep-coverage mago-analyzer --no-report`; an unfiltered LCOV report retains the
 vendored source paths.
+
+## Negative guards retain mixed exclusions
+
+`simple_negated_assertion_reconciler.rs` uses the shared `TMixed::subtract()` for negative
+scalar, array, object, named-object, and null type assertions on mixed values. PHPStan 2.3.1's
+`MixedType::subtract()` unions repeated exclusions. Its `ErrorType::subtract()` retains error
+identity. The maintained API provides both contracts. The outer union retains its existing flags.
+Falsey mixed values also retain their finite positive domain through `get_empty()` and the shared
+intersection API. A negative guard must not widen a falsey value into an unrestricted complement.
+
+`negated_assertion_reconciler.rs` routes mixed literal comparisons through the same producer.
+Strict inequalities retain their constant exclusions. Loose comparisons do not claim strict
+type exclusions. Non-mixed literals keep the existing specialized handler. Predicate evaluation,
+reference processing, certainty, native dispatch, and Pun's conversion layer are unchanged.
+
+The public `mixed_subtraction` fixture `guards.php` contains the actual PHPStan 2.3.1 records for
+negative predicates, copies, repeated guards, short-circuit conditions, terminating branches,
+joins, reassignment, strict literals, null, truthiness, and failed reads. It also checks that a
+partial offset-domain exclusion permits unset while the complete excluded domain rejects it.
+Its Analyzer control compares all full expression types and issues with native tracking on and
+off, without an injection hook.
+
+The exact public oracle comparison retains three unresolved array descriptions at lines 30,
+39, and 41. PHPStan's `IsArrayFunctionTypeSpecifyingExtension` creates explicit mixed key and
+value parameters, producing `array<mixed, mixed>`. Mago's assertion uses placeholders, and Pun's
+current converter produces implicit mixed parameters and describes the exclusion as `array`.
+Those saved oracle records remain active. No converter, representation, mapping, or gap changes
+are part of this patch.
+
+One further active record at line 153 exposes the positive guard's falsey join: its `is_int`
+alternative contributes int instead of 0. `simple_assertion_reconciler.rs` still replaces mixed
+with the asserted type without intersecting its positive falsey constraint. That producer is
+outside this negative-assertion patch.
+
+The mutation control at lines 168 and 169 exposes the shared API's array subtraction boundary.
+After unset, PHPStan removes the empty array from the excluded array domain, leaving only
+non-empty arrays excluded. Codex's `mixed/subtraction.rs::remove()` currently handles integer
+partial differences but retains the complete array exclusion. The subsequent ArrayAccess guard
+therefore produces an extra unset error. The oracle record and negative control remain active.
+This shared API correction is outside the analyzer-producer ownership of this patch.
+
+This producer does not add iterable, callable, structural-accessory, or generic-constraint
+complements. Loose coercive comparisons also need separate transfers. A fresh PHPStan probe of
+`$value != 0` requires `mixed~(0|0.0|'0'|false|null)`, not just `mixed~0`. The unchanged resource
+predicate control returns mixed, matching PHPStan.
+
+## Falsey guard intersections and explicit array assertions
+
+The follow-up closes the three producer and transfer failures recorded above. The original
+`guards.php` regression now matches all 36 PHPStan 2.3.1 records, without changed expectations.
+
+`simple_assertion_reconciler.rs` intersects a falsey mixed value with the asserted type instead
+of replacing that value with the entire asserted domain. The intersection uses the finite
+falsey domain and strict assertion containment. In particular, integer zero does not satisfy
+`is_float()`. Subsequent positive float and bool guards retain their surviving literals.
+
+`assertion.rs` supplies explicit mixed key and value types for builtin `is_array()` assertions,
+matching `IsArrayFunctionTypeSpecifyingExtension::specifyTypes()`. The prelude annotation does
+not carry that distinction. A user-defined function named `is_array` retains its own assertions.
+Unconstrained keyed-array refinements keep these source-owned parameters. Pun's atomic converter
+reads the mixed identity from Codex, not an annotation flag or the reported type string.
+The positive array intersection also absorbs constant-array alternatives covered by its generic
+array. Re-unioning those alternatives would normalize away the explicit mixed key again.
+
+Codex's accompanying patch retains explicit mixed through subtraction, unset, unions,
+intersections, copies, and distinct-array joins. It also subtracts the empty-array domain
+from an array exclusion after unset, retaining only non-empty arrays in that exclusion.
+
+Fresh controls are in `mixed-subtraction/array-guards.php` and `guard-types.php`. Their oracle
+records remain strict. Two additional records expose separate existing contracts: the shared
+type reporter adds parentheses around a single non-empty-array exclusion at array-guards.php:74;
+and Mago infers a string assertion from an unannotated user function at line 137, which PHPStan
+does not infer. This patch does not change `restore_metadata`, the shared type reporter, or
+inferred function assertions.
+
+## Declared assertions at invocation boundaries
+
+`invocation/post_process.rs` does not publish body-inferred conditional assertions as call-site
+contracts. It checks `FunctionLikeMetadata::assertions_inferred`, which the scanner sets only
+when no explicit assertions exist. The populator clears that flag when a method inherits a
+declared assertion. It does not inherit a parent's body predicate as a declared child contract.
+Body-inferred metadata remains available to callback providers.
+
+PHPStan's `FuncCallHandler::specifyTypes()` checks registered type-specifying extensions,
+conditional return types, and reflected PHPDoc assertions. It does not inspect the callee's
+body for an argument predicate. `BetterReflectionProvider` builds those assertions from the
+resolved PHPDoc. Both paths are pinned at `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`.
+
+Only the inferred conditional maps are omitted. Argument evaluation, reference output,
+exception processing, unconditional assertions, and plugin assertions keep their existing paths.
+Declared `@phpstan-assert`, `@phpstan-assert-if-true`, and `@phpstan-assert-if-false` contracts
+still apply, including inherited method contracts and opposite-branch exclusions.
+
+`mixed-subtraction/call-assertions.php` records 28 fresh PHPStan 2.3.1 diagnostics for functions,
+methods, closures, assignments inside arguments, and reference output. Public analyzer controls
+compare those records with native tracking enabled and disabled. `inherited-assertions.php`
+adds four oracle records for an overriding method with its own inferred predicate and an
+overriding method without one. Neither inherits the parent's inferred assertion.
+The existing strict record at `array-guards.php:137` now matches mixed. Its line 74
+type-description mismatch is unchanged.
+
+## File-local global constant values
+
+`expression/constant_access.rs` prefers an encountered user declaration's local value when its atoms
+differ from canonical initializer metadata. Forward reads and reads from other files retain reflection
+unions. Equal atoms keep the canonical union markers, including existing benevolent numeric bounds.
+Built-in constants keep their authoritative metadata and platform handling.
+
+`expression/call/function_call.rs` records an already-scanned `define()` declaration's visited value
+in that same overlay. The declaration span must match the call, so another two-argument call cannot
+define or refine a constant. This reuses existing argument artifacts without a second observer walk.
+
+The public `pun-analyse/tests/attributes.rs` regressions compare both reflection and local-flow results
+with PHPStan 2.3.1. Global initializer arrays, duplicate keys, reassigned copies, namespace lookup,
+scanned declarations, and precise arithmetic share the same controls. This patch does not change
+class-constant union storage or add cycle resolution semantics.
+
+## Raw class-constant values and late-bound declarations
+
+The class-constant resolver and cached receiver consume Codex's canonical union without converting it
+to a single atom. Named, `self`, and `parent` reads retain the raw initializer even when a native or
+PHPDoc declaration is broader or incompatible. An overridable late-bound receiver instead exposes
+the effective declaration type. Final receiver classes and final untyped constants retain raw values.
+Final typed constants still expose their declared type through an overridable receiver.
+
+Declaration-expression analysis remains independent: a PHPDoc compatibility diagnostic checks the
+runtime expression type, not the canonical reflection union. The external metadata writer uses its
+existing union wire encoding directly. No extension protocol or dependency version changes are needed.
+
+The fresh PHPStan 2.3.1 controls in `class-constant-initializers/declared.php` distinguish each selection
+and verify that a mismatched `@var string` reports runtime value 1 while exact reads retain `1|4`.
+
+## Expression callbacks without provider metadata
+
+`ExpressionHook` requires `Send + Sync`, not `Provider`. The registry stores expression callbacks and
+dispatches their hook methods without reading provider metadata. The thread-safety requirements stay
+unchanged. Existing providers can still implement both traits.
+
+Pun's internal initializer scope uses this callback contract without an unused `Provider::meta()`
+implementation. The public class-initializer controls exercise the callback through ordinary analysis,
+including lexical `self` and `parent` arithmetic. No new analysis entrypoint or metadata calls are added.
+
+## Raw object constant readers and member lookup
+
+Class-constant resolution and cached receivers use `expand_class_constant_value()` to keep raw
+initializer objects bare. The class-access wrapper no longer expands an already-resolved value
+again. Global constant reads preserve that identity for canonical values, while encountered local
+declarations retain ordinary constructor inference.
+
+Method-template collection and property localization specialize a temporary receiver through
+`specialize_named_object_for_member_lookup()`. A bare `Box` therefore stays bare when read as a
+constant, but its members still use the declared template defaults or bounds. Explicit receiver
+arguments and class-relative template scopes retain their existing paths.
+
+The source contract is PHPStan 2.3.1's
+[`ObjectType::getClassReflection()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/ObjectType.php#L1952-L1968),
+with default selection in
+[`TemplateTypeHelper::resolveTemplateTypes()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/Generic/TemplateTypeHelper.php#L64-L68).
+Public controls in `initializer-objects/` distinguish raw values, native and PHPDoc declarations,
+constructor flow, repeated property reads, and member return types.
+
+## Literal-array reads inside destructuring targets
+
+`expression/assignment/mod.rs` preserves PHPParser's target roles when preparing list values.
+`ParserAbstract::fixupArrayDestructuring()` recursively converts short and legacy arrays inside a
+short-array target, but stops at explicit `list()`. Arrays inside that explicit list remain literals.
+The item reference marker belongs to PHPParser's `ArrayItem`, not its value expression.
+
+PHPStan 2.3.1's `AssignHandler::doPrepareTarget()` defers List_ children. Its `applyWrite()` prepares
+each child after evaluating the RHS and earlier list items. A literal-array child takes the ordinary
+expression-read fallback, so its keys and nested values are evaluated without assigning its variables.
+Assignments within those literals retain their normal effects. Target keys are evaluated once.
+The owning sources are pinned at `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`.
+
+Pun's `rules/infer.rs` adapter observes reference-item values when an array is actually evaluated as
+a literal, matching `ArrayHandler::processExpr()`. The broad undefined-allowed reference selection
+does not suppress those reads. Destructuring writes do not fire literal-array expression hooks.
+Call-result processing, canonical initializer inference and reference-alias storage are unchanged.
+
+Public controls are in `tests/assignment_target_reads.rs` and `fixtures/assignment-target-reads/`.
+The capture uses PHPStan's public Analyser at levels 0, 1, 2, 7, 8, 9 and 10. Reachable cases compare
+the variable, assignment, nullsafe, append-read, parser and type-dump diagnostics. Purity collectors
+are unchanged. Separate boundary controls compare read observations without claiming support for
+unreachable syntax-rule callbacks or dynamic-variable write identities. Complete oracle diagnostics,
+including those independent contracts, remain in the capture.
+
+## Failed method-call results
+
+`expression/call/method_call.rs` stores `ErrorType` when method analysis leaves no result.
+The fallback runs after argument analysis, callable-signature providers, and magic return providers.
+It does not replace a resolved result, including private methods and real `never` returns.
+Unknown dynamic selectors instead produce mixed. Existing nullsafe short circuits retain their results.
+The ordinary method resolver marks unresolved `method_exists` assertions as mixed: PHPStan's
+[`HasMethodType`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/Accessory/HasMethodType.php#L160-L174)
+provides a permissive dummy reflection rather than a failed lookup. Actual reflected methods keep their signatures.
+
+`expression/call/static_method_call.rs` uses the same missing-reflection fallback. An invalid class operand
+instead produces mixed: PHPStan first converts that operand to `ErrorType`, whose method reflection is permissive.
+The shared invocation owner stays unchanged. Dynamic function and callable resolution have separate fallback
+contracts, so a missing invocation artifact alone cannot select a universal call result.
+
+The source contracts are PHPStan 2.3.1 at `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`:
+
+- [`MethodCallHandler::resolveReturnType()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/MethodCallHandler.php#L453-L505)
+  distinguishes failed reflection, dynamic names, and nullsafe propagation.
+- [`MethodCallReturnTypeHelper::methodCallReturnType()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/Helper/MethodCallReturnTypeHelper.php#L43-L58)
+  filters union members by method availability before selecting a reflected return.
+- [`StaticCallHandler::resolveReturnType()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/StaticCallHandler.php#L497-L580)
+  converts expression receivers to object or class-string object types before method lookup.
+- [`MethodCallCheck::check()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Rules/Methods/MethodCallCheck.php#L51-L61)
+  retains unknown-class errors. Pun's ordinary receiver check now retains them too.
+
+The public `analyse()` regressions in `crates/pun-analyse/tests/failed_methods.rs` compare complete diagnostics,
+tips, and ignorable flags against fresh PHPStan JSON in `fixtures/failed-methods/`. Only capture paths are shortened.
+The original matrix changes from 18 diagnostics, with 17 exact matches, to all 28 PHPStan diagnostics.
+Raw relative initializer calls change from 3 to all 11 diagnostics without changing their receiver identities.
+The boundary fixture checks copied failures, overwritten values, mixed and object receivers, unions, dynamic names,
+documented magic methods, static operands, callable controls, nullsafe short circuits, terminating calls,
+and `method_exists` assertions on named and unnamed objects.
+
+The dependency's public-Analyzer test `failed_method_fallback_preserves_active_signature_and_return_providers`
+uses a real framed PHP worker. It checks callable-signature providers on otherwise absent instance and static
+methods, magic return providers, a native Rust return provider, and a first-class callable invocation.
+
+Fresh LLVM instrumentation covers all 23 added executable production lines without exclusions: eight in
+Pun's receiver check, four in instance calls, seven in static calls, and four in the ordinary method resolver.
+The instrumented public regressions compare 80 complete diagnostics and the engine's actual `never` result
+against 81 PHPStan records. Pun's separate `never` display is deliberately not used as an engine expectation.
+The final snapshot passes 59 selected public tests, the active-provider test, and all Methods, Functions,
+and Operators rule and level partitions: 764 rule cases and 1,508 level cases. Existing gap allowances are
+unchanged; no executed gap became stale.
+
+This patch does not change function-call fallback, constant-string dynamic method diagnostics, general nullsafe
+chain reconstruction, undocumented magic reflection, or Pun's `never` display. Those independent contracts
+remain outside this patch.
+
+## Failed named function results
+
+`expression/call/function_call.rs` stores `ErrorType` when an ordinary named call has no result after argument
+and invocation processing. Reflected and provider results remain intact, and the existing after-call hooks
+retain their opportunity to replace the result. Dynamic callable expressions and the shared invocation owner
+remain unchanged.
+
+This follows PHPStan 2.3.1's
+[`FuncCallHandler::resolveReturnType()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/FuncCallHandler.php#L883-L885):
+absent function reflection returns `ErrorType`, even when `function_exists()` suppresses the primary missing-function
+diagnostic. This differs from the permissive dummy method reflection supplied by `method_exists()`.
+
+The public regression in `crates/pun-analyse/tests/failed_functions.rs` compares complete diagnostics, tips and
+ignorability with PHPStan captures at levels 0, 2 and 10. It covers copied failure values, evaluated arguments,
+imports and qualified names, function-existence guards, resolved functions, built-ins and a closure control.
+Regenerate its expectations with `tests/fixtures/failed-functions/capture.php` and the pinned PHPStan PHAR.
+
+## Explicit mixed offset results
+
+`utils/expression/array.rs` preserves the explicit flag when reading an offset from mixed.
+The result is a fresh unconstrained mixed, not a copy of the receiver's truthiness, non-nullness,
+or subtracted types. Nested reads therefore keep explicit identity without inheriting receiver constraints.
+The existing never-from-loop handling remains unchanged. Unknown properties and methods still produce
+implicit mixed even when their receiver is explicit mixed.
+
+This follows PHPStan 2.3.1's
+[`MixedType::getOffsetValueType()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/MixedType.php#L845-L848).
+The public controls in `crates/pun-analyse/tests/explicit_mixed_producers.rs` also exercise declarations,
+the real prelude, assignment copies, overwritten values, closure captures, and both union orders.
+No assignment, capture, or combiner changes are needed once the producers supply the existing flag.
+The fixture README records the separate native-property, clone, falsey-join, and invalid `array_pop`
+boundaries rather than treating them as explicit-mixed parity.
+
+## Parameter-dependent first-class callback returns
+
+`expression/partial_application/function_partial_application.rs` preserves conditional return types
+when constructing a first-class function signature. `invocation/analyzer.rs` binds that callback's
+named parameters to the surrounding call's expected inputs before resolving its conditional return.
+The specialized signature replaces the provisional callback bounds when inferring the outer call.
+Ordinary generic callbacks retain their existing inference path.
+
+This follows PHPStan 2.3.1's `GenericParametersAcceptorResolver::resolve()` and
+`ResolvedFunctionVariantWithOriginal::resolveConditionalTypesForParameter()`: parameter names and
+passed argument types remain available until conditional return resolution.
+The public `callback_gather` controls compare fifteen fresh PHPStan observations and the unchanged
+level-9 bug-11056 fixture. They cover positive and negated conditions, named arguments, a nonzero
+parameter index, unknown strings, copied callables, and ordinary generic and arrow controls.
+The callback, callable-origin, explicit-mixed producer, and native-lane suites pass 33 public tests.
+Fresh LLVM profiles cover all 32 changed executable engine lines without exclusions.
+
+Recapture the conditional observations from the repository root:
+
+```sh
+php .oracle/phpstan/vendor/bin/phpstan analyse \
+	--configuration=crates/pun-analyse/tests/fixtures/callback-gather/phpstan.neon \
+	--no-progress --error-format=json \
+	crates/pun-analyse/tests/fixtures/callback-gather/conditional.php |
+	jq '[.files[].messages[]]'
+```
+
+## Nested constant-list foreach back edges
+
+`statement/loop/foreach.rs` extends the bounded array-exit chain above to nested loops and local
+continue exits, following PHPStan 2.3.1's
+[`ForeachHandler::tryProcessUnrolledConstantArrayForeach()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/StmtHandler/ForeachHandler.php#L658-L841).
+Each required entry receives the preceding entry's fallthrough and local-continue scopes. A
+nonlocal continue does not become an inner back edge. The existing sixteen-entry limit remains;
+a nested speculative chain also respects PHPStan's product limit of eight. Normal assignment
+invalidates dependent offset caches when binding each key and value. Speculative artifacts and
+callbacks stay isolated; the ordinary walk still owns diagnostics and non-array observations.
+
+`reconciler/mod.rs` resolves a selector from its current scope before reading or refining its
+containing array, as
+[`MutatingScope::specifyExpressionTypeInPlace()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/MutatingScope.php#L3773-L3820)
+does. Only a single constant key identifies a named offset; union selectors do not establish
+every alternative. The original dynamic expression id remains the cache identity. Positive
+isset assertions use the same key resolution. A false isset narrows a required nullable offset
+to null. A nullable offset that might be absent leaves the containing array unchanged: null
+from an iterable-value fallback is not evidence that the entry exists. Optional non-nullable
+offset removal and other value assertions keep their existing refinement paths. This follows
+[`DefaultNarrowingHelper::createIssetSingleSubjectNonTrueTypes()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/Helper/DefaultNarrowingHelper.php#L633-L795).
+The public `coalesce_scope.rs` controls compare repeated missing-offset probes, generic arrays
+and lists, required and optional nullable entries, optional integer entries, and nested offsets.
+
+Public controls in `tests/constant_foreach.rs` retain the original `bug-13643.php` fixture and
+compare complete diagnostics with fresh PHPStan captures under `tests/fixtures/constant-foreach/`.
+They cover conditional writes and continue forms, already-integer, non-integer and missing
+entries, asymmetric key/value assignment, loop budgets, ordinary observations and literal-selector
+scopes. References, breaks, returns, hooks, optional entries, shape unions, associative iterators
+and non-direct targets still use the ordinary path. In particular, this does not fix the separate
+ordinary-path over-refinement after unconditional writes through a by-reference union selector.
+
+## Invocation bottom identity
+
+`invocation/resolver.rs` keeps a complete `TUnion` when resolving parameter-linked return types and
+conditional branches. The selected branch's implicit, explicit accepting, or nonaccepting never
+identity survives the outer union reconstruction. An unresolved condition combines the actual branch
+types through the shared union operation. It does not mark every signature-derived bottom explicit.
+
+This follows PHPStan 2.3.1's
+[`ConditionalTypeForParameter`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/ConditionalTypeForParameter.php)
+and [`ConditionalType`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/ConditionalType.php),
+which return the selected type rather than reconstructing a never type. The public Analyzer controls
+in `crates/pun-analyse/tests/never_identity.rs` compare selected, negated, and unresolved branches with
+fresh scope captures. Call evaluation, closure return inference, termination facts, and the external
+wire protocol are separate owners and remain unchanged here.
+
+## Never values and call termination
+
+`invocation/return_type_fetcher.rs` resolves the declaration before consulting return providers.
+Its result retains both the selected value type and whether the resolved declaration is explicitly
+never-returning. `expression/call/mod.rs` requires every possible target to terminate, with no
+mixed or nullable continuation. Provider-selected implicit never remains an observable value type.
+
+PHPStan's `TypehintHelper::decideType()` retains an explicit PHPDoc never even when the native
+declaration returns object, array or void. The declaration compatibility fallback preserves that
+bottom instead of replacing it with the native return. Argument-driven template inference also
+retains the input never kind when extracting residual atoms, so forwarded callable returns keep
+their actual identity without turning implicit bottom into explicit never.
+
+This ports PHPStan 2.3.1's `FuncCallHandler::processExpr()`: resolved acceptors establish call
+termination before dynamic return rewrites. PHPStan models `call_user_func()` and
+`call_user_func_array()` forwarding as value rewrites of mixed-returning builtins; Mago's generic
+forwarding signatures must not introduce an intrinsic exit edge. Nullsafe calls retain
+`NullsafeMethodCallHandler`'s non-terminating expression result, even for a non-null receiver.
+Expression statements separately terminate for explicit never values, following `ExpressionHandler`.
+
+`AnalysisArtifacts::call_terminations` keeps these evaluation facts separate from copied types.
+Function and closure artifacts transfer the facts to their parent. The existing changed-entry
+checkpoint implementation now also handles boolean observations, preserving nested rollback,
+merge, speculative replay and opaque-hook mutations without cloning complete maps on entry.
+Call and pipe evaluations start with a checkpoint-aware false fact before expression hooks run.
+Skipped or unresolved loop conditions and increments cannot retain a previous terminating result;
+removing the entry instead would let a checkpoint merge restore the old true fact.
+Pun's flow and finally checks consume the resolved facts. Unused-call checks suppress only
+explicit never results. Throw, exit and die produce nonaccepting never; a terminating closure body
+without return values infers non-accepting never, as `ClosureTypeResolver` does.
+
+`crates/pun-analyse/tests/never_calls.rs` compares public diagnostics with the pinned PHPStan
+capture under `tests/fixtures/never-calls/`. The fixture distinguishes implicit return values,
+native and PHPDoc declarations, conditional named arguments, callable invocation, forwarding
+inside and outside other calls, nullsafe calls and their arguments, loop bodies and finally blocks.
+The public Analyzer controls in `native_lane.rs` also replace replayed conditions and increments
+through hooks, checking skipped calls, replacement values and unresolved targets with native
+tracking both enabled and disabled.
+
+## Terminating expression bottom identity
+
+`expression/construct/exit.rs` and `expression/throw.rs` emit nonaccepting never, matching PHPStan
+2.3.1's [`ExitHandler`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/ExitHandler.php#L68-L79)
+and [`ThrowHandler`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/ThrowHandler.php#L49-L60).
+This changes three type emissions, not termination facts, throw edges, or argument evaluation.
+Nonaccepting never remains explicit.
+
+The earlier clone note misattributed the accepting result of `fn () => exit()` to arrow inference.
+PHPStan's [`ClosureTypeResolver`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/Helper/ClosureTypeResolver.php#L672-L688)
+retains the body type. The installed 2.3.1 PHAR and source tag agree. Correcting the expression
+producers also corrects their arrow and forwarded return types without normalizing arrow returns.
+
+The public Analyzer regression in `crates/pun-analyse/tests/never_identity.rs` uses
+`tests/fixtures/never-identity/expected-producers.json`, captured by `capture-producers.php` with
+the pinned PHPStan bootstrap. It checks direct exit, die, and throw expressions, hinted and unhinted
+arrows, statement-body closures, named never calls, forwarding, intrinsic call facts, and statement
+continuation. Dynamic return controls retain implicit, explicit accepting, and nonaccepting never
+through unhinted arrows. A blanket arrow normalization would fail those controls. Arrow inference,
+native inference, clone inference, and shared combinators remain unchanged.
+
+## Edited-body declaration ownership
+
+The class, interface, trait, enum, method, and function duplicate guards compare against
+`CodebaseMetadata::declaration_span()`. A current-file anonymous-signature snapshot records the
+scanner-selected span of each named declaration owned by that file. This lets body edits change
+declaration ends and positions without causing the analyzer to skip the edited body as a duplicate.
+Populated named signatures and their project ownership remain shared. Without a refresh, the original
+span remains authoritative. Another file's declaration is never remapped, and same-file duplicates
+still compare against only the selected declaration.
+
+The public controls in `pun-analyse/tests/closure_freshness.rs` exercise all six guards, moved bodies,
+same-file duplicates, and a declaration owned by another project file. The exact Rector regression in
+`pun-lint/tests/moved_closure.rs` requires both these ownership checks and fresh anonymous signatures.
+Closure, invocation, scope, and plugin lookup APIs retain their existing signatures and lifetimes.
+
+The native CLI now matches the supplied Rector 2.6.1 expectation byte for byte and is idempotent.
+All 63 focused and adjacent public controls pass. Fresh profiles cover **6/6 changed analyzer
+executable lines** against `e1c66a25`, without exclusions. The full commands, snapshot ownership,
+and combined changed-line coverage are recorded in
+[`mago-codex/PATCHES.md`](../mago-codex/PATCHES.md#current-file-anonymous-signatures).
+
+## Clone result object guarantees
+
+`expression/clone.rs` follows PHPStan 2.3.1's
+[`CloneHandler::resolveCloneType()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/CloneHandler.php#L40-L43)
+and [`CloneTypeTraverser`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/Traverser/CloneTypeTraverser.php).
+The result intersects the operand with `object`, then changes outer `$this` members to `static`.
+Union and intersection members are visited. Object type arguments and template bounds are not traversed
+when replacing `$this`. Operand evaluation and the existing clone diagnostic collector remain unchanged.
+
+Unconstrained templates retain their scope and mixed bound with an object intersection.
+Other template bounds retain their identity after intersecting the bound with object.
+Callable signatures use the existing `HasMethod('__invoke')` object with the original callable payload
+as an intersection member. The callable cast reads that payload without losing its signature.
+No shared type normalization, native inference, or converter changes are included.
+
+The public `clone_inference` regression compares 28 observations with fresh, identical PHPStan 2.3.1
+and 2.2.7 captures under `tests/fixtures/clone/`. It checks explicit and implicit mixed operands,
+object/scalar unions, nullable and invalid operands, enum and callable results, template bounds,
+`$this` unions, and assignment effects. Observers check one visit per clone and operand.
+The diagnostic comparison covers `clone.nonObject` and the operand's `function.notFound` at level 7,
+not unrelated captured diagnostics. Mago's existing enum clone diagnostic remains intentional.
+The `$this` union comes from a flow join: a PHPDoc `$this|Item` parameter has a separate scanner gap.
+
+An operand that is already never retains its complete union before the per-atomic reconstruction.
+PHPStan's object intersection and clone traversal preserve implicit, explicit accepting, and
+nonaccepting never. Newly impossible clones, such as `clone 1`, still produce implicit never.
+This preservation belongs to clone inference, not shared combinators or call-termination producers.
+
+`capture-never.php` captures all three PHPStan 2.3.1 identities directly and through a dynamic
+return extension on mixed-returning functions. The matching public Analyzer hooks supply the same
+operands. The regression checks operand and clone identity, single evaluation, and statement
+continuation. Real `call_user_func()` named and closure operands also retain nonaccepting never
+without an intrinsic termination fact. Their clone statements stop execution, but a clone nested
+inside another call does not stop continuation. The scalar control retains implicit never and
+continues. Regenerate these expectations with `capture-never.php` and the pinned PHPStan bootstrap.
+
+## Receiver-aware native property observations
+
+The passive native lane now enters bounded method scopes and transfers scalar/mixed and simple
+named-object parameters without consulting PHPDoc replacements. Instance property observations
+reuse `resolver/property.rs::resolve_declared_property` and the original declaration metadata.
+Full property types, declarations, diagnostics and inferred full return types are unchanged.
+
+PHPStan's native property reflection is receiver-dependent. For `ThisType`/`StaticType`,
+[`CallbackUnresolvedPropertyPrototypeReflection::transformPropertyWithStaticType()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Reflection/Type/CallbackUnresolvedPropertyPrototypeReflection.php#L80-L101)
+reuses transformed PHPDoc metadata when it equals the native type; mixed equality ignores
+explicitness. Consequently an undocumented declared-mixed property read through `$this` or its
+copy has implicit native mixed, while an ordinary named-object receiver retains explicit native
+mixed. A real `@var mixed` or `@var int` changes this comparison; removing comments cannot model it.
+Untyped properties remain native implicit mixed even when documented. Method prototypes instead
+compare their effective return with the native return, preserving the observed documented-mixed
+method result through `$this`.
+
+Mixed offsets derive their explicitness from the native operand, never its full property type.
+Assignment copies and initial reference aliases transfer that value. Arrow and by-value closure
+captures transfer independent native holders; by-reference closure feedback transfers the shared
+full holder, matching PHPStan's observed native explicitness change. These are evaluation-only
+changes: closure metadata, lookup, overlays, callbacks and scanner machinery are not modified.
+
+The public `native_properties` regression compares 47 fresh observations from PHPStan 2.3.1 and
+Rector's PHPStan 2.2.7, including native availability, type and explicit identity, full-type equality
+with native tracking disabled, and immutable declaration metadata. Regenerate both captures with
+`tests/fixtures/explicit-mixed/oracle.php`, passing each version's bootstrap and `native-properties.php`.
+The unchanged native engine has all 47 observations unavailable.
+Seven additional dual-version observations in `native-receiver-controls.php` cover scalar native
+declarations, a constructed expression receiver, and the different native identities of a documented
+mixed method called through `$this` and an ordinary receiver.
+
+This is not a complete native engine. Native callable values remain unavailable, but creating an
+unexecuted closure preserves unaffected outer holders. Unsupported by-reference bodies invalidate
+the outer continuation. Dynamic/nullsafe members, magic/hooked or class-annotated properties, nonscalar property or
+method results, method arguments, constructors, generic/compound receiver domains and reference
+writes remain unavailable. Constructor-free named instantiation is supported. No comment-blanked
+fallback or direct-property syntax exception is used.
+
+## Simultaneous ASCII string casing guarantees
+
+Concatenation and positive string assertions preserve `TStringCasing::Both` through the codex's
+independent casing guarantees. PSL splice retains the guarantees shared by the source and replacement.
+Unicode and grapheme case conversion still sets only its requested guarantee; it does not assume
+that an input unchanged by ASCII case conversion stays unchanged by Unicode case conversion.
+Pun's type conversion emits both PHPStan string accessories.
+
+Complete snapshots use protocol 2.1. String casing tags 0, 1, and 2 still mean unspecified,
+lowercase, and uppercase. Tag 3 means both. Both header readers reject protocol 2.0 instead of
+silently dropping the extra guarantee. The casing snapshot tests check fixed legacy bytes,
+all four round trips, current-version acceptance, and old-version rejection.
+
+This patch does not add a `str_repeat` return-type provider or change literal byte storage.
+
+Fresh profiles cover **16/16 changed analyzer executable lines**, **99/99 changed production lines**
+including codex and Pun conversion, and **294/294 changed Rust test lines**, without exclusions.
+The 38 selected Pun tests pass. The standalone analyzer suite passes 420 of 426 tests.
+The same six failures occur on pristine `19a99280` (419 of 425 tests pass): three destructuring tests,
+the static-interface-call test, and two foreach-variable tests. The new casing snapshot test passes.
+The standalone run adds protocol coverage to the codex run. Temporary Cargo patches point `mago-codex`
+and `mago-syntax` at their maintained directories:
+
+```sh
+cargo llvm-cov --manifest-path third_party/mago-analyzer/Cargo.toml --dep-coverage mago-codex \
+	--no-report --lib --features mago-codex/serde -- --test-threads=2
+```
+
+Coverage is the intersection of changed lines against `19a99280` and LLVM's executable-line records.
+The reports use `llvm-cov export` directly because cargo-llvm-cov's dependency report filters out path dependencies.
+
+The combined casing and `str_repeat` replay on `a147e34b` preserves the current NeverKind conversion
+and separate call-termination facts. The current native-lane replay, inspection, convergence, never,
+and callback controls pass in the 212-test Analyzer selection. All 19 protocol-module tests pass,
+including the new casing tags and rejection of protocol 2.0. This replay does not rerun the complete
+standalone engine suite described above. Fresh private profiles cover **16/16 changed analyzer
+production lines**, **441/441 combined production lines**, and **422/422 Rust test lines** against
+`a147e34b`, without exclusions, using one Cargo job, one Rayon thread, and `CARGO_INCREMENTAL=0`.
+
+## Boolean operand scopes
+
+Boolean expressions retain their evaluated post scope and both filtered branch scopes.
+`&&` takes its truthy override from the evaluated RHS. `||` takes its falsey override from the RHS.
+The opposite branches apply specifications to the merged operand scope. Nested expressions reuse
+the captured scopes instead of applying an earlier operand's assertions to reassigned variables.
+`if` joins the actual continuing branch types through the existing variable-scope merge service.
+
+These contracts follow PHPStan 2.3.1's
+[`BooleanAndHandler`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/BooleanAndHandler.php),
+[`BooleanOrHandler`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/BooleanOrHandler.php),
+and [`BooleanNarrowingHelper`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/Helper/BooleanNarrowingHelper.php).
+The RHS walk still occurs when the LHS has a known Boolean result, matching PHPStan's captured
+assignment effects. Excluded mixed values use the shared intersection operation during positive
+assertion reconciliation, so narrowing to an object does not discard its negative constraints.
+Public controls retain the original negative-branch expectations and cover assignments, nested
+conditions, returns, ternaries, scalar guards, and generic or receiver-specific object identities.
+
+## Named-object exclusions in protocol 2.2
+
+Named-object snapshots append an exclusion-presence flag after the remapped-parameters flag.
+When present, the payload is a nested union: request snapshots retain its request-local handle;
+complete provider responses omit handles, as they do for other nested unions. Existing object,
+atomic, and message tags retain their meanings. Protocol 2.1 already introduced casing tag 3;
+the new object layout uses 2.2. Both header readers reject 2.0 and 2.1 before decoding their payloads.
+
+The encoder and decoder use the existing union recursion and member-count limits. Exclusions stay
+separate from positive intersection children, including unions and nested negative constraints.
+Real PHP worker and public Analyzer controls cover ordinary objects, flow-narrowed exclusions,
+nested provider round trips, and rejected over-depth, oversized, or empty union payloads. Rejected
+responses retain the existing provider warning and native-analysis fallback.
+Their semantic controls use PHPStan 2.3.1's retained `object-intersections` captures: joining
+`mixed~A` with `C~A&C` yields `mixed~A&C`, whereas joining it with `C` or `A&C` yields `mixed`.
+
+## Nonempty concatenation truthiness
+
+`expression/binary/concat.rs` refines the concatenation of two nonempty strings to a non-falsy
+string. Both the aggregate and pairwise paths check this conjunction before propagating an
+existing truthy operand. Aggregate queries require every alternative on each side to be nonempty.
+The existing nonempty fallback, literal folding, literal origin, and independent casing guarantees
+remain unchanged.
+
+The branch order follows PHPStan 2.3.1's
+[`InitializerExprTypeResolver::resolveConcatType()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Reflection/InitializerExprTypeResolver.php#L582-L600).
+The public `pun-analyse/tests/string_casing.rs` regression runs the unchanged research probe through
+`run()`. Its `fixtures/string-casing/concat-expected.json` contains 29 freshly captured level-0
+PHPStan diagnostics. Before the correction, 11 types differ and 18 controls match. After the
+correction, all 29 match, including asymmetric operands, partly-nonempty unions, empty and zero
+suffixes, literal-origin strings, casing accessories, and flattened chains.
+
+The repeat controls retain PHPStan's separate behavior: `str_repeat($nonempty, 2)` remains
+`non-empty-string`, not `non-falsy-string`. Casing-union normalization and native inference are
+unchanged. The existing casing, guarantees, repeat, and native-lane selection passes all 34 tests.
+
+Fresh raw LLVM profiles from the new public regression alone cover **6/6 changed production
+executable lines** against `ea303bb4`, without exclusions. The maintained analyzer is explicitly
+instrumented with `--dep-coverage mago-analyzer`. The private target uses one Cargo job, one Rayon
+thread, one test thread, debug level 1, and no incremental compilation:
+
+```sh
+export CARGO_TARGET_DIR=/tmp/pun-concat-target
+export CARGO_LLVM_COV_TARGET_DIR="$CARGO_TARGET_DIR"
+export CARGO_BUILD_JOBS=1 RAYON_NUM_THREADS=1 RUST_TEST_THREADS=1
+export CARGO_INCREMENTAL=0 CARGO_PROFILE_DEV_DEBUG=1 CARGO_PROFILE_TEST_DEBUG=1
+export CARGO_NET_OFFLINE=true
+timeout 900 nice cargo llvm-cov --offline --no-report --dep-coverage mago-analyzer \
+	-p punphp-analyse --test string_casing --test string_guarantees --test str_repeat \
+	--test native_lane -- --test-threads=1
+```
+
+## Boolean operand definition certainty
+
+Evaluated Boolean scopes retain variable state and possible-variable membership alongside their
+local types. The post-expression join uses the incoming `VariableScope` snapshots before adding
+RHS-only cached types. An output argument evaluated only on the RHS therefore remains possibly
+defined when the LHS can short-circuit. Branch transfers restore the captured certainty state as
+well as the evaluated types, including nested expressions and explicit absence after `unset`.
+The object-exclusion transfer and the continuing `if` branch type join remain unchanged.
+
+The original public `variables` flow fixture retains both PHPStan 2.3.1 diagnostics for `$matches`
+at lines 99 and 100. Fresh captures also confirm the unchanged transfer-fixture expectations.
+The existing live-scope observer adds `&&`, `||`, post-expression, and nested-RHS output-argument
+controls. Their expected certainty follows independent PHPStan 2.3.1 reads, not cached type presence.
+
+All 51 tests pass across `variables`, `object_intersections`, `incoming_isset`, `closure_from_callable`,
+`closure_freshness`, `never_calls`, and `never_identity`. The four original variable configurations
+also match fresh PHPStan 2.3.1 captures without changing their expectations. Fresh profiles cover
+**40/40 changed analyzer executable production lines** against `ea303bb457f6342e24d948076bfbca4ef785d0a1`,
+without exclusions. The measurement intersects the changed lines with a direct LLVM LCOV export.
+The analyzer dependency is explicitly instrumented:
+
+```sh
+cargo llvm-cov --offline --dep-coverage mago-analyzer --no-report -p punphp-analyse \
+	--test variables --test object_intersections --test incoming_isset \
+	--test closure_from_callable --test closure_freshness --test never_calls --test never_identity
+```
+
+## Nested variable-name observations
+
+Read and assignment-target preparation analyze a nested variable's name through the expression
+dispatcher. Inner indirect names therefore receive ordinary hooks even when the outer target
+allows undefined variables, as in assignment, isset, empty, coalescing and unset.
+
+Pun records a nested target's certainty before evaluating its name, matching DefinedVariableRule's
+incoming scope. Indirect names retain their post-name observations, including assignment side
+effects. The existing public variable fixture includes both forms, three-level nesting, defined
+and maybe-defined names, and multiline name diagnostics. Expectations come from PHPStan 2.3.1
+in all four existing variable configurations; the earlier fixture records remain unchanged.
+
+## Numeric-string accessory retention
+
+String assertion reconciliation transfers the independently retained non-empty accessory, not
+nonemptiness implied by numericness. Numeric refinement still proves semantic nonemptiness.
+Pun's type conversion reads the retained-accessory query, so bare numeric-string stays bare while
+an explicitly intersected non-empty accessory survives assignments and branch merges.
+
+The native float-to-string constructor marks nonemptiness as implied by numericness, matching
+PHPStan 2.3.1's `FloatType::toString()` (`src/Type/FloatType.php:129–136`). Its numeric, uppercase,
+and semantic nonempty guarantees are unchanged. The existing native-cast oracle stays unchanged.
+
+String scalar snapshots retain the existing semantic flag at bit 2. Bit 4 records numeric-implied
+nonemptiness without a separate accessory. The decoder reconstructs the constructor's accessory
+argument from both flags. The existing casing wire matrix checks bare numeric flags 21 alongside
+explicit numeric flags 5 for every casing state. Object layouts and message version headers are
+not changed by this patch.
+
+The source contract and public PHPStan 2.3.1 regression are documented in
+`mago-codex/PATCHES.md`, under “Numeric-string nonempty accessories”.
+
+## Literal string-offset reads
+
+`src/utils/expression/array.rs::handle_array_access_on_string()` retains the byte selected by a
+single inferred integer literal from a known literal string. Negative offsets count from the end.
+The reference is PHPStan 2.3.1's `src/Type/Constant/ConstantStringType.php:440–484` at
+`cb3b7e99489b2e3789ee2eec10501cb7a72580ea`. Its valid offsets are `-strlen` through `strlen - 1`,
+where `strlen` counts PHP bytes, not Unicode characters.
+
+An out-of-range read returns ErrorType, including reads from an empty string. Isset analysis uses
+the existing absent-value placeholder so coalesce selects its fallback. Definitely noninteger
+indexes still fail before literal extraction; numeric strings, booleans, floats, and null are not
+coerced into integer indexes. The helper consumes the already inferred index without evaluating it again.
+
+The public `variables` regression appends four-mode PHPStan captures to
+`crates/pun-analyse/tests/fixtures/variables.json` without changing its 236 earlier records.
+Controls cover positive and negative bounds, a large index, empty strings, noninteger indexes,
+multibyte and binary receivers, defined and maybe-defined names, receiver and index reassignment,
+an exact-offset write, union receivers, and coalesce fallbacks. The existing nested-name, multiline,
+and array-offset controls remain intact.
+
+This patch does not implement PHPStan's finite-range character unions for nonliteral integer indexes,
+specialize template-bound indexes, or reconstruct a whole string after character writes. These paths
+retain their existing inference; the exact-offset write control checks the existing stored offset only.
+For example, fresh PHPStan yields `''|'f'|'o'` for `'foo'[$index]` when `$index` has general type `int`;
+that range-based inference is not part of this correction. The patch does not establish complete
+DefinedVariableRule or CompactVariablesRule parity.
+
+## Failed static property reads
+
+`expression/access/static_property_access.rs` emits `ErrorType` for an unresolved static property,
+not null. A failed alternative in a finite name union contributes the same error type.
+The existing union combiner preserves that identity alongside successful property alternatives.
+Real null properties retain their declared value and decrement deprecation diagnostics.
+
+This follows PHPStan 2.3.1's
+[`StaticPropertyFetchHandler::composeResult()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/StaticPropertyFetchHandler.php#L170-L223).
+`InvalidIncDecOperationRule` checks the completed operand read before the virtual property write.
+Pun already captures that read through its expression hook. No diagnostic filter, inc/dec rule,
+conversion, or shared combiner change is needed.
+
+Pun's property checker also applies the virtual `PropertyAssignNode` check to direct static names.
+Expression names already receive that check. Both paths reuse the same receiver and visibility checker,
+matching `AccessStaticPropertiesInAssignRule` rather than omitting the direct name's second finding.
+
+The public `statements` controls compare direct reads, finite dynamic reads, mixed successful and
+failed alternatives, all four inc/dec forms, actual null and nullable properties, valid names,
+unknown names, visibility, and instance-property access with fresh PHPStan captures at levels 2 and 8.
+The original `static-property-names/boundaries.php:61` control retains its four primary property
+findings without the spurious `preDec.type` on null. Existing receiver and visibility resolution,
+null receiver handling, and the separate error-path fallback remain unchanged.
+
+The level-2 operand capture matches all 52 diagnostics, including tips and ignorability.
+The strict level-8 capture retains two separate missing `assign.propertyType` findings for `++`
+of a property declared null. `types/properties.rs::increment()` checks write access and readonly
+rules, but explicitly omits the assigned-value type check. That rule needs the written value,
+which differs from a postfix expression's result. This patch does not duplicate that rule in
+`inc_dec.rs` or change its expectation. The complete statements run therefore has 21 passing
+tests and one failing new operand test. All original statements tests pass.
+
+A supplemental level-10 oracle capture also exposes the unchanged error-path fallback for static
+access to an instance property: PHPStan reports `preDec.type` on mixed, while the analyzer retains
+never. The missing-property producer fix does not change this distinct resolver failure.
+Neither remaining boundary requires a conversion change.
+
+Fresh LLVM profiles from public `run()` calls cover all five added executable production lines,
+without exclusions. The existing dispatch after removal of the direct-name restriction executes
+101 times. The analyzer dependency is explicitly instrumented with `--dep-coverage mago-analyzer`.
+
+## Increment and decrement virtual property writes
+
+`expression/unary.rs` keeps a postfix expression's completed operand read before mutation.
+The expression returns that old value. Its virtual property assignment uses the new value,
+as a prefix expression does. The operator span carries the virtual assigned value through the
+existing span-keyed expression observations. No source expression has that span.
+
+Finite dynamic static names need a separate value for each reflected property.
+`expression/access/static_property_access.rs` retains the resolved name and type pairs before
+a broader alternative or `ErrorType` absorbs them. The selector is evaluated once.
+The existing increment and decrement type operations compute each narrowed written value,
+without another evaluation or assignment. Speculative collector recordings prevent those
+type queries from repeating the operand's diagnostics. A keyed type at the operator span
+transports the named virtual values. It does not describe a PHP array expression.
+
+The shared type operations also preserve `IncDecTypeHelper`'s nonconstant string cases.
+Literal-string stays literal-string. Numeric-string produces a benevolent integer and float
+union. Other strings produce a benevolent string, integer, and float union. The existing
+benevolent-type flags carry that contract through conversion, avoiding false assignment errors
+for ordinary string properties. Constant numeric strings retain their exact arithmetic values.
+
+Pun's existing `types/properties.rs` write checker reads these observations and calls its
+existing assigned-value acceptance check. Direct names still use the ordinary written type.
+Finite static names use the same property reflection, visibility, readonly, and acceptance
+checks. Unknown names find no reflected property. Offset writes retain their existing checks.
+
+`resolver/static_property.rs` treats static access to an instance property as a failed read,
+using `ErrorType` rather than never. An inaccessible static property still has its reflected
+value type. These contracts preserve real null deprecations and strict mixed operand checks
+without filtering diagnostics or changing conversion.
+
+The source contracts are PHPStan 2.3.1's
+[`PostIncHandler`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/PostIncHandler.php#L55-L101),
+[`IncDecTypeHelper`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/Helper/IncDecTypeHelper.php#L45-L145),
+[`TypesAssignedToPropertiesRule`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Rules/Properties/TypesAssignedToPropertiesRule.php#L43-L125),
+and `StaticPropertyFetchHandler` linked above. Public `statements` fixtures retain independent
+PHPStan captures at levels 2, 8, and 10. They distinguish the expression result from the stored
+value with null, literal integer, and numeric-string properties assigned from prefix and
+postfix expressions. Other controls cover finite unions, failed and unknown names, visibility,
+receiver errors, readonly properties, and multiline positions.
+
+The retained level-8 operand fixture now reports both missing null-property assignment errors.
+The level-10 fixture also reports the mixed operand error for static access to an instance property.
+The complete `statements` suite passes with these unchanged expectations.
+
+## For and while entry-scope pollution
+
+`Settings::pollute_scope_with_loop_initial_assignments` defaults to true. Pun transports PHPStan's
+`polluteScopeWithLoopInitialAssignments` from resolved parameters through `Project` and every inference
+entry point. `checkMaybeUndefinedVariables` controls reporting independently.
+
+The reference is PHPStan 2.3.1 at `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`:
+
+- `src/Analyser/StmtHandler/ForHandler.php:306–322` selects or joins whole scopes. A false first condition
+  or a terminating body selects the evaluated header scope when enabled, or the pre-loop scope when disabled.
+  A possible first iteration joins the selected entry with the computed exit. A guaranteed first iteration
+  joins the pre-loop scope only when pollution is disabled.
+- `src/Analyser/StmtHandler/WhileHandler.php:215–221` joins the first falsey condition scope on a possible
+  zero-iteration edge. Disabling pollution adds the pre-loop scope on that edge only. A definitely-entering
+  while does not acquire the for loop's extra pre-loop edge.
+- `ForHandler.php:175–190` evaluates all header expressions but uses only the last condition's truthiness.
+- `ForHandler.php:273–295` generalizes the final body's holders with the update scope before falsey
+  condition reconciliation. `MutatingScope.php:5014–5129,5157–5245` retains the incoming holder set and
+  certainty; differing constant-string buckets retain literal origin and common string accessories.
+
+The existing shared loop owner captures actual variable scopes after header evaluation and before truthy
+reconciliation. Its existing joins union types and combine variable certainty, including conditional holders.
+No variable-name scan or diagnostic rewrite is involved. The existing break and continue scopes still route
+local and outward exits. A dead back edge does not publish update writes or widen the next iteration. Updates
+are still analyzed on a detached copy for diagnostics, as in PHPStan's final walk. An outward exit from a
+guaranteed first iteration cannot fall through into an enclosing loop's update expressions.
+
+The public `variables` test compares resolved default, enabled, disabled, and quiet configs against fresh
+PHPStan diagnostics and `dumpType()` output in `tests/fixtures/loop-pollution/expected.json`. The fixture includes
+PHPStan's original `loop-initial-assignments.php` and `bug-11545.php`, plus entry writes, existing definite and
+maybe-defined variables, zero and guaranteed iteration, comma conditions, update-only versus existing holders,
+dead-update diagnostics, termination, nested exits, a conditional holder, and an update that invalidates a
+dynamic-offset holder's parent. `capture.php` canonicalizes paths before configuring `pathRoutingParser` so
+reflection does not discard the original fixture bodies. The disabled bug-11545 contract reports `$result`
+as maybe defined at line 24. The existing dead-code fixture now also reports its original terminating-for
+comparison at `src/conditions.php:602`, verified with fresh PHPStan; the test no longer masks that expectation.
+
+This setting does not alter do-while, foreach, or standalone block pollution. Native loop transfers remain
+unsupported and invalidate the native state on the existing path. This patch does not add a second flow engine
+or claim complete DefinedVariableRule parity. Scalar, array, reference, and template generalization beyond the
+constant-string update contract retain the existing inference engine's behavior; this is not a complete port
+of `MutatingScope::generalizeType()`.
+
+## Foreach body and exit-scope pollution
+
+`Settings::pollute_scope_with_always_iterable_foreach` defaults to true. Pun transports PHPStan's
+`polluteScopeWithAlwaysIterableForeach` from resolved parameters through `Project` and each inference entry
+point. The setting is independent of `checkMaybeUndefinedVariables` and loop-initial pollution.
+
+The reference is PHPStan 2.3.1 at `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`:
+
+- [`ForeachHandler.php:157–184`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/StmtHandler/ForeachHandler.php#L157-L184)
+  narrows the iterable against `[]` at body entry only when pollution is enabled. Pun uses the existing
+  nonempty-countable reconciler, which retains non-array alternatives rather than asserting truthiness.
+- [`ForeachHandler.php:285–335`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/StmtHandler/ForeachHandler.php#L285-L335)
+  joins reachable body ends with local break and continue exits. The shared loop owner records these actual
+  scopes separately from speculative back edges. Convergence comparisons include the new scope fields.
+  Outward exits still reach their existing target loop.
+- [`ForeachHandler.php:458–474`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/StmtHandler/ForeachHandler.php#L458-L474)
+  merges a possible zero-iteration edge narrowed to `iteratee === [] || is_object(iteratee)`, regardless of
+  the setting. A definitely empty iterable restores entry. Guaranteed iteration uses final holders when
+  enabled, or projects them onto entry when disabled. Entry is captured after iterable evaluation, so
+  assignments in the iterable expression remain unconditional. Guaranteed termination cannot fall through.
+- [`MutatingScope.php:4960–5008`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/MutatingScope.php#L4960-L5008)
+  retains final types, combines entry and final certainty with AND, makes new holders maybe-defined, and
+  preserves entry-only holders. Pun aligns existing holder types before its existing scope join. This avoids
+  unioning overwritten entry types or creating conditional implications from artificial type differences.
+  The join intersects existing conditional holders. Projection restores entry's `after_extract_call` state.
+  Projection follows the existing array refinements and unrolling, which supply final types but cannot
+  make array-valued bindings or body assignments definite when pollution is disabled.
+
+Public `variables` and `project` tests use resolved default, enabled, disabled, quiet, and independent configs.
+`tests/fixtures/foreach-pollution/capture.php` regenerates full PHPStan diagnostics and `dumpType()` expectations.
+Controls cover the original `foreach-always-iterable.php`, nonempty and possibly empty parameters, literal
+arrays, key and value bindings, assignment and property iterables, empty-edge types, local and outward exits,
+termination, definite and maybe-defined holders, conditional-holder invalidation, unset, and extract.
+The do-while, standalone block, and loop-initial controls retain their separate behavior.
+
+Native loop transfers still invalidate native state before the loop on the existing path. This patch does
+not reconstruct paired native types, extend iterable reconciliation, or claim complete DefinedVariableRule parity.
+
+## Finite integer string-offset reads
+
+This follow-up implements the finite-range inference left open above. The owner remains
+`src/utils/expression/array.rs::handle_array_access_on_string()`. Its reference is PHPStan 2.3.1 at
+`cb3b7e99489b2e3789ee2eec10501cb7a72580ea`:
+
+- `src/Type/Constant/ConstantStringType.php:440–486` intersects integer offsets with the valid byte interval.
+- `src/Type/IntegerRangeType.php:725–743` enumerates only a bounded range whose maximum minus minimum is
+  at most 128. This permits 129 indexes, regardless of how many distinct bytes they select.
+- `src/Type/StringType.php:70–84` supplies ErrorType for wholly invalid integer reads and otherwise
+  supplies the inherited `non-empty-string` fallback.
+
+A single bounded range after intersection produces a deduplicated union of selected PHP bytes.
+The union includes `''` only when the original offset is not wholly valid. Its absence flag preserves
+coalesce fallbacks. Empty receivers and wholly invalid ordinary integer offsets produce ErrorType.
+Singleton intersections, constant-integer unions, disjoint ranges, and ranges over the enumeration
+limit retain the inherited fallback instead of approximating a character union.
+Inherited fallbacks retain possible absence unless the ordinary integer offset is wholly valid.
+An empty coalesce fallback therefore stays possible for partial ranges and uncertain indexes.
+
+Integer templates also retain the fallback, including templates with finite or invalid bounds.
+`IntegerRangeType::tryIntersect()` (`src/Type/IntegerRangeType.php:588–626`) does not simplify these
+templates to a range. A template bounded by one constant integer inherits the literal read instead.
+
+The existing public string-offset fixture covers bounded and unbounded ranges, negative indexes,
+partial and invalid intervals, integer unions, duplicate bytes, empty and binary strings, the
+enumeration boundaries, and noninteger and template controls. Four-mode variable-name captures
+append to the earlier 318 records without changing them. Whole-string reconstruction after writes,
+broader inference completeness, and whole-rule activation remain outside this correction.
+
+A preceding failed read of the same variable-key expression can still leave a cached ErrorType
+that `src/expression/array_access.rs` reuses inside coalesce without consulting this helper.
+The empty-string coalesce control runs independently of earlier reads. Repairing that cache contract
+requires its expression owner and is not part of this patch.
+
+## Cached offset reads and absence
+
+This follow-up repairs that cache boundary in `src/expression/array_access.rs`. Its reference is
+PHPStan 2.3.1 at `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`:
+
+- `src/Analyser/IssetabilityDescriptor.php:105–128` checks offset presence from the evaluated receiver and index.
+- `src/Analyser/IssetabilityResolution.php:68–91` keeps offset presence separate from the cached value type.
+- `src/Analyser/ExprHandler/ArrayDimFetchHandler.php:149–175` computes the read without evaluating its children again.
+
+Failed reads no longer populate or satisfy the offset-value cache. Nullable cache entries use the
+existing array-target helper, which also handles absence probes. The result retains valid narrowed
+values with the helper's presence flags. A coalesce-only null placeholder cannot replace a failed read
+or add null to a nonnullable array value. A present key containing ErrorType remains an error value,
+not an absent key. Postfix indexes keep their saved narrowing and execute once.
+
+The public fixtures retain the earlier 340 variable records and 78 string-offset dumps. Appended
+PHPStan captures cover reads before and after coalesce, isset, and empty, literal and variable keys,
+failed array and string reads, narrowed values, receiver and index changes, writes, and postfix indexes.
+The existing input-state and failed-read cascade regressions remain unchanged.
+
+Successful nonnullable cache entries retain their existing path. General dynamic-key presence after
+value narrowing needs a coalesce scope-join correction outside this expression owner. In the appended
+`validNarrowedCache()` control, PHPStan returns `'unusedNarrowedFallback'|int` and `bool`, while the
+cache returns `int` and `true`. In `cachedValueNarrowing()`, PHPStan returns `string|false`, while the
+cache returns `string`. The public dump regression retains these expectations without exemptions
+and still fails on those three records.
+
+Refreshing those entries' presence flags alone is insufficient: `src/expression/binary/null_coalesce.rs`
+reconciles the false edge to null and joins that null into the successful cached value. Later ordinary
+reads then change from `int` to `int|null`, or from `string` to `string|null`. A separate value-preserving
+absence join is required before the nonnullable cache path can use the same presence refresh.
+
+Whole-string reconstruction after literal-key writes remains outside this correction. The written-byte
+cache control uses a variable key, which the existing assignment owner stores. No variable-rule flow
+engine, diagnostic filter, selector, or pollution setting changes. These controls do not establish
+complete inference or whole-rule parity.
+
+## Coalesce absence and stored null values
+
+This follow-up separates an absent offset from an existing null value in
+`src/expression/binary/null_coalesce.rs`. The reference is PHPStan 2.3.1 at
+`cb3b7e99489b2e3789ee2eec10501cb7a72580ea`:
+
+- `src/Analyser/ExprHandler/CoalesceHandler.php:58–104` narrows the successful read and joins its scope
+  with the RHS scope, including counterfactual RHS effects.
+- `src/Analyser/ExprHandler/Helper/CoalesceCompositionHelper.php:53–71` obtains RHS narrowing from
+  false isset rather than an unconditional null assertion.
+- `src/Analyser/ExprHandler/Helper/DefaultNarrowingHelper.php:633–784` retains maybe-absent values,
+  narrows required offsets to null, and filters top-level constant-array alternatives.
+
+Isset probes refresh presence independently of a cached nonnullable value. Coalesce uses the evaluated
+index without evaluating a postfix operand again. Its successful scope keeps the nonnullable cached
+value. Its RHS scope retains a maybe-absent read without inventing a stored null, but a required offset
+receives actual-null narrowing. Nested probes do not assert intermediate-key existence.
+
+`src/reconciler/simple_negated_assertion_reconciler.rs` reuses the existing required-offset query and
+filters sealed keyed-array and list alternatives. A required nonnullable entry excludes its alternative.
+An optional nonnullable entry is absent only when no alternative permits null at that key.
+
+The strict public regression now matches all 152 existing string-offset records, including both
+cached-narrowing negative controls. All 352 variable records remain unchanged. Fresh PHPStan captures
+extend the existing coalesce-scope fixture with nullable and optional entries, RHS writes, parent and
+index overwrites, nested reads, constant alternatives, and evaluated postfix indexes.
+
+The expanded coalesce-scope regression still has seven mismatches at lines 127, 153, 168, 202, 211, 265,
+and 294, including loss of the empty-list alternative.
+The shared `src/context/variable_scope.rs::merge_variable_scope_types()` join collapses distinct array
+shapes and retains offset-expression caches found in only one continuing branch. PHPStan's
+`src/Analyser/ScopeOps.php:204–256,278–290` discards such maybe-certain offset holders while retaining
+maybe-defined direct variables. The needed shared interface is a coalesce join that preserves array
+shapes and intersects offset-cache presence across continuing branches, without changing direct-variable
+certainty or conditional holders. Value absence flags alone do not describe holder certainty.
+This patch does not change that shared join, and the expanded test remains strict and failing.
+It is not an integration-ready claim of complete coalesce or variable-rule parity.
+
+## Coalesce continuing-scope join
+
+`src/context/variable_scope.rs::merge_coalesce_scope_types()` selects a coalesce-specific mode of
+the existing scope join. Closed array values use `combine_union_types_preserving_array_shapes()`,
+including empty alternatives. Open arrays retain the existing generalizing union. Contained closed
+alternatives are removed, so a stored ErrorType absorbs the counterfactual null alternative without
+changing the offset reader. A pair of closed keyed shapes can combine one additional key into an
+optional entry when every shared entry is identical and neither shape is empty.
+
+Offset-expression cache entries survive only when every continuing branch stores that fact. The
+holder check does not use the stored value's possibly-undefined flag. The coalesce RHS also skips
+parent assertions for mixed reads, including failed reads. Otherwise, asserting an absent parent's
+type can synthesize its definition and hide the next nested probe's undefined-root diagnostic.
+
+The source contract is PHPStan 2.3.1's `src/Analyser/ScopeOps.php:204–256,278–290` at
+`cb3b7e99489b2e3789ee2eec10501cb7a72580ea`. The array union follows
+`src/Type/TypeCombinator.php:1147–1251,1602–1643` and the one-key subset of
+`src/Type/Constant/ConstantArrayType.php:2987–3045`. The mixed-parent guard follows
+`src/Analyser/ExprHandler/Helper/DefaultNarrowingHelper.php:722–725`.
+
+Direct-variable certainty, conditional holders, and impossible-branch handling still use the existing
+join. Only the coalesce caller selects the new mode. Loop and try/catch joins retain their existing
+union behavior, and loop generalization is unchanged.
+
+The 78-record scope fixture and the strict string-offset and variable expectations are unchanged.
+The public scope test now compares every record, including the seven previously filtered coalesce
+diagnostics. On the unchanged parent, seven scope records differ. The new join resolves those
+differences, preserves the 152 strict failed-offset and 352 variable records, and keeps both cached-value
+narrowing controls. The existing dead-code fixture checks repeated probes of an absent array root.
+
+The array reduction is bounded. It does not port every `TypeCombinator` array-union optimization or
+establish complete coalesce, string-offset, or variable-rule inference parity.
+
+## Standalone block scope pollution
+
+`Settings::pollute_scope_with_block` defaults to true. Pun passes `polluteScopeWithBlock` from resolved
+parameters through `Project`, `Checks`, `Checker`, and every primary and secondary inference entry point.
+The setting is independent of maybe-undefined reporting, loop-initial pollution, and foreach pollution.
+
+The reference is PHPStan 2.3.1 at `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`:
+
+- [`BlockHandler.php:48–69`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/StmtHandler/BlockHandler.php#L48-L69)
+  evaluates the body once. Enabled pollution returns its actual scope. Disabled pollution joins incoming
+  and final scopes but keeps the actual termination, exits, throws, and effects.
+- [`MutatingScope.php:4514–4577`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/MutatingScope.php#L4514-L4577)
+  joins holder types and certainty, combines conditional holders, joins native types, and ANDs extract state.
+  Pun uses its existing variable-scope and native-scope joins. Only scope state changes after body analysis.
+  Existing control-flow artifacts and other body effects remain intact.
+
+Mago's CST also represents control-statement braces as `Statement::Block`. PHP-Parser exposes those bodies
+as statement lists, so they must not receive standalone-block pollution. The statement dispatcher records
+the spans of the actual braced bodies of `if`, `elseif`, `else`, `for`, `while`, `foreach`, and `do`.
+These immutable body roles remain distinct from nested standalone blocks and blocks inside colon-delimited bodies.
+The default-enabled path does not collect those spans. No parser or variable-scope implementation changes.
+
+Public `variables` and `project` tests compare resolved default, enabled, disabled, quiet, and independent
+configs with fresh PHPStan output in `tests/fixtures/block-pollution/expected.json`. `capture.php` regenerates
+the diagnostics, full types, and scalar native types. Controls cover asymmetric holders, nested blocks,
+conditionals, return, throw, local and outward exits, unset, extract, output arguments, expression effects,
+include inference, exhaustive matches, body braces, colon syntax, and unchanged surrounding code.
+The public Analyzer test checks native exit unions, unchanged full artifacts, and single visits to marked reads.
+Plugin-error controls check that a failed body remains an error rather than a continuing optional branch.
+
+This patch does not port PHPStan's separate `VariableFlow` liveness algebra or extend the existing scope joins.
+Unsupported native transfers retain their existing invalidation behavior. This is not a complete variable-flow
+or DefinedVariableRule port.
+
+## Evaluated for and while condition formulas
+
+`src/statement/loop/mod.rs::apply_pre_condition_to_loop_context` now derives each for or while
+condition's formula after the existing expression evaluation. The formula therefore uses the operand
+types from that pass, including assignments in earlier comma-separated conditions. Formula extraction
+does not evaluate the expression again. The first-falsey snapshot uses the same evaluated formula.
+
+Previously, the helper reconciled clauses cached before the first condition evaluation. For
+`$n = strlen('./-'); for ($i = 0; $i < $n; $i++)`, those clauses lacked `$n`'s literal value.
+The symbolic comparison alone did not narrow `$i`, leaving `int<0, max>`. Finite string-offset
+inference then correctly included `''`, which caused an extra `argument.type` diagnostic for
+`explode($chars[$i], 'Mercedes-Benz')`. The evaluated comparison supplies the existing integer
+assertion with the upper bound `3`, restoring `int<0, 2>` and `'-'|'.'|'/'`.
+
+The reference is PHPStan 2.3.1 at `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`:
+
+- [`ForHandler::processStmt()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/StmtHandler/ForHandler.php#L175-L194)
+  takes the truthy scope from the evaluated condition result. Its later passes also use each
+  evaluated condition's truthy scope.
+- [`StrlenFunctionReturnTypeExtension::getTypeFromFunctionCall()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/Php/StrlenFunctionReturnTypeExtension.php#L35-L65)
+  derives the literal byte length from constant scalar strings.
+
+Do-while retains its cached post-condition formula: its body includes an unconditional first
+iteration, which must not inherit a later iteration's evaluated upper bound. Cached exit formulas,
+condition-complexity reporting, convergence, and exit generalization are unchanged. The patch does
+not change string-offset inference or introduce a numeric relation engine.
+
+The public `failed_string_offsets` target checks the original `testBug11506` through `run()` at
+levels 5 and 9. PHPStan reports no diagnostics at either level. Its existing offset fixture adds
+18 fresh PHPStan dump records for constant and parameter bounds, a zero-iteration exit, a bound
+reset by the condition after a body write, comma-separated assignment and postfix results, while,
+the unconditional do-while control, and a growing body bound that must still allow `''`.
+All 152 earlier oracle records remain unchanged.
+
+The oracle capture uses the pinned executable, the existing `failed-reads/phpstan.neon`, level 0,
+and the explicit `string-offsets.php` path. Only absolute file keys are reduced to basenames.
+Integer-union bound propagation and precise numeric writes from postfix expressions remain outside
+this correction.
+
+Fresh instrumentation covers **11/11 changed executable production lines**, with no exclusions.
+The measurement uses direct `llvm-cov export` over the offset test executable and the fresh merged
+profile. Cargo, Rayon, and the test harness each use one job, with incremental compilation disabled.
+The offset, variable and loop-pollution, project, statement, dead-code, and native-lane controls pass.
+The incoming-isset target retains its baseline certainty mismatch at `flow.php:228–229`, also
+reproduced with main's pre-fix executable. Both 246-case Functions partitions at levels 5 and 9
+have zero new mismatches. Their harness failures report only the existing stale `testBug1946` gap
+at each level. No gap or earlier expectation changes are part of this patch.
+
+## Foreach entry holder values and mixed-template identity
+
+`src/context/variable_scope.rs::merge_scope_types()` skips values whose incoming scope explicitly
+marks the holder absent. Reconciliation can leave a diagnostic-only null placeholder in `locals`
+after an impossible positive `isset`. PHPStan has no incoming value to union on that edge.
+Including the placeholder makes a later nonnullable foreach assignment appear nullable and prevents
+a terminating positive `isset` from establishing absence on the remaining edge.
+The source contract is PHPStan 2.3.1's `src/Analyser/ScopeOps.php:204–256` at
+`cb3b7e99489b2e3789ee2eec10501cb7a72580ea`. The check uses explicit absence, not value nullability
+or possibly-undefined flags.
+
+`src/statement/loop/foreach.rs` retains a single mixed-bound template's identity when narrowing the
+zero-iteration edge to the empty array. The empty array intersects that template instead of becoming
+an independent union member. PHPStan's `src/Analyser/StmtHandler/ForeachHandler.php:459–474` joins
+the body with the scope narrowed by `iteratee === [] || is_object(iteratee)`.
+Concrete array bounds and non-template values keep their existing reconciliation.
+
+The public `scope_joins` regression captures all 40 PHPStan records across maybe-variable reporting
+and foreach and loop pollution settings. Controls retain actual nullable foreach values, plain mixed
+iterators, and object-bound templates. Existing incoming-isset and strict-mixed expectations remain
+unchanged. This prerequisite does not enable the shared array-shape join rollout, change loop
+widening, or claim complete parity for concrete template-array intersections or null-context
+assertion specifications.
+
+### Shared continuing scopes and expression-statement specifications
+
+Real continuing edges use the bounded shape-preserving union and offset-holder intersection that
+previously applied only to coalescing. Foreach's pollution-off result remains a final-value and
+entry-certainty projection. Loop widening, provisional inheritance, and coalesce result types
+remain separate from the shared join.
+
+Invocation assertions record walked null-context specifications instead of changing a skipped
+operand's scope. Expression statements compose those specifications with the existing algebra
+and reconciler. This follows PHPStan 2.3.1's `ExpressionHandler`, `BooleanNarrowingHelper`, and
+`ExpressionResult` contracts. The builtin `assert` extension retains its truthy-argument
+specifications in both boolean branches. Host assertion providers use the same deferred boundary.
+
+The public `scope_joins` target retains 40 foreach-entry records and all original 123 asymmetric
+join records. Fresh PHPStan captures extend the join matrix to 131 records and add 86 null-context
+records. The latter cover independent and common offsets, conjunction and disjunction, assignment,
+overwrite, negation, XOR, builtin assertions, and plugin-provider controls. A public Analyzer test
+supplies the provider controls through a real host assertion provider, without duplicate PHPDoc
+assertions, and compares the three observed values with the same PHPStan capture.
+
+The shared PHPStan `reduce_arrays` prerequisite preserves non-plain empty intersections and
+templates separately, matching `TypeCombinator::reduceArrays` at lines 1552–1560. Plain empty
+shapes still participate in merging. Its existing template-array oracle capture retains all
+104 earlier records and adds 24 input-order and strategy controls. These cover list and empty
+templates, plain array bounds, impossible non-empty bounds, and optional and empty partners.
+Before the correction, 14 controls fail and four public join records lose the list-template arm.
+After the correction, both the standalone public-type discriminator and all strict records pass.
+No foreach or converter workaround replaces the shared combiner correction.
+
+All 121 tests in the 16 selected neighboring targets pass, including block, loop, foreach,
+incoming-isset, strict-mixed, variable, failed-offset, coalesce, native, and try controls. All four
+scope tests and all 257 captured records pass, as do all 79 PHPStan-crate tests. Fresh exact-source
+instrumentation covers 169/169 changed analyser lines and 7/7 shared PHPStan lines without
+exclusions. Cargo, Rayon, and the test harness each use one job, with incremental compilation disabled.
+
+### Continuing if-branch union order
+
+`src/statement/if.rs` joins continuing scopes in reverse branch order. PHPStan 2.3.1's
+`IfHandler.php:112,136,149` merges each later branch into the accumulated earlier scopes, and
+`ExpressionTypeHolder::and()` unions the receiver's type before the other holder's type.
+Both PHPDoc and native holder joins retain that order. The pure-call collector exposes underlying
+union order when it selects the last reflected method for a no-effect diagnostic. Sorting type
+descriptions or changing the diagnostic would leave the shared scope contract wrong.
+
+A fresh seven-function public oracle matrix distinguishes both assignment orders, explicit else,
+elseif, and full else chains, with two terminating-branch controls. Before this correction five
+diagnostics choose the wrong class. Afterward all seven complete diagnostics match. The original
+level-4 DeadCode fixture supplies the maintained regression test.
+
+### Conditional type holders on continuing branches
+
+`context/variable_scope.rs` retains conditional consequences when branch types differ, even when
+both branches definitely define the target. Guards use the representable difference between the
+incoming types. Absorbed or overlapping guards follow PHPStan 2.3.1's target exclusions rather
+than proving presence from a potentially shared value. Inherited consequences with the same guard
+merge their target types across continuing branches.
+
+Reconciliation supplies only explicitly specified expressions to holder matching. Exact matches
+take precedence over supertype matches, absence consequences require an exact match, and matching
+consequences intersect existing target types. Assignments and unsets invalidate holders that
+reference the changed variable, including symbolic indexes. A completed branch join does not
+specify all its expressions again.
+
+Ordinary array reads no longer insert derived values into `locals`. Those values belong to
+expression observations, not the specified expression holders used to create correlations.
+Explicit offset refinements still participate in reads, including coalesce and postfix-index
+controls. PHPStan keeps its derived `resolvedTypes` cache separate from `expressionTypes`.
+
+The source contract is PHPStan 2.3.1 at
+`cb3b7e99489b2e3789ee2eec10501cb7a72580ea`: `ScopeOps.php:371–592` creates holders,
+`:689–810` invalidates them, and `:985–1066` matches specified guards.
+`MutatingScope.php:4370–4409` intersects consequences, and `:4720–4775` merges same-guard holders.
+`MutatingScope::getType()` records derived values in `resolvedTypes`, independently of those holders.
+
+The public `conditional_type_correlation` target compares complete PHPStan captures in four
+configurations. Controls cover literal receiver calls, unpack arrays, asymmetric equality,
+overlapping and absorbed bounds, constant-array and interface guards, inherited consequences,
+prior target narrowing, writes, unsets, symbolic indexes, and unrelated branches. This change
+does not expose counterfactual scopes to named-argument selection or claim dynamic-name parity.
+
+All 207 new oracle records and 106 tests across 18 selected public targets pass. Existing scope,
+variable, native, loop, foreach, coalesce, failed-offset, and unset captures remain unchanged.
+Fresh dependency instrumentation covers all 160 changed executable lines without exclusions.
+
+### Requested method identity before storage selection
+
+`resolver::method::ResolvedMethod` and `invocation::MethodTargetContext` retain `requested_name`,
+the ASCII-case-folded lookup name before trait or ancestor storage selection. Trait aliases keep
+their own lookup identity while `declaring_method_id` continues to identify the original storage.
+Instance, static, callable, partial, constructor, attribute, magic and implicit invocations carry
+the corresponding name without changing resolution, signatures, diagnostics or side effects.
+Synthetic constructor and string-cast invocations retain `__construct` and `__toString`, even
+when those methods are aliases of differently named trait declarations.
+
+The public `requested_method_names` test observes real invocation hooks and return providers.
+It distinguishes original and aliased trait calls, case folding, dynamic alternatives, inheritance,
+constructors and implicit string casts. A fresh PHPStan 2.3.1 reflection probe at pinned revision
+`cb3b7e99489b2e3789ee2eec10501cb7a72580ea` confirms why storage identity alone is insufficient:
+the original `@phpstan-impure` trait method reflects maybe side effects, while its alias reflects
+yes. This API only exposes the missing identity; purity consumption and isolated expression
+observations remain separate changes.
+
+### Receiver-local mutation invalidation
+
+`invocation::post_process::clear_object_property_narrowings()` follows PHPStan's
+`MethodCallHandler` receiver invalidation boundary: constructors, certainly side-effectful
+instance methods, and unresolved methods invalidate mutable receiver descendants. Merely
+possibly impure methods and static callees preserve receiver facts unless an argument escapes.
+Readonly targets and private properties declared outside the callee's reflected class retain
+their facts. Conditional guards invalidate without those target-only exemptions, matching
+`ScopeOps::invalidateExpression()`.
+
+The reflected requested name, rather than trait storage identity, selects the consuming class,
+PHPDoc availability, native return fallback, and constructor classification. The public
+`receiver_invalidation` target compares all 39 complete PHPStan 2.3.1 records and a two-record
+scanned-stub purity control. It includes inherited aliases, fluent and void returns, readonly
+guards, independent receivers, constructors, and private-parent properties. All 32 selected
+public tests across twelve targets pass, as do seven instrumented tests. Whole-crate coverage
+and the combined original-fixture gate remain separate checks.
+
+### Sequential optional-array joins and offset order
+
+`context/variable_scope.rs` reduces eligible sealed keyed-array pairs even when the union contains
+other alternatives. The bounded reduction requires equal shared value types, ignoring holder
+certainty flags, and permits at most one extra required key. Optional entries retain their separate
+optionality metadata. This prevents independent nullable-property appends from accumulating an
+exponential number of shapes without widening discriminators or unrelated alternatives.
+
+Continuing-edge joins retain the incoming array order before reduction. A merged pair occupies the
+primary superset's slot and starts with its value types. This includes equal-key pairs with different
+optional entries. The shared codex combiner is unchanged. Loop widening and foreach projection keep
+their existing paths.
+
+`utils/expression/array.rs` consumes offset alternatives in forward order. Its stack stores the
+initial alternatives, deferred intersection bases, and generic constraints in reverse so each pop
+visits the next incoming alternative. No callable metadata or diagnostic selection changes here.
+
+The source contract is PHPStan 2.3.1 at `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`:
+`TypeCombinator.php:1525–1760`, `ConstantArrayType.php:2987–3114`, and `UnionType.php:978–996`.
+This is not a complete `reduceArrays` port.
+
+The public `sequential_scope_joins` target compares complete four-configuration captures for
+sequential appends, tagged alternatives, required empty alternatives, and `list<never>` templates.
+Its ordering controls cover both superset positions, unrelated alternatives, equal-key optionality,
+and template bounds in both orders. A public analyzer hook also retains a deferred intersection
+around the same template bounds and compares offset member order with PHPStan's scope API.
+The unchanged `Methods/data/bug-12110.php` supplies the large sequential-join control.
+
+The fixture's `capture.php` and `capture-offset-order.php` regenerate the diagnostics and scope
+captures with the pinned PHPStan PHAR. Existing expectations remain unchanged.
+
+### Owned call-scope type observations
+
+`Settings::call_scope_observations` requests expression spans inside particular non-nullsafe
+instance method calls. The one live expression walk retains each requested expression's own
+entry scope. `AnalysisArtifacts::call_scope_observations` returns owned types for each literal
+dynamic method name after its equality predicate, or unfiltered answers for identifier calls.
+Unreached expressions have no answer. Ordinary analysis retains no scopes.
+
+`observations.rs` follows PHPStan 2.3.1's `NodeCallbackScope`, `ExpressionResult` and
+`ClosureCallContextMatcher` at `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`.
+Derived arrays, unpack expressions and dependencies are priced on isolated copies when
+their stored children cannot answer the asking position. Compatible children consume
+their stored results without replaying effects. Variable certainty is checked independently
+of cached types. An explicit absence holder cannot supply a cached literal.
+Resolved argument parameter contexts, including inference from the stored argument, determine
+closure compatibility rather than unconditional closure reuse or changes to captured variables.
+Final reflection facts do not replace the retained pre-evaluation scopes.
+
+The pricing fork owns its collector, scope and artifacts. A lexical observer-dispatch
+boundary also covers fresh artifacts created inside closures and anonymous constructors.
+Observer-marked hooks do not publish another evaluation. Semantic hooks and return,
+signature, assertion and throw providers stay active. Raw callback gathering is not used
+as an isolation flag. Public controls compare complete real hook counts, live expression
+artifacts and diagnostics with observations disabled and enabled.
+
+The public `call_scope_observations` fixtures retain full PHPStan analyser diagnostics
+and independently captured precise scope observations. They distinguish per-name receiver,
+array and unpack correlations, offset versus dynamic selectors, expression-position
+writes and receiver replacements, purity, nested requests, semantic providers, closures
+and resolved argument contexts. `closure-matcher.php` captures the extension/raw-context
+compatibility guards separately through PHPStan's public matcher.
+This facility does not change Pun's rule consumers or activate any named-argument mapping.
+Conditional holders, shape correlation and live receiver invalidation are independent prerequisites.
+
+Retained expression completion also runs after successful semantic-hook short circuits.
+Public after-expression hooks keep their existing dispatch. A variable selector therefore
+retains its position after a provider supplies the receiver type, without another event.
+Unfiltered reads require a retained evaluated position instead of silently losing an answer.
+Nonvariadic unpack expressions are evaluated before template inference. A provider that
+leaves no type uses the existing mixed fallback, not a second evaluation during validation.
+Public controls cover these boundaries, generic variadic unpacks, absent and unknown
+dependencies, formula-budget exhaustion, and recovered calls with a missing selector.
+
+### Unpacked operands retain written evaluation order
+
+`invocation/analyzer.rs` evaluates unpacked operands alongside ordinary non-closure arguments
+in their written order. Closures remain deferred for contextual specialization and raw callback
+gathering. Parameter binding, template inference and validation consume the completed expression
+types without evaluating an unpack again. A semantic hook that leaves no type keeps the existing
+mixed fallback. Zero-parameter callees also evaluate their unpacked operands.
+
+This follows PHPStan 2.3.1's
+[`ArgumentsHandler::processArgs()` processing order](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ArgumentsHandler.php#L198-L230)
+and its
+[single evolving-scope expression walk](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ArgumentsHandler.php#L647-L695).
+The existing variadic by-reference flag and callee argument context still reach the same argument
+analyzer. The patch does not change named-parameter selection, providers or observation pricing.
+
+The public `call_scope_observations` tests compare operand types and exact expression-hook counts
+with fresh PHPStan captures. `unpack-boundaries.php` preserves the filtered named-argument fixture
+byte for byte. Its controls distinguish earlier and later assignments, pure calls and impure calls,
+for both identifier and dynamic method selectors. `unpack-order.php` adds ordinary, generic,
+variadic, by-reference, consecutive-unpack and zero-parameter calls. Semantic-hook controls require
+one evaluation even when no expression type is supplied. A failing unpack stops the walk before
+later ordinary operands and propagates the plugin error.
+
+From `crates/pun-analyse/tests/fixtures/call-scope-observations`, regenerate each new capture with
+`php capture-unpack-order.php /absolute/path/to/phpstan-2.3.1.phar unpack-boundaries.php`
+or the same command with `unpack-order.php`.
+Assignment-derived conditional holders and Pun's filtered named-argument consumer are separate
+changes. These operand captures do not claim to validate those consumers.
+
+### Bounded finite offsets in live array literals
+
+`expression/array.rs` retains bounded integer and string alternatives as constant slots.
+The source is PHPStan 2.3.1 at `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`:
+
+- [`ArrayHandler::processExpr`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/ArrayHandler.php#L173-L190)
+  passes each key and value's evaluated type to the initializer resolver.
+- [`ConstantArrayTypeBuilder::setOffsetValueType`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/Constant/ConstantArrayTypeBuilder.php#L130-L440)
+  owns optional slots, matched-key overwrites, and the possible next automatic indexes.
+- [`InitializerExprTypeResolver::getArrayType`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Reflection/InitializerExprTypeResolver.php#L644-L765)
+  passes literal offsets and optional constant unpack slots to that builder.
+- [`IntegerRangeType::getFiniteTypes`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/IntegerRangeType.php#L725-L744)
+  bounds range enumeration at 129 values. A finite offset must contain fewer than 256
+  alternatives. More than 256 accumulated slots degrade to generic key and value parameters.
+
+A finite offset does not produce a union of singleton arrays. Existing required slots widen,
+existing optional slots receive the replacement value, and unmatched keys become optional.
+Append visits existing slots in insertion order before it adds the highest possible next index.
+Numeric strings use `ArrayKey::from_string` before slot identity and duplicate conversion.
+Constant unpacks preserve optional slots and feed integer slots through the append operation.
+
+`finite_array_literal_keys` compares the public analyzer's live constant slots, optionality,
+nonempty and list flags, exact counts, and degraded key and value types with 50 fresh PHPStan
+scope captures. These include 255 versus 256 finite alternatives, 129 versus 130 range values,
+256 versus 257 accumulated slots, and exhausted automatic indexes. The test also compares all
+five public Pun diagnostics with PHPStan's finalized level-5 analyser results, including the
+message, identifier, tip, and ignorable flag. The capture retains PHPStan's precise descriptions
+without rewriting them.
+`fixtures/finite-array-literal-keys/capture.php` regenerates the capture from the pinned PHAR.
+
+This patch does not add assignment-derived correlations, change filtered-scope observations,
+or change Pun's type converter. The live artifact test does not claim byte-identical shape display
+order, optional-shape nonempty display, list accessories, or the `oversized-array` display accessory.
+Those require metadata outside this file. Constant-array union unpacks retain their existing path.
+A finite key after a general or union unpack does not reseal that fallback's generic parameters.
+
+### Nullable nested values in shared closed-array joins
+
+`BlockContext::merge_variable_scope_types` extends its existing closed-array pair reduction
+to same-key shapes with at least two slots. PHPStan 2.3.1's
+[`ConstantArrayType::legacyIsKeysSupersetOf`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/Constant/ConstantArrayType.php#L2987-L3041)
+allows one shared-value comparison to answer No. A nullable nested value instead answers
+Yes/Maybe, following
+[`ConstantArrayType::isSuperTypeOf`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/Constant/ConstantArrayType.php#L767-L879).
+
+The added proof compares identical non-null alternatives and recursively checks plain keyed
+shapes with the same keys. It removes only explicit null alternatives, not void, mixed exclusions
+or template bounds. At most one remaining unproved value comparison is allowed: the pair is
+eligible even if that comparison is No. Pairs needing broader trinary type relations retain their
+existing alternatives. Mago's coercive Boolean containment and nonempty-array identity shortcut
+are not substitutes for this proof. Existing superset slot order and optional-key reduction remain.
+The new eligibility path excludes callable intersections and differing list metadata on the outer
+shapes as well as the recursively compared values.
+
+The public `call_scope_observations` regression compares all 16 frozen PHPStan observations for
+overlapping and unrelated nested values in both branch orders. Both overlapping root observations
+fail before the correction. Disjoint nested values plus a differing sibling remain separate shapes.
+Observation-enabled and disabled walks retain identical live types and diagnostics.
+Regenerate with `php capture.php /absolute/path/to/phpstan-2.3.1.phar nested-shared-joins.php`
+from `crates/pun-analyse/tests/fixtures/call-scope-observations`.
+This is a shared scope-join correction, not a nullsafe or assignment-specific rewrite.
+
+### Constant method names follow union and template contracts
+
+`observations.rs` extracts names from raw types using PHPStan 2.3.1's
+[`UnionType::getConstantStrings()` and `pickFromTypes()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/UnionType.php#L1728-L1747).
+An alternative without constant strings vetoes the whole union. Template parameters use their
+bound, and intersections concatenate the constant strings supplied by their members, matching
+[`IntersectionType::getConstantStrings()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/IntersectionType.php#L254-L264).
+The public selector fixture covers literal unions, integer alternatives, unknown strings,
+callable strings, class strings, literal-bound templates and template intersections.
+From `crates/pun-analyse/tests/fixtures/call-scope-observations`, regenerate its capture with
+`php capture.php /absolute/path/to/phpstan-2.3.1.phar selector-names.php --dependencies`.
+
+### Requested historical dependencies retain their own evaluation scopes
+
+`observations/history.rs` indexes explicitly requested expressions outside their asking call.
+The real walk retains each reached expression's before-scope and its children's stored results.
+Call entry imports those snapshots without importing unrelated expression types. An unreached
+request still has no answer. Ordinary analysis does not build the index or retain scopes.
+
+Filtered questions apply the future call's name predicate to the historical expression's own
+before-scope, following PHPStan 2.3.1's
+[`NodeCallbackScope::doGetType()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/NodeCallbackScope.php#L120-L147)
+and [`preprocessScope()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/NodeCallbackScope.php#L254-L269).
+Identifier calls keep the existing asking-position compatibility check. When a historical
+expression needs pricing there, its indexed CST runs only in the isolated pricing context.
+Published hooks, live artifacts and live diagnostics remain unchanged.
+
+The public historical fixture checks all 15 PHPStan observations: earlier receivers,
+derived arrays and their variable dependencies under two names, followed by an identifier call
+after a later write. Its current receiver differs from its earlier receiver under one predicate.
+The identifier question instead sees the later value in both the variable and the derived array.
+From `crates/pun-analyse/tests/fixtures/call-scope-observations`, regenerate the complete capture with
+`php capture-historical.php /absolute/path/to/phpstan-2.3.1.phar historical.php --dependencies --function-events`.
+
+### Call results separate raw returns from value reads
+
+`artifacts/expression_result.rs` ports PHPStan 2.3.1's
+[`ExpressionResult` read contract](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExpressionResult.php#L351-L556).
+The ordinary artifact map contains effective full values. A companion record retains the own
+raw return, normal-resolution versus eager provenance, pre-evaluation holders, expression
+overrides, and independent native returns. Normal call resolution publishes raw returns through
+`set_resolved_expression_type`, including dynamic return providers. Syntax determines projection:
+named function, method, nullsafe method, and static calls project direct `void` union alternatives to `null`.
+Callable-value function syntax and first-class callable creation do not project.
+`TUnion::clone_with_types` preserves metadata and does not visit nested array or callable types.
+
+The effective read order is the cached answer, an expression override, an eager answer, a
+definite pre-evaluation holder, and finally the projected own return. A holder does not skip
+evaluation. Native answers never use the full type as a fallback and never project `void`.
+The keep-void read uses the own raw return when PHPStan's `isVoid()` is yes or maybe, including
+unconstrained mixed and template bounds. Otherwise, keep-void returns the effective value.
+This is `ExpressionResult::getKeepVoidType`, not Scope's separate contains-null-gated wrapper.
+
+`AnalysisArtifacts::get_expression_result` returns an owned `ExpressionResult` snapshot.
+`set_expression_result` restores that snapshot without pricing the expression again or treating
+the effective value as a new eager return. The snapshot includes raw and effective full types,
+raw and effective native availability, projection eligibility, holders, and resolution and
+override provenance. `ProviderContext` and `HookContext` expose the snapshot, raw, and keep-void
+reads. Reinstalling a snapshot retains supplied native information even when the destination
+had no native lane, including through detached nested checkpoints. It never creates a native
+answer from a full type. Existing expression-type getters remain full value reads.
+
+Foreign-position reads follow
+[`getTypeOnScope`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExpressionResult.php#L651-L674)
+and
+[`atAskPosition`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExpressionResult.php#L807-L840).
+Callers supply the asking scope's authoritative holder and freshly resolved expression override.
+`get_type_on_scope` projects the holder or own fallback, even for an eager fallback, after the
+override has declined. Its native counterpart does not project. `at_ask_position` makes a
+scope-owned full/native pair eager. It drops the original position's holder and cached override,
+then applies the supplied asking-position overrides. A missing native answer stays missing.
+
+The companion record uses the existing nested expression checkpoints for rollback, merge, and
+mutable-hook snapshots. Function artifact transfer retains the record alongside the full map.
+Native-only changes do not affect full-lane convergence. A new call evaluation clears the prior
+span's raw return, holders, overrides, native result, and call-termination observation.
+
+The public Analyzer, hook, and provider tests compare against fresh, complete captures under
+`tests/expression-result`. `capture.php` emits the value/raw/keep-void/native matrix, writes
+factory controls to `controls.tsv`, and emits all level-0 diagnostics to stderr. The repeated
+`$sink->read()?->foo([$sink->read()])` control installs the nullsafe ensure through a semantic
+hook at the argument boundary. Both method evaluations still occur. This tests holder precedence,
+not the separately owned nullsafe ensure implementation.
+
+Observation storage must carry `Option<ExpressionResult>` and restore it with
+`set_expression_result`, not clone the value map and call `set_expression_type`. Consumers must
+retain their distinction between an evaluated expression without a type and an unevaluated one.
+Checker void-use diagnostics must read keep-void results. Neither consumer integration is part
+of this storage and producer patch.
+
+Match construction is another keep-void consumer. PHPStan's
+[`MatchHandler` arm union](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/MatchHandler.php#L557-L569)
+uses each arm's `getKeepVoidType()`. The match expression itself cannot project `void`.
+`match.php` and its complete captures distinguish the all-void match's ordinary `void` type
+from each named call arm's ordinary `null`, raw `void`, and keep-void `void` types.
+The match handler and Checker integration remain separate work. The broader comment near the
+upstream arm union does not replace `ExpressionResult::projectsVoidToNull()`'s syntax predicate.
+
+### Nullsafe calls restore shallow receiver devices
+
+`context/non_nullability.rs` follows PHPStan 2.3.1's
+[`NonNullabilityHelper::ensureShallowNonNullability` and `revertNonNullability`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/Helper/NonNullabilityHelper.php).
+The nullsafe method handler evaluates the receiver once, then specifies its non-null scope view.
+Method resolution consumes that view without replacing the receiver's stored expression type.
+Nested devices retain the original receiver nullability for short-circuit decisions.
+
+The device saves the immediate parent of an array offset. Reverting its specification updates
+ancestor containers without discarding unrelated writes. Specification runs with alias and
+conditional transfers detached. An assignment in the receiver spine does not alias its LHS.
+Definitely null receivers restore the pre-call scope. Possibly null receivers join that scope
+with the reverted call scope, as in
+[`NullsafeMethodCallHandler::processExpr`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/NullsafeMethodCallHandler.php#L61-L148).
+The expression's short-circuit null comes from the original receiver, not the temporary device.
+
+The nullsafe join drops fetch holders present on only one incoming edge, after it derives
+conditional holders. This follows `ScopeOps::finishMerge` without changing ordinary property
+memoization. This matters when a receiver assignment occurs only on the call edge.
+
+The three `nullsafe-scope-*.php` public fixtures retain 57 PHPStan type observations and all
+seven public diagnostics. The inference tests also compare observation-enabled and disabled
+artifacts, diagnostics and published hooks, including the receiver function's single evaluation.
+Regenerate each capture from its fixture directory with
+`php capture.php /absolute/path/to/phpstan-2.3.1.phar nullsafe-scopes.php --function-events`,
+substituting `nullsafe-scope-edges.php` or `nullsafe-scope-results.php` for the other captures.
+
+This is the live scope prerequisite. Nullsafe call observation registration, historical selector
+indexing and stored-consumption pricing remain separate work. These tests do not claim that the
+unfinished nullsafe observation matrix passes or replace any of its frozen expectations.
+
+## Derived assignment conditions
+
+`expression/assignment/mod.rs` preserves existing conditional holders before a direct
+variable assignment evaluates its RHS. `context/variable_scope.rs` derives the assigned
+variable's type under each definite RHS-variable consequence and its guard, then installs
+the new holders after ordinary target invalidation. This ports PHPStan 2.3.1's
+[`AssignHandler::processDerivedConditionalExpressionsAfterAssign`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/AssignHandler.php#L2323-L2390),
+including distinct reads in source order, the 16-evaluation limit, self-read exclusion,
+and rejection of conditions on the overwritten target.
+
+Pricing uses copied artifacts and detached control-flow sinks. It suppresses observer
+events and diagnostics while retaining semantic return providers. Observation-enabled
+analysis also forks the observation state, so argument settling cannot replace live
+retained results. The ordinary assignment and its expression type remain unchanged.
+
+Mago does not return PHPStan's general `ImpurePoint` list. This patch consequently prices
+only RHS operations whose purity it can establish. Unknown calls, methods, property
+accesses, superglobal reads, and effectful constructs do not produce derived holders.
+Explicitly pure functions, local references, and local writes remain eligible. Conditional holders
+retain Mago's existing single-guard representation. General impurity tracking and compound
+condition holders are separate boundaries, not inferred by this patch.
+
+String concatenation, casts, and interpolation also need PHPStan's
+`ImplicitToStringCallHelper` guard: an object's `__toString()` can add an impure point
+without an explicit method call in the RHS. These operations are eligible only when
+their live operand types establish scalar or null inputs. Missing types, object inputs,
+and unresolved template inputs do not imply purity.
+
+The complete PHPStan records and capture script in
+`crates/pun-analyse/tests/fixtures/assignment-derived-conditions/` cover array key/value
+correlations, reversed associations, overwritten guards and targets, self-dependency,
+undefined reads, pure and impure calls, local writes, the evaluation limit, and named
+unpacks at levels 0, 4, and 5. The public regression uses `pun_analyse::run` without
+identifier filtering. Literal arrays with multiple possible keys retain their existing
+live producer behavior; singleton-key pricing supplies the derived consequences.
+
+Combining partial closed-array consequences uses the separate definite constant-array
+intersection port in `mago-codex`. The strict matrix also exercises the independent
+`isset.variable` diagnostic consumer at levels 4 and 5. Assignment pricing does not
+emit that diagnostic or replace the consumer's incoming-operand observation.
+
+## Transporting call results and combining match arms
+
+Observation storage now snapshots and restores `ExpressionResult`, preserving raw/value/native
+answers and call-return provenance during compatible child consumption. An evaluated expression
+without a result remains distinct from an expression not evaluated yet. Synthetic selector state
+uses an eager non-call result without inventing a native answer.
+
+Match construction reads arm keep-void results. Shared unions preserve void rather than
+performing source-call projection, retaining both all-void and mixed void/non-void arms.
+The public `call_scope_observations` result-transport regression compares fresh PHPStan captures
+while forcing filtered parent-array repricing. Its semantic hook checks the consumed children's
+raw/value/keep-void answers and native availability before and after repricing. The fixture also
+distinguishes raw invocation-target unions from eligible call values and tests ordinary ternary,
+coalescing and stored-variable void values.
+
+Pun's Checker retains keep-void answers separately from ordinary value types. Call and match
+consumers consult them only when the effective value contains explicit null, matching
+`MutatingScope::getKeepVoidType()`. Ordinary argument conversion still reads value types.
+
+## Constant dynamic method diagnostic scopes
+
+Pun's `CallMethodsRule` consumer now checks each constant dynamic method name in its owned filtered
+operand scope. Requests include positional and zero-argument dynamic calls, not just named or unpacked
+calls. Receiver conversion, acceptor selection, unpack expansion, template inference, argument types,
+and reference-return checks use the selected scope without recovery from the global type map.
+
+The reference is `CallMethodsRule::processNode()` at PHPStan revision
+`cb3b7e99489b2e3789ee2eec10501cb7a72580ea`. Literal identifier calls keep their existing path.
+The logical call span still selects the independently retained keep-void result. Diagnostic locations
+use the selector or argument span. A mixed void and non-void result does not become void merely because
+one selected method declares void.
+
+The public `dynamic_methods` regression compares complete diagnostics from the pinned PHPStan PHAR,
+including correlated receivers and arguments, union vetoes, template selector bounds, void results,
+and independent configuration switches. This consumer change does not add missing nullsafe observations.
+
+## Integer-to-string precision
+
+String casts use Codex's port of PHPStan 2.3.1 `IntegerType::toString()` and
+`IntegerRangeType::toString()`, preserving decimal-integer strings rather than widening
+them to general numeric strings. A single integer operand retains the source function's
+inclusive finite expansion limit without a second, lower string-combination threshold.
+
+The partial native lane uses the same pure conversion only for its own known integer
+operand. It does not consult PHPDoc refinements or the full expression artifacts, and
+unsupported native unions remain unavailable. The public `decimal_string_producers`
+regression checks both native modes and the original full-result artifacts.
+
+## Assignment preparation and cached property operands
+
+`expression/assignment/mod.rs` registers each target's preparation position before the RHS.
+A write-only variable has an entry position but no completed read. Array targets read the root and
+dimensions once, inside out, and compose each offset's pre-write answer from those results.
+Missing offsets retain their read error, not the writer's promotion into a new container.
+An append target has `never` as its prepared read. Property targets compose their read from the
+completed receiver and selector without installing a new property holder.
+
+The reference is
+[`AssignHandler::prepareTarget`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/AssignHandler.php#L623-L982).
+Preparation diagnostics from the composed fetch are discarded. The existing write resolver still
+validates the assignment, while the operand walks keep their effects and diagnostics.
+Literal string selectors use their evaluated bytes to select the same holder as a named fetch.
+A dynamic selector with a constant-string type keeps its own expression identity.
+
+`observations.rs` collects successful operand completions and passes their `ExpressionResult`
+values to the write in a lexical handoff. The handoff preserves raw, value, native, and call-return
+metadata. An evaluated operand without a type remains absent when consumed. The handoff ends on
+success or error and does not recover operands from the global expression map or an earlier scope.
+
+`expression/access/property_access.rs` evaluates the receiver and selector even when the property
+has a memoized value, following
+[`PropertyFetchHandler::processExpr`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/PropertyFetchHandler.php#L62-L72).
+Editor reference gathering does not replace these evaluations.
+
+The public `call_scope_observations` controls use the frozen `prepared-positions` and
+`prepared-effects` captures. Both captures come from `capture.php` with `--dependencies` and
+`--function-events`. They cover pre-write positions, cached receivers, and single operand evaluation.
+The controls compare observation-enabled and disabled effects, diagnostics, and result metadata in
+both native modes. Public semantic-hook controls also check that target errors precede RHS effects.
+These changes do not fix multiple-target invocation replay or change nullsafe call logic.
+
+## Conditional formal holders and reference-capture feedback
+
+Function entry follows PHPStan 2.3.1's `MutatingScope::enterFunctionLike()` at
+`cb3b7e99489b2e3789ee2eec10501cb7a72580ea`. It indexes every effective formal type before
+preparing top-level conditional-parameter relationships. Positive guards intersect the referenced
+formal with the target. Negative guards subtract the target. Negated conditionals swap consequences.
+Relationships enter the existing conditional-holder store after parameter writes and before use.
+Ordinary parameter unions and independent native parameter types retain their existing storage.
+
+Closures retain a relationship only when both its guard and consequence are captured. Arrows inherit
+relationships, with parameter writes and static `$this` invalidating shadows. Reference capture does
+not widen an unchanged holder. Existing convergence still generalizes changing captures, following
+`MutatingScope::processClosureScope()`. Feedback writes the selected full holder into an available
+parent native scope, without copying a deferred body's narrower or unavailable native scope.
+
+The public `parameter_conditions` and `capture_feedback` targets compare pinned PHPStan diagnostics
+and full/native readings. This patch does not implement the complete local/escaped reference-invocation
+machinery or the independent variable-value liveness producer for unused-capture diagnostics.
+
+## Nullsafe call-return provenance retains declared null
+
+Nullsafe return assembly distinguishes explicit null in a target's return type from null introduced
+by a nullable receiver. The check includes generic-parameter constraints. `NULLSAFE_NULL` applies
+only when every target lacks declared null, preserving raw `void|null` without treating its null
+as exclusively short-circuit provenance. Ordinary call-value projection remains separate.
+The public `nullsafe_call_provenance` target checks raw/value metadata in both native and observer modes.
+
+## Original receiver types for nullsafe method diagnostics
+
+`NullSafeMethodCall::analyze()` retains the processed receiver's full type separately from the ensured
+operand consumed by the plain twin. Active enclosing non-nullability devices supply their original
+types, following PHPStan 2.3.1's `NullsafeMethodCallHandler` and `NullsafeMethodCallExpressionNode`.
+The per-call artifact is cleared before hooks and replaced by each real receiver evaluation. Selected
+scope pricing clones artifacts, so its derived receiver answers cannot overwrite the real walk.
+
+Pun's `NullsafeMethodCallRule` consumes this artifact rather than the ensured operand. Nested calls on
+the same nullable receiver remain nullable; independent non-null receivers and assignment expressions
+still report redundant nullsafe access. The dynamic-method complete-record fixture covers these
+distinctions. Native nullsafe receiver transfer remains outside the partial native lane; this patch
+does not fabricate native answers or change the rule's existing bounded native-return lookup.
+
+## Coalesce offset holders
+
+`expression/binary/null_coalesce.rs` separates printed-expression holders from evaluated keys used
+to refine parent arrays. String and array receivers keep distinct holders for `['0']` and `[0]`.
+Variable, signed, postfix, boolean, null, and nested indexes retain their expression identities.
+The producer does not publish absent-read placeholders as existing nullable fallback holders.
+Required offsets retain counterfactual nullable holders, using the already-evaluated parent.
+Synthetic array `??=` retains the written target holder while assignment commits its parent shape.
+
+The references are PHPStan 2.3.1's `ScopeOps::nodeKey()`, `ArrayOffsetNormalizingVisitor`,
+`MutatingScope::specifyExpressionTypeInPlace()`, `DefaultNarrowingHelper`, `CoalesceHandler`, and
+`AssignOpHandler`, at source revision `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`.
+The public `refined_isset_keys` regression compares complete diagnostics and live holder certainty
+with pinned captures. Both native modes retain identical full artifacts. Postfix indexes run once.
+
+Prepared `??=` targets retain failed-read ErrorType. Coalesce checks the evaluated array and key
+separately: a missing sealed-array entry or list position selects the RHS, including a missing ancestor.
+Optional entries, open arrays, and required error-valued entries do not prove absence. The read artifact
+is unchanged, and the index is not evaluated again. This follows
+[`IssetabilityDescriptor::resolve()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/IssetabilityDescriptor.php#L108-L127),
+[`IssetabilityResolution::isSet()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/IssetabilityResolution.php#L68-L90),
+and [`CoalesceCompositionHelper::composeType()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/Helper/CoalesceCompositionHelper.php#L98-L139).
+[`AssignOpHandler`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/AssignOpHandler.php#L243-L272)
+writes that composed value rather than the failed target read. The `prepared.php` regression captures
+complete PHPStan records, prepared input errors, required error-valued holders, and a postfix index.
+
+## Possibly absent variable reads
+
+Direct-variable diagnostics consume the holder's possibly-undefined flag without requiring a second
+legacy name set. Cast redundancy checks retain that uncertainty instead of treating a present-value
+type as proof that the read exists. Neither change widens or replaces the value type.
+
+The references are PHPStan 2.3.1's `DefinedVariableRule::processNode()` and `ForeachHandler`, at
+source revision `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`. The existing empty/nonempty foreach
+unit controls retain their assertions. Fresh oracle captures report exactly three possibly-undefined
+variables for the possibly empty array and none for the nonempty array.
+
+## Prepared property targets are not plain reads
+
+Property-target preparation retains its composed pre-write type and the receiver and selector reads.
+A direct assignment does not publish the composed property's read reference. Compound assignments
+retain that reference because they consume the previous value.
+
+This follows PHPStan 2.3.1's `AssignHandler::prepareTarget()` and `doPrepareTarget()` property branch,
+which park a read result for type queries but mark the raw direct target as an assignment. The unchanged
+intersection-template unit and an asymmetric direct/compound property control verify the distinction.
+
+## Failed assignments and invalid interface calls retain their types
+
+An ErrorType assignment does not emit `MixedAssignment`. It retains the failed value and its primary
+offset diagnostic. Genuine mixed assignments retain their warning. The static-property units no
+longer expect `NoValue` after a failed or inaccessible read, matching the pinned PHPStan captures.
+
+Direct static interface calls retain the resolved method reflection after their primary abstract-call
+diagnostic. Declared integer and void results remain available to ordinary result consumers, and unknown
+methods remain ErrorType. Pun's frontend continues parameter checks after the abstract-call error.
+
+The references are PHPStan 2.3.1's `AssignHandler`, `StaticPropertyFetchHandler`,
+`AccessStaticPropertiesCheck`, and `StaticMethodCallCheck`, at source revision
+`cb3b7e99489b2e3789ee2eec10501cb7a72580ea`. The `assignment_error_values` and `interface_static`
+public targets retain independent type and complete diagnostic controls.
+
+## Semantic closure capture value flow
+
+`variable_flow` ports the `VariableFlowBuilder`, `VariableLivenessResolver`, and `VariableWritesNode`
+contracts from the same pinned PHPStan source. Successful expression and statement evaluations publish
+immutable fragments. Backward liveness distinguishes reading an imported value from overwriting it.
+By-reference captures retain aliases rather than importing a value write. Matched catch edges use the
+analyser's typed throw routing. Speculative callback gathers publish no flow fragments.
+
+`Settings::track_variable_flow` defaults to false. Pun's unused-capture consumer requests the producer
+and receives completed closure-body results through `AnalysisArtifacts::variable_writes`. It does not
+use lexical reads when a semantic result is absent. The constructor consumer retains its existing walk.
+
+The public `closure_capture_writes` target compares complete diagnostic records and independently
+captured write identities, dependencies, reads, and uses in both native-type modes. Its semantic-hook
+control verifies that a skipped operand does not become a fabricated read.
+
+## Implicit never is not a diagnostic or an exit edge
+
+`ClosureGetCurrentDynamicReturnTypeExtension` returns implicit never outside an anonymous function.
+The provider retains that type without Mago's additional invalid-static-call diagnostic. Assigning a
+never-valued expression does not add `ImpossibleAssignment`. Intrinsic call termination remains a
+separate result of the resolved declaration, not a consequence of the provider-selected value type.
+
+The existing closure units use fresh pinned PHPStan expectations. The extended `never_identity`
+producer fixture records global, function, and method getCurrent calls, subsequent dynamic-call
+ErrorType results, and continuing statement markers. Its capture script preserves the earlier records.
+
+## Invocation operands have one physical evaluation
+
+`EvaluatedArguments` separates the physical argument walk from each target's binding, validation,
+template inference and return provider. Statically named calls combine parameter acceptors, including
+reference, variadic and closure-this contracts. OUT writeback uses that single acceptor. Dynamic names
+retain independent beforeScope type queries without publishing another live evaluation. Invalid dynamic
+calls retain ErrorType, and implicit-never callees do not add an invalid-callable diagnostic.
+
+Closure binding carries the runtime full and native `$this` unions independently of the class used for
+member access. The existing capture-reference hook runs only after real operand analysis, never on a
+cached argument. The `single_call_arguments` target checks asymmetric effects, beforeScope returns,
+semantic providers, OUT writes and bound closure types with observations and native tracking on and off.
+
+These contracts port PHPStan 2.3.1's `ArgumentsHandler`,
+`ParametersAcceptorSelector::combineAcceptors`, `MethodCallReturnTypeHelper` and `FuncCallHandler`,
+at source revision `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`.
+
+## Mixed addition preserves benevolent result acceptance
+
+`InitializerExprTypeResolver::getPlusType` returns a benevolent float, integer and general-array union
+for mixed operands, including ErrorType. It omits the array only when both operands exclude every array.
+Both operands still evaluate before this inference, and implicit-never propagation remains unchanged.
+
+Both existing ignore-issue flags carry benevolence. The native return consumer follows
+`BenevolentUnionType::isAcceptedBy`: any accepted member is sufficient. Unmarked strict unions still
+require every member, and a disjoint declared return still fails. No global containment rule changes.
+The `mixed_addition` target retains independently captured type and complete diagnostic controls.
+The public Analyzer regression in `phpdoc_unions` independently checks int, float, string and bool
+acceptance against real PHPStan Type API results in both native-tracking modes.
+
+## Scope-aware callable acceptors and nested reference writes
+
+Dynamic function calls use the codebase-aware callable-possibility query. Mixed and bare object
+values retain a trivial mixed acceptor; definitely noncallable values retain ErrorType. Negative
+callable assertions enter the existing mixed-exclusion store, so a later invocation does not recover
+the possibility that the guard excluded.
+
+Array and string method aliases use lexical visibility when selecting their return acceptor.
+An inaccessible method contributes mixed rather than leaking its private or protected signature.
+Forwarding through `call_user_func` and `call_user_func_array` uses that same acceptor. Accessible
+aliases, existing closures and invokable objects retain their signatures. The references are
+PHPStan 2.3.1's `FuncCallHandler`, `MixedType`, `ConstantArrayType` and `ConstantStringType` at
+`cb3b7e99489b2e3789ee2eec10501cb7a72580ea`. The `callable_visibility` target compares complete
+diagnostics and independent raw producer results against the pinned capture.
+
+Input-reference writeback checks existence on the variable root of a derived offset. A composed
+offset need not have a standalone certainty holder. The existing post-argument scope still owns
+existence, and existing OUT assignment updates the offset and invalidates its parent without
+replaying the key. The `nested_reference_writes` target retains the complete original bug-3387
+fixture and asymmetric value, native-availability, event and selected-scope controls.
+
+## First-class method callable fallback values
+
+`MethodCallableNodeHandler` returns a bare `Closure` when a method name is dynamic or its reflection
+is unavailable. Dynamic selectors do not enter `MethodCallableRule`'s ordinary name validation or
+signature reflection. The receiver and selector still evaluate once, in that order. Named lookups
+retain their primary method-access diagnostics, but their fallback value is not never.
+
+`failed_method_callables` compares raw producer, post-write and continuation values with pinned
+PHPStan 2.3.1 observations, and complete diagnostics across default and bleeding-edge configurations.
+Observer and native-tracking controls preserve operand order and artifacts. Ordinary dynamic calls,
+property selectors and non-first-class partial applications retain their independent behavior.
+
+## Failed constants and instantiations retain value results
+
+`ClassConstFetchHandler` returns genuine mixed for non-Identifier names, independently of selector
+diagnostics. Unresolved named constant fetches retain ErrorType. Valid receiver-union alternatives
+survive invalid alternatives. Resolver diagnostics, references and operand evaluation remain active.
+`failed_class_constants` captures producer values, written holders, continuation and complete diagnostics
+from PHPStan 2.3.1, including a genuinely terminating selector and fatal analysis-error propagation.
+
+Named interface, trait, enum, abstract and unknown-class instantiations retain named object values.
+Constructor arguments, references, OUT writes and return providers still execute. Invalid expression
+targets retain ErrorType. Explicit-never constructor returns and dynamic-target asymmetry remain separate.
+Out-of-class `self`, `static` and `parent` follow their distinct value paths. Missing-parent constructions
+retain a nameless `NonexistentParent` leaf rather than a named object. `failed_instantiation` retains
+independent raw/new, post-write and continuation controls without fabricating frontend types.
+
+## Prepared compound reads survive writes
+
+`AssignOpHandler` stores the completed target read separately from its subsequent write. After applyWrite,
+the analyzer restores prepared ExpressionResult artifacts, including raw/native answers and genuine
+unavailability, without replaying operands or semantic hooks. Written scope holders retain their new values.
+Constant-array slot projection removes optionality from the value lookup while retaining it in the absence
+flag. Genuine nullable values are unchanged. The private projection never replaces the written receiver.
+
+`compound_assignment_reads` compares complete implemented-rule diagnostics and actual prepared reads with
+the pinned PHPStan capture. The frozen capture also retains unported offset-rule diagnostics. Native and
+observer controls check once-only key and RHS evaluation, unavailable values and independent written holders.
+
+## Constant foreach entries produce conditional holders
+
+`ForeachHandler` relates each constant key to its entry's value when the loop has direct key/value
+variables, one constant-array alternative and no foreach doccomment. The same guard narrows the dynamic
+offset of a direct iterable variable. These holders do not depend on the separate array write-back path:
+by-reference targets and literal iterables retain their value correlations. Constant-list keys retain
+their literal domain rather than an unknown integer tail.
+
+`foreach_conditional_holders` compares complete Bug13054 diagnostics at levels 0 and 5, independent
+generic unions, overwritten selectors and reference controls against PHPStan 2.3.1. Ordinary observations
+match in both native modes; the partial native API still leaves foreach values unavailable.
+
+## Nonexistent-parent values and class strings
+
+PHPStan 2.3.1's `NonexistentParentClassType` is an object with no class names, member capabilities,
+or generic-object containment. Instantiation produces that leaf for both missing class scope and an
+unresolved inherited parent. Ordinary unknown class names and native named-parent hints stay named.
+Copies, joins, array elements, and complete external-worker snapshots preserve the distinct leaf.
+
+Integer, float, string, array and unary numeric conversions return ErrorType. Boolean conversion
+retains object truthiness. Failed instance members and offsets return ErrorType; clone intersects
+with generic object and returns implicit never. Failed static method and property reads keep mixed
+full-type results. Foreach retains ErrorType keys and values for a lone sentinel, but preserves valid
+array alternatives when the sentinel appears in a union. Operand writes and continuation still run.
+
+`get_class` projects object arguments to their class-string types, keeping a nonspecific class-string
+for the sentinel. Its `::class` projection is `TClassLikeString::LiteralAny`: an unnamed
+`class-string&literal-string`, not the literal string `parent` or a bound generic class-string.
+The provider leaves unsupported non-object and no-argument calls to existing inference.
+
+Protocol 2.3 adds object tag 7 and class-string variant 5 without reusing existing tags. Both header
+readers reject older minor versions before decoding. The real PHP worker round-trip control checks
+the sentinel, its literal class string, an object/sentinel union, and a valid inherited-parent object.
+The public fixture's observations and complete level-0, level-5 and level-9 diagnostics come from the
+hash-pinned PHPStan capture under `tests/fixtures/failed-instantiation/`.

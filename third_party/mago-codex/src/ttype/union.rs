@@ -41,6 +41,16 @@ use crate::ttype::shared::get_static_atomic;
 #[cfg(test)]
 mod tests;
 
+/// PHPStan's bottom identities. Ordering matches union: implicit bottom is removed,
+/// and an accepting explicit bottom absorbs a non-accepting bottom in either order.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord)]
+pub enum NeverKind {
+    #[default]
+    Implicit,
+    NonAccepting,
+    Explicit,
+}
+
 #[derive(Debug, Clone, Eq, PartialOrd, Ord)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct TUnion {
@@ -99,10 +109,9 @@ impl TUnion {
     /// This preserves the original logic for cleaning up dynamically created unions,
     /// such as removing redundant `never` types.
     ///
-    /// Atoms are additionally sorted into canonical order so that two unions
-    /// built from the same set of atoms compare equal via the ordered
-    /// slice-equality fast path in [`PartialEq::eq`], without triggering the
-    /// fallback O(N^2) subset check.
+    /// Member order is preserved: union method reflection uses the first member's
+    /// declaring class. Equality and hashing remain order-independent, and printed
+    /// IDs sort a separate view without changing the members.
     ///
     /// # Panics
     ///
@@ -134,10 +143,6 @@ impl TUnion {
             types.push(TAtomic::Never);
         }
 
-        if types.len() > 1 {
-            types.sort_unstable();
-        }
-
         Self::new(Cow::Owned(types))
     }
 
@@ -163,6 +168,40 @@ impl TUnion {
     #[must_use]
     pub fn from_atomic(atomic: TAtomic) -> TUnion {
         TUnion::from_single(Cow::Owned(atomic))
+    }
+
+    /// The identity of a bottom union; non-bottom values have no never identity.
+    #[must_use]
+    pub fn never_kind(&self) -> Option<NeverKind> {
+        if !self.is_never() {
+            return None;
+        }
+        Some(if self.flags.contains(UnionFlags::NON_ACCEPTING_NEVER) {
+            NeverKind::NonAccepting
+        } else if self.flags.contains(UnionFlags::EXPLICIT_NEVER) {
+            NeverKind::Explicit
+        } else {
+            NeverKind::Implicit
+        })
+    }
+
+    /// This is type identity, not whether evaluating an expression terminates.
+    #[must_use]
+    pub fn is_explicit_never(&self) -> bool {
+        self.is_never() && self.flags.contains(UnionFlags::EXPLICIT_NEVER)
+    }
+
+    /// Set bottom identity without allowing stale bottom flags on other values.
+    #[must_use]
+    pub fn with_never_kind(mut self, kind: NeverKind) -> Self {
+        self.set_never_kind(kind);
+        self
+    }
+
+    pub fn set_never_kind(&mut self, kind: NeverKind) {
+        let is_never = self.is_never();
+        self.flags.set(UnionFlags::EXPLICIT_NEVER, is_never && kind != NeverKind::Implicit);
+        self.flags.set(UnionFlags::NON_ACCEPTING_NEVER, is_never && kind == NeverKind::NonAccepting);
     }
 
     #[inline]
@@ -305,6 +344,14 @@ impl TUnion {
     #[must_use]
     pub fn clone_with_types(&self, types: Vec<TAtomic>) -> TUnion {
         TUnion { types: Cow::Owned(ensure_non_empty_types(types)), flags: self.flags }
+            .with_never_kind(self.never_kind().unwrap_or_default())
+    }
+
+    /// Substitute a union's value, retaining outer metadata but taking the replacement's bottom identity.
+    #[must_use]
+    pub fn clone_with_union(&self, replacement: TUnion) -> TUnion {
+        let kind = replacement.never_kind().unwrap_or_default();
+        self.clone_with_types(replacement.types.into_owned()).with_never_kind(kind)
     }
 
     #[must_use]
@@ -313,6 +360,12 @@ impl TUnion {
             types: Cow::Owned(ensure_non_empty_types(self.get_non_nullable_types())),
             flags: self.flags & !UnionFlags::NULLSAFE_NULL,
         }
+    }
+
+    /// PHPStan's TypeCombinator::removeNull subtracts null only when it is an explicit alternative.
+    #[must_use]
+    pub fn remove_null(&self) -> TUnion {
+        if self.has_null() { self.to_non_nullable() } else { self.clone() }
     }
 
     #[must_use]
@@ -325,7 +378,7 @@ impl TUnion {
         self.types
             .iter()
             .filter_map(|t| match t {
-                TAtomic::Null | TAtomic::Void => None,
+                TAtomic::Null => None,
                 TAtomic::GenericParameter(parameter) => Some(TAtomic::GenericParameter(TGenericParameter {
                     parameter_name: parameter.parameter_name,
                     defining_entity: parameter.defining_entity,
@@ -405,6 +458,7 @@ impl TUnion {
             types.push(TAtomic::Null);
         }
 
+        self.set_never_kind(NeverKind::Implicit);
         self
     }
 
@@ -1261,7 +1315,8 @@ impl TType for TUnion {
             .iter()
             .map(|atomic| {
                 let id = atomic.get_id();
-                if atomic.is_generic_parameter() || atomic.has_intersection_types() {
+                if atomic.is_generic_parameter() || atomic.has_intersection_types()
+                    || matches!(atomic, TAtomic::Scalar(TScalar::ClassLikeString(TClassLikeString::LiteralAny))) {
                     concat_word!(b"(", id.as_bytes(), b")")
                 } else {
                     id
@@ -1288,7 +1343,12 @@ impl TType for TUnion {
                 .iter()
                 .map(|atomic| {
                     let id = atomic.get_pretty_id_with_indent(if multiline { indent + 2 } else { indent });
-                    if atomic.has_intersection_types() { concat_word!(b"(", id.as_bytes(), b")") } else { id }
+                    if atomic.has_intersection_types()
+                        || matches!(atomic, TAtomic::Scalar(TScalar::ClassLikeString(TClassLikeString::LiteralAny))) {
+                        concat_word!(b"(", id.as_bytes(), b")")
+                    } else {
+                        id
+                    }
                 })
                 .collect();
             atomic_ids.sort_unstable();
@@ -1334,7 +1394,9 @@ impl PartialEq for TUnion {
             .union(UnionFlags::IGNORE_FALSABLE_ISSUES)
             .union(UnionFlags::FROM_TEMPLATE_DEFAULT)
             .union(UnionFlags::FROM_UNSPECIFIED_TEMPLATE)
-            .union(UnionFlags::CONSTANT_ARRAY_KEY);
+            .union(UnionFlags::CONSTANT_ARRAY_KEY)
+            .union(UnionFlags::EXPLICIT_NEVER)
+            .union(UnionFlags::NON_ACCEPTING_NEVER);
 
         if self.flags.intersection(SEMANTIC_FLAGS) != other.flags.intersection(SEMANTIC_FLAGS) {
             return false;
@@ -1407,10 +1469,10 @@ pub fn populate_union_type(
                         | TScalar::Integer(_)
                         | TScalar::Float(_)
                         | TScalar::String(_)
-                        | TScalar::ClassLikeString(TClassLikeString::Any { .. } | TClassLikeString::Literal { .. })
+                        | TScalar::ClassLikeString(TClassLikeString::Any { .. } | TClassLikeString::LiteralAny | TClassLikeString::Literal { .. })
                 ) | TAtomic::Mixed(_)
                     | TAtomic::Resource(_)
-                    | TAtomic::Object(TObject::Any)
+                    | TAtomic::Object(TObject::Any | TObject::NonexistentParent)
                     | TAtomic::Never
                     | TAtomic::Null
                     | TAtomic::Void

@@ -1,0 +1,302 @@
+[
+    {
+        "start": 242,
+        "end": 254,
+        "line": 8,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MarkerEdges",
+        "method": "reference",
+        "certainty": "Yes"
+    },
+    {
+        "start": 329,
+        "end": 341,
+        "line": 9,
+        "property": "items",
+        "expression": "$this->items",
+        "class": "MarkerEdges",
+        "method": "append",
+        "certainty": "Yes"
+    },
+    {
+        "start": 417,
+        "end": 429,
+        "line": 10,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MarkerEdges",
+        "method": "compound",
+        "certainty": "No"
+    },
+    {
+        "start": 503,
+        "end": 515,
+        "line": 11,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MarkerEdges",
+        "method": "increment",
+        "certainty": "No"
+    },
+    {
+        "start": 679,
+        "end": 691,
+        "line": 14,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MarkerEdges",
+        "method": "switchContinue",
+        "certainty": "Yes"
+    },
+    {
+        "start": 828,
+        "end": 840,
+        "line": 18,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MarkerEdges",
+        "method": "switchPartial",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 1001,
+        "end": 1013,
+        "line": 22,
+        "property": "other",
+        "expression": "$this->other",
+        "class": "MarkerEdges",
+        "method": "switchFallthrough",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 1015,
+        "end": 1027,
+        "line": 22,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MarkerEdges",
+        "method": "switchFallthrough",
+        "certainty": "Yes"
+    },
+    {
+        "start": 1179,
+        "end": 1191,
+        "line": 26,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MarkerEdges",
+        "method": "switchReturn",
+        "certainty": "Yes"
+    },
+    {
+        "start": 1333,
+        "end": 1345,
+        "line": 30,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MarkerEdges",
+        "method": "doBreak",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 1473,
+        "end": 1485,
+        "line": 34,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MarkerEdges",
+        "method": "doAlwaysBreak",
+        "certainty": "Yes"
+    },
+    {
+        "start": 1632,
+        "end": 1644,
+        "line": 38,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MarkerEdges",
+        "method": "whileBreak",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 1800,
+        "end": 1812,
+        "line": 42,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MarkerEdges",
+        "method": "whileContinue",
+        "certainty": "No"
+    },
+    {
+        "start": 1926,
+        "end": 1938,
+        "line": 46,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MarkerEdges",
+        "method": "forOnce",
+        "certainty": "Yes"
+    },
+    {
+        "start": 1999,
+        "end": 2015,
+        "line": 48,
+        "property": "defaulted",
+        "expression": "$this->defaulted",
+        "class": "MarkerEdges",
+        "method": "defaults",
+        "certainty": "No"
+    },
+    {
+        "start": 2106,
+        "end": 2118,
+        "line": 49,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MarkerEdges",
+        "method": "dynamic",
+        "certainty": "No"
+    },
+    {
+        "start": 2194,
+        "end": 2208,
+        "line": 50,
+        "property": "missing",
+        "expression": "$this->missing",
+        "class": "MarkerEdges",
+        "method": "missing",
+        "certainty": "No"
+    },
+    {
+        "start": 2354,
+        "end": 2366,
+        "line": 53,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MarkerEdges",
+        "method": "finallyRead",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 2392,
+        "end": 2404,
+        "line": 54,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MarkerEdges",
+        "method": "finallyRead",
+        "certainty": "Yes"
+    },
+    {
+        "start": 2629,
+        "end": 2641,
+        "line": 59,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MarkerEdges",
+        "method": "finallyCatch",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 2667,
+        "end": 2679,
+        "line": 60,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MarkerEdges",
+        "method": "finallyCatch",
+        "certainty": "Yes"
+    },
+    {
+        "start": 2832,
+        "end": 2844,
+        "line": 64,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MarkerEdges",
+        "method": "finallyBreak",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 2887,
+        "end": 2899,
+        "line": 65,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MarkerEdges",
+        "method": "finallyBreak",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 3056,
+        "end": 3068,
+        "line": 69,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MarkerEdges",
+        "method": "finallyWrites",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 3219,
+        "end": 3231,
+        "line": 73,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MarkerEdges",
+        "method": "finallyNewBreak",
+        "certainty": "Yes"
+    },
+    {
+        "start": 3408,
+        "end": 3420,
+        "line": 77,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MarkerEdges",
+        "method": "finallyNewContinue",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 3578,
+        "end": 3590,
+        "line": 81,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MarkerEdges",
+        "method": "finallySwitch",
+        "certainty": "Yes"
+    },
+    {
+        "start": 3684,
+        "end": 3696,
+        "line": 86,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "HookMarkers",
+        "method": "$present::get",
+        "certainty": "Yes"
+    },
+    {
+        "start": 3998,
+        "end": 4010,
+        "line": 93,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "MagicMarkers",
+        "method": "test",
+        "certainty": "No"
+    },
+    {
+        "start": 4231,
+        "end": 4243,
+        "line": 98,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "FinallyThrowMarkers",
+        "method": "check",
+        "certainty": "Yes"
+    }
+]

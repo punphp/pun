@@ -40,6 +40,8 @@ use mago_word::WordSet;
 use mago_word::concat_word;
 
 use crate::artifacts::AnalysisArtifacts;
+use crate::artifacts::BooleanExpressionScope;
+use crate::artifacts::BooleanExpressionScopes;
 use crate::artifacts::VariableThrowKind;
 use crate::code::IssueCode;
 use crate::context::Context;
@@ -58,11 +60,11 @@ use crate::invocation::arguments::is_argument_referenceable;
 use crate::invocation::arguments::is_array_multisort;
 use crate::invocation::resolver::resolve_invocation_type;
 use crate::plugin::provider::assertion::InvocationAssertions;
-use crate::reconciler;
 use crate::reconciler::assertion_reconciler::intersect_union_with_union;
 use crate::utils::expression::get_block_expression_id;
 use crate::utils::expression::get_non_nullsafe_expression_id;
 use crate::utils::expression::get_nullsafe_base_expressions;
+use crate::utils::expression::get_root_expression_id;
 use crate::utils::misc::unwrap_expression;
 
 pub fn post_invocation_process<'ctx, 'arena, A>(
@@ -78,7 +80,34 @@ pub fn post_invocation_process<'ctx, 'arena, A>(
 where
     A: Arena,
 {
-    update_by_reference_argument_types(context, block_context, artifacts, invoication, template_result, parameters)?;
+    update_by_reference_argument_types(context, block_context, artifacts, invoication, template_result, parameters, false)?;
+
+    post_invocation_metadata(
+        context,
+        block_context,
+        artifacts,
+        invoication,
+        this_variable,
+        template_result,
+        parameters,
+        apply_assertions,
+    )
+}
+
+/// Callee metadata is resolved independently of the source call's argument effects.
+pub(crate) fn post_invocation_metadata<'ctx, 'arena, A>(
+    context: &mut Context<'ctx, 'arena, A>,
+    block_context: &mut BlockContext<'ctx>,
+    artifacts: &mut AnalysisArtifacts,
+    invoication: &Invocation<'ctx, '_, 'arena>,
+    this_variable: Option<&[u8]>,
+    template_result: &TemplateResult,
+    parameters: &WordMap<TUnion>,
+    apply_assertions: bool,
+) -> Result<(), AnalysisError>
+where
+    A: Arena,
+{
     clear_object_property_narrowings(context, block_context, invoication, this_variable);
 
     if block_context.flags.inside_try() && invoication.target.get_function_like_metadata().is_none() {
@@ -201,13 +230,22 @@ where
 
     let range = (invoication.span.start.offset, invoication.span.end.offset);
 
+    // PHPStan narrows arguments from declared contracts or extensions, not a callee's body.
+    // The scanner/populator distinguish inferred predicates from declared/inherited assertions.
+    let empty_assertions = BTreeMap::new();
+    let (if_true_assertions, if_false_assertions) = if metadata.assertions_inferred {
+        (&empty_assertions, &empty_assertions)
+    } else {
+        (&metadata.if_true_assertions, &metadata.if_false_assertions)
+    };
+
     let resolved_if_true_assertions = resolve_invocation_assertion(
         context,
         block_context,
         artifacts,
         invoication,
         this_variable,
-        &metadata.if_true_assertions,
+        if_true_assertions,
         template_result,
         parameters,
         false,
@@ -227,7 +265,7 @@ where
         artifacts,
         invoication,
         this_variable,
-        &metadata.if_false_assertions,
+        if_false_assertions,
         template_result,
         parameters,
         false,
@@ -241,7 +279,7 @@ where
         artifacts.if_false_assertions.entry(range).or_default().entry(variable).or_default().extend(assertions);
     }
 
-    apply_assertion_to_call_context(
+    record_null_context_assertions(
         context,
         block_context,
         artifacts,
@@ -287,10 +325,10 @@ where
     }
 }
 
-fn apply_assertion_to_call_context<'ctx, 'arena, A>(
+fn record_null_context_assertions<'ctx, 'arena, A>(
     context: &mut Context<'ctx, 'arena, A>,
     block_context: &mut BlockContext<'ctx>,
-    artifacts: &AnalysisArtifacts,
+    artifacts: &mut AnalysisArtifacts,
     invocation: &Invocation<'ctx, '_, 'arena>,
     this_variable: Option<&[u8]>,
     assertions: &BTreeMap<Word, Conjunction<Assertion>>,
@@ -299,9 +337,16 @@ fn apply_assertion_to_call_context<'ctx, 'arena, A>(
 ) where
     A: Arena,
 {
+    if assertions.is_empty() {
+        return;
+    }
+    // ExpressionResult carries specifications separately from the walked scope.
+    // In particular, a call on the left of && does not narrow its skip edge.
+    let mut specification_context = block_context.clone();
+    specification_context.clauses.clear();
     let type_assertions = resolve_invocation_assertion(
         context,
-        block_context,
+        &mut specification_context,
         artifacts,
         invocation,
         this_variable,
@@ -311,41 +356,58 @@ fn apply_assertion_to_call_context<'ctx, 'arena, A>(
         true,
     );
 
-    if type_assertions.is_empty() {
-        return;
+    let range = (invocation.span.start.offset, invocation.span.end.offset);
+    // AssertFunctionTypeSpecifyingExtension asks its argument for truthy specifications
+    // in every context. Declared unconditional @assert tags, unlike this extension,
+    // contribute only in null context.
+    if invocation.target.get_function_like_metadata().is_some_and(|metadata| {
+        metadata.flags.is_built_in() && metadata.name.as_bytes().eq_ignore_ascii_case(b"assert")
+    }) {
+        crate::reconciler::reconcile_keyed_types(
+            context,
+            &type_assertions,
+            AssertionMap::default(),
+            &mut specification_context,
+            &mut WordSet::default(),
+            &type_assertions.keys().copied().collect(),
+            &invocation.span,
+            false,
+            false,
+        );
+        let scope = |block: &BlockContext<'_>| BooleanExpressionScope {
+            locals: block.locals.clone(),
+            variable_state: block.variable_state.clone(),
+            variables_possibly_in_scope: block.variables_possibly_in_scope.clone(),
+        };
+        let narrowed = scope(&specification_context);
+        artifacts.boolean_expression_scopes.insert(range, BooleanExpressionScopes {
+            post: scope(block_context),
+            truthy: narrowed.clone(),
+            falsey: narrowed,
+        });
     }
-
-    block_context
-        .stable_method_calls
-        .extend(type_assertions.keys().filter(|variable| variable.as_bytes().ends_with(b"()")).copied());
-
-    let referenced_variable_ids: WordSet = type_assertions.keys().copied().collect();
-    let mut changed_variable_ids: WordSet = WordSet::default();
-    let mut active_type_assertions = AssertionMap::default();
-    for (variable, type_assertion) in &type_assertions {
-        active_type_assertions.insert(*variable, (1..type_assertion.len()).collect());
+    let clauses = artifacts.null_context_clauses.entry(range).or_default();
+    clauses.extend(specification_context.clauses.iter().map(|clause| (**clause).clone()));
+    for (variable, assertions) in type_assertions {
+        for alternatives in assertions {
+            let mut possibilities = AssertionMap::default();
+            possibilities.insert(
+                variable,
+                alternatives.into_iter().map(|assertion| (assertion.to_hash(), assertion)).collect(),
+            );
+            clauses.push(Clause::new(possibilities, invocation.span, invocation.span, None, None, None));
+        }
     }
-
-    reconciler::reconcile_keyed_types(
-        context,
-        &type_assertions,
-        active_type_assertions,
-        block_context,
-        &mut changed_variable_ids,
-        &referenced_variable_ids,
-        &invocation.span,
-        true,
-        false,
-    );
 }
 
-fn update_by_reference_argument_types<'ctx, 'arena, A>(
+pub(crate) fn update_by_reference_argument_types<'ctx, 'arena, A>(
     context: &mut Context<'ctx, 'arena, A>,
     block_context: &mut BlockContext<'ctx>,
     artifacts: &mut AnalysisArtifacts,
     invocation: &Invocation<'ctx, '_, 'arena>,
     template_result: &TemplateResult,
     parameters: &WordMap<TUnion>,
+    positional_writeback: bool,
 ) -> Result<(), AnalysisError>
 where
     A: Arena,
@@ -357,19 +419,31 @@ where
             continue;
         }
 
-        let (argument, argument_id) = get_argument_for_parameter(
-            context,
-            block_context,
-            invocation,
-            Some(parameter_offset),
-            parameter_ref.get_name().map(|name| name.0),
-        );
+        let (argument, argument_id) = if positional_writeback {
+            // If ArgumentsNormalizer cannot reorder named operands, PHPStan's
+            // OUT loop retains their written positions, not a per-name binding.
+            let argument = invocation.arguments_source.get_argument(parameter_offset).and_then(|argument| argument.value());
+            let id = argument.and_then(|argument| get_block_expression_id(argument, context, block_context));
+            (argument, id)
+        } else {
+            get_argument_for_parameter(
+                context,
+                block_context,
+                invocation,
+                Some(parameter_offset),
+                parameter_ref.get_name().map(|name| name.0),
+            )
+        };
 
         if let Some(argument) = argument {
             // An input reference cannot create its source. Query the post-argument running scope:
             // another argument may have assigned this variable after its initial read.
+            // Derived reads need not have a separate local-certainty entry: their variable root
+            // owns existence, while assignment below updates the offset and invalidates its parent.
             if block_context.variable_state.non_creating_references.contains(&argument.span())
-                && argument_id.is_some_and(|name| !block_context.variable_certainty(name).is_defined())
+                && get_root_expression_id(argument)
+                    .or(argument_id)
+                    .is_some_and(|name| !block_context.variable_certainty(name).is_defined())
             {
                 continue;
             }
@@ -517,12 +591,55 @@ fn clear_object_property_narrowings<'ctx, 'arena, A>(
 {
     let metadata = invocation.target.get_function_like_metadata();
     let suspends_fiber = metadata.is_some_and(|metadata| metadata.flags.suspends_fiber());
+    let method_context = invocation.target.get_method_context();
+    let invalidating_class = method_context.and_then(|method| {
+        let declaring = method.declaring_method_id?;
+        Some(method.class_like_metadata.appearing_method_ids.get(&method.requested_name)
+            .unwrap_or(&declaring).get_class_name())
+    });
+    // FileTypeMapper remaps the trait's PHPDoc scope to its alias, leaving the
+    // original method's native declaration but not its PHPDoc in the consuming class.
+    let aliased_source = method_context.is_some_and(|method| {
+        let Some(declaring) = method.declaring_method_id else { return false };
+        let Some(storage) = context.codebase.get_class_like(declaring.get_class_name().as_bytes()) else { return false };
+        let class = invalidating_class
+            .and_then(|name| context.codebase.get_class_like(name.as_bytes()))
+            .unwrap_or(storage);
+        storage.kind.is_trait() && storage.name != class.name
+            && class.trait_alias_map.iter().any(|(alias, source)| {
+                *source == method.requested_name
+                    && class.declaring_method_ids.get(alias) == Some(&declaring)
+            })
+    });
+    // MethodCallHandler invalidates the receiver only for a constructor, known side effects,
+    // or an unresolved method. A merely possibly impure method keeps its property observations.
+    let invalidated_receiver = receiver_variable.filter(|_| metadata.is_none_or(|metadata| {
+        let Some(method) = &metadata.method_metadata else { return false };
+        if method.is_static {
+            return false;
+        }
+        let returns = if aliased_source {
+            &metadata.return_type_declaration_metadata
+        } else {
+            &metadata.return_type_metadata
+        }.as_ref().map(|ty| &ty.type_union);
+        let constructor = method_context.map_or(method.is_constructor, |method| method.requested_name.as_bytes() == b"__construct");
+        constructor
+            || returns.is_some_and(TUnion::is_void)
+            || metadata.declared_purity().filter(|_| !aliased_source).map_or_else(
+                || returns.is_some_and(|ty| {
+                    matches!(ty.types.as_ref(), [atomic] if atomic.is_this())
+                }),
+                |pure| !pure,
+            )
+    })).map(Word::new);
     let preserves_stable_method_results = metadata
-        .is_some_and(|metadata| (metadata.flags.is_pure() || metadata.flags.is_mutation_free()) && !suspends_fiber);
+        .is_some_and(|metadata| (metadata.flags.is_pure() || metadata.flags.is_mutation_free()) && !suspends_fiber)
+        && invalidated_receiver.is_none();
     let preserves_property_narrowings = metadata.is_some_and(|metadata| {
         (metadata.flags.is_pure() || metadata.flags.is_mutation_free() || metadata.flags.is_external_mutation_free())
             && !suspends_fiber
-    });
+    }) && invalidated_receiver.is_none();
 
     if !preserves_stable_method_results {
         block_context.stable_method_call_assertions.clear();
@@ -530,6 +647,7 @@ fn clear_object_property_narrowings<'ctx, 'arena, A>(
         if preserves_property_narrowings {
             let references_method_call =
                 |clause: &Rc<Clause>| clause.possibilities.keys().copied().any(references_method_call_key);
+            block_context.invalidate_expression_holders(|key, _| references_method_call_key(key));
             block_context.locals.retain(|key, _| !references_method_call_key(*key));
             block_context.clauses.retain(|clause| !references_method_call(clause));
             block_context.reconciled_expression_clauses.retain(|clause| !references_method_call(clause));
@@ -541,36 +659,32 @@ fn clear_object_property_narrowings<'ctx, 'arena, A>(
         return;
     }
 
-    let class_metadata = block_context.scope.get_class_like();
-    let preserves_this_property = |var_id: Word| -> bool {
-        let Some(property_name) = var_id.as_bytes().strip_prefix(b"$this->") else {
-            return false;
-        };
-        if memchr::memmem::find(property_name, b"->").is_some() || property_name.contains(&b'[') {
-            return false;
-        }
-
-        class_metadata.is_some_and(|metadata| {
-            metadata.flags.is_readonly()
-                || metadata
-                    .properties
-                    .get(&Word::new(property_name))
-                    .is_some_and(|property| property.flags.is_readonly())
+    let preserved: WordSet = block_context
+        .locals
+        .keys()
+        .copied()
+        .filter(|var_id| {
+            is_property_or_index_key(*var_id)
+                && (property_root_is_immutable(context, block_context, *var_id)
+                    || (invalidated_receiver.is_some_and(|receiver| is_descendant_of_any(*var_id, &[receiver]))
+                        && invalidating_class.is_some_and(|class| {
+                            private_property_of_other_class(context, block_context, *var_id, class)
+                        })))
         })
-    };
-    let is_self_method_call = matches!(receiver_variable, Some(v) if v == b"$this")
-        && match invocation.target.get_function_like_identifier() {
-            Some(FunctionLikeIdentifier::Method(class_name, _)) => block_context
-                .scope
-                .get_class_like_name()
-                .is_some_and(|current_class| current_class.as_bytes().eq_ignore_ascii_case(class_name.as_bytes())),
-            _ => false,
-        };
+        .collect();
+    let is_self_method_call = invalidated_receiver.is_some_and(|receiver| receiver.as_bytes() == b"$this");
     let clears_this = is_self_method_call || (suspends_fiber && block_context.scope.get_class_like_name().is_some());
     if is_self_method_call {
         block_context.definitely_uninitialized_property_ids.clear();
     }
 
+    block_context.invalidate_expression_holders(|key, guard| {
+        references_method_call_key(key)
+            || (clears_this && ((guard && key.as_bytes() == b"$this")
+                || (key.as_bytes().starts_with(b"$this->") && (guard || !preserved.contains(&key)))))
+            || is_superglobal_index_key(key)
+            || is_superglobal_name(key.as_bytes())
+    });
     let mut resource_ids = WordSet::default();
     block_context.locals.retain(|var_id, current_type| {
         if references_method_call_key(*var_id) {
@@ -595,7 +709,7 @@ fn clear_object_property_narrowings<'ctx, 'arena, A>(
             *current_type = Rc::new(widened);
         }
 
-        if clears_this && var_id.as_bytes().starts_with(b"$this->") && !preserves_this_property(*var_id) {
+        if clears_this && var_id.as_bytes().starts_with(b"$this->") && !preserved.contains(var_id) {
             return false;
         }
         if is_superglobal_index_key(*var_id) {
@@ -618,7 +732,7 @@ fn clear_object_property_narrowings<'ctx, 'arena, A>(
                     && (resource_ids.contains(&var_id)
                         || (clears_this
                             && var_id.as_bytes().starts_with(b"$this->")
-                            && !preserves_this_property(var_id))
+                            && !preserved.contains(&var_id))
                         || is_superglobal_index_key(var_id)
                         || is_superglobal_name(var_id.as_bytes())))
         })
@@ -653,9 +767,9 @@ fn clear_object_property_narrowings<'ctx, 'arena, A>(
     }
 
     let mut this_escapes = matches!(receiver_variable, Some(v) if v == b"$this");
-    let mut escaped_roots: Vec<Word> = Vec::new();
+    let mut escaped_roots: Vec<Word> = invalidated_receiver.into_iter().collect();
     let mut container_escapes = false;
-    let mut has_object_argument = false;
+    let mut has_object_argument = invalidated_receiver.is_some();
     for argument in invocation.arguments_source.iter_arguments() {
         let Some(expression) = argument.value() else {
             continue;
@@ -696,21 +810,15 @@ fn clear_object_property_narrowings<'ctx, 'arena, A>(
         escaped_roots.push(Word::new(b"$this"));
     }
 
-    let preserved: WordSet = block_context
-        .locals
-        .keys()
-        .copied()
-        .filter(|var_id| {
-            is_property_or_index_key(*var_id) && property_root_is_immutable(context, block_context, *var_id)
-        })
-        .collect();
-
-    let should_wipe = |var_id: Word| -> bool {
+    let should_wipe = |var_id: Word, guard: bool| -> bool {
+        if guard && escaped_roots.contains(&var_id) {
+            return true;
+        }
         if !is_property_or_index_key(var_id) {
             return false;
         }
 
-        if preserved.contains(&var_id) {
+        if !guard && preserved.contains(&var_id) {
             return false;
         }
 
@@ -725,12 +833,13 @@ fn clear_object_property_narrowings<'ctx, 'arena, A>(
         is_descendant_of_any(var_id, &escaped_roots)
     };
 
-    block_context.locals.retain(|var_id, _| !should_wipe(*var_id));
+    block_context.invalidate_expression_holders(should_wipe);
+    block_context.locals.retain(|var_id, _| !should_wipe(*var_id, false));
 
-    block_context.clauses.retain(|clause| clause.wedge || !clause.possibilities.keys().copied().any(should_wipe));
+    block_context.clauses.retain(|clause| clause.wedge || !clause.possibilities.keys().copied().any(|key| should_wipe(key, false)));
     block_context
         .reconciled_expression_clauses
-        .retain(|clause| clause.wedge || !clause.possibilities.keys().copied().any(should_wipe));
+        .retain(|clause| clause.wedge || !clause.possibilities.keys().copied().any(|key| should_wipe(key, false)));
     block_context.retain_valid_class_type_relations();
 }
 
@@ -817,10 +926,37 @@ where
         return true;
     }
 
-    class_metadata
-        .properties
-        .get(&Word::new(property))
+    context.codebase
+        .get_declaring_property(class_name.as_bytes(), concat_word!("$", property).as_bytes())
         .is_some_and(|property_metadata| property_metadata.flags.is_readonly())
+}
+
+/// MutatingScope::isPrivatePropertyOfDifferentClass uses the callee's reflected declaring class.
+fn private_property_of_other_class<A>(
+    context: &Context<'_, '_, A>,
+    block_context: &BlockContext<'_>,
+    key: Word,
+    invalidating_class: Word,
+) -> bool
+where
+    A: Arena,
+{
+    let bytes = key.as_bytes();
+    let Some(arrow) = memchr::memmem::rfind(bytes, b"->") else { return false };
+    let property = &bytes[arrow + 2..];
+    if property.contains(&b'[') { return false; }
+    let Some(root_type) = block_context.locals.get(&Word::new(&bytes[..arrow])) else { return false };
+    !root_type.types.is_empty() && root_type.types.iter().all(|atom| {
+        let TAtomic::Object(object) = atom else { return false };
+        let Some(class) = object.get_name().and_then(|name| context.codebase.get_class_like(name.as_bytes())) else {
+            return false;
+        };
+        let property = concat_word!("$", property);
+        let Some(declaring) = class.declaring_property_ids.get(&property) else { return false };
+        !declaring.as_bytes().eq_ignore_ascii_case(invalidating_class.as_bytes())
+            && context.codebase.get_property(declaring.as_bytes(), property.as_bytes())
+                .is_some_and(|property| property.read_visibility.is_private())
+    })
 }
 
 /// A variable ID like `$_SESSION['user_id']` - an index access rooted at a PHP
@@ -1563,7 +1699,7 @@ where
         artifacts.if_false_assertions.entry(range).or_default().entry(variable).or_default().extend(assertion_set);
     }
 
-    apply_assertion_to_call_context(
+    record_null_context_assertions(
         context,
         block_context,
         artifacts,

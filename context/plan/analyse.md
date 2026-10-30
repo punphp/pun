@@ -352,16 +352,20 @@ Assistant's calls in analyse 3f (class-hierarchy declaration rules, hierarchy.rs
 
 Assistant's calls in analyse 3i (ClassNameCheck once for every level-0 caller, class_names.rs, 2026-10-19; the plan
 was silent):
-- `checkClassCaseSensitivity` is a bool on `rules::Checks`, copied from a new `Project::check_class_case_sensitivity`
-  that is always false (level 0) until the presets set it; it is not read from the PHPStan config, and pun-config has
-  no option. The callers that pass it upstream are FunctionDefinitionCheck (functions, methods, closures, arrow
+- `checkClassCaseSensitivity` is a bool on `rules::Checks`, copied from `Project::check_class_case_sensitivity`
+  and read from the PHPStan config; level 0 defaults to false and the presets set it. The callers that pass it
+  upstream are FunctionDefinitionCheck (functions, methods, closures, arrow
   functions, hooks, `@phpstan-self-out`), ExistingClassInInstanceOfRule, CaughtExceptionExistenceRule and
   ExistingClassesInPropertiesRule; the rest call with `true`. tests/class_names.rs proves the flag against a
   level-2 oracle run.
-- `checkInternalClassCaseSensitivity` stays off, but PHPStan reflects four core attribute classes from its own
+- `checkInternalClassCaseSensitivity` defaults to false and is read from the PHPStan config. PHPStan reflects four core attribute classes from its own
   stubs (stubs/runtime/Attribute84.php: Attribute, AllowDynamicProperties, ReturnTypeWillChange,
   SensitiveParameter), so they are not built-in to it and their case is checked (`#[\ATTRIBUTE]` reports at level 0).
   A probe of every class in data/symbols.json found no others.
+- `featureToggles.checkImportedClassNameCase` defaults to false; bleeding edge enables it unless explicitly
+  disabled. Written-name reconstruction applies only to matching single-part unqualified Name nodes and changes
+  lookup as well as comparison and diagnostic text. Qualified, relative, multipart and non-name nodes keep their
+  existing paths. Seven fresh PHPStan 2.3.1 configurations supply 205 exact diagnostics (2026-10-26).
 - UseAliasVisitor is a per-namespace map of explicit `use X as Y` aliases; a pair whose node is the written name
   skips the case check when the name is one part written exactly as such an alias. Pairs on other nodes (a
   parameter, a property, a `use` item) never skip, as their php-parser node carries no such attribute. The pinned

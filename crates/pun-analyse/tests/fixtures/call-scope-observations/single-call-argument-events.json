@@ -1,0 +1,92 @@
+{
+    "438": {
+        "end": 440,
+        "expression": "$i",
+        "type": "*ERROR*",
+        "visits": 1
+    },
+    "450": {
+        "end": 474,
+        "expression": "$target->$name(++$i, $i)",
+        "type": "1|array{1, 1}",
+        "visits": 1
+    },
+    "465": {
+        "end": 469,
+        "expression": "++$i",
+        "type": "1",
+        "visits": 1
+    },
+    "467": {
+        "end": 469,
+        "expression": "$i",
+        "type": "0",
+        "visits": 1
+    },
+    "471": {
+        "end": 473,
+        "expression": "$i",
+        "type": "1",
+        "visits": 1
+    },
+    "600": {
+        "end": 602,
+        "expression": "$i",
+        "type": "*ERROR*",
+        "visits": 1
+    },
+    "613": {
+        "end": 651,
+        "expression": "$target->$name(input: ++$i, later: $i)",
+        "type": "11|array{11, 11}",
+        "visits": 1
+    },
+    "635": {
+        "end": 639,
+        "expression": "++$i",
+        "type": "11",
+        "visits": 1
+    },
+    "637": {
+        "end": 639,
+        "expression": "$i",
+        "type": "10",
+        "visits": 1
+    },
+    "648": {
+        "end": 650,
+        "expression": "$i",
+        "type": "11",
+        "visits": 1
+    },
+    "945": {
+        "end": 947,
+        "expression": "$i",
+        "type": "*ERROR*",
+        "visits": 1
+    },
+    "958": {
+        "end": 1009,
+        "expression": "$target->$name(...['input' => ++$i, 'later' => $i])",
+        "type": "int|string",
+        "visits": 1
+    },
+    "988": {
+        "end": 992,
+        "expression": "++$i",
+        "type": "21",
+        "visits": 1
+    },
+    "990": {
+        "end": 992,
+        "expression": "$i",
+        "type": "20",
+        "visits": 1
+    },
+    "1005": {
+        "end": 1007,
+        "expression": "$i",
+        "type": "21",
+        "visits": 1
+    }
+}

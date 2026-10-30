@@ -1,0 +1,374 @@
+[
+    {
+        "line": 8,
+        "reads": [
+            {
+                "expression": "$value['0']",
+                "certainty": "No"
+            },
+            {
+                "expression": "$value[0]",
+                "certainty": "No"
+            }
+        ]
+    },
+    {
+        "line": 10,
+        "reads": [
+            {
+                "expression": "$value['0']",
+                "certainty": "No"
+            },
+            {
+                "expression": "$value[0]",
+                "certainty": "No"
+            }
+        ]
+    },
+    {
+        "line": 12,
+        "reads": [
+            {
+                "expression": "$value['0']",
+                "certainty": "No"
+            },
+            {
+                "expression": "$value[0]",
+                "certainty": "No"
+            }
+        ]
+    },
+    {
+        "line": 14,
+        "reads": [
+            {
+                "expression": "$value['1']",
+                "certainty": "No"
+            },
+            {
+                "expression": "$value[1]",
+                "certainty": "No"
+            }
+        ]
+    },
+    {
+        "line": 16,
+        "reads": [
+            {
+                "expression": "$value[false]",
+                "certainty": "No"
+            },
+            {
+                "expression": "$value[0]",
+                "certainty": "No"
+            }
+        ]
+    },
+    {
+        "line": 18,
+        "reads": [
+            {
+                "expression": "$value['2']",
+                "certainty": "No"
+            },
+            {
+                "expression": "$value[2]",
+                "certainty": "No"
+            }
+        ]
+    },
+    {
+        "line": 24,
+        "reads": [
+            {
+                "expression": "$value['0']",
+                "certainty": "No"
+            },
+            {
+                "expression": "$value[0]",
+                "certainty": "No"
+            }
+        ]
+    },
+    {
+        "line": 26,
+        "reads": [
+            {
+                "expression": "$value['1']",
+                "certainty": "Yes"
+            },
+            {
+                "expression": "$value[1]",
+                "certainty": "No"
+            }
+        ]
+    },
+    {
+        "line": 28,
+        "reads": [
+            {
+                "expression": "$value['2']",
+                "certainty": "Yes"
+            },
+            {
+                "expression": "$value[2]",
+                "certainty": "No"
+            }
+        ]
+    },
+    {
+        "line": 30,
+        "reads": [
+            {
+                "expression": "$value['3']",
+                "certainty": "Yes"
+            },
+            {
+                "expression": "$value[3]",
+                "certainty": "No"
+            }
+        ]
+    },
+    {
+        "line": 32,
+        "reads": [
+            {
+                "expression": "$value['0']",
+                "certainty": "Yes"
+            },
+            {
+                "expression": "$value[0]",
+                "certainty": "No"
+            }
+        ]
+    },
+    {
+        "line": 35,
+        "reads": [
+            {
+                "expression": "$value['1']",
+                "certainty": "Yes"
+            },
+            {
+                "expression": "$value[1]",
+                "certainty": "Yes"
+            }
+        ]
+    },
+    {
+        "line": 37,
+        "reads": [
+            {
+                "expression": "$value['3']",
+                "certainty": "Yes"
+            },
+            {
+                "expression": "$value[3]",
+                "certainty": "No"
+            }
+        ]
+    },
+    {
+        "line": 44,
+        "reads": [
+            {
+                "expression": "$value[$key]",
+                "certainty": "Yes"
+            },
+            {
+                "expression": "$value[0]",
+                "certainty": "No"
+            }
+        ]
+    },
+    {
+        "line": 50,
+        "reads": [
+            {
+                "expression": "$value['0']['0']",
+                "certainty": "Yes"
+            },
+            {
+                "expression": "$value[0][0]",
+                "certainty": "No"
+            },
+            {
+                "expression": "$value['0']",
+                "certainty": "Yes"
+            },
+            {
+                "expression": "$value[0]",
+                "certainty": "No"
+            }
+        ]
+    },
+    {
+        "line": 56,
+        "reads": [
+            {
+                "expression": "$value[$i++]",
+                "certainty": "No"
+            },
+            {
+                "expression": "$value[$i]",
+                "certainty": "No"
+            },
+            {
+                "expression": "$value[0]",
+                "certainty": "No"
+            },
+            {
+                "expression": "$i",
+                "certainty": "Yes",
+                "value": "1"
+            }
+        ]
+    },
+    {
+        "line": 60,
+        "reads": [
+            {
+                "expression": "$array[$j++]",
+                "certainty": "Yes"
+            },
+            {
+                "expression": "$array[$j]",
+                "certainty": "No"
+            },
+            {
+                "expression": "$array[0]",
+                "certainty": "No"
+            },
+            {
+                "expression": "$j",
+                "certainty": "Yes",
+                "value": "1"
+            }
+        ]
+    },
+    {
+        "line": 66,
+        "reads": [
+            {
+                "expression": "$value[false]",
+                "certainty": "Yes"
+            },
+            {
+                "expression": "$value[0]",
+                "certainty": "No"
+            }
+        ]
+    },
+    {
+        "line": 68,
+        "reads": [
+            {
+                "expression": "$value[true]",
+                "certainty": "Yes"
+            },
+            {
+                "expression": "$value[1]",
+                "certainty": "No"
+            }
+        ]
+    },
+    {
+        "line": 70,
+        "reads": [
+            {
+                "expression": "$value[null]",
+                "certainty": "Yes"
+            },
+            {
+                "expression": "$value['']",
+                "certainty": "No"
+            }
+        ]
+    },
+    {
+        "line": 72,
+        "reads": [
+            {
+                "expression": "$value[-1]",
+                "certainty": "Yes"
+            }
+        ]
+    },
+    {
+        "line": 74,
+        "reads": [
+            {
+                "expression": "$value[+1]",
+                "certainty": "Yes"
+            },
+            {
+                "expression": "$value[1]",
+                "certainty": "No"
+            }
+        ]
+    },
+    {
+        "line": 80,
+        "reads": [
+            {
+                "expression": "$value['0']",
+                "certainty": "Yes"
+            },
+            {
+                "expression": "$value[0]",
+                "certainty": "No"
+            }
+        ]
+    },
+    {
+        "line": 86,
+        "reads": [
+            {
+                "expression": "$value['0']['0']",
+                "certainty": "No"
+            },
+            {
+                "expression": "$value[0][0]",
+                "certainty": "No"
+            },
+            {
+                "expression": "$value['0']",
+                "certainty": "No"
+            },
+            {
+                "expression": "$value[0]",
+                "certainty": "No"
+            }
+        ]
+    },
+    {
+        "line": 92,
+        "reads": [
+            {
+                "expression": "$value[0]",
+                "certainty": "Yes"
+            },
+            {
+                "expression": "$value['0']",
+                "certainty": "No"
+            }
+        ]
+    },
+    {
+        "line": 94,
+        "reads": [
+            {
+                "expression": "$value[FALSE]",
+                "certainty": "Yes"
+            },
+            {
+                "expression": "$value[false]",
+                "certainty": "No"
+            },
+            {
+                "expression": "$value[0]",
+                "certainty": "Yes"
+            }
+        ]
+    }
+]

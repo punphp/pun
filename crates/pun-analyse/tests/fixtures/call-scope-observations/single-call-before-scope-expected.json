@@ -1,0 +1,107 @@
+{
+    "calls": {
+        "454": {
+            "line": 19,
+            "expression": "$target->$name(++$i, $i)",
+            "names": [
+                {
+                    "name": "bar",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 454,
+                            "end": 461,
+                            "expression": "$target",
+                            "type": "BeforeScopeTargets"
+                        },
+                        {
+                            "start": 469,
+                            "end": 473,
+                            "expression": "++$i",
+                            "type": "1"
+                        },
+                        {
+                            "start": 471,
+                            "end": 473,
+                            "expression": "$i",
+                            "type": "0"
+                        },
+                        {
+                            "start": 475,
+                            "end": 477,
+                            "expression": "$i",
+                            "type": "1"
+                        }
+                    ]
+                },
+                {
+                    "name": "foo",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 454,
+                            "end": 461,
+                            "expression": "$target",
+                            "type": "BeforeScopeTargets"
+                        },
+                        {
+                            "start": 469,
+                            "end": 473,
+                            "expression": "++$i",
+                            "type": "1"
+                        },
+                        {
+                            "start": 471,
+                            "end": 473,
+                            "expression": "$i",
+                            "type": "0"
+                        },
+                        {
+                            "start": 475,
+                            "end": 477,
+                            "expression": "$i",
+                            "type": "1"
+                        }
+                    ]
+                }
+            ]
+        },
+        "589": {
+            "line": 24,
+            "expression": "$target->$name(++$i, $i)",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 589,
+                            "end": 596,
+                            "expression": "$target",
+                            "type": "BeforeScopeTargets"
+                        },
+                        {
+                            "start": 604,
+                            "end": 608,
+                            "expression": "++$i",
+                            "type": "11"
+                        },
+                        {
+                            "start": 606,
+                            "end": 608,
+                            "expression": "$i",
+                            "type": "10"
+                        },
+                        {
+                            "start": 610,
+                            "end": 612,
+                            "expression": "$i",
+                            "type": "11"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "errors": []
+}

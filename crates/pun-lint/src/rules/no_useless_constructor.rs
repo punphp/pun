@@ -12,8 +12,8 @@ use mago_syntax::cst::*;
 use pun_problem::{Fix, Safety};
 
 use super::class_method::{
-    ClassInfo, class_info, default_value, doc_tags, expr_value, hint_text, is_final, is_public,
-    mapped_type_text, member_doc,
+    ClassInfo, default_value, doc_tags, expr_value, hint_text, is_final, is_public,
+    mapped_type_text, member_doc, with_class_info,
 };
 use super::rector_batch5::remove_members;
 use super::types::facts::{Facts, facts};
@@ -40,19 +40,17 @@ impl Rule for NoUselessConstructor {
         out: &mut Vec<Report>,
     ) {
         let facts = facts(ctx);
-        let Some(class) = class_info(node, ancestors, &facts) else {
-            return;
-        };
-        for (index, member) in class.members.iter().enumerate() {
-            let ClassLikeMember::Method(method) = member else {
-                continue;
-            };
-            if !is_removable(ctx, ancestors, &facts, &class, method, index) {
-                continue;
-            }
-            let mut removed = vec![false; class.members.len()];
-            removed[index] = true;
-            out.push(Report {
+        with_class_info(node, ancestors, &facts, |class| {
+            for (index, member) in class.members.iter().enumerate() {
+                let ClassLikeMember::Method(method) = member else {
+                    continue;
+                };
+                if !is_removable(ctx, ancestors, &facts, &class, method, index) {
+                    continue;
+                }
+                let mut removed = vec![false; class.members.len()];
+                removed[index] = true;
+                out.push(Report {
                 span: node_span(method),
                 message: "Remove the constructor, which only calls the parent constructor with the same arguments."
                     .to_string(),
@@ -68,7 +66,8 @@ impl Rule for NoUselessConstructor {
                     ),
                 }),
             });
-        }
+            }
+        });
     }
 }
 

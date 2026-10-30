@@ -55,6 +55,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for PropertyAccess<'arena> {
             self.arrow.span(),
             &self.property,
             false,
+            true,
         )
     }
 }
@@ -78,12 +79,13 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for NullSafePropertyAccess<'arena> {
             self.question_mark_arrow.span(),
             &self.property,
             true,
+            true,
         )
     }
 }
 
 #[inline]
-fn analyze_property_access<'ctx, 'ast, 'arena, A>(
+pub(crate) fn analyze_property_access<'ctx, 'ast, 'arena, A>(
     context: &mut Context<'ctx, 'arena, A>,
     block_context: &mut BlockContext<'ctx>,
     artifacts: &mut AnalysisArtifacts,
@@ -92,6 +94,7 @@ fn analyze_property_access<'ctx, 'ast, 'arena, A>(
     arrow_span: Span,
     property_selector: &'ast ClassLikeMemberSelector<'arena>,
     is_null_safe: bool,
+    remember: bool,
 ) -> Result<(), AnalysisError>
 where
     A: Arena,
@@ -109,6 +112,13 @@ where
         && let Some(property_access_id) = &property_access_id
         && let Some(existing_type) = block_context.locals.get(property_access_id).cloned()
     {
+        // A holder replaces the fetch's value, not the evaluation of its operands.
+        let was_inside_general_use = block_context.flags.inside_general_use();
+        block_context.flags.set_inside_general_use(true);
+        let result = object.analyze(context, block_context, artifacts);
+        block_context.flags.set_inside_general_use(was_inside_general_use);
+        result?;
+        crate::resolver::selector::resolve_member_selector(context, block_context, artifacts, property_selector, true)?;
         add_memoized_property_reference(context, block_context, artifacts, object, property_selector, is_null_safe)?;
 
         artifacts.set_rc_expression_type(&span, existing_type);
@@ -179,7 +189,7 @@ where
     }
 
     if let Some(narrowed_rc) = narrowed_from_non_nullsafe {
-        if let Some(property_access_id) = property_access_id {
+        if remember && let Some(property_access_id) = property_access_id {
             block_context.locals.insert(property_access_id, Rc::clone(&narrowed_rc));
         }
 
@@ -210,7 +220,7 @@ where
     );
 
     let resulting_type = Rc::new(resulting_type);
-    if let Some(property_access_id) = property_access_id {
+    if remember && let Some(property_access_id) = property_access_id {
         block_context.locals.insert(property_access_id, Rc::clone(&resulting_type));
     }
 
@@ -902,6 +912,26 @@ mod tests {
             IssueCode::NonExistentClassLike,
             IssueCode::NonExistentClassLike,
             IssueCode::UnusedStatement,
+        ]
+    }
+
+    test_analysis! {
+        name = prepared_property_writes_distinguish_direct_and_compound_reads,
+        code = indoc! {"
+            <?php
+
+            class PropertyWriteUsage {
+                private int $written = 0;
+                private int $changed = 0;
+
+                public function update(int $value): void {
+                    $this->written = $value;
+                    $this->changed += $value;
+                }
+            }
+        "},
+        issues = [
+            IssueCode::WriteOnlyProperty,
         ]
     }
 

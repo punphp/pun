@@ -78,7 +78,7 @@ impl TNew {
                         None => resulting_atomics.push(TAtomic::Object(TObject::Any)),
                     }
                 }
-                TAtomic::Scalar(TScalar::ClassLikeString(TClassLikeString::Any { .. })) => {
+                TAtomic::Scalar(TScalar::ClassLikeString(TClassLikeString::Any { .. } | TClassLikeString::LiteralAny)) => {
                     resulting_atomics.push(TAtomic::Object(TObject::Any));
                 }
                 _ => return None,

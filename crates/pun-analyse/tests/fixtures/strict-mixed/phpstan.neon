@@ -1,0 +1,7 @@
+parameters:
+    paths:
+        - cases.php
+    phpVersion: 80400
+    featureToggles:
+        checkNonStringableDynamicAccess: true
+    tmpDir: /tmp/pun-strict-mixed-oracle-cache

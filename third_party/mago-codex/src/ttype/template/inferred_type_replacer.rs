@@ -64,10 +64,11 @@ pub fn replace_with_polarity(
             intersection_types.as_ref(),
             template_result,
         )
-        .map_or_else(|| union.clone(), |replacement| union.clone_with_types(replacement.types.into_owned()));
+        .map_or_else(|| union.clone(), |replacement| union.clone_with_union(replacement));
     }
 
     let mut new_types = Vec::with_capacity(union.types.len());
+    let mut never_kind = union.never_kind().unwrap_or_default();
 
     for atomic_type in union.types.as_ref() {
         let mut atomic_type = atomic_type.clone();
@@ -104,6 +105,7 @@ pub fn replace_with_polarity(
                 );
 
                 if let Some(template_type) = template_type {
+                    never_kind = never_kind.max(template_type.never_kind().unwrap_or_default());
                     new_types.extend(template_type.types.into_owned());
                 } else {
                     new_types.push(atomic_type);
@@ -172,11 +174,13 @@ pub fn replace_with_polarity(
         return get_never();
     }
 
-    union.clone_with_types(combiner::combine_preserving_array_shapes(
-        new_types,
-        codebase,
-        combiner::CombinerOptions::default(),
-    ))
+    union
+        .clone_with_types(combiner::combine_preserving_array_shapes(
+            new_types,
+            codebase,
+            combiner::CombinerOptions::default(),
+        ))
+        .with_never_kind(never_kind)
 }
 
 fn replace_template_parameter(
@@ -253,6 +257,11 @@ fn replace_atomic(
     codebase: &CodebaseMetadata,
     polarity: Variance,
 ) -> TAtomic {
+    if let TAtomic::Array(array) = &mut atomic
+        && let Some(callable) = array.callable_mut()
+    {
+        *callable = replace_atomic(callable.clone(), template_result, codebase, polarity);
+    }
     match &mut atomic {
         TAtomic::Conditional(conditional) => {
             *Arc::make_mut(&mut conditional.subject) =

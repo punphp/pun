@@ -1,0 +1,11 @@
+{
+  "unicode-fatal": "<?php\n$x = <<<TXT\n  \\u{110000}\n bad\n  TXT;\n",
+  "unicode-before-later-part": "<?php\n$x = <<<TXT\n  \\u{110000}$value\n bad\n  TXT;\n",
+  "unicode-after-invalid-prefix": "<?php\n$x = <<<TXT\n \\u{110000}$value\n bad\n  TXT;\n",
+  "nonfatal-unicode-before-later-part": "<?php\n$x = <<<TXT\n  \\u{}$value\n bad\n  TXT;\n",
+  "numeric-lexical": "<?php\n$x = 0_8;\n$y = <<<TXT\n bad\n  TXT;\n",
+  "recovered-expression": "<?php\n$x = <<<TXT\n bad\n  TXT;\n$broken = ;\n",
+  "bare-cr-short": "<?php\r$x = <<<TXT\r good\rbad\r  TXT;\r",
+  "valid-bare-cr-after-text": "<?php\r$x = <<<TXT\r  good\rbad\r  TXT;\r",
+  "unclosed-document": "<?php\n$x = <<<TXT\n bad\n"
+}

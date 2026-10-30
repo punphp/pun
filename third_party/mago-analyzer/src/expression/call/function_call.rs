@@ -1,10 +1,17 @@
+use std::borrow::Cow;
+
 use mago_allocator::Arena;
 use mago_codex::identifier::function_like::FunctionLikeIdentifier;
 use mago_codex::ttype::TType;
+use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::callable::TCallable;
 use mago_codex::ttype::atomic::callable::TCallableSignature;
+use mago_codex::ttype::atomic::object::TObject;
+use mago_codex::ttype::cast::can_atomic_be_callable;
 use mago_codex::ttype::cast::cast_atomic_to_callable;
 use mago_codex::ttype::expander::contains_parameter_variable;
+use mago_codex::ttype::get_error;
+use mago_codex::ttype::get_mixed;
 use mago_codex::ttype::template::TemplateResult;
 use mago_reporting::Annotation;
 use mago_reporting::Issue;
@@ -26,6 +33,7 @@ use crate::invocation::InvocationArgumentsSource;
 use crate::invocation::InvocationTarget;
 use crate::plugin::ExpressionHookResult;
 use crate::plugin::context::HookContext;
+use crate::visibility::is_callable_method_inaccessible;
 
 impl<'ast, 'arena> Analyzable<'ast, 'arena> for FunctionCall<'arena> {
     fn analyze<'ctx, A>(
@@ -59,6 +67,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for FunctionCall<'arena> {
             }
         }
 
+        let reflection_scope = block_context.clone();
         let mut template_result = TemplateResult::default();
         let (invocation_targets, _) =
             resolve_targets(context, block_context, artifacts, self.function, &mut template_result)?;
@@ -66,22 +75,39 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for FunctionCall<'arena> {
             matches!(target.get_function_like_identifier(), Some(FunctionLikeIdentifier::Function(name)) if name.as_bytes().eq_ignore_ascii_case(b"extract"))
         });
 
-        let native_return = if block_context.native_locals.is_some()
+        let native_function = if block_context.native_locals.is_some()
             && !context.plugin_registry.has_function_assertion_providers()
-            && invocation_targets.len() == 1
             && matches!(self.function, Expression::Identifier(_))
+            && let [target] = invocation_targets.as_slice()
         {
-            invocation_targets[0].get_function_like_metadata().and_then(crate::native::function_return_type)
+            target.get_function_like_metadata()
         } else {
             None
         };
-        if native_return.is_none() {
-            block_context.native_locals = None;
-        }
+        let native_return = if block_context.native_locals.is_some()
+            && !context.plugin_registry.has_function_assertion_providers()
+            && let Expression::Identifier(identifier) = self.function
+        {
+            let name = context.resolved_names.get(identifier);
+            // PHPStan supplies these diagnostic-only functions even without project declarations.
+            // src/dumpType.php has no native return hint, hence mixed (not full/PHPDoc).
+            if [b"PHPStan\\dumpType".as_slice(), b"PHPStan\\dumpNativeType", b"PHPStan\\dumpPhpDocType"]
+                .iter().any(|diagnostic| name.eq_ignore_ascii_case(diagnostic))
+            {
+                Some(get_mixed())
+            } else {
+                native_function.and_then(crate::native::function_return_type)
+            }
+        } else {
+            None
+        };
 
+        // PHP evaluates arguments before call effects, in the evolving argument scope. Do not
+        // invalidate their native observations merely because the callee's transfer is unsupported.
         analyze_invocation_targets(
             context,
             block_context,
+            &reflection_scope,
             artifacts,
             template_result,
             invocation_targets,
@@ -91,12 +117,30 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for FunctionCall<'arena> {
             false,
             false,
             false, // object_has_nullsafe_null - not applicable for function calls
+            false,
+            true,
         )?;
+
+        // Read the actual arguments' already-visited native results, after their writes/hooks.
+        // Neither an unavailable result nor a safe continuation manufactures a native return.
+        if native_return.is_none()
+            && !native_function.is_some_and(|function| {
+                crate::native::function_continuation(function, &self.argument_list, artifacts)
+            })
+        {
+            block_context.native_locals = None;
+        }
+
+        // FuncCallHandler::resolveReturnType() also gives invalid dynamic calls
+        // ErrorType. This does not turn an implicit-never callee into termination.
+        if artifacts.get_expression_type(&self.span()).is_none() {
+            artifacts.set_resolved_expression_type(&self.span(), get_error());
+        }
 
         if block_context.native_locals.is_some()
             && let Some(native_return) = native_return
         {
-            artifacts.set_rc_native_expression_type(self, std::rc::Rc::new(native_return));
+            artifacts.set_resolved_native_expression_type(self, std::rc::Rc::new(native_return));
         }
 
         if extracts_variables {
@@ -108,6 +152,18 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for FunctionCall<'arena> {
             for reported in hook_context.take_issues() {
                 context.collector.report_with_code(reported.code, reported.issue);
             }
+        }
+
+        // Only an already-scanned define() declaration owns this invocation span. Keep its visited
+        // value in the same file-local overlay as const, without changing canonical reflection types.
+        if let [name, value] = self.argument_list.arguments.as_slice()
+            && let Some(name) = artifacts.get_expression_type(name.value())
+                .and_then(|ty| ty.get_single_literal_string_value())
+            && let Some(constant) = context.codebase.get_constant(name)
+            && constant.span == self.span()
+            && let Some(value) = artifacts.get_expression_type(value.value())
+        {
+            context.constant_types.insert(constant.span, value.clone());
         }
 
         Ok(())
@@ -179,13 +235,20 @@ where
     let mut encountered_invalid_targets = false;
     let mut targets = vec![];
     for atomic in expression_type.types.as_ref() {
-        if (atomic.is_null() && expression_type.ignore_nullable_issues())
+        if atomic.is_never()
+            || (atomic.is_null() && expression_type.ignore_nullable_issues())
             || (atomic.is_false() && expression_type.ignore_falsable_issues())
         {
             continue;
         }
 
-        if let Some(callable) = cast_atomic_to_callable(atomic, context.codebase, Some(template_result)) {
+        let callable = if is_callable_method_inaccessible(context, block_context, atomic) {
+            // InaccessibleMethod contributes a trivial acceptor, not the declaration's signature.
+            Some(Cow::Owned(TCallable::Signature(TCallableSignature::mixed(false))))
+        } else {
+            cast_atomic_to_callable(atomic, context.codebase, Some(template_result))
+        };
+        if let Some(callable) = callable {
             match callable.as_ref() {
                 TCallable::Signature(callable_signature) => {
                     if let Some(id) = callable_signature.get_source()
@@ -213,7 +276,13 @@ where
                     }
 
                     targets.push(InvocationTarget::Callable {
-                        signature: callable_signature.clone(),
+                        // ObjectType(Closure)'s trivial acceptor contributes mixed to the
+                        // invocation return, without erasing its callable intersection's signature.
+                        signature: if matches!(atomic, TAtomic::Object(TObject::Named(object)) if object.name.as_bytes().eq_ignore_ascii_case(b"Closure")) {
+                            callable_signature.clone().with_return_type(Some(std::sync::Arc::new(mago_codex::ttype::get_mixed())))
+                        } else {
+                            callable_signature.clone()
+                        },
                         effective_signature: None,
                         span: expression.span(),
                         source: callable_signature.get_source(),
@@ -227,7 +296,7 @@ where
                     }
                 }
             }
-        } else if atomic.can_be_callable() {
+        } else if can_atomic_be_callable(atomic, context.codebase) {
             targets.push(InvocationTarget::Callable {
                 signature: TCallableSignature::mixed(false),
                 effective_signature: None,

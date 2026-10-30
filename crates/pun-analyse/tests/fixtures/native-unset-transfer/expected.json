@@ -1,0 +1,411 @@
+{
+    "phar_sha256": "85157dba3d95d77ca603d2b7303aa78a538f9e3b56ccad07dd794c53aa96d1ae",
+    "source_sha256": "f044f6fb009b8cb0e2c60bb79e71b1f1f343dd3a5f2a7e27b0d55005661ad68f",
+    "observations": [
+        {
+            "file": "unsets.php",
+            "start": 102,
+            "end": 108,
+            "line": 8,
+            "expression": "$shape",
+            "supported": true,
+            "native": "array{present: 1}"
+        },
+        {
+            "file": "unsets.php",
+            "start": 155,
+            "end": 161,
+            "line": 10,
+            "expression": "$shape",
+            "supported": true,
+            "native": "array{}"
+        },
+        {
+            "file": "unsets.php",
+            "start": 178,
+            "end": 202,
+            "line": 11,
+            "expression": "isset($shape['present'])",
+            "supported": true,
+            "native": "false"
+        },
+        {
+            "file": "unsets.php",
+            "start": 219,
+            "end": 241,
+            "line": 12,
+            "expression": "$shape['present'] ?? 7",
+            "supported": true,
+            "native": "7"
+        },
+        {
+            "file": "unsets.php",
+            "start": 335,
+            "end": 340,
+            "line": 19,
+            "expression": "$keep",
+            "supported": true,
+            "native": "int"
+        },
+        {
+            "file": "unsets.php",
+            "start": 376,
+            "end": 384,
+            "line": 21,
+            "expression": "$removed",
+            "supported": true,
+            "native": "99"
+        },
+        {
+            "file": "unsets.php",
+            "start": 422,
+            "end": 437,
+            "line": 23,
+            "expression": "isset($removed)",
+            "supported": true,
+            "native": "false"
+        },
+        {
+            "file": "unsets.php",
+            "start": 454,
+            "end": 459,
+            "line": 24,
+            "expression": "$keep",
+            "supported": true,
+            "native": "int"
+        },
+        {
+            "file": "unsets.php",
+            "start": 558,
+            "end": 566,
+            "line": 31,
+            "expression": "$removed",
+            "supported": false,
+            "native": "*ERROR*"
+        },
+        {
+            "file": "unsets.php",
+            "start": 587,
+            "end": 592,
+            "line": 32,
+            "expression": "$keep",
+            "supported": false,
+            "native": "int"
+        },
+        {
+            "file": "unsets.php",
+            "start": 779,
+            "end": 785,
+            "line": 40,
+            "expression": "$shape",
+            "supported": true,
+            "native": "array{third: 3}"
+        },
+        {
+            "file": "unsets.php",
+            "start": 802,
+            "end": 806,
+            "line": 41,
+            "expression": "$key",
+            "supported": true,
+            "native": "'second'"
+        },
+        {
+            "file": "unsets.php",
+            "start": 857,
+            "end": 863,
+            "line": 43,
+            "expression": "$shape",
+            "supported": true,
+            "native": "array{}"
+        },
+        {
+            "file": "unsets.php",
+            "start": 905,
+            "end": 909,
+            "line": 45,
+            "expression": "$key",
+            "supported": true,
+            "native": "'reassigned'"
+        },
+        {
+            "file": "unsets.php",
+            "start": 1051,
+            "end": 1057,
+            "line": 52,
+            "expression": "$shape",
+            "supported": true,
+            "native": "array{first: 1, 2: 'two', '03': 3}"
+        },
+        {
+            "file": "unsets.php",
+            "start": 1098,
+            "end": 1104,
+            "line": 54,
+            "expression": "$shape",
+            "supported": true,
+            "native": "array{first: 1, '03': 3}"
+        },
+        {
+            "file": "unsets.php",
+            "start": 1146,
+            "end": 1152,
+            "line": 56,
+            "expression": "$shape",
+            "supported": true,
+            "native": "array{first: 1}"
+        },
+        {
+            "file": "unsets.php",
+            "start": 1241,
+            "end": 1246,
+            "line": 63,
+            "expression": "$tail",
+            "supported": true,
+            "native": "array{1, 2}"
+        },
+        {
+            "file": "unsets.php",
+            "start": 1311,
+            "end": 1318,
+            "line": 66,
+            "expression": "$middle",
+            "supported": true,
+            "native": "array{0: 1, 2: 3}"
+        },
+        {
+            "file": "unsets.php",
+            "start": 1359,
+            "end": 1366,
+            "line": 68,
+            "expression": "$middle",
+            "supported": true,
+            "native": "array{0: 1, 2: 3}"
+        },
+        {
+            "file": "unsets.php",
+            "start": 1425,
+            "end": 1432,
+            "line": 71,
+            "expression": "$single",
+            "supported": true,
+            "native": "array{}"
+        },
+        {
+            "file": "unsets.php",
+            "start": 1472,
+            "end": 1479,
+            "line": 73,
+            "expression": "$single",
+            "supported": true,
+            "native": "array{}"
+        },
+        {
+            "file": "unsets.php",
+            "start": 1683,
+            "end": 1689,
+            "line": 84,
+            "expression": "$shape",
+            "supported": true,
+            "native": "array{second: 2}"
+        },
+        {
+            "file": "unsets.php",
+            "start": 1869,
+            "end": 1875,
+            "line": 92,
+            "expression": "$shape",
+            "supported": true,
+            "native": "array{first?: 1, second?: 2, third: 3}"
+        },
+        {
+            "file": "unsets.php",
+            "start": 1892,
+            "end": 1896,
+            "line": 93,
+            "expression": "$key",
+            "supported": true,
+            "native": "'first'|'second'"
+        },
+        {
+            "file": "unsets.php",
+            "start": 2003,
+            "end": 2009,
+            "line": 100,
+            "expression": "$shape",
+            "supported": true,
+            "native": "array{0?: 1, 1?: 2, 2?: 3}"
+        },
+        {
+            "file": "unsets.php",
+            "start": 2131,
+            "end": 2137,
+            "line": 106,
+            "expression": "$shape",
+            "supported": true,
+            "native": "array"
+        },
+        {
+            "file": "unsets.php",
+            "start": 2182,
+            "end": 2188,
+            "line": 108,
+            "expression": "$shape",
+            "supported": true,
+            "native": "array<mixed~'first', mixed>"
+        },
+        {
+            "file": "unsets.php",
+            "start": 2205,
+            "end": 2221,
+            "line": 109,
+            "expression": "$shape['second']",
+            "supported": true,
+            "native": "mixed"
+        },
+        {
+            "file": "unsets.php",
+            "start": 2360,
+            "end": 2366,
+            "line": 116,
+            "expression": "$shape",
+            "supported": true,
+            "native": "array{}"
+        },
+        {
+            "file": "unsets.php",
+            "start": 2506,
+            "end": 2512,
+            "line": 123,
+            "expression": "$shape",
+            "supported": false,
+            "native": "array{outer: array{}}"
+        },
+        {
+            "file": "unsets.php",
+            "start": 2533,
+            "end": 2538,
+            "line": 124,
+            "expression": "$keep",
+            "supported": false,
+            "native": "int"
+        },
+        {
+            "file": "unsets.php",
+            "start": 2576,
+            "end": 2582,
+            "line": 126,
+            "expression": "$shape",
+            "supported": false,
+            "native": "array{}"
+        },
+        {
+            "file": "unsets.php",
+            "start": 2700,
+            "end": 2706,
+            "line": 133,
+            "expression": "$shape",
+            "supported": false,
+            "native": "array{1, 2}"
+        },
+        {
+            "file": "unsets.php",
+            "start": 2813,
+            "end": 2819,
+            "line": 140,
+            "expression": "$shape",
+            "supported": false,
+            "native": "array{1}"
+        },
+        {
+            "file": "unsets.php",
+            "start": 2978,
+            "end": 2984,
+            "line": 148,
+            "expression": "$shape",
+            "supported": false,
+            "native": "mixed"
+        },
+        {
+            "file": "unsets.php",
+            "start": 3087,
+            "end": 3092,
+            "line": 154,
+            "expression": "$keep",
+            "supported": false,
+            "native": "int"
+        },
+        {
+            "file": "unsets.php",
+            "start": 3199,
+            "end": 3204,
+            "line": 161,
+            "expression": "$keep",
+            "supported": false,
+            "native": "int"
+        },
+        {
+            "file": "unsets.php",
+            "start": 3314,
+            "end": 3319,
+            "line": 168,
+            "expression": "$keep",
+            "supported": false,
+            "native": "int"
+        },
+        {
+            "file": "unsets.php",
+            "start": 3443,
+            "end": 3448,
+            "line": 175,
+            "expression": "$keep",
+            "supported": false,
+            "native": "int"
+        },
+        {
+            "file": "unsets.php",
+            "start": 3549,
+            "end": 3554,
+            "line": 181,
+            "expression": "$keep",
+            "supported": false,
+            "native": "int"
+        },
+        {
+            "file": "unsets.php",
+            "start": 3743,
+            "end": 3751,
+            "line": 193,
+            "expression": "$written",
+            "supported": true,
+            "native": "0"
+        },
+        {
+            "file": "unsets.php",
+            "start": 3768,
+            "end": 3774,
+            "line": 194,
+            "expression": "$shape",
+            "supported": true,
+            "native": "array{0?: 1, 1?: 2}"
+        },
+        {
+            "file": "unsets.php",
+            "start": 3831,
+            "end": 3837,
+            "line": 200,
+            "expression": "$other",
+            "supported": true,
+            "native": "2"
+        },
+        {
+            "file": "unsets.php",
+            "start": 3850,
+            "end": 3857,
+            "line": 201,
+            "expression": "$global",
+            "supported": false,
+            "native": "mixed"
+        }
+    ]
+}

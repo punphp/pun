@@ -196,3 +196,16 @@ fn original_first_class_callbacks_retain_no_named_arguments() {
     assert_eq!(want.len(), 8);
     assert_eq!(got, want);
 }
+
+#[test]
+fn void_diagnostics_keep_raw_calls_while_argument_types_use_values() {
+    // PHPStan 2.3.1, level N and phpVersion 80500 on void-values.php; retain complete diagnostics.
+    for level in [1, 2, 5] {
+        check(
+            level,
+            80500,
+            &["void-values.php"],
+            &format!("expected-void-values-level{level}.json"),
+        );
+    }
+}

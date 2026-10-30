@@ -1,4 +1,5 @@
 use std::borrow::Cow;
+use std::collections::BTreeMap;
 use std::rc::Rc;
 use std::sync::Arc;
 
@@ -10,6 +11,7 @@ use crate::metadata::class_like::ClassLikeMetadata;
 use crate::misc::GenericParent;
 use crate::ttype::atomic::TAtomic;
 use crate::ttype::atomic::array::TArray;
+use crate::ttype::atomic::array::key::ArrayKey;
 use crate::ttype::atomic::array::keyed::TKeyedArray;
 use crate::ttype::atomic::array::list::TList;
 use crate::ttype::atomic::generic::TGenericParameter;
@@ -22,7 +24,6 @@ use crate::ttype::atomic::scalar::class_like_string::TClassLikeStringKind;
 use crate::ttype::atomic::scalar::int::TInteger;
 use crate::ttype::atomic::scalar::string::TString;
 use crate::ttype::atomic::scalar::string::TStringCasing;
-use crate::ttype::atomic::scalar::string::TStringLiteral;
 use crate::ttype::comparator::ComparisonResult;
 use crate::ttype::comparator::union_comparator;
 use crate::ttype::expander::StaticClassType;
@@ -103,6 +104,7 @@ pub mod display;
 pub mod error;
 pub mod expander;
 pub mod flags;
+pub(crate) mod initializer;
 pub mod resolution;
 pub mod shared;
 pub mod template;
@@ -520,10 +522,10 @@ pub fn get_string() -> TUnion {
     TUnion::from_single(Cow::Borrowed(STRING_ATOMIC))
 }
 
-/// Returns a zero-allocation `TUnion` for a `string` with the specified properties.
+/// Returns a `TUnion` for a `string` with the specified properties.
 ///
-/// This function maps all possible boolean property combinations to a canonical,
-/// static `TAtomic` instance, avoiding heap allocations for common string types.
+/// Common combinations borrow canonical static atomics. Other combinations retain
+/// their independent casing guarantees in an owned atomic.
 #[must_use]
 #[allow(clippy::fn_params_excessive_bools)]
 pub fn get_string_with_props(
@@ -533,11 +535,21 @@ pub fn get_string_with_props(
     is_callable: bool,
     casing: TStringCasing,
 ) -> TUnion {
+    // These refinements do not have a shared static atomic. Do not erase casing
+    // or an independent non-empty accessory just because the string is numeric.
+    if is_numeric && (!casing.is_unspecified() || is_non_empty) {
+        return TUnion::from_atomic(TAtomic::Scalar(TScalar::String(TString::general_with_props(
+            is_numeric, is_truthy, is_non_empty, is_callable, casing,
+        ))));
+    }
     if is_callable {
         return match casing {
             TStringCasing::Lowercase => TUnion::from_single(Cow::Borrowed(LOWERCASE_CALLABLE_STRING_ATOMIC)),
             TStringCasing::Uppercase => TUnion::from_single(Cow::Borrowed(UPPERCASE_CALLABLE_STRING_ATOMIC)),
             TStringCasing::Unspecified => TUnion::from_single(Cow::Borrowed(CALLABLE_STRING_ATOMIC)),
+            TStringCasing::Both => TUnion::from_atomic(TAtomic::Scalar(TScalar::String(TString::general_with_props(
+                is_numeric, is_truthy, is_non_empty, is_callable, casing,
+            )))),
         };
     }
 
@@ -556,6 +568,11 @@ pub fn get_string_with_props(
         (false, false, true, TStringCasing::Unspecified) => NON_EMPTY_STRING_ATOMIC,
         (false, false, true, TStringCasing::Uppercase) => NON_EMPTY_UPPERCASE_STRING_ATOMIC,
         (false, false, true, TStringCasing::Lowercase) => NON_EMPTY_LOWERCASE_STRING_ATOMIC,
+        (false, _, _, TStringCasing::Both) => {
+            return TUnion::from_atomic(TAtomic::Scalar(TScalar::String(TString::general_with_props(
+                is_numeric, is_truthy, is_non_empty, is_callable, casing,
+            ))));
+        }
     };
 
     TUnion::from_single(Cow::Borrowed(atomic_ref))
@@ -591,6 +608,13 @@ pub fn get_mixed() -> TUnion {
     TUnion::from_single(Cow::Borrowed(MIXED_ATOMIC))
 }
 
+/// PHPStan's declared `mixed`, distinct from an absent or unknown type.
+#[inline]
+#[must_use]
+pub fn get_explicit_mixed() -> TUnion {
+    TUnion::from_atomic(TAtomic::Mixed(TMixed::new().with_is_explicit(true)))
+}
+
 /// Returns PHPStan's `ErrorType`: unconstrained mixed with distinct error identity.
 #[inline]
 #[must_use]
@@ -619,6 +643,18 @@ pub fn get_mixed_maybe_from_loop(from_loop_isset: bool) -> TUnion {
 #[must_use]
 pub fn get_never() -> TUnion {
     TUnion::from_single(Cow::Borrowed(NEVER_ATOMIC))
+}
+
+/// An explicitly specified accepting bottom (PHPStan's `NeverType(true)`).
+#[must_use]
+pub fn get_explicit_never() -> TUnion {
+    get_never().with_never_kind(union::NeverKind::Explicit)
+}
+
+/// A declared PHP/PHPDoc `never` (PHPStan's `NonAcceptingNeverType`).
+#[must_use]
+pub fn get_non_accepting_never() -> TUnion {
+    get_never().with_never_kind(union::NeverKind::NonAccepting)
 }
 
 #[inline]
@@ -1007,7 +1043,10 @@ fn combine_unequal_union_types_cow(
     preserve_array_shapes: bool,
 ) -> TUnion {
     let flags_1 = type_1.flags;
-    let mut combined_type = if type_1.is_never() || type_1.is_never_template() {
+    let mut combined_type = if type_1.is_never() && type_2.is_never() {
+        let kind = type_1.never_kind().unwrap().max(type_2.never_kind().unwrap());
+        type_1.into_owned().with_never_kind(kind)
+    } else if type_1.is_never() || type_1.is_never_template() {
         type_2.clone()
     } else if type_2.is_never() || type_2.is_never_template() {
         type_1.into_owned()
@@ -1114,8 +1153,10 @@ fn add_unequal_union_type_inner(
         combine_unequal_union_types_cow(Cow::Owned(base_type), other_type, codebase, options, preserve_array_shapes)
     };
     let constant_array_key = base_type.flags.contains(UnionFlags::CONSTANT_ARRAY_KEY);
+    let never_kind = base_type.never_kind().unwrap_or_default();
     base_type.flags = original_flags;
     base_type.flags.set(UnionFlags::CONSTANT_ARRAY_KEY, constant_array_key);
+    base_type.set_never_kind(never_kind);
 
     if !other_type.had_template() {
         base_type.set_had_template(false);
@@ -1147,8 +1188,10 @@ pub fn intersect_union_types(type_1: &TUnion, type_2: &TUnion, codebase: &Codeba
         return Some(type_1.clone());
     }
 
-    if type_1.is_never() || type_2.is_never() {
-        return Some(get_never());
+    if let Some(kind) = type_1.never_kind() {
+        return Some(type_1.clone().with_never_kind(kind.min(type_2.never_kind().unwrap_or(kind))));
+    } else if type_2.is_never() {
+        return Some(type_2.clone());
     }
 
     if type_1.is_error() {
@@ -1164,11 +1207,40 @@ pub fn intersect_union_types(type_1: &TUnion, type_2: &TUnion, codebase: &Codeba
         if let [TAtomic::Mixed(mixed)] = mixed.types.as_ref()
             && let Some(excluded) = mixed.get_subtracted_type()
         {
+            if let [TAtomic::Object(TObject::Named(exclusion))] = excluded.types.as_ref()
+                && !exclusion.has_intersection_types()
+                && union_comparator::is_contained_by(
+                    codebase, other,
+                    &TUnion::from_atomic(TAtomic::Object(TObject::Named(exclusion.clone().with_subtracted_type(None)))),
+                    false, false, false, &mut ComparisonResult::default(),
+                )
+            {
+                return Some(exclusion.subtracted_type.as_ref().map_or_else(get_never, |remaining| {
+                    intersect_union_types(other, remaining, codebase).unwrap_or_else(get_never)
+                }));
+            }
             return Some(match other.types.as_ref() {
                 [TAtomic::Mixed(other)] => TUnion::from_atomic(TAtomic::Mixed(match other.effective_subtracted_type() {
                     Some(previous) => TMixed::with_subtracted_type(combine_union_types(excluded, &previous, codebase, Default::default())),
                     None => mixed.clone(),
-                })),
+                }.with_is_explicit(mixed.is_explicit() || other.is_explicit()))),
+                [TAtomic::Object(TObject::Named(object))] => {
+                    let excluded = object.subtracted_type.as_ref().map_or_else(
+                        || excluded.clone(),
+                        |previous| {
+                            combine_union_types(excluded, previous, codebase, Default::default())
+                        },
+                    );
+                    let base = object.clone().with_subtracted_type(None);
+                    let excluded = intersect_union_types(
+                        &TUnion::from_atomic(TAtomic::Object(TObject::Named(base))),
+                        &excluded,
+                        codebase,
+                    );
+                    TUnion::from_atomic(TAtomic::Object(TObject::Named(
+                        object.clone().with_subtracted_type(excluded),
+                    )))
+                }
                 _ => atomic::mixed::subtraction::remove(other, excluded, codebase),
             });
         }
@@ -1178,7 +1250,9 @@ pub fn intersect_union_types(type_1: &TUnion, type_2: &TUnion, codebase: &Codeba
 
     if type_1.is_mixed() {
         if type_2.is_mixed() {
-            return Some(get_mixed());
+            return Some(TUnion::from_atomic(TAtomic::Mixed(TMixed::new().with_is_explicit(
+                type_1.types.iter().chain(type_2.types.iter()).any(|atomic| matches!(atomic, TAtomic::Mixed(mixed) if mixed.is_explicit())),
+            ))));
         }
 
         return Some(type_2.clone());
@@ -1244,6 +1318,165 @@ pub fn intersect_union_types(type_1: &TUnion, type_2: &TUnion, codebase: &Codeba
     None
 }
 
+/// Containment of every conjunct, including the primary object's generic/static identity.
+pub(crate) fn is_atomic_intersection_contained_by(
+    input: &TAtomic,
+    container: &TAtomic,
+    codebase: &CodebaseMetadata,
+) -> bool {
+    let input = TUnion::from_atomic(input.clone());
+    let contained = |container| {
+        let mut result = ComparisonResult::default();
+        union_comparator::is_contained_by(
+            codebase,
+            &input,
+            &TUnion::from_atomic(container),
+            false,
+            false,
+            false,
+            &mut result,
+        ) && !result.is_only_accepted
+    };
+    if !contained(container.clone()) {
+        return false;
+    }
+    // The general comparator can otherwise prove only the additional intersection parts.
+    let mut root = container.clone();
+    if let Some(parts) = root.get_intersection_types_mut() {
+        parts.clear();
+        return contained(root);
+    }
+    true
+}
+
+type ConstantArrayItems = BTreeMap<ArrayKey, (bool, TUnion)>;
+
+/// Definite ConstantArrayType views, not the asserted offsets of an ordinary generic array.
+fn constant_array_parts(array: &TArray) -> Option<(ConstantArrayItems, Option<(TUnion, TUnion)>)> {
+    match array {
+        TArray::Keyed(array) if array.is_constant_shape() => Some((
+            array.known_items.as_deref().cloned().unwrap_or_default(),
+            array
+                .parameters
+                .as_ref()
+                .filter(|(key, _)| !key.is_never())
+                .map(|(key, value)| ((**key).clone(), (**value).clone())),
+        )),
+        TArray::List(array) if array.known_elements.is_some() => Some((
+            array
+                .known_elements
+                .as_ref()?
+                .iter()
+                .map(|(key, item)| (ArrayKey::Integer(*key as i64), item.clone()))
+                .collect(),
+            (!array.element_type.is_never()).then(|| (get_non_negative_int(), (*array.element_type).clone())),
+        )),
+        _ => None,
+    }
+}
+
+/// TypeCombinator::intersectDefiniteConstantArrays. Each side's extras apply only to absent keys.
+fn intersect_constant_arrays(
+    left: &TArray,
+    right: &TArray,
+    left_items: ConstantArrayItems,
+    right_items: ConstantArrayItems,
+    left_tail: Option<(TUnion, TUnion)>,
+    right_tail: Option<(TUnion, TUnion)>,
+    codebase: &CodebaseMetadata,
+    intersection_performed: &mut bool,
+) -> Option<TAtomic> {
+    *intersection_performed = true;
+    let tail = match (&left_tail, &right_tail) {
+        (Some((left_key, left_value)), Some((right_key, right_value))) => {
+            let key = intersect_union_types(left_key, right_key, codebase)?;
+            let value = intersect_union_types(left_value, right_value, codebase)?;
+            if key.is_never() || value.is_never() {
+                return None;
+            }
+            Some((key, value))
+        }
+        _ => None,
+    };
+    let mut items = BTreeMap::new();
+    for key in left_items
+        .keys()
+        .chain(right_items.keys().filter(|key| !left_items.contains_key(key)))
+    {
+        let (optional, value) = match (left_items.get(key), right_items.get(key)) {
+            (Some((left_optional, left_value)), Some((right_optional, right_value))) => {
+                // ConstantArrayType::isSuperTypeOf rejects disjoint shared values before dispatch,
+                // even for an optional field. Keep that public intersector boundary.
+                let value = intersect_union_types(left_value, right_value, codebase)?;
+                if value.is_never() {
+                    if *left_optional && *right_optional {
+                        continue;
+                    }
+                    return None;
+                }
+                (*left_optional && *right_optional, value)
+            }
+            (left, right) => {
+                let ((optional, value), other_tail) = match left {
+                    Some(item) => (item, &right_tail),
+                    None => (right?, &left_tail),
+                };
+                let other = other_tail.as_ref().filter(|(keys, _)| {
+                    intersect_union_types(&TUnion::from_atomic(key.to_atomic()), keys, codebase)
+                        .is_some_and(|key| !key.is_never())
+                });
+                let value = other.and_then(|(_, other)| intersect_union_types(value, other, codebase));
+                let Some(value) = value.filter(|value| !value.is_never()) else {
+                    if *optional {
+                        continue;
+                    }
+                    return None;
+                };
+                (*optional, value)
+            }
+        };
+        items.insert(*key, (optional, value));
+    }
+    let non_empty = left.is_non_empty() || right.is_non_empty() || items.values().any(|(optional, _)| !optional);
+    if non_empty && items.is_empty() && tail.is_none() {
+        return None;
+    }
+    let callable = match (left.callable(), right.callable()) {
+        (Some(left), Some(right)) => Some(intersect_atomic_types(left, right, codebase, intersection_performed)?),
+        (left, right) => left.or(right).cloned(),
+    };
+    let mut array = if matches!(left, TArray::List(_)) || matches!(right, TArray::List(_)) {
+        let elements = items
+            .into_iter()
+            .map(|(key, item)| Some((usize::try_from(key.get_integer()?).ok()?, item)))
+            .collect::<Option<BTreeMap<_, _>>>()?;
+        let mut list = TList::from_known_elements(elements);
+        if let Some((_, value)) = tail {
+            list.element_type = Arc::new(value);
+            list.known_count = None;
+        }
+        list.non_empty = non_empty;
+        TArray::List(list)
+    } else {
+        let mut array = TKeyedArray::new().with_non_empty(non_empty);
+        if !items.is_empty() {
+            array.known_items = Some(Arc::new(items));
+        }
+        if let Some((mut key, value)) = tail {
+            key.flags
+                .set(UnionFlags::CONSTANT_ARRAY_KEY, array.known_items.is_some());
+            array.parameters = Some((Arc::new(key), Arc::new(value)));
+        }
+        array.known_non_list = matches!(left, TArray::Keyed(array) if array.known_non_list)
+            || matches!(right, TArray::Keyed(array) if array.known_non_list);
+        TArray::Keyed(array)
+    };
+    if let Some(callable) = callable {
+        array.add_intersection_type(callable);
+    }
+    Some(TAtomic::Array(array))
+}
+
 /// This is the core logic used by `intersect_union_types`.
 fn intersect_atomic_types(
     type_1: &TAtomic,
@@ -1285,57 +1518,44 @@ fn intersect_atomic_types(
         return Some(TAtomic::Scalar(TScalar::Integer(intersected_int)));
     }
 
-    let t1_union = TUnion::from_atomic(type_1.clone());
-    let t2_union = TUnion::from_atomic(type_2.clone());
+    let narrower_type = if is_atomic_intersection_contained_by(type_2, type_1, codebase) {
+        Some(type_2)
+    } else if is_atomic_intersection_contained_by(type_1, type_2, codebase) {
+        Some(type_1)
+    } else {
+        None
+    };
 
-    let mut narrower_type = None;
-    let mut wider_type = None;
-
-    if union_comparator::is_contained_by(
-        codebase,
-        &t2_union,
-        &t1_union,
-        false,
-        false,
-        false,
-        &mut ComparisonResult::default(),
-    ) {
-        narrower_type = Some(type_2);
-        wider_type = Some(type_1);
-    } else if union_comparator::is_contained_by(
-        codebase,
-        &t1_union,
-        &t2_union,
-        false,
-        false,
-        false,
-        &mut ComparisonResult::default(),
-    ) {
-        narrower_type = Some(type_1);
-        wider_type = Some(type_2);
+    if let Some(narrower) = narrower_type {
+        *intersection_performed = true;
+        return Some(narrower.clone());
     }
 
-    if let (Some(narrower), Some(wider)) = (narrower_type, wider_type) {
+    if let (TAtomic::Scalar(TScalar::ClassLikeString(TClassLikeString::Any { kind: TClassLikeStringKind::Class })),
+        TAtomic::Scalar(TScalar::String(string)))
+        | (TAtomic::Scalar(TScalar::String(string)),
+        TAtomic::Scalar(TScalar::ClassLikeString(TClassLikeString::Any { kind: TClassLikeStringKind::Class }))) = (type_1, type_2)
+        && *string == TString::unspecified_literal(false)
+    {
         *intersection_performed = true;
-        let mut result = narrower.clone();
-
-        if narrower.can_be_intersected() && wider.can_be_intersected() {
-            let mut wider_clone = wider.clone();
-            if let Some(types) = wider_clone.get_intersection_types_mut() {
-                types.clear();
-            }
-
-            result.add_intersection_type(wider_clone);
-            if let Some(wider_intersections) = wider.get_intersection_types() {
-                for i_type in wider_intersections {
-                    result.add_intersection_type(i_type.clone());
-                }
-            }
-        }
-        return Some(result);
+        return Some(TAtomic::Scalar(TScalar::ClassLikeString(TClassLikeString::LiteralAny)));
     }
 
     if let (TAtomic::Array(left_array), TAtomic::Array(right_array)) = (type_1, type_2) {
+        if let (Some((left_items, left_tail)), Some((right_items, right_tail))) =
+            (constant_array_parts(left_array), constant_array_parts(right_array))
+        {
+            return intersect_constant_arrays(
+                left_array,
+                right_array,
+                left_items,
+                right_items,
+                left_tail,
+                right_tail,
+                codebase,
+                intersection_performed,
+            );
+        }
         let array_has_known_shape = |array: &TArray| match array {
             TArray::List(list) => list.known_elements.is_some(),
             TArray::Keyed(keyed) => keyed.known_items.is_some(),
@@ -1350,6 +1570,10 @@ fn intersect_atomic_types(
 
         let key = intersect_union_types(&left_key, &right_key, codebase).unwrap_or_else(get_never);
         let value = intersect_union_types(&left_value, &right_value, codebase).unwrap_or_else(get_never);
+        let callable = match (left_array.callable(), right_array.callable()) {
+            (Some(left), Some(right)) => Some(intersect_atomic_types(left, right, codebase, intersection_performed)?),
+            (left, right) => left.or(right).cloned(),
+        };
 
         let is_list = left_array.is_list() || right_array.is_list();
         let non_empty = left_array.is_non_empty() || right_array.is_non_empty();
@@ -1359,15 +1583,23 @@ fn intersect_atomic_types(
         }
 
         *intersection_performed = true;
-        let array = if is_list {
+        let mut array = if is_list {
             let mut list = TList::new(Arc::new(value));
             list.non_empty = non_empty;
             TArray::List(list)
         } else {
             TArray::Keyed(TKeyedArray::new_with_parameters(Arc::new(key), Arc::new(value)).with_non_empty(non_empty))
         };
+        if let Some(callable) = callable {
+            array.add_intersection_type(callable);
+        }
 
         return Some(TAtomic::Array(array));
+    }
+
+    // Concrete arrays accept callable constraints, not the object conjunctions below.
+    if type_1.is_array() || type_2.is_array() {
+        return None;
     }
 
     if let (TAtomic::Scalar(TScalar::String(s)), TAtomic::Scalar(TScalar::Numeric))
@@ -1378,28 +1610,7 @@ fn intersect_atomic_types(
     }
 
     if let (TAtomic::Scalar(TScalar::String(s1)), TAtomic::Scalar(TScalar::String(s2))) = (type_1, type_2) {
-        if let (Some(v1), Some(v2)) = (&s1.get_known_literal_value(), &s2.get_known_literal_value())
-            && v1 != v2
-        {
-            return None;
-        }
-
-        let combined = TAtomic::Scalar(TScalar::String(TString {
-            is_numeric: s1.is_numeric || s2.is_numeric,
-            is_truthy: s1.is_truthy || s2.is_truthy,
-            is_non_empty: s1.is_non_empty || s2.is_non_empty,
-            is_callable: false,
-            casing: match (s1.casing, s2.casing) {
-                (TStringCasing::Lowercase, TStringCasing::Lowercase) => TStringCasing::Lowercase,
-                (TStringCasing::Uppercase, TStringCasing::Uppercase) => TStringCasing::Uppercase,
-                _ => TStringCasing::Unspecified,
-            },
-            literal: if s1.is_literal_origin() && s2.is_literal_origin() {
-                Some(TStringLiteral::Unspecified)
-            } else {
-                None
-            },
-        }));
+        let combined = TAtomic::Scalar(TScalar::String(s1.intersect(s2)?));
         *intersection_performed = true;
         return Some(combined);
     }
@@ -1417,10 +1628,22 @@ fn intersect_atomic_types(
         }
 
         let mut result = type_1.clone();
-        result.add_intersection_type(type_2.clone());
-        if let Some(intersections) = type_2.get_intersection_types() {
-            for i in intersections {
-                result.add_intersection_type(i.clone());
+        let mut pending = vec![type_2.clone()];
+        if let TAtomic::Object(TObject::Named(object)) = &mut result
+            && let Some(parts) = object.intersection_types.take()
+        {
+            pending.extend(*parts);
+        }
+        let root = result.clone();
+        while let Some(mut part) = pending.pop() {
+            // Flatten ordinary object conjunctions, not template bounds or generic arguments.
+            if let TAtomic::Object(TObject::Named(object)) = &mut part
+                && let Some(parts) = object.intersection_types.take()
+            {
+                pending.extend(*parts);
+            }
+            if part != root && !result.get_intersection_types().is_some_and(|parts| parts.contains(&part)) {
+                result.add_intersection_type(part);
             }
         }
 
@@ -1589,6 +1812,9 @@ fn get_iterable_parameters_impl(
 
 #[must_use]
 pub fn get_array_parameters(array_type: &TArray, codebase: &CodebaseMetadata) -> (TUnion, TUnion) {
+    if let Some(view) = array_type.callable_array_view(codebase) {
+        return get_array_parameters(&TArray::Keyed(view), codebase);
+    }
     match array_type {
         TArray::Keyed(keyed_data) => {
             let mut key_types = vec![];
@@ -1697,6 +1923,9 @@ pub fn get_iterable_value_parameter(atomic: &TAtomic, codebase: &CodebaseMetadat
 
 #[must_use]
 pub fn get_array_value_parameter(array_type: &TArray, codebase: &CodebaseMetadata) -> TUnion {
+    if let Some(view) = array_type.callable_array_view(codebase) {
+        return get_array_value_parameter(&TArray::Keyed(view), codebase);
+    }
     match array_type {
         TArray::Keyed(keyed_data) => {
             let mut value_param;
@@ -1894,6 +2123,74 @@ mod tests {
     fn assert_exact(actual: &TUnion, expected: &TUnion) {
         assert_eq!(actual.types, expected.types);
         assert_eq!(actual.flags, expected.flags);
+    }
+
+    #[test]
+    fn array_intersections_preserve_callable_constraints_and_reject_objects() {
+        use super::TType;
+        use super::atomic::TAtomic;
+        use super::atomic::array::{TArray, keyed::TKeyedArray};
+        use std::sync::Arc;
+
+        let codebase = CodebaseMetadata::new();
+        let signature = super::get_mixed_callable().get_single().clone();
+        let mut callable =
+            TArray::Keyed(TKeyedArray::new_with_parameters(Arc::new(get_mixed()), Arc::new(get_mixed())));
+        callable.add_intersection_type(signature.clone());
+        let callable = TUnion::from_atomic(TAtomic::Array(callable));
+        let strings = get_list(get_string());
+        for (left, right) in [(&callable, &strings), (&strings, &callable)] {
+            let result = super::intersect_union_types(left, right, &codebase).unwrap();
+            let TAtomic::Array(array) = result.get_single() else { panic!("concrete array") };
+            assert_eq!(array.callable(), Some(&signature));
+            assert!(array.is_list());
+            assert_eq!(
+                super::get_array_value_parameter(array, &codebase),
+                TUnion::from_vec(vec![
+                    super::get_class_string().get_single().clone(),
+                    super::get_truthy_string().get_single().clone(),
+                ])
+            );
+        }
+        let object = super::get_named_object(mago_word::word("Example"), None);
+        for (left, right) in [(&callable, &object), (&object, &callable)] {
+            assert!(super::intersect_union_types(left, right, &codebase).is_none());
+        }
+    }
+
+    #[test]
+    fn intersecting_callable_arrays_checks_both_element_and_signature_constraints() {
+        use std::sync::Arc;
+        use super::TType;
+        use super::atomic::TAtomic;
+        use super::atomic::array::{TArray, keyed::TKeyedArray};
+        use super::atomic::callable::{TCallable, TCallableSignature, parameter::TCallableParameter};
+        use super::comparator::{ComparisonResult, atomic_comparator};
+
+        let codebase = CodebaseMetadata::new();
+        let signature = |argument| TAtomic::Callable(TCallable::Signature(
+            TCallableSignature::new(false, false)
+                .with_parameters(vec![TCallableParameter::new(Some(Arc::new(argument)), false, false, false)])
+                .with_return_type(Some(Arc::new(get_string()))),
+        ));
+        let array = |values, callable| {
+            let mut array = TArray::Keyed(TKeyedArray::new_with_parameters(Arc::new(get_mixed()), Arc::new(values)));
+            array.add_intersection_type(callable);
+            TAtomic::Array(array)
+        };
+        let argument = TUnion::from_vec(vec![get_int().get_single().clone(), get_string().get_single().clone()]);
+        let integers = array(get_string(), signature(get_int()));
+        let any = array(get_mixed(), signature(argument.clone()));
+        for (left, right) in [(&integers, &any), (&any, &integers)] {
+            assert!(!atomic_comparator::is_contained_by(&codebase, left, right, false, &mut ComparisonResult::new()));
+            let result = super::intersect_union_types(
+                &TUnion::from_atomic(left.clone()), &TUnion::from_atomic(right.clone()), &codebase,
+            ).unwrap();
+            let TAtomic::Array(result) = result.get_single() else { panic!("concrete array") };
+            assert_eq!(result.callable(), Some(&signature(argument.clone())));
+            assert!(result.callable_array_view(&codebase).unwrap().known_items.as_ref().unwrap()
+                .values().all(|(_, value)| !value.has_object_type()));
+        }
     }
 
     #[test]

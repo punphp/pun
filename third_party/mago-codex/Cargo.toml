@@ -89,6 +89,10 @@ version = "2.7.4"
 version = "5.0"
 default-features = false
 
+[dependencies.pun-tokens]
+package = "punphp-tokens"
+path = "../../crates/pun-tokens"
+
 [dependencies.rayon]
 version = "1.10.0"
 

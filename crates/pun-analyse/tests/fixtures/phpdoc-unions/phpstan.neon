@@ -1,0 +1,6 @@
+parameters:
+    level: 0
+    tmpDir: ../../../../../target/oracle-phpdoc-unions
+    paths: [flat.php, controls.php]
+    parallel:
+        maximumNumberOfProcesses: 1

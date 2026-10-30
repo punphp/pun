@@ -1,0 +1,289 @@
+{
+    "all": [
+        {
+            "file": "$ROOT/contracts.php",
+            "message": "Parameter #1 $changed (int) of method NamedProducerGates\\IncompatibleMethod::run() is not contravariant with parameter #1 $old (string) of method NamedProducerGates\\ParentMethod::run().",
+            "line": 19,
+            "ignorable": false,
+            "identifier": "method.childParameterType"
+        },
+        {
+            "file": "$ROOT/contracts.php",
+            "message": "Call to NamedProducerGates\\ParentMethod::run() uses named argument for parameter $old, but NamedProducerGates\\IncompatibleMethod renames it to $changed.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/contracts.php",
+            "message": "Call to NamedProducerGates\\ParentMethod::run() uses named argument for parameter $old, but NamedProducerGates\\RenamedMethod renames it to $new.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/contracts.php",
+            "message": "Call to NamedProducerGates\\ParentConstructor::__construct() uses named argument for parameter $initial, but NamedProducerGates\\RenamedConstructor renames it to $replacement.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/ignored.php",
+            "message": "Call to NamedProducerGates\\ParentMethod::run() uses named argument for parameter $old, but NamedProducerGates\\IncompatibleMethod renames it to $changed.",
+            "line": 10,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "no-calls": [
+        {
+            "file": "$ROOT/contracts.php",
+            "message": "Parameter #1 $changed (int) of method NamedProducerGates\\IncompatibleMethod::run() is not contravariant with parameter #1 $old (string) of method NamedProducerGates\\ParentMethod::run().",
+            "line": 19,
+            "ignorable": false,
+            "identifier": "method.childParameterType"
+        },
+        {
+            "file": "$ROOT/ignored.php",
+            "message": "No error with identifier argument.parameterRenamedInSubtype is reported on line 10.",
+            "line": 10,
+            "ignorable": false,
+            "identifier": "ignore.unmatchedIdentifier"
+        }
+    ],
+    "no-overrides": [
+        {
+            "file": "$ROOT/contracts.php",
+            "message": "Call to NamedProducerGates\\ParentConstructor::__construct() uses named argument for parameter $initial, but NamedProducerGates\\RenamedConstructor renames it to $replacement.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/ignored.php",
+            "message": "No error with identifier argument.parameterRenamedInSubtype is reported on line 10.",
+            "line": 10,
+            "ignorable": false,
+            "identifier": "ignore.unmatchedIdentifier"
+        }
+    ],
+    "no-constructors": [
+        {
+            "file": "$ROOT/contracts.php",
+            "message": "Parameter #1 $changed (int) of method NamedProducerGates\\IncompatibleMethod::run() is not contravariant with parameter #1 $old (string) of method NamedProducerGates\\ParentMethod::run().",
+            "line": 19,
+            "ignorable": false,
+            "identifier": "method.childParameterType"
+        },
+        {
+            "file": "$ROOT/contracts.php",
+            "message": "Call to NamedProducerGates\\ParentMethod::run() uses named argument for parameter $old, but NamedProducerGates\\IncompatibleMethod renames it to $changed.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/contracts.php",
+            "message": "Call to NamedProducerGates\\ParentMethod::run() uses named argument for parameter $old, but NamedProducerGates\\RenamedMethod renames it to $new.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/ignored.php",
+            "message": "Call to NamedProducerGates\\ParentMethod::run() uses named argument for parameter $old, but NamedProducerGates\\IncompatibleMethod renames it to $changed.",
+            "line": 10,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "no-join": [
+        {
+            "file": "$ROOT/contracts.php",
+            "message": "Parameter #1 $changed (int) of method NamedProducerGates\\IncompatibleMethod::run() is not contravariant with parameter #1 $old (string) of method NamedProducerGates\\ParentMethod::run().",
+            "line": 19,
+            "ignorable": false,
+            "identifier": "method.childParameterType"
+        },
+        {
+            "file": "$ROOT/ignored.php",
+            "message": "No error with identifier argument.parameterRenamedInSubtype is reported on line 10.",
+            "line": 10,
+            "ignorable": false,
+            "identifier": "ignore.unmatchedIdentifier"
+        }
+    ],
+    "boundaries-all": [
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to an undefined method NamedProducerBoundaries\\ChildClass::missing().",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to an undefined method NamedProducerBoundaries\\ParentClass::missing().",
+            "line": 32,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to an undefined method NamedProducerBoundaries\\ParentClass::missing().",
+            "line": 33,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Method name for NamedProducerBoundaries\\ParentClass must be a string, but 123 was given.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "method.nameNotString"
+        }
+    ],
+    "boundaries-no-calls": [],
+    "boundaries-no-overrides": [
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to an undefined method NamedProducerBoundaries\\ChildClass::missing().",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to an undefined method NamedProducerBoundaries\\ParentClass::missing().",
+            "line": 32,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to an undefined method NamedProducerBoundaries\\ParentClass::missing().",
+            "line": 33,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Method name for NamedProducerBoundaries\\ParentClass must be a string, but 123 was given.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "method.nameNotString"
+        }
+    ],
+    "boundaries-no-constructors": [
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to an undefined method NamedProducerBoundaries\\ChildClass::missing().",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to an undefined method NamedProducerBoundaries\\ParentClass::missing().",
+            "line": 32,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to an undefined method NamedProducerBoundaries\\ParentClass::missing().",
+            "line": 33,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Method name for NamedProducerBoundaries\\ParentClass must be a string, but 123 was given.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "method.nameNotString"
+        }
+    ],
+    "boundaries-no-join": [
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to an undefined method NamedProducerBoundaries\\ChildClass::missing().",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to an undefined method NamedProducerBoundaries\\ParentClass::missing().",
+            "line": 32,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to an undefined method NamedProducerBoundaries\\ParentClass::missing().",
+            "line": 33,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Method name for NamedProducerBoundaries\\ParentClass must be a string, but 123 was given.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "method.nameNotString"
+        }
+    ],
+    "constructor-all": [
+        {
+            "file": "$ROOT/constructor-only.php",
+            "message": "Parameter #1 $replacement (int) of method NamedProducerConstructor\\ChildClass::__construct() is not contravariant with parameter #1 $initial (string) of method NamedProducerConstructor\\ParentClass::__construct().",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "method.childParameterType"
+        },
+        {
+            "file": "$ROOT/constructor-only.php",
+            "message": "Call to NamedProducerConstructor\\ParentClass::__construct() uses named argument for parameter $initial, but NamedProducerConstructor\\ChildClass renames it to $replacement.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "constructor-no-calls": [
+        {
+            "file": "$ROOT/constructor-only.php",
+            "message": "Parameter #1 $replacement (int) of method NamedProducerConstructor\\ChildClass::__construct() is not contravariant with parameter #1 $initial (string) of method NamedProducerConstructor\\ParentClass::__construct().",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "method.childParameterType"
+        }
+    ],
+    "constructor-no-overrides": [
+        {
+            "file": "$ROOT/constructor-only.php",
+            "message": "Parameter #1 $replacement (int) of method NamedProducerConstructor\\ChildClass::__construct() is not contravariant with parameter #1 $initial (string) of method NamedProducerConstructor\\ParentClass::__construct().",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "method.childParameterType"
+        },
+        {
+            "file": "$ROOT/constructor-only.php",
+            "message": "Call to NamedProducerConstructor\\ParentClass::__construct() uses named argument for parameter $initial, but NamedProducerConstructor\\ChildClass renames it to $replacement.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "constructor-no-constructors": [],
+    "constructor-no-join": [
+        {
+            "file": "$ROOT/constructor-only.php",
+            "message": "Parameter #1 $replacement (int) of method NamedProducerConstructor\\ChildClass::__construct() is not contravariant with parameter #1 $initial (string) of method NamedProducerConstructor\\ParentClass::__construct().",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "method.childParameterType"
+        }
+    ]
+}

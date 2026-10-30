@@ -1,0 +1,747 @@
+{
+    "analysed": {
+        "errors": [
+            {
+                "file": "mixed-brace-first.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Cannot mix bracketed namespace declarations with unbracketed namespace declarations on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "mixed-header-close-tag.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Cannot mix bracketed namespace declarations with unbracketed namespace declarations on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "mixed-later-keyword.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "Cannot mix bracketed namespace declarations with unbracketed namespace declarations on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "mixed-placement-and-outside.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declaration statement has to be the very first statement in the script on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "mixed-placement-and-outside.php",
+                "line": 5,
+                "identifier": "phpstan.parse",
+                "message": "Cannot mix bracketed namespace declarations with unbracketed namespace declarations on line 5",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "mixed-semicolon-first.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Cannot mix bracketed namespace declarations with unbracketed namespace declarations on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "mixed-suppresses-outside.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "Cannot mix bracketed namespace declarations with unbracketed namespace declarations on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "outside-attribute-arrow.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "No code may exist outside of namespace {} on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "outside-attribute-class.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "No code may exist outside of namespace {} on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "outside-attribute-closure.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "No code may exist outside of namespace {} on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "outside-attribute-constant.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "No code may exist outside of namespace {} on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "outside-attribute-enum.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "No code may exist outside of namespace {} on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "outside-attribute-function.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "No code may exist outside of namespace {} on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "outside-attribute-interface.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "No code may exist outside of namespace {} on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "outside-attribute-trait.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "No code may exist outside of namespace {} on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "outside-before-halt.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "No code may exist outside of namespace {} on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "outside-carriage-return-text.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "No code may exist outside of namespace {} on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "outside-comment-nops.php",
+                "line": 5,
+                "identifier": "phpstan.parse",
+                "message": "No code may exist outside of namespace {} on line 5",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "outside-declare.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "No code may exist outside of namespace {} on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "outside-earlier-name.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "No code may exist outside of namespace {} on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "outside-inline.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "No code may exist outside of namespace {} on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "outside-later-name.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "No code may exist outside of namespace {} on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "outside-once.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "No code may exist outside of namespace {} on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "outside-shebang.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "No code may exist outside of namespace {} on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "outside-two-newlines.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "No code may exist outside of namespace {} on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "outside-use.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "No code may exist outside of namespace {} on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "placement-and-outside.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declaration statement has to be the very first statement in the script on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "placement-and-outside.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "No code may exist outside of namespace {} on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "placement-brace.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declaration statement has to be the very first statement in the script on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "placement-inline.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declaration statement has to be the very first statement in the script on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "placement-keyword-line.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declaration statement has to be the very first statement in the script on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "placement-leading-space.php",
+                "line": 1,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declaration statement has to be the very first statement in the script on line 1",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "placement-mixed-crlf.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declaration statement has to be the very first statement in the script on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "placement-once.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declaration statement has to be the very first statement in the script on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "placement-only-cr.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declaration statement has to be the very first statement in the script on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "placement-retained-close-nop.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declaration statement has to be the very first statement in the script on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "placement-retained-nop-then-bare-nop.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declaration statement has to be the very first statement in the script on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "placement-retained-semicolon-nop.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declaration statement has to be the very first statement in the script on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "placement-semicolon.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declaration statement has to be the very first statement in the script on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "placement-shebang-extra-line.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declaration statement has to be the very first statement in the script on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "placement-shebang-extra-text.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declaration statement has to be the very first statement in the script on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "placement-shebang-no-newline.php",
+                "line": 1,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declaration statement has to be the very first statement in the script on line 1",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "placement-shebang-not-first.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declaration statement has to be the very first statement in the script on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "placement-space-after-close.php",
+                "line": 1,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declaration statement has to be the very first statement in the script on line 1",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "placement-two-newlines.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declaration statement has to be the very first statement in the script on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "positive-no-namespace.php",
+                "line": 2,
+                "identifier": "function.notFound",
+                "message": "Function missing_namespace_post_control not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            }
+        ],
+        "general": []
+    },
+    "scanned": {
+        "placement": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "mixed": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "outside": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "comment-nop-shebang": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "positive-braced": {
+            "errors": [],
+            "general": []
+        },
+        "positive-tags": {
+            "errors": [],
+            "general": []
+        },
+        "positive-shebang": {
+            "errors": [],
+            "general": []
+        },
+        "positive-halt": {
+            "errors": [],
+            "general": []
+        }
+    },
+    "order": {
+        "placement-and-outside": {
+            "errors": [
+                {
+                    "file": "order.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "void cannot be used as a parameter type on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Namespace declaration statement has to be the very first statement in the script on line 3",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 4,
+                    "identifier": "phpstan.parse",
+                    "message": "Namespace declarations cannot be nested on line 4",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 5,
+                    "identifier": "phpstan.parse",
+                    "message": "void cannot be used as a parameter type on line 5",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 8,
+                    "identifier": "phpstan.parse",
+                    "message": "No code may exist outside of namespace {} on line 8",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 8,
+                    "identifier": "phpstan.parse",
+                    "message": "void cannot be used as a parameter type on line 8",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"void cannot be used as a parameter type on line 2\" cannot be ignored, use excludePaths instead.",
+                "Error message \"void cannot be used as a parameter type on line 5\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Namespace declarations cannot be nested on line 4\" cannot be ignored, use excludePaths instead.",
+                "Error message \"void cannot be used as a parameter type on line 8\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Namespace declaration statement has to be the very first statement in the script on line 3\" cannot be ignored, use excludePaths instead.",
+                "Error message \"No code may exist outside of namespace {} on line 8\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "mixed-suppression": {
+            "errors": [
+                {
+                    "file": "order.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "void cannot be used as a parameter type on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Namespace declaration statement has to be the very first statement in the script on line 3",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 4,
+                    "identifier": "phpstan.parse",
+                    "message": "Namespace declarations cannot be nested on line 4",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 6,
+                    "identifier": "phpstan.parse",
+                    "message": "void cannot be used as a parameter type on line 6",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 7,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot mix bracketed namespace declarations with unbracketed namespace declarations on line 7",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 8,
+                    "identifier": "phpstan.parse",
+                    "message": "void cannot be used as a parameter type on line 8",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"void cannot be used as a parameter type on line 2\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Namespace declarations cannot be nested on line 4\" cannot be ignored, use excludePaths instead.",
+                "Error message \"void cannot be used as a parameter type on line 6\" cannot be ignored, use excludePaths instead.",
+                "Error message \"void cannot be used as a parameter type on line 8\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Namespace declaration statement has to be the very first statement in the script on line 3\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Cannot mix bracketed namespace declarations with unbracketed namespace declarations on line 7\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "outside-attributed-values": {
+            "errors": [
+                {
+                    "file": "order.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot use attributes on multiple constants at once on line 3",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "No code may exist outside of namespace {} on line 3",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 4,
+                    "identifier": "phpstan.parse",
+                    "message": "void cannot be used as a parameter type on line 4",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 6,
+                    "identifier": "phpstan.parse",
+                    "message": "void cannot be used as a parameter type on line 6",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"void cannot be used as a parameter type on line 4\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Cannot use attributes on multiple constants at once on line 3\" cannot be ignored, use excludePaths instead.",
+                "Error message \"void cannot be used as a parameter type on line 6\" cannot be ignored, use excludePaths instead.",
+                "Error message \"No code may exist outside of namespace {} on line 3\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "body-before-postprocessing": {
+            "errors": [
+                {
+                    "file": "order.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot use try without catch or finally on line 3",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Namespace declaration statement has to be the very first statement in the script on line 3",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 4,
+                    "identifier": "phpstan.parse",
+                    "message": "No code may exist outside of namespace {} on line 4",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "order.php",
+                    "line": 5,
+                    "identifier": "phpstan.parse",
+                    "message": "void cannot be used as a parameter type on line 5",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Cannot use try without catch or finally on line 3\" cannot be ignored, use excludePaths instead.",
+                "Error message \"void cannot be used as a parameter type on line 5\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Namespace declaration statement has to be the very first statement in the script on line 3\" cannot be ignored, use excludePaths instead.",
+                "Error message \"No code may exist outside of namespace {} on line 4\" cannot be ignored, use excludePaths instead."
+            ]
+        }
+    }
+}

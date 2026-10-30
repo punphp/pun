@@ -1,0 +1,501 @@
+{
+    "phar_sha256": "85157dba3d95d77ca603d2b7303aa78a538f9e3b56ccad07dd794c53aa96d1ae",
+    "source_sha256": "cd8ef73651400e468dbb34d29b34b7da2feb904eb12589c72090a4c90faf2eb7",
+    "observations": [
+        {
+            "file": "calls.php",
+            "start": 122,
+            "end": 128,
+            "line": 8,
+            "expression": "$value",
+            "supported": true,
+            "native": "int"
+        },
+        {
+            "file": "calls.php",
+            "start": 145,
+            "end": 161,
+            "line": 9,
+            "expression": "var_dump($value)",
+            "supported": false,
+            "native": "void"
+        },
+        {
+            "file": "calls.php",
+            "start": 219,
+            "end": 225,
+            "line": 11,
+            "expression": "$value",
+            "supported": true,
+            "native": "int"
+        },
+        {
+            "file": "calls.php",
+            "start": 242,
+            "end": 265,
+            "line": 12,
+            "expression": "printf('%d', $value, 2)",
+            "supported": false,
+            "native": "int"
+        },
+        {
+            "file": "calls.php",
+            "start": 286,
+            "end": 292,
+            "line": 13,
+            "expression": "$value",
+            "supported": true,
+            "native": "int"
+        },
+        {
+            "file": "calls.php",
+            "start": 309,
+            "end": 324,
+            "line": 14,
+            "expression": "strlen('hello')",
+            "supported": false,
+            "native": "int<0, max>"
+        },
+        {
+            "file": "calls.php",
+            "start": 345,
+            "end": 351,
+            "line": 15,
+            "expression": "$value",
+            "supported": true,
+            "native": "int"
+        },
+        {
+            "file": "calls.php",
+            "start": 368,
+            "end": 386,
+            "line": 16,
+            "expression": "(var_dump($value))",
+            "supported": false,
+            "native": "void"
+        },
+        {
+            "file": "calls.php",
+            "start": 407,
+            "end": 413,
+            "line": 17,
+            "expression": "$value",
+            "supported": true,
+            "native": "int"
+        },
+        {
+            "file": "calls.php",
+            "start": 430,
+            "end": 458,
+            "line": 18,
+            "expression": "var_dump($value = 7, $value)",
+            "supported": false,
+            "native": "void"
+        },
+        {
+            "file": "calls.php",
+            "start": 479,
+            "end": 485,
+            "line": 19,
+            "expression": "$value",
+            "supported": true,
+            "native": "7"
+        },
+        {
+            "file": "calls.php",
+            "start": 692,
+            "end": 711,
+            "line": 28,
+            "expression": "variadic($value, 4)",
+            "supported": false,
+            "native": "array"
+        },
+        {
+            "file": "calls.php",
+            "start": 732,
+            "end": 738,
+            "line": 29,
+            "expression": "$value",
+            "supported": true,
+            "native": "int"
+        },
+        {
+            "file": "calls.php",
+            "start": 755,
+            "end": 771,
+            "line": 30,
+            "expression": "returningArray()",
+            "supported": false,
+            "native": "array"
+        },
+        {
+            "file": "calls.php",
+            "start": 792,
+            "end": 798,
+            "line": 31,
+            "expression": "$value",
+            "supported": true,
+            "native": "int"
+        },
+        {
+            "file": "calls.php",
+            "start": 815,
+            "end": 829,
+            "line": 32,
+            "expression": "noReturnHint()",
+            "supported": true,
+            "native": "mixed"
+        },
+        {
+            "file": "calls.php",
+            "start": 846,
+            "end": 852,
+            "line": 33,
+            "expression": "$value",
+            "supported": true,
+            "native": "int"
+        },
+        {
+            "file": "calls.php",
+            "start": 916,
+            "end": 942,
+            "line": 38,
+            "expression": "$result = var_dump($value)",
+            "supported": false,
+            "native": "void"
+        },
+        {
+            "file": "calls.php",
+            "start": 963,
+            "end": 969,
+            "line": 39,
+            "expression": "$value",
+            "supported": false,
+            "native": "int"
+        },
+        {
+            "file": "calls.php",
+            "start": 1031,
+            "end": 1050,
+            "line": 44,
+            "expression": "var_dump(...[1, 2])",
+            "supported": false,
+            "native": "void"
+        },
+        {
+            "file": "calls.php",
+            "start": 1071,
+            "end": 1077,
+            "line": 45,
+            "expression": "$value",
+            "supported": false,
+            "native": "int"
+        },
+        {
+            "file": "calls.php",
+            "start": 1136,
+            "end": 1159,
+            "line": 50,
+            "expression": "var_dump(value: $value)",
+            "supported": false,
+            "native": "void"
+        },
+        {
+            "file": "calls.php",
+            "start": 1180,
+            "end": 1186,
+            "line": 51,
+            "expression": "$value",
+            "supported": false,
+            "native": "int"
+        },
+        {
+            "file": "calls.php",
+            "start": 1263,
+            "end": 1281,
+            "line": 56,
+            "expression": "var_dump($unknown)",
+            "supported": false,
+            "native": "void"
+        },
+        {
+            "file": "calls.php",
+            "start": 1302,
+            "end": 1308,
+            "line": 57,
+            "expression": "$value",
+            "supported": false,
+            "native": "int"
+        },
+        {
+            "file": "calls.php",
+            "start": 1423,
+            "end": 1437,
+            "line": 63,
+            "expression": "var_dump($box)",
+            "supported": false,
+            "native": "void"
+        },
+        {
+            "file": "calls.php",
+            "start": 1458,
+            "end": 1464,
+            "line": 64,
+            "expression": "$value",
+            "supported": false,
+            "native": "int"
+        },
+        {
+            "file": "calls.php",
+            "start": 1595,
+            "end": 1612,
+            "line": 70,
+            "expression": "reference($value)",
+            "supported": false,
+            "native": "array"
+        },
+        {
+            "file": "calls.php",
+            "start": 1633,
+            "end": 1639,
+            "line": 71,
+            "expression": "$value",
+            "supported": false,
+            "native": "int"
+        },
+        {
+            "file": "calls.php",
+            "start": 1782,
+            "end": 1791,
+            "line": 77,
+            "expression": "globals()",
+            "supported": false,
+            "native": "array"
+        },
+        {
+            "file": "calls.php",
+            "start": 1812,
+            "end": 1818,
+            "line": 78,
+            "expression": "$value",
+            "supported": false,
+            "native": "int"
+        },
+        {
+            "file": "calls.php",
+            "start": 1886,
+            "end": 1915,
+            "line": 83,
+            "expression": "file_get_contents('file.txt')",
+            "supported": false,
+            "native": "string|false"
+        },
+        {
+            "file": "calls.php",
+            "start": 1936,
+            "end": 1942,
+            "line": 84,
+            "expression": "$value",
+            "supported": false,
+            "native": "int"
+        },
+        {
+            "file": "calls.php",
+            "start": 2004,
+            "end": 2028,
+            "line": 89,
+            "expression": "array_map('intval', [1])",
+            "supported": false,
+            "native": "array"
+        },
+        {
+            "file": "calls.php",
+            "start": 2049,
+            "end": 2055,
+            "line": 90,
+            "expression": "$value",
+            "supported": false,
+            "native": "int"
+        },
+        {
+            "file": "calls.php",
+            "start": 2116,
+            "end": 2125,
+            "line": 95,
+            "expression": "missing()",
+            "supported": false,
+            "native": "*ERROR*"
+        },
+        {
+            "file": "calls.php",
+            "start": 2146,
+            "end": 2152,
+            "line": 96,
+            "expression": "$value",
+            "supported": false,
+            "native": "int"
+        },
+        {
+            "file": "calls.php",
+            "start": 2231,
+            "end": 2243,
+            "line": 101,
+            "expression": "$function(1)",
+            "supported": false,
+            "native": "mixed"
+        },
+        {
+            "file": "calls.php",
+            "start": 2264,
+            "end": 2270,
+            "line": 102,
+            "expression": "$value",
+            "supported": false,
+            "native": "int"
+        },
+        {
+            "file": "calls.php",
+            "start": 2423,
+            "end": 2440,
+            "line": 109,
+            "expression": "assertion($value)",
+            "supported": false,
+            "native": "array"
+        },
+        {
+            "file": "calls.php",
+            "start": 2461,
+            "end": 2467,
+            "line": 110,
+            "expression": "$value",
+            "supported": false,
+            "native": "int"
+        },
+        {
+            "file": "calls.php",
+            "start": 2535,
+            "end": 2562,
+            "line": 115,
+            "expression": "call_user_func('intval', 1)",
+            "supported": false,
+            "native": "mixed"
+        },
+        {
+            "file": "calls.php",
+            "start": 2583,
+            "end": 2589,
+            "line": 116,
+            "expression": "$value",
+            "supported": false,
+            "native": "int"
+        },
+        {
+            "file": "calls.php",
+            "start": 2661,
+            "end": 2683,
+            "line": 121,
+            "expression": "fopen('file.txt', 'r')",
+            "supported": false,
+            "native": "resource|false"
+        },
+        {
+            "file": "calls.php",
+            "start": 2704,
+            "end": 2710,
+            "line": 122,
+            "expression": "$value",
+            "supported": false,
+            "native": "int"
+        },
+        {
+            "file": "calls.php",
+            "start": 2780,
+            "end": 2794,
+            "line": 127,
+            "expression": "assert($value)",
+            "supported": false,
+            "native": "bool"
+        },
+        {
+            "file": "calls.php",
+            "start": 2815,
+            "end": 2821,
+            "line": 128,
+            "expression": "$value",
+            "supported": false,
+            "native": "int<min, -1>|int<1, max>"
+        },
+        {
+            "file": "calls.php",
+            "start": 2894,
+            "end": 2913,
+            "line": 133,
+            "expression": "var_dump(missing())",
+            "supported": false,
+            "native": "void"
+        },
+        {
+            "file": "calls.php",
+            "start": 2934,
+            "end": 2940,
+            "line": 134,
+            "expression": "$value",
+            "supported": false,
+            "native": "int"
+        },
+        {
+            "file": "calls.php",
+            "start": 3049,
+            "end": 3067,
+            "line": 140,
+            "expression": "var_dump($unknown)",
+            "supported": false,
+            "native": "void"
+        },
+        {
+            "file": "calls.php",
+            "start": 3088,
+            "end": 3094,
+            "line": 141,
+            "expression": "$value",
+            "supported": false,
+            "native": "int"
+        },
+        {
+            "file": "calls.php",
+            "start": 3161,
+            "end": 3177,
+            "line": 146,
+            "expression": "var_dump([1, 2])",
+            "supported": false,
+            "native": "void"
+        },
+        {
+            "file": "calls.php",
+            "start": 3198,
+            "end": 3204,
+            "line": 147,
+            "expression": "$value",
+            "supported": false,
+            "native": "int"
+        },
+        {
+            "file": "calls.php",
+            "start": 3269,
+            "end": 3292,
+            "line": 152,
+            "expression": "strlen($value = 'text')",
+            "supported": false,
+            "native": "int<0, max>"
+        },
+        {
+            "file": "calls.php",
+            "start": 3313,
+            "end": 3319,
+            "line": 153,
+            "expression": "$value",
+            "supported": true,
+            "native": "'text'"
+        }
+    ]
+}

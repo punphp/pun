@@ -1,0 +1,408 @@
+[
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: array{m: 'bar', v: 's'}|array{m: 'foo', v: 1}",
+        "line": 8,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: 1",
+        "line": 10,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: array{1}",
+        "line": 11,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: 's'",
+        "line": 13,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: array{'s'}",
+        "line": 14,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: array{m: 'bar', v: 's'}|array{m: 'foo', v: 1}",
+        "line": 22,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: 1",
+        "line": 24,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: array{1}",
+        "line": 25,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: 's'",
+        "line": 27,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: array{'s'}",
+        "line": 28,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: array{m: 'bar'|'foo', v: 1}",
+        "line": 36,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: 1",
+        "line": 38,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: array{1}",
+        "line": 39,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: 1",
+        "line": 41,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: array{1}",
+        "line": 42,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: array{m: 'bar'|'foo', v: 1}",
+        "line": 50,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: 1",
+        "line": 52,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: array{1}",
+        "line": 53,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: 1",
+        "line": 55,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: array{1}",
+        "line": 56,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: array{m: 'bar'}|array{m: 'foo'}",
+        "line": 64,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: 'foo'",
+        "line": 66,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: array{'foo'}",
+        "line": 67,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: 'bar'",
+        "line": 69,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: array{'bar'}",
+        "line": 70,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: array{m: 'bar'}|array{m: 'foo'}",
+        "line": 78,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: 'foo'",
+        "line": 80,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: array{'foo'}",
+        "line": 81,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: 'bar'",
+        "line": 83,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: array{'bar'}",
+        "line": 84,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: array{m: 'bar'|'foo', v: 1|'s'}",
+        "line": 93,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: 1|'s'",
+        "line": 95,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: array{1|'s'}",
+        "line": 96,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: 1|'s'",
+        "line": 98,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: array{1|'s'}",
+        "line": 99,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: array{m: 'bar'|'foo', v: 1|'s'}",
+        "line": 108,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: 1|'s'",
+        "line": 110,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: array{1|'s'}",
+        "line": 111,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: 1|'s'",
+        "line": 113,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: array{1|'s'}",
+        "line": 114,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: array{extra: true, m: 'foo', v: 1}|array{m: 'bar', v: 's'}",
+        "line": 122,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: 1",
+        "line": 124,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: array{1}",
+        "line": 125,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: 's'",
+        "line": 127,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: array{'s'}",
+        "line": 128,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: array{extra: true, m: 'foo', v: 1}|array{m: 'bar', v: 's'}",
+        "line": 136,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: 1",
+        "line": 138,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: array{1}",
+        "line": 139,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: 's'",
+        "line": 141,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: array{'s'}",
+        "line": 142,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: array{m: 'foo', v: 1}",
+        "line": 150,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: 1",
+        "line": 151,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: 1|'s'",
+        "line": 158,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: 1",
+        "line": 160,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: 's'",
+        "line": 162,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: 1|'s'",
+        "line": 170,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: 1",
+        "line": 172,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    },
+    {
+        "file": "$ROOT/matrix.php",
+        "message": "Dumped type: 's'",
+        "line": 174,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+    }
+]

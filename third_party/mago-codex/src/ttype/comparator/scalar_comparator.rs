@@ -69,6 +69,18 @@ pub fn is_contained_by(
                 return false;
             }
 
+            if c.decimal_integer.is_some_and(|expected| i.is_decimal_integer() != Some(expected)) {
+                return false;
+            }
+
+            // A decimal accessory implies non-emptiness but is not the explicit non-empty
+            // conjunct required by IntersectionType::isSubTypeOf(). Non-falsy also proves it.
+            if c.decimal_integer.is_some() && c.has_non_empty_accessory()
+                && !i.has_non_empty_accessory() && !i.is_truthy()
+            {
+                return false;
+            }
+
             if c.is_non_empty() && !i.is_non_empty() {
                 return false;
             }
@@ -77,6 +89,7 @@ pub fn is_contained_by(
                 TStringCasing::Lowercase => !i.is_lowercase(),
                 TStringCasing::Uppercase => !i.is_uppercase(),
                 TStringCasing::Unspecified => false,
+                TStringCasing::Both => !i.is_lowercase() || !i.is_uppercase(),
             };
 
             if !i.is_empty() && casing_mismatch {
@@ -104,13 +117,18 @@ pub fn is_contained_by(
                         TStringCasing::Lowercase => value.as_bytes().iter().all(|byte| !byte.is_ascii_uppercase()),
                         TStringCasing::Uppercase => value.as_bytes().iter().all(|byte| !byte.is_ascii_lowercase()),
                         TStringCasing::Unspecified => true,
+                        TStringCasing::Both => value.as_bytes().iter().all(|byte| !byte.is_ascii_alphabetic()),
                     }
             });
         }
-        (TAtomic::Scalar(TScalar::String(c)), TAtomic::Scalar(TScalar::ClassLikeString(_)))
-            if !c.is_literal_origin() && !c.is_numeric =>
+        (TAtomic::Scalar(TScalar::String(c)), TAtomic::Scalar(TScalar::ClassLikeString(i)))
+            if (!c.is_literal_origin() || (c.is_unspecified_literal() && input_type_part.is_string_of_literal_origin()))
+                && !c.is_numeric =>
         {
-            return true;
+            return c.casing.is_unspecified()
+                || i.literal_value().is_some_and(|value| {
+                    c.casing.join(TStringCasing::from_bytes(value.as_bytes())) == c.casing
+                });
         }
         (TAtomic::Scalar(TScalar::ClassLikeString(container_class_string)), TAtomic::Scalar(input_scalar)) => {
             return class_string_comparator::is_contained_by(

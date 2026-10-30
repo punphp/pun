@@ -25,27 +25,35 @@ use mago_reporting::Issue;
 use mago_span::HasSpan;
 use mago_span::Span;
 use mago_syntax::cst::Access;
-use mago_syntax::cst::Array;
 use mago_syntax::cst::ArrayElement;
 use mago_syntax::cst::Assignment;
 use mago_syntax::cst::AssignmentOperator;
 use mago_syntax::cst::Binary;
 use mago_syntax::cst::BinaryOperator;
+use mago_syntax::cst::Call;
+use mago_syntax::cst::ClassLikeMemberSelector;
+use mago_syntax::cst::Construct;
 use mago_syntax::cst::Expression;
-use mago_syntax::cst::List;
+use mago_syntax::cst::Literal;
+use mago_syntax::cst::LocalIdentifier;
+use mago_syntax::cst::StringPart;
 use mago_syntax::cst::UnaryPrefix;
 use mago_syntax::cst::UnaryPrefixOperator;
 use mago_syntax::cst::Variable;
+use mago_syntax::walker::MutWalker;
 use mago_word::Word;
 use mago_word::WordSet;
+use mago_word::word;
 
 use crate::analyzable::Analyzable;
 use crate::artifacts::AnalysisArtifacts;
 use crate::artifacts::CheckpointAction;
+use crate::artifacts::ExpressionResult;
 use crate::code::IssueCode;
 use crate::context::Context;
 use crate::context::block::BlockContext;
 use crate::context::block::ReferenceConstraintSource;
+use crate::context::block::VariableState;
 use crate::context::scope::var_has_root;
 use crate::context::scope::var_references_dynamic;
 use crate::error::AnalysisError;
@@ -59,6 +67,7 @@ use crate::utils::expression::get_block_expression_id;
 use crate::utils::expression::get_non_nullsafe_expression_id;
 use crate::utils::expression::get_nullsafe_base_expressions;
 use crate::utils::expression::get_root_expression_id;
+use crate::utils::expression::variable::get_variables_referenced_in_expression;
 use crate::utils::misc::unwrap_expression;
 
 pub(crate) mod array_assignment;
@@ -102,6 +111,47 @@ pub fn analyze_assignment<'ctx, 'ast, 'arena, A>(
     artifacts: &mut AnalysisArtifacts,
     assignment_span: Option<Span>,
     target_expression: &'ast Expression<'arena>,
+    assignment_operator: Option<&AssignmentOperator>,
+    source_expression: Option<&'ast Expression<'arena>>,
+    source_type: Option<TUnion>,
+) -> Result<(), AnalysisError>
+where
+    A: Arena,
+{
+    let read_target = assignment_operator.is_some_and(|operator| !matches!(operator, AssignmentOperator::Assign(_)));
+    let operands = analyze_assignment_target(target_expression, context, block_context, artifacts, read_target)?;
+    crate::observations::with_prepared_operands(context, &operands, |context| {
+        analyze_prepared_assignment(
+            context,
+            block_context,
+            artifacts,
+            assignment_span,
+            target_expression,
+            assignment_operator,
+            source_expression,
+            source_type,
+        )
+    })?;
+    if read_target {
+        // PHPStan 2.3.1 AssignHandler::applyWrite updates the scope holder, not the prepared
+        // operand results in storage. Keep the actual completed reads here too:
+        // array_assignment uses these same artifact slots for its write chain.
+        for (span, result) in operands {
+            match result {
+                Some(result) => artifacts.set_expression_result(&span, result),
+                None => artifacts.remove_expression_type(&(span.start.offset, span.end.offset)),
+            }
+        }
+    }
+    Ok(())
+}
+
+fn analyze_prepared_assignment<'ctx, 'ast, 'arena, A>(
+    context: &mut Context<'ctx, 'arena, A>,
+    block_context: &mut BlockContext<'ctx>,
+    artifacts: &mut AnalysisArtifacts,
+    assignment_span: Option<Span>,
+    target_expression: &'ast Expression<'arena>,
     mut assignment_operator: Option<&AssignmentOperator>,
     source_expression: Option<&'ast Expression<'arena>>,
     source_type: Option<TUnion>,
@@ -113,9 +163,19 @@ where
         assignment_operator = None;
     }
 
-    analyze_assignment_target(target_expression, context, block_context, artifacts)?;
-
     let target_variable_id = get_block_expression_id(target_expression, context, block_context);
+    let mut reads: Vec<_> = if assignment_operator.is_none()
+        && matches!(target_expression, Expression::Variable(Variable::Direct(_)))
+        && context.raw_callback_gather_depth == 0
+        && let Some(source) = source_expression
+    {
+        get_variables_referenced_in_expression(source, false).into_iter().collect()
+    } else {
+        Vec::new()
+    };
+    // NodeFinder visits occurrences in source order, not VariableScanner's hash order.
+    reads.sort_by_key(|(_, span)| span.start.offset);
+    let before_assignment = if reads.is_empty() { None } else { block_context.assignment_condition_scope() };
     let mut existing_target_type = None;
     if let Some(target_variable_id) = &target_variable_id {
         block_context.conditionally_referenced_variable_ids.remove(target_variable_id);
@@ -135,6 +195,7 @@ where
     }
 
     let mut assignment_operation_type = None;
+    let mut assignment_operation_native_type = None;
     if let Some(source_expression) = source_expression {
         let was_inside_general_use = block_context.flags.inside_general_use();
         block_context.flags.set_inside_general_use(true);
@@ -180,6 +241,10 @@ where
                 } else {
                     None
                 };
+                if matches!(assignment_operator, AssignmentOperator::Coalesce(_)) {
+                    assignment_operation_native_type =
+                        artifacts.get_rc_native_expression_type(&binary_expression).cloned();
+                }
 
                 artifacts.finish_expression_type_checkpoint(CheckpointAction::Merge);
             }
@@ -235,6 +300,34 @@ where
             ),
         );
     }
+
+    let pending_conditions = if let (Some(before), Some(target), Some(source)) =
+        (before_assignment, target_variable_id, source_expression)
+        && derived_assignment_rhs_is_pure(source, context, artifacts)
+    {
+        before.derive_assignment_conditions(target, reads.into_iter().map(|(name, _)| word(name)), &source_type, |scope| {
+            scope.if_body_context = None;
+            scope.finally_scope = None;
+            let mut sandbox = artifacts.clone();
+            sandbox.loop_scope = None;
+            sandbox.case_scopes.clear();
+            crate::plugin::registry::with_isolated_type_pricing(|| {
+                let mut price = |context: &mut Context<'ctx, 'arena, A>| context.gather_callback(|context| {
+                    source.analyze(context, scope, &mut sandbox)?;
+                    Ok::<_, AnalysisError>(sandbox.get_expression_type(source).cloned().unwrap_or_else(get_mixed))
+                });
+                if context.observation_program.is_some() {
+                    // Argument settling may update retained results. An observation-enabled
+                    // walk therefore needs its own observation state, not just copied artifacts.
+                    price(&mut context.fork_for_observation())
+                } else {
+                    price(context)
+                }
+            })
+        })?
+    } else {
+        VariableState::default()
+    };
 
     if let (Some(target_variable_id), Some(existing_target_type)) = (&target_variable_id, &existing_target_type) {
         block_context.remove_descendants(context, *target_variable_id, existing_target_type, Some(&source_type));
@@ -306,13 +399,73 @@ where
         && matches!(target_expression, Expression::Variable(_))
     {
         add_nullsafe_assignment_clauses(target_variable_id, source_expression, context, block_context);
+        block_context.install_assignment_conditions(pending_conditions);
     }
 
     if let Some(assignment_span) = assignment_span {
         artifacts.set_rc_expression_type(&assignment_span, source_type);
+        if let Some(native) = assignment_operation_native_type
+            && block_context.native_locals.is_some()
+        {
+            artifacts.set_rc_native_expression_type(&assignment_span, native);
+        }
     }
 
     Ok(())
+}
+
+/// The live analyzer has no general ImpurePoint result yet. Unknown calls/accessors
+/// are not assumed pure, and implicit string calls require scalar inputs. Local
+/// writes are not PHPStan impure points (unlike superglobals).
+fn derived_assignment_rhs_is_pure<'arena, A: Arena>(
+    source: &Expression<'arena>,
+    context: &Context<'_, 'arena, A>,
+    artifacts: &AnalysisArtifacts,
+) -> bool {
+    struct PureRhs {
+        pure: bool,
+    }
+    impl<'ast, 'ctx, 'arena, A: Arena> MutWalker<'ast, 'arena, (&Context<'ctx, 'arena, A>, &AnalysisArtifacts)> for PureRhs {
+        fn walk_in_expression(&mut self, expression: &'ast Expression<'arena>, state: &mut (&Context<'ctx, 'arena, A>, &AnalysisArtifacts)) {
+            let (context, artifacts) = *state;
+            // ImplicitToStringCallHelper may add an impure __toString invocation.
+            // Missing or non-scalar types cannot establish its absence.
+            let scalar = |expression: &Expression<'arena>| artifacts.get_expression_type(expression)
+                .is_some_and(|ty| ty.types.iter().all(|ty| matches!(ty, TAtomic::Scalar(_) | TAtomic::Null)));
+            self.pure &= match expression {
+                Expression::Binary(binary) if matches!(binary.operator, BinaryOperator::StringConcat(_)) =>
+                    scalar(binary.lhs) && scalar(binary.rhs),
+                Expression::UnaryPrefix(prefix) if matches!(prefix.operator,
+                    UnaryPrefixOperator::StringCast(_, _) | UnaryPrefixOperator::BinaryCast(_, _)) => scalar(prefix.operand),
+                Expression::CompositeString(string) => string.parts().as_slice().iter().all(|part| match part {
+                    StringPart::Literal(_) => true,
+                    StringPart::Expression(expression) => scalar(expression),
+                    StringPart::BracedExpression(part) => scalar(part.expression),
+                }),
+                Expression::Call(Call::Function(call)) => match call.function {
+                    Expression::Identifier(name) => context.codebase
+                        .get_function(context.resolve_function_name(name))
+                        .is_some_and(|metadata| metadata.flags.is_pure() && !metadata.flags.suspends_fiber()),
+                    _ => false,
+                },
+                Expression::Variable(Variable::Direct(variable)) =>
+                    crate::common::global::get_global_variable_type(word(variable.name)).is_none(),
+                Expression::Assignment(assignment) =>
+                    matches!(assignment.lhs, Expression::Variable(Variable::Direct(_))),
+                Expression::Construct(construct) => matches!(construct, Construct::Isset(_) | Construct::Empty(_)),
+                Expression::Call(_) | Expression::Access(Access::Property(_) | Access::NullSafeProperty(_) | Access::StaticProperty(_))
+                | Expression::Instantiation(_) | Expression::AnonymousClass(_) | Expression::Yield(_) | Expression::Pipe(_) => false,
+                _ => true,
+            };
+        }
+
+        // Creating a callable does not execute its body or any effects inside it.
+        fn walk_closure(&mut self, _: &'ast mago_syntax::cst::Closure<'arena>, _: &mut (&Context<'ctx, 'arena, A>, &AnalysisArtifacts)) {}
+        fn walk_arrow_function(&mut self, _: &'ast mago_syntax::cst::ArrowFunction<'arena>, _: &mut (&Context<'ctx, 'arena, A>, &AnalysisArtifacts)) {}
+    }
+    let mut purity = PureRhs { pure: true };
+    purity.walk_expression(source, &mut (&*context, artifacts));
+    purity.pure
 }
 
 fn add_nullsafe_assignment_clauses<'ctx, 'arena, A>(
@@ -396,6 +549,10 @@ where
         });
     }
 
+    // Assign/AssignRef (including array-root writes) create PHPStan's marker;
+    // compound and increment writes do not. This is separate from readonly's write kind.
+    let initializes_marker = matches!(property_write_kind, PropertyWriteKind::Direct | PropertyWriteKind::Coalesce)
+        || source_expression.is_some_and(Expression::is_reference);
     match target_expression {
         Expression::Variable(target_variable) if target_expression_id.is_some() => analyze_assignment_to_variable(
             context,
@@ -416,6 +573,7 @@ where
             &source_type,
             source_expression.map(mago_span::HasSpan::span),
             property_write_kind,
+            initializes_marker,
         )?,
         Expression::Access(Access::StaticProperty(property_access)) => static_property_assignment::analyze(
             context,
@@ -426,10 +584,10 @@ where
             target_expression_id,
         )?,
         Expression::ArrayAccess(array_access) => {
-            array_assignment::analyze(context, block_context, artifacts, array_access.into(), &source_type)?;
+            array_assignment::analyze(context, block_context, artifacts, array_access.into(), &source_type, initializes_marker)?;
         }
         Expression::ArrayAppend(array_append) => {
-            array_assignment::analyze(context, block_context, artifacts, array_append.into(), &source_type)?;
+            array_assignment::analyze(context, block_context, artifacts, array_append.into(), &source_type, initializes_marker)?;
         }
         Expression::Array(array) => {
             analyze_destructuring(
@@ -440,6 +598,7 @@ where
                 source_expression,
                 &source_type,
                 array.elements.as_slice(),
+                true,
             )?;
         }
         Expression::List(list) => {
@@ -451,6 +610,7 @@ where
                 source_expression,
                 &source_type,
                 list.elements.as_slice(),
+                false,
             )?;
         }
         _ => {
@@ -633,33 +793,6 @@ pub fn analyze_assignment_to_variable<'ctx, 'arena, A>(
         );
     }
 
-    if assigned_type.is_never() {
-        let mut issue =
-            Issue::error("Invalid assignment: the right-hand side has type `never` and cannot produce a value.")
-                .with_annotation(
-                    Annotation::primary(variable_span).with_message("Cannot assign a `never` type value here"),
-                );
-
-        if let Some(source_expression) = source_expression
-            && let Expression::Binary(_) = source_expression
-        {
-            issue = issue.with_annotation(
-                Annotation::secondary(source_expression.span()).with_message("This expression has type `never`."),
-            );
-        }
-
-        context.collector.report_with_code(
-            IssueCode::ImpossibleAssignment,
-            issue
-                .with_note(
-                    "An expression with type `never` is guaranteed to exit, throw, or loop indefinitely."
-                )
-                .with_help(
-                    "This assignment is unreachable because the right-hand side never completes. Remove the assignment or refactor the preceding code."
-                )
-        );
-    }
-
     let mut from_docblock = false;
     if let Some((variable_type, variable_type_span)) =
         get_type_from_var_docblock(context, block_context, artifacts, Some(variable_id.as_bytes()), !destructuring)
@@ -678,7 +811,11 @@ pub fn analyze_assignment_to_variable<'ctx, 'arena, A>(
         from_docblock = true;
     }
 
-    if !from_docblock && assigned_type.is_mixed() && !variable_id.as_bytes().starts_with(b"$_") {
+    if !from_docblock
+        && assigned_type.is_mixed()
+        && !assigned_type.is_error()
+        && !variable_id.as_bytes().starts_with(b"$_")
+    {
         let assigned_type_str = assigned_type.get_id();
 
         let mut issue = Issue::warning(format!(
@@ -745,10 +882,18 @@ pub fn analyze_assignment_to_variable<'ctx, 'arena, A>(
         } else {
             source_expression.and_then(|source| artifacts.get_rc_native_expression_type(source).cloned())
         };
-        block_context.native_locals = block_context.native_locals.take().zip(native).map(|(mut locals, native)| {
-            locals.insert(variable_id, native);
-            locals
-        });
+        if !from_docblock && source_expression.is_some_and(|source|
+            matches!(source, Expression::Closure(_) | Expression::ArrowFunction(_)))
+        {
+            // Creating a closure does not execute its body. Its native callable value remains
+            // unavailable, while unaffected outer holders survive the separate capture transfer.
+            block_context.native_locals.as_mut().unwrap().remove(&variable_id);
+        } else {
+            block_context.native_locals = block_context.native_locals.take().zip(native).map(|(mut locals, native)| {
+                locals.insert(variable_id, native);
+                locals
+            });
+        }
     }
 
     block_context.invalidate_variable_certainty(variable_id);
@@ -764,6 +909,7 @@ fn analyze_destructuring<'ctx, 'ast, 'arena, A>(
     source_expression: Option<&'ast Expression<'arena>>, // the expression being destructured
     array_type: &TUnion, // the type of the array being destructured
     target_elements: &'ast [ArrayElement<'arena>], // the elements being destructured
+    convert_arrays: bool, // PHPParser::fixupArrayDestructuring stops at an explicit List_.
 ) -> Result<(), AnalysisError>
 where
     A: Arena,
@@ -981,15 +1127,13 @@ where
                     if add_null { access_type.as_nullable() } else { access_type }
                 };
 
-                analyze_assignment(
+                analyze_destructuring_value(
                     context,
                     block_context,
                     artifacts,
-                    None,
                     key_value_element.value,
-                    None,
-                    Some(key_value_element.key),
-                    Some(access_type),
+                    access_type,
+                    convert_arrays,
                 )?;
             }
             ArrayElement::Value(value_element) => {
@@ -1021,15 +1165,13 @@ where
                     if add_null { access_type.as_nullable() } else { access_type }
                 };
 
-                analyze_assignment(
+                analyze_destructuring_value(
                     context,
                     block_context,
                     artifacts,
-                    None,
                     value_element.value,
-                    None,
-                    None,
-                    Some(access_type),
+                    access_type,
+                    convert_arrays,
                 )?;
             }
             ArrayElement::Variadic(variadic_element) => {
@@ -1175,55 +1317,299 @@ fn check_list_destructure_keys<'arena, A>(
     }
 }
 
+/// AssignHandler::applyWrite() prepares each List_ value after the RHS and preceding item writes.
+/// A literal Array_ uses prepareTarget()'s ordinary expression-read fallback, never a recursive write.
+fn analyze_destructuring_value<'ctx, 'ast, 'arena, A>(
+    context: &mut Context<'ctx, 'arena, A>,
+    block_context: &mut BlockContext<'ctx>,
+    artifacts: &mut AnalysisArtifacts,
+    value: &'ast Expression<'arena>,
+    source_type: TUnion,
+    convert_arrays: bool,
+) -> Result<(), AnalysisError>
+where
+    A: Arena,
+{
+    let target = unwrap_expression(value);
+    if !convert_arrays && matches!(target, Expression::Array(_) | Expression::LegacyArray(_)) {
+        return value.analyze(context, block_context, artifacts);
+    }
+    if convert_arrays && let Expression::LegacyArray(array) = target {
+        return analyze_destructuring(
+            context,
+            block_context,
+            artifacts,
+            array.span(),
+            None,
+            &source_type,
+            array.elements.as_slice(),
+            true,
+        );
+    }
+    // PHPParser stores a reference on ArrayItem; its value is the bare variable expression.
+    let target = match target {
+        Expression::UnaryPrefix(reference) if reference.operator.is_reference() => reference.operand,
+        target => target,
+    };
+    analyze_assignment(context, block_context, artifacts, None, target, None, None, Some(source_type))
+}
+
 fn analyze_assignment_target<'ctx, 'arena, A>(
     expression: &Expression<'arena>,
     context: &mut Context<'ctx, 'arena, A>,
     block_context: &mut BlockContext<'ctx>,
     artifacts: &mut AnalysisArtifacts,
-) -> Result<(), AnalysisError>
+    read_target: bool,
+) -> Result<Vec<(Span, Option<ExpressionResult>)>, AnalysisError>
 where
     A: Arena,
 {
+    // prepareTarget's raw callback belongs to entry, not the RHS or the write.
+    // A direct write-only variable deliberately has no completed read result.
+    crate::observations::before(expression, context, block_context);
+    let mut operands = Vec::new();
     match expression {
         Expression::Variable(Variable::Nested(nested)) => {
-            nested.variable.analyze(context, block_context, artifacts)?;
+            let name = context.arena.alloc(Expression::Variable(nested.variable.clone()));
+            prepare_assignment_operand(name, context, block_context, artifacts, &mut operands)?;
         }
         Expression::Variable(Variable::Indirect(indirect)) => {
-            indirect.expression.analyze(context, block_context, artifacts)?;
+            prepare_assignment_operand(indirect.expression, context, block_context, artifacts, &mut operands)?;
         }
-        Expression::List(List { elements, .. }) | Expression::Array(Array { elements, .. }) => {
-            for element in elements {
-                match element {
-                    ArrayElement::KeyValue(key_value_array_element) => {
-                        analyze_assignment_target(key_value_array_element.value, context, block_context, artifacts)?;
+        // List_ children are prepared during applyWrite(), not before the RHS.
+        Expression::List(_) | Expression::Array(_) => {}
+        Expression::ArrayAccess(_) | Expression::ArrayAppend(_) => {
+            let mut links = Vec::new();
+            let mut root = expression;
+            loop {
+                match root {
+                    Expression::ArrayAccess(access) => {
+                        links.push((root, access.array, Some(access.index)));
+                        root = access.array;
                     }
-                    ArrayElement::Value(value_array_element) => {
-                        analyze_assignment_target(value_array_element.value, context, block_context, artifacts)?;
+                    Expression::ArrayAppend(append) => {
+                        links.push((root, append.array, None));
+                        root = append.array;
                     }
-                    ArrayElement::Variadic(variadic_array_element) => {
-                        analyze_assignment_target(variadic_array_element.value, context, block_context, artifacts)?;
-                    }
-                    ArrayElement::Missing(_) => {}
+                    _ => break,
                 }
             }
+            prepare_assignment_operand(root, context, block_context, artifacts, &mut operands)?;
+            // PHPStan walks the root and dimensions inside-out, composing each
+            // link from those results. Never re-run an index to price the target.
+            for (link, array, index) in links.into_iter().rev() {
+                if link.span() != expression.span() {
+                    crate::observations::before(link, context, block_context);
+                }
+                if let Some(index) = index {
+                    prepare_assignment_operand(index, context, block_context, artifacts, &mut operands)?;
+                }
+                artifacts.remove_expression_type(&(link.span().start.offset, link.span().end.offset));
+                let value = if let Some(index) = index {
+                    let array_type = artifacts.get_rc_expression_type(array).cloned();
+                    let index_type = artifacts.get_rc_expression_type(index).cloned();
+                    array_type.zip(index_type).map(|(array_type, index_type)| {
+                        // prepareTarget composes getOffsetValueType, not the
+                        // writer's promotion of missing offsets into containers.
+                        // array_assignment still owns validation of the write.
+                        // ConstantArrayType projects a slot's value independently
+                        // of optionality. Do not let ordinary-read diagnostics add
+                        // null for absence; genuine nullable values stay unchanged.
+                        // This projection is private, never the written receiver.
+                        let mut value_projection = array_type.as_ref().clone();
+                        let mut possibly_undefined = false;
+                        for atomic in value_projection.types.to_mut() {
+                            match atomic {
+                                TAtomic::Array(TArray::Keyed(array)) => {
+                                    if let Some(items) = &mut array.known_items {
+                                        possibly_undefined |= index_type
+                                            .get_single_array_key()
+                                            .and_then(|key| items.get(&key))
+                                            .is_some_and(|(optional, _)| *optional);
+                                        for (optional, _) in std::sync::Arc::make_mut(items).values_mut() {
+                                            *optional = false;
+                                        }
+                                    }
+                                }
+                                TAtomic::Array(TArray::List(array)) => {
+                                    if let Some(items) = &mut array.known_elements {
+                                        possibly_undefined |= index_type
+                                            .get_single_literal_int_value()
+                                            .and_then(|key| usize::try_from(key).ok())
+                                            .and_then(|key| items.get(&key))
+                                            .is_some_and(|(optional, _)| *optional);
+                                        for (optional, _) in std::sync::Arc::make_mut(items).values_mut() {
+                                            *optional = false;
+                                        }
+                                    }
+                                }
+                                _ => {}
+                            }
+                        }
+                        let mut value = context
+                            .record(|context| {
+                                get_array_target_type_given_index(
+                                    context,
+                                    block_context,
+                                    link.span(),
+                                    array.span(),
+                                    Some(index.span()),
+                                    &value_projection,
+                                    &index_type,
+                                    false,
+                                    get_block_expression_id(array, context, block_context),
+                                    None,
+                                    false,
+                                )
+                            })
+                            .0;
+                        // Coalesce still needs absence independently of the value.
+                        if possibly_undefined {
+                            value.set_possibly_undefined(true, None);
+                        }
+                        value
+                    })
+                } else {
+                    Some(get_never())
+                };
+                if let Some(value) = value {
+                    artifacts.set_expression_type(link, value);
+                    crate::native::after_expression(link, context, block_context, artifacts);
+                }
+                crate::observations::after(link, context, block_context, artifacts);
+                operands.push((link.span(), artifacts.get_expression_result(link)));
+            }
         }
-        Expression::ArrayAccess(array_access) => {
-            analyze_assignment_target(array_access.array, context, block_context, artifacts)?;
-            analyze_assignment_target(array_access.index, context, block_context, artifacts)?;
+        Expression::Access(Access::Property(access)) => {
+            prepare_assignment_property(
+                expression,
+                access.object,
+                &access.property,
+                access.arrow.span(),
+                false,
+                context,
+                block_context,
+                artifacts,
+                &mut operands,
+                read_target,
+            )?;
         }
-        Expression::Access(Access::Property(property_access)) => {
-            analyze_assignment_target(property_access.object, context, block_context, artifacts)?;
-        }
-        Expression::Access(Access::NullSafeProperty(null_safe_property_access)) => {
-            analyze_assignment_target(null_safe_property_access.object, context, block_context, artifacts)?;
+        Expression::Access(Access::NullSafeProperty(access)) => {
+            prepare_assignment_property(
+                expression,
+                access.object,
+                &access.property,
+                access.question_mark_arrow.span(),
+                true,
+                context,
+                block_context,
+                artifacts,
+                &mut operands,
+                read_target,
+            )?;
         }
         Expression::Access(Access::StaticProperty(static_property_access)) => {
-            analyze_assignment_target(static_property_access.class, context, block_context, artifacts)?;
+            operands.extend(analyze_assignment_target(
+                static_property_access.class,
+                context,
+                block_context,
+                artifacts,
+                true,
+            )?);
         }
         _ => {}
     }
 
+    Ok(operands)
+}
+
+fn prepare_assignment_property<'ctx, 'arena, A: Arena>(
+    expression: &Expression<'arena>,
+    object: &Expression<'arena>,
+    property: &ClassLikeMemberSelector<'arena>,
+    arrow: Span,
+    nullsafe: bool,
+    context: &mut Context<'ctx, 'arena, A>,
+    block_context: &mut BlockContext<'ctx>,
+    artifacts: &mut AnalysisArtifacts,
+    operands: &mut Vec<(Span, Option<ExpressionResult>)>,
+    read_target: bool,
+) -> Result<(), AnalysisError> {
+    prepare_assignment_operand(object, context, block_context, artifacts, operands)?;
+    let mut resolved_property = None;
+    let variable = match property {
+        ClassLikeMemberSelector::Expression(selector) => {
+            prepare_assignment_operand(selector.expression, context, block_context, artifacts, operands)?;
+            // PHPStan normalizes a literal-string name to the named fetch's holder.
+            // A dynamic expression with a constant-string type is not that identity.
+            if matches!(unwrap_expression(selector.expression), Expression::Literal(Literal::String(_)))
+                && let Some(name) = artifacts.get_expression_type(selector.expression)
+                    .and_then(|ty| ty.get_single_literal_string_value())
+            {
+                resolved_property = Some(ClassLikeMemberSelector::Identifier(LocalIdentifier {
+                    span: property.span(),
+                    value: context.arena.alloc_slice_copy(name),
+                }));
+            }
+            None
+        }
+        ClassLikeMemberSelector::Variable(variable) => {
+            let name = context.arena.alloc(Expression::Variable(variable.clone()));
+            crate::observations::before(name, context, block_context);
+            Some(name)
+        }
+        _ => None,
+    };
+    artifacts.remove_expression_type(&(expression.span().start.offset, expression.span().end.offset));
+    // AssignHandler parks a composed pre-write value without counting a plain
+    // assignment target as a property read. Receiver and selector reads above survive.
+    let references = (!read_target).then(|| std::mem::take(&mut artifacts.symbol_references));
+    let (result, completed) = crate::observations::collect_prepared_operands(context, |context| {
+        crate::observations::with_prepared_operands(context, operands, |context| {
+            context
+                .record(|context| {
+                    crate::expression::access::property_access::analyze_property_access(
+                        context,
+                        block_context,
+                        artifacts,
+                        expression.span(),
+                        object,
+                        arrow,
+                        resolved_property.as_ref().unwrap_or(property),
+                        nullsafe,
+                        false,
+                    )
+                })
+                .0
+        })
+    });
+    if let Some(references) = references {
+        artifacts.symbol_references = references;
+    }
+    operands.extend(completed);
+    result?;
+    if let Some(name) = variable {
+        crate::observations::after(name, context, block_context, artifacts);
+        operands.push((name.span(), artifacts.get_expression_result(name)));
+    }
+    crate::native::after_expression(expression, context, block_context, artifacts);
+    crate::observations::after(expression, context, block_context, artifacts);
+    operands.push((expression.span(), artifacts.get_expression_result(expression)));
     Ok(())
+}
+
+fn prepare_assignment_operand<'ctx, 'arena, A: Arena>(
+    expression: &Expression<'arena>,
+    context: &mut Context<'ctx, 'arena, A>,
+    block_context: &mut BlockContext<'ctx>,
+    artifacts: &mut AnalysisArtifacts,
+    operands: &mut Vec<(Span, Option<ExpressionResult>)>,
+) -> Result<(), AnalysisError> {
+    let (result, completed) = crate::observations::collect_prepared_operands(context, |context| {
+        expression.analyze(context, block_context, artifacts)
+    });
+    operands.extend(completed);
+    result
 }
 
 fn handle_assignment_with_boolean_logic<'ctx, 'arena, A>(

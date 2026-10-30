@@ -1,0 +1,313 @@
+{
+  "general": [],
+  "errors": [
+    {
+      "file": "writes.php",
+      "line": 17,
+      "identifier": "property.readOnlyByPhpDocDefaultValue",
+      "message": "@readonly property cannot have a default value.",
+      "tip": null
+    },
+    {
+      "file": "writes.php",
+      "line": 22,
+      "identifier": "preDec.type",
+      "message": "Cannot use -- on null.",
+      "tip": "Operator -- is deprecated for null."
+    },
+    {
+      "file": "writes.php",
+      "line": 23,
+      "identifier": "postDec.type",
+      "message": "Cannot use -- on null.",
+      "tip": "Operator -- is deprecated for null."
+    },
+    {
+      "file": "writes.php",
+      "line": 42,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyWrites\\Holder::$missing.",
+      "tip": null
+    },
+    {
+      "file": "writes.php",
+      "line": 42,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyWrites\\Holder::$missing.",
+      "tip": null
+    },
+    {
+      "file": "writes.php",
+      "line": 44,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyWrites\\Holder::$missing.",
+      "tip": null
+    },
+    {
+      "file": "writes.php",
+      "line": 44,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyWrites\\Holder::$missing.",
+      "tip": null
+    },
+    {
+      "file": "writes.php",
+      "line": 45,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyWrites\\Holder::$missing.",
+      "tip": null
+    },
+    {
+      "file": "writes.php",
+      "line": 45,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyWrites\\Holder::$missing.",
+      "tip": null
+    },
+    {
+      "file": "writes.php",
+      "line": 46,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyWrites\\Holder::$missing.",
+      "tip": null
+    },
+    {
+      "file": "writes.php",
+      "line": 46,
+      "identifier": "staticProperty.notFound",
+      "message": "Access to an undefined static property StaticPropertyWrites\\Holder::$missing.",
+      "tip": null
+    },
+    {
+      "file": "writes.php",
+      "line": 51,
+      "identifier": "staticProperty.nonObject",
+      "message": "Cannot access static property $nil on int.",
+      "tip": null
+    },
+    {
+      "file": "writes.php",
+      "line": 51,
+      "identifier": "staticProperty.nonObject",
+      "message": "Cannot access static property $nil on int.",
+      "tip": null
+    },
+    {
+      "file": "writes.php",
+      "line": 52,
+      "identifier": "staticProperty.nonObject",
+      "message": "Cannot access static property $nil on int.",
+      "tip": null
+    },
+    {
+      "file": "writes.php",
+      "line": 52,
+      "identifier": "staticProperty.nonObject",
+      "message": "Cannot access static property $nil on int.",
+      "tip": null
+    },
+    {
+      "file": "writes.php",
+      "line": 53,
+      "identifier": "staticProperty.private",
+      "message": "Access to private property $hidden of class StaticPropertyWrites\\Holder.",
+      "tip": null
+    },
+    {
+      "file": "writes.php",
+      "line": 53,
+      "identifier": "staticProperty.private",
+      "message": "Access to private property $hidden of class StaticPropertyWrites\\Holder.",
+      "tip": null
+    },
+    {
+      "file": "writes.php",
+      "line": 54,
+      "identifier": "staticProperty.private",
+      "message": "Access to private property $hidden of class StaticPropertyWrites\\Holder.",
+      "tip": null
+    },
+    {
+      "file": "writes.php",
+      "line": 54,
+      "identifier": "staticProperty.private",
+      "message": "Access to private property $hidden of class StaticPropertyWrites\\Holder.",
+      "tip": null
+    },
+    {
+      "file": "writes.php",
+      "line": 55,
+      "identifier": "staticProperty.private",
+      "message": "Access to private property $hidden of class StaticPropertyWrites\\Holder.",
+      "tip": null
+    },
+    {
+      "file": "writes.php",
+      "line": 55,
+      "identifier": "staticProperty.private",
+      "message": "Access to private property $hidden of class StaticPropertyWrites\\Holder.",
+      "tip": null
+    },
+    {
+      "file": "writes.php",
+      "line": 55,
+      "identifier": "preDec.type",
+      "message": "Cannot use -- on null.",
+      "tip": "Operator -- is deprecated for null."
+    },
+    {
+      "file": "writes.php",
+      "line": 56,
+      "identifier": "staticProperty.private",
+      "message": "Access to private property $hidden of class StaticPropertyWrites\\Holder.",
+      "tip": null
+    },
+    {
+      "file": "writes.php",
+      "line": 56,
+      "identifier": "staticProperty.private",
+      "message": "Access to private property $hidden of class StaticPropertyWrites\\Holder.",
+      "tip": null
+    },
+    {
+      "file": "writes.php",
+      "line": 56,
+      "identifier": "postDec.type",
+      "message": "Cannot use -- on null.",
+      "tip": "Operator -- is deprecated for null."
+    },
+    {
+      "file": "writes.php",
+      "line": 57,
+      "identifier": "property.staticAccess",
+      "message": "Static access to instance property StaticPropertyWrites\\Holder::$instance.",
+      "tip": null
+    },
+    {
+      "file": "writes.php",
+      "line": 57,
+      "identifier": "property.staticAccess",
+      "message": "Static access to instance property StaticPropertyWrites\\Holder::$instance.",
+      "tip": null
+    },
+    {
+      "file": "writes.php",
+      "line": 58,
+      "identifier": "property.staticAccess",
+      "message": "Static access to instance property StaticPropertyWrites\\Holder::$instance.",
+      "tip": null
+    },
+    {
+      "file": "writes.php",
+      "line": 58,
+      "identifier": "property.staticAccess",
+      "message": "Static access to instance property StaticPropertyWrites\\Holder::$instance.",
+      "tip": null
+    },
+    {
+      "file": "writes.php",
+      "line": 68,
+      "identifier": "preInc.type",
+      "message": "Cannot use ++ on string.",
+      "tip": "Operator ++ is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_increment()."
+    },
+    {
+      "file": "writes.php",
+      "line": 69,
+      "identifier": "postInc.type",
+      "message": "Cannot use ++ on string.",
+      "tip": "Operator ++ is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_increment()."
+    },
+    {
+      "file": "writes.php",
+      "line": 70,
+      "identifier": "preDec.type",
+      "message": "Cannot use -- on string.",
+      "tip": "Operator -- is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_decrement()."
+    },
+    {
+      "file": "writes.php",
+      "line": 71,
+      "identifier": "postDec.type",
+      "message": "Cannot use -- on string.",
+      "tip": "Operator -- is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_decrement()."
+    },
+    {
+      "file": "writes.php",
+      "line": 82,
+      "identifier": "assign.propertyProtectedSet",
+      "message": "Assign to protected(set) property StaticPropertyWrites\\InstanceHolder::$locked.",
+      "tip": null
+    },
+    {
+      "file": "writes.php",
+      "line": 83,
+      "identifier": "assign.propertyProtectedSet",
+      "message": "Assign to protected(set) property StaticPropertyWrites\\InstanceHolder::$locked.",
+      "tip": null
+    },
+    {
+      "file": "writes.php",
+      "line": 88,
+      "identifier": "postDec.type",
+      "message": "Cannot use -- on string.",
+      "tip": "Operator -- is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_decrement()."
+    },
+    {
+      "file": "writes.php",
+      "line": 125,
+      "identifier": "preInc.type",
+      "message": "Cannot use ++ on literal-string.",
+      "tip": "Operator ++ is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_increment()."
+    },
+    {
+      "file": "writes.php",
+      "line": 126,
+      "identifier": "postInc.type",
+      "message": "Cannot use ++ on literal-string.",
+      "tip": "Operator ++ is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_increment()."
+    },
+    {
+      "file": "writes.php",
+      "line": 127,
+      "identifier": "preDec.type",
+      "message": "Cannot use -- on literal-string.",
+      "tip": "Operator -- is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_decrement()."
+    },
+    {
+      "file": "writes.php",
+      "line": 128,
+      "identifier": "postDec.type",
+      "message": "Cannot use -- on literal-string.",
+      "tip": "Operator -- is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_decrement()."
+    },
+    {
+      "file": "writes.php",
+      "line": 134,
+      "identifier": "preInc.expr",
+      "message": "Cannot use ++ on a non-variable.",
+      "tip": null
+    },
+    {
+      "file": "writes.php",
+      "line": 134,
+      "identifier": "callable.nonCallable",
+      "message": "Trying to invoke int but it's not a callable.",
+      "tip": null
+    },
+    {
+      "file": "writes.php",
+      "line": 135,
+      "identifier": "postDec.expr",
+      "message": "Cannot use -- on a non-variable.",
+      "tip": null
+    },
+    {
+      "file": "writes.php",
+      "line": 135,
+      "identifier": "callable.nonCallable",
+      "message": "Trying to invoke int but it's not a callable.",
+      "tip": null
+    }
+  ]
+}

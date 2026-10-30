@@ -1,0 +1,197 @@
+{
+  "errors": [
+    {
+      "file": "false-use.php",
+      "line": 3,
+      "identifier": "attribute.notFound",
+      "message": "Attribute class AliasProbe\\FalseAlias does not exist.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "false-use.php",
+      "line": 5,
+      "identifier": "class.notFound",
+      "message": "Instantiated class AliasProbe\\FalseAlias not found.",
+      "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 4,
+      "identifier": "attribute.notFound",
+      "message": "Attribute class AliasProbe\\Alias does not exist.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 6,
+      "identifier": "attribute.notFound",
+      "message": "Attribute class AliasProbe\\aLiAs does not exist.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 8,
+      "identifier": "attribute.notFound",
+      "message": "Attribute class AliasProbe\\ImportedAlias does not exist.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 10,
+      "identifier": "attribute.notFound",
+      "message": "Attribute class AliasProbe\\StringAlias does not exist.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 12,
+      "identifier": "attribute.notFound",
+      "message": "Attribute class AliasProbe\\BareString does not exist.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 14,
+      "identifier": "attribute.notFound",
+      "message": "Attribute class AliasProbe\\Chain does not exist.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 16,
+      "identifier": "attribute.notFound",
+      "message": "Attribute class AliasProbe\\FunctionImport does not exist.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 19,
+      "identifier": "class.notFound",
+      "message": "Instantiated class AliasProbe\\Alias not found.",
+      "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 20,
+      "identifier": "class.notFound",
+      "message": "Call to static method ping() on an unknown class AliasProbe\\Alias.",
+      "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 21,
+      "identifier": "class.notFound",
+      "message": "Access to constant VALUE on an unknown class AliasProbe\\Alias.",
+      "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 22,
+      "identifier": "class.notFound",
+      "message": "Function AliasProbe\\signature() has invalid return type AliasProbe\\Alias.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 22,
+      "identifier": "class.notFound",
+      "message": "Parameter $value of function AliasProbe\\signature() has invalid type AliasProbe\\Alias.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 24,
+      "identifier": "attribute.notFound",
+      "message": "Attribute class AliasProbe\\Alias does not exist.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 24,
+      "identifier": "attribute.notFound",
+      "message": "Attribute class AliasProbe\\Alias does not exist.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 26,
+      "identifier": "attribute.notFound",
+      "message": "Attribute class AliasProbe\\Alias does not exist.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 26,
+      "identifier": "attribute.notFound",
+      "message": "Attribute class AliasProbe\\aLiAs does not exist.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 28,
+      "identifier": "attribute.notFound",
+      "message": "Attribute class AliasProbe\\Alias does not exist.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 30,
+      "identifier": "attribute.notFound",
+      "message": "Attribute class AliasProbe\\Alias does not exist.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 33,
+      "identifier": "attribute.notAttribute",
+      "message": "Class AliasProbe\\Clash is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 38,
+      "identifier": "attribute.notAttribute",
+      "message": "Class AliasProbe\\ViaLowerNative is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 40,
+      "identifier": "attribute.notAttribute",
+      "message": "Class AliasProbe\\ViaMeta is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "uses.php",
+      "line": 43,
+      "identifier": "class.nameCase",
+      "message": "Class AliasProbe\\Marker referenced with incorrect case: AliasProbe\\marker.",
+      "tip": null,
+      "ignorable": true
+    }
+  ],
+  "general": []
+}

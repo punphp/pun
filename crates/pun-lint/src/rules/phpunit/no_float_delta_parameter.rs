@@ -45,9 +45,6 @@ impl Rule for NoFloatDeltaParameter {
         if !matches!(
             unparenthesize(arg_value(first)),
             Expression::Literal(Literal::Float(_))
-        ) && !matches!(
-            unparenthesize(arg_value(first)),
-            Expression::Literal(Literal::Integer(i)) if i.value.is_some_and(|v| v > i64::MAX as u64)
         ) {
             return;
         }

@@ -1142,10 +1142,7 @@ where
             context,
             scope,
         ) {
-            if class_like_metadata.constants.contains_key(&constant_metadata.name) {
-                continue;
-            }
-
+            // BetterReflection selects the last declaration, including its source span and declared types.
             class_like_metadata.constants.insert(constant_metadata.name, constant_metadata);
         }
     }
@@ -1260,6 +1257,11 @@ where
 
                                 if let Some(alias) = method_alias {
                                     class_like_metadata.add_trait_alias(method_name, alias);
+                                    class_like_metadata
+                                        .trait_method_adaptations
+                                        .get_or_insert_with(Default::default)
+                                        .alias_names
+                                        .insert(alias, mago_word::word(adaptation.alias.as_ref().unwrap().value));
                                     if let Some(source) = source {
                                         class_like_metadata
                                             .trait_method_adaptations

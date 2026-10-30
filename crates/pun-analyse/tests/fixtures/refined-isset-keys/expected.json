@@ -1,0 +1,490 @@
+{
+    "bug-4671-0": [],
+    "bug-4671-1": [],
+    "bug-4671-4": [
+        [
+            "bug-4671.php",
+            13,
+            "isset.offset",
+            "Offset decimal-int-string on array<string, string> in isset() does not exist.",
+            null,
+            true
+        ]
+    ],
+    "bug-4671-5": [
+        [
+            "bug-4671.php",
+            13,
+            "isset.offset",
+            "Offset decimal-int-string on array<string, string> in isset() does not exist.",
+            null,
+            true
+        ]
+    ],
+    "bug-4671-9": [
+        [
+            "bug-4671.php",
+            13,
+            "isset.offset",
+            "Offset decimal-int-string on array<string, string> in isset() does not exist.",
+            null,
+            true
+        ]
+    ],
+    "keys-0": [],
+    "keys-1": [],
+    "keys-4": [
+        [
+            "keys.php",
+            7,
+            "isset.offset",
+            "Offset decimal-int-string on array<string, string> in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            8,
+            "nullCoalesce.offset",
+            "Offset decimal-int-string on array<string, string> on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            16,
+            "isset.offset",
+            "Offset decimal-int-string on array<string, string> in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            17,
+            "nullCoalesce.offset",
+            "Offset decimal-int-string on array<string, string> on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            79,
+            "isset.offset",
+            "Offset decimal-int-string&non-empty-string on array<string, string> in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            80,
+            "nullCoalesce.offset",
+            "Offset decimal-int-string&non-empty-string on array<string, string> on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            97,
+            "isset.offset",
+            "Offset decimal-int-string on array{left: string} in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            98,
+            "nullCoalesce.offset",
+            "Offset decimal-int-string on array{left: string} on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            124,
+            "isset.offset",
+            "Offset decimal-int-string on array<string, string|null> in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            125,
+            "nullCoalesce.offset",
+            "Offset decimal-int-string on array<string, string|null> on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            130,
+            "isset.offset",
+            "Offset decimal-int-string on string in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            131,
+            "nullCoalesce.offset",
+            "Offset decimal-int-string on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            136,
+            "isset.offset",
+            "Offset '0' on array<string, string> in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            140,
+            "isset.offset",
+            "Offset '-1' on array<string, string> in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            161,
+            "isset.offset",
+            "Offset int|decimal-int-string on array<string, string> in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            162,
+            "nullCoalesce.offset",
+            "Offset int|decimal-int-string on array<string, string> on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            170,
+            "isset.offset",
+            "Offset '0'|'1' on array<string, string> in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            171,
+            "nullCoalesce.offset",
+            "Offset '0'|'1' on array<string, string> on left side of ?? does not exist.",
+            null,
+            true
+        ]
+    ],
+    "keys-5": [
+        [
+            "keys.php",
+            7,
+            "isset.offset",
+            "Offset decimal-int-string on array<string, string> in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            8,
+            "nullCoalesce.offset",
+            "Offset decimal-int-string on array<string, string> on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            16,
+            "isset.offset",
+            "Offset decimal-int-string on array<string, string> in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            17,
+            "nullCoalesce.offset",
+            "Offset decimal-int-string on array<string, string> on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            79,
+            "isset.offset",
+            "Offset decimal-int-string&non-empty-string on array<string, string> in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            80,
+            "nullCoalesce.offset",
+            "Offset decimal-int-string&non-empty-string on array<string, string> on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            97,
+            "isset.offset",
+            "Offset decimal-int-string on array{left: string} in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            98,
+            "nullCoalesce.offset",
+            "Offset decimal-int-string on array{left: string} on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            124,
+            "isset.offset",
+            "Offset decimal-int-string on array<string, string|null> in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            125,
+            "nullCoalesce.offset",
+            "Offset decimal-int-string on array<string, string|null> on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            130,
+            "isset.offset",
+            "Offset decimal-int-string on string in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            131,
+            "nullCoalesce.offset",
+            "Offset decimal-int-string on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            136,
+            "isset.offset",
+            "Offset '0' on array<string, string> in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            140,
+            "isset.offset",
+            "Offset '-1' on array<string, string> in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            161,
+            "isset.offset",
+            "Offset int|decimal-int-string on array<string, string> in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            162,
+            "nullCoalesce.offset",
+            "Offset int|decimal-int-string on array<string, string> on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            170,
+            "isset.offset",
+            "Offset '0'|'1' on array<string, string> in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            171,
+            "nullCoalesce.offset",
+            "Offset '0'|'1' on array<string, string> on left side of ?? does not exist.",
+            null,
+            true
+        ]
+    ],
+    "keys-9": [
+        [
+            "keys.php",
+            7,
+            "isset.offset",
+            "Offset decimal-int-string on array<string, string> in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            8,
+            "nullCoalesce.offset",
+            "Offset decimal-int-string on array<string, string> on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            16,
+            "isset.offset",
+            "Offset decimal-int-string on array<string, string> in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            17,
+            "nullCoalesce.offset",
+            "Offset decimal-int-string on array<string, string> on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            79,
+            "isset.offset",
+            "Offset decimal-int-string&non-empty-string on array<string, string> in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            80,
+            "nullCoalesce.offset",
+            "Offset decimal-int-string&non-empty-string on array<string, string> on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            97,
+            "isset.offset",
+            "Offset decimal-int-string on array{left: string} in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            98,
+            "nullCoalesce.offset",
+            "Offset decimal-int-string on array{left: string} on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            124,
+            "isset.offset",
+            "Offset decimal-int-string on array<string, string|null> in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            125,
+            "nullCoalesce.offset",
+            "Offset decimal-int-string on array<string, string|null> on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            130,
+            "isset.offset",
+            "Offset decimal-int-string on string in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            131,
+            "nullCoalesce.offset",
+            "Offset decimal-int-string on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            136,
+            "isset.offset",
+            "Offset '0' on array<string, string> in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            140,
+            "isset.offset",
+            "Offset '-1' on array<string, string> in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            161,
+            "isset.offset",
+            "Offset int|decimal-int-string on array<string, string> in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            162,
+            "nullCoalesce.offset",
+            "Offset int|decimal-int-string on array<string, string> on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            170,
+            "isset.offset",
+            "Offset '0'|'1' on array<string, string> in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            171,
+            "nullCoalesce.offset",
+            "Offset '0'|'1' on array<string, string> on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            179,
+            "offsetAccess.invalidOffset",
+            "Possibly invalid array key type string|null.",
+            null,
+            true
+        ],
+        [
+            "keys.php",
+            180,
+            "offsetAccess.invalidOffset",
+            "Possibly invalid array key type string|null.",
+            null,
+            true
+        ]
+    ]
+}

@@ -1,0 +1,7 @@
+{
+  "attribute": "class ScanBefore {} function scanFunction(): int { return 1; } const SCAN_CONSTANT = 1; #[\\self] class ScanAfter {}",
+  "body": "class ScanBefore { function f() { new \\parent; } } class ScanAfter {} function scanFunction(): int { return 1; } const SCAN_CONSTANT = 1;",
+  "signature": "class ScanBefore { function f(\\static $x) {} } class ScanAfter {} function scanFunction(): int { return 1; } const SCAN_CONSTANT = 1;",
+  "duplicate": "class ScanBefore {} class ScanAfter {} function scanFunction(): int { return 1; } const SCAN_CONSTANT = 1; use A as X; use B as x;",
+  "valid": "class ScanBefore { function f() { missing_unanalysed(); } } class ScanAfter {} function scanFunction(): int { return 1; } const SCAN_CONSTANT = 1;"
+}

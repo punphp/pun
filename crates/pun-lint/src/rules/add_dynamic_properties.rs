@@ -268,7 +268,7 @@ fn value_types(
     {
         let class = resolve_class_name(ancestors, id);
         if facts.codebase.get_class_like(class.as_bytes()).is_none() {
-            return (Type::Object(class.clone(), vec![]), Ty::Object(class));
+            return (Type::Object(class.clone(), vec![], false), Ty::Object(class));
         }
     }
     // Mago types each closure it reaches as its signature alone (`resolve_closure_like_type`)
@@ -317,7 +317,7 @@ fn closure_return(t: &TUnion) -> Type {
         return Type::Void;
     }
     match (phpstan_type(t).unwrap_or_else(mixed), t.types.as_ref()) {
-        (Type::Object(class, mut args), [TAtomic::Object(TObject::Named(n))])
+        (Type::Object(class, mut args, _), [TAtomic::Object(TObject::Named(n))])
             if class == "Generator" && args.len() == 4 =>
         {
             let params = n.type_parameters.as_deref().expect("its four arguments");
@@ -327,7 +327,7 @@ fn closure_return(t: &TUnion) -> Type {
             if is_void(&params[3]) {
                 args[3] = Type::Void;
             }
-            Type::Object(class, args)
+            Type::Object(class, args, false)
         }
         (r#type, _) => r#type,
     }
@@ -441,11 +441,13 @@ fn corrected(facts: &Facts, t: Option<Type>) -> Type {
     let exists = |name: &str| facts.codebase.get_class_like(name.as_bytes());
     match t {
         Type::ConstString(ref value)
-            if exists(value).is_some_and(|c| c.original_name.as_bytes() == value.as_bytes()) =>
+            if exists(&String::from_utf8_lossy(value))
+                .is_some_and(|c| c.original_name.as_bytes() == value.as_slice()) =>
         {
-            Type::ClassString(Some(Box::new(Type::Object(value.clone(), vec![]))))
+            let name = String::from_utf8_lossy(value).into_owned();
+            Type::ClassString(Some(Box::new(Type::Object(name, vec![], false))))
         }
-        Type::ClassString(Some(ref inner)) if matches!(&**inner, Type::Object(name, _) if exists(name).is_none()) => {
+        Type::ClassString(Some(ref inner)) if matches!(&**inner, Type::Object(name, _, _) if exists(name).is_none()) => {
             Type::String
         }
         t => t,

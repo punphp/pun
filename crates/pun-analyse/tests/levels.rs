@@ -1,7 +1,8 @@
 //! PHPStan's own rule tests of levels 1 to 9, run through `phpstan analyse --level N` by
 //! `scripts/export-rule-fixtures.php --level=N` into tests/fixtures/levels/N: every case's errors with an
 //! identifier Pun reports at that level must be exactly PHPStan's. Cases that still differ are listed in
-//! tests/fixtures/levels/gaps.txt, and the list must be exact (a fixed case has to leave it).
+//! tests/fixtures/levels/gaps.txt, and the list must be exact (a fixed case has to leave it). The partial
+//! declaration-purity port uses diagnostic-specific void-pure-gaps.txt instead of case-wide exceptions.
 
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
@@ -17,6 +18,7 @@ const EXACT: &[&str] = &[
     "variable.nameNotString",
     "argument.named",
     "argument.parameterRenamedInSubtype",
+    "void.pure",
 ];
 
 /// The identifiers of the rules ported above level 0, and of level-0 rules whose errors the level fixtures hold.
@@ -455,16 +457,35 @@ fn phpstan_level_fixtures() {
     let tests = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures");
     let root = tests.join("levels");
     let data = tests.join("rules/data");
-    // PUN_LEVELS_FILTER=Properties/ runs only the fixtures (and checks only the gaps) whose name contains it
+    // PUN_LEVELS_FILTER=Properties/ selects fixture paths; only executed cases can retire a gap.
     let filter = std::env::var("PUN_LEVELS_FILTER").unwrap_or_default();
+    // Half-open case bounds split large fixtures without rewriting their oracle records.
+    let case_start = std::env::var("PUN_LEVELS_CASE_START").map_or(0, |v| v.parse().unwrap());
+    let case_end = std::env::var("PUN_LEVELS_CASE_END").map_or(usize::MAX, |v| v.parse().unwrap());
+    let filtered = !filter.is_empty() || case_start != 0 || case_end != usize::MAX;
     let gaps: BTreeSet<String> = std::fs::read_to_string(root.join("gaps.txt"))
         .unwrap()
         .lines()
-        .filter(|l| !l.is_empty() && !l.starts_with('#') && l.contains(&filter))
+        .filter(|l| !l.is_empty() && !l.starts_with('#'))
         .map(str::to_string)
         .collect();
+    // Declaration purity is partial. Only these exact oracle-positive locations may be missing;
+    // older case-wide gaps must not swallow a regression in its supported declarations.
+    let purity_gaps: BTreeSet<(String, String, i64)> =
+        std::fs::read_to_string(root.join("void-pure-gaps.txt"))
+            .unwrap()
+            .lines()
+            .filter(|l| !l.is_empty() && !l.starts_with('#'))
+            .map(|l| {
+                let (case, location) = l.split_once(" | ").unwrap();
+                let (file, line) = location.rsplit_once(':').unwrap();
+                (case.to_string(), file.to_string(), line.parse().unwrap())
+            })
+            .collect();
+    let mut missing_purity = BTreeSet::new();
     let prefix = format!("{}/", data.display());
     let mut failing = BTreeSet::new();
+    let mut tested = BTreeSet::new();
     let mut exact_failures = BTreeSet::new();
     let mut details = Vec::new();
     let mut levels: Vec<_> = std::fs::read_dir(&root)
@@ -484,7 +505,13 @@ fn phpstan_level_fixtures() {
             .filter(|f| f.to_string_lossy().contains(&filter))
         {
             let test: Value = serde_json::from_str(&std::fs::read_to_string(&f).unwrap()).unwrap();
-            for case in test["cases"].as_array().unwrap() {
+            for case in test["cases"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .skip(case_start)
+                .take(case_end.saturating_sub(case_start))
+            {
                 let paths = |k: &str| -> Vec<PathBuf> {
                     case[k]
                         .as_array()
@@ -503,7 +530,7 @@ fn phpstan_level_fixtures() {
                         // (ValueAssignedToClassConstantRule's errors share the identifier and are not ported)
                         || (id == "classConstant.phpDocType" && message.contains(" native type "))
                 };
-                let want: BTreeSet<Key> = case["errors"]
+                let mut want: BTreeSet<Key> = case["errors"]
                     .as_array()
                     .unwrap()
                     .iter()
@@ -534,6 +561,16 @@ fn phpstan_level_fixtures() {
                     test["test"].as_str().unwrap(),
                     case["method"].as_str().unwrap()
                 );
+                tested.insert(name.clone());
+                for e in want.difference(&got).filter(|e| e.2 == "void.pure") {
+                    let gap = (name.clone(), e.0.clone(), e.1);
+                    if purity_gaps.contains(&gap) {
+                        missing_purity.insert(gap);
+                    }
+                }
+                want.retain(|e| {
+                    e.2 != "void.pure" || !purity_gaps.contains(&(name.clone(), e.0.clone(), e.1))
+                });
                 if want != got {
                     if want
                         .symmetric_difference(&got)
@@ -551,7 +588,11 @@ fn phpstan_level_fixtures() {
             }
         }
     }
-    let fixed: Vec<_> = gaps.difference(&failing).collect();
+    let fixed: Vec<_> = gaps
+        .iter()
+        .filter(|name| !filtered || tested.contains(*name))
+        .filter(|name| !failing.contains(*name))
+        .collect();
     let new: Vec<_> = details
         .iter()
         .filter(|d| {
@@ -559,9 +600,14 @@ fn phpstan_level_fixtures() {
             !gaps.contains(name) || exact_failures.contains(name)
         })
         .collect();
+    let fixed_purity: Vec<_> = purity_gaps
+        .iter()
+        .filter(|(case, _, _)| !filtered || tested.contains(case))
+        .filter(|gap| !missing_purity.contains(*gap))
+        .collect();
     assert!(
-        fixed.is_empty() && new.is_empty(),
-        "gaps.txt lists {} passing case(s): {fixed:?}\n{} new failure(s):\n{}",
+        fixed.is_empty() && new.is_empty() && fixed_purity.is_empty(),
+        "gaps.txt lists {} passing case(s): {fixed:?}\nvoid-pure-gaps.txt lists resolved/absent locations: {fixed_purity:?}\n{} new failure(s):\n{}",
         fixed.len(),
         new.len(),
         new.iter()
@@ -569,4 +615,5 @@ fn phpstan_level_fixtures() {
             .collect::<Vec<_>>()
             .join("\n")
     );
+    eprintln!("checked {} PHPStan level fixture cases", tested.len());
 }

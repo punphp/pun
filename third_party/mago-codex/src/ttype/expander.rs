@@ -13,6 +13,7 @@ use crate::identifier::function_like::FunctionLikeIdentifier;
 use crate::identifier::method::MethodIdentifier;
 use crate::metadata::CodebaseMetadata;
 use crate::metadata::class_like::ClassLikeMetadata;
+use crate::metadata::class_like_constant::ClassLikeConstantMetadata;
 use crate::metadata::function_like::FunctionLikeMetadata;
 use crate::ttype::TType;
 use crate::ttype::TypeRef;
@@ -46,6 +47,7 @@ use crate::ttype::atomic::scalar::int::TInteger;
 use crate::ttype::atomic::scalar::string::TString;
 use crate::ttype::atomic::scalar::string::TStringLiteral;
 use crate::ttype::combiner;
+use crate::ttype::union::NeverKind;
 use crate::ttype::union::TUnion;
 
 thread_local! {
@@ -166,6 +168,11 @@ pub struct TypeExpansionOptions {
     pub allow_mixin_static_rebind: bool,
     /// Keep operators that depend on call arguments while binding their class-relative types.
     pub preserve_parameter_dependencies: bool,
+    /// InitializerExprTypeResolver creates bare object identities, including literal self/parent/static.
+    /// Their names and omitted arguments are values, not declaration types to instantiate.
+    pub preserve_initializer_object_identity: bool,
+    /// Canonical initializer reflection observes union order; ordinary flow remains normalized.
+    pub preserve_initializer_union_order: bool,
 }
 
 /// Expands a type union, resolving special types like `self`, `static`, `parent`,
@@ -178,6 +185,31 @@ pub fn expand_union(codebase: &CodebaseMetadata, return_type: &mut TUnion, optio
     expand_union_inner(codebase, return_type, options);
 }
 
+/// Select the raw initializer or effective declaration before expanding its references.
+pub fn expand_class_constant_value(
+    codebase: &CodebaseMetadata,
+    constant: &ClassLikeConstantMetadata,
+    late_bound: bool,
+    options: &TypeExpansionOptions,
+) -> TUnion {
+    let mut value = constant.value_type(late_bound);
+    let options = TypeExpansionOptions {
+        preserve_initializer_object_identity: constant.inferred_type.is_some()
+            && (!late_bound || (constant.type_metadata.is_none() && constant.flags.is_final())),
+        ..options.clone()
+    };
+    expand_union(codebase, &mut value, &options);
+    value
+}
+
+/// Fill omitted arguments on a temporary member-lookup receiver, not the stored initializer.
+pub fn specialize_named_object_for_member_lookup(codebase: &CodebaseMetadata, object: &mut TNamedObject) {
+    if object.type_parameters.is_none() && !object.is_static && !object.is_this {
+        let metadata = codebase.get_class_like_by_name(object.name);
+        expand_or_fill_type_parameters(object, metadata, codebase, &TypeExpansionOptions::default());
+    }
+}
+
 fn expand_shared_union(codebase: &CodebaseMetadata, return_type: &mut Arc<TUnion>, options: &TypeExpansionOptions) {
     if return_type.is_expandable() {
         expand_union_inner(codebase, Arc::make_mut(return_type), options);
@@ -185,13 +217,27 @@ fn expand_shared_union(codebase: &CodebaseMetadata, return_type: &mut Arc<TUnion
 }
 
 fn expand_union_inner(codebase: &CodebaseMetadata, return_type: &mut TUnion, options: &TypeExpansionOptions) {
+    let mut never_kind = return_type.never_kind().unwrap_or_default();
     let mut types = std::mem::take(&mut return_type.types).into_owned();
+    if options.preserve_initializer_union_order {
+        let mut expanded = Vec::new();
+        for mut atomic in types {
+            let mut skip = false;
+            expand_atomic(&mut atomic, codebase, options, &mut skip, &mut expanded, &mut never_kind);
+            if !skip {
+                expanded.push(atomic);
+            }
+        }
+        return_type.types = crate::ttype::initializer::expanded(expanded, codebase).types;
+        return_type.set_never_kind(never_kind);
+        return;
+    }
     let mut new_return_type_parts: Vec<TAtomic> = Vec::new();
     let mut skip_mask: u64 = 0;
 
     for (i, return_type_part) in types.iter_mut().enumerate() {
         let mut skip_key = false;
-        expand_atomic(return_type_part, codebase, options, &mut skip_key, &mut new_return_type_parts);
+        expand_atomic(return_type_part, codebase, options, &mut skip_key, &mut new_return_type_parts, &mut never_kind);
 
         if skip_key && i < 64 {
             skip_mask |= 1u64 << i;
@@ -222,6 +268,12 @@ fn expand_union_inner(codebase: &CodebaseMetadata, return_type: &mut TUnion, opt
     }
 
     return_type.types = Cow::Owned(types);
+    return_type.set_never_kind(never_kind);
+}
+
+fn expanded_types(union: TUnion, never_kind: &mut NeverKind) -> Vec<TAtomic> {
+    *never_kind = (*never_kind).max(union.never_kind().unwrap_or_default());
+    union.types.into_owned()
 }
 
 pub(crate) fn expand_atomic(
@@ -230,7 +282,15 @@ pub(crate) fn expand_atomic(
     options: &TypeExpansionOptions,
     skip_key: &mut bool,
     new_return_type_parts: &mut Vec<TAtomic>,
+    never_kind: &mut NeverKind,
 ) {
+    if let TAtomic::Array(array) = return_type_part
+        && let Some(callable) = array.callable_mut()
+    {
+        let mut constraint = TUnion::from_atomic(callable.clone());
+        expand_union(codebase, &mut constraint, options);
+        *callable = constraint.get_single().clone();
+    }
     match return_type_part {
         TAtomic::Array(array_type) => match array_type {
             TArray::Keyed(keyed_data) => {
@@ -268,6 +328,11 @@ pub(crate) fn expand_atomic(
             }
         },
         TAtomic::Object(object) => {
+            if options.preserve_initializer_object_identity
+                && matches!(object, TObject::Named(named) if named.type_parameters.is_none())
+            {
+                return;
+            }
             if let Some(parameter) = resolve_generic_static_type(object, codebase, options) {
                 *skip_key = true;
                 new_return_type_parts.push(TAtomic::GenericParameter(parameter));
@@ -310,7 +375,14 @@ pub(crate) fn expand_atomic(
         }
         TAtomic::Scalar(TScalar::ClassLikeString(TClassLikeString::OfType { constraint, .. })) => {
             let mut atomic_return_type_parts = vec![];
-            expand_atomic(Arc::make_mut(constraint), codebase, options, &mut false, &mut atomic_return_type_parts);
+            expand_atomic(
+                Arc::make_mut(constraint),
+                codebase,
+                options,
+                &mut false,
+                &mut atomic_return_type_parts,
+                &mut NeverKind::Implicit,
+            );
 
             if !atomic_return_type_parts.is_empty() {
                 *Arc::make_mut(constraint) = atomic_return_type_parts.remove(0);
@@ -318,11 +390,18 @@ pub(crate) fn expand_atomic(
         }
         TAtomic::Reference(TReference::Member { class_like_name, member_selector }) => {
             *skip_key = true;
-            expand_member_reference(*class_like_name, member_selector, codebase, options, new_return_type_parts);
+            expand_member_reference(
+                *class_like_name,
+                member_selector,
+                codebase,
+                options,
+                new_return_type_parts,
+                never_kind,
+            );
         }
         TAtomic::Reference(TReference::Global { selector }) => {
             *skip_key = true;
-            expand_global_reference(selector, codebase, options, new_return_type_parts);
+            expand_global_reference(selector, codebase, options, new_return_type_parts, never_kind);
         }
         TAtomic::Callable(TCallable::Alias(id)) => {
             if let Some(value) = get_atomic_of_function_like_identifier(id, codebase) {
@@ -347,12 +426,12 @@ pub(crate) fn expand_atomic(
             expand_union(codebase, &mut then, options);
             expand_union(codebase, &mut otherwise, options);
 
-            new_return_type_parts.extend(then.types.into_owned());
-            new_return_type_parts.extend(otherwise.types.into_owned());
+            new_return_type_parts.extend(expanded_types(then, never_kind));
+            new_return_type_parts.extend(expanded_types(otherwise, never_kind));
         }
         TAtomic::Alias(alias) => {
             *skip_key = true;
-            new_return_type_parts.extend(expand_alias(alias, codebase, options));
+            new_return_type_parts.extend(expanded_types(expand_alias(alias, codebase, options), never_kind));
         }
         TAtomic::Derived(derived) => {
             if options.preserve_parameter_dependencies && contains_parameter_variable(derived) {
@@ -369,7 +448,9 @@ pub(crate) fn expand_atomic(
                 TDerived::IntMaskOf(int_mask_of) => expand_int_mask_of(int_mask_of, codebase, options),
                 TDerived::PropertiesOf(properties_of) => expand_properties_of(properties_of, codebase, options),
                 TDerived::New(new_type) => expand_new(new_type, codebase, options),
-                TDerived::TemplateType(template_type) => expand_template_type(template_type, codebase, options),
+                TDerived::TemplateType(template_type) => {
+                    expanded_types(expand_template_type(template_type, codebase, options), never_kind)
+                }
                 TDerived::Intersection(intersection) => expand_derived_intersection(intersection, codebase, options),
             });
         }
@@ -491,8 +572,9 @@ fn resolve_array_key(key: ArrayKey, codebase: &CodebaseMetadata, options: &TypeE
     // Try class constants first
     if let Some(constant) = class_like.constants.get(&constant_name)
         && let Some(inferred) = &constant.inferred_type
+        && inferred.is_single()
     {
-        match inferred {
+        match inferred.get_single() {
             TAtomic::Scalar(TScalar::Integer(TInteger::Literal(i))) => {
                 return ArrayKey::Integer(*i);
             }
@@ -529,7 +611,10 @@ fn expand_member_reference(
     codebase: &CodebaseMetadata,
     options: &TypeExpansionOptions,
     new_return_type_parts: &mut Vec<TAtomic>,
+    never_kind: &mut NeverKind,
 ) {
+    // The referenced value selects its own raw or declaration policy, independently of its caller.
+    let options = &TypeExpansionOptions { preserve_initializer_object_identity: false, ..options.clone() };
     let class_like_name = if class_like_name.as_bytes().eq_ignore_ascii_case(b"parent") {
         options
             .self_class
@@ -564,23 +649,18 @@ fn expand_member_reference(
             continue;
         }
 
-        if let Some(inferred_type) = constant.inferred_type.as_ref() {
+        if constant.inferred_type.is_some() {
             let Some(_guard) = ConstantExpansionGuard::try_new(class_like_name, *constant_name) else {
                 new_return_type_parts.push(TAtomic::Never);
                 continue;
             };
 
-            let mut inferred_type = inferred_type.clone();
-            let mut skip_inferred_type = false;
-            expand_atomic(&mut inferred_type, codebase, options, &mut skip_inferred_type, new_return_type_parts);
-
-            if !skip_inferred_type {
-                new_return_type_parts.push(inferred_type);
-            }
+            let inferred_type = expand_class_constant_value(codebase, constant, false, options);
+            new_return_type_parts.extend(expanded_types(inferred_type, never_kind));
         } else if let Some(type_metadata) = constant.type_metadata.as_ref() {
             let mut constant_type = type_metadata.type_union.clone();
             expand_union(codebase, &mut constant_type, options);
-            new_return_type_parts.extend(constant_type.types.into_owned());
+            new_return_type_parts.extend(expanded_types(constant_type, never_kind));
         } else {
             new_return_type_parts.push(TAtomic::Mixed(TMixed::new()));
         }
@@ -607,7 +687,7 @@ fn expand_member_reference(
     {
         let mut alias_type = type_alias.type_union.clone();
         expand_union(codebase, &mut alias_type, options);
-        new_return_type_parts.extend(alias_type.types.into_owned());
+        new_return_type_parts.extend(expanded_types(alias_type, never_kind));
     }
 
     if new_return_type_parts.is_empty() {
@@ -620,7 +700,9 @@ fn expand_global_reference(
     codebase: &CodebaseMetadata,
     options: &TypeExpansionOptions,
     new_return_type_parts: &mut Vec<TAtomic>,
+    never_kind: &mut NeverKind,
 ) {
+    let options = &TypeExpansionOptions { preserve_initializer_object_identity: false, ..options.clone() };
     let (constant, constants) = match selector {
         TGlobalReferenceSelector::Identifier(name) => (codebase.constants.get_key_value(name), None),
         _ => (None, Some(&codebase.constants)),
@@ -640,12 +722,16 @@ fn expand_global_reference(
 
         if let Some(inferred_type) = constant.inferred_type.as_ref() {
             let mut inferred_type = inferred_type.clone();
-            expand_union(codebase, &mut inferred_type, options);
-            new_return_type_parts.extend(inferred_type.types.into_owned());
+            expand_union(
+                codebase,
+                &mut inferred_type,
+                &TypeExpansionOptions { preserve_initializer_object_identity: true, ..options.clone() },
+            );
+            new_return_type_parts.extend(expanded_types(inferred_type, never_kind));
         } else if let Some(type_metadata) = constant.type_metadata.as_ref() {
             let mut constant_type = type_metadata.type_union.clone();
             expand_union(codebase, &mut constant_type, options);
-            new_return_type_parts.extend(constant_type.types.into_owned());
+            new_return_type_parts.extend(expanded_types(constant_type, never_kind));
         } else {
             new_return_type_parts.push(TAtomic::Mixed(TMixed::new()));
         }
@@ -1260,17 +1346,17 @@ fn expand_template_type(
     template_type: &TTemplateType,
     codebase: &CodebaseMetadata,
     options: &TypeExpansionOptions,
-) -> Vec<TAtomic> {
+) -> TUnion {
     let mut expanded = template_type.clone();
     expand_union(codebase, expanded.get_object_mut(), options);
     expand_union(codebase, expanded.get_class_name_mut(), options);
     expand_union(codebase, expanded.get_template_name_mut(), options);
 
     let Some(resolved) = expanded.resolve(codebase) else {
-        return vec![TAtomic::Mixed(TMixed::new())];
+        return crate::ttype::get_mixed();
     };
 
-    resolved.types.into_owned()
+    resolved
 }
 
 #[cold]
@@ -1335,7 +1421,14 @@ fn expand_properties_of(
 
     let mut skip_keyed_array = false;
     let mut expanded_parts = vec![];
-    expand_atomic(&mut keyed_array, codebase, options, &mut skip_keyed_array, &mut expanded_parts);
+    expand_atomic(
+        &mut keyed_array,
+        codebase,
+        options,
+        &mut skip_keyed_array,
+        &mut expanded_parts,
+        &mut NeverKind::Implicit,
+    );
     if skip_keyed_array {
         expanded_parts
     } else {
@@ -1345,7 +1438,7 @@ fn expand_properties_of(
 }
 
 #[cold]
-fn expand_alias(alias: &TAlias, codebase: &CodebaseMetadata, options: &TypeExpansionOptions) -> Vec<TAtomic> {
+fn expand_alias(alias: &TAlias, codebase: &CodebaseMetadata, options: &TypeExpansionOptions) -> TUnion {
     let class_name = alias.get_class_name();
     let alias_name = alias.get_alias_name();
 
@@ -1353,18 +1446,18 @@ fn expand_alias(alias: &TAlias, codebase: &CodebaseMetadata, options: &TypeExpan
     let is_cycle = EXPANDING_ALIASES.with(|set| set.borrow().contains(&(class_name, alias_name)));
 
     if is_cycle {
-        return vec![TAtomic::Alias(alias.clone())];
+        return TUnion::from_atomic(TAtomic::Alias(alias.clone()));
     }
 
     let Some(mut expanded_union) = alias.resolve(codebase).cloned() else {
-        return vec![TAtomic::Alias(alias.clone())];
+        return TUnion::from_atomic(TAtomic::Alias(alias.clone()));
     };
 
     let _guard = AliasExpansionGuard::new(class_name, alias_name);
 
     expand_union(codebase, &mut expanded_union, options);
 
-    expanded_union.types.into_owned()
+    expanded_union
 }
 
 #[cfg(test)]
@@ -3164,6 +3257,8 @@ mod tests {
             function_is_final: false,
             allow_mixin_static_rebind: false,
             preserve_parameter_dependencies: false,
+            preserve_initializer_object_identity: false,
+            preserve_initializer_union_order: false,
         };
 
         let mut actual = input;

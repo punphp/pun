@@ -35,6 +35,24 @@ pub struct Settings {
     /// This does not disable PHPDoc, change full types, or enable native-dependent rules.
     pub track_native_types: bool,
 
+    /// Opt-in rule-facing observations; only these calls and expression subtrees retain scopes.
+    pub call_scope_observations: Vec<crate::observations::CallScopeRequest>,
+
+    /// Live PropertyInitializationExpr observations. Empty preserves ordinary method scheduling.
+    pub property_initialization_observations: Vec<crate::property_initialization::PropertyInitializationRequest>,
+
+    /// Produce PHPStan's immutable local value-flow results during the semantic walk.
+    pub track_variable_flow: bool,
+
+    /// PHPStan's for/while entry-scope pollution, independently of undefined-variable reporting.
+    pub pollute_scope_with_loop_initial_assignments: bool,
+
+    /// PHPStan's foreach body-entry narrowing and guaranteed-iteration holder projection.
+    pub pollute_scope_with_always_iterable_foreach: bool,
+
+    /// PHPStan's standalone block scope pollution, independently of loop settings and reporting.
+    pub pollute_scope_with_block: bool,
+
     /// Find and report expressions whose results are not used (e.g., `$a + $b;`). Defaults to `false`.
     pub find_unused_expressions: bool,
 
@@ -417,6 +435,12 @@ impl Settings {
         Self {
             version,
             track_native_types: false,
+            call_scope_observations: Vec::new(),
+            property_initialization_observations: Vec::new(),
+            pollute_scope_with_loop_initial_assignments: true,
+            pollute_scope_with_always_iterable_foreach: true,
+            track_variable_flow: false,
+            pollute_scope_with_block: true,
             find_unused_expressions: true,
             find_unused_definitions: true,
             find_overly_wide_return_types: false,

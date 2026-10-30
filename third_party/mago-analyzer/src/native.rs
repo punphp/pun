@@ -3,24 +3,35 @@
 use std::cmp::Ordering;
 use std::rc::Rc;
 
+use mago_allocator::Arena;
+use mago_codex::metadata::CodebaseMetadata;
 use mago_codex::metadata::function_like::{FunctionLikeKind, FunctionLikeMetadata};
 use mago_codex::ttype::atomic::TAtomic;
+use mago_codex::ttype::atomic::object::{TObject, named::TNamedObject};
 use mago_codex::ttype::atomic::scalar::string::TStringCasing;
 use mago_codex::ttype::atomic::scalar::{TScalar, float::TFloat, int::TInteger, string::TString};
+use mago_codex::ttype::combine_union_types;
+use mago_codex::ttype::combiner::CombinerOptions;
+use mago_codex::ttype::expander::{TypeExpansionOptions, expand_union};
 use mago_codex::ttype::union::TUnion;
 use mago_codex::ttype::{
-    get_bool, get_false, get_float, get_int, get_int_or_float, get_int_range, get_literal_float,
-    get_literal_int, get_literal_string, get_mixed, get_string, get_string_with_props, get_true,
+    get_bool, get_error, get_false, get_float, get_int, get_int_or_float, get_int_range, get_literal_float,
+    get_literal_int, get_literal_string, get_mixed, get_never, get_string, get_string_with_props,
+    get_true, wrap_atomic,
 };
 use mago_syntax::cst::{
-    AssignmentOperator, Binary, BinaryOperator, Call, Expression, Literal, Statement, UnaryPrefix,
-    UnaryPrefixOperator, Variable,
+    Access, ArgumentList, AssignmentOperator, Binary, BinaryOperator, Call, ClassLikeMemberSelector, Construct, Expression,
+    Literal, Statement, UnaryPrefix, UnaryPrefixOperator, Variable,
 };
 use mago_word::WordMap;
 use mago_word::word;
 
 use crate::artifacts::AnalysisArtifacts;
+use crate::context::Context;
 use crate::context::block::BlockContext;
+use crate::context::scope::{var_has_root, var_references_dynamic};
+use crate::resolver::property::resolve_declared_property;
+use crate::utils::expression::{get_block_expression_id, get_root_expression_id};
 use crate::utils::php_emulation::string_to_int;
 
 pub(crate) fn scalar_type(ty: &TUnion) -> bool {
@@ -32,9 +43,39 @@ pub(crate) fn scalar_type(ty: &TUnion) -> bool {
     })
 }
 
+fn builtin_predicate(function: &FunctionLikeMetadata) -> bool {
+    !function.flags.is_user_defined()
+        && matches!(function.kind, FunctionLikeKind::Function)
+        && matches!(function.name.as_bytes(), b"is_int" | b"is_string" | b"property_exists")
+}
+
 fn supported_function(function: &FunctionLikeMetadata) -> bool {
+    let predicate = builtin_predicate(function);
+    (function.flags.is_user_defined() || predicate)
+        && !function.flags.is_by_reference()
+        && !function.flags.has_yield()
+        && function.assertions.is_empty()
+        // These predicates' conditional PHPDoc assertions do not change the native signature
+        // or straight-line continuation. Calls used as conditions remain unsupported.
+        && (predicate || (function.if_true_assertions.is_empty() && function.if_false_assertions.is_empty()))
+        && function.globals_accessed.is_empty()
+        && function.parameters.iter().all(|parameter| {
+            !parameter.flags.is_by_reference()
+                && !parameter.flags.is_variadic()
+                && parameter.out_type.is_none()
+        })
+}
+
+/// ArgumentsHandler::processArgs writes through references and invalidates object/resource
+/// arguments separately from FuncCallHandler's native return resolver. Bound this continuation
+/// to visited scalar/null arguments and non-reference signatures, including variadic signatures.
+/// A missing native return contract is not evidence that the call mutates these local holders.
+pub(crate) fn function_continuation(
+    function: &FunctionLikeMetadata,
+    arguments: &ArgumentList<'_>,
+    artifacts: &AnalysisArtifacts,
+) -> bool {
     matches!(function.kind, FunctionLikeKind::Function)
-        && function.flags.is_user_defined()
         && !function.flags.is_by_reference()
         && !function.flags.has_yield()
         && function.assertions.is_empty()
@@ -43,44 +84,76 @@ fn supported_function(function: &FunctionLikeMetadata) -> bool {
         && function.globals_accessed.is_empty()
         && function.parameters.iter().all(|parameter| {
             !parameter.flags.is_by_reference()
-                && !parameter.flags.is_variadic()
                 && parameter.out_type.is_none()
-                && parameter
-                    .type_declaration_metadata
-                    .as_ref()
-                    .is_none_or(|ty| scalar_type(&ty.type_union))
+                && parameter.closure_this_type.is_none()
+                && !parameter.type_declaration_metadata.as_ref()
+                    .is_some_and(|ty| ty.type_union.has_callable())
+        })
+        // FuncCallScopeEffectsHelper::applyCallScopeEffects assigns http_response_header
+        // for these builtins without a by-reference parameter. That write is not ported here.
+        && (function.flags.is_user_defined()
+            || !matches!(function.name.as_bytes(), b"fopen" | b"file_get_contents"))
+        && arguments.arguments.iter().all(|argument| {
+            argument.is_positional() && !argument.is_unpacked()
+                && artifacts.get_native_expression_type(argument.value()).is_some_and(|ty| {
+                    ty.types.iter().all(|atomic| matches!(atomic, TAtomic::Scalar(_) | TAtomic::Null))
+                })
         })
 }
 
-pub(crate) fn parameter_types(function: &FunctionLikeMetadata) -> Option<WordMap<Rc<TUnion>>> {
-    supported_function(function).then(|| {
-        function
-            .parameters
-            .iter()
-            .map(|parameter| {
-                let ty = parameter
-                    .type_declaration_metadata
-                    .as_ref()
-                    .map_or_else(get_mixed, |ty| ty.type_union.clone());
-                (parameter.name.0, Rc::new(ty))
-            })
-            .collect()
-    })
+fn named_object(ty: &TUnion) -> Option<&TNamedObject> {
+    match ty.types.as_ref() {
+        [TAtomic::Object(TObject::Named(object))]
+            if object.type_parameters.is_none() && object.intersection_types.is_none() => Some(object),
+        _ => None,
+    }
 }
 
-pub(crate) fn function_return_type(function: &FunctionLikeMetadata) -> Option<TUnion> {
+pub(crate) fn parameter_types(
+    function: &FunctionLikeMetadata,
+    codebase: &CodebaseMetadata,
+) -> Option<WordMap<Rc<TUnion>>> {
     if !supported_function(function) {
         return None;
     }
+    function.parameters.iter().map(|parameter| {
+        let mut ty = parameter.type_declaration_metadata.as_ref()
+            .map_or_else(get_mixed, |ty| ty.type_union.clone());
+        expand_union(codebase, &mut ty, &TypeExpansionOptions::default());
+        (ty.types.iter().all(|atomic| matches!(atomic,
+            TAtomic::Scalar(_) | TAtomic::Null | TAtomic::Mixed(_) | TAtomic::Array(_)))
+            || named_object(&ty).is_some())
+            .then(|| (parameter.name.0, Rc::new(ty)))
+    }).collect()
+}
+
+pub(crate) fn function_return_type(function: &FunctionLikeMetadata) -> Option<TUnion> {
+    if !matches!(function.kind, FunctionLikeKind::Function)
+        || !supported_function(function)
+        || (!builtin_predicate(function)
+            && function.parameters.iter().any(|parameter| parameter.type_declaration_metadata.as_ref()
+                .is_some_and(|ty| !scalar_type(&ty.type_union))))
+    {
+        return None;
+    }
+    // PHPStan's native-promoted resolveReturnType uses the declaration before PHPDoc or
+    // dynamic return extensions. In particular an object return is not its documented shape.
     let ty = function
         .return_type_declaration_metadata
         .as_ref()
         .map_or_else(get_mixed, |ty| ty.type_union.clone());
-    scalar_type(&ty).then_some(ty)
+    (scalar_type(&ty) || ty.is_void() || matches!(ty.types.as_ref(), [TAtomic::Object(TObject::Any)])
+        || named_object(&ty).is_some()).then_some(ty)
 }
 
 pub(crate) fn before_statement(statement: &Statement<'_>, block: &mut BlockContext<'_>) {
     if block.native_locals.is_none() {
+        return;
+    }
+    if let Statement::If(statement) = statement {
+        if !condition_shape(statement.condition, true) {
+            block.native_locals = None;
+        }
         return;
     }
     if !matches!(
@@ -94,8 +167,9 @@ pub(crate) fn before_statement(statement: &Statement<'_>, block: &mut BlockConte
             | Statement::Block(_)
             | Statement::Expression(_)
             | Statement::Return(_)
+            | Statement::Unset(_)
     ) {
-        // Branch, loop, reference and exceptional transfers are not implemented. Invalidation
+        // Loop, reference and exceptional transfers are not implemented. Invalidation
         // happens BEFORE their children, so neither inner nor subsequent queries use stale state.
         block.native_locals = None;
     }
@@ -118,6 +192,7 @@ pub(crate) fn before_expression(expression: &Expression<'_>, block: &mut BlockCo
                     UnaryPrefixOperator::Plus(_)
                         | UnaryPrefixOperator::Negation(_)
                         | UnaryPrefixOperator::Not(_)
+                        | UnaryPrefixOperator::Reference(_)
                 )
         }
         Expression::Binary(binary) => {
@@ -125,14 +200,28 @@ pub(crate) fn before_expression(expression: &Expression<'_>, block: &mut BlockCo
                 || binary.operator.is_multiplicative()
                 || binary.operator.is_comparison()
                 || binary.operator.is_concatenation()
-                || matches!(binary.operator, BinaryOperator::LowXor(_))
+                || matches!(binary.operator, BinaryOperator::LowXor(_) | BinaryOperator::NullCoalesce(_))
         }
         Expression::Assignment(assignment) => {
-            matches!(assignment.operator, AssignmentOperator::Assign(_))
-                && matches!(assignment.lhs, Expression::Variable(Variable::Direct(variable))
-                    if variable.name != b"$this" && variable.name != b"$GLOBALS" && !variable.name.starts_with(b"$_"))
+            let mut target = assignment.lhs;
+            if matches!(assignment.operator, AssignmentOperator::Coalesce(_)) {
+                while let Expression::ArrayAccess(access) = target { target = access.array; }
+            }
+            matches!(assignment.operator, AssignmentOperator::Assign(_) | AssignmentOperator::Coalesce(_))
+                && matches!(target, Expression::Variable(Variable::Direct(variable))
+                    if variable.name != b"$this" && variable.name != b"$GLOBALS" && !variable.name.starts_with(b"$_")
+                        && !block.references_in_scope.contains_key(&word(variable.name))
+                        && !block.referenced_counts.contains_key(&word(variable.name))
+                        && !block.references_to_external_scope.contains(&word(variable.name)))
         }
-        // The resolved target is checked before arguments in function_call.rs.
+        Expression::Access(Access::Property(property)) => property.property.is_identifier(),
+        Expression::ArrayAccess(_) | Expression::Array(_) | Expression::LegacyArray(_)
+        | Expression::Construct(Construct::Isset(_)) | Expression::Closure(_) | Expression::ArrowFunction(_) => true,
+        Expression::Instantiation(new) => matches!(new.class, Expression::Identifier(_))
+            && new.argument_list.as_ref().is_none_or(|arguments| arguments.arguments.is_empty()),
+        Expression::Call(Call::Method(call)) => call.method.is_identifier() && call.argument_list.arguments.is_empty(),
+        Expression::Conditional(conditional) => condition_shape(conditional.condition, true),
+        // Statically named calls evaluate arguments before their own continuation effects.
         Expression::Call(Call::Function(call)) => {
             matches!(call.function, Expression::Identifier(_))
         }
@@ -143,11 +232,29 @@ pub(crate) fn before_expression(expression: &Expression<'_>, block: &mut BlockCo
     }
 }
 
-pub(crate) fn after_expression(
+pub(crate) fn after_expression<A: Arena>(
     expression: &Expression<'_>,
+    context: &Context<'_, '_, A>,
     block: &mut BlockContext<'_>,
     artifacts: &mut AnalysisArtifacts,
 ) {
+    // A ternary value can be unavailable while its full-selected continuation is supported.
+    // The conditional analyzer owns both transfers independently.
+    if matches!(expression, Expression::Conditional(_) | Expression::Closure(_) | Expression::ArrowFunction(_))
+        || matches!(expression, Expression::Assignment(assignment)
+            if matches!(assignment.rhs, Expression::Closure(_) | Expression::ArrowFunction(_)))
+    {
+        // Closure body observations and capture transfers are supported, not native callable signatures.
+        return;
+    }
+    if let Expression::Assignment(assignment) = expression
+        && let Some(root) = get_root_expression_id(assignment.lhs)
+        && let Some(locals) = &mut block.native_locals
+    {
+        // A specified offset is a scope fact, not a replacement array value.
+        // Root/key writes invalidate it just as they invalidate selected holders.
+        locals.retain(|name, _| *name == root || (!var_has_root(*name, root) && !var_references_dynamic(*name, root)));
+    }
     let Some(locals) = &block.native_locals else {
         return;
     };
@@ -156,22 +263,509 @@ pub(crate) fn after_expression(
         Expression::Literal(_) => artifacts.get_rc_expression_type(expression).cloned(),
         Expression::Variable(Variable::Direct(variable)) => {
             locals.get(&word(variable.name)).cloned()
+                .or_else(|| (block.flags.inside_isset() && block.variable_certainty(word(variable.name)).is_absent())
+                    .then(|| Rc::new(get_error())))
         }
         Expression::Parenthesized(parenthesized) => artifacts
             .get_rc_native_expression_type(parenthesized.expression)
             .cloned(),
         // An assignment expression yields its RHS, even when @var changes the target's type.
+        Expression::Assignment(assignment) if matches!(assignment.operator, AssignmentOperator::Coalesce(_)) => {
+            // The synthetic Binary has this same span. Keep its composed value, not the RHS
+            // that the ordinary writer copied. The target's prepared read remains unchanged.
+            let value = artifacts.get_rc_native_expression_type(expression).cloned();
+            if let Some(value) = &value
+                && let Some((name, written)) = crate::expression::array_access::native_write(
+                    assignment.lhs, value, artifacts, locals, context.codebase,
+                )
+                && let Some(locals) = &mut block.native_locals
+            {
+                locals.insert(name, Rc::new(written));
+            } else {
+                block.native_locals = None;
+            }
+            value
+        }
         Expression::Assignment(assignment) => artifacts
             .get_rc_native_expression_type(assignment.rhs)
             .cloned(),
         Expression::UnaryPrefix(unary) => unary_type(unary, artifacts).map(Rc::new),
+        Expression::Binary(binary) if matches!(binary.operator, BinaryOperator::NullCoalesce(_)) => {
+            artifacts.get_rc_native_expression_type(expression).cloned()
+        }
         Expression::Binary(binary) => binary_type(binary, artifacts).map(Rc::new),
+        Expression::Access(Access::Property(property)) => {
+            property_type(property.object, &property.property, context, block, artifacts).map(Rc::new)
+        }
+        Expression::ArrayAccess(access) => {
+            get_block_expression_id(expression, context, block).and_then(|id| locals.get(&id).cloned())
+                .or_else(|| crate::expression::array_access::native_value(access, context.codebase, artifacts).map(Rc::new))
+        }
+        Expression::Call(Call::Method(call)) => {
+            method_type(call.object, &call.method, context, block, artifacts).map(Rc::new)
+        }
+        Expression::Instantiation(new) => {
+            let Expression::Identifier(identifier) = new.class else { return };
+            let name = word(context.resolved_names.get(identifier));
+            let class = context.codebase.get_class_like_by_name(name);
+            class.filter(|class| class.kind.is_class() && class.template_types.is_empty()
+                && context.codebase.get_declaring_method(name.as_bytes(), b"__construct").is_none())
+                .map(|_| Rc::new(wrap_atomic(TAtomic::Object(TObject::Named(TNamedObject::new(name).with_is_exact(true))))))
+        }
         _ => artifacts.get_rc_native_expression_type(expression).cloned(),
     };
     if let Some(ty) = ty {
-        artifacts.set_rc_native_expression_type(expression, ty);
-    } else {
+        if matches!(expression, Expression::Call(Call::Method(_))) {
+            artifacts.set_resolved_native_expression_type(expression, ty);
+        } else {
+            artifacts.set_rc_native_expression_type(expression, ty);
+        }
+    } else if !matches!(expression, Expression::Call(Call::Function(_)) | Expression::Parenthesized(_)) {
+        // The call analyzer owns its continuation independently of return availability.
+        // Parentheses add no effects; their child already owns any invalidation.
         block.native_locals = None;
+    }
+}
+
+// A memoized full property read need not visit its receiver again. Read only the native holder
+// for a direct/parenthesized local in that case, never the full memoized expression type.
+fn receiver_type<'a>(expression: &Expression<'_>, block: &'a BlockContext<'_>, artifacts: &'a AnalysisArtifacts) -> Option<&'a TUnion> {
+    direct_local(expression).and_then(|name| block.native_locals.as_ref()?.get(&word(name)).map(Rc::as_ref))
+        .or_else(|| artifacts.get_native_expression_type(expression))
+}
+
+fn property_type<A: Arena>(
+    receiver: &Expression<'_>, selector: &ClassLikeMemberSelector<'_>,
+    context: &Context<'_, '_, A>, block: &BlockContext<'_>, artifacts: &AnalysisArtifacts,
+) -> Option<TUnion> {
+    let receiver = receiver_type(receiver, block, artifacts)?;
+    if receiver.is_mixed() {
+        return Some(get_mixed());
+    }
+    let object = named_object(receiver)?;
+    let ClassLikeMemberSelector::Identifier(name) = selector else { return None };
+    let class = context.codebase.get_class_like_by_name(object.name)?;
+    let declaration = resolve_declared_property(context.codebase, class,
+        mago_word::concat_word!(b"$", name.value), true, block.scope.get_class_like_name())?;
+    let ty = declaration.native_type(object)?;
+    scalar_type(&ty).then_some(ty)
+}
+
+fn method_type<A: Arena>(
+    receiver: &Expression<'_>, selector: &ClassLikeMemberSelector<'_>,
+    context: &Context<'_, '_, A>, block: &BlockContext<'_>, artifacts: &AnalysisArtifacts,
+) -> Option<TUnion> {
+    let receiver = receiver_type(receiver, block, artifacts)?;
+    if receiver.is_mixed() {
+        return Some(get_mixed());
+    }
+    let object = named_object(receiver)?;
+    let ClassLikeMemberSelector::Identifier(name) = selector else { return None };
+    let method = context.codebase.get_declaring_method(object.name.as_bytes(), name.value)?;
+    if !supported_function(method) || !method.parameters.is_empty() {
+        return None;
+    }
+    let mut ty = method.return_type_declaration_metadata.as_ref()
+        .map_or_else(get_mixed, |metadata| metadata.type_union.clone());
+    // CallbackUnresolvedMethodPrototypeReflection reuses the transformed effective return
+    // when it equals the native return; MixedType::equals intentionally ignores explicitness.
+    if object.is_static && ty.is_mixed()
+        && let Some(full) = &method.return_type_metadata
+        && full.type_union.is_mixed()
+    {
+        ty = full.type_union.clone();
+    }
+    (scalar_type(&ty) || ty.is_void()).then_some(ty)
+}
+
+pub(crate) type Locals = WordMap<Rc<TUnion>>;
+
+// Do not enter conditional::analyze's re-evaluation path with an effectful wrapped condition.
+// Short circuit, calls, and general expression constraints remain outside this bounded transfer.
+pub(crate) fn condition_shape(expression: &Expression<'_>, assignment: bool) -> bool {
+    match expression {
+        Expression::Literal(_) | Expression::Variable(Variable::Direct(_)) => true,
+        Expression::Parenthesized(value) => condition_shape(value.expression, false),
+        Expression::UnaryPrefix(value) if value.operator.is_not() => {
+            condition_shape(value.operand, false)
+        }
+        Expression::Assignment(value) => {
+            assignment && value.operator.is_assign() && direct_local(value.lhs).is_some()
+        }
+        Expression::Binary(value) => {
+            (value.operator.is_identity() || ordered(&value.operator))
+                && ((direct_local(value.lhs).is_some() && literal_shape(value.rhs))
+                    || (direct_local(value.rhs).is_some() && literal_shape(value.lhs)))
+        }
+        _ => false,
+    }
+}
+
+fn literal_shape(expression: &Expression<'_>) -> bool {
+    match expression {
+        Expression::Literal(_) => true,
+        Expression::UnaryPrefix(value) => {
+            matches!(value.operand, Expression::Literal(_))
+                && matches!(value.operator, UnaryPrefixOperator::Negation(_))
+        }
+        _ => false,
+    }
+}
+
+fn ordered(operator: &BinaryOperator<'_>) -> bool {
+    matches!(
+        operator,
+        BinaryOperator::LessThan(_)
+            | BinaryOperator::LessThanOrEqual(_)
+            | BinaryOperator::GreaterThan(_)
+            | BinaryOperator::GreaterThanOrEqual(_)
+    )
+}
+
+/// PHPStan applies the ordinary condition's specifications to both holder maps. In particular,
+/// full-type decided scalar comparisons can impose never on a native-reachable branch.
+/// Callers validate condition_shape before evaluation; an unsupported condition has no live map.
+pub(crate) fn branch(
+    condition: &Expression<'_>,
+    locals: &Option<Locals>,
+    artifacts: &AnalysisArtifacts,
+    positive: bool,
+    codebase: &CodebaseMetadata,
+) -> Option<Locals> {
+    let mut locals = locals.clone()?;
+    match condition {
+        Expression::Parenthesized(value) => {
+            return branch(
+                value.expression,
+                &Some(locals),
+                artifacts,
+                positive,
+                codebase,
+            );
+        }
+        Expression::UnaryPrefix(value) if value.operator.is_not() => {
+            return branch(value.operand, &Some(locals), artifacts, !positive, codebase);
+        }
+        Expression::Variable(Variable::Direct(variable)) => {
+            let name = word(variable.name);
+            let narrowed = truthy_type(locals.get(&name)?, positive, codebase)?;
+            locals.insert(name, Rc::new(narrowed));
+        }
+        Expression::Assignment(value) => {
+            let name = word(direct_local(value.lhs)?);
+            let narrowed = truthy_type(locals.get(&name)?, positive, codebase)?;
+            locals.insert(name, Rc::new(narrowed));
+        }
+        Expression::Binary(value) => {
+            let (name, literal, reversed) = if let Some(name) = direct_local(value.lhs) {
+                (word(name), value.rhs, false)
+            } else {
+                (word(direct_local(value.rhs)?), value.lhs, true)
+            };
+            // The shape gate allows only scalar literal operands here.
+            let literal = artifacts.get_native_expression_type(literal)?;
+            let current = locals.get(&name)?;
+            let narrowed = if value.operator.is_identity() {
+                let equal = positive ^ value.operator.is_negated_equality();
+                let decided_scalar = matches!(
+                    literal.get_single(),
+                    TAtomic::Scalar(TScalar::Integer(_) | TScalar::String(_))
+                ) && !equal;
+                let decided = artifacts.get_expression_type(value).and_then(truth);
+                if let Some(known) = decided.filter(|_| decided_scalar) {
+                    if known != positive {
+                        get_never()
+                    } else {
+                        (**current).clone()
+                    }
+                } else {
+                    literal_type(current, literal.get_single(), equal, codebase)?
+                }
+            } else {
+                let TAtomic::Scalar(TScalar::Integer(TInteger::Literal(limit))) =
+                    literal.get_single()
+                else {
+                    return None;
+                };
+                let greater = matches!(
+                    value.operator,
+                    BinaryOperator::GreaterThan(_) | BinaryOperator::GreaterThanOrEqual(_)
+                ) ^ reversed;
+                let inclusive = matches!(
+                    value.operator,
+                    BinaryOperator::LessThanOrEqual(_) | BinaryOperator::GreaterThanOrEqual(_)
+                );
+                let above = greater == positive;
+                let include_limit = inclusive == positive;
+                let boundary = if include_limit {
+                    Some(*limit)
+                } else if above {
+                    limit.checked_add(1)
+                } else {
+                    limit.checked_sub(1)
+                };
+                match boundary {
+                    Some(boundary) => range_type(
+                        current,
+                        if above { boundary } else { i64::MIN },
+                        if above { i64::MAX } else { boundary },
+                        codebase,
+                    )?,
+                    None => get_never(),
+                }
+            };
+            locals.insert(name, Rc::new(narrowed));
+        }
+        _ => {} // Literal conditions do not constrain a local.
+    }
+    Some(locals)
+}
+
+/// Only continuing, full-selected edges contribute. An unavailable contributing edge poisons the
+/// result; an absent variable on an edge does not replace its when-defined type with mixed.
+pub(crate) fn join(branches: &[Option<Locals>], codebase: &CodebaseMetadata) -> Option<Locals> {
+    let mut merged = branches.first()?.clone()?;
+    for branch in &branches[1..] {
+        for (name, ty) in branch.as_ref()? {
+            let value = merged
+                .get(name)
+                .map_or_else(|| ty.clone(), |old| Rc::new(union(old, ty, codebase)));
+            merged.insert(*name, value);
+        }
+    }
+    // Unlike a possibly absent variable's when-defined value, an expression
+    // constraint is authoritative only if every contributing edge specifies it.
+    merged.retain(|name, _| !name.as_bytes().contains(&b'[')
+        || branches.iter().all(|branch| branch.as_ref().is_some_and(|locals| locals.contains_key(name))));
+    Some(merged)
+}
+
+fn union(left: &TUnion, right: &TUnion, codebase: &CodebaseMetadata) -> TUnion {
+    let mut result = combine_union_types(left, right, codebase, CombinerOptions::default());
+    // Mago retains falsy literals beside a truthy string. PHPStan collapses the complete
+    // truthy/falsy partition back to string; keep this normalization out of the full lane.
+    let has_literal = |want: &[u8]| {
+        result.types.iter().any(|atomic| {
+            matches!(atomic,
+        TAtomic::Scalar(TScalar::String(value)) if value.get_known_literal_value() == Some(want))
+        })
+    };
+    let has_empty = has_literal(b"");
+    let has_zero = has_literal(b"0");
+    if (has_empty || has_zero)
+        && result.types.iter().any(|atomic| {
+            let TAtomic::Scalar(TScalar::String(value)) = atomic else {
+                return false;
+            };
+            let mut general = value.clone();
+            general.is_truthy = false;
+            general.is_non_empty = false;
+            general == TString::general() && value.is_non_empty && (!value.is_truthy || has_zero)
+        })
+    {
+        result
+            .types
+            .to_mut()
+            .retain(|atomic| !matches!(atomic, TAtomic::Scalar(TScalar::String(_))));
+        let mut string = TString::general();
+        string.is_non_empty = !has_empty;
+        result
+            .types
+            .to_mut()
+            .push(TAtomic::Scalar(TScalar::String(string)));
+    }
+    result
+}
+
+fn interval(min: i64, max: i64) -> TUnion {
+    if min > max {
+        get_never()
+    } else if min == max {
+        get_literal_int(min)
+    } else {
+        get_int_range(
+            (min != i64::MIN).then_some(min),
+            (max != i64::MAX).then_some(max),
+        )
+    }
+}
+
+fn range_type(ty: &TUnion, min: i64, max: i64, codebase: &CodebaseMetadata) -> Option<TUnion> {
+    let mut result = get_never();
+    for atomic in ty.types.iter() {
+        let part = match atomic {
+            TAtomic::Scalar(TScalar::Integer(value)) => interval(
+                min.max(value.get_minimum_value().unwrap_or(i64::MIN)),
+                max.min(value.get_maximum_value().unwrap_or(i64::MAX)),
+            ),
+            _ => return None,
+        };
+        result = union(&result, &part, codebase);
+    }
+    Some(result)
+}
+
+fn integer_literal(
+    value: &TInteger,
+    want: i64,
+    equal: bool,
+    codebase: &CodebaseMetadata,
+) -> TUnion {
+    let min = value.get_minimum_value().unwrap_or(i64::MIN);
+    let max = value.get_maximum_value().unwrap_or(i64::MAX);
+    if equal {
+        interval(min.max(want), max.min(want))
+    } else if want < min || want > max {
+        wrap_atomic(TAtomic::Scalar(TScalar::Integer(*value)))
+    } else {
+        let left = want
+            .checked_sub(1)
+            .map_or_else(get_never, |end| interval(min, end));
+        let right = want
+            .checked_add(1)
+            .map_or_else(get_never, |start| interval(start, max));
+        union(&left, &right, codebase)
+    }
+}
+
+fn literal_type(
+    ty: &TUnion,
+    literal: &TAtomic,
+    equal: bool,
+    codebase: &CodebaseMetadata,
+) -> Option<TUnion> {
+    let mut result = get_never();
+    for atomic in ty.types.iter() {
+        let part = match (atomic, literal) {
+            (
+                TAtomic::Scalar(TScalar::Integer(value)),
+                TAtomic::Scalar(TScalar::Integer(TInteger::Literal(want))),
+            ) => integer_literal(value, *want, equal, codebase),
+            (TAtomic::Scalar(TScalar::Bool(value)), TAtomic::Scalar(TScalar::Bool(want))) => {
+                let want = want.value?;
+                match value.value {
+                    Some(value) if (value == want) != equal => get_never(),
+                    Some(_) => wrap_atomic(atomic.clone()),
+                    None => boolean(Some(want == equal)),
+                }
+            }
+            (TAtomic::Scalar(TScalar::String(value)), TAtomic::Scalar(TScalar::String(want))) => {
+                let want_literal = want.get_known_literal_value()?;
+                if let Some(value) = value.get_known_literal_value() {
+                    if (value == want_literal) == equal {
+                        wrap_atomic(atomic.clone())
+                    } else {
+                        get_never()
+                    }
+                } else {
+                    // comparison_type admitted only a general or known-literal string.
+                    if equal {
+                        wrap_atomic(literal.clone())
+                    } else {
+                        wrap_atomic(atomic.clone())
+                    }
+                }
+            }
+            (TAtomic::Null, TAtomic::Null) => {
+                if equal {
+                    wrap_atomic(TAtomic::Null)
+                } else {
+                    get_never()
+                }
+            }
+            (
+                TAtomic::Null
+                | TAtomic::Scalar(TScalar::Bool(_) | TScalar::Integer(_) | TScalar::String(_)),
+                TAtomic::Null
+                | TAtomic::Scalar(TScalar::Bool(_) | TScalar::Integer(_) | TScalar::String(_)),
+            ) => {
+                if equal {
+                    get_never()
+                } else {
+                    wrap_atomic(atomic.clone())
+                }
+            }
+            _ => return None,
+        };
+        result = union(&result, &part, codebase);
+    }
+    Some(result)
+}
+
+fn truthy_type(ty: &TUnion, positive: bool, codebase: &CodebaseMetadata) -> Option<TUnion> {
+    let mut result = get_never();
+    for atomic in ty.types.iter() {
+        let part = match atomic {
+            TAtomic::Never => get_never(),
+            TAtomic::Null => {
+                if positive {
+                    get_never()
+                } else {
+                    wrap_atomic(atomic.clone())
+                }
+            }
+            TAtomic::Scalar(TScalar::Bool(value)) => match value.value {
+                Some(value) if value != positive => get_never(),
+                _ => boolean(Some(positive)),
+            },
+            TAtomic::Scalar(TScalar::Integer(value)) => {
+                integer_literal(value, 0, !positive, codebase)
+            }
+            TAtomic::Scalar(TScalar::String(value)) => {
+                if let Some(literal) = value.get_known_literal_value() {
+                    if (literal != b"" && literal != b"0") == positive {
+                        wrap_atomic(atomic.clone())
+                    } else {
+                        get_never()
+                    }
+                } else {
+                    let mut general = value.clone();
+                    general.is_truthy = false;
+                    general.is_non_empty = false;
+                    if general != TString::general() {
+                        return None;
+                    }
+                    if positive {
+                        let mut value = value.clone();
+                        value.is_truthy = true;
+                        value.is_non_empty = true;
+                        wrap_atomic(TAtomic::Scalar(TScalar::String(value)))
+                    } else {
+                        let mut values = get_never();
+                        if !value.is_non_empty {
+                            values = get_literal_string(word(""));
+                        }
+                        if !value.is_truthy {
+                            values = union(&values, &get_literal_string(word("0")), codebase);
+                        }
+                        values
+                    }
+                }
+            }
+            _ => return None,
+        };
+        result = union(&result, &part, codebase);
+    }
+    Some(result)
+}
+
+pub(crate) fn conditional_value(
+    condition: &Expression<'_>,
+    then: Option<&Expression<'_>>,
+    otherwise: &Expression<'_>,
+    artifacts: &AnalysisArtifacts,
+    codebase: &CodebaseMetadata,
+) -> Option<TUnion> {
+    let condition_type = artifacts.get_native_expression_type(condition)?;
+    let positive = || match then {
+        Some(then) => artifacts.get_native_expression_type(then).cloned(),
+        None => truthy_type(condition_type, true, codebase),
+    };
+    let negative = || artifacts.get_native_expression_type(otherwise).cloned();
+    match truth(condition_type) {
+        Some(true) => positive(),
+        Some(false) => negative(),
+        None => Some(union(&positive()?, &negative()?, codebase)),
     }
 }
 
@@ -237,6 +831,9 @@ fn boolean(value: Option<bool>) -> TUnion {
 
 fn unary_type(unary: &UnaryPrefix<'_>, artifacts: &AnalysisArtifacts) -> Option<TUnion> {
     let ty = artifacts.get_native_expression_type(unary.operand)?;
+    if matches!(unary.operator, UnaryPrefixOperator::Reference(_)) {
+        return Some(ty.clone());
+    }
     if let Some(cast) = scalar_cast(&unary.operator) {
         return cast_type(cast, ty);
     }
@@ -351,9 +948,7 @@ fn cast_type(cast: ScalarCast, ty: &TUnion) -> Option<TUnion> {
             }
             get_float()
         }
-        (String, Scalar(Int(TInteger::Literal(value)))) => {
-            get_literal_string(mago_word::i64_word(*value))
-        }
+        (String, Scalar(Int(integer))) => integer.to_string_type(),
         (String, Scalar(Decimal(TFloat::Literal(value)))) => {
             if **value == 0.0 {
                 // ConstantFloatType::toString intentionally represents both zero signs.
@@ -366,16 +961,15 @@ fn cast_type(cast: ScalarCast, ty: &TUnion) -> Option<TUnion> {
             }
         }
         (String, Scalar(Decimal(TFloat::Float))) => {
-            // The shared union constructor drops casing when is_numeric is true.
+            // PHP's scientific float notation uses uppercase E, not lowercase e.
             TUnion::from_atomic(Scalar(Text(TString::general_with_props(
                 true,
                 false,
-                true,
+                false, // Numericness implies nonemptiness without a separate accessory.
                 false,
                 TStringCasing::Uppercase,
             ))))
         }
-        // General/ranged integer strings need PHPStan's decimal-integer-string accessory, not numeric-string.
         _ => return None,
     })
 }
@@ -592,11 +1186,71 @@ fn direct_local<'a>(mut expression: &'a Expression<'_>) -> Option<&'a [u8]> {
     }
 }
 
+/// IssetabilityResolution::isSet for native variable/offset/leaf values. The
+/// outer Option is availability; the inner Option is PHPStan's maybe verdict.
+pub(crate) fn isset(
+    expression: &Expression<'_>,
+    block: &BlockContext<'_>,
+    artifacts: &AnalysisArtifacts,
+    codebase: &CodebaseMetadata,
+) -> Option<Option<bool>> {
+    isset_fold(expression, block, artifacts, codebase, None)
+}
+
+fn isset_fold(
+    expression: &Expression<'_>,
+    block: &BlockContext<'_>,
+    artifacts: &AnalysisArtifacts,
+    codebase: &CodebaseMetadata,
+    result: Option<bool>,
+) -> Option<Option<bool>> {
+    if let Some(name) = direct_local(expression) {
+        let certainty = block.variable_certainty(word(name));
+        if !certainty.is_defined() && !certainty.is_absent() { return Some(None); }
+        if let Some(result) = result { return Some(Some(result)); }
+        if certainty.is_absent() { return Some(Some(false)); }
+    }
+    if let Expression::ArrayAccess(access) = expression {
+        return crate::expression::array_access::native_offset(
+            artifacts.get_native_expression_type(access.array)?,
+            artifacts.get_native_expression_type(access.index)?,
+            codebase,
+        ).and_then(|(value, exists)| {
+            if exists == Some(false) { return Some(Some(false)); }
+            if exists.is_none() { return Some(None); }
+            // isSet replaces the threaded verdict at each offset, then forwards it
+            // through the root variable's certainty gate. It is not a conjunction
+            // of each link's nullability (not even for a null leaf).
+            let value = artifacts.get_native_expression_type(expression).unwrap_or(&value);
+            match non_null(value) {
+                Some(result) => isset_fold(access.array, block, artifacts, codebase, Some(result)),
+                None => Some(None),
+            }
+        });
+    }
+    // Native/writable property reflection has separate initializedness rules.
+    // Do not infer a verdict from the native value alone.
+    if matches!(expression, Expression::Access(_)) { return None; }
+    Some(result.or(non_null(artifacts.get_native_expression_type(expression)?)))
+}
+
+fn non_null(value: &TUnion) -> Option<bool> {
+    if value.is_null() || value.is_never() { Some(false) }
+    else if value.has_null() || value.has_nullable_mixed() { None }
+    else { Some(true) }
+}
+
 fn comparison_type(binary: &Binary<'_>, left: &TUnion, right: &TUnion) -> Option<TUnion> {
     let operator = &binary.operator;
     let same_local =
         direct_local(binary.lhs).is_some_and(|name| direct_local(binary.rhs) == Some(name));
     if operator.is_identity() {
+        if let Some(value) = literal_identity(left, right).or_else(|| literal_identity(right, left))
+        {
+            return Some(boolean(
+                value.map(|value| value ^ operator.is_negated_equality()),
+            ));
+        }
         let (left_kind, left_constant) = identity_shape(left)?;
         let (right_kind, right_constant) = identity_shape(right)?;
         let identical = if left_kind != right_kind {
@@ -609,6 +1263,50 @@ fn comparison_type(binary: &Binary<'_>, left: &TUnion, right: &TUnion) -> Option
         return Some(boolean(
             identical.map(|value| value ^ operator.is_negated_equality()),
         ));
+    }
+    if ordered(operator)
+        && let (Some((left_min, left_max)), Some((right_min, right_max))) =
+            (integer_bounds(left), integer_bounds(right))
+    {
+        let value = match operator {
+            BinaryOperator::LessThan(_) => {
+                if left_max < right_min {
+                    Some(true)
+                } else if left_min >= right_max {
+                    Some(false)
+                } else {
+                    None
+                }
+            }
+            BinaryOperator::LessThanOrEqual(_) => {
+                if left_max <= right_min {
+                    Some(true)
+                } else if left_min > right_max {
+                    Some(false)
+                } else {
+                    None
+                }
+            }
+            BinaryOperator::GreaterThan(_) => {
+                if left_min > right_max {
+                    Some(true)
+                } else if left_max <= right_min {
+                    Some(false)
+                } else {
+                    None
+                }
+            }
+            _ => {
+                if left_min >= right_max {
+                    Some(true)
+                } else if left_max < right_min {
+                    Some(false)
+                } else {
+                    None
+                }
+            }
+        };
+        return Some(boolean(value));
     }
     let left = Number::from_type(left)?;
     let right = Number::from_type(right)?;
@@ -644,6 +1342,62 @@ fn comparison_type(binary: &Binary<'_>, left: &TUnion, right: &TUnion) -> Option
         })
     };
     Some(boolean(value))
+}
+
+fn integer_bounds(ty: &TUnion) -> Option<(i64, i64)> {
+    let mut min = i64::MAX;
+    let mut max = i64::MIN;
+    for atomic in ty.types.iter() {
+        let TAtomic::Scalar(TScalar::Integer(value)) = atomic else {
+            return None;
+        };
+        min = min.min(value.get_minimum_value().unwrap_or(i64::MIN));
+        max = max.max(value.get_maximum_value().unwrap_or(i64::MAX));
+    }
+    Some((min, max))
+}
+
+fn literal_identity(ty: &TUnion, literal: &TUnion) -> Option<Option<bool>> {
+    let (kind, true) = identity_shape(literal)? else {
+        return None;
+    };
+    let mut possible = false;
+    let mut definite = true;
+    for atomic in ty.types.iter() {
+        let value = if let (
+            TAtomic::Scalar(TScalar::Integer(value)),
+            TAtomic::Scalar(TScalar::Integer(TInteger::Literal(want))),
+        ) = (atomic, literal.get_single())
+        {
+            let min = value.get_minimum_value().unwrap_or(i64::MIN);
+            let max = value.get_maximum_value().unwrap_or(i64::MAX);
+            if *want < min || *want > max {
+                Some(false)
+            } else if min == max {
+                Some(true)
+            } else {
+                None
+            }
+        } else {
+            let (atomic_kind, constant) = identity_shape(&wrap_atomic(atomic.clone()))?;
+            if atomic_kind != kind {
+                Some(false)
+            } else if constant {
+                Some(atomic == literal.get_single())
+            } else {
+                None
+            }
+        };
+        possible |= value != Some(false);
+        definite &= value == Some(true);
+    }
+    Some(if definite {
+        Some(true)
+    } else if !possible {
+        Some(false)
+    } else {
+        None
+    })
 }
 
 fn concat_type(binary: &Binary<'_>, artifacts: &AnalysisArtifacts) -> Option<TUnion> {

@@ -1,0 +1,110 @@
+{
+    "273": {
+        "end": 279,
+        "expression": "$value",
+        "type": "*ERROR*",
+        "visits": 1
+    },
+    "296": {
+        "end": 319,
+        "expression": "$target->output($value)",
+        "type": "null",
+        "visits": 1
+    },
+    "312": {
+        "end": 318,
+        "expression": "$value",
+        "type": "'before'",
+        "visits": 1
+    },
+    "345": {
+        "end": 351,
+        "expression": "$value",
+        "type": "mixed",
+        "visits": 1
+    },
+    "727": {
+        "end": 729,
+        "expression": "$i",
+        "type": "*ERROR*",
+        "visits": 1
+    },
+    "739": {
+        "end": 786,
+        "expression": "$target->invoke(fn($value) => $value, ++$i, $i)",
+        "type": "int|string",
+        "visits": 1
+    },
+    "769": {
+        "end": 775,
+        "expression": "$value",
+        "type": "int|string",
+        "visits": 1
+    },
+    "777": {
+        "end": 781,
+        "expression": "++$i",
+        "type": "1",
+        "visits": 1
+    },
+    "779": {
+        "end": 781,
+        "expression": "$i",
+        "type": "0",
+        "visits": 1
+    },
+    "783": {
+        "end": 785,
+        "expression": "$i",
+        "type": "1",
+        "visits": 1
+    },
+    "1061": {
+        "end": 1067,
+        "expression": "$value",
+        "type": "*ERROR*",
+        "visits": 1
+    },
+    "1077": {
+        "end": 1106,
+        "expression": "$target->output(left: $value)",
+        "type": "null",
+        "visits": 1
+    },
+    "1099": {
+        "end": 1105,
+        "expression": "$value",
+        "type": "0",
+        "visits": 1
+    },
+    "1132": {
+        "end": 1138,
+        "expression": "$value",
+        "type": "int|string",
+        "visits": 1
+    },
+    "1724": {
+        "end": 1778,
+        "expression": "$target->invoke(function () { return $this->read(); })",
+        "type": "int|string",
+        "visits": 1
+    },
+    "1761": {
+        "end": 1774,
+        "expression": "$this->read()",
+        "type": "int|string",
+        "visits": 1
+    },
+    "1992": {
+        "end": 2046,
+        "expression": "$target->invoke(function () { return $this->read(); })",
+        "type": "int|string",
+        "visits": 1
+    },
+    "2029": {
+        "end": 2042,
+        "expression": "$this->read()",
+        "type": "mixed",
+        "visits": 1
+    }
+}

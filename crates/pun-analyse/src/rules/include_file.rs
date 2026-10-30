@@ -68,6 +68,9 @@ pub(super) fn prepare<'arena>(
     names: &ResolvedNames<'arena>,
     codebase: &CodebaseMetadata,
     php_version: u32,
+    pollute_scope_with_loop_initial_assignments: bool,
+    pollute_scope_with_always_iterable_foreach: bool,
+    pollute_scope_with_block: bool,
     settings: &Settings,
 ) -> (Vec<Span>, State) {
     let mut wanted = Wanted {
@@ -89,13 +92,16 @@ pub(super) fn prepare<'arena>(
         None,
         file.contents.clone(),
     );
-    let (types, _, _) = infer::analyse(
+    let (types, _, _, _, _, _, _, _) = infer::analyse(
         arena,
         &file,
         program,
         names,
         codebase,
         php_version,
+        pollute_scope_with_loop_initial_assignments,
+        pollute_scope_with_always_iterable_foreach,
+        pollute_scope_with_block,
         wanted.spans,
         Vec::new(),
     );
@@ -233,7 +239,7 @@ fn strings(c: &Checker, expr: &Expression) -> Vec<String> {
 /// IntersectionType collects the strings of every member (accessories contribute none).
 fn constant_strings(t: &Type) -> Vec<String> {
     match t {
-        Type::ConstString(s) => vec![s.clone()],
+        Type::ConstString(s) => vec![String::from_utf8_lossy(s).into_owned()],
         Type::Union(ts) | Type::Benevolent(ts) => {
             let parts: Vec<_> = ts.iter().map(constant_strings).collect();
             if parts.iter().any(Vec::is_empty) {

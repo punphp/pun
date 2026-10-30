@@ -1,0 +1,38 @@
+{
+    "399": {
+        "end": 401,
+        "expression": "$i",
+        "type": "*ERROR*",
+        "visits": 1
+    },
+    "411": {
+        "end": 458,
+        "expression": "$target->invoke(fn($value) => $value, ++$i, $i)",
+        "type": "int|string",
+        "visits": 1
+    },
+    "441": {
+        "end": 447,
+        "expression": "$value",
+        "type": "int|string",
+        "visits": 1
+    },
+    "449": {
+        "end": 453,
+        "expression": "++$i",
+        "type": "1",
+        "visits": 1
+    },
+    "451": {
+        "end": 453,
+        "expression": "$i",
+        "type": "0",
+        "visits": 1
+    },
+    "455": {
+        "end": 457,
+        "expression": "$i",
+        "type": "1",
+        "visits": 1
+    }
+}

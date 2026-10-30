@@ -22,6 +22,7 @@ use mago_codex::ttype::comparator::union_comparator;
 use mago_codex::ttype::expander;
 use mago_codex::ttype::expander::StaticClassType;
 use mago_codex::ttype::expander::TypeExpansionOptions;
+use mago_codex::ttype::get_error;
 use mago_codex::ttype::get_mixed;
 use mago_codex::ttype::template::TemplateResult;
 use mago_codex::ttype::template::inferred_type_replacer;
@@ -186,6 +187,23 @@ where
         };
 
         let classname = match object {
+            TObject::NonexistentParent => {
+                if !block_context.flags.inside_isset() {
+                    report_access_on_non_object(context, object_atomic, property_selector, object_expression.span());
+                }
+                for property_name in &property_names {
+                    result.properties.push(ResolvedProperty {
+                        property_name: *property_name,
+                        lookup_class: None,
+                        declaring_class_id: None,
+                        property_span: None,
+                        property_type: get_error(),
+                        is_magic: false,
+                        read_type: None,
+                    });
+                }
+                continue;
+            }
             TObject::Any => {
                 result.has_ambiguous_path = true;
 
@@ -631,6 +649,26 @@ pub(crate) struct DeclaredProperty<'ctx> {
 impl DeclaredProperty<'_> {
     pub(crate) fn is_magic(&self) -> bool {
         matches!(self.kind, DeclaredPropertyKind::Magic)
+    }
+
+    /// Native reflection of a real, unhooked property. StaticType's callback prototype
+    /// reuses the transformed PHPDoc type when MixedType::equals(native) succeeds; that
+    /// equality ignores explicitness. An absent PHPDoc is implicit mixed, not erased text.
+    pub(crate) fn native_type(&self, receiver: &TNamedObject) -> Option<TUnion> {
+        if !matches!(self.kind, DeclaredPropertyKind::Real { annotation: None })
+            || self.property.flags.is_static() || !self.property.hooks.is_empty()
+        {
+            return None;
+        }
+        let Some(native) = &self.property.type_declaration_metadata else {
+            return Some(get_mixed());
+        };
+        if receiver.is_static && native.type_union.is_mixed()
+            && self.property.type_metadata.as_ref().is_none_or(|ty| !ty.from_docblock)
+        {
+            return Some(get_mixed());
+        }
+        Some(native.type_union.clone())
     }
 
     /// The type the governing declaration gives the property: for a real declaration whose
@@ -1084,10 +1122,12 @@ where
         if !declaring_class_metadata.template_types.is_empty()
             && let TObject::Named(named_object) = object
         {
+            let mut receiver = named_object.clone();
+            expander::specialize_named_object_for_member_lookup(context.codebase, &mut receiver);
             *ty = localize_property_type(
                 context,
                 ty,
-                named_object.get_type_parameters().unwrap_or_default(),
+                receiver.get_type_parameters().unwrap_or_default(),
                 if class_id.as_bytes().eq_ignore_ascii_case(declaring_class_id.as_bytes()) {
                     declaring_class_metadata
                 } else {

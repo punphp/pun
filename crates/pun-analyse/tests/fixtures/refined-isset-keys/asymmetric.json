@@ -1,0 +1,298 @@
+{
+    "0": [],
+    "1": [],
+    "4": [
+        [
+            "asymmetric.php",
+            11,
+            "isset.offset",
+            "Offset non-decimal-int-string on array{string} in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "asymmetric.php",
+            12,
+            "nullCoalesce.offset",
+            "Offset non-decimal-int-string on array{string} on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "asymmetric.php",
+            20,
+            "isset.offset",
+            "Offset '0' on string in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "asymmetric.php",
+            21,
+            "nullCoalesce.offset",
+            "Offset '0' on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "asymmetric.php",
+            24,
+            "isset.offset",
+            "Offset false on string in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "asymmetric.php",
+            25,
+            "nullCoalesce.offset",
+            "Offset false on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "asymmetric.php",
+            33,
+            "isset.offset",
+            "Offset decimal-int-string on array<string, string>|string in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "asymmetric.php",
+            34,
+            "nullCoalesce.offset",
+            "Offset decimal-int-string on array<string, string>|string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "asymmetric.php",
+            39,
+            "isset.offset",
+            "Offset '0' on non-empty-list<string> in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "asymmetric.php",
+            40,
+            "nullCoalesce.offset",
+            "Offset '0' on non-empty-list<string> on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "asymmetric.php",
+            41,
+            "isset.offset",
+            "Offset 0 on non-empty-list<string> in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "asymmetric.php",
+            42,
+            "nullCoalesce.offset",
+            "Offset 0 on non-empty-list<string> on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ]
+    ],
+    "5": [
+        [
+            "asymmetric.php",
+            11,
+            "isset.offset",
+            "Offset non-decimal-int-string on array{string} in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "asymmetric.php",
+            12,
+            "nullCoalesce.offset",
+            "Offset non-decimal-int-string on array{string} on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "asymmetric.php",
+            20,
+            "isset.offset",
+            "Offset '0' on string in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "asymmetric.php",
+            21,
+            "nullCoalesce.offset",
+            "Offset '0' on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "asymmetric.php",
+            24,
+            "isset.offset",
+            "Offset false on string in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "asymmetric.php",
+            25,
+            "nullCoalesce.offset",
+            "Offset false on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "asymmetric.php",
+            33,
+            "isset.offset",
+            "Offset decimal-int-string on array<string, string>|string in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "asymmetric.php",
+            34,
+            "nullCoalesce.offset",
+            "Offset decimal-int-string on array<string, string>|string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "asymmetric.php",
+            39,
+            "isset.offset",
+            "Offset '0' on non-empty-list<string> in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "asymmetric.php",
+            40,
+            "nullCoalesce.offset",
+            "Offset '0' on non-empty-list<string> on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "asymmetric.php",
+            41,
+            "isset.offset",
+            "Offset 0 on non-empty-list<string> in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "asymmetric.php",
+            42,
+            "nullCoalesce.offset",
+            "Offset 0 on non-empty-list<string> on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ]
+    ],
+    "9": [
+        [
+            "asymmetric.php",
+            11,
+            "isset.offset",
+            "Offset non-decimal-int-string on array{string} in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "asymmetric.php",
+            12,
+            "nullCoalesce.offset",
+            "Offset non-decimal-int-string on array{string} on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "asymmetric.php",
+            20,
+            "isset.offset",
+            "Offset '0' on string in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "asymmetric.php",
+            21,
+            "nullCoalesce.offset",
+            "Offset '0' on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "asymmetric.php",
+            24,
+            "isset.offset",
+            "Offset false on string in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "asymmetric.php",
+            25,
+            "nullCoalesce.offset",
+            "Offset false on string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "asymmetric.php",
+            33,
+            "isset.offset",
+            "Offset decimal-int-string on array<string, string>|string in isset() does not exist.",
+            null,
+            true
+        ],
+        [
+            "asymmetric.php",
+            34,
+            "nullCoalesce.offset",
+            "Offset decimal-int-string on array<string, string>|string on left side of ?? does not exist.",
+            null,
+            true
+        ],
+        [
+            "asymmetric.php",
+            39,
+            "isset.offset",
+            "Offset '0' on non-empty-list<string> in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "asymmetric.php",
+            40,
+            "nullCoalesce.offset",
+            "Offset '0' on non-empty-list<string> on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "asymmetric.php",
+            41,
+            "isset.offset",
+            "Offset 0 on non-empty-list<string> in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "asymmetric.php",
+            42,
+            "nullCoalesce.offset",
+            "Offset 0 on non-empty-list<string> on left side of ?? always exists and is not nullable.",
+            null,
+            true
+        ]
+    ]
+}

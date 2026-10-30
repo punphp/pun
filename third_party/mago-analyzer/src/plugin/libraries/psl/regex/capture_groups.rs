@@ -103,6 +103,7 @@ impl FunctionReturnTypeProvider for CaptureGroupsProvider {
         Some(TUnion::from_atomic(TAtomic::Object(TObject::Named(TNamedObject::new_with_type_parameters(
             word("Psl\\Type\\TypeInterface"),
             Some(vec![TUnion::from_atomic(TAtomic::Array(TArray::Keyed(TKeyedArray {
+                callable: None,
                 parameters: if has_extra { Some((Arc::new(get_arraykey()), Arc::new(get_string()))) } else { None },
                 non_empty: true,
                 known_items: Some(known_items.into()),

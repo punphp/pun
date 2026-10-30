@@ -144,7 +144,7 @@ fn report(span: Span, message: &str, source: &str, mut edits: Vec<Edit>) -> Opti
 /// `Type::getReferencedClasses()`.
 pub(crate) fn referenced_classes(t: &Type) -> Vec<String> {
     match t {
-        Type::Object(name, args) => {
+        Type::Object(name, args, _) => {
             let mut out = vec![name.clone()];
             out.extend(args.iter().flat_map(referenced_classes));
             out

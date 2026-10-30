@@ -1,0 +1,2 @@
+# These upstream oracle fixtures assert byte offsets in CRLF source.
+crates/pun-lint/tests/mago/style-require-todo-reference/Mago/*_comment_prefixes_and_unicode_tags.php -text whitespace=cr-at-eol

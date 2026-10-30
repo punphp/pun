@@ -86,7 +86,7 @@ impl Rule for AddReturnPhpdocCommonObject {
         let Some(shared) = shared else {
             return;
         };
-        let t = Type::array(resolve_key_type(&returned), Type::Object(shared, vec![]));
+        let t = Type::array(resolve_key_type(&returned), Type::Object(shared, vec![], false));
         if decorate_return(&mut info, &t) {
             out.extend(doc_report(
                 f.name,

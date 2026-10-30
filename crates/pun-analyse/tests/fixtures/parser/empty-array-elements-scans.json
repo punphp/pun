@@ -1,0 +1,9 @@
+{
+  "short": "<?php\nclass ScanBefore {}\n$value = [,];\nclass ScanAfter {}\nfunction scanFunction() {}\nconst SCAN_CONSTANT = 1;\n",
+  "legacy-body": "<?php\nclass ScanBefore {}\nfunction scanFunction() { $value = array(,,); }\nclass ScanAfter {}\nconst SCAN_CONSTANT = 1;\n",
+  "destructuring-rhs": "<?php\nclass ScanBefore {}\n[, [, $item]] = [[, 1]];\nclass ScanAfter {}\nfunction scanFunction() {}\nconst SCAN_CONSTANT = 1;\n",
+  "legacy-list-child": "<?php\nclass ScanBefore {}\nlist([, $item]) = [[1, 2]];\nclass ScanAfter {}\nfunction scanFunction() {}\nconst SCAN_CONSTANT = 1;\n",
+  "valid-destructuring": "<?php\nclass ScanBefore {}\n[array(, $item), ([, $other])] = [[1, 2], [3, 4]];\nclass ScanAfter {}\nfunction scanFunction() {}\nconst SCAN_CONSTANT = 1;\n",
+  "valid-reference-item": "<?php\nclass ScanBefore {}\n[, &$item] = [1, 2];\nclass ScanAfter {}\nfunction scanFunction() {}\nconst SCAN_CONSTANT = 1;\n",
+  "valid-foreach": "<?php\nclass ScanBefore {}\nforeach ([[1, 2]] as $key => [, $item]) {}\nclass ScanAfter {}\nfunction scanFunction() {}\nconst SCAN_CONSTANT = 1;\n"
+}

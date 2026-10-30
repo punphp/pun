@@ -59,38 +59,12 @@ fn run(dir: &Path, program: &[&str], args: &[&str]) -> (String, Option<i32>) {
     (String::from_utf8(out.stdout).unwrap(), out.status.code())
 }
 
-#[test]
-fn formats_match_phpstan() {
+fn formats_match_phpstan(name: &str, source: &str) {
     let Some(phar) = phpstan() else { return };
     let phar = phar.to_str().unwrap();
-    for (name, source) in [
-        ("errors", ERRORS),
-        ("clean", CLEAN),
-        ("non-ignorable", NON_IGNORABLE),
-        (
-            "dumps",
-            "<?php\n\\PHPStan\\dumpType(1, true); // @phpstan-ignore phpstan.dumpType\n\\PHPStan\\dumpPhpDocType(['value' => 2]);\n",
-        ),
-    ] {
-        let d = sample(name, source);
-        for f in FORMATS {
-            let format = format!("--error-format={f}");
-            let want = run(
-                &d,
-                &[
-                    "php",
-                    phar,
-                    "analyse",
-                    "--no-progress",
-                    "-c",
-                    "phpstan.neon",
-                ],
-                &[&format],
-            );
-            let got = run(&d, &[PUN, "analyse"], &[&format]);
-            assert_eq!(got, want, "{name} {f}");
-        }
-        // `-v`: raw adds each identifier.
+    let d = sample(name, source);
+    for f in FORMATS {
+        let format = format!("--error-format={f}");
         let want = run(
             &d,
             &[
@@ -100,16 +74,54 @@ fn formats_match_phpstan() {
                 "--no-progress",
                 "-c",
                 "phpstan.neon",
-                "-v",
             ],
-            &["--error-format=raw"],
+            &[&format],
         );
-        assert_eq!(
-            run(&d, &[PUN, "analyse"], &["--error-format=raw", "-v"]),
-            want,
-            "{name} raw -v"
-        );
+        let got = run(&d, &[PUN, "analyse"], &[&format]);
+        assert_eq!(got, want, "{name} {f}");
     }
+    // `-v`: raw adds each identifier.
+    let want = run(
+        &d,
+        &[
+            "php",
+            phar,
+            "analyse",
+            "--no-progress",
+            "-c",
+            "phpstan.neon",
+            "-v",
+        ],
+        &["--error-format=raw"],
+    );
+    assert_eq!(
+        run(&d, &[PUN, "analyse"], &["--error-format=raw", "-v"]),
+        want,
+        "{name} raw -v"
+    );
+}
+
+#[test]
+fn formats_match_phpstan_errors() {
+    formats_match_phpstan("errors", ERRORS);
+}
+
+#[test]
+fn formats_match_phpstan_clean() {
+    formats_match_phpstan("clean", CLEAN);
+}
+
+#[test]
+fn formats_match_phpstan_non_ignorable() {
+    formats_match_phpstan("non-ignorable", NON_IGNORABLE);
+}
+
+#[test]
+fn formats_match_phpstan_dumps() {
+    formats_match_phpstan(
+        "dumps",
+        "<?php\n\\PHPStan\\dumpType(1, true); // @phpstan-ignore phpstan.dumpType\n\\PHPStan\\dumpPhpDocType(['value' => 2]);\n",
+    );
 }
 
 #[test]
@@ -117,6 +129,36 @@ fn unknown_format_is_a_run_error() {
     let d = sample("unknown", CLEAN);
     let (out, code) = run(&d, &[PUN, "analyse"], &["--format=nope"]);
     assert_eq!((out.as_str(), code), ("", Some(2)));
+}
+
+#[test]
+fn parser_failures_are_severe_not_configurable_rule_errors() {
+    let Some(phar) = phpstan() else { return };
+    let phar = phar.to_str().unwrap();
+    let d = sample("parser-severe", "<?php\n#[\\self] class InvalidA {}\n");
+    common::write_files(&d, &[
+        ("src/b.php", "<?php\n#[\\self] class InvalidB {}\n"),
+        ("src/c.php", "<?php\nnew \\parent;\n"),
+        ("src/control.php", ERRORS),
+        ("phpstan.neon", "parameters:\n    level: 0\n    paths: [src]\n    ignoreErrors:\n        - '#^never matches$#'\n        -\n            identifier: phpstan.parse\n"),
+        ("pun.toml", "[analyse]\npaths = [\"src\"]\n[[analyse.ignore]]\nmessage = \"#^never matches$#\"\n[[analyse.ignore]]\nidentifier = \"phpstan.parse\"\n[analyse.rules]\n\"analyse/undefined/function\" = \"off\"\n"),
+    ]);
+    for format in FORMATS {
+        let arg = format!("--error-format={format}");
+        let want = run(&d, &["php", phar, "analyse", "--no-progress", "-c", "phpstan.neon"], &[&arg]);
+        assert_eq!(want.1, Some(1));
+        assert_eq!(run(&d, &[PUN, "analyse"], &[&arg]), want, "{format}");
+    }
+    std::fs::write(d.join("src/a.php"), "<?php\n#[\\self] // @pun-ignore\nclass InvalidA {}\n").unwrap();
+    let (out, code) = run(&d, &[PUN, "analyse"], &["--format=json"]);
+    let json: serde_json::Value = serde_json::from_str(&out).unwrap();
+    assert_eq!(code, Some(1));
+    assert_eq!(json["totals"]["file_errors"], 2, "{out}");
+    assert_eq!(json["totals"]["errors"], 0, "{out}");
+    let (_, code) = run(&d, &[PUN, "analyse"], &["--generate-baseline", "--quiet"]);
+    assert_eq!(code, Some(1));
+    assert!(!d.join("pun-baseline.toml").exists());
+    std::fs::remove_dir_all(d).unwrap();
 }
 
 #[test]

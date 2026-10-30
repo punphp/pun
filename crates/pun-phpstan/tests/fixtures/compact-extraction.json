@@ -1,0 +1,722 @@
+[
+    {
+        "input": "'missing'",
+        "strings": [
+            "missing"
+        ],
+        "arrays": []
+    },
+    {
+        "input": "int",
+        "strings": [],
+        "arrays": []
+    },
+    {
+        "input": "array{'missing'}",
+        "strings": [],
+        "arrays": [
+            {
+                "keys": [
+                    "0"
+                ],
+                "values": [
+                    "'missing'"
+                ],
+                "optional": [],
+                "list": "Yes",
+                "next": [
+                    1
+                ]
+            }
+        ]
+    },
+    {
+        "input": {
+            "union": [
+                "'missing'",
+                "int"
+            ]
+        },
+        "strings": [],
+        "arrays": []
+    },
+    {
+        "input": {
+            "benevolent": [
+                "'missing'",
+                "int"
+            ]
+        },
+        "strings": [
+            "missing"
+        ],
+        "arrays": []
+    },
+    {
+        "input": {
+            "benevolent": [
+                "'missing'",
+                "string"
+            ]
+        },
+        "strings": [],
+        "arrays": []
+    },
+    {
+        "input": {
+            "union": [
+                "array{'missing'}",
+                "int"
+            ]
+        },
+        "strings": [],
+        "arrays": []
+    },
+    {
+        "input": {
+            "benevolent": [
+                "array{'missing'}",
+                "int"
+            ]
+        },
+        "strings": [],
+        "arrays": [
+            {
+                "keys": [
+                    "0"
+                ],
+                "values": [
+                    "'missing'"
+                ],
+                "optional": [],
+                "list": "Yes",
+                "next": [
+                    1
+                ]
+            }
+        ]
+    },
+    {
+        "input": {
+            "benevolent": [
+                "array{'missing'}",
+                "array<int, string>"
+            ]
+        },
+        "strings": [],
+        "arrays": []
+    },
+    {
+        "input": {
+            "benevolent": [
+                "'scalarMissing'",
+                "array{'arrayMissing'}",
+                "int"
+            ]
+        },
+        "strings": [
+            "scalarMissing"
+        ],
+        "arrays": [
+            {
+                "keys": [
+                    "0"
+                ],
+                "values": [
+                    "'arrayMissing'"
+                ],
+                "optional": [],
+                "list": "Yes",
+                "next": [
+                    1
+                ]
+            }
+        ]
+    },
+    {
+        "input": {
+            "intersection": [
+                "array<int, string>",
+                "callable",
+                {
+                    "offset": [
+                        1,
+                        "'methodMissing'"
+                    ]
+                }
+            ]
+        },
+        "strings": [],
+        "arrays": [
+            {
+                "keys": [
+                    "0",
+                    "1"
+                ],
+                "values": [
+                    "class-string",
+                    "'methodMissing'"
+                ],
+                "optional": [],
+                "list": "Yes",
+                "next": [
+                    2
+                ]
+            }
+        ]
+    },
+    {
+        "input": {
+            "intersection": [
+                "array<int, string>",
+                "callable",
+                {
+                    "offset": [
+                        0,
+                        "'Closure'"
+                    ]
+                },
+                {
+                    "offset": [
+                        1,
+                        "'bind'"
+                    ]
+                }
+            ]
+        },
+        "strings": [],
+        "arrays": [
+            {
+                "keys": [
+                    "0",
+                    "1"
+                ],
+                "values": [
+                    "'Closure'",
+                    "'bind'"
+                ],
+                "optional": [],
+                "list": "Yes",
+                "next": [
+                    2
+                ]
+            }
+        ]
+    },
+    {
+        "input": {
+            "intersection": [
+                "array{class-string, 'methodMissing'}",
+                "callable"
+            ]
+        },
+        "strings": [],
+        "arrays": [
+            {
+                "keys": [
+                    "0",
+                    "1"
+                ],
+                "values": [
+                    "class-string",
+                    "'methodMissing'"
+                ],
+                "optional": [],
+                "list": "Yes",
+                "next": [
+                    2
+                ]
+            }
+        ]
+    },
+    {
+        "input": {
+            "intersection": [
+                "array<int, 'missing'>",
+                "callable"
+            ]
+        },
+        "strings": [],
+        "arrays": [
+            {
+                "keys": [
+                    "0",
+                    "1"
+                ],
+                "values": [
+                    "*NEVER*",
+                    "'missing'"
+                ],
+                "optional": [],
+                "list": "Yes",
+                "next": [
+                    2
+                ]
+            }
+        ]
+    },
+    {
+        "input": {
+            "intersection": [
+                "array<int, '0'|'methodMissing'>",
+                "callable"
+            ]
+        },
+        "strings": [],
+        "arrays": [
+            {
+                "keys": [
+                    "0",
+                    "1"
+                ],
+                "values": [
+                    "*NEVER*",
+                    "'methodMissing'"
+                ],
+                "optional": [],
+                "list": "Yes",
+                "next": [
+                    2
+                ]
+            }
+        ]
+    },
+    {
+        "input": {
+            "intersection": [
+                "array{class-string, 'methodMissing', ...<int, string>}",
+                "callable"
+            ]
+        },
+        "strings": [],
+        "arrays": [
+            {
+                "keys": [
+                    "0",
+                    "1"
+                ],
+                "values": [
+                    "class-string",
+                    "'methodMissing'"
+                ],
+                "optional": [],
+                "list": "Yes",
+                "next": [
+                    2
+                ]
+            }
+        ]
+    },
+    {
+        "input": {
+            "union": [
+                "array{'one'}",
+                "array{'two'}"
+            ]
+        },
+        "strings": [],
+        "arrays": [
+            {
+                "keys": [
+                    "0"
+                ],
+                "values": [
+                    "'one'"
+                ],
+                "optional": [],
+                "list": "Yes",
+                "next": [
+                    1
+                ]
+            },
+            {
+                "keys": [
+                    "0"
+                ],
+                "values": [
+                    "'two'"
+                ],
+                "optional": [],
+                "list": "Yes",
+                "next": [
+                    1
+                ]
+            }
+        ]
+    },
+    {
+        "input": {
+            "intersection": [
+                "array{'one'}",
+                "non-empty-array"
+            ]
+        },
+        "strings": [],
+        "arrays": [
+            {
+                "keys": [
+                    "0"
+                ],
+                "values": [
+                    "'one'"
+                ],
+                "optional": [],
+                "list": "Yes",
+                "next": [
+                    1
+                ]
+            }
+        ]
+    },
+    {
+        "input": {
+            "template": {
+                "name": "T",
+                "bound": "'missing'"
+            }
+        },
+        "strings": [
+            "missing"
+        ],
+        "arrays": []
+    },
+    {
+        "input": {
+            "template": {
+                "name": "U",
+                "bound": {
+                    "template": {
+                        "name": "T",
+                        "bound": "'missing'"
+                    }
+                }
+            }
+        },
+        "strings": [],
+        "arrays": []
+    },
+    {
+        "input": {
+            "template": {
+                "name": "T",
+                "bound": "array{'missing'}"
+            }
+        },
+        "strings": [],
+        "arrays": [
+            {
+                "keys": [
+                    "0"
+                ],
+                "values": [
+                    "'missing'"
+                ],
+                "optional": [],
+                "list": "Yes",
+                "next": [
+                    1
+                ]
+            }
+        ]
+    },
+    {
+        "input": {
+            "template": {
+                "name": "U",
+                "bound": {
+                    "template": {
+                        "name": "T",
+                        "bound": "array{'missing'}"
+                    }
+                }
+            }
+        },
+        "strings": [],
+        "arrays": [
+            {
+                "keys": [
+                    "0"
+                ],
+                "values": [
+                    "'missing'"
+                ],
+                "optional": [],
+                "list": "Yes",
+                "next": [
+                    1
+                ]
+            }
+        ]
+    },
+    {
+        "input": {
+            "template": {
+                "name": "T",
+                "bound": {
+                    "benevolent": [
+                        "'missing'",
+                        "int"
+                    ]
+                }
+            }
+        },
+        "strings": [
+            "missing"
+        ],
+        "arrays": []
+    },
+    {
+        "input": {
+            "template": {
+                "name": "T",
+                "bound": {
+                    "benevolent": [
+                        "array{'missing'}",
+                        "int"
+                    ]
+                }
+            }
+        },
+        "strings": [],
+        "arrays": [
+            {
+                "keys": [
+                    "0"
+                ],
+                "values": [
+                    "'missing'"
+                ],
+                "optional": [],
+                "list": "Yes",
+                "next": [
+                    1
+                ]
+            }
+        ]
+    },
+    {
+        "input": {
+            "intersection": [
+                "array{0: class-string, ...<int, 'tailMissing'>}",
+                "callable"
+            ]
+        },
+        "strings": [],
+        "arrays": [
+            {
+                "keys": [
+                    "0",
+                    "1"
+                ],
+                "values": [
+                    "class-string",
+                    "'tailMissing'"
+                ],
+                "optional": [],
+                "list": "Yes",
+                "next": [
+                    2
+                ]
+            }
+        ]
+    },
+    {
+        "input": {
+            "intersection": [
+                "array{0?: class-string, 1?: 'optionalMissing'}",
+                "callable"
+            ]
+        },
+        "strings": [],
+        "arrays": [
+            {
+                "keys": [
+                    "0",
+                    "1"
+                ],
+                "values": [
+                    "class-string",
+                    "'optionalMissing'"
+                ],
+                "optional": [],
+                "list": "Yes",
+                "next": [
+                    2
+                ]
+            }
+        ]
+    },
+    {
+        "input": {
+            "intersection": [
+                "array<string, string>",
+                "callable"
+            ]
+        },
+        "strings": [],
+        "arrays": [
+            {
+                "keys": [
+                    "0",
+                    "1"
+                ],
+                "values": [
+                    "class-string|object",
+                    "non-falsy-string"
+                ],
+                "optional": [],
+                "list": "Yes",
+                "next": [
+                    2
+                ]
+            }
+        ]
+    },
+    {
+        "input": {
+            "intersection": [
+                {
+                    "template": {
+                        "name": "T",
+                        "bound": "array<int, string>"
+                    }
+                },
+                "callable",
+                {
+                    "offset": [
+                        1,
+                        "'methodMissing'"
+                    ]
+                }
+            ]
+        },
+        "strings": [],
+        "arrays": [
+            {
+                "keys": [
+                    "0",
+                    "1"
+                ],
+                "values": [
+                    "class-string",
+                    "'methodMissing'"
+                ],
+                "optional": [],
+                "list": "Yes",
+                "next": [
+                    2
+                ]
+            }
+        ]
+    },
+    {
+        "input": {
+            "intersection": [
+                {
+                    "union": [
+                        "array{class-string, 'firstMissing'}",
+                        "array{class-string, 'secondMissing'}"
+                    ]
+                },
+                "callable"
+            ]
+        },
+        "strings": [],
+        "arrays": [
+            {
+                "keys": [
+                    "0",
+                    "1"
+                ],
+                "values": [
+                    "class-string",
+                    "'firstMissing'|'secondMissing'"
+                ],
+                "optional": [],
+                "list": "Yes",
+                "next": [
+                    2
+                ]
+            }
+        ]
+    },
+    {
+        "input": {
+            "intersection": [
+                "'missing'",
+                "non-empty-string"
+            ]
+        },
+        "strings": [
+            "missing"
+        ],
+        "arrays": []
+    },
+    {
+        "input": {
+            "benevolent": [
+                "'missing'",
+                "mixed"
+            ]
+        },
+        "strings": [
+            "missing"
+        ],
+        "arrays": []
+    },
+    {
+        "input": {
+            "benevolent": [
+                "array{'missing'}",
+                "mixed"
+            ]
+        },
+        "strings": [],
+        "arrays": [
+            {
+                "keys": [
+                    "0"
+                ],
+                "values": [
+                    "'missing'"
+                ],
+                "optional": [],
+                "list": "Yes",
+                "next": [
+                    1
+                ]
+            }
+        ]
+    },
+    {
+        "input": {
+            "intersection": [
+                {
+                    "union": [
+                        "array{class-string}",
+                        "array{}"
+                    ]
+                },
+                "callable"
+            ]
+        },
+        "strings": [],
+        "arrays": [
+            {
+                "keys": [
+                    "0",
+                    "1"
+                ],
+                "values": [
+                    "class-string",
+                    "non-falsy-string"
+                ],
+                "optional": [],
+                "list": "Yes",
+                "next": [
+                    2
+                ]
+            }
+        ]
+    }
+]

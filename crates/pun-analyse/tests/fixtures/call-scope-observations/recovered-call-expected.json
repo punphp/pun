@@ -1,0 +1,12 @@
+{
+    "calls": [],
+    "errors": [
+        [
+            4,
+            "phpstan.parse",
+            "Syntax error, unexpected '(', expecting T_STRING or T_VARIABLE or '{' or '$' on line 4",
+            null,
+            false
+        ]
+    ]
+}

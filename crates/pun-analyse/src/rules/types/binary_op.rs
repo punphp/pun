@@ -94,7 +94,7 @@ fn number(t: &Type) -> f64 {
     match t {
         Type::ConstInt(i) => *i as f64,
         Type::ConstFloat(f) => *f,
-        Type::ConstString(s) => s.trim().parse().unwrap_or(0.0),
+        Type::ConstString(s) => std::str::from_utf8(s).ok().and_then(|s| s.trim().parse().ok()).unwrap_or(0.0),
         Type::ConstBool(b) => f64::from(u8::from(*b)),
         _ => 0.0,
     }
@@ -196,11 +196,11 @@ fn check(c: &mut Checker, op: Op, left: &Expression, right: &Expression, sigil: 
         return;
     }
     let error = declared::with_classes(c, || {
-        let sm = c.levels().strict_mixed();
+        let sm = StrictMixed::default();
         let (Some(l), Some(r)) = (checked(c, left, op, sm), checked(c, right, op, sm)) else { return false };
         // the GMP and BcMath\Number operator extensions type the operations of those objects
         let extension = |t: &Type| {
-            ["GMP", "BcMath\\Number"].iter().any(|k| is_super_type_of(&Type::Object((*k).into(), vec![]), t).yes())
+            ["GMP", "BcMath\\Number"].iter().any(|k| is_super_type_of(&Type::Object((*k).into(), vec![], false), t).yes())
         };
         !extension(&l) && !extension(&r) && fails(op, &l, &r, sm)
     });

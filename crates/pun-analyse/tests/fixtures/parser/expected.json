@@ -1,0 +1,738 @@
+[
+    {
+        "file": "alias-parser-precedence.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "Cannot use C as self because 'self' is a special class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "anonymous-attribute-argument.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\parent' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "anonymous-attribute.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\self' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "anonymous-body-before-arguments.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\parent' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "anonymous-extends.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "Cannot use 'self' as class name as it is reserved on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "anonymous-implements.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "Cannot use 'parent' as interface name as it is reserved on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "arrow-signature.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\parent' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "attribute-arguments.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\self' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "attribute-first.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\parent' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "attribute-groups.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\self' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "attribute-multiline.php",
+        "line": 3,
+        "identifier": "phpstan.parse",
+        "message": "'\\StAtIc' is an invalid class name on line 3",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "attribute-only-argument.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\parent' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "attribute-relative.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\PaReNt' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "attribute.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\self' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "catch-union.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\self' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "catch.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\static' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "class-constant-fetch.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\self' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "class-constant.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\parent' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "class-name-fetch.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\parent' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "class-parent-reserved.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "Cannot use 'parent' as class name as it is reserved on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "class-reserved.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "Cannot use 'self' as class name as it is reserved on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "class-static-grammar.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "Syntax error, unexpected T_STATIC, expecting T_STRING on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "closure-signature.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\parent' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "constant-attribute-groups.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\self' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "dnf.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\static' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "duplicate-class.php",
+        "line": 3,
+        "identifier": "phpstan.parse",
+        "message": "Cannot use Bar as x because the name is already in use on line 3",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "duplicate-constant.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "Cannot use const Bar as X because the name is already in use on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "duplicate-function.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "Cannot use function Bar as x because the name is already in use on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "duplicate-group.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "Cannot use Root\\Bar as x because the name is already in use on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "duplicate-implicit.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "Cannot use Other\\Foo as Foo because the name is already in use on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "duplicate-mixed-group.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "Cannot use function Root\\Bar as x because the name is already in use on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "duplicate-multiple.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "Cannot use B as x because the name is already in use on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "duplicate-typed-group.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "Cannot use function Root\\Bar as x because the name is already in use on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "enum-attribute-groups.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\self' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "enum-attribute.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\self' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "enum-case-attribute-groups.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\self' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "enum-case.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\self' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "enum-implements.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "Cannot use 'static' as interface name as it is reserved on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "enum-reserved.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "Cannot use 'parent' as class name as it is reserved on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "extends-reserved.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "Cannot use 'parent' as class name as it is reserved on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "function-attributes.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\self' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "function-return.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\parent' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "function-second-parameter.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\self' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "function-signature.php",
+        "line": 3,
+        "identifier": "phpstan.parse",
+        "message": "'\\parent' is an invalid class name on line 3",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "global-constant.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\self' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "hook-attribute.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\parent' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "hook-signature.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\parent' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "hooked-property.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\parent' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "implements-reserved.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "Cannot use 'static' as interface name as it is reserved on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "instanceof-order.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\parent' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "instanceof.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\static' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "instantiation-relative.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\self' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "instantiation.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\parent' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "interface-attribute-groups.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\self' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "interface-attribute.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\self' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "interface-extends.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "Cannot use 'self' as interface name as it is reserved on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "interface-reserved.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "Cannot use 'self' as class name as it is reserved on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "intersection.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\static' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "method-signature.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\parent' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "nullable.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\self' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "parameter-attributes.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\self' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "plain-property.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\parent' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "positive-alias-target.php",
+        "line": 2,
+        "identifier": "attribute.notFound",
+        "message": "Attribute class self does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "positive-callable.php",
+        "line": 2,
+        "identifier": "callable.notSupported",
+        "message": "Cannot create callable from the new operator.",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "positive-enum-type-role.php",
+        "line": 2,
+        "identifier": "enum.backingType",
+        "message": "Backed enum PositiveEnumType can have only \"int\" or \"string\" type.",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "positive-ordinary.php",
+        "line": 2,
+        "identifier": "function.notFound",
+        "message": "Function missing_control not found.",
+        "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+        "ignorable": true
+    },
+    {
+        "file": "positive-role-controls.php",
+        "line": 2,
+        "identifier": "attribute.notFound",
+        "message": "Attribute class Foo\\self does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "positive-role-controls.php",
+        "line": 2,
+        "identifier": "attribute.notFound",
+        "message": "Attribute class Foo\\self does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "positive-role-controls.php",
+        "line": 2,
+        "identifier": "attribute.notFound",
+        "message": "Attribute class self does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "positive-role-controls.php",
+        "line": 2,
+        "identifier": "attribute.notFound",
+        "message": "Attribute class self\\Foo does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "positive-role-controls.php",
+        "line": 3,
+        "identifier": "function.notFound",
+        "message": "Function self not found.",
+        "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+        "ignorable": true
+    },
+    {
+        "file": "positive-role-controls.php",
+        "line": 3,
+        "identifier": "function.notFound",
+        "message": "Function static not found.",
+        "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+        "ignorable": true
+    },
+    {
+        "file": "reserved-alias-line.php",
+        "line": 3,
+        "identifier": "phpstan.parse",
+        "message": "Cannot use Root\\Foo as PaReNt because 'PaReNt' is a special class name on line 3",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "reserved-alias.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "Cannot use Foo as self because 'self' is a special class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "reserved-collect.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "Cannot use 'self' as class name as it is reserved on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "reserved-collect.php",
+        "line": 3,
+        "identifier": "phpstan.parse",
+        "message": "Cannot use Foo as parent because 'parent' is a special class name on line 3",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "reserved-constant-alias.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "Cannot use Foo as self because 'self' is a special class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "reserved-function-alias.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "Cannot use Foo as parent because 'parent' is a special class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "reserved-group-alias.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "Cannot use Foo as parent because 'parent' is a special class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "reserved-static-alias-grammar.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "Syntax error, unexpected T_STATIC, expecting T_STRING on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "same-file-suppression.php",
+        "line": 3,
+        "identifier": "phpstan.parse",
+        "message": "'\\self' is an invalid class name on line 3",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "static-callable.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\self' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "static-method.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\parent' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "static-property.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\static' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "trait-alias.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\self' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "trait-attribute-groups.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\self' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "trait-attribute.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\self' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "trait-precedence-receiver.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\parent' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "trait-precedence.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\self' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "trait-use.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\self' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "union.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\parent' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    },
+    {
+        "file": "unreachable.php",
+        "line": 2,
+        "identifier": "phpstan.parse",
+        "message": "'\\self' is an invalid class name on line 2",
+        "tip": null,
+        "ignorable": false
+    }
+]

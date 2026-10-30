@@ -1,0 +1,2054 @@
+{
+    "default-0": [
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method DynamicMethods\\Target::integer() invoked with 0 parameters, 1 required.",
+            "line": 22,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method DynamicMethods\\Target::integer() invoked with 0 parameters, 1 required.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "method.void"
+        }
+    ],
+    "default-1": [
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method DynamicMethods\\Target::integer() invoked with 0 parameters, 1 required.",
+            "line": 22,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method DynamicMethods\\Target::integer() invoked with 0 parameters, 1 required.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "method.void"
+        }
+    ],
+    "default-2": [
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method DynamicMethods\\Target::integer() invoked with 0 parameters, 1 required.",
+            "line": 22,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method DynamicMethods\\Target::integer() invoked with 0 parameters, 1 required.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Missing parameter $value (string) in call to method DynamicMethods\\Target::text().",
+            "line": 40,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $ok in call to method DynamicMethods\\Target::text().",
+            "line": 40,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 84,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 85,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method DynamicMethods\\Target::integer() invoked with 0 parameters, 1 required.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Missing parameter $value (int) in call to method DynamicMethods\\Target::integer().",
+            "line": 103,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $unknown in call to method DynamicMethods\\Target::integer().",
+            "line": 103,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        }
+    ],
+    "default-4": [
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method DynamicMethods\\Target::integer() invoked with 0 parameters, 1 required.",
+            "line": 22,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method DynamicMethods\\Target::integer() invoked with 0 parameters, 1 required.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Missing parameter $value (string) in call to method DynamicMethods\\Target::text().",
+            "line": 40,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $ok in call to method DynamicMethods\\Target::text().",
+            "line": 40,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 84,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 85,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method DynamicMethods\\Target::integer() invoked with 0 parameters, 1 required.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Missing parameter $value (int) in call to method DynamicMethods\\Target::integer().",
+            "line": 103,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $unknown in call to method DynamicMethods\\Target::integer().",
+            "line": 103,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        }
+    ],
+    "default-5": [
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method DynamicMethods\\Target::integer() invoked with 0 parameters, 1 required.",
+            "line": 22,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method DynamicMethods\\Target::integer() invoked with 0 parameters, 1 required.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Missing parameter $value (string) in call to method DynamicMethods\\Target::text().",
+            "line": 40,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $ok in call to method DynamicMethods\\Target::text().",
+            "line": 40,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter #1 $value of method DynamicMethods\\Target::integer() expects int, string given.",
+            "line": 53,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter $value of method DynamicMethods\\Target::integer() expects int, string given.",
+            "line": 54,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter $value of method DynamicMethods\\Target::integer() expects int, string given.",
+            "line": 55,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter #1 $value of method DynamicMethods\\Left::integer() expects int, string given.",
+            "line": 70,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter #1 $value of method DynamicMethods\\Target::integer() expects int, false given.",
+            "line": 78,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter #1 $value of method DynamicMethods\\Target::text() expects string, false given.",
+            "line": 78,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 84,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 85,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method DynamicMethods\\Target::integer() invoked with 0 parameters, 1 required.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter #1 $value of method DynamicMethods\\Target::integer() expects int, false given.",
+            "line": 94,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter #1 $value of method DynamicMethods\\Target::reference() expects int, string given.",
+            "line": 99,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter #1 $value of method DynamicMethods\\Target::reference() is passed by reference, so it expects variables only.",
+            "line": 99,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method DynamicMethods\\Target::noNames() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 101,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter $value of method DynamicMethods\\Target::noNames() expects int, string given.",
+            "line": 101,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Missing parameter $value (int) in call to method DynamicMethods\\Target::integer().",
+            "line": 103,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $unknown in call to method DynamicMethods\\Target::integer().",
+            "line": 103,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Only iterables can be unpacked, false given in argument #1.",
+            "line": 104,
+            "ignorable": true,
+            "identifier": "argument.unpackNonIterable"
+        }
+    ],
+    "default-7": [
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method DynamicMethods\\Target::integer() invoked with 0 parameters, 1 required.",
+            "line": 22,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method DynamicMethods\\Target::integer() invoked with 0 parameters, 1 required.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Missing parameter $value (string) in call to method DynamicMethods\\Target::text().",
+            "line": 40,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $ok in call to method DynamicMethods\\Target::text().",
+            "line": 40,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter #1 $value of method DynamicMethods\\Target::integer() expects int, string given.",
+            "line": 53,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter $value of method DynamicMethods\\Target::integer() expects int, string given.",
+            "line": 54,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter $value of method DynamicMethods\\Target::integer() expects int, string given.",
+            "line": 55,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter #1 $value of method DynamicMethods\\Left::integer() expects int, string given.",
+            "line": 70,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter #1 $value of method DynamicMethods\\Target::integer() expects int, false given.",
+            "line": 78,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter #1 $value of method DynamicMethods\\Target::text() expects string, false given.",
+            "line": 78,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 84,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 85,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method DynamicMethods\\Target::integer() invoked with 0 parameters, 1 required.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter #1 $value of method DynamicMethods\\Target::integer() expects int, false given.",
+            "line": 94,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter #1 $value of method DynamicMethods\\Target::reference() expects int, string given.",
+            "line": 99,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter #1 $value of method DynamicMethods\\Target::reference() is passed by reference, so it expects variables only.",
+            "line": 99,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method DynamicMethods\\Target::noNames() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 101,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter $value of method DynamicMethods\\Target::noNames() expects int, string given.",
+            "line": 101,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Missing parameter $value (int) in call to method DynamicMethods\\Target::integer().",
+            "line": 103,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $unknown in call to method DynamicMethods\\Target::integer().",
+            "line": 103,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Only iterables can be unpacked, false given in argument #1.",
+            "line": 104,
+            "ignorable": true,
+            "identifier": "argument.unpackNonIterable"
+        }
+    ],
+    "types-only-5": [
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method DynamicMethods\\Target::integer() invoked with 0 parameters, 1 required.",
+            "line": 22,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method DynamicMethods\\Target::integer() invoked with 0 parameters, 1 required.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Missing parameter $value (string) in call to method DynamicMethods\\Target::text().",
+            "line": 40,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $ok in call to method DynamicMethods\\Target::text().",
+            "line": 40,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter #1 $value of method DynamicMethods\\Target::integer() expects int, string given.",
+            "line": 53,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter $value of method DynamicMethods\\Target::integer() expects int, string given.",
+            "line": 54,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter $value of method DynamicMethods\\Target::integer() expects int, string given.",
+            "line": 55,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter #1 $value of method DynamicMethods\\Left::integer() expects int, string given.",
+            "line": 70,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter #1 $value of method DynamicMethods\\Target::integer() expects int, false given.",
+            "line": 78,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter #1 $value of method DynamicMethods\\Target::text() expects string, false given.",
+            "line": 78,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 84,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 85,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method DynamicMethods\\Target::integer() invoked with 0 parameters, 1 required.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter #1 $value of method DynamicMethods\\Target::integer() expects int, false given.",
+            "line": 94,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter #1 $value of method DynamicMethods\\Target::reference() expects int, string given.",
+            "line": 99,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method DynamicMethods\\Target::noNames() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 101,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter $value of method DynamicMethods\\Target::noNames() expects int, string given.",
+            "line": 101,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Missing parameter $value (int) in call to method DynamicMethods\\Target::integer().",
+            "line": 103,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $unknown in call to method DynamicMethods\\Target::integer().",
+            "line": 103,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Only iterables can be unpacked, false given in argument #1.",
+            "line": 104,
+            "ignorable": true,
+            "identifier": "argument.unpackNonIterable"
+        }
+    ],
+    "references-only-5": [
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method DynamicMethods\\Target::integer() invoked with 0 parameters, 1 required.",
+            "line": 22,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method DynamicMethods\\Target::integer() invoked with 0 parameters, 1 required.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Missing parameter $value (string) in call to method DynamicMethods\\Target::text().",
+            "line": 40,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $ok in call to method DynamicMethods\\Target::text().",
+            "line": 40,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 84,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 85,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method DynamicMethods\\Target::integer() invoked with 0 parameters, 1 required.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Parameter #1 $value of method DynamicMethods\\Target::reference() is passed by reference, so it expects variables only.",
+            "line": 99,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method DynamicMethods\\Target::noNames() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+            "line": 101,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Missing parameter $value (int) in call to method DynamicMethods\\Target::integer().",
+            "line": 103,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $unknown in call to method DynamicMethods\\Target::integer().",
+            "line": 103,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        }
+    ],
+    "neither-5": [
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method DynamicMethods\\Target::integer() invoked with 0 parameters, 1 required.",
+            "line": 22,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method DynamicMethods\\Target::integer() invoked with 0 parameters, 1 required.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Missing parameter $value (string) in call to method DynamicMethods\\Target::text().",
+            "line": 40,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $ok in call to method DynamicMethods\\Target::text().",
+            "line": 40,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 84,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 85,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method DynamicMethods\\Target::integer() invoked with 0 parameters, 1 required.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Missing parameter $value (int) in call to method DynamicMethods\\Target::integer().",
+            "line": 103,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $unknown in call to method DynamicMethods\\Target::integer().",
+            "line": 103,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        }
+    ],
+    "this-only-5": [
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method DynamicMethods\\Target::integer() invoked with 0 parameters, 1 required.",
+            "line": 22,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method DynamicMethods\\Target::integer() invoked with 0 parameters, 1 required.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "method.void"
+        }
+    ],
+    "no-calls-5": [],
+    "all-receivers-0": [
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method DynamicMethods\\Target::integer() invoked with 0 parameters, 1 required.",
+            "line": 22,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method DynamicMethods\\Target::integer() invoked with 0 parameters, 1 required.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Missing parameter $value (string) in call to method DynamicMethods\\Target::text().",
+            "line": 40,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $ok in call to method DynamicMethods\\Target::text().",
+            "line": 40,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 84,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Result of method DynamicMethods\\Target::sink() (void) is used.",
+            "line": 85,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Method DynamicMethods\\Target::integer() invoked with 0 parameters, 1 required.",
+            "line": 92,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Missing parameter $value (int) in call to method DynamicMethods\\Target::integer().",
+            "line": 103,
+            "ignorable": true,
+            "identifier": "argument.missing"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Unknown parameter $unknown in call to method DynamicMethods\\Target::integer().",
+            "line": 103,
+            "ignorable": true,
+            "identifier": "argument.unknown"
+        }
+    ],
+    "boundaries-default-2": [
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Undefined variable: $this",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "variable.undefined"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Method DynamicMethodBoundaries\\Target::integer() invoked with 0 parameters, 1 required.",
+            "line": 32,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Result of method DynamicMethodBoundaries\\Target::sink() (void) is used.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to an undefined method DynamicMethodBoundaries\\Target::missing().",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to private method hidden() of class DynamicMethodBoundaries\\Target.",
+            "line": 41,
+            "ignorable": true,
+            "identifier": "method.private"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to protected method restricted() of class DynamicMethodBoundaries\\Target.",
+            "line": 43,
+            "ignorable": true,
+            "identifier": "method.protected"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Cannot call method missing() on stdClass.",
+            "line": 58,
+            "ignorable": true,
+            "identifier": "method.nonObject"
+        }
+    ],
+    "boundaries-default-5": [
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Method DynamicMethodBoundaries\\Target::hidden() is unused.",
+            "line": 11,
+            "ignorable": true,
+            "identifier": "method.unused"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Undefined variable: $this",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "variable.undefined"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Method DynamicMethodBoundaries\\Target::integer() invoked with 0 parameters, 1 required.",
+            "line": 32,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Result of method DynamicMethodBoundaries\\Target::sink() (void) is used.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to an undefined method DynamicMethodBoundaries\\Target::missing().",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to private method hidden() of class DynamicMethodBoundaries\\Target.",
+            "line": 41,
+            "ignorable": true,
+            "identifier": "method.private"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to protected method restricted() of class DynamicMethodBoundaries\\Target.",
+            "line": 43,
+            "ignorable": true,
+            "identifier": "method.protected"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Parameter #1 $value of method DynamicMethodBoundaries\\Target::integer() expects int, false given.",
+            "line": 45,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Parameter #1 $value of method DynamicMethodBoundaries\\Target::reference() is passed by reference, so it expects variables only.",
+            "line": 48,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Method DynamicMethodBoundaries\\Target::noNames() invoked with unpacked array with string key, but it's not allowed because of @no-named-arguments.",
+            "line": 51,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Cannot call method missing() on stdClass.",
+            "line": 58,
+            "ignorable": true,
+            "identifier": "method.nonObject"
+        }
+    ],
+    "boundaries-default-7": [
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Method DynamicMethodBoundaries\\Target::hidden() is unused.",
+            "line": 11,
+            "ignorable": true,
+            "identifier": "method.unused"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Undefined variable: $this",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "variable.undefined"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Method DynamicMethodBoundaries\\Target::integer() invoked with 0 parameters, 1 required.",
+            "line": 32,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Result of method DynamicMethodBoundaries\\Target::sink() (void) is used.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to an undefined method DynamicMethodBoundaries\\Target::missing().",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to private method hidden() of class DynamicMethodBoundaries\\Target.",
+            "line": 41,
+            "ignorable": true,
+            "identifier": "method.private"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to protected method restricted() of class DynamicMethodBoundaries\\Target.",
+            "line": 43,
+            "ignorable": true,
+            "identifier": "method.protected"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Parameter #1 $value of method DynamicMethodBoundaries\\Target::integer() expects int, false given.",
+            "line": 45,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Parameter #1 $value of method DynamicMethodBoundaries\\Target::reference() is passed by reference, so it expects variables only.",
+            "line": 48,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Method DynamicMethodBoundaries\\Target::noNames() invoked with unpacked array with string key, but it's not allowed because of @no-named-arguments.",
+            "line": 51,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Cannot call method missing() on stdClass.",
+            "line": 58,
+            "ignorable": true,
+            "identifier": "method.nonObject"
+        }
+    ],
+    "boundaries-case-5": [
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Method DynamicMethodBoundaries\\Target::hidden() is unused.",
+            "line": 11,
+            "ignorable": true,
+            "identifier": "method.unused"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Undefined variable: $this",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "variable.undefined"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Method DynamicMethodBoundaries\\Target::integer() invoked with 0 parameters, 1 required.",
+            "line": 32,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Result of method DynamicMethodBoundaries\\Target::sink() (void) is used.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to an undefined method DynamicMethodBoundaries\\Target::missing().",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to private method hidden() of class DynamicMethodBoundaries\\Target.",
+            "line": 41,
+            "ignorable": true,
+            "identifier": "method.private"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to protected method restricted() of class DynamicMethodBoundaries\\Target.",
+            "line": 43,
+            "ignorable": true,
+            "identifier": "method.protected"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Call to method DynamicMethodBoundaries\\Target::integer() with incorrect case: INTEGER",
+            "line": 45,
+            "ignorable": true,
+            "identifier": "method.nameCase"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Parameter #1 $value of method DynamicMethodBoundaries\\Target::integer() expects int, false given.",
+            "line": 45,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Parameter #1 $value of method DynamicMethodBoundaries\\Target::reference() is passed by reference, so it expects variables only.",
+            "line": 48,
+            "ignorable": true,
+            "identifier": "argument.byRef"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Method DynamicMethodBoundaries\\Target::noNames() invoked with unpacked array with string key, but it's not allowed because of @no-named-arguments.",
+            "line": 51,
+            "ignorable": true,
+            "identifier": "argument.named"
+        },
+        {
+            "file": "$ROOT/boundaries.php",
+            "message": "Cannot call method missing() on stdClass.",
+            "line": 58,
+            "ignorable": true,
+            "identifier": "method.nonObject"
+        }
+    ],
+    "guards-default-2": [
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::first().",
+            "line": 11,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::second().",
+            "line": 11,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::first().",
+            "line": 12,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::second().",
+            "line": 12,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::first().",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::second().",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::first().",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::second().",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::replacement().",
+            "line": 19,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::first().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::second().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::missing().",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::first().",
+            "line": 44,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::second().",
+            "line": 44,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::first().",
+            "line": 47,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::second().",
+            "line": 47,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::replacement().",
+            "line": 53,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        }
+    ],
+    "guards-default-5": [
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::first().",
+            "line": 11,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::second().",
+            "line": 11,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::first().",
+            "line": 12,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::second().",
+            "line": 12,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::first().",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::second().",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::first().",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::second().",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::replacement().",
+            "line": 19,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::first().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::second().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::missing().",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::first().",
+            "line": 44,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::second().",
+            "line": 44,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::first().",
+            "line": 47,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::second().",
+            "line": 47,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::replacement().",
+            "line": 53,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Parameter #1 $value of method DynamicMethodGuards\\Methods::first() expects int, false given.",
+            "line": 65,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Parameter #1 $value of method DynamicMethodGuards\\Methods::second() expects string, false given.",
+            "line": 65,
+            "ignorable": true,
+            "identifier": "argument.type"
+        }
+    ],
+    "guards-default-9": [
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::first().",
+            "line": 11,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::second().",
+            "line": 11,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::first().",
+            "line": 12,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::second().",
+            "line": 12,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::first().",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::second().",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::first().",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::second().",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::replacement().",
+            "line": 19,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::first().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::second().",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::missing().",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::first().",
+            "line": 44,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::second().",
+            "line": 44,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::first().",
+            "line": 47,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::second().",
+            "line": 47,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Call to an undefined method DynamicMethodGuards\\Target::replacement().",
+            "line": 53,
+            "ignorable": true,
+            "identifier": "method.notFound"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Parameter #1 $value of method DynamicMethodGuards\\Methods::first() expects int, false given.",
+            "line": 65,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/guards.php",
+            "message": "Parameter #1 $value of method DynamicMethodGuards\\Methods::second() expects string, false given.",
+            "line": 65,
+            "ignorable": true,
+            "identifier": "argument.type"
+        }
+    ],
+    "nullsafe-default-2": [
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Result of method DynamicNullsafeVoids\\Target::sink() (void) is used.",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Result of method DynamicNullsafeVoids\\Target::sink() (void) is used.",
+            "line": 19,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Result of method DynamicNullsafeVoids\\Target::conditional() (void) is used.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Method DynamicNullsafeVoids\\Target::sink() invoked with 1 parameter, 0 required.",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Result of method DynamicNullsafeVoids\\Target::sink() (void) is used.",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Cannot call method sink() on null.",
+            "line": 33,
+            "ignorable": true,
+            "identifier": "method.nonObject"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Method DynamicNullsafeVoids\\Target::sink() invoked with 1 parameter, 0 required.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Result of method DynamicNullsafeVoids\\Target::sink() (void) is used.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Method DynamicNullsafeVoids\\Target::sink() invoked with 1 parameter, 0 required.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Result of method DynamicNullsafeVoids\\Target::sink() (void) is used.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Method DynamicNullsafeVoids\\Target::sink() invoked with 1 parameter, 0 required.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Result of method DynamicNullsafeVoids\\Target::sink() (void) is used.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Method DynamicNullsafeVoids\\Target::sink() invoked with 1 parameter, 0 required.",
+            "line": 40,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Result of method DynamicNullsafeVoids\\Target::sink() (void) is used.",
+            "line": 40,
+            "ignorable": true,
+            "identifier": "method.void"
+        }
+    ],
+    "nullsafe-default-5": [
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Result of method DynamicNullsafeVoids\\Target::sink() (void) is used.",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Result of method DynamicNullsafeVoids\\Target::sink() (void) is used.",
+            "line": 19,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Result of method DynamicNullsafeVoids\\Target::conditional() (void) is used.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Method DynamicNullsafeVoids\\Target::sink() invoked with 1 parameter, 0 required.",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Result of method DynamicNullsafeVoids\\Target::sink() (void) is used.",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Cannot call method sink() on null.",
+            "line": 33,
+            "ignorable": true,
+            "identifier": "method.nonObject"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Method DynamicNullsafeVoids\\Target::sink() invoked with 1 parameter, 0 required.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Result of method DynamicNullsafeVoids\\Target::sink() (void) is used.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Method DynamicNullsafeVoids\\Target::sink() invoked with 1 parameter, 0 required.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Result of method DynamicNullsafeVoids\\Target::sink() (void) is used.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Using nullsafe method call on non-nullable type DynamicNullsafeVoids\\Target. Use -> instead.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "nullsafe.neverNull"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Method DynamicNullsafeVoids\\Target::sink() invoked with 1 parameter, 0 required.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Result of method DynamicNullsafeVoids\\Target::sink() (void) is used.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Method DynamicNullsafeVoids\\Target::sink() invoked with 1 parameter, 0 required.",
+            "line": 40,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Result of method DynamicNullsafeVoids\\Target::sink() (void) is used.",
+            "line": 40,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Using nullsafe method call on non-nullable type DynamicNullsafeVoids\\Target. Use -> instead.",
+            "line": 40,
+            "ignorable": true,
+            "identifier": "nullsafe.neverNull"
+        }
+    ],
+    "nullsafe-default-9": [
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Result of method DynamicNullsafeVoids\\Target::sink() (void) is used.",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Result of method DynamicNullsafeVoids\\Target::sink() (void) is used.",
+            "line": 19,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Result of method DynamicNullsafeVoids\\Target::conditional() (void) is used.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Method DynamicNullsafeVoids\\Target::sink() invoked with 1 parameter, 0 required.",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Result of method DynamicNullsafeVoids\\Target::sink() (void) is used.",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Cannot call method sink() on null.",
+            "line": 33,
+            "ignorable": true,
+            "identifier": "method.nonObject"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Method DynamicNullsafeVoids\\Target::sink() invoked with 1 parameter, 0 required.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Result of method DynamicNullsafeVoids\\Target::sink() (void) is used.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Method DynamicNullsafeVoids\\Target::sink() invoked with 1 parameter, 0 required.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Result of method DynamicNullsafeVoids\\Target::sink() (void) is used.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Using nullsafe method call on non-nullable type DynamicNullsafeVoids\\Target. Use -> instead.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "nullsafe.neverNull"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Method DynamicNullsafeVoids\\Target::sink() invoked with 1 parameter, 0 required.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Result of method DynamicNullsafeVoids\\Target::sink() (void) is used.",
+            "line": 39,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Method DynamicNullsafeVoids\\Target::sink() invoked with 1 parameter, 0 required.",
+            "line": 40,
+            "ignorable": true,
+            "identifier": "arguments.count"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Result of method DynamicNullsafeVoids\\Target::sink() (void) is used.",
+            "line": 40,
+            "ignorable": true,
+            "identifier": "method.void"
+        },
+        {
+            "file": "$ROOT/nullsafe.php",
+            "message": "Using nullsafe method call on non-nullable type DynamicNullsafeVoids\\Target. Use -> instead.",
+            "line": 40,
+            "ignorable": true,
+            "identifier": "nullsafe.neverNull"
+        }
+    ]
+}

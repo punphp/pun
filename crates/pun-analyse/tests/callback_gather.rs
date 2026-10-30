@@ -60,6 +60,36 @@ fn bounded_template_inputs_keep_their_declared_constraints() {
 }
 
 #[test]
+fn conditional_named_callbacks_keep_parameter_dependencies() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/callback-gather");
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/callback-gather/conditional-phpstan.json"
+    ))
+    .unwrap();
+    let got: Vec<_> = run(&Project::new(
+        vec![root.join("conditional.php")],
+        Vec::new(),
+    ))
+    .unwrap()
+    .into_iter()
+    .map(|e| (e.line, e.identifier, e.message))
+    .collect();
+    let want: Vec<_> = expected
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|e| {
+            (
+                e["line"].as_i64().unwrap(),
+                e["identifier"].as_str().unwrap().to_string(),
+                e["message"].as_str().unwrap().to_string(),
+            )
+        })
+        .collect();
+    assert_eq!(got, want);
+}
+
+#[test]
 fn upstream_raw_inference_is_array_key_to_mixed_before_conversion() {
     let path = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("tests/fixtures/rules/data/Functions/data/bug-10612.php");
@@ -217,20 +247,25 @@ fn speculative_errors_propagate_and_expression_observers_run_once() {
 
 #[test]
 fn upstream_bug_10612() {
-    upstream_case(0);
+    upstream_case(0, 10612);
 }
 
 #[test]
 fn upstream_bug_10612_at_level_five() {
-    upstream_case(5);
+    upstream_case(5, 10612);
 }
 
 #[test]
 fn upstream_bug_10612_at_level_nine() {
-    upstream_case(9);
+    upstream_case(9, 10612);
 }
 
-fn upstream_case(level: u8) {
+#[test]
+fn upstream_conditional_callback_at_level_nine() {
+    upstream_case(9, 11056);
+}
+
+fn upstream_case(level: u8, bug: u32) {
     let fixtures = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures");
     let root = if level == 0 {
         fixtures.join("rules")
@@ -245,10 +280,10 @@ fn upstream_case(level: u8) {
         .as_array()
         .unwrap()
         .iter()
-        .find(|case| case["method"] == "testBug10612")
+        .find(|case| case["method"] == format!("testBug{bug}"))
         .unwrap();
     let mut project = Project::new(
-        vec![fixtures.join("rules/data/Functions/data/bug-10612.php")],
+        vec![fixtures.join(format!("rules/data/Functions/data/bug-{bug}.php"))],
         Vec::new(),
     );
     project.level = level;

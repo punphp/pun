@@ -12,17 +12,16 @@ pub struct StrictMixed {
 }
 
 impl StrictMixed {
-    pub(super) fn applies(self, t: &Type) -> bool {
-        match t {
-            Type::Mixed { explicit } | Type::SubtractedMixed { explicit, .. } => {
-                if *explicit {
-                    self.explicit
-                } else {
-                    self.implicit
-                }
-            }
-            Type::Template(t) => self.explicit && matches!(t.bound, Type::Mixed { .. }),
-            _ => false,
+    /// RuleLevelHelper::transformCommonType(): unlike findTypeToCheck this traverses containers, but a
+    /// mixed template stops traversal before its default or nested bound can be rewritten.
+    pub fn transform(self, t: &Type) -> Type {
+        if !self.explicit && !self.implicit {
+            return t.clone();
+        }
+        if t.mixed_explicitness().is_some_and(|explicit| if explicit { self.explicit } else { self.implicit }) {
+            t.to_strict_mixed()
+        } else {
+            t.traverse(&|t| self.transform(t))
         }
     }
 }
@@ -34,11 +33,15 @@ pub fn accepts(a: &Type, b: &Type, strict_types: bool) -> Tri {
 
 pub fn accepts_with(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Tri {
     use Type as T;
+    if sm.explicit || sm.implicit {
+        return accepts_with(a, &sm.transform(b), strict, StrictMixed::default());
+    }
     if let T::Reasoned(t, _) = b { return accepts_with(a, t, strict, sm); }
+    if let T::SubtractedObject { object, .. } = b { return accepts_with(a, object, strict, sm); }
     if let T::LateArrayShape(s) = b { return accepts_with(a, &s.resolve(), strict, sm); }
     let rec = |x: &Type, y: &Type| accepts_with(x, y, strict, sm);
     // a CompoundType `$b` answers through its `isAcceptedBy()`, a StrictMixedType too
-    let compound = b.is_compound() || sm.applies(b);
+    let compound = b.is_compound();
     let by = || accepted_by(a, b, strict, sm);
     // `$type instanceof StringType` (and IntegerType for an int)
     let string = matches!(b, T::String | T::ConstString(_) | T::ClassString(_) | T::StringAcceptingStringable | T::StringNotAcceptingStringable);
@@ -47,9 +50,10 @@ pub fn accepts_with(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Tri {
     let accessory = |r: Tri| if r.yes() { Tri::Yes } else if compound { by() } else { r };
     match a {
         T::Reasoned(t, _) => rec(t, b),
+        T::SubtractedObject { object, .. } => if compound { by() } else { rec(object, b) },
         T::LateArrayShape(s) => rec(&s.resolve(), b),
         // MixedType (ErrorType extends it) accepts anything
-        T::Mixed { .. } | T::SubtractedMixed { .. } | T::Error | T::Wildcard | T::OffsetAccess(..) => Tri::Yes,
+        T::Mixed { .. } | T::StrictMixed | T::SubtractedMixed { .. } | T::Error | T::Wildcard | T::OffsetAccess(..) => Tri::Yes,
         T::Never(NeverKind::NonAccepting) => Tri::from(matches!(b, T::Never(_))),
         T::Never(_) => Tri::Yes,
         T::Union(types) | T::Benevolent(types) => union(a, types, b, strict, sm),
@@ -73,8 +77,8 @@ pub fn accepts_with(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Tri {
             }
         }
         // ConstantScalarTypeTrait: the same constant, else the parent's answer and maybe
-        T::ConstFloat(x) => match b {
-            T::ConstFloat(y) => Tri::from(x.to_bits() == y.to_bits()),
+        T::ConstFloat(_) => match b {
+            T::ConstFloat(_) => Tri::from(a == b),
             _ if compound => by(),
             _ => Tri::from(matches!(b, T::Float) || b.is_integer().yes()).and(Tri::Maybe),
         },
@@ -118,7 +122,7 @@ pub fn accepts_with(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Tri {
         T::ClassString(Some(object)) => match b {
             T::ConstString(name) => {
                 if b.is_class_string().yes() {
-                    rec(object, &T::Object(name.clone(), vec![]))
+                    rec(object, &T::Object(String::from_utf8_lossy(name).into_owned(), vec![], false))
                 } else {
                     Tri::No
                 }
@@ -155,26 +159,27 @@ pub fn accepts_with(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Tri {
             }
             if compound { by() } else { Tri::No }
         }
-        T::Object(class, args) if args.is_empty() => match b {
-            T::Static(bc, _) | T::This(bc) => subclass(class, bc),
-            T::Closure(_) => is_super_type_of(a, &T::Object("Closure".into(), vec![])),
+        T::Object(class, args, exact) if args.is_empty() => match b {
+            T::Static(bc, _) | T::This(bc) => subclass(class, bc, *exact),
+            T::Closure(_) => is_super_type_of(a, &T::Object("Closure".into(), vec![], false)),
             T::ObjectWithoutClass => Tri::Maybe,
             _ => match b.object_class_names().first() {
-                Some(that) => subclass(class, that),
+                Some(that) => subclass(class, that, *exact),
                 None => Tri::No,
             },
         },
         // GenericObjectType in an accepts context: a raw reference to the class is its plain object's answer
-        T::Object(class, _) if matches!(b, T::Object(bc, bargs) if bargs.is_empty() && canonical_class(bc) == canonical_class(class)) => {
-            is_super_type_of(&T::Object(class.clone(), vec![]), b)
+        T::Object(class, _, exact) if matches!(b, T::Object(bc, bargs, _) if bargs.is_empty() && canonical_class(bc) == canonical_class(class)) => {
+            is_super_type_of(&T::Object(class.clone(), vec![], *exact), b)
         }
+        T::Object(class, args, exact) => super::object_super(class, args, b, false, *exact),
         T::ObjectWithoutClass => Tri::from(
             matches!(b, T::ObjectWithoutClass | T::ObjectShape(_)) || !b.object_class_names().is_empty(),
         ),
         T::ObjectShape(props) => object_shape(a, props, b, strict),
         T::Closure(ours) => match b {
             T::Closure(_) => signature_super(ours, b, Some(strict)),
-            _ => rec(&T::Object("Closure".into(), vec![]), b),
+            _ => rec(&T::Object("Closure".into(), vec![], false), b),
         },
         // CallableType::isSuperTypeOfInternal() with `$treatMixedAsAny`; a compound other than a callable answers itself
         T::Callable(sig) => {
@@ -202,8 +207,7 @@ pub fn accepts_with(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Tri {
         T::Accessory(Accessory::NumericString) => accessory(b.is_numeric_string()),
         T::Accessory(Accessory::LiteralString) => {
             // `$type instanceof MixedType`, a template of mixed (TemplateMixedType) too
-            let mixed = matches!(b, T::Mixed { .. }) || matches!(b, T::Template(t) if matches!(t.bound, T::Mixed { .. }));
-            if mixed && !sm.applies(b) {
+            if b.mixed_explicitness().is_some() {
                 return Tri::No;
             }
             accessory(b.is_literal_string())
@@ -271,12 +275,12 @@ fn string_accepts(a: &Type, b: &Type, strict: bool) -> Tri {
 }
 
 /// `ObjectType::checkSubclassAcceptability()`: an unknown class accepts only itself.
-fn subclass(class: &str, that: &str) -> Tri {
+fn subclass(class: &str, that: &str, exact: bool) -> Tri {
     if that == class {
         return Tri::Yes;
     }
     match (symbols::lookup(class), symbols::lookup(that)) {
-        (Some(this), Some(other)) => Tri::from(this.name == other.name || other.ancestors.contains(&this.name)),
+        (Some(this), Some(other)) => Tri::from(this.name == other.name || (!exact && !this.is_final && other.ancestors.contains(&this.name))),
         _ => Tri::No,
     }
 }
@@ -294,7 +298,7 @@ fn object_shape(a: &Type, props: &[(String, Type, bool)], b: &Type, strict: bool
     }
     // SimpleXMLElementClassPropertyReflectionExtension: every property, `__benevolent<static|null>`
     if class.name == "SimpleXMLElement" || class.ancestors.iter().any(|c| c == "SimpleXMLElement") {
-        let property = Type::Benevolent(vec![Type::Object(class.name.clone(), vec![]), Type::Null]);
+        let property = Type::Benevolent(vec![Type::Object(class.name.clone(), vec![], false), Type::Null]);
         return props.iter().map(|(_, ty, _)| accepts(ty, &property, strict)).fold(Tri::Yes, Tri::and);
     }
     props
@@ -312,14 +316,14 @@ fn union(a: &Type, types: &[Type], b: &Type, strict: bool, sm: StrictMixed) -> T
         // IterableType::toArrayOrTraversable()
         let alt = T::Union(vec![
             T::Array(k.clone(), v.clone()),
-            T::Object("Traversable".into(), vec![(**k).clone(), (**v).clone()]),
+            T::Object("Traversable".into(), vec![(**k).clone(), (**v).clone()], false),
         ]);
         return rec(a, &alt);
     }
     // EQUAL_UNION_CLASSES
     for (base, classes) in [("DateTimeInterface", ["DateTimeImmutable", "DateTime"]), ("Throwable", ["Error", "Exception"])] {
-        if matches!(b, T::Object(n, args) if args.is_empty() && n == base) {
-            let all = T::Union(classes.iter().map(|c| T::Object((*c).into(), vec![])).collect());
+        if matches!(b, T::Object(n, args, _) if args.is_empty() && n == base) {
+            let all = T::Union(classes.iter().map(|c| T::Object((*c).into(), vec![], false)).collect());
             if rec(a, &all).yes() {
                 return Tri::Yes;
             }
@@ -330,7 +334,7 @@ fn union(a: &Type, types: &[Type], b: &Type, strict: bool, sm: StrictMixed) -> T
     if result.yes() {
         return result;
     }
-    if (b.is_compound() || sm.applies(b)) && !matches!(b, T::Callable(_) | T::Template(_) | T::Intersection(_)) {
+    if b.is_compound() && !matches!(b, T::Callable(_) | T::Template(_) | T::Intersection(_)) {
         return accepted_by(a, b, strict, sm);
     }
     if matches!(b, T::Template(t) if matches!(t.bound, T::Union(_) | T::Benevolent(_))) {
@@ -343,19 +347,9 @@ fn union(a: &Type, types: &[Type], b: &Type, strict: bool, sm: StrictMixed) -> T
 fn accepted_by(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Tri {
     use Type as T;
     let rec = |x: &Type, y: &Type| accepts_with(x, y, strict, sm);
-    if sm.applies(b) {
-        // StrictMixedType::isAcceptedBy(): anything but a mixed (accepts_with() answers it) maybe; a
-        // TemplateStrictMixedType's (isSubTypeOf()) is yes for the same template of mixed
-        return match (a, b) {
-            (T::Template(at), T::Template(bt))
-                if matches!(at.bound, T::Mixed { .. }) && at.name == bt.name && at.scope == bt.scope =>
-            {
-                Tri::Yes
-            }
-            _ => Tri::Maybe,
-        };
-    }
     match b {
+        T::StrictMixed => Tri::from(matches!(a, T::StrictMixed | T::Mixed { .. } | T::SubtractedMixed { .. } | T::Error)
+            || matches!(a, T::Template(t) if matches!(t.bound, T::StrictMixed))).or(Tri::Maybe),
         T::Union(types) => Tri::extreme_identity(types.iter().map(|t| rec(a, t))),
         T::Benevolent(types) => types.iter().map(|t| rec(a, t)).fold(Tri::No, Tri::or),
         T::Mixed { .. } | T::Error => Tri::Yes,
@@ -385,6 +379,8 @@ fn accepted_by(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Tri {
         },
         // TemplateMixedType::isAcceptedBy(), as MixedType's
         T::Template(t) if matches!(t.bound, T::Mixed { .. }) => Tri::from(!is_super_type_of(b, a).no()),
+        // TemplateStrictMixedType::isAcceptedBy() uses the template's subtype relation, not the bound's accepts().
+        T::Template(t) if matches!(t.bound, T::StrictMixed) => is_super_type_of(a, b),
         // TemplateTypeTrait::isAcceptedBy(): a union or intersection reaches here only with a bound of its kind (their
         // accepts() ask the members first), so it compares with the bound like any other type
         T::Template(t) => match a {

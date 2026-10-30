@@ -435,6 +435,14 @@ fn same_scope(left: &LoopScope, right: &LoopScope) -> bool {
         && left.final_actions == right.final_actions
         && left.truthy_pre_conditions == right.truthy_pre_conditions
         && left.condition_always_false == right.condition_always_false
+        && left.entry_scope == right.entry_scope
+        && left.first_falsey_scope == right.first_falsey_scope
+        && left.pre_update_scope == right.pre_update_scope
+        && left.break_scopes == right.break_scopes
+        && left.back_edge_dead == right.back_edge_dead
+        && left.foreach_entry_scope == right.foreach_entry_scope
+        && left.foreach_body_scope == right.foreach_body_scope
+        && left.foreach_continue_scopes == right.foreach_continue_scopes
         && same_optional_scope(left.parent_loop.as_deref(), right.parent_loop.as_deref())
 }
 
@@ -555,6 +563,7 @@ mod tests {
                 .all(|(a, b)| same_union(a, b))
         );
         assert_eq!(original.resolved_method_calls, optimized.resolved_method_calls);
+        assert_eq!(original.call_terminations, optimized.call_terminations);
         assert_eq!(
             format!("{:?}", original.pending_readonly_property_writes),
             format!("{:?}", optimized.pending_readonly_property_writes)
@@ -811,5 +820,15 @@ mod tests {
         with_continue.continue_locals = Some(before.locals.clone());
         assert!(!same_scope(&scope, &with_continue));
         assert!(!same_scope(&with_continue, &scope));
+
+        let mut foreach_entry = scope.clone();
+        foreach_entry.foreach_entry_scope = Some(before.variable_scope());
+        assert!(!same_scope(&scope, &foreach_entry));
+        let mut foreach_body = scope.clone();
+        foreach_body.foreach_body_scope = Some(before.variable_scope());
+        assert!(!same_scope(&scope, &foreach_body));
+        let mut foreach_continue = scope.clone();
+        foreach_continue.foreach_continue_scopes.push(before.variable_scope());
+        assert!(!same_scope(&scope, &foreach_continue));
     }
 }

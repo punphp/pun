@@ -461,3 +461,166 @@ fn accepts_reasons() {
     eprintln!("type-reasons.json: {}/{} match", rows.len() - failures.len(), rows.len());
     assert!(failures.is_empty(), "{}", failures.join("\n"));
 }
+
+/// Pinned public type comparisons: callable specialization, gradual accepts versus strict variance, and
+/// negative controls with checked mixed nested in generic arguments.
+#[test]
+fn generic_comparisons() {
+    use pun_phpstan::types::{StrictMixed, accepts_with, accepts_reasons};
+    let fixture = fixture("generic-comparisons.json");
+    let mut failures = Vec::new();
+    for row in fixture.as_array().unwrap() {
+        let a = resolve_str(row[0].as_str().unwrap(), None);
+        let received = resolve_str(row[1].as_str().unwrap(), None);
+        let checked = row[2].as_bool().unwrap();
+        let flags = StrictMixed { explicit: checked, implicit: checked };
+        let b = flags.transform(&received);
+        let got = serde_json::json!([
+            row[0], row[1], row[2], format!("{:?}", is_super_type_of(&a, &b)),
+            format!("{:?}", accepts_with(&a, &received, true, flags)), accepts_reasons(&a, &received, true, flags),
+        ]);
+        if got != *row { failures.push(format!("expected {row}\nreceived {got}")); }
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+}
+
+/// PHPStan 2.3.1 ConstantFloatType::equals(), isSuperTypeOf() and accepts(), including nested shapes.
+#[test]
+fn constant_float_identity() {
+    use pun_phpstan::types::{ConstArray, Tri, Type, accepts};
+    let shape = |value| {
+        Type::ConstArray(Box::new(ConstArray {
+            keys: vec![Type::ConstInt(0)],
+            values: vec![value],
+            next_auto_indexes: vec![1],
+            ..ConstArray::empty()
+        }))
+    };
+    for (x, y, equal) in [
+        (f64::NAN, f64::NAN, true),
+        (f64::NAN, -f64::NAN, true),
+        (f64::NAN, 1.0, false),
+        (0.0, -0.0, true),
+        (f64::INFINITY, f64::INFINITY, true),
+        (f64::INFINITY, f64::NEG_INFINITY, false),
+    ] {
+        let a = Type::ConstFloat(x);
+        let b = Type::ConstFloat(y);
+        let want = Tri::from(equal);
+        assert_eq!(
+            (a == b, is_super_type_of(&a, &b), accepts(&a, &b, true)),
+            (equal, want, want)
+        );
+        let (a, b) = (shape(a), shape(b));
+        assert_eq!((a == b, is_super_type_of(&a, &b)), (equal, want));
+        assert_eq!(accepts(&Type::Union(vec![Type::Int, a]), &b, true), want);
+    }
+}
+
+/// Per-object ClassReflection::asFinal(), not a change to the declaration or printed type identity.
+#[test]
+fn exact_objects_keep_phpstan_equality_containment_and_union_metadata_distinct() {
+    use pun_phpstan::types::{Template, Type, accepts, infer_template_types, intersect, mixed, to_phpdoc, union};
+    use serde_json::json;
+    use std::{cell::RefCell, collections::BTreeMap};
+
+    let object = |name: &str, exact| Type::Object(name.into(), vec![], exact);
+    let generic = |exact, item| Type::Object("ArrayObject".into(), vec![Type::Int, item], exact);
+    let types = BTreeMap::from([
+        ("broad", object("Exception", false)),
+        ("exact", object("Exception", true)),
+        ("child", object("RuntimeException", true)),
+        ("broad-child", object("RuntimeException", false)),
+        ("other", object("LogicException", true)),
+        ("static", Type::Static("Exception".into(), vec![])),
+        ("this", Type::This("Exception".into())),
+        ("interface", object("Throwable", false)),
+        ("generic-broad", generic(false, object("Exception", false))),
+        ("generic-exact", generic(true, object("Exception", false))),
+        ("generic-nested", generic(true, object("Exception", true))),
+        ("excluded", Type::object_subtracted(object("Exception", true), object("RuntimeException", false))),
+        ("excluded-nested", Type::object_subtracted(object("Exception", true), object("RuntimeException", true))),
+        ("cased", object("exception", false)),
+        ("cased-exact", object("exception", true)),
+        ("final", object("Closure", false)),
+        ("receiver-conjunction", Type::Intersection(vec![object("Exception", true), Type::This("Exception".into())])),
+    ]);
+    fn observation(ty: &Type) -> serde_json::Value {
+        fn collect(ty: &Type, exact: &RefCell<Vec<(String, bool)>>) {
+            if let Type::Object(name, _, is_exact) = ty {
+                exact.borrow_mut().push((name.clone(), *is_exact));
+            }
+            ty.traverse(&|inner| {
+                collect(inner, exact);
+                inner.clone()
+            });
+        }
+        let exact = RefCell::new(Vec::new());
+        collect(ty, &exact);
+        let mut exact = exact.into_inner();
+        exact.sort();
+        json!([ty.describe(Level::Precise), exact])
+    }
+    let oracle = fixture("exact-objects.json");
+    let mut failures = Vec::new();
+    for row in oracle["pairs"].as_array().unwrap() {
+        let a = &types[row["left"].as_str().unwrap()];
+        let b = &types[row["right"].as_str().unwrap()];
+        let got = json!({
+            "left": row["left"], "right": row["right"],
+            "equals": a == b,
+            "super": format!("{:?}", is_super_type_of(a, b)),
+            "accepts": format!("{:?}", accepts(a, b, true)),
+            "union": observation(&union(vec![a.clone(), b.clone()])),
+            "intersection": observation(&intersect(vec![a.clone(), b.clone()])),
+        });
+        if got != *row { failures.push(format!("want {row}\ngot {got}")); }
+    }
+    for (name, want) in oracle["preserved"].as_object().unwrap() {
+        let got = observation(&types[name.as_str()].traverse(&Clone::clone));
+        if got != *want { failures.push(format!("traversed {name}: want {want}\ngot {got}")); }
+    }
+    for (name, want) in oracle["phpdoc"].as_object().unwrap() {
+        assert_eq!(to_phpdoc(&types[name.as_str()]), want.as_str().unwrap(), "{name}");
+    }
+    let template = Type::Template(Box::new(Template {
+        name: "T".into(), scope: "function exact()".into(), bound: mixed(), default: None, argument: false,
+    }));
+    for (name, want) in oracle["inferred"].as_object().unwrap() {
+        let inferred = infer_template_types(&template, &types[name.as_str()]);
+        let got = observation(inferred.types()[0].2);
+        if got != *want { failures.push(format!("inferred {name}: want {want}\ngot {got}")); }
+    }
+    for (name, want) in oracle["queries"].as_object().unwrap() {
+        let ty = &types[name.as_str()];
+        let got = json!([format!("{:?}", ty.is_callable()), format!("{:?}", ty.has_method("missing"))]);
+        if got != *want { failures.push(format!("queried {name}: want {want}\ngot {got}")); }
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+}
+
+/// UnionType/IntersectionType::equals() matches members without changing reflection's written order.
+#[test]
+fn compound_equality_keeps_order_for_reflection_not_invariant_generic_identity() {
+    use pun_phpstan::types::Type;
+    use serde_json::Value;
+    let object = |name: &str| Type::Object(name.into(), vec![], false);
+    for row in fixture("compound-equality.json").as_array().unwrap() {
+        let make = |names: &Value| {
+            let members = names.as_array().unwrap().iter().map(|n| object(n.as_str().unwrap())).collect();
+            match row[0].as_str().unwrap() {
+                "union" => Type::Union(members),
+                "benevolent" => Type::Benevolent(members),
+                "intersection" => Type::Intersection(members),
+                _ => unreachable!(),
+            }
+        };
+        let (a, b) = (make(&row[1]), make(&row[2]));
+        let generic = |key, value| Type::Object("ArrayIterator".into(), vec![key, value], false);
+        assert_eq!(a == b, row[3].as_bool().unwrap(), "{row}");
+        assert_eq!(generic(object("Key"), a.clone()) == generic(object("Key"), b.clone()), row[4].as_bool().unwrap(), "{row}");
+        assert_eq!(generic(object("Key"), a.clone()) == generic(b, object("Key")), row[5].as_bool().unwrap(), "{row}");
+        let (Type::Union(members) | Type::Benevolent(members) | Type::Intersection(members)) = a else { unreachable!() };
+        assert_eq!(members.iter().map(Type::object_class_names).collect::<Vec<_>>(), row[1].as_array().unwrap().iter().map(|n| vec![n.as_str().unwrap().to_string()]).collect::<Vec<_>>());
+    }
+}

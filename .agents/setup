@@ -1,0 +1,97 @@
+#!/usr/bin/env bash
+# Orb setup: Rust, PHP 8.5 + Composer, the pinned oracle, the CI corpus, and the Node deps.
+# Idempotent and quick on a warm snapshot; mirrors .github/workflows/ci.yml and .github/actions/oracle.
+set -euo pipefail
+root="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$root"
+export DEBIAN_FRONTEND=noninteractive
+
+step() { # name command...
+  local name=$1 start=$SECONDS
+  shift
+  echo "==> $name"
+  "$@"
+  echo "<== $name ($((SECONDS - start))s)"
+}
+
+php_packages=(php8.5-cli php8.5-mbstring php8.5-xml php8.5-curl php8.5-zip php8.5-intl)
+
+apt_packages() {
+  local missing=()
+  for p in "${php_packages[@]}"; do dpkg -s "$p" >/dev/null 2>&1 || missing+=("$p"); done
+  [ ${#missing[@]} -eq 0 ] && { echo "all present"; return; }
+  if [ ! -f /etc/apt/sources.list.d/php.list ]; then
+    sudo curl -fsSLo /usr/share/keyrings/sury-php.gpg https://packages.sury.org/php/apt.gpg
+    echo "deb [signed-by=/usr/share/keyrings/sury-php.gpg] https://packages.sury.org/php/ bookworm main" |
+      sudo tee /etc/apt/sources.list.d/php.list >/dev/null
+  fi
+  sudo apt-get update -q
+  sudo apt-get install -y -q --no-install-recommends "${missing[@]}"
+}
+
+composer_bin() {
+  command -v composer >/dev/null && { composer --version; return; }
+  local tmp
+  tmp=$(mktemp -d)
+  curl -fsSLo "$tmp/installer.php" https://getcomposer.org/installer
+  sudo php "$tmp/installer.php" --quiet --install-dir=/usr/local/bin --filename=composer
+  rm -rf "$tmp"
+  composer --version
+}
+
+rust() {
+  if [ ! -x "$HOME/.cargo/bin/rustup" ]; then
+    curl -fsSL https://sh.rustup.rs | sh -s -- -y --no-modify-path --profile minimal --default-toolchain stable
+  fi
+  # shellcheck disable=SC1091
+  source "$HOME/.cargo/env"
+  rustup toolchain install stable --profile minimal -c rustfmt,clippy,llvm-tools-preview
+  rustup default stable
+  # The rustup installer adds this to .profile only; Amp and services start bash login shells.
+  grep -qxF '. "$HOME/.cargo/env"' "$HOME/.bash_profile" 2>/dev/null ||
+    printf '\n. "$HOME/.cargo/env"\n' >>"$HOME/.bash_profile"
+  rustc --version
+}
+
+llvm_cov() {
+  command -v cargo-llvm-cov >/dev/null && { cargo llvm-cov --version; return; }
+  curl -fsSL https://github.com/taiki-e/cargo-llvm-cov/releases/latest/download/cargo-llvm-cov-x86_64-unknown-linux-gnu.tar.gz |
+    tar -xzf - -C "$HOME/.cargo/bin"
+  cargo llvm-cov --version
+}
+
+bun_bin() {
+  # docs/bun.lock is lockfileVersion 2, which the orb image's Bun 1.3 cannot read.
+  local version=1.4.4
+  if [ "$("$HOME/.bun/bin/bun" --version 2>/dev/null)" != "$version" ]; then
+    curl -fsSL https://bun.sh/install | bash -s "bun-v$version" >/dev/null
+  fi
+  grep -qxF 'export PATH="$HOME/.bun/bin:$PATH"' "$HOME/.bash_profile" 2>/dev/null ||
+    printf '\nexport PATH="$HOME/.bun/bin:$PATH"\n' >>"$HOME/.bash_profile"
+  "$HOME/.bun/bin/bun" --version
+}
+
+pinkary() {
+  # corpus/manifest.toml points at the acceptance checkout on Pushpak's machine; recreate it from upstream.
+  local dir=/home/forge/projects/pinkary.com commit
+  commit=$(awk -F' = ' '/^name/{n=$2} /^commit/ && n=="\"pinkary\""{gsub(/"/,"",$2); print $2; exit}' corpus/manifest.toml)
+  [ "$(git -C "$dir" rev-parse HEAD 2>/dev/null)" = "$commit" ] && { echo "ok $commit"; return; }
+  sudo mkdir -p "$(dirname "$dir")" && sudo chown "$(id -u):$(id -g)" /home/forge /home/forge/projects
+  rm -rf "$dir" && git init -q "$dir"
+  git -C "$dir" fetch -q --depth 1 https://github.com/pinkary-project/pinkary.com.git "$commit"
+  git -C "$dir" -c advice.detachedHead=false checkout -q FETCH_HEAD
+}
+
+step "apt: php 8.5" apt_packages
+step "composer" composer_bin
+step "rust toolchain" rust
+step "cargo-llvm-cov" llvm_cov
+step "cargo fetch" cargo fetch --locked -q
+step "oracle (.oracle/)" scripts/oracle.sh
+step "pinkary acceptance checkout" pinkary
+step "corpus" scripts/corpus.sh pinkary laravel-framework larastan laravel-pint
+step "npm: crates/pun-fixers" npm install --prefix crates/pun-fixers --no-audit --no-fund --loglevel=error
+step "bun" bun_bin
+step "bun: docs" "$HOME/.bun/bin/bun" install --cwd docs --frozen-lockfile
+# Only the binaries most checks start from: --workspace --all-targets grows target/ past 30 GB.
+step "cargo build (warm target/)" cargo build --locked -p punphp -p punphp-harness

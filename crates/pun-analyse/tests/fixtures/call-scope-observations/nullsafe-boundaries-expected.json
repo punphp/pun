@@ -1,0 +1,875 @@
+{
+    "calls": {
+        "690": {
+            "line": 15,
+            "expression": "nullsafeReceiver($sink)?->foo($sink, [$sink])",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 690,
+                            "end": 713,
+                            "expression": "nullsafeReceiver($sink)",
+                            "type": "NullsafeBoundarySink"
+                        },
+                        {
+                            "start": 707,
+                            "end": 712,
+                            "expression": "$sink",
+                            "type": "NullsafeBoundarySink|null"
+                        },
+                        {
+                            "start": 720,
+                            "end": 725,
+                            "expression": "$sink",
+                            "type": "NullsafeBoundarySink|null"
+                        },
+                        {
+                            "start": 727,
+                            "end": 734,
+                            "expression": "[$sink]",
+                            "type": "array{NullsafeBoundarySink|null}"
+                        },
+                        {
+                            "start": 728,
+                            "end": 733,
+                            "expression": "$sink",
+                            "type": "NullsafeBoundarySink|null"
+                        }
+                    ]
+                }
+            ]
+        },
+        "752": {
+            "line": 16,
+            "expression": "$sink?->foo($born = 1)",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 752,
+                            "end": 757,
+                            "expression": "$sink",
+                            "type": "NullsafeBoundarySink"
+                        },
+                        {
+                            "start": 764,
+                            "end": 773,
+                            "expression": "$born = 1",
+                            "type": "1"
+                        },
+                        {
+                            "start": 764,
+                            "end": 769,
+                            "expression": "$born",
+                            "type": "*ERROR*"
+                        },
+                        {
+                            "start": 772,
+                            "end": 773,
+                            "expression": "1",
+                            "type": "1"
+                        }
+                    ]
+                }
+            ]
+        },
+        "791": {
+            "line": 17,
+            "expression": "$inspect->inspect($sink, $born)",
+            "names": [
+                {
+                    "name": "inspect",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 791,
+                            "end": 799,
+                            "expression": "$inspect",
+                            "type": "NullsafeBoundaryInspect"
+                        },
+                        {
+                            "start": 809,
+                            "end": 814,
+                            "expression": "$sink",
+                            "type": "NullsafeBoundarySink|null"
+                        },
+                        {
+                            "start": 816,
+                            "end": 821,
+                            "expression": "$born",
+                            "type": "1"
+                        }
+                    ]
+                }
+            ]
+        },
+        "857": {
+            "line": 19,
+            "expression": "$sink?->foo($neverBorn = 2)",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 857,
+                            "end": 862,
+                            "expression": "$sink",
+                            "type": "null"
+                        },
+                        {
+                            "start": 869,
+                            "end": 883,
+                            "expression": "$neverBorn = 2",
+                            "type": "2"
+                        },
+                        {
+                            "start": 869,
+                            "end": 879,
+                            "expression": "$neverBorn",
+                            "type": "*ERROR*"
+                        },
+                        {
+                            "start": 882,
+                            "end": 883,
+                            "expression": "2",
+                            "type": "2"
+                        }
+                    ]
+                }
+            ]
+        },
+        "901": {
+            "line": 20,
+            "expression": "$inspect->inspect($sink, $neverBorn)",
+            "names": [
+                {
+                    "name": "inspect",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 901,
+                            "end": 909,
+                            "expression": "$inspect",
+                            "type": "NullsafeBoundaryInspect"
+                        },
+                        {
+                            "start": 919,
+                            "end": 924,
+                            "expression": "$sink",
+                            "type": "null"
+                        },
+                        {
+                            "start": 926,
+                            "end": 936,
+                            "expression": "$neverBorn",
+                            "type": "*ERROR*"
+                        }
+                    ]
+                }
+            ]
+        },
+        "994": {
+            "line": 22,
+            "expression": "$sink?->foo($definitelyBorn = 3)",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 994,
+                            "end": 999,
+                            "expression": "$sink",
+                            "type": "NullsafeBoundarySink"
+                        },
+                        {
+                            "start": 1006,
+                            "end": 1025,
+                            "expression": "$definitelyBorn = 3",
+                            "type": "3"
+                        },
+                        {
+                            "start": 1006,
+                            "end": 1021,
+                            "expression": "$definitelyBorn",
+                            "type": "*ERROR*"
+                        },
+                        {
+                            "start": 1024,
+                            "end": 1025,
+                            "expression": "3",
+                            "type": "3"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1043": {
+            "line": 23,
+            "expression": "$inspect->inspect($sink, $definitelyBorn)",
+            "names": [
+                {
+                    "name": "inspect",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 1043,
+                            "end": 1051,
+                            "expression": "$inspect",
+                            "type": "NullsafeBoundaryInspect"
+                        },
+                        {
+                            "start": 1061,
+                            "end": 1066,
+                            "expression": "$sink",
+                            "type": "NullsafeBoundarySink"
+                        },
+                        {
+                            "start": 1068,
+                            "end": 1083,
+                            "expression": "$definitelyBorn",
+                            "type": "3"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1101": {
+            "line": 24,
+            "expression": "$sink->child?->foo([$sink->child], $sink->child = null, [$sink->child])",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 1101,
+                            "end": 1113,
+                            "expression": "$sink->child",
+                            "type": "NullsafeBoundarySink"
+                        },
+                        {
+                            "start": 1101,
+                            "end": 1106,
+                            "expression": "$sink",
+                            "type": "NullsafeBoundarySink"
+                        },
+                        {
+                            "start": 1120,
+                            "end": 1134,
+                            "expression": "[$sink->child]",
+                            "type": "array{NullsafeBoundarySink}"
+                        },
+                        {
+                            "start": 1121,
+                            "end": 1133,
+                            "expression": "$sink->child",
+                            "type": "NullsafeBoundarySink"
+                        },
+                        {
+                            "start": 1121,
+                            "end": 1126,
+                            "expression": "$sink",
+                            "type": "NullsafeBoundarySink"
+                        },
+                        {
+                            "start": 1136,
+                            "end": 1155,
+                            "expression": "$sink->child = null",
+                            "type": "null"
+                        },
+                        {
+                            "start": 1136,
+                            "end": 1148,
+                            "expression": "$sink->child",
+                            "type": "NullsafeBoundarySink"
+                        },
+                        {
+                            "start": 1136,
+                            "end": 1141,
+                            "expression": "$sink",
+                            "type": "NullsafeBoundarySink"
+                        },
+                        {
+                            "start": 1151,
+                            "end": 1155,
+                            "expression": "null",
+                            "type": "null"
+                        },
+                        {
+                            "start": 1157,
+                            "end": 1171,
+                            "expression": "[$sink->child]",
+                            "type": "array{null}"
+                        },
+                        {
+                            "start": 1158,
+                            "end": 1170,
+                            "expression": "$sink->child",
+                            "type": "null"
+                        },
+                        {
+                            "start": 1158,
+                            "end": 1163,
+                            "expression": "$sink",
+                            "type": "NullsafeBoundarySink"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1189": {
+            "line": 25,
+            "expression": "$inspect->inspect($sink->child)",
+            "names": [
+                {
+                    "name": "inspect",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 1189,
+                            "end": 1197,
+                            "expression": "$inspect",
+                            "type": "NullsafeBoundaryInspect"
+                        },
+                        {
+                            "start": 1207,
+                            "end": 1219,
+                            "expression": "$sink->child",
+                            "type": "NullsafeBoundarySink|null"
+                        },
+                        {
+                            "start": 1207,
+                            "end": 1212,
+                            "expression": "$sink",
+                            "type": "NullsafeBoundarySink"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1237": {
+            "line": 26,
+            "expression": "$sink?->foo($sink?->foo(1)/* observe */, [$sink])",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 1237,
+                            "end": 1242,
+                            "expression": "$sink",
+                            "type": "NullsafeBoundarySink"
+                        },
+                        {
+                            "start": 1249,
+                            "end": 1263,
+                            "expression": "$sink?->foo(1)",
+                            "type": "NullsafeBoundarySink|null"
+                        },
+                        {
+                            "start": 1249,
+                            "end": 1254,
+                            "expression": "$sink",
+                            "type": "NullsafeBoundarySink"
+                        },
+                        {
+                            "start": 1261,
+                            "end": 1262,
+                            "expression": "1",
+                            "type": "1"
+                        },
+                        {
+                            "start": 1278,
+                            "end": 1285,
+                            "expression": "[$sink]",
+                            "type": "array{NullsafeBoundarySink}"
+                        },
+                        {
+                            "start": 1279,
+                            "end": 1284,
+                            "expression": "$sink",
+                            "type": "NullsafeBoundarySink"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1249": {
+            "line": 26,
+            "expression": "$sink?->foo(1)",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 1249,
+                            "end": 1254,
+                            "expression": "$sink",
+                            "type": "NullsafeBoundarySink"
+                        },
+                        {
+                            "start": 1261,
+                            "end": 1262,
+                            "expression": "1",
+                            "type": "1"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1303": {
+            "line": 27,
+            "expression": "$sink->read()?->foo([$sink->read()])",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 1303,
+                            "end": 1316,
+                            "expression": "$sink->read()",
+                            "type": "NullsafeBoundarySink"
+                        },
+                        {
+                            "start": 1303,
+                            "end": 1308,
+                            "expression": "$sink",
+                            "type": "NullsafeBoundarySink"
+                        },
+                        {
+                            "start": 1323,
+                            "end": 1338,
+                            "expression": "[$sink->read()]",
+                            "type": "array{NullsafeBoundarySink}"
+                        },
+                        {
+                            "start": 1324,
+                            "end": 1337,
+                            "expression": "$sink->read()",
+                            "type": "NullsafeBoundarySink"
+                        },
+                        {
+                            "start": 1324,
+                            "end": 1329,
+                            "expression": "$sink",
+                            "type": "NullsafeBoundarySink"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1635": {
+            "line": 39,
+            "expression": "$sink?->$name([$value], [$sink], $value)",
+            "names": [
+                {
+                    "name": "bar",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 1635,
+                            "end": 1640,
+                            "expression": "$sink",
+                            "type": "NullsafeBoundaryOther|NullsafeBoundarySink"
+                        },
+                        {
+                            "start": 1649,
+                            "end": 1657,
+                            "expression": "[$value]",
+                            "type": "array{1|'other'}"
+                        },
+                        {
+                            "start": 1650,
+                            "end": 1656,
+                            "expression": "$value",
+                            "type": "'other'"
+                        },
+                        {
+                            "start": 1659,
+                            "end": 1666,
+                            "expression": "[$sink]",
+                            "type": "array{NullsafeBoundaryOther|NullsafeBoundarySink}"
+                        },
+                        {
+                            "start": 1660,
+                            "end": 1665,
+                            "expression": "$sink",
+                            "type": "NullsafeBoundaryOther"
+                        },
+                        {
+                            "start": 1668,
+                            "end": 1674,
+                            "expression": "$value",
+                            "type": "'other'"
+                        }
+                    ]
+                },
+                {
+                    "name": "foo",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 1635,
+                            "end": 1640,
+                            "expression": "$sink",
+                            "type": "NullsafeBoundaryOther|NullsafeBoundarySink"
+                        },
+                        {
+                            "start": 1649,
+                            "end": 1657,
+                            "expression": "[$value]",
+                            "type": "array{1|'other'}"
+                        },
+                        {
+                            "start": 1650,
+                            "end": 1656,
+                            "expression": "$value",
+                            "type": "1"
+                        },
+                        {
+                            "start": 1659,
+                            "end": 1666,
+                            "expression": "[$sink]",
+                            "type": "array{NullsafeBoundaryOther|NullsafeBoundarySink}"
+                        },
+                        {
+                            "start": 1660,
+                            "end": 1665,
+                            "expression": "$sink",
+                            "type": "NullsafeBoundarySink"
+                        },
+                        {
+                            "start": 1668,
+                            "end": 1674,
+                            "expression": "$value",
+                            "type": "1"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1726": {
+            "line": 41,
+            "expression": "$holders['sink']?->$name([$holders], $holders['sink'])",
+            "names": [
+                {
+                    "name": "bar",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 1726,
+                            "end": 1742,
+                            "expression": "$holders['sink']",
+                            "type": "NullsafeBoundaryOther|NullsafeBoundarySink"
+                        },
+                        {
+                            "start": 1726,
+                            "end": 1734,
+                            "expression": "$holders",
+                            "type": "array{sink: NullsafeBoundaryOther}"
+                        },
+                        {
+                            "start": 1735,
+                            "end": 1741,
+                            "expression": "'sink'",
+                            "type": "'sink'"
+                        },
+                        {
+                            "start": 1751,
+                            "end": 1761,
+                            "expression": "[$holders]",
+                            "type": "array{array{sink: NullsafeBoundaryOther|NullsafeBoundarySink}}"
+                        },
+                        {
+                            "start": 1752,
+                            "end": 1760,
+                            "expression": "$holders",
+                            "type": "array{sink: NullsafeBoundaryOther}"
+                        },
+                        {
+                            "start": 1763,
+                            "end": 1779,
+                            "expression": "$holders['sink']",
+                            "type": "NullsafeBoundaryOther|NullsafeBoundarySink"
+                        },
+                        {
+                            "start": 1763,
+                            "end": 1771,
+                            "expression": "$holders",
+                            "type": "array{sink: NullsafeBoundaryOther}"
+                        },
+                        {
+                            "start": 1772,
+                            "end": 1778,
+                            "expression": "'sink'",
+                            "type": "'sink'"
+                        }
+                    ]
+                },
+                {
+                    "name": "foo",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 1726,
+                            "end": 1742,
+                            "expression": "$holders['sink']",
+                            "type": "NullsafeBoundaryOther|NullsafeBoundarySink"
+                        },
+                        {
+                            "start": 1726,
+                            "end": 1734,
+                            "expression": "$holders",
+                            "type": "array{sink: NullsafeBoundarySink}"
+                        },
+                        {
+                            "start": 1735,
+                            "end": 1741,
+                            "expression": "'sink'",
+                            "type": "'sink'"
+                        },
+                        {
+                            "start": 1751,
+                            "end": 1761,
+                            "expression": "[$holders]",
+                            "type": "array{array{sink: NullsafeBoundaryOther|NullsafeBoundarySink}}"
+                        },
+                        {
+                            "start": 1752,
+                            "end": 1760,
+                            "expression": "$holders",
+                            "type": "array{sink: NullsafeBoundarySink}"
+                        },
+                        {
+                            "start": 1763,
+                            "end": 1779,
+                            "expression": "$holders['sink']",
+                            "type": "NullsafeBoundaryOther|NullsafeBoundarySink"
+                        },
+                        {
+                            "start": 1763,
+                            "end": 1771,
+                            "expression": "$holders",
+                            "type": "array{sink: NullsafeBoundarySink}"
+                        },
+                        {
+                            "start": 1772,
+                            "end": 1778,
+                            "expression": "'sink'",
+                            "type": "'sink'"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1956": {
+            "line": 46,
+            "expression": "$holders['sink']?->foo([$holders], $holders['sink'] = null, [$holders])",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 1956,
+                            "end": 1972,
+                            "expression": "$holders['sink']",
+                            "type": "NullsafeBoundarySink"
+                        },
+                        {
+                            "start": 1956,
+                            "end": 1964,
+                            "expression": "$holders",
+                            "type": "array{sink: NullsafeBoundarySink}"
+                        },
+                        {
+                            "start": 1965,
+                            "end": 1971,
+                            "expression": "'sink'",
+                            "type": "'sink'"
+                        },
+                        {
+                            "start": 1979,
+                            "end": 1989,
+                            "expression": "[$holders]",
+                            "type": "array{array{sink: NullsafeBoundarySink}}"
+                        },
+                        {
+                            "start": 1980,
+                            "end": 1988,
+                            "expression": "$holders",
+                            "type": "array{sink: NullsafeBoundarySink}"
+                        },
+                        {
+                            "start": 1991,
+                            "end": 2014,
+                            "expression": "$holders['sink'] = null",
+                            "type": "null"
+                        },
+                        {
+                            "start": 1991,
+                            "end": 2007,
+                            "expression": "$holders['sink']",
+                            "type": "NullsafeBoundarySink"
+                        },
+                        {
+                            "start": 1991,
+                            "end": 1999,
+                            "expression": "$holders",
+                            "type": "array{sink: NullsafeBoundarySink}"
+                        },
+                        {
+                            "start": 2000,
+                            "end": 2006,
+                            "expression": "'sink'",
+                            "type": "'sink'"
+                        },
+                        {
+                            "start": 2010,
+                            "end": 2014,
+                            "expression": "null",
+                            "type": "null"
+                        },
+                        {
+                            "start": 2016,
+                            "end": 2026,
+                            "expression": "[$holders]",
+                            "type": "array{array{sink: null}}"
+                        },
+                        {
+                            "start": 2017,
+                            "end": 2025,
+                            "expression": "$holders",
+                            "type": "array{sink: NullsafeBoundarySink}"
+                        }
+                    ]
+                }
+            ]
+        },
+        "2044": {
+            "line": 47,
+            "expression": "$inspect->inspect($holders)",
+            "names": [
+                {
+                    "name": "inspect",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 2044,
+                            "end": 2052,
+                            "expression": "$inspect",
+                            "type": "NullsafeBoundaryInspect"
+                        },
+                        {
+                            "start": 2062,
+                            "end": 2070,
+                            "expression": "$holders",
+                            "type": "array{sink: NullsafeBoundarySink|null}"
+                        }
+                    ]
+                }
+            ]
+        },
+        "2210": {
+            "line": 51,
+            "expression": "($sink = $maybe)?->foo($sink, [$sink])",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 2211,
+                            "end": 2225,
+                            "expression": "$sink = $maybe",
+                            "type": "NullsafeBoundarySink"
+                        },
+                        {
+                            "start": 2211,
+                            "end": 2216,
+                            "expression": "$sink",
+                            "type": "NullsafeBoundarySink|null"
+                        },
+                        {
+                            "start": 2219,
+                            "end": 2225,
+                            "expression": "$maybe",
+                            "type": "NullsafeBoundarySink|null"
+                        },
+                        {
+                            "start": 2233,
+                            "end": 2238,
+                            "expression": "$sink",
+                            "type": "NullsafeBoundarySink|null"
+                        },
+                        {
+                            "start": 2240,
+                            "end": 2247,
+                            "expression": "[$sink]",
+                            "type": "array{NullsafeBoundarySink|null}"
+                        },
+                        {
+                            "start": 2241,
+                            "end": 2246,
+                            "expression": "$sink",
+                            "type": "NullsafeBoundarySink|null"
+                        }
+                    ]
+                }
+            ]
+        },
+        "2265": {
+            "line": 52,
+            "expression": "$inspect->inspect($sink)",
+            "names": [
+                {
+                    "name": "inspect",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 2265,
+                            "end": 2273,
+                            "expression": "$inspect",
+                            "type": "NullsafeBoundaryInspect"
+                        },
+                        {
+                            "start": 2283,
+                            "end": 2288,
+                            "expression": "$sink",
+                            "type": "NullsafeBoundarySink|null"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "errors": [
+        [
+            19,
+            "method.nonObject",
+            "Cannot call method foo() on null.",
+            null,
+            true
+        ],
+        [
+            20,
+            "variable.undefined",
+            "Undefined variable: $neverBorn",
+            null,
+            true
+        ]
+    ],
+    "function_events": {
+        "690": 1
+    }
+}

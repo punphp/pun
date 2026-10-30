@@ -1,0 +1,456 @@
+{
+    "analysed": {
+        "errors": [
+            {
+                "file": "anonymous-class.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Cannot assign new by reference on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "array-append.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Cannot assign new by reference on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "array-offset.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Cannot assign new by reference on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "dynamic-class.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Cannot assign new by reference on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "function-call.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Cannot assign new by reference on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "function-partial.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Cannot assign new by reference on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "indirect-variable.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Cannot assign new by reference on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "method-call.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Cannot assign new by reference on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "method-partial.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Cannot assign new by reference on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "nullsafe-method-call.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Cannot assign new by reference on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "nullsafe-property.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Cannot assign new by reference on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "property.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Cannot assign new by reference on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "resolver-suppression.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Cannot assign new by reference on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "simple.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Cannot assign new by reference on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "split-start.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Cannot assign new by reference on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "static-method-call.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Cannot assign new by reference on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "static-method-partial.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Cannot assign new by reference on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "static-property.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Cannot assign new by reference on line 2",
+                "tip": null,
+                "ignorable": false
+            }
+        ],
+        "general": []
+    },
+    "scanned": {
+        "direct": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "nested": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "valid-reference": {
+            "errors": [],
+            "general": []
+        },
+        "valid-new": {
+            "errors": [],
+            "general": []
+        }
+    },
+    "order": {
+        "errors": [
+            {
+                "file": "order.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Cannot assign new by reference on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "order.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "Cannot assign new by reference on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "order.php",
+                "line": 7,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 7",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "order.php",
+                "line": 11,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declaration statement has to be the very first statement in the script on line 11",
+                "tip": null,
+                "ignorable": false
+            }
+        ],
+        "general": [
+            "Error message \"Cannot assign new by reference on line 4\" cannot be ignored, use excludePaths instead.",
+            "Error message \"void cannot be used as a parameter type on line 7\" cannot be ignored, use excludePaths instead.",
+            "Error message \"Cannot assign new by reference on line 2\" cannot be ignored, use excludePaths instead.",
+            "Error message \"Namespace declaration statement has to be the very first statement in the script on line 11\" cannot be ignored, use excludePaths instead."
+        ]
+    },
+    "versions": {
+        "70100": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot assign new by reference on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "70400": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot assign new by reference on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "80000": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot assign new by reference on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "80100": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot assign new by reference on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "80200": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot assign new by reference on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "80400": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot assign new by reference on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "80500": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot assign new by reference on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        }
+    },
+    "unsupported": {
+        "bare-constant-lhs": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected '=' on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "class-constant-lhs": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected '=' on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "parenthesized-lhs": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected '=' on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "destructuring-lhs": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "parenthesized-new": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected ';', expecting '[' or T_OBJECT_OPERATOR or T_NULLSAFE_OBJECT_OPERATOR on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "compound-assignment": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        }
+    },
+    "parserVersions": {
+        "50600": [],
+        "70000": [
+            "Cannot assign new by reference on line 2"
+        ]
+    }
+}

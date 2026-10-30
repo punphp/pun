@@ -1,13 +1,15 @@
 use mago_allocator::Arena;
 use std::borrow::Cow;
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashMap};
 use std::sync::Arc;
 use std::sync::LazyLock;
 
+use mago_database::file::File;
 use mago_names::ResolvedNames;
 use mago_names::scope::NamespaceScope;
 use mago_span::HasPosition;
 use mago_span::HasSpan;
+use mago_span::Span;
 use mago_syntax::cst::Access;
 use mago_syntax::cst::Array;
 use mago_syntax::cst::ArrayElement;
@@ -33,6 +35,7 @@ use mago_word::word;
 
 use crate::flags::attribute::AttributeFlags;
 use crate::identifier::function_like::FunctionLikeIdentifier;
+use crate::metadata::CodebaseMetadata;
 use crate::metadata::class_like_constant::ClassLikeConstantMetadata;
 use crate::metadata::constant::ConstantMetadata;
 use crate::scanner::Context;
@@ -53,6 +56,7 @@ use crate::ttype::atomic::scalar::int::TInteger;
 use crate::ttype::atomic::scalar::string::TString;
 use crate::ttype::atomic::scalar::string::TStringCasing;
 use crate::ttype::atomic::scalar::string::TStringLiteral;
+use crate::ttype::combine_union_types;
 use crate::ttype::get_arraykey;
 use crate::ttype::get_bool;
 use crate::ttype::get_empty_string;
@@ -77,6 +81,9 @@ use crate::ttype::get_void;
 use crate::ttype::union::TUnion;
 use crate::ttype::wrap_atomic;
 use crate::utils::str_is_numeric;
+
+mod initializer;
+pub use initializer::class_names as initializer_class_names;
 
 /// Returns the type for a predefined literal constant, if known.
 ///
@@ -132,18 +139,22 @@ pub fn get_platform_constant_type(name: &[u8]) -> Option<TUnion> {
             TAtomic::Scalar(TScalar::String(TString {
                 literal: Some(TStringLiteral::Value(word("/"))),
                 is_numeric: false,
+                decimal_integer: None,
                 is_truthy: true,
                 is_non_empty: true,
+                is_non_empty_implied: false,
                 is_callable: false,
-                casing: TStringCasing::Lowercase,
+                casing: TStringCasing::Both,
             })),
             TAtomic::Scalar(TScalar::String(TString {
                 literal: Some(TStringLiteral::Value(word("\\"))),
                 is_numeric: false,
+                decimal_integer: None,
                 is_truthy: true,
                 is_non_empty: true,
+                is_non_empty_implied: false,
                 is_callable: false,
-                casing: TStringCasing::Lowercase,
+                casing: TStringCasing::Both,
             })),
         ]
     });
@@ -230,7 +241,13 @@ pub(super) fn infer<'arena, A>(
 where
     A: Arena,
 {
-    infer_with_constant_sources(context, scope, expression, enclosing_class, None, None)
+    let context = InferenceContext {
+        file: context.file,
+        resolved_names: context.resolved_names,
+        expression_types: None,
+        codebase: None,
+    };
+    infer_with_constant_sources(&context, scope, expression, enclosing_class, None, None)
 }
 
 #[inline]
@@ -244,7 +261,13 @@ pub(super) fn infer_with_constants<'arena, A>(
 where
     A: Arena,
 {
-    infer_with_constant_sources(context, scope, expression, enclosing_class, constants, None)
+    let context = InferenceContext {
+        file: context.file,
+        resolved_names: context.resolved_names,
+        expression_types: None,
+        codebase: None,
+    };
+    infer_with_constant_sources(&context, scope, expression, enclosing_class, constants, None)
 }
 
 #[inline]
@@ -258,22 +281,73 @@ pub(super) fn infer_with_class_constants<'arena, A>(
 where
     A: Arena,
 {
-    infer_with_constant_sources(context, scope, expression, enclosing_class, None, Some(class_constants))
+    let context = InferenceContext {
+        file: context.file,
+        resolved_names: context.resolved_names,
+        expression_types: None,
+        codebase: None,
+    };
+    infer_with_constant_sources(&context, scope, expression, enclosing_class, None, Some(class_constants))
+}
+
+/// Re-infer a global initializer with resolved dependencies. Exact independently evaluated subexpressions may
+/// supply richer arithmetic types, but must not include a ternary/coalesce or any ancestor containing one:
+/// those trees must retain the initializer resolver's unions, never the runtime analyzer's selected branch.
+pub fn infer_initializer(
+    file: &File,
+    names: &ResolvedNames<'_>,
+    scope: &NamespaceScope,
+    expression: &Expression<'_>,
+    constants: &WordMap<ConstantMetadata>,
+    expression_types: &HashMap<Span, TUnion>,
+) -> Option<TUnion> {
+    let context =
+        InferenceContext { file, resolved_names: names, expression_types: Some(expression_types), codebase: None };
+    infer_with_constant_sources(&context, scope, expression, None, Some(constants), None)
+}
+
+/// The same initializer inference with resolved global/class dependencies and a lexical declaring scope.
+pub fn infer_initializer_with_codebase(
+    file: &File,
+    names: &ResolvedNames<'_>,
+    scope: &NamespaceScope,
+    expression: &Expression<'_>,
+    codebase: &CodebaseMetadata,
+    enclosing_class: Option<Word>,
+    expression_types: &HashMap<Span, TUnion>,
+) -> Option<TUnion> {
+    let context = InferenceContext {
+        file,
+        resolved_names: names,
+        expression_types: Some(expression_types),
+        codebase: Some(codebase),
+    };
+    infer_with_constant_sources(&context, scope, expression, enclosing_class, Some(&codebase.constants), None)
+}
+
+struct InferenceContext<'ctx, 'arena> {
+    file: &'ctx File,
+    resolved_names: &'ctx ResolvedNames<'arena>,
+    expression_types: Option<&'ctx HashMap<Span, TUnion>>,
+    codebase: Option<&'ctx CodebaseMetadata>,
 }
 
 #[inline]
-fn infer_with_constant_sources<'arena, A>(
-    context: &Context<'_, 'arena, A>,
+fn infer_with_constant_sources<'arena>(
+    context: &InferenceContext<'_, 'arena>,
     scope: &NamespaceScope,
     expression: &'arena Expression<'arena>,
     enclosing_class: Option<Word>,
     constants: Option<&WordMap<ConstantMetadata>>,
     class_constants: Option<&WordMap<ClassLikeConstantMetadata>>,
-) -> Option<TUnion>
-where
-    A: Arena,
-{
+) -> Option<TUnion> {
+    if let Some(value) = context.expression_types.and_then(|types| types.get(&expression.span())) {
+        return Some(value.clone());
+    }
     let expression = unwrap_parens(expression);
+    if let Some(value) = context.expression_types.and_then(|types| types.get(&expression.span())) {
+        return Some(value.clone());
+    }
     match expression {
         Expression::MagicConstant(magic_constant) => Some(match magic_constant {
             MagicConstant::Line(_) => {
@@ -319,13 +393,7 @@ where
                                 true,  // truthy
                                 true,  // not empty
                                 false, // callable, we can't tell here.
-                                if value.iter().all(|b| b.is_ascii_lowercase() || !b.is_ascii_alphabetic()) {
-                                    TStringCasing::Lowercase
-                                } else if value.iter().all(|b| b.is_ascii_uppercase() || !b.is_ascii_alphabetic()) {
-                                    TStringCasing::Uppercase
-                                } else {
-                                    TStringCasing::Unspecified
-                                },
+                                TStringCasing::from_bytes(value),
                             ))))
                         }
                     }
@@ -400,6 +468,55 @@ where
                 _ => None,
             }
         }
+        // InitializerExprTypeResolver does not select a branch from the condition's value.
+        Expression::Conditional(conditional) => {
+            let else_type = infer_with_constant_sources(
+                context,
+                scope,
+                conditional.r#else,
+                enclosing_class,
+                constants,
+                class_constants,
+            )?;
+            let if_type = infer_with_constant_sources(
+                context,
+                scope,
+                conditional.then.unwrap_or(conditional.condition),
+                enclosing_class,
+                constants,
+                class_constants,
+            )?;
+
+            // Scanned empty arrays retain an empty known-element map, which is also falsey.
+            let truthy_type = if_type.clone_with_types(
+                if_type
+                    .get_truthy_types()
+                    .into_iter()
+                    .filter(|atomic| !matches!(atomic, TAtomic::Array(array) if array.is_empty()))
+                    .collect(),
+            );
+            Some(if let Some(codebase) = context.codebase {
+                crate::ttype::initializer::union(&truthy_type, &else_type, codebase)
+            } else {
+                combine_union_types(&truthy_type, &else_type, &CodebaseMetadata::default(), Default::default())
+            })
+        }
+        Expression::Binary(Binary { operator: BinaryOperator::NullCoalesce(_), lhs, rhs }) => {
+            let left_type =
+                infer_with_constant_sources(context, scope, lhs, enclosing_class, constants, class_constants)?;
+            let right_type =
+                infer_with_constant_sources(context, scope, rhs, enclosing_class, constants, class_constants)?;
+            // TypeCombinator::removeNull removes explicit null members, not null from mixed.
+            let left_type = left_type.clone_with_types(
+                left_type.types.iter().filter(|atomic| !matches!(atomic, TAtomic::Null)).cloned().collect(),
+            );
+
+            Some(if let Some(codebase) = context.codebase {
+                crate::ttype::initializer::union(&left_type, &right_type, codebase)
+            } else {
+                combine_union_types(&left_type, &right_type, &CodebaseMetadata::default(), Default::default())
+            })
+        }
         Expression::Binary(Binary { operator: BinaryOperator::StringConcat(_), lhs, rhs }) => {
             let Some(lhs_type) =
                 infer_with_constant_sources(context, scope, lhs, enclosing_class, constants, class_constants)
@@ -431,11 +548,7 @@ where
             let is_non_empty = lhs_string.is_non_empty() || rhs_string.is_non_empty();
             let is_truthy = lhs_string.is_truthy() || rhs_string.is_truthy();
             let is_literal_origin = lhs_string.is_literal_origin() && rhs_string.is_literal_origin();
-            let casing = match (lhs_string.casing, rhs_string.casing) {
-                (TStringCasing::Lowercase, TStringCasing::Lowercase) => TStringCasing::Lowercase,
-                (TStringCasing::Uppercase, TStringCasing::Uppercase) => TStringCasing::Uppercase,
-                _ => TStringCasing::Unspecified,
-            };
+            let casing = lhs_string.casing.join(rhs_string.casing);
 
             let final_string_type = if is_literal_origin {
                 TString::unspecified_literal_with_props(false, is_truthy, is_non_empty, false, casing)
@@ -449,50 +562,59 @@ where
             let lhs = infer_with_constant_sources(context, scope, lhs, enclosing_class, constants, class_constants);
             let rhs = infer_with_constant_sources(context, scope, rhs, enclosing_class, constants, class_constants);
 
-            Some(wrap_atomic(
-                match (
-                    lhs.and_then(|v| v.get_single_literal_int_value()),
-                    rhs.and_then(|v| v.get_single_literal_int_value()),
-                ) {
-                    (Some(lhs), Some(rhs)) => {
-                        let value = match operator {
-                            BinaryOperator::BitwiseAnd(_) => lhs & rhs,
-                            BinaryOperator::BitwiseOr(_) => lhs | rhs,
-                            BinaryOperator::BitwiseXor(_) => lhs ^ rhs,
-                            BinaryOperator::LeftShift(_) => {
-                                if rhs < 0 {
-                                    return Some(get_int());
-                                }
-
-                                u32::try_from(rhs).ok().and_then(|s| lhs.checked_shl(s)).unwrap_or_default()
+            let (Some(lhs), Some(rhs)) = (lhs, rhs) else {
+                return Some(get_int());
+            };
+            let mut result = get_never();
+            for lhs in lhs.types.as_ref() {
+                for rhs in rhs.types.as_ref() {
+                    let (
+                        TAtomic::Scalar(TScalar::Integer(TInteger::Literal(lhs))),
+                        TAtomic::Scalar(TScalar::Integer(TInteger::Literal(rhs))),
+                    ) = (lhs, rhs)
+                    else {
+                        return Some(get_int());
+                    };
+                    let (lhs, rhs) = (*lhs, *rhs);
+                    let value = match operator {
+                        BinaryOperator::BitwiseAnd(_) => lhs & rhs,
+                        BinaryOperator::BitwiseOr(_) => lhs | rhs,
+                        BinaryOperator::BitwiseXor(_) => lhs ^ rhs,
+                        BinaryOperator::LeftShift(_) => {
+                            if rhs < 0 {
+                                return Some(get_int());
                             }
-                            BinaryOperator::RightShift(_) => {
-                                if rhs < 0 {
-                                    return Some(get_int());
-                                }
 
-                                match u32::try_from(rhs).ok().and_then(|s| lhs.checked_shr(s)) {
-                                    Some(v) => v,
-                                    None => {
-                                        if lhs >= 0 {
-                                            0
-                                        } else {
-                                            -1
-                                        }
+                            u32::try_from(rhs).ok().and_then(|s| lhs.checked_shl(s)).unwrap_or_default()
+                        }
+                        // The is_bitwise() guard leaves only right shift after the four arms above.
+                        _ => {
+                            if rhs < 0 {
+                                return Some(get_int());
+                            }
+
+                            match u32::try_from(rhs).ok().and_then(|s| lhs.checked_shr(s)) {
+                                Some(v) => v,
+                                None => {
+                                    if lhs >= 0 {
+                                        0
+                                    } else {
+                                        -1
                                     }
                                 }
                             }
-                            #[allow(clippy::unreachable)]
-                            _ => {
-                                unreachable!("unexpected bitwise operator: {:?}", operator);
-                            }
-                        };
+                        }
+                    };
 
-                        TAtomic::Scalar(TScalar::literal_int(value))
-                    }
-                    _ => TAtomic::Scalar(TScalar::int()),
-                },
-            ))
+                    result = combine_union_types(
+                        &result,
+                        &get_literal_int(value),
+                        &CodebaseMetadata::default(),
+                        Default::default(),
+                    );
+                }
+            }
+            Some(result)
         }
         Expression::Binary(Binary { operator, lhs, rhs }) if operator.is_arithmetic() => {
             let lhs = infer_with_constant_sources(context, scope, lhs, enclosing_class, constants, class_constants);
@@ -537,20 +659,85 @@ where
             constant: ClassLikeConstantSelector::Identifier(identifier),
             ..
         })) => {
-            let class_name_str: &[u8] = if let Expression::Identifier(identifier) = class {
-                context.resolved_names.get(identifier)
-            } else if matches!(class, Expression::Self_(_) | Expression::Static(_)) {
-                enclosing_class.as_ref().map(Word::as_bytes)?
-            } else {
-                return None;
+            if let Some(codebase) = context.codebase {
+                if !identifier.value.eq_ignore_ascii_case(b"class") {
+                    let (holder, is_object) = match class.unparenthesized() {
+                        Expression::Identifier(name) => {
+                            (crate::ttype::get_named_object(word(context.resolved_names.get(name)), None), false)
+                        }
+                        Expression::Self_(_) => (crate::ttype::get_named_object(enclosing_class?, None), false),
+                        Expression::Static(_) => (crate::ttype::get_named_object(enclosing_class?, None), true),
+                        Expression::Parent(_) => (
+                            crate::ttype::get_named_object(
+                                codebase.get_class_like_by_name(enclosing_class?)?.direct_parent_class?,
+                                None,
+                            ),
+                            false,
+                        ),
+                        _ => (
+                            infer_with_constant_sources(
+                                context,
+                                scope,
+                                class,
+                                enclosing_class,
+                                constants,
+                                class_constants,
+                            )?,
+                            true,
+                        ),
+                    };
+                    return Some(initializer::class_constant(codebase, &holder, identifier.value, is_object));
+                }
+                if matches!(class.unparenthesized(), Expression::Static(_))
+                    && let Some(metadata) = enclosing_class.and_then(|name| codebase.get_class_like_by_name(name))
+                    && !metadata.flags.is_final()
+                {
+                    return Some(wrap_atomic(TAtomic::Scalar(TScalar::ClassLikeString(
+                        TClassLikeString::class_string_of_type(TAtomic::Object(
+                            crate::ttype::atomic::object::TObject::Named(
+                                crate::ttype::atomic::object::named::TNamedObject::new_static(metadata.name),
+                            ),
+                        )),
+                    ))));
+                }
+                if let Expression::Literal(Literal::String(string)) = class.unparenthesized() {
+                    return Some(wrap_atomic(TAtomic::Scalar(TScalar::ClassLikeString(TClassLikeString::literal(
+                        word(string.value?),
+                    )))));
+                }
+                if !matches!(
+                    class.unparenthesized(),
+                    Expression::Identifier(_) | Expression::Self_(_) | Expression::Parent(_) | Expression::Static(_)
+                ) && infer_with_constant_sources(context, scope, class, enclosing_class, constants, class_constants)?
+                    .types
+                    .iter()
+                    .all(|atomic| matches!(atomic, TAtomic::Scalar(_)))
+                {
+                    return Some(crate::ttype::get_error());
+                }
+            }
+            let class_name = match class.unparenthesized() {
+                Expression::Identifier(identifier) => word(context.resolved_names.get(identifier)),
+                Expression::Self_(_) | Expression::Static(_) => enclosing_class?,
+                Expression::Parent(_) => {
+                    context.codebase?.get_class_like_by_name(enclosing_class?)?.direct_parent_class?
+                }
+                _ => return None,
             };
+            let class_name_str = class_name.as_bytes();
+
+            if let Some(constant) =
+                context.codebase.and_then(|codebase| codebase.get_class_constant(class_name_str, identifier.value))
+            {
+                return Some(constant.inferred_type.clone().unwrap_or_else(get_mixed));
+            }
 
             if let Some(class_constants) = class_constants
                 && enclosing_class.is_some_and(|class_name| class_name_str.eq_ignore_ascii_case(class_name.as_bytes()))
                 && let Some(constant) = class_constants.get(&word(identifier.value))
                 && let Some(inferred_type) = &constant.inferred_type
             {
-                return Some(wrap_atomic(inferred_type.clone()));
+                return Some(inferred_type.clone());
             }
 
             Some(wrap_atomic(if identifier.value.eq_ignore_ascii_case(b"class") {
@@ -657,6 +844,7 @@ where
                 known_elements: Some(entries.into()),
                 element_type: Arc::new(get_never()),
                 non_empty: !elements.is_empty(),
+                callable: None,
             }))))
         }
         Expression::Array(Array { elements, .. }) | Expression::LegacyArray(LegacyArray { elements, .. })
@@ -740,6 +928,18 @@ fn infer_constant<'ctx, 'arena>(
     } else {
         (constant.value(), names.get(constant))
     };
+
+    if let Some(constants) = constants_map {
+        let selected = constants.get(&ascii_lowercase_constant_name_word(fqn)).or_else(|| {
+            (!constant.value().contains(&b'\\') && !names.is_imported(constant))
+                .then(|| constants.get(&ascii_lowercase_constant_name_word(constant.value())))
+                .flatten()
+        });
+        if let Some(selected) = selected.filter(|k| !k.flags.is_built_in()) {
+            // Existence stops namespace fallback, including a dependency currently being resolved.
+            return Some(selected.inferred_type.clone().unwrap_or_else(get_mixed));
+        }
+    }
 
     if let Some(t) = get_literal_constant_type(short_name) {
         return Some(t);

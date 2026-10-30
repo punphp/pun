@@ -1,0 +1,5 @@
+parameters:
+    scanFiles:
+        - scanned.php
+    stubFiles:
+        - patch.stub

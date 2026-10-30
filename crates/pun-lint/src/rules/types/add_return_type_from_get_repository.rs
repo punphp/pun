@@ -72,7 +72,7 @@ impl Rule for AddReturnTypeFromGetRepository {
                 name.trim_start_matches('\\').to_string()
             }
             RType::Object(Object::Shortened { full, .. } | Object::Aliased { full, .. }) => full,
-            RType::T(Type::Object(name, _)) => name,
+            RType::T(Type::Object(name, _, _)) => name,
             _ => return,
         };
         // must be an existing repository class
@@ -141,7 +141,7 @@ fn is_get_repository_method_call(
     {
         return false;
     }
-    let Type::Object(class, _) = expr_type(facts, ancestors, call.object, false) else {
+    let Type::Object(class, _, _) = expr_type(facts, ancestors, call.object, false) else {
         return false;
     };
     class == ENTITY_MANAGER_INTERFACE

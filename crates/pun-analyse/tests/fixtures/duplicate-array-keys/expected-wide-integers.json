@@ -1,0 +1,1518 @@
+{
+    "errors": [
+        {
+            "line": 7,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value 4096 (1.8446744073709556E+19, 4096).",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 9,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value 4096 (4096, 1.8446744073709556E+19).",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 10,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value -4096 (-1.8446744073709556E+19, -4096).",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 14,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1.8446744073709556E+19",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "line": 15,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value 4096 ($copy, 4096).",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 18,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: -1.8446744073709556E+19",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "line": 19,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value -4096 ($copy, -4096).",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 24,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value 4096 (1.8446744073709556E+19, 4096).",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 26,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value 4096 (1.8446744073709556E+19, 4096).",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 27,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value 4096 (1.8446744073709556E+19, 4096).",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 28,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value 4096 (1.8446744073709556E+19, 4096).",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 29,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value 4096 (1.8446744073709556E+19, 4096).",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 30,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value 4096 (1.8446744073709556E+19, 4096).",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 31,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value 4096 (1.8446744073709556E+19, 4096).",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 32,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value -4096 (-1.8446744073709556E+19, -4096).",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 34,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1.8446744073709556E+19",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "line": 35,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value 4096 ($key, 4096).",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 37,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value 4096 ($key, 4096).",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 39,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value 4096 ($key, 4096).",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 44,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value 0 (1.8446744073709552E+19, 0).",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 45,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value 0 (1.8446744073709552E+19, 0).",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 46,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value -2048 (1.844674407370955E+19, -2048).",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 47,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value 0 (1.8446744073709552E+19, 0).",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 48,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value 4096 (1.8446744073709556E+19, 4096).",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 49,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value 0 (1.8446744073709552E+19, 0).",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 50,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value 0 (1.8446744073709552E+19, 0).",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 51,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value 4096 (1.8446744073709556E+19, 4096).",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 52,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value 9223372036854775807 (9223372036854775807, 0x7fffffffffffffff).",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 53,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value -9223372036854775807-1 (-9.223372036854776E+18, -9223372036854775807 - 1).",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 56,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: -9.223372036854776E+18",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "line": 57,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value -9223372036854775807-1 ($key, -9223372036854775807 - 1).",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 70,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value 4096 (WIDE, 4096).",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 71,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value 4096 (self::WIDE, 4096).",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 72,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value 0 (HUGE, 0).",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 83,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 3.402823669209385E+38",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "line": 84,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 3.402823669209385E+38",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "line": 85,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1.0889035741470031E+40",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "line": 86,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 6.96898287454082E+41",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "line": 87,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 5 duplicate keys with value 0 ($decimal, $hex, $binary, $octal, 0).",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 88,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value 0 (-3.402823669209385E+38, 0).",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 90,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: INF",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "line": 91,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value 0 ($infinite, 0).",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 93,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: INF",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "line": 94,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value 0 ($hexInfinite, 0).",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "line": 95,
+            "identifier": "array.duplicateKey",
+            "message": "Array has 2 duplicate keys with value 0 (-$infinite, 0).",
+            "tip": null,
+            "ignorable": true
+        }
+    ],
+    "literals": [
+        {
+            "kind": "Scalar_Float",
+            "raw": "18446744073709555712",
+            "value": "43f0000000000001",
+            "start": 84,
+            "end": 104
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 108,
+            "end": 109
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "4096",
+            "value": "4096",
+            "start": 111,
+            "end": 115
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 119,
+            "end": 120
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "18446744073709555712",
+            "value": "43f0000000000001",
+            "start": 140,
+            "end": 160
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 164,
+            "end": 165
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 167,
+            "end": 168
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 172,
+            "end": 173
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "4096",
+            "value": "4096",
+            "start": 193,
+            "end": 197
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 201,
+            "end": 202
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "18_446_744_073_709_555_712",
+            "value": "43f0000000000001",
+            "start": 204,
+            "end": 230
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 234,
+            "end": 235
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "18446744073709555712",
+            "value": "43f0000000000001",
+            "start": 256,
+            "end": 276
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 280,
+            "end": 281
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "4096",
+            "value": "4096",
+            "start": 284,
+            "end": 288
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 292,
+            "end": 293
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "18446744073709555712",
+            "value": "43f0000000000001",
+            "start": 322,
+            "end": 342
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 346,
+            "end": 347
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 349,
+            "end": 350
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 354,
+            "end": 355
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "18446744073709555712",
+            "value": "43f0000000000001",
+            "start": 369,
+            "end": 389
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 463,
+            "end": 464
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "4096",
+            "value": "4096",
+            "start": 466,
+            "end": 470
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 474,
+            "end": 475
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 510,
+            "end": 511
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 513,
+            "end": 514
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 518,
+            "end": 519
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "18446744073709555712",
+            "value": "43f0000000000001",
+            "start": 535,
+            "end": 555
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 619,
+            "end": 620
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "4096",
+            "value": "4096",
+            "start": 623,
+            "end": 627
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 631,
+            "end": 632
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "0x10000000000001000",
+            "value": "43f0000000000001",
+            "start": 679,
+            "end": 698
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 702,
+            "end": 703
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "4096",
+            "value": "4096",
+            "start": 705,
+            "end": 709
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 713,
+            "end": 714
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "0x10000000000001000",
+            "value": "43f0000000000001",
+            "start": 737,
+            "end": 756
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 760,
+            "end": 761
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 763,
+            "end": 764
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 768,
+            "end": 769
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "0b10000000000000000000000000000000000000000000000000001000000000000",
+            "value": "43f0000000000001",
+            "start": 787,
+            "end": 854
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 858,
+            "end": 859
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "4096",
+            "value": "4096",
+            "start": 861,
+            "end": 865
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 869,
+            "end": 870
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "02000000000000000010000",
+            "value": "43f0000000000001",
+            "start": 887,
+            "end": 910
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 914,
+            "end": 915
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "4096",
+            "value": "4096",
+            "start": 917,
+            "end": 921
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 925,
+            "end": 926
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "0o2000000000000000010000",
+            "value": "43f0000000000001",
+            "start": 951,
+            "end": 975
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 979,
+            "end": 980
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "4096",
+            "value": "4096",
+            "start": 982,
+            "end": 986
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 990,
+            "end": 991
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "0X1_0000_0000_0000_1000",
+            "value": "43f0000000000001",
+            "start": 1012,
+            "end": 1035
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 1039,
+            "end": 1040
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "4096",
+            "value": "4096",
+            "start": 1042,
+            "end": 1046
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 1050,
+            "end": 1051
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "0B1_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0001_0000_0000_0000",
+            "value": "43f0000000000001",
+            "start": 1078,
+            "end": 1161
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 1165,
+            "end": 1166
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "4096",
+            "value": "4096",
+            "start": 1168,
+            "end": 1172
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 1176,
+            "end": 1177
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "0O2_000_000_000_000_000_010_000",
+            "value": "43f0000000000001",
+            "start": 1203,
+            "end": 1234
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 1238,
+            "end": 1239
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "4096",
+            "value": "4096",
+            "start": 1241,
+            "end": 1245
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 1249,
+            "end": 1250
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "0x10000000000001000",
+            "value": "43f0000000000001",
+            "start": 1271,
+            "end": 1290
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 1294,
+            "end": 1295
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "4096",
+            "value": "4096",
+            "start": 1298,
+            "end": 1302
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 1306,
+            "end": 1307
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "0x10000000000001000",
+            "value": "43f0000000000001",
+            "start": 1321,
+            "end": 1340
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 1394,
+            "end": 1395
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "4096",
+            "value": "4096",
+            "start": 1397,
+            "end": 1401
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 1405,
+            "end": 1406
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "0b10000000000000000000000000000000000000000000000000001000000000000",
+            "value": "43f0000000000001",
+            "start": 1420,
+            "end": 1487
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 1518,
+            "end": 1519
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "4096",
+            "value": "4096",
+            "start": 1521,
+            "end": 1525
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 1529,
+            "end": 1530
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "0o2000000000000000010000",
+            "value": "43f0000000000001",
+            "start": 1544,
+            "end": 1568
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 1598,
+            "end": 1599
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "4096",
+            "value": "4096",
+            "start": 1601,
+            "end": 1605
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 1609,
+            "end": 1610
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "18446744073709551615",
+            "value": "43f0000000000000",
+            "start": 1675,
+            "end": 1695
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 1699,
+            "end": 1700
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 1702,
+            "end": 1703
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 1707,
+            "end": 1708
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "18446744073709551616",
+            "value": "43f0000000000000",
+            "start": 1724,
+            "end": 1744
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 1748,
+            "end": 1749
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 1751,
+            "end": 1752
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 1756,
+            "end": 1757
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "18446744073709549568",
+            "value": "43efffffffffffff",
+            "start": 1774,
+            "end": 1794
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 1798,
+            "end": 1799
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "2048",
+            "value": "2048",
+            "start": 1802,
+            "end": 1806
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 1810,
+            "end": 1811
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "18446744073709553664",
+            "value": "43f0000000000000",
+            "start": 1826,
+            "end": 1846
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 1850,
+            "end": 1851
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 1853,
+            "end": 1854
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 1858,
+            "end": 1859
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "18446744073709553665",
+            "value": "43f0000000000001",
+            "start": 1879,
+            "end": 1899
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 1903,
+            "end": 1904
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "4096",
+            "value": "4096",
+            "start": 1906,
+            "end": 1910
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 1914,
+            "end": 1915
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "0x10000000000000800",
+            "value": "43f0000000000000",
+            "start": 1933,
+            "end": 1952
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 1956,
+            "end": 1957
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 1959,
+            "end": 1960
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 1964,
+            "end": 1965
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "0x10000000000000801",
+            "value": "43f0000000000000",
+            "start": 1988,
+            "end": 2007
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 2011,
+            "end": 2012
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 2014,
+            "end": 2015
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 2019,
+            "end": 2020
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "0x10000000000000fff",
+            "value": "43f0000000000001",
+            "start": 2042,
+            "end": 2061
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 2065,
+            "end": 2066
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "4096",
+            "value": "4096",
+            "start": 2068,
+            "end": 2072
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 2076,
+            "end": 2077
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "9223372036854775807",
+            "value": "9223372036854775807",
+            "start": 2095,
+            "end": 2114
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 2118,
+            "end": 2119
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0x7fffffffffffffff",
+            "value": "9223372036854775807",
+            "start": 2121,
+            "end": 2139
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 2143,
+            "end": 2144
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "9223372036854775808",
+            "value": "43e0000000000000",
+            "start": 2163,
+            "end": 2182
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 2186,
+            "end": 2187
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "9223372036854775807",
+            "value": "9223372036854775807",
+            "start": 2190,
+            "end": 2209
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 2212,
+            "end": 2213
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 2217,
+            "end": 2218
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "9223372036854775807",
+            "value": "9223372036854775807",
+            "start": 2238,
+            "end": 2257
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 2261,
+            "end": 2262
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "9223372036854775808",
+            "value": "43e0000000000000",
+            "start": 2265,
+            "end": 2284
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 2288,
+            "end": 2289
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "9223372036854775808",
+            "value": "43e0000000000000",
+            "start": 2304,
+            "end": 2323
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 2380,
+            "end": 2381
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "9223372036854775807",
+            "value": "9223372036854775807",
+            "start": 2384,
+            "end": 2403
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 2406,
+            "end": 2407
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 2411,
+            "end": 2412
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 2427,
+            "end": 2428
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0x0",
+            "value": "0",
+            "start": 2441,
+            "end": 2444
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0o0",
+            "value": "0",
+            "start": 2459,
+            "end": 2462
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0b0",
+            "value": "0",
+            "start": 2478,
+            "end": 2481
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "18446744073709555712",
+            "value": "43f0000000000001",
+            "start": 2499,
+            "end": 2519
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "0x100000000000000000000000000000001",
+            "value": "47f0000000000000",
+            "start": 2534,
+            "end": 2569
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "0x10000000000001000",
+            "value": "43f0000000000001",
+            "start": 2614,
+            "end": 2633
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 2702,
+            "end": 2703
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "4096",
+            "value": "4096",
+            "start": 2705,
+            "end": 2709
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 2713,
+            "end": 2714
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 2750,
+            "end": 2751
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "4096",
+            "value": "4096",
+            "start": 2753,
+            "end": 2757
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 2761,
+            "end": 2762
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 2790,
+            "end": 2791
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 2793,
+            "end": 2794
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 2798,
+            "end": 2799
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "340282366920938463463374607431768211456",
+            "value": "47f0000000000000",
+            "start": 2861,
+            "end": 2900
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "0x100000000000000000000000000000000",
+            "value": "47f0000000000000",
+            "start": 2913,
+            "end": 2948
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "0XFFFF_FFFF_FFFF_FFFF_FFFF_FFFF_FFFF_FFFF_FFFF",
+            "value": "48f0000000000000",
+            "start": 2966,
+            "end": 3012
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "value": "4840000000000000",
+            "start": 3028,
+            "end": 3164
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "020000000000000000000000000000000000000000000000",
+            "value": "48a0000000000000",
+            "start": 3179,
+            "end": 3227
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 3379,
+            "end": 3380
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 3390,
+            "end": 3391
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "2",
+            "value": "2",
+            "start": 3404,
+            "end": 3405
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "3",
+            "value": "3",
+            "start": 3417,
+            "end": 3418
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 3420,
+            "end": 3421
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "4",
+            "value": "4",
+            "start": 3425,
+            "end": 3426
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "0x100000000000000000000000000000000",
+            "value": "47f0000000000000",
+            "start": 3447,
+            "end": 3482
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 3486,
+            "end": 3487
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 3489,
+            "end": 3490
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 3494,
+            "end": 3495
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+            "value": "7ff0000000000000",
+            "start": 3514,
+            "end": 3881
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 3950,
+            "end": 3951
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 3953,
+            "end": 3954
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 3958,
+            "end": 3959
+        },
+        {
+            "kind": "Scalar_Float",
+            "raw": "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+            "value": "7ff0000000000000",
+            "start": 3981,
+            "end": 4271
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 4349,
+            "end": 4350
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 4352,
+            "end": 4353
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 4357,
+            "end": 4358
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 4403,
+            "end": 4404
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "0",
+            "value": "0",
+            "start": 4406,
+            "end": 4407
+        },
+        {
+            "kind": "Scalar_Int",
+            "raw": "1",
+            "value": "1",
+            "start": 4411,
+            "end": 4412
+        }
+    ]
+}

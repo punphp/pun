@@ -1,0 +1,189 @@
+{
+  "general": [],
+  "errors": [
+    {
+      "file": "control-flow.php",
+      "line": 55,
+      "identifier": "attribute.notAttribute",
+      "message": "Class AttributeControlFlow\\DistinctBranches is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "control-flow.php",
+      "line": 55,
+      "identifier": "attribute.notAttribute",
+      "message": "Class AttributeControlFlow\\FalseyElse is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "control-flow.php",
+      "line": 55,
+      "identifier": "attribute.notAttribute",
+      "message": "Class AttributeControlFlow\\NonEmptyArrayThen is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "control-flow.php",
+      "line": 55,
+      "identifier": "attribute.notAttribute",
+      "message": "Class AttributeControlFlow\\ReversedBranches is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "control-flow.php",
+      "line": 58,
+      "identifier": "attribute.target",
+      "message": "Attribute class AttributeControlFlow\\ZeroBranches does not have the class target.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "control-flow.php",
+      "line": 61,
+      "identifier": "attribute.target",
+      "message": "Attribute class AttributeControlFlow\\SameBranches does not have the function target.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "control-flow.php",
+      "line": 100,
+      "identifier": "attribute.notAttribute",
+      "message": "Class AttributeControlFlow\\ShortDistinct is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "control-flow.php",
+      "line": 100,
+      "identifier": "attribute.notAttribute",
+      "message": "Class AttributeControlFlow\\ShortNonEmptyArray is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "control-flow.php",
+      "line": 100,
+      "identifier": "attribute.notAttribute",
+      "message": "Class AttributeControlFlow\\ShortTruthyString is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "control-flow.php",
+      "line": 103,
+      "identifier": "attribute.target",
+      "message": "Attribute class AttributeControlFlow\\ShortNoTargets does not have the class target.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "control-flow.php",
+      "line": 136,
+      "identifier": "attribute.notAttribute",
+      "message": "Class AttributeControlFlow\\CoalesceDistinct is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "control-flow.php",
+      "line": 136,
+      "identifier": "attribute.notAttribute",
+      "message": "Class AttributeControlFlow\\CoalesceEmptyArray is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "control-flow.php",
+      "line": 136,
+      "identifier": "attribute.notAttribute",
+      "message": "Class AttributeControlFlow\\CoalesceEmptyString is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "control-flow.php",
+      "line": 136,
+      "identifier": "attribute.notAttribute",
+      "message": "Class AttributeControlFlow\\CoalesceFalse is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "control-flow.php",
+      "line": 136,
+      "identifier": "attribute.notAttribute",
+      "message": "Class AttributeControlFlow\\CoalesceNullRight is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "control-flow.php",
+      "line": 136,
+      "identifier": "attribute.notAttribute",
+      "message": "Class AttributeControlFlow\\CoalesceZeroString is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "control-flow.php",
+      "line": 139,
+      "identifier": "attribute.target",
+      "message": "Attribute class AttributeControlFlow\\CoalesceNoTargets does not have the class target.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "control-flow.php",
+      "line": 151,
+      "identifier": "attribute.target",
+      "message": "Attribute class AttributeControlFlow\\NestedMask does not have the property target.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "control-flow.php",
+      "line": 173,
+      "identifier": "attribute.notAttribute",
+      "message": "Class AttributeControlFlow\\DistinctReferences is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "control-flow.php",
+      "line": 188,
+      "identifier": "attribute.notAttribute",
+      "message": "Class AttributeControlFlow\\UnsupportedElse is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "control-flow.php",
+      "line": 188,
+      "identifier": "attribute.notAttribute",
+      "message": "Class AttributeControlFlow\\UnsupportedLeft is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "control-flow.php",
+      "line": 188,
+      "identifier": "attribute.notAttribute",
+      "message": "Class AttributeControlFlow\\UnsupportedRight is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "control-flow.php",
+      "line": 188,
+      "identifier": "attribute.notAttribute",
+      "message": "Class AttributeControlFlow\\UnsupportedThen is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    }
+  ]
+}

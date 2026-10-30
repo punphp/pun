@@ -20,7 +20,9 @@ use mago_codex::ttype::atomic::scalar::int::TInteger;
 use mago_codex::ttype::combiner;
 use mago_codex::ttype::comparator::ComparisonResult;
 use mago_codex::ttype::comparator::atomic_comparator;
+use mago_codex::ttype::comparator::union_comparator;
 use mago_codex::ttype::get_mixed;
+use mago_codex::ttype::get_mixed_keyed_array;
 use mago_codex::ttype::get_never;
 use mago_codex::ttype::get_non_negative_int;
 use mago_codex::ttype::get_positive_int;
@@ -65,6 +67,37 @@ where
 
     if left_type.is_never() || right_type.is_never() {
         assign_arithmetic_type(artifacts, get_never(), binary);
+        return Ok(());
+    }
+
+    // PHPStan 2.3.1 InitializerExprTypeResolver::getPlusType's MixedType/MixedType branch.
+    // ErrorType inherits MixedType. Both operands have already been evaluated above.
+    if matches!(binary.operator, BinaryOperator::Addition(_))
+        && let ([TAtomic::Mixed(left)], [TAtomic::Mixed(right)]) = (left_type.types.as_ref(), right_type.types.as_ref())
+    {
+        let array = get_mixed_keyed_array();
+        // MixedType::isArray() is no only when the exclusion contains every array.
+        let excludes_arrays = |mixed: &TMixed| {
+            mixed.effective_subtracted_type().is_some_and(|excluded| {
+                union_comparator::is_contained_by(
+                    context.codebase,
+                    &array,
+                    &excluded,
+                    false,
+                    false,
+                    false,
+                    &mut ComparisonResult::new(),
+                )
+            })
+        };
+        let mut result = vec![TAtomic::Scalar(TScalar::Float(TFloat::general())), INT_ATOMIC.clone()];
+        if !(excludes_arrays(left) && excludes_arrays(right)) {
+            result.extend(array.types.into_owned());
+        }
+        let mut result = TUnion::from_vec(result);
+        result.set_ignore_nullable_issues(true);
+        result.set_ignore_falsable_issues(true);
+        assign_arithmetic_type(artifacts, result, binary);
         return Ok(());
     }
 
@@ -1028,6 +1061,7 @@ fn compose_keyed_plus(left: &TKeyedArray, right: &TKeyedArray) -> TKeyedArray {
         left.is_non_empty() || right.is_non_empty() || composed_known.values().any(|(optional, _)| !*optional);
 
     TKeyedArray {
+        callable: left.callable.clone(),
         known_items: Some(composed_known).filter(|m| !m.is_empty()).map(Into::into),
         parameters: composed_parameters,
         non_empty,

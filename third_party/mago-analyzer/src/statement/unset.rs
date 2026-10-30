@@ -30,18 +30,21 @@ use mago_syntax::cst::Access;
 use mago_syntax::cst::ClassLikeMemberSelector;
 use mago_syntax::cst::Expression;
 use mago_syntax::cst::Unset;
+use mago_syntax::cst::Variable;
 
 use crate::analyzable::Analyzable;
 use crate::artifacts::AnalysisArtifacts;
 use crate::code::IssueCode;
 use crate::context::Context;
 use crate::context::block::BlockContext;
+use crate::context::scope::{var_has_root, var_references_dynamic};
 use crate::error::AnalysisError;
 use crate::expression::assignment::array_assignment::update_type_with_key_values;
 use crate::reconciler::negated_assertion_reconciler;
 use crate::utils::expression::get_block_expression_id;
 use crate::utils::misc::unwrap_expression;
 use mago_word::concat_word;
+use mago_word::word;
 
 impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
     fn analyze<'ctx, A>(
@@ -62,6 +65,8 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
             value.analyze(context, block_context, artifacts)?;
             block_context.flags.set_inside_general_use(was_inside_general_use);
 
+            native_unset(context, block_context, artifacts, value);
+
             let value_id = get_block_expression_id(value, context, block_context);
 
             if let Some(value_id) = &value_id {
@@ -71,9 +76,10 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
                 block_context.possibly_assigned_variable_ids.insert(*value_id);
                 block_context.references_possibly_from_confusing_scope.remove(value_id);
                 if matches!(value, Expression::Variable(_)) {
+                    // MutatingScope::unsetExpression invalidates the holder. No holder falls
+                    // back to Maybe at global scope or after extract(), and No elsewhere.
                     block_context.invalidate_variable_certainty(*value_id);
                     block_context.variables_possibly_in_scope.remove(value_id);
-                    block_context.variable_state.absent.insert(*value_id);
                 }
             }
 
@@ -176,10 +182,11 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
 
                     match array {
                         TArray::List(array) => {
-                            let TList { element_type, known_elements, known_count, non_empty } = array;
+                            let TList { callable, element_type, known_elements, known_count, non_empty } = array;
 
                             let Some(known_elements) = known_elements else {
                                 atomics.push(TAtomic::Array(TArray::Keyed(TKeyedArray {
+                                    callable,
                                     known_items: None,
                                     parameters: Some((Arc::new(get_int()), element_type)),
                                     non_empty: if let Some(known_count) = known_count {
@@ -198,6 +205,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
                             let Some(ArrayKey::Integer(target_index)) = &array_key else {
                                 if array_key.is_none() {
                                     atomics.push(TAtomic::Array(TArray::List(TList {
+                                        callable,
                                         known_elements: Some(
                                             // We don't know the key value, so we can't unset it.
                                             // Mark all items as potentially undefined.
@@ -222,6 +230,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
                                     // makes no sense.
                                     // An error will be emitted when we are analyzing the expression above, so ignore it here.
                                     atomics.push(TAtomic::Array(TArray::List(TList {
+                                        callable,
                                         known_elements: Some(known_elements.into()),
                                         element_type,
                                         known_count,
@@ -261,6 +270,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
 
                             if !element_removed {
                                 atomics.push(TAtomic::Array(TArray::List(TList {
+                                    callable,
                                     known_elements: Some(known_elements.into()),
                                     element_type,
                                     known_count,
@@ -281,6 +291,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
 
                             if maintain_list {
                                 atomics.push(TAtomic::Array(TArray::List(TList {
+                                    callable,
                                     known_count,
                                     non_empty,
                                     known_elements: known_elements.map(Into::into),
@@ -292,6 +303,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
                                 // this makes the list no longer a list array, but rather a keyed array.
                                 // we need to convert the list into a keyed array.
                                 atomics.push(TAtomic::Array(TArray::Keyed(TKeyedArray {
+                                    callable,
                                     known_items: known_elements.map(|known_elements| {
                                         known_elements
                                             .into_iter()
@@ -328,6 +340,68 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
 
         Ok(())
     }
+}
+
+/// UnsetHandler's native virtual assignment, separate from its selected/PHPDoc writer.
+/// Each operand has already run, including key/argument writes. Bound this transfer to
+/// ordinary locals and one-level array offsets with normalized literal or integer keys.
+/// Missing native inputs, nested targets, and other effects invalidate rather than recover.
+fn native_unset<A: Arena>(
+    context: &mut Context<'_, '_, A>,
+    block: &mut BlockContext<'_>,
+    artifacts: &AnalysisArtifacts,
+    target: &Expression<'_>,
+) {
+    block.native_locals = block.native_locals.take().and_then(|mut locals| {
+        let (variable, access) = match target {
+            Expression::Variable(Variable::Direct(variable)) => (variable, None),
+            Expression::ArrayAccess(access) => {
+                let Expression::Variable(Variable::Direct(variable)) = access.array else { return None };
+                (variable, Some(access))
+            }
+            _ => return None,
+        };
+        let root = word(variable.name);
+        if variable.name == b"$this" || variable.name == b"$GLOBALS" || variable.name.starts_with(b"$_")
+            || block.references_in_scope.contains_key(&root)
+            || block.referenced_counts.contains_key(&root)
+            || block.references_to_external_scope.contains(&root)
+        {
+            return None;
+        }
+        let written = if let Some(access) = access {
+            let holder = artifacts.get_native_expression_type(access.array)?;
+            let index = artifacts.get_native_expression_type(access.index)?;
+            // General strings need PHP's string-to-integer-key union conversion. Other
+            // scalar keys need toArrayKey conversion too; neither is supplied by a full type.
+            if !index.is_int() && !index.types.iter().all(|atomic| atomic.to_array_key().is_some()) {
+                return None;
+            }
+            let mut atomics = Vec::new();
+            for atomic in holder.types.iter() {
+                let array = match atomic {
+                    TAtomic::Array(TArray::Keyed(array)) => array.clone(),
+                    TAtomic::Array(TArray::List(_)) => constant_array(atomic)?,
+                    _ => return None,
+                };
+                atomics.push(TAtomic::Array(TArray::Keyed(unset_keyed(context, array, index).0)));
+            }
+            let mut written = holder.clone();
+            written.types = Cow::Owned(combiner::combine_preserving_array_shapes(
+                atomics, context.codebase, context.settings.combiner_options(),
+            ));
+            Some(written)
+        } else {
+            None
+        };
+        // invalidateExpression also drops specified descendants and dynamic-key dependents.
+        // Invalidation is not an explicit absence holder, especially at global/extract scope.
+        locals.retain(|name, _| !var_has_root(*name, root) && !var_references_dynamic(*name, root));
+        if let Some(written) = written {
+            locals.insert(root, Rc::new(written));
+        }
+        Some(locals)
+    });
 }
 
 /// UnsetHandler's ExistingArrayDimFetch virtual assignment: consume only stored input results,
@@ -495,6 +569,7 @@ fn constant_array(atomic: &TAtomic) -> Option<TKeyedArray> {
     match atomic {
         TAtomic::Array(TArray::Keyed(array)) if array.parameters.is_none() => Some(array.clone()),
         TAtomic::Array(TArray::List(array)) if array.element_type.is_never() => Some(TKeyedArray {
+            callable: array.callable.clone(),
             known_items: array.known_elements.as_ref().map(|items| {
                 Arc::new(items.iter().map(|(key, value)| (ArrayKey::Integer(*key as i64), value.clone())).collect())
             }),

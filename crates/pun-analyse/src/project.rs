@@ -41,14 +41,32 @@ pub struct Project {
     pub ignore_errors: IgnoredErrors,
     /// PHPStan's `checkClassCaseSensitivity` (see `rules::Checks`): false, as at level 0, until the presets set it.
     pub check_class_case_sensitivity: bool,
+    /// `checkInternalClassCaseSensitivity`: include built-in classes in case checks (off by default).
+    pub check_internal_class_case_sensitivity: bool,
+    /// `featureToggles.checkImportedClassNameCase`: check a one-part name's written case (on with bleedingEdge).
+    pub check_imported_class_name_case: bool,
     /// `checkFunctionNameCase`: off by default at every level, independently of class-name case checks.
     pub check_function_name_case: bool,
     /// `cliArgumentsVariablesRegistered`: exempt argc and argv in the main scope only.
     pub cli_arguments_variables_registered: bool,
     /// `checkMaybeUndefinedVariables`: enabled by config.level1.neon, independently overridable.
     pub check_maybe_undefined_variables: bool,
+    /// `polluteScopeWithLoopInitialAssignments`: keep for/while entry assignments (on by default).
+    pub pollute_scope_with_loop_initial_assignments: bool,
+    /// `polluteScopeWithAlwaysIterableForeach`: narrow iterable bodies and retain new exit holders.
+    pub pollute_scope_with_always_iterable_foreach: bool,
+    /// `polluteScopeWithBlock`: retain the actual standalone block scope (on by default).
+    pub pollute_scope_with_block: bool,
     /// The rule level: `level` (`max` is 10), 0 when unset.
     pub level: u8,
+    /// `checkFunctionArgumentTypes`: `None` follows the level (on from 5), including after callers change it.
+    pub check_function_argument_types: Option<bool>,
+    /// `checkArgumentsPassedByReference`: independently overridable, otherwise on from level 5.
+    pub check_arguments_passed_by_reference: Option<bool>,
+    /// `checkThisOnly`: RuleLevelHelper's expression eligibility, otherwise on below level 2.
+    pub check_this_only: Option<bool>,
+    /// `checkAdvancedIsset`: independently overridable; `None` follows the current level (on from 4).
+    pub check_advanced_isset: Option<bool>,
     /// `featureToggles.checkGenericIterableClasses` (on with bleedingEdge).
     pub check_generic_iterable_classes: bool,
     /// `featureToggles.internalTag` (on with bleedingEdge): the `@internal` usage rules.
@@ -91,10 +109,36 @@ pub struct Project {
     /// Which identifiers the run reports, `None` for all: the others are dropped before any ignore sees them, as
     /// PHPStan never reports the errors of a rule it doesn't run.
     pub reported: Option<Reported>,
+    /// Independent registrations of the method rules that produce or join named-argument records.
+    pub method_rules: MethodRules,
 }
 
 /// [`Project::reported`].
 pub type Reported = std::sync::Arc<dyn Fn(&str) -> bool + Send + Sync>;
+
+/// Rule registration, not identifier filtering or FunctionCallParametersCheck's argument switches.
+#[derive(Clone, Copy)]
+pub struct MethodRules {
+    /// CallMethodsRule, including its ordinary diagnostics and named-argument call records.
+    pub call_methods: bool,
+    /// OverridingMethodRule, including MethodSignatureRule and parameter-rename records.
+    pub overriding_method: bool,
+    /// ConsistentConstructorRule, independently of OverridingMethodRule.
+    pub consistent_constructor: bool,
+    /// MethodCallWithPossiblyRenamedNamedArgumentRule's post-file join.
+    pub renamed_named_arguments: bool,
+}
+
+impl Default for MethodRules {
+    fn default() -> Self {
+        Self {
+            call_methods: true,
+            overriding_method: true,
+            consistent_constructor: true,
+            renamed_named_arguments: true,
+        }
+    }
+}
 
 /// phpstan-strict-rules' `strictRules.*` switches of the ported rules.
 #[derive(Clone, Copy, Default)]
@@ -201,6 +245,10 @@ impl Project {
             })
             .unwrap_or(RUNTIME_PHP_VERSION);
         let flag = |k: &str| params.get_str(k) == Some(&Value::Bool(true));
+        let optional_flag = |k: &str| match params.get_str(k) {
+            Some(Value::Bool(value)) => Some(*value),
+            _ => None,
+        };
         let toggle = |k: &str| {
             params
                 .get_str("featureToggles")
@@ -233,10 +281,19 @@ impl Project {
             ignore_errors: IgnoredErrors::new(ignore_errors, report_unmatched_ignores),
             // config.neon's false, which config.level2.neon turns on
             check_class_case_sensitivity: flag("checkClassCaseSensitivity"),
+            check_internal_class_case_sensitivity: flag("checkInternalClassCaseSensitivity"),
+            check_imported_class_name_case: toggle("checkImportedClassNameCase"),
             check_function_name_case: flag("checkFunctionNameCase"),
             cli_arguments_variables_registered: flag("cliArgumentsVariablesRegistered"),
             check_maybe_undefined_variables: flag("checkMaybeUndefinedVariables"),
+            pollute_scope_with_loop_initial_assignments: !matches!(params.get_str("polluteScopeWithLoopInitialAssignments"), Some(Value::Bool(false))),
+            pollute_scope_with_always_iterable_foreach: !matches!(params.get_str("polluteScopeWithAlwaysIterableForeach"), Some(Value::Bool(false))),
+            pollute_scope_with_block: !matches!(params.get_str("polluteScopeWithBlock"), Some(Value::Bool(false))),
             level,
+            check_function_argument_types: optional_flag("checkFunctionArgumentTypes"),
+            check_arguments_passed_by_reference: optional_flag("checkArgumentsPassedByReference"),
+            check_this_only: optional_flag("checkThisOnly"),
+            check_advanced_isset: optional_flag("checkAdvancedIsset"),
             check_generic_iterable_classes: toggle("checkGenericIterableClasses"),
             internal_tag: toggle("internalTag"),
             new_static_in_abstract_class_static_method: toggle("newStaticInAbstractClassStaticMethod"),
@@ -268,6 +325,7 @@ impl Project {
                 .map(PathBuf::from)
                 .collect(),
             reported: None,
+            method_rules: MethodRules::default(),
         }
     }
 
@@ -288,10 +346,19 @@ impl Project {
             report_ignores_without_comments: false,
             ignore_errors: IgnoredErrors::new(&Array::new(), true),
             check_class_case_sensitivity: false,
+            check_internal_class_case_sensitivity: false,
+            check_imported_class_name_case: false,
             check_function_name_case: false,
             cli_arguments_variables_registered: true,
             check_maybe_undefined_variables: false,
+            pollute_scope_with_loop_initial_assignments: true,
+            pollute_scope_with_always_iterable_foreach: true,
+            pollute_scope_with_block: true,
             level: 0,
+            check_function_argument_types: None,
+            check_arguments_passed_by_reference: None,
+            check_this_only: None,
+            check_advanced_isset: None,
             check_generic_iterable_classes: false,
             internal_tag: false,
             new_static_in_abstract_class_static_method: false,
@@ -311,6 +378,7 @@ impl Project {
             type_aliases: Vec::new(),
             stubs: Vec::new(),
             reported: None,
+            method_rules: MethodRules::default(),
         }
     }
 }

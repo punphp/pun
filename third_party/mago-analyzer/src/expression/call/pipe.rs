@@ -22,6 +22,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Pipe<'arena> {
     where
         A: Arena,
     {
+        let reflection_scope = block_context.clone();
         let mut template_result = TemplateResult::default();
 
         let was_inside_pipe_callable = block_context.flags.inside_pipe_callable();
@@ -33,6 +34,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Pipe<'arena> {
         analyze_invocation_targets(
             context,
             block_context,
+            &reflection_scope,
             artifacts,
             template_result,
             invocation_targets,
@@ -42,6 +44,8 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Pipe<'arena> {
             false,
             false,
             false, // object_has_nullsafe_null - not applicable for pipe expressions
+            false,
+            true,
         )
     }
 }

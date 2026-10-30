@@ -49,6 +49,42 @@ pub fn is_contained_by(
         return true;
     }
 
+    if let TAtomic::Object(TObject::Named(container)) = container_type_part
+        && let Some(excluded) = &container.subtracted_type
+    {
+        let base = TAtomic::Object(TObject::Named(container.clone().with_subtracted_type(None)));
+        if !is_contained_by(
+            codebase,
+            input_type_part,
+            &base,
+            inside_assertion,
+            atomic_comparison_result,
+        ) {
+            return false;
+        }
+        if let TAtomic::Object(TObject::Named(input)) = input_type_part
+            && let Some(input_excluded) = &input.subtracted_type
+            && union_comparator::is_contained_by(
+                codebase,
+                excluded,
+                input_excluded,
+                false,
+                false,
+                false,
+                atomic_comparison_result,
+            )
+        {
+            return true;
+        }
+        return !union_comparator::can_expression_types_be_identical(
+            codebase,
+            excluded,
+            &TUnion::from_atomic(input_type_part.clone()),
+            false,
+            false,
+        );
+    }
+
     // Handle TAtomic::Alias - expand both input and container
     if let TAtomic::Alias(alias) = container_type_part {
         let Some(container_union) = alias.resolve(codebase) else {
@@ -105,9 +141,9 @@ pub fn is_contained_by(
         }
 
         // intersection <= intersection (e.g., A&B <= C&D)
-        if input_type_part.has_intersection_types() {
+        if input_type_part.has_intersection_types() && !matches!(container_type_part, TAtomic::Array(_)) {
             // We have proven the input is a subtype of all the container's parts.
-            // This is sufficient.
+            // Arrays also carry their key/value constraints on the concrete base.
             return true;
         }
     }
@@ -149,7 +185,26 @@ pub fn is_contained_by(
             true
         } else if let TAtomic::Mixed(input) = input_type_part {
             input.effective_subtracted_type().is_some_and(|input_excluded| {
-                union_comparator::is_contained_by(codebase, excluded, &input_excluded, false, false, false, atomic_comparison_result)
+                union_comparator::is_contained_by(
+                    codebase, excluded, &input_excluded, false, false, false, atomic_comparison_result,
+                )
+            })
+        } else if let TAtomic::Object(TObject::Named(input)) = input_type_part
+            && let Some(input_excluded) = &input.subtracted_type
+        {
+            let base = TUnion::from_atomic(TAtomic::Object(TObject::Named(
+                input.clone().with_subtracted_type(None),
+            )));
+            crate::ttype::intersect_union_types(excluded, &base, codebase).is_none_or(|overlap| {
+                union_comparator::is_contained_by(
+                    codebase,
+                    &overlap,
+                    input_excluded,
+                    false,
+                    false,
+                    false,
+                    atomic_comparison_result,
+                )
             })
         } else {
             !union_comparator::can_expression_types_be_identical(
@@ -313,7 +368,7 @@ pub fn is_contained_by(
         && (matches!(input_type_part, TAtomic::Object(_))
             || matches!(input_type_part, TAtomic::Callable(callable) if callable.is_closure()))
     {
-        return true;
+        return !matches!(input_type_part, TAtomic::Object(TObject::NonexistentParent));
     }
 
     if let TAtomic::Object(TObject::HasMethod(container_has_method)) = container_type_part {
@@ -451,7 +506,12 @@ pub fn is_contained_by(
 
                 true
             }
-            TObject::HasMethod(_) | TObject::HasProperty(_) => false,
+            TObject::NonexistentParent
+                if container_object_with_properties.known_properties.values().all(|(optional, _)| *optional) =>
+            {
+                true
+            }
+            TObject::NonexistentParent | TObject::HasMethod(_) | TObject::HasProperty(_) => false,
         };
     }
 
@@ -567,6 +627,15 @@ pub(crate) fn can_be_identical(
     inside_assertion: bool,
     allow_type_coercion: bool,
 ) -> bool {
+    // The sentinel has no runtime object capabilities, even though isObject() is yes.
+    if matches!(first_part, TAtomic::Object(TObject::NonexistentParent))
+        || matches!(second_part, TAtomic::Object(TObject::NonexistentParent))
+    {
+        return !first_part.is_never() && !second_part.is_never()
+            && (is_contained_by(codebase, first_part, second_part, inside_assertion, &mut ComparisonResult::new())
+                || is_contained_by(codebase, second_part, first_part, inside_assertion, &mut ComparisonResult::new()));
+    }
+
     if matches!(
         (first_part, second_part),
         // If either part is a variable, they can be identical
@@ -841,6 +910,7 @@ fn strings_can_be_identical(lhs: &TString, rhs: &TString) -> bool {
         match constraints.casing {
             TStringCasing::Lowercase if value.iter().any(u8::is_ascii_uppercase) => return false,
             TStringCasing::Uppercase if value.iter().any(u8::is_ascii_lowercase) => return false,
+            TStringCasing::Both if value.iter().any(u8::is_ascii_alphabetic) => return false,
             _ => {}
         }
 

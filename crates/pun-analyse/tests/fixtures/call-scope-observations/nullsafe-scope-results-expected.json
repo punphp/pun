@@ -1,0 +1,110 @@
+{
+    "calls": {
+        "237": {
+            "line": 8,
+            "expression": "$inspect->inspect($sink?->value())",
+            "names": [
+                {
+                    "name": "inspect",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 237,
+                            "end": 245,
+                            "expression": "$inspect",
+                            "type": "nullsaferesultsink"
+                        },
+                        {
+                            "start": 255,
+                            "end": 270,
+                            "expression": "$sink?->value()",
+                            "type": "int|null"
+                        }
+                    ]
+                }
+            ]
+        },
+        "326": {
+            "line": 10,
+            "expression": "$inspect->inspect($sink?->value())",
+            "names": [
+                {
+                    "name": "inspect",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 326,
+                            "end": 334,
+                            "expression": "$inspect",
+                            "type": "nullsaferesultsink"
+                        },
+                        {
+                            "start": 344,
+                            "end": 359,
+                            "expression": "$sink?->value()",
+                            "type": "int"
+                        }
+                    ]
+                }
+            ]
+        },
+        "395": {
+            "line": 12,
+            "expression": "$inspect->inspect($sink?->value())",
+            "names": [
+                {
+                    "name": "inspect",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 395,
+                            "end": 403,
+                            "expression": "$inspect",
+                            "type": "nullsaferesultsink"
+                        },
+                        {
+                            "start": 413,
+                            "end": 428,
+                            "expression": "$sink?->value()",
+                            "type": "null"
+                        }
+                    ]
+                }
+            ]
+        },
+        "446": {
+            "line": 13,
+            "expression": "$inspect->inspect(($sink = new nullsaferesultsink())?->value())",
+            "names": [
+                {
+                    "name": "inspect",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 446,
+                            "end": 454,
+                            "expression": "$inspect",
+                            "type": "nullsaferesultsink"
+                        },
+                        {
+                            "start": 464,
+                            "end": 508,
+                            "expression": "($sink = new nullsaferesultsink())?->value()",
+                            "type": "int"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "errors": [
+        [
+            12,
+            "method.nonObject",
+            "Cannot call method value() on null.",
+            null,
+            true
+        ]
+    ],
+    "function_events": []
+}

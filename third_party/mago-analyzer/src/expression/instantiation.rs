@@ -15,7 +15,9 @@ use mago_codex::ttype::atomic::scalar::class_like_string::TClassLikeString;
 use mago_codex::ttype::expander;
 use mago_codex::ttype::expander::StaticClassType;
 use mago_codex::ttype::expander::TypeExpansionOptions;
+use mago_codex::ttype::get_error;
 use mago_codex::ttype::get_mixed;
+use mago_codex::ttype::get_named_object;
 use mago_codex::ttype::get_never;
 use mago_codex::ttype::get_object;
 use mago_codex::ttype::template::GenericTemplate;
@@ -30,6 +32,7 @@ use mago_reporting::Issue;
 use mago_span::HasSpan;
 use mago_span::Span;
 use mago_syntax::cst::ArgumentList;
+use mago_syntax::cst::Expression;
 use mago_syntax::cst::Instantiation;
 use mago_syntax::cst::PartialArgumentList;
 use mago_word::WordMap;
@@ -49,9 +52,12 @@ use crate::invocation::MethodInvocationKind;
 use crate::invocation::MethodTargetContext;
 use crate::invocation::analyzer::analyze_invocation;
 use crate::invocation::post_process::post_invocation_process;
+use crate::invocation::return_type_fetcher::fetch_declared_invocation_return_type;
+use crate::invocation::return_type_fetcher::fetch_function_like_provider_return_type;
+use crate::invocation::return_type_fetcher::fetch_invocation_provider_return_type;
 use crate::resolver::class_name::ResolutionOrigin;
 use crate::resolver::class_name::ResolvedClassname;
-use crate::resolver::class_name::resolve_classnames_from_expression;
+use crate::resolver::class_name::resolve_classnames_for_instantiation;
 use crate::utils::template::get_generic_parameter_for_offset;
 use crate::visibility::check_method_visibility_by_id;
 
@@ -65,7 +71,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Instantiation<'arena> {
     where
         A: Arena,
     {
-        let classnames = resolve_classnames_from_expression(context, block_context, artifacts, self.class, false)?;
+        let classnames = resolve_classnames_for_instantiation(context, block_context, artifacts, self.class)?;
         if classnames.is_empty() {
             return Ok(());
         }
@@ -108,7 +114,6 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Instantiation<'arena> {
         let mut resulting_type = None;
         for classname in classnames {
             let instantiation_span = self.span();
-            let class_expression_span = self.class.span();
 
             let argument_list = if let Some(arg_list) = &self.argument_list { Some(arg_list) } else { None };
 
@@ -118,7 +123,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Instantiation<'arena> {
                 artifacts,
                 &classname,
                 instantiation_span,
-                class_expression_span,
+                self.class,
                 argument_list,
             )?;
 
@@ -141,16 +146,26 @@ fn analyze_class_instantiation<'ctx, 'arena, A>(
     artifacts: &mut AnalysisArtifacts,
     classname: &ResolvedClassname,
     instantiation_span: Span,
-    class_expression_span: Span,
+    class_expression: &Expression<'arena>,
     argument_list: Option<&ArgumentList<'arena>>,
 ) -> Result<TUnion, AnalysisError>
 where
     A: Arena,
 {
+    let class_expression_span = class_expression.span();
     if classname.is_invalid() {
         argument_list.analyze(context, block_context, artifacts)?;
 
-        return Ok(get_never());
+        return Ok(match class_expression.unparenthesized() {
+            Expression::Self_(_) => get_named_object(word("self"), None),
+            Expression::Parent(_) => wrap_atomic(TAtomic::Object(TObject::NonexistentParent)),
+            _ => get_error(),
+        });
+    }
+
+    if matches!(classname.origin, ResolutionOrigin::NonexistentParent) {
+        argument_list.analyze(context, block_context, artifacts)?;
+        return Ok(get_error());
     }
 
     let Some(fq_classname) = classname.fqcn else {
@@ -189,7 +204,11 @@ where
 
         argument_list.analyze(context, block_context, artifacts)?;
 
-        return Ok(get_never());
+        return Ok(if matches!(class_expression.unparenthesized(), Expression::Parent(_)) {
+            wrap_atomic(TAtomic::Object(TObject::NonexistentParent))
+        } else {
+            get_named_object(fq_classname, None)
+        });
     };
 
     let classname_str = &metadata.original_name;
@@ -207,10 +226,6 @@ where
                  .with_note("Interfaces are contracts and cannot be directly instantiated. You need to instantiate a class that implements the interface.")
                  .with_help(format!("Instantiate a concrete class that implements `{classname_str}` instead.")),
          );
-
-        argument_list.analyze(context, block_context, artifacts)?;
-
-        return Ok(get_never());
     } else if metadata.kind.is_trait() && !classname.is_static() && !classname.is_self() {
         context.collector.report_with_code(
             IssueCode::TraitInstantiation,
@@ -223,10 +238,6 @@ where
                     "Use the trait `{classname_str}` within a class definition using the `use` keyword."
                 )),
         );
-
-        argument_list.analyze(context, block_context, artifacts)?;
-
-        return Ok(get_never());
     } else if metadata.kind.is_enum() {
         context.collector.report_with_code(
             IssueCode::EnumInstantiation,
@@ -240,12 +251,7 @@ where
                     "Use `{classname_str}::CASE_NAME` to get an enum case instance, or `{classname_str}::cases()` to get all cases."
                 )),
         );
-
-        argument_list.analyze(context, block_context, artifacts)?;
-
-        return Ok(get_never());
     }
-    // class kind is a regular class; no kind-specific instantiation diagnostic to emit
 
     if classname.is_from_class_string() && (metadata.kind.is_interface() || metadata.kind.is_trait()) {
         let kind_name = if metadata.kind.is_interface() { "interface" } else { "trait" };
@@ -269,8 +275,11 @@ where
         );
     }
 
-    let mut is_impossible = false;
-    if metadata.flags.is_abstract() && !classname.can_extend_static() && !classname.is_from_class_string() {
+    if metadata.kind.is_class()
+        && metadata.flags.is_abstract()
+        && !classname.can_extend_static()
+        && !classname.is_from_class_string()
+    {
         context.collector.report_with_code(
             IssueCode::AbstractInstantiation,
             Issue::error(format!("Cannot instantiate abstract class `{classname_str}`."))
@@ -284,8 +293,6 @@ where
                     "Instantiate a concrete subclass of this abstract class."
                 }),
         );
-
-        is_impossible = true;
     }
 
     if metadata.flags.is_deprecated()
@@ -305,6 +312,7 @@ where
     }
 
     let mut type_parameters = None;
+    let mut constructor_result = None;
 
     let constructor_id = MethodIdentifier::new(metadata.original_name, word("__construct"));
     let constructor_declraing_id = context.codebase.get_declaring_method_identifier(&constructor_id);
@@ -337,6 +345,7 @@ where
                 effective_signature: None,
                 method_context: Some(MethodTargetContext {
                     invocation_kind: MethodInvocationKind::Instance,
+                    requested_name: constructor_id.get_method_name(),
                     declaring_method_id: Some(constructor_declraing_id),
                     class_like_metadata: metadata,
                     class_type: StaticClassType::Exact(metadata.original_name),
@@ -363,6 +372,30 @@ where
             &mut argument_types,
         )?;
 
+        // NewHandler prices named/static constructors independently of instantiability.
+        // Dynamic class expressions keep their object's type even for a never constructor.
+        if classname.is_named() || classname.is_static() {
+            // Extensions are selected for the instantiated class, not an inherited declaration.
+            let requested_constructor =
+                FunctionLikeIdentifier::Method(metadata.original_name, constructor_id.get_method_name());
+            constructor_result = fetch_function_like_provider_return_type(
+                context,
+                block_context,
+                artifacts,
+                &requested_constructor,
+                &constructor_call,
+            )
+            .or_else(|| {
+                let declared = fetch_declared_invocation_return_type(
+                    context,
+                    &constructor_call,
+                    &template_result,
+                    &argument_types,
+                );
+                declared.is_explicit_never().then_some(declared)
+            });
+        }
+
         post_invocation_process(
             context,
             block_context,
@@ -374,15 +407,13 @@ where
             true,
         )?;
 
-        if !check_method_visibility_by_id(
+        check_method_visibility_by_id(
             context,
             block_context.scope.get_class_like_name(),
             &constructor_declraing_id,
             instantiation_span,
             None,
-        ) {
-            is_impossible = true;
-        }
+        );
 
         let mut resolved_template_types = vec![];
         for (offset, (template_name, template)) in metadata.template_types.iter().enumerate() {
@@ -463,6 +494,33 @@ where
                 .map(|(_, _)| if is_spl_object_storage { get_never() } else { wrap_atomic(TAtomic::Placeholder) })
                 .collect(),
         );
+    }
+
+    // PHPStan's DummyConstructorReflection also participates in dynamic return extensions.
+    // Arguments have already been walked above; querying the provider must not evaluate them again.
+    if constructor_span.is_none() && (classname.is_named() || classname.is_static()) {
+        let constructor_call = Invocation {
+            target: InvocationTarget::ExternalMethod {
+                identifier: FunctionLikeIdentifier::Method(metadata.original_name, constructor_id.get_method_name()),
+                effective_signature: None,
+                method_context: MethodTargetContext {
+                    invocation_kind: MethodInvocationKind::Instance,
+                    requested_name: constructor_id.get_method_name(),
+                    declaring_method_id: None,
+                    class_like_metadata: metadata,
+                    class_type: StaticClassType::Exact(metadata.original_name),
+                    declaring_object_type: None,
+                },
+                span: instantiation_span,
+            },
+            arguments_source: match argument_list {
+                Some(arg_list) => InvocationArgumentsSource::ArgumentList(arg_list),
+                None => InvocationArgumentsSource::None(instantiation_span),
+            },
+            span: instantiation_span,
+        };
+        constructor_result =
+            fetch_invocation_provider_return_type(context, block_context, artifacts, &constructor_call);
     }
 
     // A dynamic non-final class without a constructor can name a subclass that declares one.
@@ -552,17 +610,21 @@ where
         }
     }
 
-    if is_impossible {
-        return Ok(get_never());
+    if let Some(constructor_result) = constructor_result {
+        return Ok(constructor_result);
     }
 
     let constraint_object = TAtomic::Object(TObject::Named(TNamedObject {
         name: metadata.original_name,
         type_parameters: type_parameters.map(Vec::into_boxed_slice),
         variances: None,
-        is_static: classname.is_static() || (classname.is_self() && metadata.flags.is_final()),
+        is_static: classname.is_static(),
         is_this: false,
+        is_exact: metadata.kind.is_class()
+            && !metadata.flags.is_abstract()
+            && (classname.is_named() || classname.is_from_literal_class_string()),
         intersection_types: None,
+        subtracted_type: None,
         remapped_parameters: false,
     }));
 
@@ -616,6 +678,7 @@ where
                 effective_signature: None,
                 method_context: Some(MethodTargetContext {
                     invocation_kind: MethodInvocationKind::Instance,
+                    requested_name: constructor_id.get_method_name(),
                     declaring_method_id: Some(constructor_declaring_id),
                     class_like_metadata,
                     class_type: StaticClassType::Exact(class_like_metadata.original_name),
@@ -765,7 +828,6 @@ mod tests {
         "},
         issues = [
             IssueCode::InterfaceInstantiation,
-            IssueCode::ImpossibleAssignment, // $a becomes never
         ]
     }
 
@@ -780,7 +842,6 @@ mod tests {
         "},
         issues = [
             IssueCode::TraitInstantiation,
-            IssueCode::ImpossibleAssignment, // $a becomes never
         ]
     }
 
@@ -795,7 +856,6 @@ mod tests {
         "},
         issues = [
             IssueCode::EnumInstantiation,
-            IssueCode::ImpossibleAssignment, // $a becomes never
         ]
     }
 
@@ -810,7 +870,6 @@ mod tests {
         "},
         issues = [
             IssueCode::AbstractInstantiation,
-            IssueCode::ImpossibleAssignment, // $a becomes never
         ]
     }
 
@@ -823,7 +882,6 @@ mod tests {
         "},
         issues = [
             IssueCode::SelfOutsideClassScope,
-            IssueCode::ImpossibleAssignment, // $a becomes never
         ]
     }
 
@@ -836,7 +894,6 @@ mod tests {
         "},
         issues = [
             IssueCode::StaticOutsideClassScope,
-            IssueCode::ImpossibleAssignment, // $a becomes never
         ]
     }
 
@@ -849,7 +906,6 @@ mod tests {
         "},
         issues = [
             IssueCode::ParentOutsideClassScope,
-            IssueCode::ImpossibleAssignment, // $a becomes never
         ]
     }
 
@@ -862,7 +918,6 @@ mod tests {
         "},
         issues = [
             IssueCode::NonExistentClass,
-            IssueCode::ImpossibleAssignment, // $a becomes never
         ]
     }
 
@@ -875,10 +930,7 @@ mod tests {
 
             $a = new $className();
         "},
-        issues = [
-            IssueCode::InvalidClassStringExpression,
-            IssueCode::ImpossibleAssignment, // `$a` becomes never
-        ]
+        issues = []
     }
 
     test_analysis! {

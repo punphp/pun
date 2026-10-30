@@ -59,7 +59,7 @@ fn invariant_template(t: &Type) -> bool {
         if found.get() {
             return;
         }
-        if let Type::Object(class, args) | Type::Static(class, args) = t
+        if let Type::Object(class, args, _) | Type::Static(class, args) = t
             && !args.is_empty()
             // ponytail: the symbols carry no template variance, so every class template counts as invariant
             && symbols::lookup(class).is_some_and(|c| !c.templates.is_empty())

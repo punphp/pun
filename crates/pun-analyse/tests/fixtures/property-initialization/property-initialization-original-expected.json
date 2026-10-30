@@ -1,0 +1,292 @@
+[
+    {
+        "start": 233,
+        "end": 245,
+        "line": 10,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "EarlyReturn",
+        "method": "check",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 474,
+        "end": 486,
+        "line": 19,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "ThrowExit",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 716,
+        "end": 728,
+        "line": 28,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "AssignedReturn",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 969,
+        "end": 981,
+        "line": 38,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "AllReturn",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 1178,
+        "end": 1190,
+        "line": 46,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "ConditionalOnly",
+        "method": "check",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 1366,
+        "end": 1378,
+        "line": 54,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "InsideBranches",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 1412,
+        "end": 1424,
+        "line": 56,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "InsideBranches",
+        "method": "check",
+        "certainty": "No"
+    },
+    {
+        "start": 1524,
+        "end": 1536,
+        "line": 62,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "Promoted",
+        "method": "__construct",
+        "certainty": "Yes"
+    },
+    {
+        "start": 1597,
+        "end": 1609,
+        "line": 64,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "Promoted",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 1820,
+        "end": 1832,
+        "line": 71,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "Serialized",
+        "method": "check",
+        "certainty": "No"
+    },
+    {
+        "start": 1904,
+        "end": 1916,
+        "line": 72,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "Serialized",
+        "method": "local",
+        "certainty": "Yes"
+    },
+    {
+        "start": 2111,
+        "end": 2123,
+        "line": 79,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "WakeupOnly",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 2285,
+        "end": 2297,
+        "line": 85,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "ParentInitialized",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 2405,
+        "end": 2417,
+        "line": 89,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "InheritedOnly",
+        "method": "ownCheck",
+        "certainty": "No"
+    },
+    {
+        "start": 2583,
+        "end": 2595,
+        "line": 94,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "ParentCall",
+        "method": "ownCheck",
+        "certainty": "No"
+    },
+    {
+        "start": 2760,
+        "end": 2772,
+        "line": 99,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "InheritedLocal",
+        "method": "ownCheck",
+        "certainty": "No"
+    },
+    {
+        "start": 2844,
+        "end": 2856,
+        "line": 100,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "InheritedLocal",
+        "method": "local",
+        "certainty": "No"
+    },
+    {
+        "start": 3078,
+        "end": 3090,
+        "line": 107,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "DirectHelper",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 3373,
+        "end": 3385,
+        "line": 115,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "IndirectHelper",
+        "method": "check",
+        "certainty": "No"
+    },
+    {
+        "start": 3591,
+        "end": 3603,
+        "line": 124,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "ReturnFinally",
+        "method": "check",
+        "certainty": "No"
+    },
+    {
+        "start": 3701,
+        "end": 3713,
+        "line": 129,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "Reordered",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 3955,
+        "end": 3967,
+        "line": 136,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "UnsetAfterAssignment",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 4060,
+        "end": 4072,
+        "line": 137,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "UnsetAfterAssignment",
+        "method": "local",
+        "certainty": "Yes"
+    },
+    {
+        "start": 4241,
+        "end": 4253,
+        "line": 143,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "AliasThis",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 4418,
+        "end": 4430,
+        "line": 149,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CoalesceAssignment",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 4734,
+        "end": 4746,
+        "line": 160,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "CaughtReturn",
+        "method": "check",
+        "certainty": "Maybe"
+    },
+    {
+        "start": 4967,
+        "end": 4979,
+        "line": 168,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "BothBranches",
+        "method": "check",
+        "certainty": "Yes"
+    },
+    {
+        "start": 5190,
+        "end": 5202,
+        "line": 174,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "PromotedReadonlySerialized",
+        "method": "check",
+        "certainty": "No"
+    },
+    {
+        "start": 5403,
+        "end": 5415,
+        "line": 180,
+        "property": "value",
+        "expression": "$this->value",
+        "class": "PromotedMutableSerialized",
+        "method": "check",
+        "certainty": "No"
+    }
+]

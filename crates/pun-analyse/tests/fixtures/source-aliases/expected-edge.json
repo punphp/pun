@@ -1,0 +1,69 @@
+{
+  "errors": [
+    {
+      "file": "edge-uses.php",
+      "line": 3,
+      "identifier": "attribute.notFound",
+      "message": "Attribute class AliasEdge\\Dead does not exist.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "edge-uses.php",
+      "line": 5,
+      "identifier": "attribute.notFound",
+      "message": "Attribute class AliasEdge\\Dormant does not exist.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "edge-uses.php",
+      "line": 7,
+      "identifier": "attribute.notFound",
+      "message": "Attribute class AliasEdge\\Guarded does not exist.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "edge-uses.php",
+      "line": 9,
+      "identifier": "attribute.notFound",
+      "message": "Attribute class AliasEdge\\Twin does not exist.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "edge-uses.php",
+      "line": 11,
+      "identifier": "attribute.notFound",
+      "message": "Attribute class AliasEdge\\tWIN does not exist.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "edge-uses.php",
+      "line": 13,
+      "identifier": "class.nameCase",
+      "message": "Class AliasEdge\\Real referenced with incorrect case: AliasEdge\\rEAL.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "edge-uses.php",
+      "line": 15,
+      "identifier": "attribute.notFound",
+      "message": "Attribute class AliasEdge\\Missing does not exist.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "edge-uses.php",
+      "line": 17,
+      "identifier": "attribute.notFound",
+      "message": "Attribute class AliasEdge\\Shadow\\ShadowAlias does not exist.",
+      "tip": null,
+      "ignorable": true
+    }
+  ],
+  "general": []
+}

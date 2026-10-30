@@ -6,6 +6,74 @@ use pun_analyse::{Project, run};
 use serde_json::Value;
 
 #[test]
+fn native_isset_property_reflection_matches_phpstan() {
+    check_property_reflection(
+        "properties.php",
+        include_str!("fixtures/incoming-isset/properties-phpstan.json"),
+    );
+}
+
+#[test]
+fn property_selector_expressions_and_excluded_subtypes_match_phpstan() {
+    check_property_reflection(
+        "property-selectors.php",
+        include_str!("fixtures/incoming-isset/property-selectors-phpstan.json"),
+    );
+}
+
+fn check_property_reflection(file: &str, capture: &str) {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/incoming-isset");
+    let oracle: Value = serde_json::from_str(capture).unwrap();
+    let mut failures = Vec::new();
+    for level in [1, 4, 5] {
+        let mut project = Project::new(vec![root.join(file)], Vec::new());
+        project.level = level;
+        project.php_version = 80500;
+        let mut got: Vec<_> = run(&project)
+            .unwrap()
+            .into_iter()
+            .map(|e| {
+                serde_json::json!([
+                    e.file.replace(root.to_str().unwrap(), "$ROOT"),
+                    e.line,
+                    e.identifier,
+                    e.message,
+                    e.tip,
+                    e.can_be_ignored
+                ])
+            })
+            .collect();
+        let mut want: Vec<_> = oracle[level.to_string()]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|e| {
+                serde_json::json!([
+                    e["file"],
+                    e["line"],
+                    e["identifier"],
+                    e["message"],
+                    e.get("tip").unwrap_or(&Value::Null),
+                    e["ignorable"]
+                ])
+            })
+            .collect();
+        got.sort_by_cached_key(Value::to_string);
+        want.sort_by_cached_key(Value::to_string);
+        if got != want {
+            failures.push(format!(
+                "level {level}: {} actual / {} expected complete records\nextra: {:?}\nmissing: {:?}",
+                got.len(),
+                want.len(),
+                got.iter().filter(|e| !want.contains(e)).collect::<Vec<_>>(),
+                want.iter().filter(|e| !got.contains(e)).collect::<Vec<_>>()
+            ));
+        }
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+}
+
+#[test]
 fn exported_terminating_isset_edge_makes_the_foreach_value_absent() {
     let fixtures = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures");
     let mut project = Project::new(
@@ -105,7 +173,7 @@ fn incoming_isset_certainty_matches_phpstan() {
             .filter(|error| {
                 matches!(
                     error.identifier.as_str(),
-                    "variable.undefined" | "phpstan.dumpType"
+                    "variable.undefined" | "phpstan.dumpType" | "isset.variable"
                 )
             })
             .map(|error| (error.line, error.identifier, error.message))
@@ -117,7 +185,7 @@ fn incoming_isset_certainty_matches_phpstan() {
             .filter(|error| {
                 matches!(
                     error["identifier"].as_str(),
-                    Some("variable.undefined" | "phpstan.dumpType")
+                    Some("variable.undefined" | "phpstan.dumpType" | "isset.variable")
                 )
             })
             .map(|error| {
@@ -130,6 +198,161 @@ fn incoming_isset_certainty_matches_phpstan() {
             .collect();
         got.sort();
         want.sort();
+        assert_eq!(got, want, "level {level}");
+    }
+}
+
+/// All public records, not an identifier subset: advanced isset must not raise other rules' levels.
+#[test]
+fn independent_advanced_isset_matches_phpstan_through_public_project() {
+    use pun_phpstan::{Array, Key, Value as Parameter};
+
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/incoming-isset");
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/incoming-isset/advanced-settings-phpstan.json"
+    ))
+    .unwrap();
+    let mut failures = Vec::new();
+    for (case, records) in expected.as_object().unwrap() {
+        let (level, mode) = case.split_once('-').unwrap();
+        let level: u8 = level.parse().unwrap();
+        let mut parameters = Array::new();
+        // Cross the default boundary after construction: neither defaults nor explicit switches may freeze
+        // the other level-dependent checks at the original configuration's level.
+        parameters.set(
+            Key::from("level"),
+            Parameter::Int(if level < 4 { 9 } else { 1 }),
+        );
+        parameters.set(Key::from("phpVersion"), Parameter::Int(80400));
+        if mode != "default" {
+            parameters.set(
+                Key::from("checkAdvancedIsset"),
+                Parameter::Bool(mode == "on"),
+            );
+        }
+        let configured = Project::from_config(&root, &parameters);
+        let mut direct = Project::new(vec![root.join("advanced-settings.php")], Vec::new());
+        if mode != "default" {
+            direct.check_advanced_isset = Some(mode == "on");
+        }
+        let mut want: Vec<_> = records
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|e| {
+                serde_json::json!([
+                    e["file"],
+                    e["line"],
+                    e["identifier"],
+                    e["message"],
+                    e.get("tip").unwrap_or(&Value::Null),
+                    e["ignorable"]
+                ])
+            })
+            .collect();
+        want.sort_by_cached_key(Value::to_string);
+        for (constructor, mut project) in [("from_config", configured), ("new", direct)] {
+            project.analysed = vec![root.join("advanced-settings.php")];
+            project.level = level;
+            project.php_version = 80400;
+            project.check_maybe_undefined_variables = level >= 1;
+            let mut got: Vec<_> = run(&project)
+                .unwrap()
+                .into_iter()
+                .map(|e| {
+                    serde_json::json!([
+                        e.file.replace(root.to_str().unwrap(), "$ROOT"),
+                        e.line,
+                        e.identifier,
+                        e.message,
+                        e.tip,
+                        e.can_be_ignored
+                    ])
+                })
+                .collect();
+            got.sort_by_cached_key(Value::to_string);
+            if got != want {
+                failures.push(format!(
+                    "{case}/{constructor}\n  extra: {:?}\n  missing: {:?}",
+                    got.iter().filter(|e| !want.contains(e)).collect::<Vec<_>>(),
+                    want.iter().filter(|e| !got.contains(e)).collect::<Vec<_>>()
+                ));
+            }
+        }
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+}
+
+/// PHPStan 2.3.1, invocation.neon at each level: basic variables start at 1, advanced fetches at 4.
+/// The upstream trait fixture includes error/no-error disagreement, agreement and class-independent checks.
+#[test]
+fn isset_invocation_contract_matches_phpstan() {
+    let fixtures = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures");
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/incoming-isset/invocation-phpstan.json"
+    ))
+    .unwrap();
+    let prefix = format!("{}/", fixtures.display());
+    for level in [0, 1, 4, 9] {
+        let mut project = Project::new(
+            vec![
+                fixtures.join("incoming-isset/invocation.php"),
+                fixtures.join("rules/data/Variables/data/isset-in-trait.php"),
+            ],
+            Vec::new(),
+        );
+        project.level = level;
+        project.php_version = 80400;
+        project.check_maybe_undefined_variables = true;
+        let mut got: Vec<_> = run(&project)
+            .unwrap()
+            .into_iter()
+            .filter(|e| {
+                e.file.ends_with("invocation.php")
+                    || e.identifier.starts_with("isset.")
+                    || e.identifier == "nullsafe.neverNull"
+            })
+            .map(|e| {
+                serde_json::json!([
+                    e.file.strip_prefix(&prefix).unwrap(),
+                    e.line,
+                    e.identifier,
+                    e.message,
+                    e.tip,
+                    e.can_be_ignored
+                ])
+            })
+            .collect();
+        let capture = &expected[level.to_string()];
+        assert!(capture["errors"].as_array().unwrap().is_empty());
+        let mut want: Vec<_> = capture["files"]
+            .as_object()
+            .unwrap()
+            .iter()
+            .flat_map(|(file, result)| {
+                result["messages"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .filter(move |e| {
+                        file.ends_with("invocation.php")
+                            || e["identifier"].as_str().unwrap().starts_with("isset.")
+                            || e["identifier"] == "nullsafe.neverNull"
+                    })
+                    .map(move |e| {
+                        serde_json::json!([
+                            file,
+                            e["line"],
+                            e["identifier"],
+                            e["message"],
+                            e.get("tip").unwrap_or(&Value::Null),
+                            e["ignorable"]
+                        ])
+                    })
+            })
+            .collect();
+        got.sort_by_cached_key(Value::to_string);
+        want.sort_by_cached_key(Value::to_string);
         assert_eq!(got, want, "level {level}");
     }
 }

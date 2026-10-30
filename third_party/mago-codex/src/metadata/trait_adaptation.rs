@@ -12,6 +12,7 @@ use crate::visibility::Visibility;
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub(crate) struct TraitMethodAdaptations {
     pub alias_sources: WordMap<Word>,
+    pub alias_names: WordMap<Word>,
     pub excluded_methods: HashSet<MethodIdentifier>,
     pub modifiers: HashMap<MethodIdentifier, TraitMethodModifiers>,
 }
@@ -81,11 +82,22 @@ impl ClassLikeMetadata {
 #[derive(Default)]
 struct TraitModifierPath {
     modifiers: TraitMethodModifiers,
+    original_name: Option<Word>,
     visibility_source: Option<MethodIdentifier>,
     conflicting_visibility: bool,
 }
 
 impl CodebaseMetadata {
+    /// The reflected method spelling, retaining written trait aliases while lookup stays case-insensitive.
+    pub fn get_method_original_name(&self, class: &[u8], method: &[u8]) -> Option<Word> {
+        let class = self.get_class_like(class)?;
+        let name = mago_word::ascii_lowercase_word(method);
+        let declaring = *class.declaring_method_ids.get(&name)?;
+        self.trait_modifiers_on_path(class, name, declaring, &mut Vec::new())
+            .original_name
+            .or_else(|| self.get_method_by_id(&declaring).map(|method| method.original_name))
+    }
+
     pub(super) fn effective_trait_method_modifiers(
         &self,
         class: &ClassLikeMetadata,
@@ -122,12 +134,14 @@ impl CodebaseMetadata {
         let local = owner.trait_method_modifiers(name, declaring, self);
         let mut result = TraitModifierPath {
             modifiers: local,
+            original_name: owner.trait_method_adaptations.as_ref().and_then(|a| a.alias_names.get(&name).copied()),
             visibility_source: local.visibility.map(|_| current),
             conflicting_visibility: false,
         };
 
         for (source, source_name) in self.trait_method_sources(owner, name, declaring) {
             let inherited = self.trait_modifiers_on_path(source, source_name, declaring, path);
+            result.original_name = result.original_name.or(inherited.original_name);
             result.modifiers.is_final |= inherited.modifiers.is_final;
             if local.visibility.is_some() {
                 continue;

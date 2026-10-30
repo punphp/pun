@@ -121,3 +121,11 @@ function staticky(): static
 function nested(Shape&Named&\Countable $a, ?array $b = null, array $c = NULL, ?array $d = \null): void
 {
 }
+
+class ImplicitDebugInfo
+{
+    public function __debugInfo()
+    {
+        return [];
+    }
+}

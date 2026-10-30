@@ -252,3 +252,11 @@ class WithUnknownProperty extends \ErrorException
 {
 	public $foo;
 }
+
+class NativeOverload extends \PDO
+{
+	public function query(): int
+	{
+		return 1;
+	}
+}

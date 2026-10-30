@@ -116,7 +116,7 @@ fn from_parsed(
                         None => None,
                         Some(ShapeKey::Int(k) | ShapeKey::Ident(k)) => Some(k.clone()),
                         Some(ShapeKey::Fetch(class, name)) => Some(format!("{class}::{name}")),
-                        Some(ShapeKey::Str(k)) => Some(all?(k)?),
+                        Some(ShapeKey::Str(k)) => Some(all?(&String::from_utf8_lossy(k))?),
                     };
                     Some((key, i.optional, from_parsed(&i.value, false, all)?))
                 })
@@ -166,7 +166,9 @@ fn from_parsed(
         Node::Const(ConstExpr::Int(v) | ConstExpr::Float(v)) => TypeNode::Raw(v.clone()),
         Node::Const(ConstExpr::Fetch(class, name)) => TypeNode::Raw(format!("{class}::{name}")),
         // `ObjectShapeNode`, `ObjectShapeItemNode`
-        Node::Const(ConstExpr::Str(v)) if all.is_some() => TypeNode::Raw(all?(v)?),
+        Node::Const(ConstExpr::Str(v)) if all.is_some() => {
+            TypeNode::Raw(all?(&String::from_utf8_lossy(v))?)
+        }
         Node::ObjectShape(items) if all.is_some() => TypeNode::Raw(format!(
             "object{{{}}}",
             items

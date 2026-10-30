@@ -1,0 +1,22 @@
+{
+  "earlier-and-later-siblings": "<?php\nfunction before(void $v) {}\n$x = <<<TXT\n  \\u{110000}$value\n bad\n  TXT;\nfunction after(void $v) {}\ntry {}\n#[\\self] class SuppressedName {}\nmissing_after_fatal();\n",
+  "enclosing-declaration": "<?php\nabstract final class self {\n    public static function __construct(void $v) {\n        $x = \"\\u{110000}\";\n        function after(void $v) {}\n    }\n}\n",
+  "outer-document-suppression": "<?php\n$x = <<<OUT\n {$object->{\"\\u{110000}\"}}\n bad\n \tOUT;\n",
+  "inner-document-order": "<?php\n$x = <<<OUT\n {$object->{<<<IN\n bad \\u{110000}\n  IN\n}}\n bad\n  OUT;\n",
+  "whole-part-indentation-before-decoding": "<?php\n$x = <<<TXT\n \\u{110000}\n bad\nworse\n  TXT;\n",
+  "mixed-marker-before-fatal": "<?php\n$x = <<<TXT\n\\u{110000}\n \tTXT;\n",
+  "later-fatal-keeps-first": "<?php\n$x = \"\\u{110000}\";\n$y = \"\\u{FFFFFFFF}\";\n",
+  "children-before-encapsed-decoding": "<?php\n$x = \"\\u{110000}{$object->{(function (void $v) {})()}}\";\n",
+  "children-after-oversized-line-count": "<?php\n$x = \"\\u{110000}\n\n{$object->{(function (void $v) {})()}}\nend\";\n",
+  "children-after-malformed-line-count": "<?php\n$x = `\\u{ZZ}\n\n{$object->{(function (void $v) {})()}}\nend`;\n",
+  "namespace-suppression": "<?php\n$x = \"\\u{110000}\";\nnamespace NotFirst {}\n",
+  "earlier-array-postprocessing": "<?php\n$x = [,];\n$y = \"\\u{110000}\";\n$z = [,];\n",
+  "inner-array-before-aborted-array": "<?php\n$x = [[,], \"\\u{110000}\", [,], ,];\n",
+  "short-assignment-root-not-registered": "<?php\n[, $item] = \"\\u{110000}\";\n",
+  "nested-assignment-awaits-fixup": "<?php\n[[, $item]] = \"\\u{110000}\";\n",
+  "completed-destructuring": "<?php\n[[, $item]] = [[1, 2]];\n$x = \"\\u{110000}\";\n",
+  "fatal-in-lhs": "<?php\n[$items[\"\\u{110000}\"], ,] = [1, 2];\n",
+  "fatal-in-later-for-clause": "<?php\nfor ($x = 1,; \"\\u{110000}\"; $x++,) { try {} }\n",
+  "outer-parameter-suppression": "<?php\nfunction parameter(void $v = \"\\u{110000}\") {}\n",
+  "global-constant-suppression": "<?php\n#[SomeAttribute] const A = \"\\u{110000}\", B = 1;\n"
+}

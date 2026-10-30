@@ -1,0 +1,421 @@
+{
+    "analysed": {
+        "errors": [
+            {
+                "file": "bare.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use try without catch or finally on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "body-member.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use try without catch or finally on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "body-member.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "Constructor __construct() cannot be static on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "body-member.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "body-name.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use try without catch or finally on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "body-parameter.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use try without catch or finally on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "body-parameter.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "catch-body-parameter.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "closure.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use try without catch or finally on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "duplicate-errors.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use try without catch or finally on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "duplicate-errors.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use try without catch or finally on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "earlier-name.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use try without catch or finally on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "function.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use try without catch or finally on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "independent-errors.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use try without catch or finally on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "independent-errors.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use try without catch or finally on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "invalid-finally-body.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use try without catch or finally on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "invalid-inside-valid.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use try without catch or finally on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "keyword-line-and-case.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use try without catch or finally on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "later-name.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use try without catch or finally on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "method.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use try without catch or finally on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "nested.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use try without catch or finally on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "nested.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use try without catch or finally on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "positive-ordinary-error.php",
+                "line": 3,
+                "identifier": "function.notFound",
+                "message": "Function missing_try_parser_control not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "file": "same-file-rules.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use try without catch or finally on line 3",
+                "tip": null,
+                "ignorable": false
+            }
+        ],
+        "general": []
+    },
+    "scanned": {
+        "bare": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "function-body": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "nested": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "invalid-inside-finally": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "positive-catch": {
+            "errors": [],
+            "general": []
+        },
+        "positive-finally": {
+            "errors": [],
+            "general": []
+        },
+        "positive-both": {
+            "errors": [],
+            "general": []
+        }
+    },
+    "order": {
+        "errors": [
+            {
+                "file": "try-order.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use try without catch or finally on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "try-order.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "try-order.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use try without catch or finally on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "try-order.php",
+                "line": 5,
+                "identifier": "phpstan.parse",
+                "message": "Variadic parameter cannot have a default value on line 5",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "try-order.php",
+                "line": 5,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 5",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "try-order.php",
+                "line": 7,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 7",
+                "tip": null,
+                "ignorable": false
+            }
+        ],
+        "general": [
+            "Error message \"void cannot be used as a parameter type on line 3\" cannot be ignored, use excludePaths instead.",
+            "Error message \"Variadic parameter cannot have a default value on line 5\" cannot be ignored, use excludePaths instead.",
+            "Error message \"void cannot be used as a parameter type on line 5\" cannot be ignored, use excludePaths instead.",
+            "Error message \"Cannot use try without catch or finally on line 4\" cannot be ignored, use excludePaths instead.",
+            "Error message \"void cannot be used as a parameter type on line 7\" cannot be ignored, use excludePaths instead.",
+            "Error message \"Cannot use try without catch or finally on line 2\" cannot be ignored, use excludePaths instead."
+        ]
+    }
+}

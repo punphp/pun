@@ -1,5 +1,5 @@
-//! AccessPropertiesRule's AccessPropertiesCheck once `checkThisOnly` is off (level 2): a fetch on any expression,
-//! through RuleLevelHelper's `findTypeToCheck()`. Fetches on `$this` stay with property_access.rs.
+//! AccessPropertiesCheck and AccessStaticPropertiesCheck on expression receivers eligible under `checkThisOnly`.
+//! Non-nullsafe fetches on `$this` stay with property_access.rs.
 
 use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_span::{HasSpan, Span};
@@ -12,20 +12,10 @@ use super::super::{Checker, calls, declared, property_access};
 
 pub const IDENTIFIERS: &[&str] = &["property.nonObject", "property.protected", "staticProperty.nonObject", "staticProperty.protected"];
 
-fn all(results: impl IntoIterator<Item = Tri>) -> Tri {
-    let mut it = results.into_iter();
-    let Some(first) = it.next() else { return Tri::No };
-    it.fold(first, |a, b| if a == b { a } else { Tri::Maybe })
-}
-
-fn any(results: impl IntoIterator<Item = Tri>) -> Tri {
-    results.into_iter().fold(Tri::No, Tri::or)
-}
-
 /// The class a receiver type names, for its properties.
 fn class_of(t: &Type) -> Option<&str> {
     match t {
-        Type::Object(n, _) | Type::Static(n, _) | Type::This(n) | Type::EnumCase(n, _) => Some(n),
+        Type::Object(n, _, _) | Type::Static(n, _) | Type::This(n) | Type::EnumCase(n, _) => Some(n),
         Type::Closure(_) => Some("Closure"),
         _ => None,
     }
@@ -83,25 +73,15 @@ impl<'a> Checker<'a, '_> {
 
     /// `Type::hasInstanceProperty()` (`is_static` false) or `hasStaticProperty()`; `property` has its `$`.
     fn has_property(&self, t: &Type, property: &[u8], is_static: bool) -> Tri {
-        match t {
-            Type::Union(ts) => all(ts.iter().map(|t| self.has_property(t, property, is_static))),
-            Type::Benevolent(ts) | Type::Intersection(ts) => {
-                any(ts.iter().map(|t| self.has_property(t, property, is_static)))
-            }
-            Type::Template(tt) => self.has_property(&tt.bound, property, is_static),
+        t.query_members(&|t| match t {
             // (an object shape has no static properties)
             Type::ObjectShape(props) => match props.iter().find(|(n, ..)| !is_static && n.as_bytes() == &property[1..]) {
                 Some((_, _, optional)) => if *optional { Tri::Maybe } else { Tri::Yes },
                 None => Tri::No,
             },
-            // (`Callable(None)` as a nested pattern leaves an uncovered region on the `match` line)
-            t if matches!(t, Type::Mixed { .. } | Type::ObjectWithoutClass | Type::Iterable(..) | Type::Error)
-                || matches!(t, Type::Callable(None)) =>
-            {
-                Tri::Maybe
-            }
+            Type::ObjectWithoutClass | Type::Iterable(..) | Type::Callable(_) => Tri::Maybe,
             t => class_of(t).map_or(Tri::No, |n| self.class_has_property(n, property, is_static)),
-        }
+        })
     }
 
     /// The declaring class and visibility of the instance property a type has.
@@ -122,7 +102,7 @@ impl<'a> Checker<'a, '_> {
     }
 }
 
-/// The receivers whose type the check reads: every property fetch's object but `$this`'s (level 2).
+/// The non-nullsafe receivers whose type the check reads; `$this` stays with property_access.rs.
 pub(super) fn typed(object: &Expression, spans: &mut Vec<Span>) {
     if !is_this(object) {
         spans.push(object.span());
@@ -143,7 +123,7 @@ pub(in super::super) fn property_fetch(
     nullsafe: bool,
     allowed: bool,
 ) {
-    if c.level < 2 || is_this(object) {
+    if !c.checks_expression(object) || !nullsafe && is_this(object) {
         return;
     }
     let ClassLikeMemberSelector::Identifier(id) = selector else {
@@ -153,14 +133,12 @@ pub(in super::super) fn property_fetch(
     let property = format!("${name}");
     let property = property.as_bytes();
     let ty = c
-        .types
-        .get(&object.span())
-        .map(|t| c.to_phpstan(t))
+        .phpstan_type(object)
         .map(|t| if nullsafe || super::super::assign::contains_nullsafe(object) { super::receivers::non_null(t) } else { t });
     let found = {
         let c = &*c;
         c.find_type_to_check_of(ty, &|t| {
-            c.can_access_properties(t, false).yes()
+            c.can_access_properties(t).yes()
                 && (c.has_property(t, property, false).yes() || c.has_property(t, property, true).yes())
         })
     };
@@ -169,13 +147,13 @@ pub(in super::super) fn property_fetch(
     };
     let describe = |c: &Checker, t: &Type| {
         let t = match t {
-            Type::Static(n, args) => Type::Object(n.clone(), args.clone()),
-            Type::This(n) => Type::Object(n.clone(), vec![]),
+            Type::Static(n, args) => Type::Object(n.clone(), args.clone(), false),
+            Type::This(n) => Type::Object(n.clone(), vec![], false),
             t => t.clone(),
         };
         declared::with_classes(c, || t.describe(Level::TypeOnly))
     };
-    let can = c.can_access_properties(&t, true);
+    let can = c.can_access_properties(&t);
     if can.no() || can.maybe() && !allowed {
         let message = format!("Cannot access property ${name} on {}.", describe(c, &t));
         c.report(id.span(), "property.nonObject", message, None);
@@ -252,6 +230,7 @@ pub(in super::super) fn property_fetch(
 /// The class expressions of static property fetches the check reads (`$x::$name`; names and keywords are
 /// property_access.rs's).
 pub(super) fn typed_class(class: &Expression, spans: &mut Vec<Span>) {
+    let class = super::flow::unparen(class);
     if !matches!(
         class,
         Expression::Identifier(_) | Expression::Self_(_) | Expression::Static(_) | Expression::Parent(_)
@@ -264,19 +243,17 @@ pub(super) fn typed_class(class: &Expression, spans: &mut Vec<Span>) {
 /// no allowed-undefined context exempts it (oracle-checked: `isset($class::$x)` on `C|false` is reported).
 /// `property` has its `$` (a dynamic name is not checked).
 pub(in super::super) fn static_property_fetch(c: &mut Checker, p: &StaticPropertyAccess, property: &[u8]) {
-    if c.level < 2 {
+    if !c.checks_expression(p.class) {
         return;
     }
     let name = String::from_utf8_lossy(&property[1..]).into_owned();
     let ty = c
-        .types
-        .get(&p.class.span())
-        .map(|t| c.to_phpstan(t))
+        .phpstan_type(super::flow::unparen(p.class))
         .map(|t| if super::super::assign::contains_nullsafe(p.class) { t.remove_null() } else { t });
     let found = {
         let c = &*c;
         c.find_type_to_check_of(ty, &|t| {
-            c.can_access_properties(t, false).yes() && c.has_property(t, property, true).yes()
+            c.can_access_properties(t).yes() && c.has_property(t, property, true).yes()
         })
     };
     let Some(mut t) = found else {
@@ -286,7 +263,7 @@ pub(in super::super) fn static_property_fetch(c: &mut Checker, p: &StaticPropert
         return;
     }
     let for_describe = match &t {
-        Type::This(n) => Type::Object(n.clone(), vec![]),
+        Type::This(n) => Type::Object(n.clone(), vec![], false),
         t => t.clone(),
     };
     let described = declared::with_classes(c, || for_describe.describe(Level::TypeOnly));
@@ -295,7 +272,7 @@ pub(in super::super) fn static_property_fetch(c: &mut Checker, p: &StaticPropert
         t = pun_phpstan::types::union(ts.iter().filter(|t| !t.is_string().yes()).cloned().collect());
     }
     let at = p.property.span();
-    let can = c.can_access_properties(&t, true);
+    let can = c.can_access_properties(&t);
     if !can.yes() {
         let message = format!("Cannot access static property ${name} on {described}.");
         c.report(at, "staticProperty.nonObject", message, None);

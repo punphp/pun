@@ -1,0 +1,865 @@
+{
+    "diagnostics": {
+        "0": [
+            [
+                "prepared.php",
+                9,
+                "phpstan.dumpType",
+                "Dumped type: 5",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                16,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                23,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                30,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                37,
+                "phpstan.dumpType",
+                "Dumped type: 5",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                44,
+                "phpstan.dumpType",
+                "Dumped type: 5",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                51,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                58,
+                "phpstan.dumpType",
+                "Dumped type: 5",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                65,
+                "phpstan.dumpType",
+                "Dumped type: 6",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                72,
+                "phpstan.dumpType",
+                "Dumped type: 7",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                79,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                81,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                86,
+                "function.notFound",
+                "Function missingValue not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ],
+            [
+                "prepared.php",
+                95,
+                "phpstan.dumpType",
+                "Dumped type: 5",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                96,
+                "phpstan.dumpType",
+                "Dumped type: 1",
+                null,
+                false
+            ]
+        ],
+        "1": [
+            [
+                "prepared.php",
+                9,
+                "phpstan.dumpType",
+                "Dumped type: 5",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                16,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                23,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                30,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                36,
+                "nullCoalesce.offset",
+                "Offset 'foo' on array{bar?: int} on left side of ??= does not exist.",
+                null,
+                true
+            ],
+            [
+                "prepared.php",
+                37,
+                "phpstan.dumpType",
+                "Dumped type: 5",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                44,
+                "phpstan.dumpType",
+                "Dumped type: 5",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                51,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                58,
+                "phpstan.dumpType",
+                "Dumped type: 5",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                65,
+                "phpstan.dumpType",
+                "Dumped type: 6",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                72,
+                "phpstan.dumpType",
+                "Dumped type: 7",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                79,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                81,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                86,
+                "function.notFound",
+                "Function missingValue not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ],
+            [
+                "prepared.php",
+                95,
+                "phpstan.dumpType",
+                "Dumped type: 5",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                96,
+                "phpstan.dumpType",
+                "Dumped type: 1",
+                null,
+                false
+            ]
+        ],
+        "4": [
+            [
+                "prepared.php",
+                8,
+                "nullCoalesce.offset",
+                "Offset 'foo' on array{bar?: int} on left side of ??= does not exist.",
+                null,
+                true
+            ],
+            [
+                "prepared.php",
+                9,
+                "phpstan.dumpType",
+                "Dumped type: 5",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                16,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                22,
+                "nullCoalesce.offset",
+                "Offset 'foo' on array{foo: int} on left side of ??= always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "prepared.php",
+                23,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                30,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                36,
+                "nullCoalesce.offset",
+                "Offset 'foo' on array{bar?: int} on left side of ??= does not exist.",
+                null,
+                true
+            ],
+            [
+                "prepared.php",
+                37,
+                "phpstan.dumpType",
+                "Dumped type: 5",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                43,
+                "nullCoalesce.offset",
+                "Offset 'leaf' on array{bar?: int} on left side of ??= does not exist.",
+                null,
+                true
+            ],
+            [
+                "prepared.php",
+                44,
+                "phpstan.dumpType",
+                "Dumped type: 5",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                51,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                57,
+                "nullCoalesce.offset",
+                "Offset 1 on array{int} on left side of ??= does not exist.",
+                null,
+                true
+            ],
+            [
+                "prepared.php",
+                58,
+                "phpstan.dumpType",
+                "Dumped type: 5",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                64,
+                "nullCoalesce.offset",
+                "Offset -1 on array{int} on left side of ??= does not exist.",
+                null,
+                true
+            ],
+            [
+                "prepared.php",
+                65,
+                "phpstan.dumpType",
+                "Dumped type: 6",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                71,
+                "nullCoalesce.offset",
+                "Offset 'other' on array{int} on left side of ??= does not exist.",
+                null,
+                true
+            ],
+            [
+                "prepared.php",
+                72,
+                "phpstan.dumpType",
+                "Dumped type: 7",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                79,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                81,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                86,
+                "function.notFound",
+                "Function missingValue not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ],
+            [
+                "prepared.php",
+                94,
+                "nullCoalesce.offset",
+                "Offset 0 on array{} on left side of ??= does not exist.",
+                null,
+                true
+            ],
+            [
+                "prepared.php",
+                95,
+                "phpstan.dumpType",
+                "Dumped type: 5",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                96,
+                "phpstan.dumpType",
+                "Dumped type: 1",
+                null,
+                false
+            ]
+        ],
+        "5": [
+            [
+                "prepared.php",
+                8,
+                "nullCoalesce.offset",
+                "Offset 'foo' on array{bar?: int} on left side of ??= does not exist.",
+                null,
+                true
+            ],
+            [
+                "prepared.php",
+                9,
+                "phpstan.dumpType",
+                "Dumped type: 5",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                16,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                22,
+                "nullCoalesce.offset",
+                "Offset 'foo' on array{foo: int} on left side of ??= always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "prepared.php",
+                23,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                30,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                36,
+                "nullCoalesce.offset",
+                "Offset 'foo' on array{bar?: int} on left side of ??= does not exist.",
+                null,
+                true
+            ],
+            [
+                "prepared.php",
+                37,
+                "phpstan.dumpType",
+                "Dumped type: 5",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                43,
+                "nullCoalesce.offset",
+                "Offset 'leaf' on array{bar?: int} on left side of ??= does not exist.",
+                null,
+                true
+            ],
+            [
+                "prepared.php",
+                44,
+                "phpstan.dumpType",
+                "Dumped type: 5",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                51,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                57,
+                "nullCoalesce.offset",
+                "Offset 1 on array{int} on left side of ??= does not exist.",
+                null,
+                true
+            ],
+            [
+                "prepared.php",
+                58,
+                "phpstan.dumpType",
+                "Dumped type: 5",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                64,
+                "nullCoalesce.offset",
+                "Offset -1 on array{int} on left side of ??= does not exist.",
+                null,
+                true
+            ],
+            [
+                "prepared.php",
+                65,
+                "phpstan.dumpType",
+                "Dumped type: 6",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                71,
+                "nullCoalesce.offset",
+                "Offset 'other' on array{int} on left side of ??= does not exist.",
+                null,
+                true
+            ],
+            [
+                "prepared.php",
+                72,
+                "phpstan.dumpType",
+                "Dumped type: 7",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                79,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                81,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                86,
+                "function.notFound",
+                "Function missingValue not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ],
+            [
+                "prepared.php",
+                94,
+                "nullCoalesce.offset",
+                "Offset 0 on array{} on left side of ??= does not exist.",
+                null,
+                true
+            ],
+            [
+                "prepared.php",
+                95,
+                "phpstan.dumpType",
+                "Dumped type: 5",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                96,
+                "phpstan.dumpType",
+                "Dumped type: 1",
+                null,
+                false
+            ]
+        ],
+        "9": [
+            [
+                "prepared.php",
+                8,
+                "nullCoalesce.offset",
+                "Offset 'foo' on array{bar?: int} on left side of ??= does not exist.",
+                null,
+                true
+            ],
+            [
+                "prepared.php",
+                9,
+                "phpstan.dumpType",
+                "Dumped type: 5",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                16,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                22,
+                "nullCoalesce.offset",
+                "Offset 'foo' on array{foo: int} on left side of ??= always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "prepared.php",
+                23,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                30,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                36,
+                "nullCoalesce.offset",
+                "Offset 'foo' on array{bar?: int} on left side of ??= does not exist.",
+                null,
+                true
+            ],
+            [
+                "prepared.php",
+                37,
+                "phpstan.dumpType",
+                "Dumped type: 5",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                43,
+                "nullCoalesce.offset",
+                "Offset 'leaf' on array{bar?: int} on left side of ??= does not exist.",
+                null,
+                true
+            ],
+            [
+                "prepared.php",
+                44,
+                "phpstan.dumpType",
+                "Dumped type: 5",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                51,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                57,
+                "nullCoalesce.offset",
+                "Offset 1 on array{int} on left side of ??= does not exist.",
+                null,
+                true
+            ],
+            [
+                "prepared.php",
+                58,
+                "phpstan.dumpType",
+                "Dumped type: 5",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                64,
+                "nullCoalesce.offset",
+                "Offset -1 on array{int} on left side of ??= does not exist.",
+                null,
+                true
+            ],
+            [
+                "prepared.php",
+                65,
+                "phpstan.dumpType",
+                "Dumped type: 6",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                71,
+                "nullCoalesce.offset",
+                "Offset 'other' on array{int} on left side of ??= does not exist.",
+                null,
+                true
+            ],
+            [
+                "prepared.php",
+                72,
+                "phpstan.dumpType",
+                "Dumped type: 7",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                79,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                81,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                86,
+                "function.notFound",
+                "Function missingValue not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ],
+            [
+                "prepared.php",
+                94,
+                "nullCoalesce.offset",
+                "Offset 0 on array{} on left side of ??= does not exist.",
+                null,
+                true
+            ],
+            [
+                "prepared.php",
+                95,
+                "phpstan.dumpType",
+                "Dumped type: 5",
+                null,
+                false
+            ],
+            [
+                "prepared.php",
+                96,
+                "phpstan.dumpType",
+                "Dumped type: 1",
+                null,
+                false
+            ]
+        ]
+    },
+    "producer": [
+        {
+            "line": 8,
+            "error": true
+        },
+        {
+            "line": 10,
+            "reads": [
+                {
+                    "expression": "$items['foo']",
+                    "certainty": "Yes"
+                }
+            ]
+        },
+        {
+            "line": 87,
+            "error": true
+        },
+        {
+            "line": 88,
+            "reads": [
+                {
+                    "expression": "$items['foo']",
+                    "certainty": "Yes",
+                    "error": true
+                }
+            ]
+        },
+        {
+            "line": 94,
+            "error": true
+        },
+        {
+            "line": 97,
+            "reads": [
+                {
+                    "expression": "$items[$index++]",
+                    "certainty": "Yes"
+                },
+                {
+                    "expression": "$items[0]",
+                    "certainty": "No"
+                },
+                {
+                    "expression": "$index",
+                    "certainty": "Yes",
+                    "value": "1"
+                }
+            ]
+        }
+    ]
+}

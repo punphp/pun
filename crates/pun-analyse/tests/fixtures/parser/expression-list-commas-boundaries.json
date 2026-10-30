@@ -1,0 +1,11 @@
+{
+  "echo-eof": "<?php\necho 1,",
+  "short-echo-eof": "<?= 1,",
+  "echo-double-comma": "<?php\necho 1,,;\n",
+  "for-double-comma": "<?php\nfor (1,,; false;) {}\n",
+  "empty-echo": "<?php\necho;\n",
+  "empty-short-echo": "<?= ?>\n",
+  "constant-list": "<?php\nconst VALUE = 1,;\n",
+  "class-constant-list": "<?php\nclass Holder { const VALUE = 1,; }\n",
+  "use-list": "<?php\nuse Foo\\Bar,;\n"
+}

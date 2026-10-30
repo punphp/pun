@@ -1,0 +1,407 @@
+{
+    "261:275": {
+        "start": 261,
+        "end": 275,
+        "expression": "$copy = $value",
+        "full": "int",
+        "keep_void": "int",
+        "native": "int",
+        "visits": 1
+    },
+    "269:275": {
+        "start": 269,
+        "end": 275,
+        "expression": "$value",
+        "full": "int",
+        "keep_void": "int",
+        "native": "int",
+        "visits": 1
+    },
+    "297:331": {
+        "start": 297,
+        "end": 331,
+        "expression": "identity($copy /* probe-native */)",
+        "full": "int",
+        "keep_void": "int",
+        "native": "int",
+        "visits": 1
+    },
+    "306:311": {
+        "start": 306,
+        "end": 311,
+        "expression": "$copy",
+        "full": "int",
+        "keep_void": "int",
+        "native": "int",
+        "visits": 1
+    },
+    "384:400": {
+        "start": 384,
+        "end": 400,
+        "expression": "identity($value)",
+        "full": "int",
+        "keep_void": "int",
+        "native": "int",
+        "visits": 1
+    },
+    "393:399": {
+        "start": 393,
+        "end": 399,
+        "expression": "$value",
+        "full": "int",
+        "keep_void": "int",
+        "native": "int",
+        "visits": 1
+    },
+    "777:825": {
+        "start": 777,
+        "end": 825,
+        "expression": "$probe->record($array[$key], $array, $untouched)",
+        "full": "null",
+        "keep_void": "void",
+        "native": "void",
+        "visits": 1
+    },
+    "792:804": {
+        "start": 792,
+        "end": 804,
+        "expression": "$array[$key]",
+        "full": "non-empty-list<int>",
+        "keep_void": "non-empty-list<int>",
+        "native": "non-empty-array",
+        "visits": 1
+    },
+    "806:812": {
+        "start": 806,
+        "end": 812,
+        "expression": "$array",
+        "full": "non-empty-array<string, list<int>>",
+        "keep_void": "non-empty-array<string, list<int>>",
+        "native": "non-empty-array<string, array>",
+        "visits": 1
+    },
+    "814:824": {
+        "start": 814,
+        "end": 824,
+        "expression": "$untouched",
+        "full": "23",
+        "keep_void": "23",
+        "native": "23",
+        "visits": 1
+    },
+    "873:921": {
+        "start": 873,
+        "end": 921,
+        "expression": "$probe->record($array[$key], $array, $untouched)",
+        "full": "null",
+        "keep_void": "void",
+        "native": "void",
+        "visits": 1
+    },
+    "888:900": {
+        "start": 888,
+        "end": 900,
+        "expression": "$array[$key]",
+        "full": "non-empty-list<int>",
+        "keep_void": "non-empty-list<int>",
+        "native": "non-empty-array",
+        "visits": 1
+    },
+    "902:908": {
+        "start": 902,
+        "end": 908,
+        "expression": "$array",
+        "full": "non-empty-array<string, list<int>>",
+        "keep_void": "non-empty-array<string, list<int>>",
+        "native": "non-empty-array<string, array>",
+        "visits": 1
+    },
+    "910:920": {
+        "start": 910,
+        "end": 920,
+        "expression": "$untouched",
+        "full": "23",
+        "keep_void": "23",
+        "native": "23",
+        "visits": 1
+    },
+    "963:1011": {
+        "start": 963,
+        "end": 1011,
+        "expression": "$probe->record($array[$key], $array, $untouched)",
+        "full": "null",
+        "keep_void": "void",
+        "native": "void",
+        "visits": 1
+    },
+    "978:990": {
+        "start": 978,
+        "end": 990,
+        "expression": "$array[$key]",
+        "full": "non-empty-list<int>",
+        "keep_void": "non-empty-list<int>",
+        "native": "non-empty-array",
+        "visits": 1
+    },
+    "992:998": {
+        "start": 992,
+        "end": 998,
+        "expression": "$array",
+        "full": "non-empty-array<string, list<int>>",
+        "keep_void": "non-empty-array<string, list<int>>",
+        "native": "non-empty-array<string, array>",
+        "visits": 1
+    },
+    "1000:1010": {
+        "start": 1000,
+        "end": 1010,
+        "expression": "$untouched",
+        "full": "23",
+        "keep_void": "23",
+        "native": "23",
+        "visits": 1
+    },
+    "1053:1115": {
+        "start": 1053,
+        "end": 1115,
+        "expression": "$probe->record($array[$key], $array[$key]['done'], $untouched)",
+        "full": "null",
+        "keep_void": "void",
+        "native": "void",
+        "visits": 1
+    },
+    "1068:1080": {
+        "start": 1068,
+        "end": 1080,
+        "expression": "$array[$key]",
+        "full": "array{done: 7}",
+        "keep_void": "array{done: 7}",
+        "native": "array",
+        "visits": 1
+    },
+    "1082:1102": {
+        "start": 1082,
+        "end": 1102,
+        "expression": "$array[$key]['done']",
+        "full": "7",
+        "keep_void": "7",
+        "native": "mixed",
+        "visits": 1
+    },
+    "1104:1114": {
+        "start": 1104,
+        "end": 1114,
+        "expression": "$untouched",
+        "full": "23",
+        "keep_void": "23",
+        "native": "23",
+        "visits": 1
+    },
+    "1226:1264": {
+        "start": 1226,
+        "end": 1264,
+        "expression": "$probe->record($array['slot']['done'])",
+        "full": "null",
+        "keep_void": "void",
+        "native": "void",
+        "visits": 1
+    },
+    "1241:1263": {
+        "start": 1241,
+        "end": 1263,
+        "expression": "$array['slot']['done']",
+        "full": "3",
+        "keep_void": "3",
+        "native": "3",
+        "visits": 1
+    },
+    "1308:1378": {
+        "start": 1308,
+        "end": 1378,
+        "expression": "$probe->record($array['slot'], $array['slot']['done'], $array['keep'])",
+        "full": "null",
+        "keep_void": "void",
+        "native": "void",
+        "visits": 1
+    },
+    "1323:1337": {
+        "start": 1323,
+        "end": 1337,
+        "expression": "$array['slot']",
+        "full": "array{done: 7}",
+        "keep_void": "array{done: 7}",
+        "native": "array",
+        "visits": 1
+    },
+    "1339:1361": {
+        "start": 1339,
+        "end": 1361,
+        "expression": "$array['slot']['done']",
+        "full": "7",
+        "keep_void": "7",
+        "native": "mixed",
+        "visits": 1
+    },
+    "1363:1377": {
+        "start": 1363,
+        "end": 1377,
+        "expression": "$array['keep']",
+        "full": "23",
+        "keep_void": "23",
+        "native": "23",
+        "visits": 1
+    },
+    "1521:1591": {
+        "start": 1521,
+        "end": 1591,
+        "expression": "$probe->record($array['slot'], $array['slot']['done'], $array['keep'])",
+        "full": "null",
+        "keep_void": "void",
+        "native": "void",
+        "visits": 1
+    },
+    "1536:1550": {
+        "start": 1536,
+        "end": 1550,
+        "expression": "$array['slot']",
+        "full": "array{done: 7}",
+        "keep_void": "array{done: 7}",
+        "native": "23|array",
+        "visits": 1
+    },
+    "1552:1574": {
+        "start": 1552,
+        "end": 1574,
+        "expression": "$array['slot']['done']",
+        "full": "7",
+        "keep_void": "7",
+        "native": "mixed",
+        "visits": 1
+    },
+    "1576:1590": {
+        "start": 1576,
+        "end": 1590,
+        "expression": "$array['keep']",
+        "full": "23",
+        "keep_void": "23",
+        "native": "23|array",
+        "visits": 1
+    },
+    "1778:1806": {
+        "start": 1778,
+        "end": 1806,
+        "expression": "$probe->record($array[$key])",
+        "full": "null",
+        "keep_void": "void",
+        "native": "void",
+        "visits": 1
+    },
+    "1793:1805": {
+        "start": 1793,
+        "end": 1805,
+        "expression": "$array[$key]",
+        "full": "non-empty-list",
+        "keep_void": "non-empty-list",
+        "native": "non-empty-list",
+        "visits": 1
+    },
+    "2095:2123": {
+        "start": 2095,
+        "end": 2123,
+        "expression": "$probe->record($array[$key])",
+        "full": "null",
+        "keep_void": "void",
+        "native": "void",
+        "visits": 1
+    },
+    "2110:2122": {
+        "start": 2110,
+        "end": 2122,
+        "expression": "$array[$key]",
+        "full": "non-empty-list",
+        "keep_void": "non-empty-list",
+        "native": "non-empty-list",
+        "visits": 1
+    },
+    "2403:2453": {
+        "start": 2403,
+        "end": 2453,
+        "expression": "$probe->record($array[$key], $array[$key]['done'])",
+        "full": "null",
+        "keep_void": "void",
+        "native": "void",
+        "visits": 1
+    },
+    "2418:2430": {
+        "start": 2418,
+        "end": 2430,
+        "expression": "$array[$key]",
+        "full": "array{done: 7}",
+        "keep_void": "array{done: 7}",
+        "native": "array",
+        "visits": 1
+    },
+    "2432:2452": {
+        "start": 2432,
+        "end": 2452,
+        "expression": "$array[$key]['done']",
+        "full": "7",
+        "keep_void": "7",
+        "native": "mixed",
+        "visits": 1
+    },
+    "2641:2669": {
+        "start": 2641,
+        "end": 2669,
+        "expression": "$probe->record($array[$key])",
+        "full": "null",
+        "keep_void": "void",
+        "native": "void",
+        "visits": 1
+    },
+    "2656:2668": {
+        "start": 2656,
+        "end": 2668,
+        "expression": "$array[$key]",
+        "full": "array{}",
+        "keep_void": "array{}",
+        "native": "array{}",
+        "visits": 1
+    },
+    "2865:2935": {
+        "start": 2865,
+        "end": 2935,
+        "expression": "$probe->record($array['slot'], $array['slot']['done'], $array['keep'])",
+        "full": "null",
+        "keep_void": "void",
+        "native": "void",
+        "visits": 1
+    },
+    "2880:2894": {
+        "start": 2880,
+        "end": 2894,
+        "expression": "$array['slot']",
+        "full": "array{done: 7}",
+        "keep_void": "array{done: 7}",
+        "native": "23|array",
+        "visits": 1
+    },
+    "2896:2918": {
+        "start": 2896,
+        "end": 2918,
+        "expression": "$array['slot']['done']",
+        "full": "7",
+        "keep_void": "7",
+        "native": "mixed",
+        "visits": 1
+    },
+    "2920:2934": {
+        "start": 2920,
+        "end": 2934,
+        "expression": "$array['keep']",
+        "full": "23",
+        "keep_void": "23",
+        "native": "23|array",
+        "visits": 1
+    }
+}

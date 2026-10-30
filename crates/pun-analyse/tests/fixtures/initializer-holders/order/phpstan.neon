@@ -1,0 +1,6 @@
+parameters:
+    level: 0
+    phpVersion: 80400
+    paths:
+        - main.php
+    tmpDir: /tmp/pun-initializer-holders-order-cache

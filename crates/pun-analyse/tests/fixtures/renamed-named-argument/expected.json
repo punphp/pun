@@ -1492,5 +1492,112 @@
             "ignorable": false,
             "identifier": "phpstan.dumpType"
         }
+    ],
+    "exact-objects": [
+        {
+            "file": "$ROOT/exact_objects.php",
+            "message": "Call to ExactConstructorObjects\\ZContract::run() uses named argument for parameter $value, but ExactConstructorObjects\\ZRenamed renames it to $zValue.",
+            "line": 12,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/exact_objects.php",
+            "message": "Call to ExactConstructorObjects\\AContract::run() uses named argument for parameter $value, but ExactConstructorObjects\\ARenamed renames it to $aValue.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/exact_objects.php",
+            "message": "Call to ExactConstructorObjects\\ZContract::run() uses named argument for parameter $value, but ExactConstructorObjects\\ZRenamed renames it to $zValue.",
+            "line": 44,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/exact_objects.php",
+            "message": "Call to ExactConstructorObjects\\ZContract::run() uses named argument for parameter $value, but ExactConstructorObjects\\ZRenamed renames it to $zValue.",
+            "line": 45,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/exact_objects.php",
+            "message": "Call to ExactConstructorObjects\\ZContract::run() uses named argument for parameter $value, but ExactConstructorObjects\\ZRenamed renames it to $zValue.",
+            "line": 48,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/exact_objects.php",
+            "message": "Call to ExactConstructorObjects\\ZContract::run() uses named argument for parameter $value, but ExactConstructorObjects\\ZRenamed renames it to $zValue.",
+            "line": 55,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/exact_objects.php",
+            "message": "Call to ExactConstructorObjects\\ZContract::run() uses named argument for parameter $value, but ExactConstructorObjects\\ZRenamed renames it to $zValue.",
+            "line": 57,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/exact_objects.php",
+            "message": "Call to ExactConstructorObjects\\Box::run() uses named argument for parameter $value, but ExactConstructorObjects\\RenamedBox renames it to $boxValue.",
+            "line": 77,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/exact_objects.php",
+            "message": "Call to ExactConstructorObjects\\Receiver::run() uses named argument for parameter $value, but ExactConstructorObjects\\RenamedReceiver renames it to $renamed.",
+            "line": 86,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/exact_objects.php",
+            "message": "Call to ExactConstructorObjects\\Receiver::run() uses named argument for parameter $value, but ExactConstructorObjects\\RenamedReceiver renames it to $renamed.",
+            "line": 87,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/exact_objects.php",
+            "message": "Call to ExactConstructorObjects\\Receiver::run() uses named argument for parameter $value, but ExactConstructorObjects\\RenamedReceiver renames it to $renamed.",
+            "line": 89,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/exact_objects.php",
+            "message": "Call to ExactConstructorObjects\\Box::run() uses named argument for parameter $value, but ExactConstructorObjects\\RenamedBox renames it to $boxValue.",
+            "line": 108,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/exact_objects.php",
+            "message": "Call to ExactConstructorObjects\\AbstractOwn::run() uses named argument for parameter $value, but ExactConstructorObjects\\RenamedAbstractOwn renames it to $abstractValue.",
+            "line": 112,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/exact_objects.php",
+            "message": "Call to ExactConstructorObjects\\ZContract::run() uses named argument for parameter $value, but ExactConstructorObjects\\ZRenamed renames it to $zValue.",
+            "line": 132,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/exact_objects.php",
+            "message": "Call to ExactConstructorObjects\\ZContract::run() uses named argument for parameter $value, but ExactConstructorObjects\\ZRenamed renames it to $zValue.",
+            "line": 133,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
     ]
 }

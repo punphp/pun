@@ -3,13 +3,16 @@ use mago_codex::identifier::function_like::FunctionLikeIdentifier;
 use mago_codex::ttype::expander::get_parameter_dependent_signature_of_function_like_identifier;
 use mago_codex::ttype::expander::get_signature_of_function_like_identifier;
 use mago_codex::ttype::get_mixed_closure;
+use mago_codex::ttype::get_named_object;
 use mago_codex::ttype::get_never;
 use mago_codex::ttype::template::TemplateResult;
 use mago_codex::ttype::union::TUnion;
 use mago_span::HasSpan;
+use mago_syntax::cst::ClassLikeMemberSelector;
 use mago_syntax::cst::MethodPartialApplication;
 use mago_word::WordMap;
 use mago_word::ascii_lowercase_word;
+use mago_word::word;
 
 use crate::analyzable::Analyzable;
 use crate::artifacts::AnalysisArtifacts;
@@ -39,6 +42,31 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for MethodPartialApplication<'arena>
     where
         A: Arena,
     {
+        // PHPStan's MethodCallableRule and MethodCallableNodeHandler skip name
+        // validation and signature reflection for expression selectors. Their
+        // operands still run once, in receiver-then-selector order.
+        if self.argument_list.is_first_class_callable()
+            && matches!(&self.method, ClassLikeMemberSelector::Expression(_) | ClassLikeMemberSelector::Variable(_))
+        {
+            let was_inside_general_use = block_context.flags.inside_general_use();
+            block_context.flags.set_inside_general_use(true);
+            let result = (|| -> Result<(), AnalysisError> {
+                self.object.analyze(context, block_context, artifacts)?;
+                if let ClassLikeMemberSelector::Expression(selector) = &self.method {
+                    selector.expression.analyze(context, block_context, artifacts)?;
+                }
+                if let ClassLikeMemberSelector::Variable(selector) = &self.method {
+                    selector.analyze(context, block_context, artifacts)?;
+                }
+                Ok(())
+            })();
+            block_context.flags.set_inside_general_use(was_inside_general_use);
+            result?;
+
+            artifacts.set_expression_type(self, get_named_object(word("Closure"), None));
+            return Ok(());
+        }
+
         let method_resolution =
             resolve_method_targets(context, block_context, artifacts, self.object, &self.method, false, self.span())?;
 
@@ -80,6 +108,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for MethodPartialApplication<'arena>
                     effective_signature: None,
                     method_context: Some(MethodTargetContext {
                         invocation_kind: MethodInvocationKind::Instance,
+                        requested_name: resolved_method.requested_name,
                         declaring_method_id: Some(resolved_method.method_identifier),
                         class_like_metadata: class_metadata,
                         class_type: resolved_method.static_class_type,
@@ -100,7 +129,9 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for MethodPartialApplication<'arena>
             }
 
             if closure_types.is_empty() {
-                if method_resolution.has_invalid_target { get_never() } else { get_mixed_closure() }
+                // A missing MethodReflection yields ObjectType(Closure), even
+                // when the receiver or method lookup has its own diagnostic.
+                get_named_object(word("Closure"), None)
             } else {
                 TUnion::from_vec(closure_types)
             }
@@ -129,6 +160,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for MethodPartialApplication<'arena>
 
                 let method_target_context = MethodTargetContext {
                     invocation_kind: MethodInvocationKind::Instance,
+                    requested_name: resolved_method.requested_name,
                     declaring_method_id: Some(resolved_method.method_identifier),
                     class_like_metadata: class_metadata,
                     class_type: resolved_method.static_class_type,
@@ -228,7 +260,6 @@ mod tests {
         "#},
         issues = [
             IssueCode::InvalidMethodAccess,
-            IssueCode::ImpossibleAssignment,
         ]
     }
 
@@ -333,7 +364,6 @@ mod tests {
         "},
         issues = [
             IssueCode::NonExistentMethod,
-            IssueCode::ImpossibleAssignment,
         ]
     }
 
@@ -346,7 +376,6 @@ mod tests {
         "#},
         issues = [
             IssueCode::InvalidMethodAccess,
-            IssueCode::ImpossibleAssignment,
         ]
     }
 
@@ -359,7 +388,6 @@ mod tests {
         "},
         issues = [
             IssueCode::MethodAccessOnNull,
-            IssueCode::ImpossibleAssignment,
         ]
     }
 
@@ -431,10 +459,7 @@ mod tests {
             $methodName = 123;
             $_closure = $obj->{$methodName}(...);
         "},
-        issues = [
-            IssueCode::InvalidMemberSelector,
-            IssueCode::ImpossibleAssignment,
-        ]
+        issues = []
     }
 
     test_analysis! {

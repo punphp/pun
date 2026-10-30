@@ -33,6 +33,7 @@ pub(in super::super) struct Call {
 pub(in super::super) struct MethodCallGuard {
     pub receiver: Span,
     pub name: String,
+    pub has_arguments: bool,
 }
 
 #[derive(Clone, PartialEq, Eq)]
@@ -47,7 +48,7 @@ pub(in super::super) enum Origin {
     Unset(Span, Vec<Span>),
     Call(Arc<Call>),
     Callback(Arc<Call>, usize, usize),
-    /// Conversion must resolve the actual receiver and prove its native signature cannot pass references.
+    /// Calls with arguments must resolve the receiver and prove its native signature cannot pass references.
     AfterMethodCall(Arc<MethodCallGuard>, Arc<Origin>),
 }
 
@@ -482,6 +483,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Sources<'_, 'arena> {
             let call = Arc::new(MethodCallGuard {
                 receiver: call.object.span(),
                 name: String::from_utf8_lossy(name.value).into_owned(),
+                has_arguments: !call.argument_list.arguments.is_empty(),
             });
             for origin in self.locals.values_mut() {
                 *origin = Origin::AfterMethodCall(Arc::clone(&call), Arc::new(origin.clone()));

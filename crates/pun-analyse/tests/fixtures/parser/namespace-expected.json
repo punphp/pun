@@ -1,0 +1,419 @@
+{
+    "analysed": {
+        "errors": [
+            {
+                "file": "body-hook.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declarations cannot be nested on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "body-hook.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "Unknown hook \"MeOw\", expected \"get\" or \"set\" on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "body-name.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declarations cannot be nested on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "body-parameter.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declarations cannot be nested on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "body-parameter.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "body-try.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declarations cannot be nested on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "body-try.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use try without catch or finally on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "earlier-name.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declarations cannot be nested on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "keyword-line-and-case.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declarations cannot be nested on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "nested-global-both.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declarations cannot be nested on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "nested-global-child.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declarations cannot be nested on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "nested-global-parent.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declarations cannot be nested on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "nested-named.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declarations cannot be nested on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "nested-qualified.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declarations cannot be nested on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "nested-siblings.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declarations cannot be nested on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "nested-siblings.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declarations cannot be nested on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "nested-three.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declarations cannot be nested on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "nested-three.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declarations cannot be nested on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "outer-body-parameter.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declarations cannot be nested on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "outer-body-parameter.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "positive-ordinary-error.php",
+                "line": 2,
+                "identifier": "function.notFound",
+                "message": "Function missing_namespace_parser_control not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "file": "same-file-rules.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declarations cannot be nested on line 4",
+                "tip": null,
+                "ignorable": false
+            }
+        ],
+        "general": []
+    },
+    "scanned": {
+        "nested-named": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "nested-global-parent": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "nested-global-child": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "nested-three": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "positive-adjacent": {
+            "errors": [],
+            "general": []
+        },
+        "positive-global": {
+            "errors": [],
+            "general": []
+        }
+    },
+    "order": {
+        "errors": [
+            {
+                "file": "namespace-order.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declarations cannot be nested on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "namespace-order.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "namespace-order.php",
+                "line": 5,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declarations cannot be nested on line 5",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "namespace-order.php",
+                "line": 6,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use try without catch or finally on line 6",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "namespace-order.php",
+                "line": 9,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 9",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "namespace-order.php",
+                "line": 10,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declarations cannot be nested on line 10",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "namespace-order.php",
+                "line": 11,
+                "identifier": "phpstan.parse",
+                "message": "get hook must not have a parameter list on line 11",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "namespace-order.php",
+                "line": 13,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 13",
+                "tip": null,
+                "ignorable": false
+            }
+        ],
+        "general": [
+            "Error message \"void cannot be used as a parameter type on line 4\" cannot be ignored, use excludePaths instead.",
+            "Error message \"Cannot use try without catch or finally on line 6\" cannot be ignored, use excludePaths instead.",
+            "Error message \"Namespace declarations cannot be nested on line 5\" cannot be ignored, use excludePaths instead.",
+            "Error message \"void cannot be used as a parameter type on line 9\" cannot be ignored, use excludePaths instead.",
+            "Error message \"get hook must not have a parameter list on line 11\" cannot be ignored, use excludePaths instead.",
+            "Error message \"void cannot be used as a parameter type on line 13\" cannot be ignored, use excludePaths instead.",
+            "Error message \"Namespace declarations cannot be nested on line 3\" cannot be ignored, use excludePaths instead.",
+            "Error message \"Namespace declarations cannot be nested on line 10\" cannot be ignored, use excludePaths instead."
+        ]
+    }
+}

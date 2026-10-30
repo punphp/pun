@@ -1,0 +1,17 @@
+{
+    "expression-brace": "<?php\n$value = }",
+    "preceding-statement": "<?php\n$value = 1;\n}",
+    "preceding-empty-statement": "<?php ;}",
+    "preceding-spaced-empty-statement": "<?php ; }",
+    "preceding-inline-text": "text<?php }",
+    "eof-parameter-list": "<?php\nfunction entryIncomplete(",
+    "eof-call": "<?php\nentryIncomplete(",
+    "lexical-null-suffix": "<?php\n}\n\u0000",
+    "lexical-comment-suffix": "<?php\n}\n/* unterminated",
+    "lexical-null-prefix": "<?php\n\u0000\n}",
+    "lexical-vertical-tab-prefix": "<?php \n\u000b}",
+    "lexical-form-feed-suffix": "<?php \n}\n\u000c",
+    "short-tag": "<? }",
+    "joined-tag": "<?php}",
+    "joined-tag-comment": "<?php/**/ }"
+}

@@ -1,6 +1,6 @@
 use mago_allocator::Arena;
 use mago_codex::ttype::get_int_or_string;
-use mago_codex::ttype::get_never;
+use mago_codex::ttype::get_non_accepting_never;
 use mago_syntax::cst::DieConstruct;
 use mago_syntax::cst::ExitConstruct;
 
@@ -39,7 +39,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for ExitConstruct<'arena> {
         block_context.flags.set_has_returned(true);
         block_context.control_actions.insert(ControlAction::End);
 
-        artifacts.set_expression_type(self, get_never());
+        artifacts.set_expression_type(self, get_non_accepting_never());
 
         Ok(())
     }
@@ -71,7 +71,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for DieConstruct<'arena> {
         block_context.flags.set_has_returned(true);
         block_context.control_actions.insert(ControlAction::End);
 
-        artifacts.set_expression_type(self, get_never());
+        artifacts.set_expression_type(self, get_non_accepting_never());
 
         Ok(())
     }

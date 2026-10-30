@@ -1,0 +1,6 @@
+{
+  "duplicate": "class ScanBefore {} function scanFunction(): int { return 1; } const SCAN_CONSTANT = 1; final final class ScanAfter {}",
+  "conflict": "class ScanBefore {} function scanFunction(): int { return 1; } const SCAN_CONSTANT = 1; abstract final class ScanAfter {}",
+  "anonymous": "class ScanBefore {} function scanFunction(): int { return 1; } const SCAN_CONSTANT = 1; $x = new readonly readonly class {}; class ScanAfter {}",
+  "valid": "class ScanBefore {} function scanFunction(): int { return 1; } const SCAN_CONSTANT = 1; final readonly class ScanAfter {}"
+}

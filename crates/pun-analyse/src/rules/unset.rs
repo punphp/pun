@@ -83,7 +83,7 @@ pub(super) fn check(c: &mut Checker, u: &Unset) {
     for argument in &u.values {
         if let Expression::Access(Access::Property(p)) = unparen(argument)
             && let ClassLikeMemberSelector::Identifier(name) = &p.property
-            && let Some((class, meta, native_readonly, phpdoc_readonly)) =
+            && let Some((class, meta, native_readonly, phpdoc_readonly, private)) =
                 types::native_unset_property(c, argument)
         {
             let property = format!(
@@ -120,7 +120,7 @@ pub(super) fn check(c: &mut Checker, u: &Unset) {
                 continue;
             }
             if c.php_version >= 80400
-                && meta.read_visibility != Visibility::Private
+                && !private
                 && !property_final(c, meta)
                 && !class.flags.is_final()
                 && !class
@@ -144,7 +144,8 @@ pub(super) fn check(c: &mut Checker, u: &Unset) {
 /// PhpPropertyReflection::isFinal(): the keyword, private(set), or its own @final tag.
 fn property_final(c: &Checker, p: &PropertyMetadata) -> bool {
     p.flags.is_final()
-        || p.write_visibility == Visibility::Private
+        // Private read visibility implies private writes, not PHPStan's asymmetric `private(set)` finality.
+        || (p.write_visibility == Visibility::Private && p.read_visibility != Visibility::Private)
         || c.declaration(p)
             .and_then(|(span, _)| declared::doc_at(c, span))
             .is_some_and(|(doc, _)| {
@@ -392,7 +393,7 @@ fn has_offset(c: &Checker, ty: &Type, offset: &Type) -> Tri {
         t if t.is_string().yes() => is_super_type_of(&Type::Int, offset).and(Tri::Maybe),
         Type::Null => Tri::No,
         Type::Object(..) | Type::Static(..) | Type::This(_) | Type::EnumCase(..) => {
-            if is_super_type_of(&Type::Object("ArrayAccess".into(), vec![]), ty).yes()
+            if is_super_type_of(&Type::Object("ArrayAccess".into(), vec![], false), ty).yes()
                 && let Some((key, _)) = types::offset_types(c, ty)
             {
                 return is_super_type_of(&key, offset).and(Tri::Maybe);
@@ -449,8 +450,8 @@ fn array_key(t: &Type) -> Type {
         Type::Mixed { .. } | Type::SubtractedMixed { .. } | Type::Error => Type::Benevolent(vec![Type::Int, Type::String]),
         Type::Conditional(conditional) => array_key(&conditional.resolve()),
         Type::OffsetAccess(on, index) => late_offset(on, index).map_or_else(|| array_key(&pun_phpstan::types::mixed()), |resolved| array_key(&resolved)),
-        Type::ConstString(s) if s.parse::<i64>().is_ok_and(|i| i.to_string() == *s) => {
-            Type::ConstInt(s.parse().expect("canonical integer"))
+        Type::ConstString(s) if std::str::from_utf8(s).ok().and_then(|s| s.parse::<i64>().ok()).is_some_and(|i| i.to_string().as_bytes() == s) => {
+            Type::ConstInt(std::str::from_utf8(s).unwrap().parse().expect("canonical integer"))
         }
         Type::ConstBool(b) => Type::ConstInt(i64::from(*b)),
         Type::Bool => union(vec![Type::ConstInt(0), Type::ConstInt(1)]),
@@ -466,7 +467,7 @@ fn array_key(t: &Type) -> Type {
             }
             Type::ConstInt(value as i64)
         }
-        Type::Null => Type::ConstString(String::new()),
+        Type::Null => Type::ConstString(Vec::new()),
         t => t.clone(),
     }
 }
@@ -502,13 +503,21 @@ mod tests {
             magic_dir: false,
             path_constants: false,
         };
-        let (_, include_state) = include_file::prepare(&arena, &file, program, &names, &codebase, 80400, &settings);
+        let (_, include_state) = include_file::prepare(&arena, &file, program, &names, &codebase, 80400, true, true, true, &settings);
         let c = Checker {
             file: &file,
+            has_compiler_halt: false,
             anonymous: Default::default(),
             property_access: Default::default(),
             relative_path: &project.relative_path,
             types: Default::default(),
+            keep_void_types: Default::default(),
+            native_types: Default::default(),
+            nullsafe_method_receiver_types: Default::default(),
+            variable_writes: Default::default(),
+            property_initializations: Default::default(),
+            call_terminations: Default::default(),
+            named_call_scopes: Default::default(),
             defined: Default::default(),
             variables: Default::default(),
             origins: Default::default(),
@@ -549,8 +558,15 @@ mod tests {
             arrays: Default::default(),
             standalone_throws: Default::default(),
             case_sensitivity: false,
+            check_internal_class_case_sensitivity: false,
+            check_imported_class_name_case: false,
             check_function_name_case: false,
             level: 0,
+            check_argument_types: false,
+            check_arguments_passed_by_reference: false,
+            check_this_only: true,
+            check_advanced_isset: false,
+            method_rules: project.method_rules,
             generic_iterable_classes: false,
             new_static_in_abstract_class_static_method: false,
             larastan: None,
@@ -569,6 +585,9 @@ mod tests {
             non_stringable_names: false,
             cli_arguments_variables_registered: true,
             check_maybe_undefined_variables: false,
+            pollute_scope_with_loop_initial_assignments: true,
+            pollute_scope_with_always_iterable_foreach: true,
+            pollute_scope_with_block: true,
             method_purity_override: false,
             uninitialized_properties: false,
             missing_callable_signature: false,
@@ -586,7 +605,7 @@ mod tests {
         }));
         let array = Type::array(mixed(), mixed());
         let excluded = Type::mixed_subtracted(false, Type::Union(vec![
-            Type::String, array.clone(), Type::Object("ArrayAccess".into(), vec![]),
+            Type::String, array.clone(), Type::Object("ArrayAccess".into(), vec![], false),
         ]));
         let shape = pun_phpstan::resolve::resolve_str("array{0: int}", None);
         let open = Type::ConstArray(Box::new(pun_phpstan::types::ConstArray {
@@ -609,7 +628,7 @@ mod tests {
             ("conditional-key", conditional(Type::Int, Type::ConstInt(1), Type::ConstInt(0))),
             ("late-array", Type::OffsetAccess(Box::new(template(Type::array(Type::String, shape.clone()))), Box::new(Type::ConstString("inner".into())))),
             ("late-key", Type::OffsetAccess(Box::new(template(Type::array(Type::String, Type::ConstInt(1)))), Box::new(Type::ConstString("inner".into())))),
-            ("late-object-mixed", Type::OffsetAccess(Box::new(Type::Object("ArrayAccess".into(), vec![Type::Int, mixed()])), Box::new(Type::ConstInt(0)))),
+            ("late-object-mixed", Type::OffsetAccess(Box::new(Type::Object("ArrayAccess".into(), vec![Type::Int, mixed()], false)), Box::new(Type::ConstInt(0)))),
             ("late-array-error", Type::OffsetAccess(Box::new(Type::array(Type::String, Type::Error)), Box::new(Type::ConstString("inner".into())))),
             ("late-array-invalid-key", Type::OffsetAccess(Box::new(Type::array(Type::Int, Type::ConstInt(1))), Box::new(Type::ConstString("inner".into())))),
             ("late-shape-error", Type::OffsetAccess(Box::new(Type::ConstArray(Box::new(pun_phpstan::types::ConstArray {

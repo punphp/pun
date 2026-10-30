@@ -1,4 +1,4 @@
-//! FunctionCallParametersCheck's checks of level 5 (`checkFunctionArgumentTypes`, `checkArgumentsPassedByReference`):
+//! FunctionCallParametersCheck's independent `checkFunctionArgumentTypes` / `checkArgumentsPassedByReference`:
 //! each argument's type against its parameter's (`argument.type`), by-reference parameters given no variable
 //! (`argument.byRef`) and unpacked non-iterables (`argument.unpackNonIterable`).
 
@@ -103,7 +103,7 @@ fn infer(c: &Checker, acceptor: &Acceptor, args: &[Entry], parameters: &[Option<
     let mut passed: Vec<Option<Type>> = vec![None; declared.len()];
     for (e, p) in args.iter().zip(parameters) {
         if let Some(p) = *p
-            && let Some(t) = e.ty.clone().or_else(|| c.type_at(e.value))
+            && let Some(t) = e.value_type(c)
         {
             let t = if e.unpack { t.iterable_value_type() } else { t };
             passed[p] = Some(passed[p].take().map_or(t.clone(), |o| union(vec![o, t])));
@@ -167,7 +167,7 @@ fn late_parameter_type(t: &Type, argument: &dyn Fn(&str) -> Option<Type>) -> Typ
     };
     let t = t.traverse(&|t| late_parameter_type(t, argument));
     let t = match &t {
-        Type::Object(name, args) if matches!(name.as_str(), "key-of" | "value-of")
+        Type::Object(name, args, _) if matches!(name.as_str(), "key-of" | "value-of")
             && args.len() == 1 && !is_late(&args[0]) => {
                 pun_phpstan::resolve::key_or_value_of(&args[0], name == "value-of")
             }
@@ -303,12 +303,6 @@ fn returns_by_ref(c: &Checker, class: Option<&str>, name: &[u8]) -> bool {
     })
 }
 
-impl Checker<'_, '_> {
-    fn type_at(&self, span: Span) -> Option<Type> {
-        self.types.get(&span).map(|t| self.to_phpstan(t))
-    }
-}
-
 /// The rest of `check()` after `processArguments()`, `parameters` being each argument's parameter.
 pub(in super::super) fn arguments(
     c: &mut Checker,
@@ -328,8 +322,8 @@ pub(in super::super) fn arguments(
     ));
     let allowed_type = super::super::params::allowed_constants_type(c, acceptor);
     for (i, (e, p)) in args.iter().zip(parameters).enumerate() {
-        if e.unpack {
-            let ty = c.type_at(e.value);
+        if c.check_argument_types && e.unpack && (!c.check_this_only || e.is_this) {
+            let ty = e.value_type(c);
             let found = c.find_type_to_check_of(ty, &|t| t.is_iterable().yes());
             if let Some(t) = found
                 && !t.is_iterable().yes()
@@ -344,9 +338,9 @@ pub(in super::super) fn arguments(
         };
         super::super::params::check_named(c, acceptor, e, call);
         let by_ref = acceptor.by_ref[p];
-        let value = e.ty.clone().or_else(|| c.type_at(e.value)).map(|t| if e.unpack { t.iterable_value_type() } else { t });
+        let value = e.value_type(c).map(|t| if e.unpack { t.iterable_value_type() } else { t });
         // a built-in's by-reference parameter that creates the variable takes anything
-        if (by_ref != ByRef::CreatesNewVariable || !acceptor.builtin)
+        if c.check_argument_types && (by_ref != ByRef::CreatesNewVariable || !acceptor.builtin)
             && let (Some(param), Some(value)) = (parameter_type(&resolved, p), value)
         {
             let strict = strict && (!acceptor.builtin || !param.is_callable().yes());
@@ -367,7 +361,7 @@ pub(in super::super) fn arguments(
             }
         }
         let parameter = || describe(acceptor, p, e.name.is_none().then_some(Ok(i)));
-        if let Some(reasons) = resolved[p].as_ref().and_then(unresolvable)
+        if c.check_argument_types && let Some(reasons) = resolved[p].as_ref().and_then(unresolvable)
             && inference.declared[p].as_ref().is_some_and(|t| unresolvable(t).is_none())
         {
             // RuleErrorBuilder::addTip()/build(), as rendered by PHPStan's plain JSON formatter.
@@ -381,16 +375,18 @@ pub(in super::super) fn arguments(
                 "{} of {of} contains unresolvable type.", parameter()
             ), tip.as_deref());
         }
-        if acceptor.closure_this[p] && matches!(e.kind, ArgKind::StaticClosure) {
+        if c.check_argument_types && acceptor.closure_this[p] && matches!(e.kind, ArgKind::StaticClosure) {
             c.report(e.span, "argument.staticClosure", format!(
                 "{} of {of} expects bindable closure, static closure given.", parameter()
             ), None);
         }
-        super::super::params::check_constants(
-            c, acceptor, e, p, allowed_type.as_ref(), resolved[p].as_ref(),
-            &describe(acceptor, p, Some(e.name.map_or(Ok(i), Err))), call,
-        );
-        if by_ref == ByRef::No {
+        if c.check_argument_types {
+            super::super::params::check_constants(
+                c, acceptor, e, p, allowed_type.as_ref(), resolved[p].as_ref(),
+                &describe(acceptor, p, Some(e.name.map_or(Ok(i), Err))), call,
+            );
+        }
+        if !c.check_arguments_passed_by_reference || by_ref == ByRef::No {
             continue;
         }
         let fine = match e.kind {
@@ -404,7 +400,7 @@ pub(in super::super) fn arguments(
                 let class = if c.written(*object) == "$this" {
                     c.class_scope().map(|k| String::from_utf8_lossy(k.name.as_bytes()).into_owned())
                 } else {
-                    c.type_at(*object).and_then(|t| t.object_class_names().into_iter().next())
+                    e.type_at(c, *object).and_then(|t| t.object_class_names().into_iter().next())
                 };
                 returns_by_ref(c, class.as_deref(), name)
             }

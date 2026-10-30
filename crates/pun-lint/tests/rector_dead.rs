@@ -34,6 +34,61 @@ fn remove_unused_private_method() {
 }
 
 #[test]
+fn unused_private_method_after_facade_fix_rounds() {
+    use pun_lint::Linter;
+    use pun_lint::rules::PreferFacadeOverApp;
+    use std::path::Path;
+
+    let input = "<?php
+
+final class FacadeFixRounds
+{
+    public function run(): void
+    {
+        app(Firewall::class, [app('request')])->isBot();
+        $this->called();
+    }
+
+    private function called(): void {}
+    private function unused(): void {}
+}
+";
+    // Rector 2.6.1, PHP 8.4: RemoveUnusedPrivateMethodRector alone, then with
+    // HelperFuncCallToFacadeClassRector. Nested helpers force another fix round.
+    let expected = "<?php
+
+final class FacadeFixRounds
+{
+    public function run(): void
+    {
+        app(Firewall::class, [app('request')])->isBot();
+        $this->called();
+    }
+
+    private function called(): void {}
+}
+";
+    let path = Path::new("facade-fix-rounds.php");
+    let alone = Linter::new(vec![Box::new(NoUnusedPrivateMethod)], 80400)
+        .fix(path, input)
+        .unwrap();
+    assert_eq!(alone.source, expected);
+
+    let combined = Linter::new(
+        vec![
+            Box::new(NoUnusedPrivateMethod),
+            Box::new(PreferFacadeOverApp),
+        ],
+        80400,
+    )
+    .fix(path, input)
+    .unwrap();
+    let expected = expected.replace("app(", "\\Illuminate\\Support\\Facades\\App::make(");
+    assert_eq!(combined.source, expected);
+    assert!(combined.remaining.is_empty());
+}
+
+#[test]
 fn remove_parent_delegating_constructor() {
     check(
         NoUselessConstructor,

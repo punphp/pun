@@ -16,7 +16,6 @@ use mago_codex::ttype::expander::TypeExpansionOptions;
 use mago_codex::ttype::get_class_string;
 use mago_codex::ttype::get_mixed;
 use mago_codex::ttype::union::TUnion;
-use mago_codex::ttype::wrap_atomic;
 use mago_reporting::Annotation;
 use mago_reporting::Issue;
 use mago_span::HasSpan;
@@ -104,6 +103,11 @@ where
                     result.has_invalid_path = true;
                 }
 
+                continue;
+            }
+
+            if matches!(class_resolution.origin, ResolutionOrigin::NonexistentParent) {
+                result.has_invalid_path = true;
                 continue;
             }
 
@@ -196,6 +200,10 @@ fn handle_class_magic_constant<'ast, 'arena, A>(
 where
     A: Arena,
 {
+    if matches!(class_resolution.origin, ResolutionOrigin::NonexistentParent) {
+        return Some(TUnion::from_atomic(TAtomic::Scalar(TScalar::ClassLikeString(TClassLikeString::LiteralAny))));
+    }
+
     if matches!(class_resolution.origin, ResolutionOrigin::AnyString) {
         context.collector.report_with_code(
             IssueCode::InvalidClassConstantOnString,
@@ -357,25 +365,14 @@ where
         let display = format!("{}::{}", metadata.original_name, const_name);
         crate::utils::availability::check_class_constant_availability(context, constant_metadata, &display, const_span);
 
-        // Prefer the docblock type (@var) when it exists, as it reflects the user's
-        // intended type. When type_metadata was merely copied from the type declaration
-        // (they are equal), fall back to the more specific inferred type.
-        let mut const_type = if let Some(type_metadata) = &constant_metadata.type_metadata
-            && type_metadata.from_docblock
-        {
-            type_metadata.type_union.clone()
-        } else {
-            constant_metadata
-                .inferred_type
-                .clone()
-                .map(wrap_atomic)
-                .or_else(|| constant_metadata.type_metadata.clone().map(|s| s.type_union))
-                .unwrap_or_else(get_mixed)
-        };
-
-        expander::expand_union(
+        let late_bound =
+            !matches!(resolution_origin, ResolutionOrigin::Named { .. } | ResolutionOrigin::LiteralClassString)
+                && !metadata.flags.is_final()
+                && !metadata.kind.is_enum();
+        let const_type = expander::expand_class_constant_value(
             context.codebase,
-            &mut const_type,
+            constant_metadata,
+            late_bound,
             &TypeExpansionOptions {
                 self_class: Some(metadata.name),
                 static_class_type: StaticClassType::Name(metadata.name),
@@ -425,22 +422,14 @@ where
                 const_span,
             );
 
-            let mut const_type = if let Some(type_metadata) = &constant_metadata.type_metadata
-                && type_metadata.from_docblock
-            {
-                type_metadata.type_union.clone()
-            } else {
-                constant_metadata
-                    .inferred_type
-                    .clone()
-                    .map(wrap_atomic)
-                    .or_else(|| constant_metadata.type_metadata.clone().map(|s| s.type_union))
-                    .unwrap_or_else(get_mixed)
-            };
-
-            expander::expand_union(
+            let late_bound =
+                !matches!(resolution_origin, ResolutionOrigin::Named { .. } | ResolutionOrigin::LiteralClassString)
+                    && !required_metadata.flags.is_final()
+                    && !required_metadata.kind.is_enum();
+            let const_type = expander::expand_class_constant_value(
                 context.codebase,
-                &mut const_type,
+                constant_metadata,
+                late_bound,
                 &TypeExpansionOptions {
                     self_class: Some(required_metadata.name),
                     static_class_type: StaticClassType::Name(required_metadata.name),
