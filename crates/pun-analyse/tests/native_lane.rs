@@ -413,7 +413,6 @@ fn unsupported_transfers_poison_the_scope_before_children_and_never_recover_by_a
         "$name = 'missingFunction'; $value = $name();",
         "$value = $missing;",
         "static $cached = 2;",
-        "unset($value);",
         "/** @var positive-int */ $value;",
         "$GLOBALS = 2;",
         "$_SESSION = 2;",

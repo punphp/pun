@@ -30,18 +30,21 @@ use mago_syntax::cst::Access;
 use mago_syntax::cst::ClassLikeMemberSelector;
 use mago_syntax::cst::Expression;
 use mago_syntax::cst::Unset;
+use mago_syntax::cst::Variable;
 
 use crate::analyzable::Analyzable;
 use crate::artifacts::AnalysisArtifacts;
 use crate::code::IssueCode;
 use crate::context::Context;
 use crate::context::block::BlockContext;
+use crate::context::scope::{var_has_root, var_references_dynamic};
 use crate::error::AnalysisError;
 use crate::expression::assignment::array_assignment::update_type_with_key_values;
 use crate::reconciler::negated_assertion_reconciler;
 use crate::utils::expression::get_block_expression_id;
 use crate::utils::misc::unwrap_expression;
 use mago_word::concat_word;
+use mago_word::word;
 
 impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
     fn analyze<'ctx, A>(
@@ -61,6 +64,8 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
             block_context.flags.set_inside_general_use(true);
             value.analyze(context, block_context, artifacts)?;
             block_context.flags.set_inside_general_use(was_inside_general_use);
+
+            native_unset(context, block_context, artifacts, value);
 
             let value_id = get_block_expression_id(value, context, block_context);
 
@@ -335,6 +340,68 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
 
         Ok(())
     }
+}
+
+/// UnsetHandler's native virtual assignment, separate from its selected/PHPDoc writer.
+/// Each operand has already run, including key/argument writes. Bound this transfer to
+/// ordinary locals and one-level array offsets with normalized literal or integer keys.
+/// Missing native inputs, nested targets, and other effects invalidate rather than recover.
+fn native_unset<A: Arena>(
+    context: &mut Context<'_, '_, A>,
+    block: &mut BlockContext<'_>,
+    artifacts: &AnalysisArtifacts,
+    target: &Expression<'_>,
+) {
+    block.native_locals = block.native_locals.take().and_then(|mut locals| {
+        let (variable, access) = match target {
+            Expression::Variable(Variable::Direct(variable)) => (variable, None),
+            Expression::ArrayAccess(access) => {
+                let Expression::Variable(Variable::Direct(variable)) = access.array else { return None };
+                (variable, Some(access))
+            }
+            _ => return None,
+        };
+        let root = word(variable.name);
+        if variable.name == b"$this" || variable.name == b"$GLOBALS" || variable.name.starts_with(b"$_")
+            || block.references_in_scope.contains_key(&root)
+            || block.referenced_counts.contains_key(&root)
+            || block.references_to_external_scope.contains(&root)
+        {
+            return None;
+        }
+        let written = if let Some(access) = access {
+            let holder = artifacts.get_native_expression_type(access.array)?;
+            let index = artifacts.get_native_expression_type(access.index)?;
+            // General strings need PHP's string-to-integer-key union conversion. Other
+            // scalar keys need toArrayKey conversion too; neither is supplied by a full type.
+            if !index.is_int() && !index.types.iter().all(|atomic| atomic.to_array_key().is_some()) {
+                return None;
+            }
+            let mut atomics = Vec::new();
+            for atomic in holder.types.iter() {
+                let array = match atomic {
+                    TAtomic::Array(TArray::Keyed(array)) => array.clone(),
+                    TAtomic::Array(TArray::List(_)) => constant_array(atomic)?,
+                    _ => return None,
+                };
+                atomics.push(TAtomic::Array(TArray::Keyed(unset_keyed(context, array, index).0)));
+            }
+            let mut written = holder.clone();
+            written.types = Cow::Owned(combiner::combine_preserving_array_shapes(
+                atomics, context.codebase, context.settings.combiner_options(),
+            ));
+            Some(written)
+        } else {
+            None
+        };
+        // invalidateExpression also drops specified descendants and dynamic-key dependents.
+        // Invalidation is not an explicit absence holder, especially at global/extract scope.
+        locals.retain(|name, _| !var_has_root(*name, root) && !var_references_dynamic(*name, root));
+        if let Some(written) = written {
+            locals.insert(root, Rc::new(written));
+        }
+        Some(locals)
+    });
 }
 
 /// UnsetHandler's ExistingArrayDimFetch virtual assignment: consume only stored input results,

@@ -167,6 +167,7 @@ pub(crate) fn before_statement(statement: &Statement<'_>, block: &mut BlockConte
             | Statement::Block(_)
             | Statement::Expression(_)
             | Statement::Return(_)
+            | Statement::Unset(_)
     ) {
         // Loop, reference and exceptional transfers are not implemented. Invalidation
         // happens BEFORE their children, so neither inner nor subsequent queries use stale state.
