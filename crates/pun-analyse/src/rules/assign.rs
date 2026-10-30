@@ -2,7 +2,7 @@
 //! AssignHandler::processAssignVar() emits) and OffsetAccessWithoutDimForReadingRule (with the expressions
 //! `$scope->isInExpressionAssign()` holds for), and PropertyAssignRefRule.
 
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 use mago_codex::metadata::function_like::FunctionLikeMetadata;
 use mago_codex::ttype::atomic::TAtomic;
@@ -21,6 +21,41 @@ pub struct State {
     assigned: HashSet<Span>,
     /// Subtrees PHPStan only assigns virtually (VirtualAssignNodeCallback: no rule sees their nodes).
     virtual_targets: Vec<Span>,
+    /// MutatingScope's currentlyAssignedExpressions, keyed by expression identity, not source occurrence.
+    pub(super) expressions: HashSet<String>,
+    saved: Vec<HashSet<String>>,
+    enter: HashMap<Span, String>,
+    exit: HashMap<Span, String>,
+}
+
+impl State {
+    pub(super) fn enter_scope(&mut self) {
+        self.saved.push(std::mem::take(&mut self.expressions));
+    }
+
+    pub(super) fn leave_scope(&mut self) {
+        self.expressions = self.saved.pop().expect("entered assignment scope");
+    }
+}
+
+/// Enter/exitExpressionAssign creates a scope with a replaced entry; exit removes it, not an outer count.
+pub(super) fn enter_expression(c: &mut Checker, e: &Expression) {
+    if let Some(key) = c.assign.enter.get(&e.span()) {
+        c.assign.expressions.insert(key.clone());
+    }
+}
+
+pub(super) fn exit_expression(c: &mut Checker, e: &Expression) {
+    if let Some(key) = c.assign.exit.get(&e.span()) {
+        c.assign.expressions.remove(key);
+    }
+}
+
+fn expression_scope(c: &mut Checker, e: &Expression) {
+    if let Some(key) = c.assignment_key(e) {
+        c.assign.enter.insert(e.span(), key.clone());
+        c.assign.exit.insert(e.span(), key);
+    }
 }
 
 fn unparenthesized<'e, 'arena>(mut e: &'e Expression<'arena>) -> &'e Expression<'arena> {
@@ -182,16 +217,26 @@ pub fn assignment(c: &mut Checker, a: &Assignment) {
         mark_assigned(c, a.lhs, ListRole::Target);
         if let Some(r) = referenced {
             c.assign.assigned.insert(unparenthesized(r).span());
+            expression_scope(c, unparenthesized(r));
         }
     }
     assign_var(c, a.lhs, ListRole::Target);
+}
+
+pub(super) fn is_list_target(e: &Expression) -> bool {
+    list_items(unparenthesized(e), ListRole::Target).is_some()
 }
 
 /// processAssignVar() with `$enterExpressionAssign`: the `[]` fetches of the target's dim-fetch chains.
 fn mark_assigned(c: &mut Checker, var: &Expression, role: ListRole) {
     let mut var = unparenthesized(var);
     if let Some(items) = list_items(var, role) {
-        for (_, value, role) in items {
+        for (key, value, role) in items {
+            // applyWrite(KIND_LIST) enters the value on itemScope. Only a written key's ExpressionResult
+            // transfers that scope into the running result; an unkeyed item keeps the original scope.
+            if let Some(key) = key && let Some(identity) = c.assignment_key(value) {
+                c.assign.enter.insert(key.span(), identity);
+            }
             mark_assigned(c, value, role);
         }
         return;
@@ -202,8 +247,18 @@ fn mark_assigned(c: &mut Checker, var: &Expression, role: ListRole) {
                 c.assign.assigned.insert(var.span());
                 var = unparenthesized(a.array);
             }
-            Expression::ArrayAccess(a) => var = unparenthesized(a.array),
-            _ => return,
+            Expression::ArrayAccess(a) => {
+                // prepareTarget exits each written dimension after its result. The attempted enter there
+                // does not replace the running scope, unlike the root's enter/exit pair.
+                if let Some(key) = c.assignment_key(a.index) {
+                    c.assign.exit.insert(a.index.span(), key);
+                }
+                var = unparenthesized(a.array);
+            }
+            _ => {
+                expression_scope(c, var);
+                return;
+            }
         }
     }
 }
@@ -294,6 +349,7 @@ pub fn unset(c: &mut Checker, u: &Unset) {
 pub fn array_append(c: &mut Checker, a: &ArrayAppend) {
     let span = a.span();
     if c.assign.assigned.contains(&span)
+        || c.assignment_key(&Expression::ArrayAppend(a.clone())).is_some_and(|key| c.assign.expressions.contains(&key))
         || c.assign
             .virtual_targets
             .iter()
@@ -565,6 +621,7 @@ pub fn arguments(c: &mut Checker, call: Callee) {
         let value = unparenthesized(arg.value());
         if let Expression::ArrayAppend(_) = value {
             c.assign.assigned.insert(value.span());
+            expression_scope(c, value);
         }
         if !matches!(value, Expression::Variable(Variable::Direct(v)) if v.name == b"$this") {
             assign_var(c, value, ListRole::Read);

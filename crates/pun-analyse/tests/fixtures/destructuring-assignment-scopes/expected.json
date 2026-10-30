@@ -1,0 +1,1891 @@
+{
+    "phar_sha256": "85157dba3d95d77ca603d2b7303aa78a538f9e3b56ccad07dd794c53aa96d1ae",
+    "diagnostics": {
+        "level0": [
+            [
+                "argument-exit.php",
+                4,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "argument-exit.php",
+                6,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "argument-exit.php",
+                6,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "branch-isolation.php",
+                12,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "branch-isolation.php",
+                12,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "branch-isolation.php",
+                5,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "branch-isolation.php",
+                7,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "branch-isolation.php",
+                7,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "branch-isolation.php",
+                9,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "branch-isolation.php",
+                9,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "closure-isolation.php",
+                10,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "closure-isolation.php",
+                16,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "closure-isolation.php",
+                16,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "closure-isolation.php",
+                17,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "closure-isolation.php",
+                18,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "closure-isolation.php",
+                5,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "closure-isolation.php",
+                5,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "closure-isolation.php",
+                7,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "conditional.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "conditional.php",
+                4,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "conditional.php",
+                7,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "conditional.php",
+                7,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "constant-branches.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "constant-branches.php",
+                7,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "different-root.php",
+                3,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "different-root.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "different-root.php",
+                4,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "different-root.php",
+                5,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "dimension-exit.php",
+                3,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "dimension-exit.php",
+                5,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "dimension-exit.php",
+                5,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "elseif-transfer.php",
+                6,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "function-isolation.php",
+                11,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "function-isolation.php",
+                5,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "function-isolation.php",
+                5,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "function-isolation.php",
+                8,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "intervening.php",
+                3,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "intervening.php",
+                8,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "literal-key.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "match.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "match.php",
+                4,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "method-isolation.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "method-isolation.php",
+                4,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "nested-dimensions.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "nested-dimensions.php",
+                4,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "nested-dimensions.php",
+                5,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "nested-dimensions.php",
+                6,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "nested-dimensions.php",
+                6,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "nested-items.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "observations.php",
+                4,
+                "phpstan.dumpType",
+                "Dumped type: 1",
+                null,
+                false
+            ],
+            [
+                "observations.php",
+                5,
+                "phpstan.dumpType",
+                "Dumped type: 17",
+                null,
+                false
+            ],
+            [
+                "observations.php",
+                6,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "observations.php",
+                8,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "parentheses.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "property-roots.php",
+                5,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "property-roots.php",
+                5,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "property-roots.php",
+                6,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "reference-exit.php",
+                3,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "reference-exit.php",
+                5,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "reference-exit.php",
+                5,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "same-key.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "short-circuit.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "short-circuit.php",
+                4,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "short-circuit.php",
+                7,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "short-circuit.php",
+                7,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "single-match.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "single-match.php",
+                4,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "standalone.php",
+                3,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "standalone.php",
+                3,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "surviving-branch.php",
+                8,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "transferred.php",
+                3,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "transferred.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "unkeyed.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "unkeyed.php",
+                4,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "unknown-identity.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "unknown-identity.php",
+                4,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "unsupported-root.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ]
+        ],
+        "default": [
+            [
+                "argument-exit.php",
+                4,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "argument-exit.php",
+                6,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "argument-exit.php",
+                6,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "branch-isolation.php",
+                12,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "branch-isolation.php",
+                12,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "branch-isolation.php",
+                5,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "branch-isolation.php",
+                7,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "branch-isolation.php",
+                7,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "branch-isolation.php",
+                9,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "branch-isolation.php",
+                9,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "closure-isolation.php",
+                10,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "closure-isolation.php",
+                16,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "closure-isolation.php",
+                16,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "closure-isolation.php",
+                17,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "closure-isolation.php",
+                18,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "closure-isolation.php",
+                5,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "closure-isolation.php",
+                5,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "closure-isolation.php",
+                7,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "conditional.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "conditional.php",
+                4,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "conditional.php",
+                7,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "conditional.php",
+                7,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "constant-branches.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "constant-branches.php",
+                7,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "different-root.php",
+                3,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "different-root.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "different-root.php",
+                4,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "different-root.php",
+                5,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "dimension-exit.php",
+                3,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "dimension-exit.php",
+                5,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "dimension-exit.php",
+                5,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "elseif-transfer.php",
+                6,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "function-isolation.php",
+                11,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "function-isolation.php",
+                5,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "function-isolation.php",
+                5,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "function-isolation.php",
+                8,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "intervening.php",
+                3,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "intervening.php",
+                8,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "literal-key.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "match.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "match.php",
+                4,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "method-isolation.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "method-isolation.php",
+                4,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "nested-dimensions.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "nested-dimensions.php",
+                4,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "nested-dimensions.php",
+                5,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "nested-dimensions.php",
+                6,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "nested-dimensions.php",
+                6,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "nested-items.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "observations.php",
+                4,
+                "phpstan.dumpType",
+                "Dumped type: 1",
+                null,
+                false
+            ],
+            [
+                "observations.php",
+                5,
+                "phpstan.dumpType",
+                "Dumped type: 17",
+                null,
+                false
+            ],
+            [
+                "observations.php",
+                6,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "observations.php",
+                8,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "parentheses.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "property-roots.php",
+                5,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "property-roots.php",
+                5,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "property-roots.php",
+                6,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "reference-exit.php",
+                3,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "reference-exit.php",
+                5,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "reference-exit.php",
+                5,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "same-key.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "short-circuit.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "short-circuit.php",
+                4,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "short-circuit.php",
+                7,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "short-circuit.php",
+                7,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "single-match.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "single-match.php",
+                4,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "standalone.php",
+                3,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "standalone.php",
+                3,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "surviving-branch.php",
+                8,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "transferred.php",
+                3,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "transferred.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "unkeyed.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "unkeyed.php",
+                4,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "unknown-identity.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "unknown-identity.php",
+                4,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "unsupported-root.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ]
+        ],
+        "quiet": [
+            [
+                "argument-exit.php",
+                4,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "argument-exit.php",
+                6,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "argument-exit.php",
+                6,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "branch-isolation.php",
+                12,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "branch-isolation.php",
+                12,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "branch-isolation.php",
+                5,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "branch-isolation.php",
+                7,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "branch-isolation.php",
+                7,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "branch-isolation.php",
+                9,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "branch-isolation.php",
+                9,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "closure-isolation.php",
+                10,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "closure-isolation.php",
+                16,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "closure-isolation.php",
+                16,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "closure-isolation.php",
+                17,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "closure-isolation.php",
+                18,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "closure-isolation.php",
+                5,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "closure-isolation.php",
+                5,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "closure-isolation.php",
+                7,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "conditional.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "conditional.php",
+                4,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "conditional.php",
+                7,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "conditional.php",
+                7,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "constant-branches.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "constant-branches.php",
+                7,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "different-root.php",
+                3,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "different-root.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "different-root.php",
+                4,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "different-root.php",
+                5,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "dimension-exit.php",
+                3,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "dimension-exit.php",
+                5,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "dimension-exit.php",
+                5,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "elseif-transfer.php",
+                6,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "function-isolation.php",
+                11,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "function-isolation.php",
+                5,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "function-isolation.php",
+                5,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "function-isolation.php",
+                8,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "intervening.php",
+                3,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "intervening.php",
+                8,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "literal-key.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "match.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "match.php",
+                4,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "method-isolation.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "method-isolation.php",
+                4,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "nested-dimensions.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "nested-dimensions.php",
+                4,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "nested-dimensions.php",
+                5,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "nested-dimensions.php",
+                6,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "nested-dimensions.php",
+                6,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "nested-items.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "observations.php",
+                4,
+                "phpstan.dumpType",
+                "Dumped type: 1",
+                null,
+                false
+            ],
+            [
+                "observations.php",
+                5,
+                "phpstan.dumpType",
+                "Dumped type: 17",
+                null,
+                false
+            ],
+            [
+                "observations.php",
+                6,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "observations.php",
+                8,
+                "phpstan.dumpType",
+                "Dumped type: int",
+                null,
+                false
+            ],
+            [
+                "parentheses.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "property-roots.php",
+                5,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "property-roots.php",
+                5,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "property-roots.php",
+                6,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "reference-exit.php",
+                3,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "reference-exit.php",
+                5,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "reference-exit.php",
+                5,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "same-key.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "short-circuit.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "short-circuit.php",
+                4,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "short-circuit.php",
+                7,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "short-circuit.php",
+                7,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "single-match.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "single-match.php",
+                4,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "standalone.php",
+                3,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "standalone.php",
+                3,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "surviving-branch.php",
+                8,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "transferred.php",
+                3,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "transferred.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "unkeyed.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "unkeyed.php",
+                4,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "unknown-identity.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ],
+            [
+                "unknown-identity.php",
+                4,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "unsupported-root.php",
+                4,
+                "assign.invalidExpr",
+                "Expression on left side of assignment is not assignable.",
+                null,
+                false
+            ]
+        ]
+    },
+    "observations": [
+        {
+            "start": 108,
+            "line": 3,
+            "selected": "17",
+            "native": "17"
+        },
+        {
+            "start": 74,
+            "line": 3,
+            "selected": "0",
+            "native": "0"
+        },
+        {
+            "start": 149,
+            "line": 4,
+            "selected": "1",
+            "native": "1"
+        },
+        {
+            "start": 188,
+            "line": 5,
+            "selected": "17",
+            "native": "17"
+        },
+        {
+            "start": 305,
+            "line": 8,
+            "selected": "int",
+            "native": "int"
+        }
+    ]
+}

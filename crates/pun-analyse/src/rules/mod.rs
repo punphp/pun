@@ -1221,6 +1221,12 @@ impl<'a, 'arena> Checker<'a, 'arena> {
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
+    fn walk_expression(&mut self, e: &'ast Expression<'arena>, context: &mut ()) {
+        assign::enter_expression(self, e);
+        mago_syntax::walker::walk_expression_mut(self, e, context);
+        assign::exit_expression(self, e);
+    }
+
     fn walk_in_class(&mut self, class: &'ast Class<'arena>, _: &mut ()) {
         let current = format!("Class {}", self.resolved_span(class.name.span));
         names::class_hierarchy(
@@ -1864,26 +1870,49 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         let mut previous_false = Vec::new();
         let mut survivors: Vec<Vec<Guard>> = Vec::new();
         let mut expressions = Vec::new();
+        let mut assignment_paths = Vec::new();
+        let mut remaining_assignment_path = true;
         for (i, (cond, statements)) in branches.into_iter().enumerate() {
             let mut entry = previous_false.clone();
+            let mut known = None;
             if let Some(cond) = cond {
                 if i > 0 {
-                    self.with_guards(previous_false.clone(), |s| s.walk_expression(cond, &mut ()));
+                    let mut assignments = self.assign.expressions.clone();
+                    self.with_guards(previous_false.clone(), |s| {
+                        s.walk_expression(cond, &mut ());
+                        assignments = s.assign.expressions.clone();
+                    });
+                    self.assign.expressions = assignments;
                 }
+                // IfHandler prices the condition on the running falsey scope, before entering its branch.
+                known = match types::flow::unparen(cond) {
+                    Expression::Literal(Literal::True(_)) => Some(true),
+                    Expression::Literal(Literal::False(_) | Literal::Null(_)) => Some(false),
+                    _ => self.type_of(cond).and_then(|t| {
+                        if t.is_always_truthy() { Some(true) } else { t.is_always_falsy().then_some(false) }
+                    }),
+                };
                 entry.extend(self.truthy(cond));
                 previous_false.extend(self.falsy(cond));
             }
-            let (terminates, outgoing) = self.walk_branch(entry.clone(), &statements);
+            let (terminates, outgoing, assignments) = self.walk_branch(entry.clone(), &statements);
             if !terminates {
                 expressions.push(outgoing);
                 survivors.push(entry);
+                if remaining_assignment_path && known != Some(false) {
+                    assignment_paths.push(assignments);
+                }
             }
+            remaining_assignment_path &= known != Some(true);
         }
         if !has_else {
             let mut outgoing = self.expression_guards();
             outgoing.extend(previous_false.iter().filter(|g| scope::definite_expression(g)).cloned());
             expressions.push(outgoing);
             survivors.push(previous_false);
+            if remaining_assignment_path {
+                assignment_paths.push(self.assign.expressions.clone());
+            }
         }
         // after the `if`: what holds in every branch that falls through
         if let Some((first, rest)) = survivors.split_first() {
@@ -1894,7 +1923,13 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
                 .collect();
             self.guards.extend(after);
         }
+        let assignments = match assignment_paths.len() {
+            0 => self.assign.expressions.clone(),
+            1 => assignment_paths.pop().expect("one surviving scope"),
+            _ => HashSet::new(),
+        };
         self.join_expression_guards(&expressions);
+        self.assign.expressions = assignments;
     }
 
     fn walk_conditional(&mut self, cond: &'ast Conditional<'arena>, c: &mut ()) {
@@ -1942,7 +1977,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         dead_code::match_expression(self, m);
         self.walk_expression(m.expression, c);
         let on_true = matches!(m.expression, Expression::Literal(Literal::True(_)));
+        let assignments = self.assign.expressions.clone();
         for arm in m.arms.iter() {
+            self.assign.expressions = assignments.clone();
             match arm {
                 MatchArm::Expression(arm) => {
                     for cond in arm.conditions.iter() {
@@ -1964,6 +2001,24 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
                 }
             }
         }
+        // Multiple result scopes go through mergeWith, which clears the assignment-expression table.
+        if m.arms.len() > 1 {
+            self.assign.expressions.clear();
+        }
+    }
+
+    fn walk_assignment(&mut self, a: &'ast Assignment<'arena>, context: &mut ()) {
+        self.walk_in_assignment(a, context);
+        if assign::is_list_target(a.lhs) {
+            // KIND_LIST applies its targets after the RHS, keeping every item's key before its value.
+            self.walk_expression(a.rhs, context);
+            self.walk_expression(a.lhs, context);
+        } else {
+            self.walk_expression(a.lhs, context);
+            self.walk_expression(a.rhs, context);
+        }
+        self.walk_assignment_operator(&a.operator, context);
+        self.walk_out_assignment(a, context);
     }
 
     fn walk_in_assignment(&mut self, a: &'ast Assignment<'arena>, _: &mut ()) {
@@ -2197,6 +2252,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     // a rebound closure is checked in its bound `$this`'s class (none when Pun cannot tell it)
     fn walk_out_closure(&mut self, f: &'ast Closure<'arena>, _: &mut ()) {
+        self.assign.leave_scope();
         self.leave_this();
         self.larastan_leave_function();
         self.syntax.parents.pop();
@@ -2207,6 +2263,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         }
     }
     fn walk_out_arrow_function(&mut self, f: &'ast ArrowFunction<'arena>, _: &mut ()) {
+        self.assign.leave_scope();
         self.leave_this();
         self.pop_frame();
         if self.rebound.contains_key(&f.span()) {
@@ -2323,6 +2380,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         attributes::constant(self, k);
     }
     fn walk_in_closure(&mut self, f: &'ast Closure<'arena>, _: &mut ()) {
+        self.assign.enter_scope();
         strict::closure(self, f);
         if self.rebound.get(&f.span()).is_some_and(|b| b.defines_this) {
             self.enter_this(true);
@@ -2409,6 +2467,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         assign::catch(self, clause);
     }
     fn walk_in_arrow_function(&mut self, f: &'ast ArrowFunction<'arena>, _: &mut ()) {
+        self.assign.enter_scope();
         types::anonymous_defaults(self, &f.parameter_list);
         types::arrow_function_returns(self, f);
         types::too_wide_arrow_function(self, f);

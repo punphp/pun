@@ -4,7 +4,7 @@
 //! branch leaves after the `if`, `&&`/`||`/`!`, `? :`, `match (true)`, variables holding such a check, closures
 //! inheriting their parent's scope, and checks a constructor ends with (remembered in the class's other methods).
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::symbol::SymbolKind;
@@ -272,6 +272,7 @@ fn expression_key(e: &Expression, resolve: &dyn Fn(&Identifier) -> String, funct
             format!("{callee}({})", args?.join(", "))
         }
         Expression::ArrayAccess(a) => format!("{}[{}]", key(a.array)?, key(a.index)?),
+        Expression::ArrayAppend(a) => format!("{}[]", key(a.array)?),
         Expression::Access(Access::Property(p)) => {
             let ClassLikeMemberSelector::Identifier(id) = &p.property else { return None };
             format!("{}->{}", key(p.object)?, String::from_utf8_lossy(id.value))
@@ -688,6 +689,11 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             .contains(&Guard::Function(name.trim_start_matches('\\').to_string()))
     }
 
+    /// MutatingScope::getNodeKey for the supported assignment expressions. Unknown syntax has no identity.
+    pub(super) fn assignment_key(&self, e: &Expression) -> Option<String> {
+        expression_key(e, &|id| self.resolved(id), &|id| self.guard_function_name(id))
+    }
+
     /// MethodCallCheck asks about the original selector expression, not each selected constant name.
     pub(super) fn in_dynamic_method_exists(&self, receiver: &Expression, selector: &Expression, name: &str) -> bool {
         let key = |e| expression_key(e, &|id| self.resolved(id), &|id| self.guard_function_name(id));
@@ -706,10 +712,12 @@ impl<'a, 'arena> Checker<'a, 'arena> {
     pub(super) fn with_guards(&mut self, extra: Vec<Guard>, body: impl FnOnce(&mut Self)) {
         let saved = self.guards.clone();
         let marks = self.marks.clone();
+        let assignments = self.assign.expressions.clone();
         self.guards.extend(extra);
         body(self);
         self.guards = saved;
         self.marks = marks;
+        self.assign.expressions = assignments;
     }
 
     /// Removing a holder must also translate the enclosing blocks' guard boundaries.
@@ -872,6 +880,10 @@ impl<'a, 'arena> Checker<'a, 'arena> {
 
     /// ScopeOps::mergeWith: an expression holder is definite only if every surviving path has it.
     pub(super) fn join_expression_guards(&mut self, paths: &[Vec<Guard>]) {
+        // MutatingScope::mergeWithVariableState resets currentlyAssignedExpressions, not their intersection.
+        if paths.len() > 1 {
+            self.assign.expressions.clear();
+        }
         self.retain_guards(|guard| !expression_guard(guard) || paths.iter().all(|p| p.contains(guard)));
         if let Some((first, rest)) = paths.split_first() {
             for guard in first.iter().filter(|g| rest.iter().all(|p| p.contains(g))) {
@@ -943,6 +955,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
 
     /// A function or method body: a fresh scope (the constructor's remembered guards in a method).
     pub(super) fn enter_function(&mut self, mut guards: Vec<Guard>) {
+        self.assign.enter_scope();
         // the narrowed `PHP_VERSION_ID` carries into a function or class declared in the branch
         guards.extend(self.guards.iter().filter(|g| matches!(g, Guard::PhpVersion(..))).cloned());
         self.saved.push(Saved {
@@ -989,6 +1002,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
     }
 
     pub(super) fn leave_function(&mut self) {
+        self.assign.leave_scope();
         let s = self.saved.pop().expect("entered");
         self.guards = s.guards;
         self.marks = s.marks;
@@ -999,18 +1013,20 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         &mut self,
         extra: Vec<Guard>,
         statements: &[&Statement<'arena>],
-    ) -> (bool, Vec<Guard>) {
+    ) -> (bool, Vec<Guard>, HashSet<String>) {
         let mut outgoing = Vec::new();
+        let mut assignments = HashSet::new();
         self.with_guards(extra, |c| {
             c.marks.push(c.guards.len());
             for s in statements {
                 c.walk_statement(s, &mut ());
             }
             outgoing = c.expression_guards();
+            assignments = c.assign.expressions.clone();
             let mark = c.marks.pop().expect("pushed");
             c.guards.truncate(mark);
         });
-        (statements_terminate(statements.iter().copied()), outgoing)
+        (statements_terminate(statements.iter().copied()), outgoing, assignments)
     }
 }
 
