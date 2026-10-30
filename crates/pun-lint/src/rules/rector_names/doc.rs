@@ -40,7 +40,7 @@ pub(crate) struct Typed {
     types: Vec<Node>,
     description: String,
     /// The strings written in the value, each as printed ([`strings_of`]).
-    strings: Vec<(String, String)>,
+    strings: Vec<(Vec<u8>, Option<String>)>,
     /// The identifiers [`Doc::set_ident`] replaced: a new `IdentifierTypeNode` has no `PARENT` attribute, so the
     /// name importing no longer sees its template tag.
     replaced: Vec<usize>,
@@ -108,7 +108,7 @@ pub(crate) struct Other {
     prepositions: Vec<String>,
     /// Each string in the `@method` parameters' defaults as printed, in order.
     quotes: Vec<String>,
-    strings: Vec<(String, String)>,
+    strings: Vec<(Vec<u8>, Option<String>)>,
 }
 
 impl Other {
@@ -142,7 +142,7 @@ impl Other {
 
     /// The value node's `__toString()`.
     fn print(&self) -> Option<String> {
-        let quote = |v: &str| quote_of(&self.strings, v);
+        let quote = |v: &[u8]| quote_of(&self.strings, v);
         let ty = |node: &Node| TypeNode::from_parsed_all(node, &quote).map(|t| t.to_string());
         let description = self.description.as_deref().unwrap_or_default();
         Some(match &self.value {
@@ -1003,26 +1003,26 @@ fn other(tag: phpdoc::Tag, value: &str, description: impl Fn(usize) -> String) -
     }))
 }
 
-/// The strings written in `value`: each as `pun_phpstan` reads it (`StringUnescaper`, the bytes that are no UTF-8
-/// replaced) and as `ConstExprStringNode` prints it.
-fn strings_of(value: &str) -> Vec<(String, String)> {
+/// The strings written in `value`: each as `pun_phpstan` reads it (`StringUnescaper`) and as `ConstExprStringNode`
+/// prints it, `None` where that print is no UTF-8.
+fn strings_of(value: &str) -> Vec<(Vec<u8>, Option<String>)> {
     let mut strings = Vec::new();
     for tok in parser::tokenize(value) {
         if let t::SINGLE_QUOTED_STRING | t::DOUBLE_QUOTED_STRING = tok.ty {
             let unescaped = parser::unescape_string(&value[tok.start..tok.end]);
             let printed = parser::print_string(&unescaped, &value[tok.start..tok.end]);
-            strings.push((String::from_utf8_lossy(&unescaped).into_owned(), printed));
+            strings.push((unescaped, printed));
         }
     }
     strings
 }
 
-/// The string `value` as printed.
-fn quote_of(strings: &[(String, String)], value: &str) -> Option<String> {
+/// The string `value` as printed; `None` where Rector would print bytes that are no UTF-8.
+fn quote_of(strings: &[(Vec<u8>, Option<String>)], value: &[u8]) -> Option<String> {
     strings
         .iter()
         .find(|(s, _)| s == value)
-        .map(|(_, printed)| printed.clone())
+        .and_then(|(_, printed)| printed.clone())
 }
 
 /// The byte of the input a `ParserException` message names (`getCurrentTokenOffset()`).
@@ -1123,7 +1123,11 @@ fn scan_method(value: &str) -> Option<(usize, Vec<String>, Vec<String>)> {
                 t::EQUAL if depth == 0 => default = true,
                 t::SINGLE_QUOTED_STRING | t::DOUBLE_QUOTED_STRING if default => {
                     let unescaped = parser::unescape_string(&value[tok.start..tok.end]);
-                    quotes.push(parser::print_string(&unescaped, &value[tok.start..tok.end]));
+                    let written = &value[tok.start..tok.end];
+                    quotes.push(
+                        parser::print_string(&unescaped, written)
+                            .unwrap_or_else(|| written.to_string()),
+                    );
                 }
                 _ => {}
             }
@@ -1679,7 +1683,7 @@ fn print_child(child: &Child) -> Option<String> {
     let name = child.tag.as_deref().unwrap_or_default();
     match &child.value {
         Value::Typed(typed) => {
-            let quote = |v: &str| quote_of(&typed.strings, v);
+            let quote = |v: &[u8]| quote_of(&typed.strings, v);
             let ty = |i: usize| -> Option<String> {
                 Some(TypeNode::from_parsed_all(&typed.types[i], &quote)?.to_string())
             };

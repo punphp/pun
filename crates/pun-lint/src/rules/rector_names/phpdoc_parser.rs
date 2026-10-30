@@ -772,12 +772,12 @@ pub(crate) fn unescape_string(token: &str) -> Vec<u8> {
 }
 
 /// `ConstExprStringNode::__toString()` of `value`, the string `written`: single-quoted with `addcslashes($value,
-/// '\'\\')`, else `escapeDoubleQuotedString()`. Where that leaves bytes that are no UTF-8 (a `\u{...}` escape of
-/// a surrogate or beyond U+10FFFF, which the regex lets through), the string stays as written.
-pub(crate) fn print_string(value: &[u8], written: &str) -> String {
+/// '\'\\')`, else `escapeDoubleQuotedString()`. `None` where that leaves bytes that are no UTF-8 (a `\u{...}` escape
+/// of a surrogate or beyond U+10FFFF, which the regex lets through).
+pub(crate) fn print_string(value: &[u8], written: &str) -> Option<String> {
     if written.starts_with('\'') {
         let value = String::from_utf8_lossy(value);
-        return format!("'{}'", value.replace('\\', "\\\\").replace('\'', "\\'"));
+        return Some(format!("'{}'", value.replace('\\', "\\\\").replace('\'', "\\'")));
     }
     // `addcslashes($value, "\n\r\t\f\v\$\"\\")`
     let mut escaped = Vec::new();
@@ -824,7 +824,7 @@ pub(crate) fn print_string(value: &[u8], written: &str) -> String {
         last = m.end();
     }
     out.extend_from_slice(&escaped[last..]);
-    String::from_utf8(out).map_or_else(|_| written.to_string(), |out| format!("\"{out}\""))
+    String::from_utf8(out).ok().map(|out| format!("\"{out}\""))
 }
 
 /// `MULTI_NEW_LINES_REGEX`: a run of two or more line breaks made its last one.

@@ -648,7 +648,9 @@ fn print(expr: &Expr) -> String {
     match expr {
         Expr::Str(value, Quote::Single) => single_quoted(value),
         // `escapeString()`, as `ConstExprStringNode` does
-        Expr::Str(value, Quote::Double) => print_string(value.as_bytes(), "\""),
+        Expr::Str(value, Quote::Double) => {
+            print_string(value.as_bytes(), "\"").expect("a Rust string is UTF-8")
+        }
         Expr::Int(value) => value.to_string(),
         Expr::Float(value) => print_float(*value),
         Expr::Const(name) => name.to_string(),

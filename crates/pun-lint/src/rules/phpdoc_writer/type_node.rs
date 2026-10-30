@@ -56,7 +56,7 @@ impl TypeNode {
     /// gives a string as written.
     pub fn from_parsed_all(
         node: &Node,
-        quote: &dyn Fn(&str) -> Option<String>,
+        quote: &dyn Fn(&[u8]) -> Option<String>,
     ) -> Option<TypeNode> {
         from_parsed(node, false, Some(quote))
     }
@@ -70,7 +70,7 @@ impl TypeNode {
 fn from_parsed(
     node: &Node,
     in_array: bool,
-    all: Option<&dyn Fn(&str) -> Option<String>>,
+    all: Option<&dyn Fn(&[u8]) -> Option<String>>,
 ) -> Option<TypeNode> {
     Some(match node {
         Node::Ident(name) => TypeNode::Identifier(name.clone()),
@@ -116,7 +116,7 @@ fn from_parsed(
                         None => None,
                         Some(ShapeKey::Int(k) | ShapeKey::Ident(k)) => Some(k.clone()),
                         Some(ShapeKey::Fetch(class, name)) => Some(format!("{class}::{name}")),
-                        Some(ShapeKey::Str(k)) => Some(all?(&String::from_utf8_lossy(k))?),
+                        Some(ShapeKey::Str(k)) => Some(all?(k)?),
                     };
                     Some((key, i.optional, from_parsed(&i.value, false, all)?))
                 })
@@ -166,15 +166,13 @@ fn from_parsed(
         Node::Const(ConstExpr::Int(v) | ConstExpr::Float(v)) => TypeNode::Raw(v.clone()),
         Node::Const(ConstExpr::Fetch(class, name)) => TypeNode::Raw(format!("{class}::{name}")),
         // `ObjectShapeNode`, `ObjectShapeItemNode`
-        Node::Const(ConstExpr::Str(v)) if all.is_some() => {
-            TypeNode::Raw(all?(&String::from_utf8_lossy(v))?)
-        }
+        Node::Const(ConstExpr::Str(v)) if all.is_some() => TypeNode::Raw(all?(v)?),
         Node::ObjectShape(items) if all.is_some() => TypeNode::Raw(format!(
             "object{{{}}}",
             items
                 .iter()
                 .map(|(key, optional, value)| {
-                    let key = all?(key).unwrap_or_else(|| key.clone());
+                    let key = all?(key.as_bytes()).unwrap_or_else(|| key.clone());
                     Some(format!(
                         "{key}{}: {}",
                         if *optional { "?" } else { "" },
