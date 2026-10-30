@@ -32,6 +32,7 @@ use mago_codex::ttype::atomic::scalar::class_like_string::TClassLikeString;
 use mago_codex::ttype::comparator::ComparisonResult;
 use mago_codex::ttype::comparator::atomic_comparator;
 use mago_codex::ttype::comparator::union_comparator;
+use mago_codex::ttype::combine_union_types;
 use mago_codex::ttype::expander;
 use mago_codex::ttype::expander::StaticClassType;
 use mago_codex::ttype::expander::TypeExpansionOptions;
@@ -447,7 +448,7 @@ where
         }
 
         let declared_parameter_type = if let Some(parameter_type) = parameter_metadata.get_type_metadata() {
-            let effective_type =
+            let mut effective_type =
                 expand_type_metadata(context, block_context, artifacts, function_like_metadata, parameter_type);
 
             if parameter_type.from_docblock
@@ -539,6 +540,53 @@ where
                         ;
 
                         context.collector.report_with_code(IssueCode::DocblockParameterNarrowing, issue);
+                    }
+                }
+
+                // TypehintHelper::decideType, bounded to named-object/null declarations and
+                // object PHPDoc refinements. Interface unions and native intersections need
+                // PHPStan's trinary overlap relation, not the comparator's permissive overlap.
+                // Keep those, callable, conditional, derived and array channels unchanged.
+                // Diagnose the original PHPDoc above; clamp only the selected entry holder.
+                if expanded_native.types.iter().all(|atomic| {
+                    atomic.is_null() || matches!(atomic, TAtomic::Object(TObject::Named(object))
+                        if object.intersection_types.is_none()
+                            && (expanded_native.types.len() == 1
+                                || context.codebase.get_class_like_by_name(object.name)
+                                    .is_some_and(|class| class.kind.is_class())))
+                }) && effective_type.types.iter().all(|atomic| {
+                    matches!(atomic,
+                        TAtomic::Object(TObject::Named(_) | TObject::Any)
+                            | TAtomic::Null | TAtomic::Mixed(_) | TAtomic::GenericParameter(_))
+                }) {
+                    let documented = if expanded_native.has_null() {
+                        effective_type.clone()
+                    } else {
+                        effective_type.remove_null()
+                    };
+                    // The comparator resolves template bounds for the decision, not the
+                    // selected value: a compatible T remains T rather than becoming its bound.
+                    let selected = if !documented.is_never()
+                        && union_comparator::is_contained_by_with_erased_template_arguments(
+                            context.codebase, &documented, &expanded_native, &mut ComparisonResult::default(),
+                        )
+                    {
+                        documented
+                    } else {
+                        expanded_native.clone()
+                    };
+                    effective_type = selected.clone();
+                    if expanded_native.types.len() > 1 {
+                        for atomic in expanded_native.types.iter() {
+                            let member = wrap_atomic(atomic.clone());
+                            if !union_comparator::can_expression_types_be_identical(
+                                context.codebase, &member, &selected, false, false,
+                            ) {
+                                effective_type = combine_union_types(
+                                    &effective_type, &member, context.codebase, Default::default(),
+                                );
+                            }
+                        }
                     }
                 }
             }

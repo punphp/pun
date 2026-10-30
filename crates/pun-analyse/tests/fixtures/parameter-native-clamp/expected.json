@@ -1,0 +1,901 @@
+{
+    "phar_sha256": "85157dba3d95d77ca603d2b7303aa78a538f9e3b56ccad07dd794c53aa96d1ae",
+    "sources": {
+        "types.php": "d495c99c2b9248abe401fa92094ab39e9714b48d40a1d4b02f2d1751bd195ef4",
+        "channels.php": "c05ca0904bdfc4a559b4fe8fa8ad42300211cf33a8b77d6243251caf43b815e7"
+    },
+    "observations": [
+        {
+            "file": "types.php",
+            "start": 217,
+            "end": 221,
+            "line": 12,
+            "expression": "$box",
+            "supported": true,
+            "full": "ParameterNativeClamp\\Box",
+            "native": "ParameterNativeClamp\\Box"
+        },
+        {
+            "file": "types.php",
+            "start": 238,
+            "end": 250,
+            "line": 13,
+            "expression": "$box?->value",
+            "supported": true,
+            "full": "int",
+            "native": "int"
+        },
+        {
+            "file": "types.php",
+            "start": 267,
+            "end": 286,
+            "line": 14,
+            "expression": "isset($box?->value)",
+            "supported": true,
+            "full": "true",
+            "native": "true"
+        },
+        {
+            "file": "types.php",
+            "start": 303,
+            "end": 323,
+            "line": 15,
+            "expression": "$box?->nullable ?? 0",
+            "supported": true,
+            "full": "int",
+            "native": "int"
+        },
+        {
+            "file": "types.php",
+            "start": 409,
+            "end": 413,
+            "line": 21,
+            "expression": "$box",
+            "supported": true,
+            "full": "ParameterNativeClamp\\Box|null",
+            "native": "ParameterNativeClamp\\Box|null"
+        },
+        {
+            "file": "types.php",
+            "start": 430,
+            "end": 442,
+            "line": 22,
+            "expression": "$box?->value",
+            "supported": true,
+            "full": "int|null",
+            "native": "int|null"
+        },
+        {
+            "file": "types.php",
+            "start": 459,
+            "end": 478,
+            "line": 23,
+            "expression": "isset($box?->value)",
+            "supported": true,
+            "full": "bool",
+            "native": "bool"
+        },
+        {
+            "file": "types.php",
+            "start": 563,
+            "end": 567,
+            "line": 29,
+            "expression": "$box",
+            "supported": true,
+            "full": "ParameterNativeClamp\\Child",
+            "native": "ParameterNativeClamp\\Box"
+        },
+        {
+            "file": "types.php",
+            "start": 584,
+            "end": 596,
+            "line": 30,
+            "expression": "$box?->value",
+            "supported": true,
+            "full": "int",
+            "native": "int"
+        },
+        {
+            "file": "types.php",
+            "start": 685,
+            "end": 689,
+            "line": 36,
+            "expression": "$box",
+            "supported": true,
+            "full": "ParameterNativeClamp\\Child|null",
+            "native": "ParameterNativeClamp\\Box|null"
+        },
+        {
+            "file": "types.php",
+            "start": 706,
+            "end": 718,
+            "line": 37,
+            "expression": "$box?->value",
+            "supported": true,
+            "full": "int|null",
+            "native": "int|null"
+        },
+        {
+            "file": "types.php",
+            "start": 799,
+            "end": 803,
+            "line": 43,
+            "expression": "$box",
+            "supported": true,
+            "full": "ParameterNativeClamp\\Child",
+            "native": "ParameterNativeClamp\\Child"
+        },
+        {
+            "file": "types.php",
+            "start": 893,
+            "end": 897,
+            "line": 49,
+            "expression": "$box",
+            "supported": true,
+            "full": "ParameterNativeClamp\\Box",
+            "native": "ParameterNativeClamp\\Box"
+        },
+        {
+            "file": "types.php",
+            "start": 914,
+            "end": 926,
+            "line": 50,
+            "expression": "$box?->value",
+            "supported": true,
+            "full": "int",
+            "native": "int"
+        },
+        {
+            "file": "types.php",
+            "start": 1014,
+            "end": 1018,
+            "line": 56,
+            "expression": "$box",
+            "supported": true,
+            "full": "ParameterNativeClamp\\Box",
+            "native": "ParameterNativeClamp\\Box"
+        },
+        {
+            "file": "types.php",
+            "start": 1099,
+            "end": 1103,
+            "line": 62,
+            "expression": "$box",
+            "supported": true,
+            "full": "ParameterNativeClamp\\Box",
+            "native": "ParameterNativeClamp\\Box"
+        },
+        {
+            "file": "types.php",
+            "start": 1182,
+            "end": 1186,
+            "line": 68,
+            "expression": "$box",
+            "supported": true,
+            "full": "ParameterNativeClamp\\Box",
+            "native": "ParameterNativeClamp\\Box"
+        },
+        {
+            "file": "types.php",
+            "start": 1268,
+            "end": 1272,
+            "line": 74,
+            "expression": "$box",
+            "supported": true,
+            "full": "null",
+            "native": "null"
+        },
+        {
+            "file": "types.php",
+            "start": 1359,
+            "end": 1363,
+            "line": 80,
+            "expression": "$box",
+            "supported": false,
+            "full": "ParameterNativeClamp\\Child|ParameterNativeClamp\\Other",
+            "native": "ParameterNativeClamp\\Box|ParameterNativeClamp\\Other"
+        },
+        {
+            "file": "types.php",
+            "start": 1436,
+            "end": 1440,
+            "line": 85,
+            "expression": "$box",
+            "supported": true,
+            "full": "ParameterNativeClamp\\Box",
+            "native": "ParameterNativeClamp\\Box"
+        },
+        {
+            "file": "types.php",
+            "start": 1457,
+            "end": 1466,
+            "line": 86,
+            "expression": "$nullable",
+            "supported": true,
+            "full": "ParameterNativeClamp\\Box|null",
+            "native": "ParameterNativeClamp\\Box|null"
+        },
+        {
+            "file": "types.php",
+            "start": 1560,
+            "end": 1564,
+            "line": 92,
+            "expression": "$box",
+            "supported": true,
+            "full": "ParameterNativeClamp\\Box|null",
+            "native": "ParameterNativeClamp\\Box|null"
+        }
+    ],
+    "channels": [
+        {
+            "start": 199,
+            "end": 205,
+            "full": "T of ParameterNativeClampChannels\\Box (function ParameterNativeClampChannels\\identity(), argument)",
+            "native": "ParameterNativeClampChannels\\Box",
+            "template": {
+                "name": "T",
+                "bound": "ParameterNativeClampChannels\\Box"
+            }
+        },
+        {
+            "start": 313,
+            "end": 322,
+            "full": "Closure(int): string",
+            "native": "Closure",
+            "callable": {
+                "parameters": [
+                    "int"
+                ],
+                "return": "string"
+            }
+        }
+    ],
+    "errors": {
+        "types.php-0": [
+            [
+                90,
+                "parameter.implicitlyNullable",
+                "Deprecated in PHP 8.4: Parameter #1 $box (ParameterNativeClamp\\Box) is implicitly nullable via default value null.",
+                null,
+                true
+            ]
+        ],
+        "types.php-4": [
+            [
+                10,
+                "parameter.phpDocType",
+                "PHPDoc tag @param for parameter $box with type ParameterNativeClamp\\Box|null is not subtype of native type ParameterNativeClamp\\Box.",
+                null,
+                true
+            ],
+            [
+                12,
+                "expr.resultUnused",
+                "Expression \"$box\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                13,
+                "expr.resultUnused",
+                "Expression \"$box?->value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                13,
+                "nullsafe.neverNull",
+                "Using nullsafe property access on non-nullable type ParameterNativeClamp\\Box. Use -> instead.",
+                null,
+                true
+            ],
+            [
+                14,
+                "expr.resultUnused",
+                "Expression \"isset($box?->value)\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                14,
+                "isset.expr",
+                "Expression in isset() is not nullable.",
+                null,
+                true
+            ],
+            [
+                15,
+                "expr.resultUnused",
+                "Expression \"$box?->nullable ?? 0\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                15,
+                "nullsafe.neverNull",
+                "Using nullsafe property access \"?->nullable\" on left side of ?? is unnecessary. Use -> instead.",
+                null,
+                true
+            ],
+            [
+                21,
+                "expr.resultUnused",
+                "Expression \"$box\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                22,
+                "expr.resultUnused",
+                "Expression \"$box?->value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                23,
+                "expr.resultUnused",
+                "Expression \"isset($box?->value)\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                23,
+                "nullsafe.neverNull",
+                "Using nullsafe property access \"?->value\" in isset() is unnecessary. Use -> instead.",
+                null,
+                true
+            ],
+            [
+                27,
+                "parameter.phpDocType",
+                "PHPDoc tag @param for parameter $box with type ParameterNativeClamp\\Child|null is not subtype of native type ParameterNativeClamp\\Box.",
+                null,
+                true
+            ],
+            [
+                29,
+                "expr.resultUnused",
+                "Expression \"$box\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                30,
+                "expr.resultUnused",
+                "Expression \"$box?->value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                30,
+                "nullsafe.neverNull",
+                "Using nullsafe property access on non-nullable type ParameterNativeClamp\\Child. Use -> instead.",
+                null,
+                true
+            ],
+            [
+                36,
+                "expr.resultUnused",
+                "Expression \"$box\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                37,
+                "expr.resultUnused",
+                "Expression \"$box?->value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                41,
+                "parameter.phpDocType",
+                "PHPDoc tag @param for parameter $box with type ParameterNativeClamp\\Box is not subtype of native type ParameterNativeClamp\\Child.",
+                null,
+                true
+            ],
+            [
+                41,
+                "void.pure",
+                "Function ParameterNativeClamp\\widerDoc() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                43,
+                "expr.resultUnused",
+                "Expression \"$box\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                47,
+                "parameter.phpDocType",
+                "PHPDoc tag @param for parameter $box with type ParameterNativeClamp\\Other|null is incompatible with native type ParameterNativeClamp\\Box.",
+                null,
+                true
+            ],
+            [
+                49,
+                "expr.resultUnused",
+                "Expression \"$box\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                50,
+                "expr.resultUnused",
+                "Expression \"$box?->value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                50,
+                "nullsafe.neverNull",
+                "Using nullsafe property access on non-nullable type ParameterNativeClamp\\Box. Use -> instead.",
+                null,
+                true
+            ],
+            [
+                54,
+                "parameter.phpDocType",
+                "PHPDoc tag @param for parameter $box with type object|null is not subtype of native type ParameterNativeClamp\\Box.",
+                null,
+                true
+            ],
+            [
+                54,
+                "void.pure",
+                "Function ParameterNativeClamp\\objectDoc() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                56,
+                "expr.resultUnused",
+                "Expression \"$box\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                60,
+                "parameter.phpDocType",
+                "PHPDoc tag @param for parameter $box with type mixed is not subtype of native type ParameterNativeClamp\\Box.",
+                null,
+                true
+            ],
+            [
+                60,
+                "void.pure",
+                "Function ParameterNativeClamp\\mixedDoc() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                62,
+                "expr.resultUnused",
+                "Expression \"$box\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                66,
+                "parameter.phpDocType",
+                "PHPDoc tag @param for parameter $box with type null is incompatible with native type ParameterNativeClamp\\Box.",
+                null,
+                true
+            ],
+            [
+                66,
+                "void.pure",
+                "Function ParameterNativeClamp\\nullDoc() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                68,
+                "expr.resultUnused",
+                "Expression \"$box\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                72,
+                "parameter.phpDocType",
+                "PHPDoc tag @param for parameter $box with type ParameterNativeClamp\\Box is incompatible with native type null.",
+                null,
+                true
+            ],
+            [
+                72,
+                "void.pure",
+                "Function ParameterNativeClamp\\nullNative() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                74,
+                "expr.resultUnused",
+                "Expression \"$box\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                78,
+                "void.pure",
+                "Function ParameterNativeClamp\\unionDoc() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                80,
+                "expr.resultUnused",
+                "Expression \"$box\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                83,
+                "void.pure",
+                "Function ParameterNativeClamp\\quiet() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                85,
+                "expr.resultUnused",
+                "Expression \"$box\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                86,
+                "expr.resultUnused",
+                "Expression \"$nullable\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                90,
+                "parameter.implicitlyNullable",
+                "Deprecated in PHP 8.4: Parameter #1 $box (ParameterNativeClamp\\Box) is implicitly nullable via default value null.",
+                null,
+                true
+            ],
+            [
+                90,
+                "void.pure",
+                "Function ParameterNativeClamp\\defaultNull() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                92,
+                "expr.resultUnused",
+                "Expression \"$box\" on a separate line does not do anything.",
+                null,
+                true
+            ]
+        ],
+        "types.php-9": [
+            [
+                10,
+                "parameter.phpDocType",
+                "PHPDoc tag @param for parameter $box with type ParameterNativeClamp\\Box|null is not subtype of native type ParameterNativeClamp\\Box.",
+                null,
+                true
+            ],
+            [
+                12,
+                "expr.resultUnused",
+                "Expression \"$box\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                13,
+                "expr.resultUnused",
+                "Expression \"$box?->value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                13,
+                "nullsafe.neverNull",
+                "Using nullsafe property access on non-nullable type ParameterNativeClamp\\Box. Use -> instead.",
+                null,
+                true
+            ],
+            [
+                14,
+                "expr.resultUnused",
+                "Expression \"isset($box?->value)\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                14,
+                "isset.expr",
+                "Expression in isset() is not nullable.",
+                null,
+                true
+            ],
+            [
+                15,
+                "expr.resultUnused",
+                "Expression \"$box?->nullable ?? 0\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                15,
+                "nullsafe.neverNull",
+                "Using nullsafe property access \"?->nullable\" on left side of ?? is unnecessary. Use -> instead.",
+                null,
+                true
+            ],
+            [
+                21,
+                "expr.resultUnused",
+                "Expression \"$box\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                22,
+                "expr.resultUnused",
+                "Expression \"$box?->value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                23,
+                "expr.resultUnused",
+                "Expression \"isset($box?->value)\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                23,
+                "nullsafe.neverNull",
+                "Using nullsafe property access \"?->value\" in isset() is unnecessary. Use -> instead.",
+                null,
+                true
+            ],
+            [
+                27,
+                "parameter.phpDocType",
+                "PHPDoc tag @param for parameter $box with type ParameterNativeClamp\\Child|null is not subtype of native type ParameterNativeClamp\\Box.",
+                null,
+                true
+            ],
+            [
+                29,
+                "expr.resultUnused",
+                "Expression \"$box\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                30,
+                "expr.resultUnused",
+                "Expression \"$box?->value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                30,
+                "nullsafe.neverNull",
+                "Using nullsafe property access on non-nullable type ParameterNativeClamp\\Child. Use -> instead.",
+                null,
+                true
+            ],
+            [
+                36,
+                "expr.resultUnused",
+                "Expression \"$box\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                37,
+                "expr.resultUnused",
+                "Expression \"$box?->value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                41,
+                "parameter.phpDocType",
+                "PHPDoc tag @param for parameter $box with type ParameterNativeClamp\\Box is not subtype of native type ParameterNativeClamp\\Child.",
+                null,
+                true
+            ],
+            [
+                41,
+                "void.pure",
+                "Function ParameterNativeClamp\\widerDoc() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                43,
+                "expr.resultUnused",
+                "Expression \"$box\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                47,
+                "parameter.phpDocType",
+                "PHPDoc tag @param for parameter $box with type ParameterNativeClamp\\Other|null is incompatible with native type ParameterNativeClamp\\Box.",
+                null,
+                true
+            ],
+            [
+                49,
+                "expr.resultUnused",
+                "Expression \"$box\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                50,
+                "expr.resultUnused",
+                "Expression \"$box?->value\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                50,
+                "nullsafe.neverNull",
+                "Using nullsafe property access on non-nullable type ParameterNativeClamp\\Box. Use -> instead.",
+                null,
+                true
+            ],
+            [
+                54,
+                "parameter.phpDocType",
+                "PHPDoc tag @param for parameter $box with type object|null is not subtype of native type ParameterNativeClamp\\Box.",
+                null,
+                true
+            ],
+            [
+                54,
+                "void.pure",
+                "Function ParameterNativeClamp\\objectDoc() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                56,
+                "expr.resultUnused",
+                "Expression \"$box\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                60,
+                "parameter.phpDocType",
+                "PHPDoc tag @param for parameter $box with type mixed is not subtype of native type ParameterNativeClamp\\Box.",
+                null,
+                true
+            ],
+            [
+                60,
+                "void.pure",
+                "Function ParameterNativeClamp\\mixedDoc() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                62,
+                "expr.resultUnused",
+                "Expression \"$box\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                66,
+                "parameter.phpDocType",
+                "PHPDoc tag @param for parameter $box with type null is incompatible with native type ParameterNativeClamp\\Box.",
+                null,
+                true
+            ],
+            [
+                66,
+                "void.pure",
+                "Function ParameterNativeClamp\\nullDoc() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                68,
+                "expr.resultUnused",
+                "Expression \"$box\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                72,
+                "parameter.phpDocType",
+                "PHPDoc tag @param for parameter $box with type ParameterNativeClamp\\Box is incompatible with native type null.",
+                null,
+                true
+            ],
+            [
+                72,
+                "void.pure",
+                "Function ParameterNativeClamp\\nullNative() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                74,
+                "expr.resultUnused",
+                "Expression \"$box\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                78,
+                "void.pure",
+                "Function ParameterNativeClamp\\unionDoc() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                80,
+                "expr.resultUnused",
+                "Expression \"$box\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                83,
+                "void.pure",
+                "Function ParameterNativeClamp\\quiet() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                85,
+                "expr.resultUnused",
+                "Expression \"$box\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                86,
+                "expr.resultUnused",
+                "Expression \"$nullable\" on a separate line does not do anything.",
+                null,
+                true
+            ],
+            [
+                90,
+                "parameter.implicitlyNullable",
+                "Deprecated in PHP 8.4: Parameter #1 $box (ParameterNativeClamp\\Box) is implicitly nullable via default value null.",
+                null,
+                true
+            ],
+            [
+                90,
+                "void.pure",
+                "Function ParameterNativeClamp\\defaultNull() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                92,
+                "expr.resultUnused",
+                "Expression \"$box\" on a separate line does not do anything.",
+                null,
+                true
+            ]
+        ],
+        "channels.php-0": [],
+        "channels.php-4": [],
+        "channels.php-9": []
+    }
+}
