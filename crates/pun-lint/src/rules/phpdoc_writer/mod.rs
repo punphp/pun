@@ -43,6 +43,7 @@ use super::php_parser::{previous_token_end, tokens};
 use super::require_named_argument_order::{Target, callee};
 use super::phpunit::annotations::reformatted;
 use super::rector_conditions::indentation;
+use super::types::declare::expression_order;
 use super::types::docblock::{class_members, class_name, is_this, method};
 use super::types::facts::facts;
 use super::types::names::resolve_written_class_name;
@@ -361,8 +362,18 @@ pub fn expr_type(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], expr: &Expressio
         }
         Expression::Call(Call::Method(c)) if is_this(c.object) => this_method_return_type(ctx, ancestors, c)
             .or_else(|| facts(ctx).full_type(node_span(expr)).and_then(phpstan_type)),
+        Expression::Conditional(_) => {
+            let facts = facts(ctx);
+            ordered_type(expression_order(expr, |e| facts.full_type(node_span(e)))?)
+        }
         _ => facts(ctx).full_type(node_span(expr)).and_then(phpstan_type),
     }
+}
+
+/// [`phpstan_type`] of a ternary's members in the order [`expression_order`] gives them (Mago's own order is not
+/// PHPStan's).
+fn ordered_type(types: Vec<&TAtomic>) -> Option<Type> {
+    phpstan_type(&TUnion::from_vec(types.into_iter().cloned().collect()))
 }
 
 /// Whether `expr` is one of PHP's superglobal variables.
@@ -500,6 +511,10 @@ pub fn native_expr_type(ctx: &Context<'_>, expr: &Expression<'_>) -> Option<Type
     let expr = unparenthesize(expr);
     match expr {
         Expression::Literal(_) => expr_type(ctx, &[], expr),
+        Expression::Conditional(_) => {
+            let facts = facts(ctx);
+            ordered_type(expression_order(expr, |e| facts.native_type(node_span(e)))?)
+        }
         _ => facts(ctx).native_type(node_span(expr)).and_then(phpstan_type),
     }
 }

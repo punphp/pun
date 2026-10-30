@@ -14,6 +14,7 @@ use pun_phpstan::types::{Accessory, Type, intersect, mixed};
 use pun_problem::{Edit, Fix, Safety, Span};
 
 use super::docblock::{FunctionLike, assignments, class_name, variable_name};
+use super::declare::expression_order;
 use super::facts::{Facts, facts};
 use super::silent_void::Place;
 use super::type_factory::{Created, infer_returns};
@@ -142,7 +143,7 @@ fn resolve(
         if !types.iter().all(|t| matches!(t, TAtomic::Array(_))) {
             return None;
         }
-        let types: Vec<Type> = types.iter().map(array_atomic).collect::<Option<_>>()?;
+        let types: Vec<Type> = types.iter().map(|a| array_atomic(a, &[])).collect::<Option<_>>()?;
         match types.len() {
             1 => types.into_iter().next().expect("one type"),
             _ => Type::Union(types),
@@ -157,7 +158,16 @@ fn resolve(
         if !is_array(native) {
             return None;
         }
-        array_type(native?)?
+        // the values appended to it, each ternary's members in PHPStan's order
+        let mut order = Vec::new();
+        for a in assignments(Node::Block(body)) {
+            if let Expression::ArrayAppend(append) = a.lhs
+                && variable_name(append.array) == Some(name)
+            {
+                order.extend(expression_order(a.rhs, |e| facts.native_type(node_span(e))).into_iter().flatten());
+            }
+        }
+        array_type(native?, &order)?
     };
     // processAddArrayReturnType()
     let at = node_span(f.parameters).end;
@@ -239,21 +249,24 @@ fn should_add_return_array_doc_type(t: &Type) -> bool {
 
 /// PHPStan's type of a native array as the scope builds it: Mago's non-empty list a `list<T>`
 /// (`AccessoryArrayListType`), a non-empty array with `NonEmptyArrayType`, its items alike; anything else as
-/// [`phpstan_type`] maps it.
-fn array_type(t: &TUnion) -> Option<Type> {
-    let mut types: Vec<Type> = t.types.iter().map(array_atomic).collect::<Option<_>>()?;
+/// [`phpstan_type`] maps it. A union's members come in the order of `order` (PHPStan's union of the values in the order
+/// they are added), the others after them.
+fn array_type(t: &TUnion, order: &[&TAtomic]) -> Option<Type> {
+    let mut atomics: Vec<&TAtomic> = t.types.iter().collect();
+    atomics.sort_by_key(|a| order.iter().position(|o| o == a).unwrap_or(order.len()));
+    let mut types: Vec<Type> = atomics.into_iter().map(|a| array_atomic(a, order)).collect::<Option<_>>()?;
     Some(match types.len() {
         1 => types.remove(0),
         _ => Type::Union(types),
     })
 }
 
-fn array_atomic(a: &TAtomic) -> Option<Type> {
+fn array_atomic(a: &TAtomic, order: &[&TAtomic]) -> Option<Type> {
     match a {
         // a non-empty one is what straight-line appends build (PHPStan's constant list); one that may be empty comes
         // from a loop, whose generalization PHPStan's scope keeps a plain `array<int<0, max>, T>`
         TAtomic::Array(TArray::List(l)) if l.known_elements.is_none() => {
-            let array = Type::array(Type::int_range(Some(0), None), array_type(&l.element_type)?);
+            let array = Type::array(Type::int_range(Some(0), None), array_type(&l.element_type, order)?);
             Some(match l.non_empty {
                 true => Type::Intersection(vec![array, Type::Accessory(Accessory::List)]),
                 false => array,
@@ -261,7 +274,7 @@ fn array_atomic(a: &TAtomic) -> Option<Type> {
         }
         TAtomic::Array(TArray::Keyed(k)) if k.known_items.is_none() && k.parameters.is_some() => {
             let (key, value) = k.parameters.as_ref()?;
-            let array = Type::array(phpstan_type(key)?, array_type(value)?);
+            let array = Type::array(phpstan_type(key)?, array_type(value, order)?);
             Some(if k.non_empty {
                 Type::Intersection(vec![array, Type::Accessory(Accessory::NonEmptyArray)])
             } else {

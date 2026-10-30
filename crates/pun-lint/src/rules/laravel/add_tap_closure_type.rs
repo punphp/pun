@@ -40,7 +40,7 @@ use super::print::set_param_type;
 use super::{is_name, member_name};
 use crate::rules::rector_code_quality::named;
 use crate::rules::types::class_scope;
-use crate::rules::types::declare::{return_declaration, union_order};
+use crate::rules::types::declare::{expression_order, return_declaration};
 use crate::rules::types::facts::{Facts, facts};
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -145,7 +145,8 @@ fn refactor_parameter(
             &[Member::Other],
         );
     }
-    let t = facts.full_type(node_span(unparenthesize(value)))?;
+    let value = unparenthesize(value);
+    let t = facts.full_type(node_span(value))?;
     // a `mixed`, a class the codebase does not know, `object` (Mago's type of a conditional return type PHPStan
     // resolves to `mixed`, a template's bound) and `never` (Mago's type of code it finds wrong)
     let unknown = |a: &TAtomic| match a {
@@ -161,7 +162,8 @@ fn refactor_parameter(
     if t.types.iter().any(unknown) {
         return None;
     }
-    let declared = declaration(&facts, &t.types, ctx.php_version)?;
+    let ordered = expression_order(value, |e| facts.full_type(node_span(e)))?;
+    let declared = declaration(&facts, ordered, ctx.php_version)?;
     let values = value_members(&facts, &t.types, own.as_deref());
     parameter_edit(ctx, ancestors, param, own.as_deref(), declared, &values)
 }
@@ -363,14 +365,14 @@ fn parameter_edit(
 
 /// The parameter declaration of a type: `Some(None)` where Rector has none (`null`, `never`, `void` alone),
 /// `None` where Pun does not know Rector's.
-fn declaration(facts: &Facts, types: &[TAtomic], php_version: u32) -> Option<Option<String>> {
+fn declaration(facts: &Facts, types: Vec<&TAtomic>, php_version: u32) -> Option<Option<String>> {
     if types
         .iter()
         .all(|a| matches!(a, TAtomic::Null | TAtomic::Never | TAtomic::Void))
     {
         return Some(None);
     }
-    let declared = return_declaration(union_order(types), &facts.codebase, php_version, &[], true)?;
+    let declared = return_declaration(types, &facts.codebase, php_version, &[], true)?;
     // `StaticTypeMapper`: `$this` and `static` are `self` but in a return type
     let self_named = |m: &str| match m {
         "static" => "self".to_string(),
