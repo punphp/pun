@@ -4,14 +4,28 @@ The one file for where Pun stands: how this folder works, every decision, the bu
 open questions. Rewritten 2026-10-17 after walking through every command with Pushpak; it replaces README.md,
 DECISIONS.md, TASKS.md and REQUESTS.md (their history is in git). Finished work is not listed; `git log` has it.
 
-## 0. Resume here (2026-10-29)
+## 0. Resume here (2026-10-30)
 
 One lead agent works on `main` and spawns subagents for independent slices in worktrees (AGENTS.md "How work runs").
 Pushpak resumed all commands on 2026-10-25. CI stays disabled.
 
 - **Counts** (local mapping.toml `ported = true`): format 168 of 168, lint 514 of 703, analyse 299 of 385.
   Pending: format 0, lint 189, analyse 86 (275 total). Ported rules still have the explicit parity gaps below.
-- **Latest verified batch:** singleton/dynamic property names, supplied and inherited generic arguments, and
+- **Latest verified batch:** source-owned builtin signature channels, live property initialization markers,
+  constructor exit joins, bounded helper summaries and native isset/coalescing transfers are verified on main.
+  The 540-partition frozen sweep covers all 782 analyser public/library tests across 135 targets,
+  1,315 rule cases and 2,787 level cases. Its original two failures are obsolete native-unavailability
+  assertions. Fresh PHPStan captures retain all 58 compound-read diagnostics, nineteen full reads and
+  all 23 capture-feedback records, adding nineteen native reads. Both corrected targets pass all five tests
+  on main without production changes. Unsupported compound operators remain explicitly unavailable.
+  All 56 targeted CLI tests, 88 PHPStan tests and 432 lint tests pass. All-dependency instrumentation passes
+  445 native analyser units and 23 public/control tests. Source-matched coverage is analyse 44,020/44,020,
+  PHPStan 10,747/10,747 and lint 39,338/39,338 after existing exclusions; all 808 changed production lines
+  are covered. All 173 exact-object exports are warning-free, with no unmatched runtime profiles.
+  Nine compiler-only profiles are independently matched to procedural-macro libraries and archived separately.
+  The docs build passes on 1,446 pages, with eleven rendered contract checks. No gap allowances change.
+  The 625 level gaps, 43 exact purity locations and fourteen rule gaps remain. Full parity is not complete.
+- **Previous isset/initializer batch:** singleton/dynamic property names, supplied and inherited generic arguments, and
   set-hook writable types now feed IssetCheck. Its advanced setting is independently overridable without
   changing other rules' levels. Nonliteral class-constant initializers retain conditional alternatives and
   array-addition order without selecting a runtime branch.
@@ -44,28 +58,42 @@ Pushpak resumed all commands on 2026-10-25. CI stays disabled.
   exclusions. The docs build passes on 1,446 pages, with thirteen rendered contract checks.
   There are still 625 level gaps, 43 exact purity locations and fourteen rule gaps. Full parity is not complete.
 - **Current work:** named-argument activation still needs coherent compound semantic signatures, including
-  signature-owned defaults/templates and separate native/PHPDoc return channels. The verified private builtin
-  metadata slice preserves all 37,001 existing variant records and passes all 88 PHPStan tests. The private
-  deferred key/value identity and resolution-boundary slice matches fifteen complete query records, passes
+  signature-owned defaults/templates and separate native/PHPDoc return channels. Builtin metadata now passes
+  the complete combined main gate, preserving all 37,001 existing variant records. The private deferred
+  key/value identity and resolution-boundary slice matches fifteen complete query records, passes
   89 PHPStan tests, 220 original rule cases and 440 level cases, and covers 63/63 changed production lines.
-  Predicate assertion channels, occurrence variance and void authority remain unfinished; the semantic
-  port is still red, with its guard and inactive mapping intact.
-  Isset activation still needs constructor exit-scope initialization and native certainty configuration.
-  Singleton/generic property reflection, independent advanced checks and nonliteral initializer order now
-  pass the combined frozen main fixture, CLI and coverage checks.
+  The queued callable assertion carrier matches thirty complete diagnostics, passes 92 PHPStan tests,
+  99 analyser tests, 409 original rule cases and 440 level cases, and covers 278/278 changed executable Rust
+  lines. Its private compound target improves to six passes/six failures, with 22 missing and no extra records.
+  Native callable overloads, occurrence variance and void authority remain unfinished. Occurrence variance
+  has a source owner. The semantic port is still red, with its guard and inactive mapping intact.
+  Isset activation still needs native certainty configuration. Constructor exit-scope initialization and
+  bounded helper selection now pass the complete combined main gate. Tied distinct declarations and
+  ambiguous carriers remain conservative.
   Copied class-constant ordering has a verified private correction with 76 complete oracle records.
-  Live property markers and the checker bridge have private proofs for constructor exit joins. The corrected
-  bridge passes all six library tests and covers 41/41 changed executable lines. The private direct-helper
-  port matches 159 diagnostic records. Its compound-selection follow-up matches 114 diagnostic records and
-  brings cumulative changed production coverage to 220/220; tied distinct declarations and ambiguous carriers
-  remain conservative. Private canonical conditional array addition matches 127 diagnostic records; exact-key
-  converter selection and its owning library prerequisite remain with the source owner.
-  The private native isset/coalescing carrier passes 42 tests, preserves 201 supported observations and
-  26 unavailable controls, and covers 297/297 changed production lines. Certainty configuration and its
-  IssetCheck consumer now have an independent owner. The retained 242 diagnostic records are oracle evidence,
-  not proof that the unimplemented consumer matches. A fresh top-level unset probe also differs: PHPStan
-  reports mixed/maybe-undefined, while Pun reports ErrorType/undefined.
-  CI stays disabled. Next: integrate the queued patches after the verified batch.
+  Private canonical conditional array addition matches 127 diagnostic records; its exact-key
+  converter correction now matches all 92 same-value records and forty unchanged narrowing/unset controls,
+  passes 91 tests and covers 5/5 changed production lines. The queued public 256-alternative fallback preserves
+  keys, values, nonemptiness and guaranteed offsets, matching 259 complete records and passing 93 tests with
+  62/62 changed production lines covered. Its owner now handles native-only array insertion order.
+  Native isset/coalescing carriers now pass the complete combined main gate, including assignment handoff
+  alongside marker writes. Their original 201 supported observations and 26 unavailable controls remain.
+  The strict certainty consumer remains uncommitted: 16/24 complete comparisons pass, with 56 missing records and no false-certainty
+  extras. Native continuation after calls, native unset, nullable/nullsafe receivers and native-only array order
+  are prerequisites; no full/PHPDoc fallback is accepted. The queued bounded call-continuation port matches
+  eleven supported values across 55 records, preserves 44 explicit unavailable controls and 110 once-only
+  visits, and covers 43/43 changed production lines. Eighty tests pass; one legacy post-strlen availability
+  assertion needs its independently proven update before integration. Queued native unset matches 31 supported
+  observations, preserves fourteen unavailable controls and 265 once-only events, passes 87 neighboring tests,
+  and covers 47/47 changed production lines. Its separate legacy unset-unavailability assertion needs updating.
+  The same owner now handles nullable-object parameters and nullsafe property observations.
+  The retained 242 diagnostic records are oracle evidence, not consumer parity. A private top-level unset
+  correction now matches all 67 complete diagnostics and twenty type/certainty observations, passes 69 tests
+  and covers 4/4 executable changed lines. Its queued counterfactual `!isset` follow-up matches 119 complete
+  records and 64 observations, passes 69 neighboring tests and covers 13/13 changed production lines.
+  The same owner now handles failed reads in reference-valued array literals. Typed-trait `instanceof`
+  descriptions also have a source owner; boolean-membership diagnostics remain a separate parity boundary.
+  CI stays disabled. Next: push the verified local batch, then integrate the queued bounded prerequisites.
 - **Preceding verified batch:** overflowing integer literals retain their PHP magnitude and radix-specific
   rounding, including values beyond `u128`. Fresh PHPStan captures match all 45 diagnostics and 171 literal
   kind/value/raw-byte/span records. All 393 combined partitions execute: 1,315 rule cases, 2,787 level cases,
@@ -1159,12 +1187,14 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | Work | Status |
 | --- | --- |
 | analyse 3: finish level 0 and the level-2 class rules; the current rule counts are in §0. Not yet: DebugScopeRule, DumpNativeTypeRule and FileAssertRule | todo |
-| analyse level 0 named arguments: complete MethodCallWithPossiblyRenamedNamedArgumentRule before activating its mapping | doing (the corrected snapshot passes all 2,787 level cases, 1,315 rule cases and 765 public/library tests; the expanded mixed-policy generic-proxy regression matches all thirty records and the CLI matches all four JSON records; source-matched coverage is complete; ordinary compound semantic argument/reference/template checks remain explicitly guarded, so the mapping stays inactive) |
-| analyse compound method signatures: retain combined semantic parameter, reference, template and return metadata through the ordinary shared argument checker | doing (the private builtin metadata slice passes all 88 PHPStan tests, preserves all 37,001 old variant records and covers 7/7 changed Rust lines; private deferred key/value identities and their resolution boundary pass 89 PHPStan tests, 26 neighbors, 220 rule and 440 level cases and cover 63/63 changed production lines; two privately removed obsolete gaps are not yet removed on main; the semantic target remains 3 passed/9 failed, with 28 missing and four extra records; predicate assertion channels now have a source owner, while occurrence variance and void authority remain; the compound guard and inactive mapping stay intact) |
-| analyse isset diagnostics: complete IssetCheck and whole-rule activation | doing (refined keys, property reflection and independent checkAdvancedIsset corrections pass the complete combined main gate and coverage; the private live PropertyInitializationExpr facility covers 250/250 changed lines, and its corrected checker bridge matches 129 complete records, passes all six library tests and covers 41/41 changed executable lines; the private direct-helper port matches 159 diagnostic records, and its compound-selection follow-up passes 79 tests, matches 31 marker and 114 diagnostic records, and brings cumulative helper production coverage to 220/220; tied distinct declarations and ambiguous carriers remain conservative; a pruning-only failure was not reproduced; native certainty configuration remains separate; mapping stays inactive) |
-| analyse by-reference capture feedback: complete local and escaped invocation semantics | doing (read-only captured values, reference feedback and unused-capture flow pass the complete combined gate and coverage; broader escaped invocation semantics remain) |
-| analyse native certainty observations: preserve native argument values through checking calls, native object returns and diagnostic-only dumps before completing PHPDoc-certainty tips | doing (argument observations, bookkeeping and function tips pass the full combined gate and source-matched coverage; the queued native isset/coalescing carrier passes 42 tests, preserves 201 supported observations and 26 unavailable controls, and covers 297/297 changed production lines without changing full-result provenance or visit order; its 242 diagnostic records remain oracle-only evidence; the same owner is porting certainty retention and the scoped IssetCheck consumer, without replay or full-type fallback; broader certainty/tip options remain deferred) |
-| analyse nonliteral initializer order: retain insertion order through array-union and conditional class-constant initializers | doing (the direct correction passes the complete combined main gate and coverage; private proof matches 59 complete records, passes 61 tests and covers 119/119 changed lines; the queued scoped constant-provenance correction matches 76 complete records, passes 105 tests and covers 206/206 changed lines; private canonical conditional array addition matches 127 complete records and covers 160/160 changed production lines, but oversized fallback is unproven; the owner is correcting exact-key converter selection and its library initializer prerequisite; global order, numeric-string arithmetic and dynamic PHP_OS key descriptions remain separate) |
+| analyse level 0 named arguments: complete MethodCallWithPossiblyRenamedNamedArgumentRule before activating its mapping | doing (the corrected snapshot passes all 2,787 level cases, 1,315 rule cases and 782 public/library tests; the expanded mixed-policy generic-proxy regression matches all thirty records and the CLI matches all four JSON records; source-matched coverage is complete; ordinary compound semantic argument/reference/template checks remain explicitly guarded, so the mapping stays inactive) |
+| analyse compound method signatures: retain combined semantic parameter, reference, template and return metadata through the ordinary shared argument checker | doing (the builtin metadata slice passes the complete combined main gate and all 88 owning PHPStan tests, retaining all 37,001 old variants; private deferred identities and their resolution boundary cover 63/63 changed production lines; the queued predicate carrier matches thirty complete diagnostics, passes 92 PHPStan and 99 analyser tests, 409 rule cases and 440 level cases, and covers 278/278 changed executable Rust lines; the private compound target improves to six passes/six failures, with 22 missing and no extra records; native callable overloads, occurrence variance and void authority remain unfinished; occurrence variance has a source owner; two privately removed gaps remain on main, and the original thirteen private signature lines remain uncovered; the compound guard and inactive mapping stay intact) |
+| analyse isset diagnostics: complete IssetCheck and whole-rule activation | doing (live markers, the corrected checker bridge and bounded helper summaries pass the complete combined main fixture, CLI and source-matched coverage gate; private facility coverage is 250/250 changed lines; the corrected bridge matches 129 complete records, passes all six library tests and covers 41/41 changed executable lines; direct-helper captures match 159 diagnostic records; the compound-selection follow-up passes 79 tests, matches 31 marker and 114 diagnostic records, and brings cumulative helper production coverage to 220/220; tied distinct declarations and ambiguous carriers remain conservative; a pruning-only failure was not reproduced; native certainty configuration remains separate; mapping stays inactive) |
+| analyse by-reference capture feedback: complete local and escaped invocation semantics | doing (read-only captured values, reference feedback and unused-capture flow pass the complete combined gate and coverage; all 23 freshly recaptured full/native records now pass without the obsolete scalar/array unavailability allowances; broader escaped invocation semantics remain) |
+| analyse native certainty observations: preserve native argument values through checking calls, native object returns and diagnostic-only dumps before completing PHPDoc-certainty tips | doing (the native isset/coalescing carrier passes the complete combined main gate, preserves 201 supported observations and 26 unavailable controls, and covers 297/297 changed production lines without changing full-result provenance or visit order; its 242 diagnostic records remain oracle-only evidence; strict certainty-consumer WIP passes 16/24 complete comparisons but misses 56 records, with no false-certainty extras; queued bounded call continuation passes eighty tests, matches eleven supported values across 55 records, preserves 44 unavailable controls and 110 once-only visits, and covers 43/43 changed production lines; queued native unset matches 31 supported observations, retains fourteen unavailable controls and 265 once-only events, passes 87 neighboring tests and covers 47/47 changed production lines; two obsolete native-lane assertions need their proven updates before integration; nullable/nullsafe receivers and native-only array order have separate source owners; no replay or full/PHPDoc fallback; broader certainty/tip options remain deferred) |
+| analyse nonliteral initializer order: retain insertion order through array-union and conditional class-constant initializers | doing (the direct correction passes the complete combined main gate and coverage; the queued scoped provenance correction matches 76 complete records and covers 206/206 changed lines; private conditional addition matches 127 records and covers 160/160 changed production lines; its exact-key correction matches 92 same-value records and forty unchanged controls, passing 91 tests with 5/5 changed lines covered; the queued public 256-alternative fallback matches 259 complete records, passes 93 tests and covers 62/62 changed production lines, with its generic return reached 27 times by passing public inputs; its owner now handles native-only insertion order; global order, numeric-string arithmetic, dynamic PHP_OS keys and broader oversized/open arrays remain separate) |
+| analyse trait instanceof descriptions: preserve the shared PHPStan type description for typed receivers, not only this and mixed | doing (the public Project probe misses the complete typed-object diagnostic while its other seven records match; an isolated source owner is porting the description contract) |
+| analyse reference-array and boolean-membership boundaries: preserve failed read types inside reference-valued literals and avoid extra narrowing diagnostics for a bool in a complete true/false array | doing (fresh complete oracle and Pun records are retained in /tmp/pun-live-initialization-public-controls/boundary-{phpstan,pun}.json; failed reference-array reads have an isolated source owner; the boolean-membership correction remains todo; public coverage controls use independently verified supported cases without weakening these failures) |
 | analyse native-object PHPDoc shapes: retain object-shape refinements on parameters declared `object` | todo (the untyped shape controls retain the shape, but native-object inputs erase it; independently captured dumps remain in /tmp/pun-sentinel-verification-evidence) |
 | analyse pure-void diagnostics: report void.pure for pure functions whose bodies only unset values and dump types | doing (the declaration-effects port integrates and all three owning public tests pass on main; its private regression matches 98 complete PHPStan records across seven levels and covers 31/31 changed production lines; nested/property roots, reference-aware offset writes and complete PureFunctionRule/PureMethodRule activation remain deferred) |
 | analyse exit match conditions: report match.alwaysFalse when an exit expression terminates a match condition | todo (the yielded-condition delivery control passes, while the exit-condition probe misses the upstream record; failing comparisons remain in /tmp/pun-sentinel-verification-evidence/refined.log) |
@@ -1173,7 +1203,7 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | analyse invalid-generator recovery: preserve mixed property values when erroneous PHPDoc prevents a yield send type | todo (PHPStan's public probe returns mixed; source predicts a never fallback, but combined Pun reproduction remains) |
 | analyse independent argument options (needs Pushpak): choose Pun option ownership for checkFunctionArgumentTypes, checkArgumentsPassedByReference and checkThisOnly without coupling their values to one aggregate rule level | needs Pushpak (default: preserve independent analyser API overrides and level-derived preset defaults; reject unrepresentable migration overrides explicitly rather than changing the level or silently losing settings) |
 | analyse level 0 arrays: complete DuplicateKeysInLiteralArraysRule beyond the verified scalar/constant keys, sealed unpacking and byte-exact literal keys; identifier boundaries still use UTF-8 text | doing (shared quoted-key decoding, byte-based tokenization and comment ingestion pass the complete combined gate and coverage; identifier handling and whole-rule activation remain incomplete) |
-| analyse level 0 variables: port DefinedVariableRule and CompactVariablesRule on shared variable-certainty observations, including assign/undefined-allowed contexts, dynamic names and the CLI/maybe-undefined switches | doing (nested dynamic-name reads, stable array-offset filtering, literal string-byte offsets and scope-pollution settings pass the complete combined gate and coverage; a fresh top-level assignment/unset/read probe expects mixed and maybe-undefined from PHPStan but produces ErrorType and definitely-undefined in Pun; general scope joins and compact's independent selector decision remain separate; no whole-rule activation) |
+| analyse level 0 variables: port DefinedVariableRule and CompactVariablesRule on shared variable-certainty observations, including assign/undefined-allowed contexts, dynamic names and the CLI/maybe-undefined switches | doing (nested dynamic-name reads, stable array-offset filtering, literal string-byte offsets and scope-pollution settings pass the complete combined gate and coverage; the queued top-level unset correction matches 67 complete diagnostics and twenty observations, passes 69 tests and covers 4/4 executable changed lines; counterfactual !isset globals still have four extra/four missing records and remain with the same source owner; general scope joins and compact's independent selector decision remain separate; no whole-rule activation) |
 | analyse level 0 unset: port UnsetRule's readonly and hooked-property checks, recursive offset checks and definitely-undefined local checks through shared reflection, types and certainty | doing (27 integrated public tests and ten exported cases pass; required-interface native reflection and annotation writable types are integrated; fresh captures cover the bounded reflection contracts; complete rule activation and combined coverage remain) |
 | analyse level 0 attributes: complete the twelve existing attribute-rule contracts against AttributesCheck, including constructor types and version/named-argument controls, before activating their mappings | doing (explicit aliases, parenthesized flags and shared trait-constructor reflection integrated; isolated reflection controls match 9/41/45 oracle diagnostics at levels 0/5/6; conditional/coalesce initializer inference remains isolated; combined gates running; mapping stays unported) |
 | analyse shared class names: carry imported-name and internal-class case options through the shared ClassCaseSensitivityCheck, preserving explicit aliases and written-name distinctions | doing (isolated source port against fresh PHPStan controls; qualified special-name parser validation and source-only class_alias provenance remain separate attribute boundaries) |

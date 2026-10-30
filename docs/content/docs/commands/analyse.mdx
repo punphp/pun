@@ -155,6 +155,11 @@ Multiline diagnostics use the `isset` construct's line. Whole-rule parity remain
 The analyser API honors `checkAdvancedIsset` independently of the level without changing other rules' levels.
 For single-class receivers, property checks resolve singleton dynamic names and retain supplied or inherited generic arguments.
 Property nullability checks use a set hook's writable parameter type when present.
+Literal `$this->property` checks read PHPStan's virtual initialization markers from the incoming scope, including before `??=` writes.
+Constructor summaries join normal and explicit-return exits. Throwing exits do not contribute, and explicit returns retain their scope before `finally`.
+Same-class instance methods receive those summaries unless serialization can bypass the constructor.
+Eligible constructor helper calls contribute non-transitive summaries from methods in the same file with at most 50 lines between their start and end.
+Ambiguous compound helper declarations remain conservative. `unset` does not clear these virtual markers.
 Integer-to-string casts retain decimal-integer-string precision, including bounded ranges and independent native types.
 Array offset checks coerce definite decimal-integer strings to integer keys; string offset checks retain the raw key type.
 For `isset` and null coalescing, array keys also convert broad booleans to `0|1` and broad floats to integers.
@@ -179,6 +184,7 @@ Per-name filtered observations for dynamic method calls remain incomplete.
 
 For supported native expressions, constant `if` checks distinguish documented types from native types when adding PHPStan's PHPDoc-certainty tip.
 Function type-predicate checks use each argument's evaluated native type to decide that tip.
+Native array literals, offsets, `isset` operands and coalescing assignments retain separate evaluated values without replacing documented results or repeating expression evaluation.
 Unsupported native transfers remain unavailable and do not imply PHPDoc certainty.
 The remaining-cases tip takes precedence. Global certainty options remain incomplete.
 

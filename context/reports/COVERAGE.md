@@ -6,19 +6,23 @@ The two supported-only `r` modifier lines need the newer engine. Its expectation
 PHP and PCRE2 fixtures, not the orb's PHP 8.5.12 oracle, which links 10.42.
 Combine exports only when their token sources are byte-identical.
 
-The combined isset/initializer gate passes all 769 analyser public/library tests, 1,315 rule cases
-and 2,787 level cases in 520 disjoint bounded partitions. It also passes 56 targeted CLI tests,
-including all forty unchanged format comparisons split across four checkpointable tests. Diagnostic
-captures and gap allowances remain unchanged. The preceding source-owned gate passes all 445 native
-analyser units, 88 PHPStan tests and 432 lint tests.
+The combined live-initialization gate covers all 782 analyser public/library tests, 1,315 rule cases
+and 2,787 level cases in 540 disjoint bounded partitions. Its original two failures are obsolete
+native-unavailability assertions for coalescing assignments and capture feedback. Independent PHPStan
+recaptures preserve all existing diagnostic and full-type records. Both corrected targets pass all
+five tests on main without production changes; the original failures remain in the frozen evidence.
+All 56 targeted CLI tests, 88 PHPStan tests and 432 lint tests pass. The all-dependency instrumented
+gate passes 445 native analyser units and 23 public/control tests. No gap allowances change.
 
-Source-matched coverage is 44,105/44,105 analyser lines, 39,338/39,338 lint lines and 10,740/10,740
+Source-matched coverage is 44,020/44,020 analyser lines, 39,338/39,338 lint lines and 10,747/10,747
 PHPStan lines after existing exclusions. These counts supersede the older generated table below.
-No new exclusions are added. Every combined source record has the same SHA-256 as the measured source.
+All 808 changed executable production lines are covered. No new exclusions are added.
+Every combined source record has the same SHA-256 as the measured source.
 Coverage exports pair each executable with its build-ID-matched profiles from the verified gate.
-The CLI children's profiles retain the real Pun executable's coverage. A separate initializer fallback
-probe matches four complete PHPStan JSON records byte for byte. Exact-object exports are warning-free,
-with no unmatched profiles. Completed executables are retired only after preserving their source,
+The CLI children's profiles retain the real Pun executable's coverage. All 173 exact-object exports
+are warning-free, with no unmatched runtime profiles. Nine compiler-only profiles match procedural-macro
+library build IDs and remain separately archived; they are not runtime coverage.
+Completed executables are retired only after preserving their source,
 object, profile and export hashes; cached exports reject changed profiles or source manifests.
 Declaration-only module files contain no executable lines.
 
@@ -70,10 +74,10 @@ Uncovered lines:
 - `crates/pun-analyse/src/rules/return_types.rs:1316-1318` the same for the Closure method return provider.
 - `crates/pun-analyse/src/rules/larastan/relations.rs:180` RelationExistenceRule's relation method declared by one of PHP's own classes: a model extends Eloquent's Model, which extends none of them, so its methods are always the user's.
 - `crates/pun-analyse/src/laravel/mod.rs:506-513` `Provider::meta()` of the model-attribute hook: Mago's `Provider` trait requires it, but `PluginRegistry` reads `meta()` only for its own library plugins, never for a registered expression hook, and the hook struct is private.
-- `crates/pun-analyse/src/rules/infer.rs:347-350` `Provider::meta()` of the definedness hook: as for the model-attribute hook's above, `PluginRegistry` never reads it for a registered expression hook.
+- `crates/pun-analyse/src/rules/infer.rs:363-366` `Provider::meta()` of the definedness hook: as for the model-attribute hook's above, `PluginRegistry` never reads it for a registered expression hook.
 - `crates/pun-analyse/src/mago.rs:74` the upstream-panic fallback that skips only the failing file. The former debug-panic.php (`int&mixed`) no longer triggers it, and signed integer division overflow is now fixed in the maintained analyzer. The containment guard remains for unexpected upstream failures.
 - `crates/pun-analyse/src/rules/types/convert.rs:838` a symbolic class-constant array key (`array{Foo::BAR: int}`): canonical expansion resolves known literal keys before conversion. Unknown or nonliteral keys can remain symbolic inside Mago, but no public input is known to carry one into this converter. The fallback returns `Error`. This is the existing exclusion shifted by type conversion handling, not a newly excluded branch.
-- `crates/pun-phpstan/src/symbols.rs:156-158` `Visitor::expecting()` of the symbols.json map reader: serde calls it only to word the error for malformed input, and symbols.json is compiled in (every map in it is an object or `[]`).
+- `crates/pun-phpstan/src/symbols.rs:167-169` `Visitor::expecting()` of the symbols.json map reader: serde calls it only to word the error for malformed input, and symbols.json is compiled in (every map in it is an object or `[]`).
 - `crates/pun-lint/src/rules/laravel/prefer_nullsafe.rs:49` the non-target node guard: `Linter` dispatches this rule only for MethodCall and PropertyAccess, as its `targets()` requires.
 - `crates/pun-lint/src/rules/laravel/prefer_env_helper.rs:34` the non-target node guard: `Linter` dispatches only ArrayAccess for this rule.
 - `crates/pun-lint/src/rules/add_csv_escape_argument.rs:71` the non-target node guard: `Linter` dispatches only FunctionCall and MethodCall for this rule.
