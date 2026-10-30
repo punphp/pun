@@ -22,9 +22,7 @@ pub(in super::super) fn find(c: &Checker, program: &Program) -> Statements {
         c,
         out: Statements::default(),
     };
-    if c.level >= 4 {
-        finder.walk_program(program, &mut ());
-    }
+    finder.walk_program(program, &mut ());
     finder.out
 }
 
@@ -82,7 +80,9 @@ impl Finder<'_, '_, '_> {
                                 | Statement::HaltCompiler(_)
                         ))
                 });
-            if let Some(next) = next {
+            if self.c.level >= 4
+                && let Some(next) = next
+            {
                 self.out.reported.insert(next.span());
             }
         }

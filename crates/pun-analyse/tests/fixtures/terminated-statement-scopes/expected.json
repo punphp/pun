@@ -1,0 +1,295 @@
+{
+    "phar_sha256": "85157dba3d95d77ca603d2b7303aa78a538f9e3b56ccad07dd794c53aa96d1ae",
+    "levels": [
+        [
+            [
+                "input.php",
+                28,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "input.php",
+                39,
+                "function.inner",
+                "Inner named functions are not supported by PHPStan. Consider refactoring to an anonymous function, class method, or a top-level-defined function. See issue #165 (https://github.com/phpstan/phpstan/issues/165) for more details.",
+                null,
+                true
+            ],
+            [
+                "input.php",
+                40,
+                "function.notFound",
+                "Function missingFromDeclaration not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ],
+            [
+                "input.php",
+                44,
+                "function.notFound",
+                "Function missingFromMethod not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ]
+        ],
+        [
+            [
+                "input.php",
+                28,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "input.php",
+                39,
+                "function.inner",
+                "Inner named functions are not supported by PHPStan. Consider refactoring to an anonymous function, class method, or a top-level-defined function. See issue #165 (https://github.com/phpstan/phpstan/issues/165) for more details.",
+                null,
+                true
+            ],
+            [
+                "input.php",
+                40,
+                "function.notFound",
+                "Function missingFromDeclaration not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ],
+            [
+                "input.php",
+                44,
+                "function.notFound",
+                "Function missingFromMethod not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ]
+        ],
+        [
+            [
+                "input.php",
+                2,
+                "void.pure",
+                "Function returned() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "input.php",
+                15,
+                "void.pure",
+                "Function bothBranches() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "input.php",
+                28,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "input.php",
+                37,
+                "void.pure",
+                "Function declarations() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "input.php",
+                39,
+                "function.inner",
+                "Inner named functions are not supported by PHPStan. Consider refactoring to an anonymous function, class method, or a top-level-defined function. See issue #165 (https://github.com/phpstan/phpstan/issues/165) for more details.",
+                null,
+                true
+            ],
+            [
+                "input.php",
+                40,
+                "function.notFound",
+                "Function missingFromDeclaration not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ],
+            [
+                "input.php",
+                44,
+                "function.notFound",
+                "Function missingFromMethod not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ]
+        ],
+        [
+            [
+                "input.php",
+                2,
+                "void.pure",
+                "Function returned() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "input.php",
+                15,
+                "void.pure",
+                "Function bothBranches() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "input.php",
+                28,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "input.php",
+                37,
+                "void.pure",
+                "Function declarations() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "input.php",
+                39,
+                "function.inner",
+                "Inner named functions are not supported by PHPStan. Consider refactoring to an anonymous function, class method, or a top-level-defined function. See issue #165 (https://github.com/phpstan/phpstan/issues/165) for more details.",
+                null,
+                true
+            ],
+            [
+                "input.php",
+                40,
+                "function.notFound",
+                "Function missingFromDeclaration not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ],
+            [
+                "input.php",
+                44,
+                "function.notFound",
+                "Function missingFromMethod not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ]
+        ],
+        [
+            [
+                "input.php",
+                2,
+                "void.pure",
+                "Function returned() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "input.php",
+                4,
+                "deadCode.unreachable",
+                "Unreachable statement - code above always terminates.",
+                null,
+                true
+            ],
+            [
+                "input.php",
+                9,
+                "deadCode.unreachable",
+                "Unreachable statement - code above always terminates.",
+                null,
+                true
+            ],
+            [
+                "input.php",
+                13,
+                "deadCode.unreachable",
+                "Unreachable statement - code above always terminates.",
+                null,
+                true
+            ],
+            [
+                "input.php",
+                15,
+                "void.pure",
+                "Function bothBranches() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "input.php",
+                21,
+                "deadCode.unreachable",
+                "Unreachable statement - code above always terminates.",
+                null,
+                true
+            ],
+            [
+                "input.php",
+                28,
+                "offsetAccess.noDim",
+                "Cannot use [] for reading.",
+                null,
+                false
+            ],
+            [
+                "input.php",
+                34,
+                "deadCode.unreachable",
+                "Unreachable statement - code above always terminates.",
+                null,
+                true
+            ],
+            [
+                "input.php",
+                37,
+                "void.pure",
+                "Function declarations() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "input.php",
+                39,
+                "function.inner",
+                "Inner named functions are not supported by PHPStan. Consider refactoring to an anonymous function, class method, or a top-level-defined function. See issue #165 (https://github.com/phpstan/phpstan/issues/165) for more details.",
+                null,
+                true
+            ],
+            [
+                "input.php",
+                39,
+                "deadCode.unreachable",
+                "Unreachable statement - code above always terminates.",
+                null,
+                true
+            ],
+            [
+                "input.php",
+                40,
+                "function.notFound",
+                "Function missingFromDeclaration not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ],
+            [
+                "input.php",
+                44,
+                "function.notFound",
+                "Function missingFromMethod not found.",
+                "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                true
+            ]
+        ]
+    ]
+}
