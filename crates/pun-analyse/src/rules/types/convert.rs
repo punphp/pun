@@ -80,7 +80,51 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         t: &TUnion,
         types: &HashMap<Span, TUnion, impl BuildHasher>,
     ) -> Type {
+        // The native observation map is a separate authority, not a PHPDoc-aware selected scope.
+        // Compare map identity, never equal values: an unrelated selected map keeps its own policy.
+        if std::ptr::eq(
+            std::ptr::from_ref(types).cast::<()>(),
+            std::ptr::from_ref(&self.native_types).cast::<()>(),
+        ) {
+            return self.native_type_from(e.span(), t);
+        }
         self.phpstan_type_from_with(e, t, types, ConversionScope::Selected)
+    }
+
+    fn native_type_from(&self, at: Span, actual: &TUnion) -> Type {
+        let actual = self.to_phpstan(actual);
+        self.native_source_order(at)
+            .map_or(actual.clone(), |source| restore_metadata(actual, &source, false))
+    }
+
+    /// `getNativeType` promotes native observations, not parameter or annotation PHPDoc.
+    /// Only literal, copy and offset edges provide an order, with every dependency observed natively.
+    fn native_source_order(&self, at: Span) -> Option<Type> {
+        self.native_types.get(&at)?;
+        match self.origins.get(&at)? {
+            infer::Origin::Copy(from) => self.native_source_order(*from),
+            infer::Origin::Array(items) => {
+                let mut builder = ShapeBuilder::new();
+                for (key, value) in items {
+                    let key = match key {
+                        Some(key) => Some(array_key(self.to_phpstan(self.native_types.get(key)?))?),
+                        None => None,
+                    };
+                    let actual = self.native_types.get(value)?;
+                    builder.set(key, self.native_type_from(*value, actual), false);
+                }
+                Some(builder.get())
+            }
+            infer::Origin::Offset(array, key) => {
+                let Type::ConstArray(source) = self.native_source_order(*array)? else {
+                    return None;
+                };
+                let key = array_key(self.to_phpstan(self.native_types.get(key)?))?;
+                source.keys.iter().position(|k| *k == key).map(|i| source.values[i].clone())
+            }
+            // Declarations, calls and forgotten mutations are not native order evidence.
+            _ => None,
+        }
     }
 
     fn phpstan_type_from_with(

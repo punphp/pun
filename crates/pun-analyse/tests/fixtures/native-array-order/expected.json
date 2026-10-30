@@ -1,0 +1,663 @@
+{
+    "version": "2.3.1",
+    "phar_sha256": "85157dba3d95d77ca603d2b7303aa78a538f9e3b56ccad07dd794c53aa96d1ae",
+    "sources": {
+        "project": "a171fc1367afe26a5eee84296cdb67b0ce677ec77ce87deb1d2162aaca08e610",
+        "native": "525ecc30e7b2eaa50afe609fe016b119b8acc76db58ab2919e75abcc9f710657",
+        "consumer": "de2efb046e3b082a30f5a9e422f7ed048a44fb6020a3065cde0213f7ffca5e76"
+    },
+    "errors": {
+        "project/0/certain": [
+            [
+                "project.php",
+                20,
+                "array.duplicateKey",
+                "Array has 2 duplicate keys with value 'second' ('second', 'second').",
+                null,
+                true
+            ]
+        ],
+        "project/4/certain": [
+            [
+                "project.php",
+                14,
+                "function.alreadyNarrowedType",
+                "Call to function is_array() with array{z: array{second: null, first: 1}, a: 2} will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "project.php",
+                15,
+                "function.alreadyNarrowedType",
+                "Call to function is_array() with array{second: null, first: 1} will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "project.php",
+                20,
+                "array.duplicateKey",
+                "Array has 2 duplicate keys with value 'second' ('second', 'second').",
+                null,
+                true
+            ],
+            [
+                "project.php",
+                21,
+                "function.alreadyNarrowedType",
+                "Call to function is_array() with array{second: null, first: 1} will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "project.php",
+                23,
+                "function.alreadyNarrowedType",
+                "Call to function is_array() with array{1: 'second', 0: 'first'} will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "project.php",
+                31,
+                "function.alreadyNarrowedType",
+                "Call to function is_array() with array{a: 2, z: 3} will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "project.php",
+                32,
+                "function.alreadyNarrowedType",
+                "Call to function is_array() with array{second: null, first: 1} will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "project.php",
+                39,
+                "function.alreadyNarrowedType",
+                "Call to function is_array() with array{int} will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "project.php",
+                41,
+                "function.alreadyNarrowedType",
+                "Call to function is_array() with array{3, 1} will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "project.php",
+                7,
+                "function.alreadyNarrowedType",
+                "Call to function is_array() with array{second: null, first: 1} will always evaluate to true.",
+                null,
+                true
+            ]
+        ],
+        "project/5/certain": [
+            [
+                "project.php",
+                14,
+                "function.alreadyNarrowedType",
+                "Call to function is_array() with array{z: array{second: null, first: 1}, a: 2} will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "project.php",
+                15,
+                "function.alreadyNarrowedType",
+                "Call to function is_array() with array{second: null, first: 1} will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "project.php",
+                20,
+                "array.duplicateKey",
+                "Array has 2 duplicate keys with value 'second' ('second', 'second').",
+                null,
+                true
+            ],
+            [
+                "project.php",
+                21,
+                "function.alreadyNarrowedType",
+                "Call to function is_array() with array{second: null, first: 1} will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "project.php",
+                23,
+                "function.alreadyNarrowedType",
+                "Call to function is_array() with array{1: 'second', 0: 'first'} will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "project.php",
+                31,
+                "function.alreadyNarrowedType",
+                "Call to function is_array() with array{a: 2, z: 3} will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "project.php",
+                32,
+                "function.alreadyNarrowedType",
+                "Call to function is_array() with array{second: null, first: 1} will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "project.php",
+                39,
+                "function.alreadyNarrowedType",
+                "Call to function is_array() with array{int} will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "project.php",
+                41,
+                "function.alreadyNarrowedType",
+                "Call to function is_array() with array{3, 1} will always evaluate to true.",
+                null,
+                true
+            ],
+            [
+                "project.php",
+                7,
+                "function.alreadyNarrowedType",
+                "Call to function is_array() with array{second: null, first: 1} will always evaluate to true.",
+                null,
+                true
+            ]
+        ],
+        "native/0/certain": [
+            [
+                "native.php",
+                14,
+                "phpstan.dumpNativeType",
+                "Dumped type: array{second: null, first: 1}",
+                null,
+                false
+            ],
+            [
+                "native.php",
+                19,
+                "array.duplicateKey",
+                "Array has 2 duplicate keys with value 'second' ('second', 'second').",
+                null,
+                true
+            ],
+            [
+                "native.php",
+                20,
+                "phpstan.dumpNativeType",
+                "Dumped type: array{second: null, first: 1}",
+                null,
+                false
+            ],
+            [
+                "native.php",
+                26,
+                "phpstan.dumpNativeType",
+                "Dumped type: array{1: 'second', 0: 'first'}",
+                null,
+                false
+            ],
+            [
+                "native.php",
+                32,
+                "phpstan.dumpNativeType",
+                "Dumped type: array",
+                null,
+                false
+            ],
+            [
+                "native.php",
+                38,
+                "phpstan.dumpNativeType",
+                "Dumped type: mixed",
+                null,
+                false
+            ],
+            [
+                "native.php",
+                45,
+                "phpstan.dumpNativeType",
+                "Dumped type: mixed",
+                null,
+                false
+            ],
+            [
+                "native.php",
+                51,
+                "phpstan.dumpNativeType",
+                "Dumped type: non-empty-array<string, 1>",
+                null,
+                false
+            ],
+            [
+                "native.php",
+                58,
+                "phpstan.dumpNativeType",
+                "Dumped type: array{second: null, first: 1}",
+                null,
+                false
+            ],
+            [
+                "native.php",
+                7,
+                "phpstan.dumpNativeType",
+                "Dumped type: array{second: null, first: 1}",
+                null,
+                false
+            ]
+        ],
+        "consumer/0/certain": [
+            [
+                "consumer.php",
+                37,
+                "array.duplicateKey",
+                "Array has 2 duplicate keys with value 'second' ('second', 'second').",
+                null,
+                true
+            ]
+        ],
+        "consumer/0/native": [
+            [
+                "consumer.php",
+                37,
+                "array.duplicateKey",
+                "Array has 2 duplicate keys with value 'second' ('second', 'second').",
+                null,
+                true
+            ]
+        ],
+        "consumer/4/certain": [
+            [
+                "consumer.php",
+                14,
+                "isset.offset",
+                "Offset 'first' on array{second: null, first: 1} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                20,
+                "isset.offset",
+                "Offset 0 on list{object, non-empty-string}&callable(): mixed in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                26,
+                "isset.offset",
+                "Offset 0 on list{object, non-empty-string}&callable(): mixed in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                32,
+                "isset.offset",
+                "Offset 0 on array{1: 'second', 0: 'first'} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                37,
+                "array.duplicateKey",
+                "Array has 2 duplicate keys with value 'second' ('second', 'second').",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                38,
+                "isset.offset",
+                "Offset 'first' on array{second: null, first: 1} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                44,
+                "isset.offset",
+                "Offset 0 on array{3, 1} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                52,
+                "isset.offset",
+                "Offset 'a' on array{a: 2, z: 3} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                52,
+                "isset.offset",
+                "Offset 'first' on array{second: null, first: 1} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                59,
+                "isset.offset",
+                "Offset 0 on array{int} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                66,
+                "isset.offset",
+                "Offset 'first' on array{second: null, first: int} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                7,
+                "isset.offset",
+                "Offset 'first' on array{second: null, first: 1} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                79,
+                "isset.offset",
+                "Offset 'only' on array{only: 1} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                86,
+                "isset.offset",
+                "Offset 0 on list{object, non-empty-string}&callable(): mixed in isset() always exists and is not nullable.",
+                null,
+                true
+            ]
+        ],
+        "consumer/4/native": [
+            [
+                "consumer.php",
+                14,
+                "isset.offset",
+                "Offset 'first' on array{second: null, first: 1} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                32,
+                "isset.offset",
+                "Offset 0 on array{1: 'second', 0: 'first'} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                37,
+                "array.duplicateKey",
+                "Array has 2 duplicate keys with value 'second' ('second', 'second').",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                38,
+                "isset.offset",
+                "Offset 'first' on array{second: null, first: 1} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                44,
+                "isset.offset",
+                "Offset 0 on array{3, 1} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                52,
+                "isset.offset",
+                "Offset 'a' on array{a: 2, z: 3} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                52,
+                "isset.offset",
+                "Offset 'first' on array{second: null, first: 1} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                7,
+                "isset.offset",
+                "Offset 'first' on array{second: null, first: 1} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                79,
+                "isset.offset",
+                "Offset 'only' on array{only: 1} in isset() always exists and is not nullable.",
+                null,
+                true
+            ]
+        ],
+        "consumer/5/certain": [
+            [
+                "consumer.php",
+                14,
+                "isset.offset",
+                "Offset 'first' on array{second: null, first: 1} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                20,
+                "isset.offset",
+                "Offset 0 on list{object, non-empty-string}&callable(): mixed in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                26,
+                "isset.offset",
+                "Offset 0 on list{object, non-empty-string}&callable(): mixed in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                32,
+                "isset.offset",
+                "Offset 0 on array{1: 'second', 0: 'first'} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                37,
+                "array.duplicateKey",
+                "Array has 2 duplicate keys with value 'second' ('second', 'second').",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                38,
+                "isset.offset",
+                "Offset 'first' on array{second: null, first: 1} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                44,
+                "isset.offset",
+                "Offset 0 on array{3, 1} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                52,
+                "isset.offset",
+                "Offset 'a' on array{a: 2, z: 3} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                52,
+                "isset.offset",
+                "Offset 'first' on array{second: null, first: 1} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                59,
+                "isset.offset",
+                "Offset 0 on array{int} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                66,
+                "isset.offset",
+                "Offset 'first' on array{second: null, first: int} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                7,
+                "isset.offset",
+                "Offset 'first' on array{second: null, first: 1} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                79,
+                "isset.offset",
+                "Offset 'only' on array{only: 1} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                86,
+                "isset.offset",
+                "Offset 0 on list{object, non-empty-string}&callable(): mixed in isset() always exists and is not nullable.",
+                null,
+                true
+            ]
+        ],
+        "consumer/5/native": [
+            [
+                "consumer.php",
+                14,
+                "isset.offset",
+                "Offset 'first' on array{second: null, first: 1} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                32,
+                "isset.offset",
+                "Offset 0 on array{1: 'second', 0: 'first'} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                37,
+                "array.duplicateKey",
+                "Array has 2 duplicate keys with value 'second' ('second', 'second').",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                38,
+                "isset.offset",
+                "Offset 'first' on array{second: null, first: 1} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                44,
+                "isset.offset",
+                "Offset 0 on array{3, 1} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                52,
+                "isset.offset",
+                "Offset 'a' on array{a: 2, z: 3} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                52,
+                "isset.offset",
+                "Offset 'first' on array{second: null, first: 1} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                7,
+                "isset.offset",
+                "Offset 'first' on array{second: null, first: 1} in isset() always exists and is not nullable.",
+                null,
+                true
+            ],
+            [
+                "consumer.php",
+                79,
+                "isset.offset",
+                "Offset 'only' on array{only: 1} in isset() always exists and is not nullable.",
+                null,
+                true
+            ]
+        ]
+    }
+}
