@@ -1,5 +1,15 @@
 # Coverage
 
+The project replay passes all 21 existing tests across `project` and `larastan`.
+Both exact-object exports are warning-free and cover seven previously missing lines:
+driver.rs:119, scope.rs:411/424/434/444/450 and rules/mod.rs:1085, all under pun-analyse/src/rules.
+No source edits, new tests or exclusions are needed. The source-identical cohort union reaches
+analyse 44,275/44,310 after existing exclusions, leaving 35 lines across six files; raw coverage is
+44,275/44,328. PHPStan remains 10,747/10,747 and lint 72,700/73,200 after existing exclusions.
+This is not a fresh whole-suite run. Complete inventories, test logs, source manifests, exact
+objects, profile identities and warning-free exports are under `/tmp/pun-project-main-gate/`.
+Both compressed objects are independently decompressed and SHA-256-verified.
+
 The guard replay passes all 23 existing tests across `class_constants`, `dynamic_methods` and `pipe_rule`.
 A fresh PHPStan 2.3.1 capture preserves all 287 dynamic-method diagnostic records across 22 configurations.
 Three warning-free exact-object exports cover 21 previously missing scope lines and params.rs:945,
