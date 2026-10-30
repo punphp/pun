@@ -1,5 +1,15 @@
 # Coverage
 
+The public coalesce replay passes all nine existing tests across `refined_isset_keys` and `coalesce_scope`.
+A fresh PHPStan 2.3.1 capture matches all 96 finite-key records across five levels byte for byte.
+Two warning-free exact-object exports close the eight missing coalesce lines. The source-identical
+cohort union covers all 476 owning lines, without production edits, new tests or exclusions.
+Current analyse coverage is 44,246/44,310 after existing exclusions, leaving 64 lines across seven files.
+Raw analyse coverage is 44,246/44,328. PHPStan remains 10,747/10,747 and lint 72,700/73,200 after
+existing exclusions. Historical source-identical coverage is not a fresh whole-suite execution.
+Source manifests, complete test logs, recapture, exact objects and profiles are under
+`/tmp/pun-coalesce-main-gate/`.
+
 The property-type batch covers all 25 changed executable production lines without exclusions.
 The refactor first passes all 52 unchanged type-rule tests. Final combined main passes 78 tests across
 four complete targets: the lint library (3), engine (8), strict rules (3) and type rules (64).
