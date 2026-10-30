@@ -1,0 +1,3034 @@
+[
+    {
+        "name": "children-1-1",
+        "input": {
+            "first": "__source<345744867328000, __template<T, 'function fixture()', __source<345744867328001, int>, __source<345744867328002, 1>>>",
+            "second": "__source<345744867328003, __template<T, 'function fixture()', __source<345744867328001, int>, __source<345744867328002, 1>>>",
+            "clone": "__source<345744867328004, __template<T, 'function fixture()', __source<345744867328001, int>, __source<345744867328002, 1>>>",
+            "argument": "__source<345744867328005, __argument_template<T, 'function fixture()', __source<345744867328001, int>, __source<345744867328002, 1>>>"
+        },
+        "expected": [
+            {
+                "slot": "first",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 0,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "second",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 1,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "clone",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 2,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "argument",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), argument)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 3,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": true,
+                        "position": "invariant"
+                    }
+                ]
+            }
+        ],
+        "printed": [
+            {
+                "slot": "first",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 0,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "second",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 1,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "clone",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 2,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "argument",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), argument)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 3,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": true,
+                        "position": "invariant"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "name": "children-1-",
+        "input": {
+            "first": "__source<345744867328006, __template<T, 'function fixture()', __source<345744867328007, int>, __source<345744867328008, 1>>>",
+            "second": "__source<345744867328009, __template<T, 'function fixture()', __source<345744867328007, int>, __source<345744867328010, 1>>>",
+            "clone": "__source<345744867328011, __template<T, 'function fixture()', __source<345744867328007, int>, __source<345744867328008, 1>>>",
+            "argument": "__source<345744867328012, __argument_template<T, 'function fixture()', __source<345744867328007, int>, __source<345744867328008, 1>>>"
+        },
+        "expected": [
+            {
+                "slot": "first",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 0,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "second",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 1,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 2,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "clone",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 2,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "argument",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), argument)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 3,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": true,
+                        "position": "invariant"
+                    }
+                ]
+            }
+        ],
+        "printed": [
+            {
+                "slot": "first",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 0,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "second",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 1,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 2,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "clone",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 2,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "argument",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), argument)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 3,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": true,
+                        "position": "invariant"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "name": "children--1",
+        "input": {
+            "first": "__source<345744867328013, __template<T, 'function fixture()', __source<345744867328014, int>, __source<345744867328015, 1>>>",
+            "second": "__source<345744867328016, __template<T, 'function fixture()', __source<345744867328017, int>, __source<345744867328015, 1>>>",
+            "clone": "__source<345744867328018, __template<T, 'function fixture()', __source<345744867328014, int>, __source<345744867328015, 1>>>",
+            "argument": "__source<345744867328019, __argument_template<T, 'function fixture()', __source<345744867328014, int>, __source<345744867328015, 1>>>"
+        },
+        "expected": [
+            {
+                "slot": "first",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 0,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "second",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 1,
+                        "name": "T",
+                        "bound": 2,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "clone",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 2,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "argument",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), argument)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 3,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": true,
+                        "position": "invariant"
+                    }
+                ]
+            }
+        ],
+        "printed": [
+            {
+                "slot": "first",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 0,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "second",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 1,
+                        "name": "T",
+                        "bound": 2,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "clone",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 2,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "argument",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), argument)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 3,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": true,
+                        "position": "invariant"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "name": "children--",
+        "input": {
+            "first": "__source<345744867328020, __template<T, 'function fixture()', __source<345744867328021, int>, __source<345744867328022, 1>>>",
+            "second": "__source<345744867328023, __template<T, 'function fixture()', __source<345744867328024, int>, __source<345744867328025, 1>>>",
+            "clone": "__source<345744867328026, __template<T, 'function fixture()', __source<345744867328021, int>, __source<345744867328022, 1>>>",
+            "argument": "__source<345744867328027, __argument_template<T, 'function fixture()', __source<345744867328021, int>, __source<345744867328022, 1>>>"
+        },
+        "expected": [
+            {
+                "slot": "first",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 0,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "second",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 1,
+                        "name": "T",
+                        "bound": 2,
+                        "default": 3,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "clone",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 2,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "argument",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), argument)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 3,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": true,
+                        "position": "invariant"
+                    }
+                ]
+            }
+        ],
+        "printed": [
+            {
+                "slot": "first",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 0,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "second",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 1,
+                        "name": "T",
+                        "bound": 2,
+                        "default": 3,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "clone",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 2,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "argument",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), argument)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 3,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": true,
+                        "position": "invariant"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "name": "array_map#0",
+        "builtin": "array_map",
+        "variant": 0,
+        "input": {
+            "param:0": "__source<345744867328028, (__source<345744867328029, callable> | __source<345744867328030, null>)>",
+            "param:1": "__source<345744867328031, array>",
+            "param:2": "__source<345744867328032, array>",
+            "effective": "__source<345744867328033, array>",
+            "phpdoc": "__source<345744867328034, mixed>",
+            "native": "__source<345744867328033, array>"
+        },
+        "expected": [
+            {
+                "slot": "param:0",
+                "descriptions": [
+                    "(callable(): mixed)|null",
+                    "(callable(): mixed)|null",
+                    "(callable)|null"
+                ],
+                "phpdoc": "(callable | null)",
+                "references": []
+            },
+            {
+                "slot": "param:1",
+                "descriptions": [
+                    "array",
+                    "array",
+                    "array"
+                ],
+                "phpdoc": "array",
+                "references": []
+            },
+            {
+                "slot": "param:2",
+                "descriptions": [
+                    "array",
+                    "array",
+                    "array"
+                ],
+                "phpdoc": "array",
+                "references": []
+            },
+            {
+                "slot": "effective",
+                "descriptions": [
+                    "array",
+                    "array",
+                    "array"
+                ],
+                "phpdoc": "array",
+                "references": []
+            },
+            {
+                "slot": "phpdoc",
+                "descriptions": [
+                    "mixed",
+                    "mixed",
+                    "mixed"
+                ],
+                "phpdoc": "mixed",
+                "references": []
+            },
+            {
+                "slot": "native",
+                "descriptions": [
+                    "array",
+                    "array",
+                    "array"
+                ],
+                "phpdoc": "array",
+                "references": []
+            }
+        ],
+        "printed": [
+            {
+                "slot": "param:0",
+                "descriptions": [
+                    "(callable(): mixed)|null",
+                    "(callable(): mixed)|null",
+                    "(callable)|null"
+                ],
+                "phpdoc": "callable|null",
+                "references": []
+            },
+            {
+                "slot": "param:1",
+                "descriptions": [
+                    "array",
+                    "array",
+                    "array"
+                ],
+                "phpdoc": "array",
+                "references": []
+            },
+            {
+                "slot": "param:2",
+                "descriptions": [
+                    "array",
+                    "array",
+                    "array"
+                ],
+                "phpdoc": "array",
+                "references": []
+            },
+            {
+                "slot": "effective",
+                "descriptions": [
+                    "array",
+                    "array",
+                    "array"
+                ],
+                "phpdoc": "array",
+                "references": []
+            },
+            {
+                "slot": "phpdoc",
+                "descriptions": [
+                    "mixed",
+                    "mixed",
+                    "mixed"
+                ],
+                "phpdoc": "mixed",
+                "references": []
+            },
+            {
+                "slot": "native",
+                "descriptions": [
+                    "array",
+                    "array",
+                    "array"
+                ],
+                "phpdoc": "array",
+                "references": []
+            }
+        ]
+    },
+    {
+        "name": "array_filter#0",
+        "builtin": "array_filter",
+        "variant": 0,
+        "input": {
+            "param:0": "__source<345744867328035, array>",
+            "param:1": "__source<345744867328036, (__source<345744867328037, callable(mixed): bool> | __source<345744867328038, callable(mixed, mixed): bool> | __source<345744867328039, null>)>",
+            "default:1": "__source<345744867328040, null>",
+            "param:2": "__source<345744867328041, int>",
+            "default:2": "__source<345744867328042, 0>",
+            "effective": "__source<345744867328043, array>",
+            "phpdoc": "__source<345744867328044, mixed>",
+            "native": "__source<345744867328043, array>"
+        },
+        "expected": [
+            {
+                "slot": "param:0",
+                "descriptions": [
+                    "array",
+                    "array",
+                    "array"
+                ],
+                "phpdoc": "array",
+                "references": []
+            },
+            {
+                "slot": "param:1",
+                "descriptions": [
+                    "(callable(mixed): bool)|(callable(mixed, mixed): bool)|null",
+                    "(callable(mixed): bool)|(callable(mixed, mixed): bool)|null",
+                    "(callable)|null"
+                ],
+                "phpdoc": "(callable(mixed): bool | callable(mixed, mixed): bool | null)",
+                "references": []
+            },
+            {
+                "slot": "default:1",
+                "descriptions": [
+                    "null",
+                    "null",
+                    "null"
+                ],
+                "phpdoc": "null",
+                "references": []
+            },
+            {
+                "slot": "param:2",
+                "descriptions": [
+                    "int",
+                    "int",
+                    "int"
+                ],
+                "phpdoc": "int",
+                "references": []
+            },
+            {
+                "slot": "default:2",
+                "descriptions": [
+                    "0",
+                    "0",
+                    "int"
+                ],
+                "phpdoc": "0",
+                "references": []
+            },
+            {
+                "slot": "effective",
+                "descriptions": [
+                    "array",
+                    "array",
+                    "array"
+                ],
+                "phpdoc": "array",
+                "references": []
+            },
+            {
+                "slot": "phpdoc",
+                "descriptions": [
+                    "mixed",
+                    "mixed",
+                    "mixed"
+                ],
+                "phpdoc": "mixed",
+                "references": []
+            },
+            {
+                "slot": "native",
+                "descriptions": [
+                    "array",
+                    "array",
+                    "array"
+                ],
+                "phpdoc": "array",
+                "references": []
+            }
+        ],
+        "printed": [
+            {
+                "slot": "param:0",
+                "descriptions": [
+                    "array",
+                    "array",
+                    "array"
+                ],
+                "phpdoc": "array",
+                "references": []
+            },
+            {
+                "slot": "param:1",
+                "descriptions": [
+                    "(callable(mixed): bool)|(callable(mixed, mixed): bool)|null",
+                    "(callable(mixed): bool)|(callable(mixed, mixed): bool)|null",
+                    "(callable)|null"
+                ],
+                "phpdoc": "callable(mixed): bool|callable(mixed, mixed): bool|null",
+                "references": []
+            },
+            {
+                "slot": "default:1",
+                "descriptions": [
+                    "null",
+                    "null",
+                    "null"
+                ],
+                "phpdoc": "null",
+                "references": []
+            },
+            {
+                "slot": "param:2",
+                "descriptions": [
+                    "int",
+                    "int",
+                    "int"
+                ],
+                "phpdoc": "int",
+                "references": []
+            },
+            {
+                "slot": "default:2",
+                "descriptions": [
+                    "0",
+                    "0",
+                    "int"
+                ],
+                "phpdoc": "0",
+                "references": []
+            },
+            {
+                "slot": "effective",
+                "descriptions": [
+                    "array",
+                    "array",
+                    "array"
+                ],
+                "phpdoc": "array",
+                "references": []
+            },
+            {
+                "slot": "phpdoc",
+                "descriptions": [
+                    "mixed",
+                    "mixed",
+                    "mixed"
+                ],
+                "phpdoc": "mixed",
+                "references": []
+            },
+            {
+                "slot": "native",
+                "descriptions": [
+                    "array",
+                    "array",
+                    "array"
+                ],
+                "phpdoc": "array",
+                "references": []
+            }
+        ]
+    },
+    {
+        "name": "iterator_to_array#0",
+        "builtin": "iterator_to_array",
+        "variant": 0,
+        "input": {
+            "param:0": "__source<345744867328045, iterable>",
+            "param:1": "__source<345744867328046, bool>",
+            "default:1": "__source<345744867328047, true>",
+            "effective": "__source<345744867328048, array>",
+            "phpdoc": "__source<345744867328049, mixed>",
+            "native": "__source<345744867328048, array>"
+        },
+        "expected": [
+            {
+                "slot": "param:0",
+                "descriptions": [
+                    "iterable",
+                    "iterable",
+                    "iterable"
+                ],
+                "phpdoc": "iterable",
+                "references": []
+            },
+            {
+                "slot": "param:1",
+                "descriptions": [
+                    "bool",
+                    "bool",
+                    "bool"
+                ],
+                "phpdoc": "bool",
+                "references": []
+            },
+            {
+                "slot": "default:1",
+                "descriptions": [
+                    "true",
+                    "true",
+                    "true"
+                ],
+                "phpdoc": "true",
+                "references": []
+            },
+            {
+                "slot": "effective",
+                "descriptions": [
+                    "array",
+                    "array",
+                    "array"
+                ],
+                "phpdoc": "array",
+                "references": []
+            },
+            {
+                "slot": "phpdoc",
+                "descriptions": [
+                    "mixed",
+                    "mixed",
+                    "mixed"
+                ],
+                "phpdoc": "mixed",
+                "references": []
+            },
+            {
+                "slot": "native",
+                "descriptions": [
+                    "array",
+                    "array",
+                    "array"
+                ],
+                "phpdoc": "array",
+                "references": []
+            }
+        ],
+        "printed": [
+            {
+                "slot": "param:0",
+                "descriptions": [
+                    "iterable",
+                    "iterable",
+                    "iterable"
+                ],
+                "phpdoc": "iterable",
+                "references": []
+            },
+            {
+                "slot": "param:1",
+                "descriptions": [
+                    "bool",
+                    "bool",
+                    "bool"
+                ],
+                "phpdoc": "bool",
+                "references": []
+            },
+            {
+                "slot": "default:1",
+                "descriptions": [
+                    "true",
+                    "true",
+                    "true"
+                ],
+                "phpdoc": "true",
+                "references": []
+            },
+            {
+                "slot": "effective",
+                "descriptions": [
+                    "array",
+                    "array",
+                    "array"
+                ],
+                "phpdoc": "array",
+                "references": []
+            },
+            {
+                "slot": "phpdoc",
+                "descriptions": [
+                    "mixed",
+                    "mixed",
+                    "mixed"
+                ],
+                "phpdoc": "mixed",
+                "references": []
+            },
+            {
+                "slot": "native",
+                "descriptions": [
+                    "array",
+                    "array",
+                    "array"
+                ],
+                "phpdoc": "array",
+                "references": []
+            }
+        ]
+    },
+    {
+        "name": "get_class#0",
+        "builtin": "get_class",
+        "variant": 0,
+        "input": {
+            "param:0": "__source<345744867328050, object>",
+            "default:0": "__source<345744867328051, *ERROR*>",
+            "effective": "__source<345744867328052, class-string>",
+            "phpdoc": "__source<345744867328053, mixed>",
+            "native": "__source<345744867328052, class-string>"
+        },
+        "expected": [
+            {
+                "slot": "param:0",
+                "descriptions": [
+                    "object",
+                    "object",
+                    "object"
+                ],
+                "phpdoc": "object",
+                "references": []
+            },
+            {
+                "slot": "default:0",
+                "descriptions": [
+                    "*ERROR*",
+                    "mixed",
+                    "mixed"
+                ],
+                "phpdoc": "mixed",
+                "references": []
+            },
+            {
+                "slot": "effective",
+                "descriptions": [
+                    "class-string",
+                    "class-string",
+                    "class-string"
+                ],
+                "phpdoc": "class-string",
+                "references": []
+            },
+            {
+                "slot": "phpdoc",
+                "descriptions": [
+                    "mixed",
+                    "mixed",
+                    "mixed"
+                ],
+                "phpdoc": "mixed",
+                "references": []
+            },
+            {
+                "slot": "native",
+                "descriptions": [
+                    "class-string",
+                    "class-string",
+                    "class-string"
+                ],
+                "phpdoc": "class-string",
+                "references": []
+            }
+        ],
+        "printed": [
+            {
+                "slot": "param:0",
+                "descriptions": [
+                    "object",
+                    "object",
+                    "object"
+                ],
+                "phpdoc": "object",
+                "references": []
+            },
+            {
+                "slot": "default:0",
+                "descriptions": [
+                    "*ERROR*",
+                    "mixed",
+                    "mixed"
+                ],
+                "phpdoc": "mixed",
+                "references": []
+            },
+            {
+                "slot": "effective",
+                "descriptions": [
+                    "class-string",
+                    "class-string",
+                    "class-string"
+                ],
+                "phpdoc": "class-string",
+                "references": []
+            },
+            {
+                "slot": "phpdoc",
+                "descriptions": [
+                    "mixed",
+                    "mixed",
+                    "mixed"
+                ],
+                "phpdoc": "mixed",
+                "references": []
+            },
+            {
+                "slot": "native",
+                "descriptions": [
+                    "class-string",
+                    "class-string",
+                    "class-string"
+                ],
+                "phpdoc": "class-string",
+                "references": []
+            }
+        ]
+    },
+    {
+        "name": "Generator::send#0",
+        "builtin": "Generator::send",
+        "variant": 0,
+        "input": {
+            "param:0": "__source<345744867328054, __template<TSend, 'class Generator', __source<345744867328055, mixed>>>",
+            "effective": "__source<345744867328056, __template<TValue, 'class Generator', __source<345744867328057, mixed>>>",
+            "phpdoc": "__source<345744867328056, __template<TValue, 'class Generator', __source<345744867328057, mixed>>>",
+            "native": "__source<345744867328058, mixed>"
+        },
+        "expected": [
+            {
+                "slot": "param:0",
+                "descriptions": [
+                    "TSend (class Generator, parameter)",
+                    "TSend",
+                    "TSend"
+                ],
+                "phpdoc": "TSend",
+                "references": [
+                    {
+                        "instance": 0,
+                        "name": "TSend",
+                        "bound": 0,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "effective",
+                "descriptions": [
+                    "TValue (class Generator, parameter)",
+                    "TValue",
+                    "TValue"
+                ],
+                "phpdoc": "TValue",
+                "references": [
+                    {
+                        "instance": 1,
+                        "name": "TValue",
+                        "bound": 1,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "phpdoc",
+                "descriptions": [
+                    "TValue (class Generator, parameter)",
+                    "TValue",
+                    "TValue"
+                ],
+                "phpdoc": "TValue",
+                "references": [
+                    {
+                        "instance": 1,
+                        "name": "TValue",
+                        "bound": 1,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "native",
+                "descriptions": [
+                    "mixed",
+                    "mixed",
+                    "mixed"
+                ],
+                "phpdoc": "mixed",
+                "references": []
+            }
+        ],
+        "printed": [
+            {
+                "slot": "param:0",
+                "descriptions": [
+                    "TSend (class Generator, parameter)",
+                    "TSend",
+                    "TSend"
+                ],
+                "phpdoc": "TSend",
+                "references": [
+                    {
+                        "instance": 0,
+                        "name": "TSend",
+                        "bound": 0,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "effective",
+                "descriptions": [
+                    "TValue (class Generator, parameter)",
+                    "TValue",
+                    "TValue"
+                ],
+                "phpdoc": "TValue",
+                "references": [
+                    {
+                        "instance": 1,
+                        "name": "TValue",
+                        "bound": 1,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "phpdoc",
+                "descriptions": [
+                    "TValue (class Generator, parameter)",
+                    "TValue",
+                    "TValue"
+                ],
+                "phpdoc": "TValue",
+                "references": [
+                    {
+                        "instance": 1,
+                        "name": "TValue",
+                        "bound": 1,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "native",
+                "descriptions": [
+                    "mixed",
+                    "mixed",
+                    "mixed"
+                ],
+                "phpdoc": "mixed",
+                "references": []
+            }
+        ]
+    },
+    {
+        "name": "ArrayIterator::offsetGet#0",
+        "builtin": "ArrayIterator::offsetGet",
+        "variant": 0,
+        "input": {
+            "param:0": "__source<345744867328059, __template<TKey, 'class ArrayIterator', __source<345744867328060, __benevolent<(__source<345744867328061, int> | __source<345744867328062, string>)>>>>",
+            "effective": "__source<345744867328063, (__source<345744867328064, __template<TValue, 'class ArrayIterator', __source<345744867328065, mixed>>> | __source<345744867328066, null>)>",
+            "phpdoc": "__source<345744867328063, (__source<345744867328064, __template<TValue, 'class ArrayIterator', __source<345744867328065, mixed>>> | __source<345744867328066, null>)>",
+            "native": "__source<345744867328067, mixed>"
+        },
+        "expected": [
+            {
+                "slot": "param:0",
+                "descriptions": [
+                    "TKey of (int|string) (class ArrayIterator, parameter)",
+                    "TKey of (int|string)",
+                    "TKey of (int|string)"
+                ],
+                "phpdoc": "TKey",
+                "references": [
+                    {
+                        "instance": 0,
+                        "name": "TKey",
+                        "bound": 0,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "effective",
+                "descriptions": [
+                    "TValue (class ArrayIterator, parameter)|null",
+                    "TValue|null",
+                    "TValue|null"
+                ],
+                "phpdoc": "(TValue | null)",
+                "references": [
+                    {
+                        "instance": 1,
+                        "name": "TValue",
+                        "bound": 1,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "phpdoc",
+                "descriptions": [
+                    "TValue (class ArrayIterator, parameter)|null",
+                    "TValue|null",
+                    "TValue|null"
+                ],
+                "phpdoc": "(TValue | null)",
+                "references": [
+                    {
+                        "instance": 1,
+                        "name": "TValue",
+                        "bound": 1,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "native",
+                "descriptions": [
+                    "mixed",
+                    "mixed",
+                    "mixed"
+                ],
+                "phpdoc": "mixed",
+                "references": []
+            }
+        ],
+        "printed": [
+            {
+                "slot": "param:0",
+                "descriptions": [
+                    "TKey of (int|string) (class ArrayIterator, parameter)",
+                    "TKey of (int|string)",
+                    "TKey of (int|string)"
+                ],
+                "phpdoc": "TKey",
+                "references": [
+                    {
+                        "instance": 0,
+                        "name": "TKey",
+                        "bound": 0,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "effective",
+                "descriptions": [
+                    "TValue (class ArrayIterator, parameter)|null",
+                    "TValue|null",
+                    "TValue|null"
+                ],
+                "phpdoc": "TValue|null",
+                "references": [
+                    {
+                        "instance": 1,
+                        "name": "TValue",
+                        "bound": 1,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "phpdoc",
+                "descriptions": [
+                    "TValue (class ArrayIterator, parameter)|null",
+                    "TValue|null",
+                    "TValue|null"
+                ],
+                "phpdoc": "TValue|null",
+                "references": [
+                    {
+                        "instance": 1,
+                        "name": "TValue",
+                        "bound": 1,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "native",
+                "descriptions": [
+                    "mixed",
+                    "mixed",
+                    "mixed"
+                ],
+                "phpdoc": "mixed",
+                "references": []
+            }
+        ]
+    },
+    {
+        "name": "Generator::send declaration",
+        "builtin": "Generator::send",
+        "variant": 0,
+        "input": {
+            "class:TKey": "__source<345744867328068, __template<TKey, 'class Generator', __source<345744867328069, mixed>>>",
+            "class:TValue": "__source<345744867328070, __template<TValue, 'class Generator', __source<345744867328071, mixed>>>",
+            "class:TSend": "__source<345744867328072, __template<TSend, 'class Generator', __source<345744867328073, mixed>>>",
+            "class:TReturn": "__source<345744867328074, __template<TReturn, 'class Generator', __source<345744867328075, mixed>>>",
+            "param:0": "__source<345744867328054, __template<TSend, 'class Generator', __source<345744867328055, mixed>>>",
+            "effective": "__source<345744867328056, __template<TValue, 'class Generator', __source<345744867328057, mixed>>>",
+            "phpdoc": "__source<345744867328056, __template<TValue, 'class Generator', __source<345744867328057, mixed>>>",
+            "native": "__source<345744867328058, mixed>"
+        },
+        "expected": [
+            {
+                "slot": "class:TKey",
+                "descriptions": [
+                    "TKey (class Generator, parameter)",
+                    "TKey",
+                    "TKey"
+                ],
+                "phpdoc": "TKey",
+                "references": [
+                    {
+                        "instance": 0,
+                        "name": "TKey",
+                        "bound": 0,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "class:TValue",
+                "descriptions": [
+                    "TValue (class Generator, parameter)",
+                    "TValue",
+                    "TValue"
+                ],
+                "phpdoc": "TValue",
+                "references": [
+                    {
+                        "instance": 1,
+                        "name": "TValue",
+                        "bound": 1,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "class:TSend",
+                "descriptions": [
+                    "TSend (class Generator, parameter)",
+                    "TSend",
+                    "TSend"
+                ],
+                "phpdoc": "TSend",
+                "references": [
+                    {
+                        "instance": 2,
+                        "name": "TSend",
+                        "bound": 2,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "class:TReturn",
+                "descriptions": [
+                    "TReturn (class Generator, parameter)",
+                    "TReturn",
+                    "TReturn"
+                ],
+                "phpdoc": "TReturn",
+                "references": [
+                    {
+                        "instance": 3,
+                        "name": "TReturn",
+                        "bound": 3,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "param:0",
+                "descriptions": [
+                    "TSend (class Generator, parameter)",
+                    "TSend",
+                    "TSend"
+                ],
+                "phpdoc": "TSend",
+                "references": [
+                    {
+                        "instance": 4,
+                        "name": "TSend",
+                        "bound": 4,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "effective",
+                "descriptions": [
+                    "TValue (class Generator, parameter)",
+                    "TValue",
+                    "TValue"
+                ],
+                "phpdoc": "TValue",
+                "references": [
+                    {
+                        "instance": 5,
+                        "name": "TValue",
+                        "bound": 5,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "phpdoc",
+                "descriptions": [
+                    "TValue (class Generator, parameter)",
+                    "TValue",
+                    "TValue"
+                ],
+                "phpdoc": "TValue",
+                "references": [
+                    {
+                        "instance": 5,
+                        "name": "TValue",
+                        "bound": 5,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "native",
+                "descriptions": [
+                    "mixed",
+                    "mixed",
+                    "mixed"
+                ],
+                "phpdoc": "mixed",
+                "references": []
+            }
+        ],
+        "printed": [
+            {
+                "slot": "class:TKey",
+                "descriptions": [
+                    "TKey (class Generator, parameter)",
+                    "TKey",
+                    "TKey"
+                ],
+                "phpdoc": "TKey",
+                "references": [
+                    {
+                        "instance": 0,
+                        "name": "TKey",
+                        "bound": 0,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "class:TValue",
+                "descriptions": [
+                    "TValue (class Generator, parameter)",
+                    "TValue",
+                    "TValue"
+                ],
+                "phpdoc": "TValue",
+                "references": [
+                    {
+                        "instance": 1,
+                        "name": "TValue",
+                        "bound": 1,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "class:TSend",
+                "descriptions": [
+                    "TSend (class Generator, parameter)",
+                    "TSend",
+                    "TSend"
+                ],
+                "phpdoc": "TSend",
+                "references": [
+                    {
+                        "instance": 2,
+                        "name": "TSend",
+                        "bound": 2,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "class:TReturn",
+                "descriptions": [
+                    "TReturn (class Generator, parameter)",
+                    "TReturn",
+                    "TReturn"
+                ],
+                "phpdoc": "TReturn",
+                "references": [
+                    {
+                        "instance": 3,
+                        "name": "TReturn",
+                        "bound": 3,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "param:0",
+                "descriptions": [
+                    "TSend (class Generator, parameter)",
+                    "TSend",
+                    "TSend"
+                ],
+                "phpdoc": "TSend",
+                "references": [
+                    {
+                        "instance": 4,
+                        "name": "TSend",
+                        "bound": 4,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "effective",
+                "descriptions": [
+                    "TValue (class Generator, parameter)",
+                    "TValue",
+                    "TValue"
+                ],
+                "phpdoc": "TValue",
+                "references": [
+                    {
+                        "instance": 5,
+                        "name": "TValue",
+                        "bound": 5,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "phpdoc",
+                "descriptions": [
+                    "TValue (class Generator, parameter)",
+                    "TValue",
+                    "TValue"
+                ],
+                "phpdoc": "TValue",
+                "references": [
+                    {
+                        "instance": 5,
+                        "name": "TValue",
+                        "bound": 5,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "native",
+                "descriptions": [
+                    "mixed",
+                    "mixed",
+                    "mixed"
+                ],
+                "phpdoc": "mixed",
+                "references": []
+            }
+        ]
+    },
+    {
+        "name": "ArrayIterator::offsetGet declaration",
+        "builtin": "ArrayIterator::offsetGet",
+        "variant": 0,
+        "input": {
+            "class:TKey": "__source<345744867328076, __template<TKey, 'class ArrayIterator', __source<345744867328060, __benevolent<(__source<345744867328061, int> | __source<345744867328062, string>)>>>>",
+            "class:TValue": "__source<345744867328077, __template<TValue, 'class ArrayIterator', __source<345744867328065, mixed>>>",
+            "param:0": "__source<345744867328059, __template<TKey, 'class ArrayIterator', __source<345744867328060, __benevolent<(__source<345744867328061, int> | __source<345744867328062, string>)>>>>",
+            "effective": "__source<345744867328063, (__source<345744867328064, __template<TValue, 'class ArrayIterator', __source<345744867328065, mixed>>> | __source<345744867328066, null>)>",
+            "phpdoc": "__source<345744867328063, (__source<345744867328064, __template<TValue, 'class ArrayIterator', __source<345744867328065, mixed>>> | __source<345744867328066, null>)>",
+            "native": "__source<345744867328067, mixed>"
+        },
+        "expected": [
+            {
+                "slot": "class:TKey",
+                "descriptions": [
+                    "TKey of (int|string) (class ArrayIterator, parameter)",
+                    "TKey of (int|string)",
+                    "TKey of (int|string)"
+                ],
+                "phpdoc": "TKey",
+                "references": [
+                    {
+                        "instance": 0,
+                        "name": "TKey",
+                        "bound": 0,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "class:TValue",
+                "descriptions": [
+                    "TValue (class ArrayIterator, parameter)",
+                    "TValue",
+                    "TValue"
+                ],
+                "phpdoc": "TValue",
+                "references": [
+                    {
+                        "instance": 1,
+                        "name": "TValue",
+                        "bound": 1,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "param:0",
+                "descriptions": [
+                    "TKey of (int|string) (class ArrayIterator, parameter)",
+                    "TKey of (int|string)",
+                    "TKey of (int|string)"
+                ],
+                "phpdoc": "TKey",
+                "references": [
+                    {
+                        "instance": 2,
+                        "name": "TKey",
+                        "bound": 0,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "effective",
+                "descriptions": [
+                    "TValue (class ArrayIterator, parameter)|null",
+                    "TValue|null",
+                    "TValue|null"
+                ],
+                "phpdoc": "(TValue | null)",
+                "references": [
+                    {
+                        "instance": 3,
+                        "name": "TValue",
+                        "bound": 1,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "phpdoc",
+                "descriptions": [
+                    "TValue (class ArrayIterator, parameter)|null",
+                    "TValue|null",
+                    "TValue|null"
+                ],
+                "phpdoc": "(TValue | null)",
+                "references": [
+                    {
+                        "instance": 3,
+                        "name": "TValue",
+                        "bound": 1,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "native",
+                "descriptions": [
+                    "mixed",
+                    "mixed",
+                    "mixed"
+                ],
+                "phpdoc": "mixed",
+                "references": []
+            }
+        ],
+        "printed": [
+            {
+                "slot": "class:TKey",
+                "descriptions": [
+                    "TKey of (int|string) (class ArrayIterator, parameter)",
+                    "TKey of (int|string)",
+                    "TKey of (int|string)"
+                ],
+                "phpdoc": "TKey",
+                "references": [
+                    {
+                        "instance": 0,
+                        "name": "TKey",
+                        "bound": 0,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "class:TValue",
+                "descriptions": [
+                    "TValue (class ArrayIterator, parameter)",
+                    "TValue",
+                    "TValue"
+                ],
+                "phpdoc": "TValue",
+                "references": [
+                    {
+                        "instance": 1,
+                        "name": "TValue",
+                        "bound": 1,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "param:0",
+                "descriptions": [
+                    "TKey of (int|string) (class ArrayIterator, parameter)",
+                    "TKey of (int|string)",
+                    "TKey of (int|string)"
+                ],
+                "phpdoc": "TKey",
+                "references": [
+                    {
+                        "instance": 2,
+                        "name": "TKey",
+                        "bound": 0,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "effective",
+                "descriptions": [
+                    "TValue (class ArrayIterator, parameter)|null",
+                    "TValue|null",
+                    "TValue|null"
+                ],
+                "phpdoc": "TValue|null",
+                "references": [
+                    {
+                        "instance": 3,
+                        "name": "TValue",
+                        "bound": 1,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "phpdoc",
+                "descriptions": [
+                    "TValue (class ArrayIterator, parameter)|null",
+                    "TValue|null",
+                    "TValue|null"
+                ],
+                "phpdoc": "TValue|null",
+                "references": [
+                    {
+                        "instance": 3,
+                        "name": "TValue",
+                        "bound": 1,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "native",
+                "descriptions": [
+                    "mixed",
+                    "mixed",
+                    "mixed"
+                ],
+                "phpdoc": "mixed",
+                "references": []
+            }
+        ]
+    },
+    {
+        "name": "shared contextual static bound",
+        "input": {
+            "first": "__source<345744867328078, __template<S, 'function fixture()', __source<345744867328079, mixed>>>",
+            "second": "__source<345744867328080, __template<S, 'function fixture()', __source<345744867328081, mixed>>>",
+            "static": "__source<345744867328082, __static<'ArrayIterator'>>"
+        },
+        "expected": [
+            {
+                "slot": "first",
+                "descriptions": [
+                    "S (function fixture(), parameter)",
+                    "S",
+                    "S"
+                ],
+                "phpdoc": "S",
+                "references": [
+                    {
+                        "instance": 0,
+                        "name": "S",
+                        "bound": 0,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "second",
+                "descriptions": [
+                    "S (function fixture(), parameter)",
+                    "S",
+                    "S"
+                ],
+                "phpdoc": "S",
+                "references": [
+                    {
+                        "instance": 1,
+                        "name": "S",
+                        "bound": 1,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "static",
+                "descriptions": [
+                    "static(ArrayIterator<TKey of (int|string) (class ArrayIterator, argument), TValue (class ArrayIterator, argument)>)",
+                    "static(ArrayIterator<TKey of (int|string), TValue>)",
+                    "static(ArrayIterator<TKey of (int|string), TValue>)"
+                ],
+                "phpdoc": "static",
+                "references": []
+            }
+        ],
+        "printed": [
+            {
+                "slot": "first",
+                "descriptions": [
+                    "S (function fixture(), parameter)",
+                    "S",
+                    "S"
+                ],
+                "phpdoc": "S",
+                "references": [
+                    {
+                        "instance": 0,
+                        "name": "S",
+                        "bound": 0,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "second",
+                "descriptions": [
+                    "S (function fixture(), parameter)",
+                    "S",
+                    "S"
+                ],
+                "phpdoc": "S",
+                "references": [
+                    {
+                        "instance": 1,
+                        "name": "S",
+                        "bound": 1,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "static",
+                "descriptions": [
+                    "static(ArrayIterator<TKey of (int|string) (class ArrayIterator, argument), TValue (class ArrayIterator, argument)>)",
+                    "static(ArrayIterator<TKey of (int|string), TValue>)",
+                    "static(ArrayIterator<TKey of (int|string), TValue>)"
+                ],
+                "phpdoc": "static",
+                "references": []
+            }
+        ]
+    },
+    {
+        "name": "restore children-1-1",
+        "bridge": true,
+        "input": {
+            "first": "__source<345744867328083, __template<T, 'function fixture()', __source<345744867328084, int>, __source<345744867328085, 1>>>",
+            "second": "__source<345744867328086, __template<T, 'function fixture()', __source<345744867328084, int>, __source<345744867328085, 1>>>",
+            "restored": "__source<345744867328086, __template<T, 'function fixture()', __source<345744867328084, int>, __source<345744867328085, 1>>>"
+        },
+        "expected": [
+            {
+                "slot": "first",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 0,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "second",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 1,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "restored",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 1,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            }
+        ],
+        "printed": [
+            {
+                "slot": "first",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 0,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "second",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 1,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "restored",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 1,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "name": "restore children-1-",
+        "bridge": true,
+        "input": {
+            "first": "__source<345744867328087, __template<T, 'function fixture()', __source<345744867328088, int>, __source<345744867328089, 1>>>",
+            "second": "__source<345744867328090, __template<T, 'function fixture()', __source<345744867328088, int>, __source<345744867328091, 1>>>",
+            "restored": "__source<345744867328092, __template<T, 'function fixture()', __source<345744867328088, int>, __source<345744867328089, 1>>>"
+        },
+        "expected": [
+            {
+                "slot": "first",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 0,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "second",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 1,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 2,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "restored",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 2,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            }
+        ],
+        "printed": [
+            {
+                "slot": "first",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 0,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "second",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 1,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 2,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "restored",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 2,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "name": "restore children--1",
+        "bridge": true,
+        "input": {
+            "first": "__source<345744867328093, __template<T, 'function fixture()', __source<345744867328094, int>, __source<345744867328095, 1>>>",
+            "second": "__source<345744867328096, __template<T, 'function fixture()', __source<345744867328097, int>, __source<345744867328095, 1>>>",
+            "restored": "__source<345744867328098, __template<T, 'function fixture()', __source<345744867328094, int>, __source<345744867328095, 1>>>"
+        },
+        "expected": [
+            {
+                "slot": "first",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 0,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "second",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 1,
+                        "name": "T",
+                        "bound": 2,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "restored",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 2,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            }
+        ],
+        "printed": [
+            {
+                "slot": "first",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 0,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "second",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 1,
+                        "name": "T",
+                        "bound": 2,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "restored",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 2,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "name": "restore children--",
+        "bridge": true,
+        "input": {
+            "first": "__source<345744867328099, __template<T, 'function fixture()', __source<345744867328100, int>, __source<345744867328101, 1>>>",
+            "second": "__source<345744867328102, __template<T, 'function fixture()', __source<345744867328103, int>, __source<345744867328104, 1>>>",
+            "restored": "__source<345744867328105, __template<T, 'function fixture()', __source<345744867328100, int>, __source<345744867328101, 1>>>"
+        },
+        "expected": [
+            {
+                "slot": "first",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 0,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "second",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 1,
+                        "name": "T",
+                        "bound": 2,
+                        "default": 3,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "restored",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 2,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            }
+        ],
+        "printed": [
+            {
+                "slot": "first",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 0,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "second",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 1,
+                        "name": "T",
+                        "bound": 2,
+                        "default": 3,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "restored",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 2,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "name": "nested callable source forwarding",
+        "input": {
+            "declaration": "__source<345744867328099, __template<T, 'function fixture()', __source<345744867328100, int>, __source<345744867328101, 1>>>",
+            "callable": "__source<345744867328106, callable(__source<345744867328099, __template<T, 'function fixture()', __source<345744867328100, int>, __source<345744867328101, 1>>> $x): __source<345744867328099, __template<T, 'function fixture()', __source<345744867328100, int>, __source<345744867328101, 1>>>>"
+        },
+        "expected": [
+            {
+                "slot": "declaration",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 0,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "callable",
+                "descriptions": [
+                    "callable(T): T",
+                    "callable(T): T",
+                    "callable"
+                ],
+                "phpdoc": "callable(T $x): T",
+                "references": [
+                    {
+                        "instance": 0,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    },
+                    {
+                        "instance": 0,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            }
+        ],
+        "printed": [
+            {
+                "slot": "declaration",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 0,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "callable",
+                "descriptions": [
+                    "callable(T): T",
+                    "callable(T): T",
+                    "callable"
+                ],
+                "phpdoc": "callable(T $x): T",
+                "references": [
+                    {
+                        "instance": 0,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    },
+                    {
+                        "instance": 0,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "name": "factory adds source default",
+        "bridge": true,
+        "input": {
+            "first": "__source<345744867328107, __template<T, 'function fixture()', __source<345744867328108, int>, __source<345744867328109, 1>>>",
+            "second": "__source<345744867328110, __template<T, 'function fixture()', __source<345744867328108, int>>>",
+            "restored": "__source<345744867328111, __template<T, 'function fixture()', __source<345744867328108, int>, __source<345744867328109, 1>>>"
+        },
+        "expected": [
+            {
+                "slot": "first",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 0,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "second",
+                "descriptions": [
+                    "T of int (function fixture(), parameter)",
+                    "T of int",
+                    "T of int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 1,
+                        "name": "T",
+                        "bound": 0,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "restored",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 2,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            }
+        ],
+        "printed": [
+            {
+                "slot": "first",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 0,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "second",
+                "descriptions": [
+                    "T of int (function fixture(), parameter)",
+                    "T of int",
+                    "T of int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 1,
+                        "name": "T",
+                        "bound": 0,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "restored",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 2,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "name": "factory removes source default",
+        "bridge": true,
+        "input": {
+            "first": "__source<345744867328112, __template<T, 'function fixture()', __source<345744867328113, int>>>",
+            "second": "__source<345744867328114, __template<T, 'function fixture()', __source<345744867328113, int>, __source<345744867328115, 1>>>",
+            "restored": "__source<345744867328116, __template<T, 'function fixture()', __source<345744867328113, int>>>"
+        },
+        "expected": [
+            {
+                "slot": "first",
+                "descriptions": [
+                    "T of int (function fixture(), parameter)",
+                    "T of int",
+                    "T of int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 0,
+                        "name": "T",
+                        "bound": 0,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "second",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 1,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "restored",
+                "descriptions": [
+                    "T of int (function fixture(), parameter)",
+                    "T of int",
+                    "T of int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 2,
+                        "name": "T",
+                        "bound": 0,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            }
+        ],
+        "printed": [
+            {
+                "slot": "first",
+                "descriptions": [
+                    "T of int (function fixture(), parameter)",
+                    "T of int",
+                    "T of int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 0,
+                        "name": "T",
+                        "bound": 0,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "second",
+                "descriptions": [
+                    "T of int = 1 (function fixture(), parameter)",
+                    "T of int = 1",
+                    "T of int = int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 1,
+                        "name": "T",
+                        "bound": 0,
+                        "default": 1,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            },
+            {
+                "slot": "restored",
+                "descriptions": [
+                    "T of int (function fixture(), parameter)",
+                    "T of int",
+                    "T of int"
+                ],
+                "phpdoc": "T",
+                "references": [
+                    {
+                        "instance": 2,
+                        "name": "T",
+                        "bound": 0,
+                        "default": null,
+                        "argument": false,
+                        "position": "invariant"
+                    }
+                ]
+            }
+        ]
+    }
+]

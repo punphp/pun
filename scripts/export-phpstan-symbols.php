@@ -55,8 +55,21 @@ function container(int $phpVersion): PHPStan\DependencyInjection\Container
  *   __stringAndStringable, __stringNotStringable         the string types around objects with __toString()
  *   "..."                                                constant string with control characters (PHP escapes)
  */
-function t(Type $type): string
+function source_id(Type $type): int
 {
+    static $objects;
+    $objects ??= new SplObjectStorage();
+    if (!$objects->contains($type)) {
+        $objects[$type] = count($objects);
+    }
+
+    // Separate containers/processes for target versions must not alias their object ordinals.
+    return (($GLOBALS['sourceVersion'] ?? 0) << 32) | $objects[$type];
+}
+
+function t(Type $type, bool $source = false): string
+{
+    $id = $source ? source_id($type) : null;
     $holes = [];
     $hole = function (string $text) use (&$holes): Type {
         $name = '__PunHole'.count($holes);
@@ -64,28 +77,40 @@ function t(Type $type): string
 
         return new PHPStan\Type\ObjectType($name);
     };
-    $mapped = PHPStan\Type\TypeTraverser::map($type, function (Type $t, callable $traverse) use ($hole): Type {
+    $mapped = PHPStan\Type\TypeTraverser::map($type, function (Type $t, callable $traverse) use ($hole, $source): Type {
         if ($t instanceof PHPStan\Type\Generic\TemplateType) {
-            if ($t->isArgument()) {
+            if ($t->isArgument() && !$source) {
                 throw new LogicException('template argument in a signature');
             }
-            $args = [$t->getName(), var_export($t->getScope()->describe(), true), t($t->getBound())];
+            $args = [$t->getName(), var_export($t->getScope()->describe(), true), t($t->getBound(), $source)];
             if ($t->getDefault() !== null) {
-                $args[] = t($t->getDefault());
+                $args[] = t($t->getDefault(), $source);
+            }
+            $template = ($t->isArgument() ? '__argument_template<' : '__template<').implode(', ', $args).'>';
+
+            return $hole($source ? '__source<'.source_id($t).', '.$template.'>' : $template);
+        }
+        if ($source && $t instanceof PHPStan\Type\StaticType) {
+            $args = [var_export($t->getClassName(), true)];
+            if ($t instanceof PHPStan\Type\Generic\GenericStaticType) {
+                $args = [...$args, ...array_map(fn ($part) => t($part, true), $t->getTypes())];
             }
 
-            return $hole('__template<'.implode(', ', $args).'>');
+            return $hole('__static<'.implode(', ', $args).'>');
         }
         if ($t instanceof PHPStan\Type\BenevolentUnionType) {
-            return $hole('__benevolent<'.t(new PHPStan\Type\UnionType($t->getTypes())).'>');
+            if ($source) {
+                return $hole('__benevolent<('.implode(' | ', array_map(fn ($part) => t($part, true), (fn () => $this->getSortedTypes())->call($t))).')>');
+            }
+            return $hole('__benevolent<'.t(new PHPStan\Type\UnionType($t->getTypes()), $source).'>');
         }
         // Mapping members to placeholders would re-normalize (int&T becomes never), so these are written member by
         // member, in the order toPhpDocNode() uses.
         if ($t instanceof PHPStan\Type\UnionType) {
-            return $hole('('.implode(' | ', array_map('t', (fn () => $this->getSortedTypes())->call($t))).')');
+            return $hole('('.implode(' | ', array_map(fn ($part) => t($part, $source), (fn () => $this->getSortedTypes())->call($t))).')');
         }
         if ($t instanceof PHPStan\Type\IntersectionType && array_filter($t->getTypes(), fn ($m) => $m instanceof PHPStan\Type\Generic\TemplateType) !== []) {
-            return $hole('('.implode(' & ', array_map('t', (fn () => $this->getSortedTypes())->call($t))).')');
+            return $hole('('.implode(' & ', array_map(fn ($part) => t($part, $source), (fn () => $this->getSortedTypes())->call($t))).')');
         }
         if ($t instanceof PHPStan\Type\StringAlwaysAcceptingObjectWithToStringType) {
             return $hole('__stringAndStringable');
@@ -107,6 +132,9 @@ function t(Type $type): string
     });
     $s = (string) $mapped->toPhpDocNode();
     $s = preg_replace_callback('/__PunHole\d+/', fn ($m) => $holes[$m[0]], $s);
+    if ($source) {
+        return $type instanceof PHPStan\Type\Generic\TemplateType ? $s : '__source<'.$id.', '.$s.'>';
+    }
     $GLOBALS['reflected'][$GLOBALS['ctx'] ?? ''][$s][json_encode(array_map(fn ($l) => $type->describe($l), [VerbosityLevel::precise(), VerbosityLevel::value(), VerbosityLevel::typeOnly()]))] = true;
 
     return $s;
@@ -148,13 +176,38 @@ function variant(ParametersAcceptor $v): array
 // Keep the channels returned by the reflection, not guesses based on its effective return description.
 function signature(ParametersAcceptor $v): array
 {
-    return [
+    $signature = [
         'phpDocReturn' => t($v->getPhpDocReturnType()),
         'nativeReturn' => t($v->getNativeReturnType()),
         'templates' => array_map('t', $v->getTemplateTypeMap()->getTypes()),
         'resolvedTemplates' => array_map('t', $v->getResolvedTemplateTypeMap()->getTypes()),
         'variances' => array_map(fn ($variance) => $variance->describe(), $v->getCallSiteVarianceMap()->getVariances()),
     ];
+    $types = [$v->getReturnType(), $v->getPhpDocReturnType(), $v->getNativeReturnType(),
+        ...array_values($v->getTemplateTypeMap()->getTypes()), ...array_values($v->getResolvedTemplateTypeMap()->getTypes())];
+    foreach ($v->getParameters() as $parameter) {
+        $types[] = $parameter->getType();
+        if ($parameter->getDefaultValue() !== null) {
+            $types[] = $parameter->getDefaultValue();
+        }
+    }
+    foreach ($types as $type) {
+        if ($type->getReferencedTemplateTypes(PHPStan\Type\Generic\TemplateTypeVariance::createInvariant()) !== []) {
+            $source = fn (Type $t) => t($t, true);
+            $signature['sources'] = [
+                'params' => array_map(fn ($p) => $source($p->getType()), $v->getParameters()),
+                'defaults' => array_map(fn ($p) => $p->getDefaultValue() === null ? null : $source($p->getDefaultValue()), $v->getParameters()),
+                'return' => $source($v->getReturnType()),
+                'phpDocReturn' => $source($v->getPhpDocReturnType()),
+                'nativeReturn' => $source($v->getNativeReturnType()),
+                'templates' => array_map($source, $v->getTemplateTypeMap()->getTypes()),
+                'resolvedTemplates' => array_map($source, $v->getResolvedTemplateTypeMap()->getTypes()),
+            ];
+            break;
+        }
+    }
+
+    return $signature;
 }
 
 function callable_entry(PHPStan\Reflection\FunctionReflection|PHPStan\Reflection\ExtendedMethodReflection $f): array
@@ -175,6 +228,7 @@ function callable_entry(PHPStan\Reflection\FunctionReflection|PHPStan\Reflection
 /** @return array{functions: array<string, mixed>, constants: array<string, string>, classes: array<string, mixed>} */
 function dump(int $phpVersion, array &$typeStrings): array
 {
+    $GLOBALS['sourceVersion'] = $phpVersion;
     $c = container($phpVersion);
     $provider = $c->getByType(ReflectionProvider::class);
     $map = $c->getByType(FunctionSignatureMapProvider::class)->getSignatureMap();
@@ -239,6 +293,9 @@ function dump(int $phpVersion, array &$typeStrings): array
             'constants' => [],
             'methods' => [],
         ];
+        if ($class->getTemplateTypeMap()->getTypes() !== []) {
+            $entry['templateSources'] = array_map(fn ($t) => t($t, true), $class->getTemplateTypeMap()->getTypes());
+        }
         // the templates' variance, when not invariant (TemplateTypeVariance::describe())
         foreach ($class->getTemplateTypeMap()->getTypes() as $name => $t) {
             if ($t instanceof PHPStan\Type\Generic\TemplateType && !$t->getVariance()->invariant()) {
@@ -261,6 +318,7 @@ function dump(int $phpVersion, array &$typeStrings): array
             $generic = $object->getAncestorWithClassName($ancestor);
             if ($generic instanceof PHPStan\Type\Generic\GenericObjectType) {
                 $entry['generics'][$ancestor] = array_map('t', $generic->getTypes());
+                $entry['genericSources'][$ancestor] = array_map(fn ($t) => t($t, true), $generic->getTypes());
             }
         }
         $GLOBALS['reflected'] = $reflected;
@@ -864,14 +922,17 @@ if (($argv[1] ?? '') === 'dump') {
 }
 
 // Refresh just this reflection contract without changing host-dependent extension constant values or fixtures.
-if (in_array($argv[1] ?? '', ['allowed-constants', 'signatures'], true)) {
+// source-graphs adds object sharing only; every existing reflection channel and effect stays untouched.
+if (in_array($argv[1] ?? '', ['allowed-constants', 'signatures', 'source-graphs'], true)) {
     $path = $root.'/crates/pun-phpstan/data/symbols.json';
     $symbols = json_decode(file_get_contents($path), false, 512, JSON_THROW_ON_ERROR);
+    $graphs = $argv[1] === 'source-graphs';
     foreach ([80400, 80500] as $version) {
+        $GLOBALS['sourceVersion'] = $version;
         $provider = container($version)->getByType(ReflectionProvider::class);
         // A new reflection channel can differ on 8.5 even when the old effective signature did not.
         $data = $version === 80400 ? $symbols : $symbols->php85;
-        if ($version === 80500 && $argv[1] === 'signatures') {
+        if ($version === 80500 && ($graphs || $argv[1] === 'signatures')) {
             $data = (object) [];
             foreach (['functions', 'classes'] as $kind) {
                 $data->$kind = (object) array_replace((array) $symbols->$kind, (array) $symbols->php85->$kind);
@@ -883,6 +944,21 @@ if (in_array($argv[1] ?? '', ['allowed-constants', 'signatures'], true)) {
                 if ($entry === null) {
                     continue;
                 }
+                if ($kind === 'classes' && ($graphs || $argv[1] === 'signatures')) {
+                    $class = $provider->getClass($name);
+                    $templates = $class->getTemplateTypeMap()->getTypes();
+                    if ($templates !== []) {
+                        $entry->templateSources = array_map(fn ($t) => t($t, true), $templates);
+                    }
+                    $object = $templates === [] ? new PHPStan\Type\ObjectType($class->getName()) : new PHPStan\Type\Generic\GenericObjectType($class->getName(), array_values($templates));
+                    foreach ($entry->ancestors as $ancestor) {
+                        $generic = $object->getAncestorWithClassName($ancestor);
+                        if ($generic instanceof PHPStan\Type\Generic\GenericObjectType) {
+                            $entry->genericSources ??= (object) [];
+                            $entry->genericSources->$ancestor = array_map(fn ($t) => t($t, true), $generic->getTypes());
+                        }
+                    }
+                }
                 $callables = $kind === 'functions' ? [$name => $entry] : $entry->methods;
                 foreach ($callables as $method => $callable) {
                     $reflection = $kind === 'functions'
@@ -891,6 +967,12 @@ if (in_array($argv[1] ?? '', ['allowed-constants', 'signatures'], true)) {
                     $fresh = callable_entry($reflection);
                     foreach (['variants', 'named'] as $variants) {
                         foreach ($callable->$variants ?? [] as $i => $variant) {
+                            if ($graphs) {
+                                if (isset($fresh[$variants][$i]['signature']['sources'])) {
+                                    $variant->signature->sources = $fresh[$variants][$i]['signature']['sources'];
+                                }
+                                continue;
+                            }
                             if ($argv[1] === 'signatures') {
                                 $variant->signature = $fresh[$variants][$i]['signature'];
                                 continue;
@@ -905,7 +987,7 @@ if (in_array($argv[1] ?? '', ['allowed-constants', 'signatures'], true)) {
                     }
                 }
             }
-            if ($version === 80500 && $argv[1] === 'signatures') {
+            if ($version === 80500 && ($graphs || $argv[1] === 'signatures')) {
                 foreach ($data->$kind as $name => $entry) {
                     if (json_encode($entry) !== json_encode($symbols->$kind->$name ?? null)) {
                         $symbols->php85->$kind->$name = $entry;
