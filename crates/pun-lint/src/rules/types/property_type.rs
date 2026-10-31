@@ -20,8 +20,8 @@ use mago_codex::ttype::atomic::scalar::int::TInteger;
 use mago_codex::ttype::union::TUnion;
 use mago_syntax::cst::{
     Access, AnonymousClass, Argument, Assignment, Call, Class, ClassLikeMember,
-    ClassLikeMemberSelector, Expression, Hint, Literal, Method, Modifier, Node, Property,
-    PropertyItem, Sequence, UnaryPrefixOperator, Variable,
+    ClassLikeMemberSelector, Expression, Hint, Literal, Method, Modifier, Node, PlainProperty,
+    Property, PropertyItem, Sequence, UnaryPrefixOperator, Variable,
 };
 use pun_problem::{Edit, Span};
 
@@ -755,25 +755,35 @@ impl<'ast, 'arena> ClassView<'ast, 'arena> {
 
     /// The class's untyped plain properties with one item (the others no rule types).
     pub(crate) fn properties(&self) -> Vec<Prop<'ast, 'arena>> {
-        self.members
-            .iter()
-            .filter_map(|m| match m {
-                ClassLikeMember::Property(p @ Property::Plain(plain)) if plain.hint.is_none() => {
-                    let items: Vec<&PropertyItem<'_>> = plain.items.iter().collect();
-                    let [item] = items[..] else {
-                        return Some(Prop {
+        self.plain_properties().map(|(_, prop)| prop).collect()
+    }
+
+    /// The same selection as [`Self::properties`], retaining the plain declaration for its attributes.
+    pub(crate) fn plain_properties(
+        &self,
+    ) -> impl Iterator<Item = (&'ast PlainProperty<'arena>, Prop<'ast, 'arena>)> {
+        self.members.iter().filter_map(|m| match m {
+            ClassLikeMember::Property(p @ Property::Plain(plain)) if plain.hint.is_none() => {
+                let items: Vec<&PropertyItem<'_>> = plain.items.iter().collect();
+                let [item] = items[..] else {
+                    return Some((
+                        plain,
+                        Prop {
                             property: p,
                             item: None,
-                        });
-                    };
-                    Some(Prop {
+                        },
+                    ));
+                };
+                Some((
+                    plain,
+                    Prop {
                         property: p,
                         item: Some(item),
-                    })
-                }
-                _ => None,
-            })
-            .collect()
+                    },
+                ))
+            }
+            _ => None,
+        })
     }
 }
 
@@ -1515,18 +1525,14 @@ pub(crate) struct VarTag<'s> {
 }
 
 impl<'s> VarTag<'s> {
-    /// The property's doc comment; `None` where Pun does not read it as phpdoc-parser does.
-    pub(crate) fn of(
-        source: &'s str,
-        node: Node<'_, '_>,
-        ancestors: &[Node<'_, '_>],
-    ) -> Option<Self> {
-        let annotated = Annotated::of(source, node, ancestors)?;
+    /// The property's annotation context, even without a doc comment. An unreadable `@var` stays `Err` in `tag`.
+    pub(crate) fn of(source: &'s str, property: &Property<'_>, ancestors: &[Node<'_, '_>]) -> Self {
+        let annotated = Annotated::property(source, property, ancestors);
         let tag = match &annotated.doc {
             Some(doc) => typed_tag(doc, "@var", None),
             None => Ok(None),
         };
-        Some(VarTag { annotated, tag })
+        VarTag { annotated, tag }
     }
 
     fn doc(&self) -> Option<&Doc<'s>> {

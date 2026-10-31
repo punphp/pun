@@ -4,8 +4,8 @@
 //! attribute groups as php-parser prints them when they are added to the node's `attrGroups`.
 
 use mago_syntax::cst::{
-    AttributeList, LiteralStringKind, Namespace, NamespaceBody, Node, Sequence, Statement, UseItem,
-    UseItems,
+    AttributeList, LiteralStringKind, Namespace, NamespaceBody, Node, Property, Sequence,
+    Statement, UseItem, UseItems,
 };
 use pun_problem::{Edit, Span};
 
@@ -40,17 +40,43 @@ impl<'s> Annotated<'s> {
             Node::Class(class) => &class.attribute_lists,
             Node::Method(method) => &method.attribute_lists,
             Node::Function(function) => &function.attribute_lists,
-            Node::Property(mago_syntax::cst::Property::Plain(property)) => {
-                &property.attribute_lists
-            }
-            Node::Property(mago_syntax::cst::Property::Hooked(property)) => {
-                &property.attribute_lists
-            }
+            Node::Property(property) => return Some(Self::property(source, property, ancestors)),
             Node::Interface(interface) => &interface.attribute_lists,
             Node::FunctionLikeParameter(parameter) => &parameter.attribute_lists,
             _ => return None,
         };
-        let start = node_span(&node).start;
+        Some(Self::from_attributes(
+            source,
+            node_span(&node).start,
+            lists,
+            ancestors,
+        ))
+    }
+
+    /// An actual property, plain or hooked, always has annotation context even without readable PHPDoc.
+    pub(crate) fn property(
+        source: &'s str,
+        property: &Property<'_>,
+        ancestors: &[Node<'_, '_>],
+    ) -> Self {
+        let lists = match property {
+            Property::Plain(property) => &property.attribute_lists,
+            Property::Hooked(property) => &property.attribute_lists,
+        };
+        Self::from_attributes(
+            source,
+            node_span(&Node::Property(property)).start,
+            lists,
+            ancestors,
+        )
+    }
+
+    fn from_attributes(
+        source: &'s str,
+        start: usize,
+        lists: &Sequence<'_, AttributeList<'_>>,
+        ancestors: &[Node<'_, '_>],
+    ) -> Self {
         let doc = Doc::of(source, ancestors, start);
         let outer = ancestors
             .iter()
@@ -62,13 +88,13 @@ impl<'s> Annotated<'s> {
         let other_comments = doc
             .as_ref()
             .is_some_and(|d| !source[comments_from..d.span.start].trim().is_empty());
-        Some(Annotated {
+        Annotated {
             start,
             last_attribute_end: lists.last().map(|l| node_span(l).end),
             doc,
             other_comments,
             comments_from,
-        })
+        }
     }
 
     /// [`Self::of`] with the doc comment php-parser's `getDocComment()` reads: the last among the node's comments,

@@ -75,15 +75,18 @@ impl Rule for AddPropertyTypeSetup {
             }
             if let Ty::Object(name) = &t
                 && name.eq_ignore_ascii_case(MOCK_OBJECT)
-                && let Some(var) = VarTag::of(ctx.source, Node::Property(prop.property), &view.path)
-                && let Ok(Some(tag)) = &var.tag
-                && let Some(written) = object_name(&tag.ty)
             {
-                let class = doc_class(&view.path, written);
-                if !class.eq_ignore_ascii_case(MOCK_OBJECT)
-                    && let Some(e) = var.set(ctx.source, &format!("(\\{MOCK_OBJECT} & \\{class})"))
+                let var = VarTag::of(ctx.source, prop.property, &view.path);
+                if let Ok(Some(tag)) = &var.tag
+                    && let Some(written) = object_name(&tag.ty)
                 {
-                    edits.extend(e);
+                    let class = doc_class(&view.path, written);
+                    if !class.eq_ignore_ascii_case(MOCK_OBJECT)
+                        && let Some(e) =
+                            var.set(ctx.source, &format!("(\\{MOCK_OBJECT} & \\{class})"))
+                    {
+                        edits.extend(e);
+                    }
                 }
             }
             let at = variable_span(&prop).start;

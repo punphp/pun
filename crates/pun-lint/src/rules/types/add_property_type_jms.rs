@@ -133,10 +133,7 @@ fn visit<'ast, 'arena>(
         }
         let declaration = match kind {
             Kind::Scalar => {
-                let Some(var) = VarTag::of(ctx.source, Node::Property(prop.property), &view.path)
-                else {
-                    continue;
-                };
+                let var = VarTag::of(ctx.source, prop.property, &view.path);
                 let doc = match &var.tag {
                     Ok(Some(tag)) => match tag.ty {
                         TagType::Name(n) => Some(n.to_ascii_lowercase()),

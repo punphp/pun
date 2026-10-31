@@ -126,11 +126,10 @@ fn type_from_var<'ast, 'arena>(
         {
             continue;
         }
-        let Some(var) = VarTag::of(ctx.source, Node::Property(prop.property), &view.path)
-            .filter(|v| v.annotated.doc.is_some())
-        else {
+        let var = VarTag::of(ctx.source, prop.property, &view.path);
+        if var.annotated.doc.is_none() {
             continue;
-        };
+        }
         let Ok(Some(tag)) = &var.tag else { continue };
         let Some(written) = object_name(&tag.ty) else {
             continue;

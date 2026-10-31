@@ -76,10 +76,7 @@ impl Rule for AddPropertyTypeBehatContext {
             if prop.default().is_some_and(|d| !is_null_literal(d)) {
                 continue;
             }
-            let Some(var) = VarTag::of(ctx.source, Node::Property(prop.property), &view.path)
-            else {
-                continue;
-            };
+            let var = VarTag::of(ctx.source, prop.property, &view.path);
             let (written, generic, tag) = match &var.tag {
                 Ok(Some(tag)) => match tag.ty {
                     TagType::Name(n) => (n, false, Some(tag)),

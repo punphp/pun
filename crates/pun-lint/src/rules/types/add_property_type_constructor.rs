@@ -77,10 +77,7 @@ impl Rule for AddPropertyTypeConstructor {
             if matches!(t, Ty::Mixed) || is_doctrine_collection(&facts, &t) {
                 continue;
             }
-            let Some(var) = VarTag::of(ctx.source, Node::Property(prop.property), &view.path)
-            else {
-                continue;
-            };
+            let var = VarTag::of(ctx.source, prop.property, &view.path);
             if prop.is_public() {
                 let mixed = match &var.tag {
                     Ok(None) => true,

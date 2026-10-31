@@ -14,20 +14,21 @@
 //! `ManyToMany`, `ManyToOne`, `OneToOne`, and ODM's `ReferenceMany`, `EmbedMany`, `ReferenceOne`, `EmbedOne`, as an
 //! attribute or an annotation) are left alone, as is a class with a Doctrine `loadMetadata()` method.
 
-use mago_syntax::cst::{Node, NodeKind};
+use mago_syntax::cst::{Node, NodeKind, PlainProperty};
 use pun_problem::{Edit, Fix, Safety, Span};
 
 use super::add_property_type_constructor::is_test_case;
 use super::facts::facts;
 use super::property_type::{
-    Assigned, ClassView, Prop, TYPED_PROPERTIES, Ty, VarTag, assigned_type, declared_ty, doc_type,
+    Assigned, ClassView, TYPED_PROPERTIES, Ty, VarTag, assigned_type, declared_ty, doc_type,
     is_legal, is_null_literal, is_var_tag_useless, mixed_passed_or_union, property_declaration,
     variable_span,
 };
+use crate::rules::lint_b_doc::Doc;
 use crate::rules::mago_helpers::{boolean, configure};
 use crate::rules::no_redundant_property_default::is_property_assigned;
-use crate::rules::phpunit::annotations::Annotated;
 use crate::rules::rector_batch5::{has_attribute, imported};
+use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
 
 #[derive(Default)]
@@ -87,11 +88,11 @@ impl Rule for AddPropertyTypeAssigns {
         }
         let test_case = is_test_case(&facts, &view);
         let mut edits: Vec<Edit> = Vec::new();
-        for prop in &view.properties() {
+        for (plain, ref prop) in view.plain_properties() {
             if !prop.is_private() && !self.inline_public {
                 continue;
             }
-            if is_doctrine_mapped(ctx.source, prop, &view.path) {
+            if is_doctrine_mapped(ctx.source, plain, &view.path) {
                 continue;
             }
             if !is_legal(&facts, &view, prop, self.inline_public) {
@@ -115,10 +116,7 @@ impl Rule for AddPropertyTypeAssigns {
             else {
                 continue;
             };
-            let Some(var) = VarTag::of(ctx.source, Node::Property(prop.property), &view.path)
-            else {
-                continue;
-            };
+            let var = VarTag::of(ctx.source, prop.property, &view.path);
             let at = variable_span(prop);
             edits.push(Edit::new(
                 Span::new(at.start, at.start),
@@ -154,19 +152,14 @@ impl Rule for AddPropertyTypeAssigns {
 
 /// `isDoctrineMappedProperty` (`AttrinationFinder::hasByMany`): a Doctrine mapping attribute, or a doc annotation
 /// naming one.
-fn is_doctrine_mapped(source: &str, prop: &Prop<'_, '_>, path: &[Node<'_, '_>]) -> bool {
-    let lists = match prop.property {
-        mago_syntax::cst::Property::Plain(p) => &p.attribute_lists,
-        mago_syntax::cst::Property::Hooked(p) => &p.attribute_lists,
-    };
+fn is_doctrine_mapped(source: &str, prop: &PlainProperty<'_>, path: &[Node<'_, '_>]) -> bool {
     if DOCTRINE_MAPPING
         .iter()
-        .any(|c| has_attribute(path, lists, c))
+        .any(|c| has_attribute(path, &prop.attribute_lists, c))
     {
         return true;
     }
-    let Some(doc) = Annotated::of(source, Node::Property(prop.property), path).and_then(|a| a.doc)
-    else {
+    let Some(doc) = Doc::of(source, path, node_span(prop).start) else {
         return false;
     };
     doc.text_all().split('@').skip(1).any(|tag| {
