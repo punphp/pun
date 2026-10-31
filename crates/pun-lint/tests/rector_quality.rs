@@ -60,12 +60,13 @@ use std::path::Path;
 use lint_c::run_class;
 use mago_syntax::cst::Node;
 use pun_lint::rules::{
-    NoAlwaysFalseCondition, NoAlwaysTrueIf, NoAlwaysTrueInstanceof, NoAlwaysTrueInstanceofAssert,
-    NoConstantCondition, NoConstantViaVariable, NoInvalidVarTag, NoPhpdocClassCaseMismatch,
-    NoRedundantForeachGuard, NoRedundantPropertyDefault, NoTypedPropertyInstanceof,
-    NoUnusedTestMethodParam, NoUselessCast, NoUselessFilterVar, NoUselessMath,
-    PreferInlineArrayReturn, PreferInstanceMethod, PreferPropertyExists, PreferReturnedCondition,
-    RequireConsistentReturn, RequirePreviousException,
+    AddPropertyTypeAssigns, AddPropertyTypeConstructor, NoAlwaysFalseCondition, NoAlwaysTrueIf,
+    NoAlwaysTrueInstanceof, NoAlwaysTrueInstanceofAssert, NoConstantCondition,
+    NoConstantViaVariable, NoInvalidVarTag, NoPhpdocClassCaseMismatch, NoRedundantForeachGuard,
+    NoRedundantPropertyDefault, NoTypedPropertyInstanceof, NoUnusedTestMethodParam, NoUselessCast,
+    NoUselessFilterVar, NoUselessMath, PreferInlineArrayReturn, PreferInstanceMethod,
+    PreferPropertyExists, PreferReturnedCondition, RequireConsistentReturn,
+    RequirePreviousException,
 };
 use pun_lint::{Linter, Rule};
 
@@ -221,6 +222,28 @@ fn remove_default_value_from_assigned_property_on_every_node() {
     check(
         Everywhere(Box::new(NoRedundantPropertyDefault)),
         "RemoveDefaultValueFromAssignedPropertyRector",
+    );
+}
+
+#[test]
+fn typed_property_from_assigns_on_every_node() {
+    lint_c::run_class_stubs(
+        vec![Box::new(Everywhere(Box::new(
+            AddPropertyTypeAssigns::default(),
+        )))],
+        "TypedPropertyFromAssignsRector",
+        70400,
+        &["php-parser-stubs", "phpunit-stubs"],
+    );
+}
+
+#[test]
+fn typed_property_from_strict_constructor_on_every_node() {
+    lint_c::run_class_stubs(
+        vec![Box::new(Everywhere(Box::new(AddPropertyTypeConstructor)))],
+        "TypedPropertyFromStrictConstructorRector",
+        80100,
+        &["doctrine-stubs"],
     );
 }
 

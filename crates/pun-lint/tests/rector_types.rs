@@ -411,6 +411,24 @@ fn typed_property_from_assigns() {
 }
 
 #[test]
+fn typed_property_from_assigns_native_options() {
+    let mut rule = AddPropertyTypeAssigns::default();
+    assert_eq!(
+        rule.configure(&serde_json::json!({"inline_public": true})),
+        Err("unknown option `inline_public` or a value of the wrong type".to_string()),
+    );
+    assert_eq!(
+        rule.configure(&serde_json::json!({"inline-public": true})),
+        Ok(()),
+    );
+    run_class_at(
+        vec![Box::new(rule)],
+        "TypedPropertyFromAssignsRectorInlinePublic",
+        80100,
+    );
+}
+
+#[test]
 fn typed_property_from_assigns_complex_types() {
     // config/complex_types.php: INTERSECTION_TYPES
     run_class_stubs(
