@@ -381,7 +381,9 @@ Dynamic constructor targets, built-in constructor throw extensions, and conditio
 Local `unset` statements preserve operand effects and evaluate an offset's index before its receiver.
 Local `??=` assignments preserve right-hand-side effects and throws, including when the target is already nonnull.
 Supported plain-array targets retain index throw points separately from index impurity and termination, matching PHPStan's target preparation.
-Purity checks support direct locals and single offsets on proven plain arrays. References and nested or property roots remain incomplete.
+Purity checks include array template bounds for direct locals and single offsets.
+An offset read does not add a possible `offsetGet()` call when its receiver is definitely an array or definitely not `ArrayAccess`.
+Offset writes and unsets still require proven array receivers. References and nested or property roots remain incomplete.
 Unknown effect producers remain unchecked. Full pure-function and pure-method validation remains incomplete.
 
 Array writes distinguish definite literal keys from literal alternatives within a general string or integer key.
