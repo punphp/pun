@@ -76,6 +76,7 @@ pub(crate) mod declare;
 mod doctrine_repository;
 pub(crate) mod docblock;
 mod native;
+mod union_method;
 mod never;
 pub(crate) mod no_nullsafe_on_non_null;
 mod prefer_identical_same_type;

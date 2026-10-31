@@ -64,9 +64,12 @@ static PRELUDE: LazyLock<(CodebaseMetadata, SymbolReferences)> = LazyLock::new(|
     (prelude.metadata, prelude.symbol_references)
 });
 
-/// The analyser's plugins: Mago's defaults.
-static PLUGINS: LazyLock<PluginRegistry> =
-    LazyLock::new(|| create_registry_with_plugins(&[], false));
+/// The analyser's plugins: Mago's defaults, with PHPStan's type of a method call on a union.
+static PLUGINS: LazyLock<PluginRegistry> = LazyLock::new(|| {
+    let mut registry = create_registry_with_plugins(&[], false);
+    super::union_method::register(&mut registry);
+    registry
+});
 
 /// A project's symbols with the prelude's, populated, scanned twice: with the docblocks blanked out, for PHPStan's
 /// native types that Rector's type rules read, and as written, for the types Rector reads of a call of a built-in
