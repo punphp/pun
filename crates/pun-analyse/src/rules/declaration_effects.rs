@@ -582,18 +582,30 @@ impl Producer<'_, '_, '_> {
                 // ArrayDimFetchHandler walks the dimension BEFORE reading the receiver. It may replace
                 // the container or escape an alias, so neither proof may be taken before this walk.
                 let mut effects = self.expression(a.index)?;
+                let array = self.array(a.array)
+                    || self
+                        .c
+                        .phpstan_type(a.array)
+                        .is_some_and(|t| t.is_array() == Tri::Yes);
                 if self.referenced
-                    || (!self.array(a.array)
-                        && !self
-                            .c
-                            .phpstan_type(a.array)
-                            .is_some_and(|t| t.is_array() == Tri::Yes))
+                    || (!array
+                        && !self.c.phpstan_type(a.array).is_some_and(|ty| {
+                            declared::with_classes(self.c, || {
+                                is_super_type_of(
+                                    &Type::Object("ArrayAccess".into(), vec![], false),
+                                    &ty,
+                                ) == Tri::No
+                            })
+                        }))
                 {
                     return None; // Unknown/ArrayAccess containers need offsetGet AND offsetUnset points.
                 }
                 effects.merge(self.expression(a.array)?);
-                // Removing an offset preserves the container's array kind, unlike removing the local.
-                self.arrays.insert(v.name.to_vec());
+                // Only an actual array survives as an array fact. A non-array bound can become
+                // ErrorType after this virtual assignment, so the next unset must read its new type.
+                if array {
+                    self.arrays.insert(v.name.to_vec());
+                }
                 Some(effects)
             }
             // Property unsets add an impure point; dynamic variables/static properties need producers.

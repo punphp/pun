@@ -199,6 +199,8 @@ Literal string offsets use PHP bytes and support negative integer indexes.
 At file scope and after `extract()`, `unset` removes a variable's holder without declaring it definitely absent.
 A later read has type `mixed` and might be undefined. Without either scope fallback, a later local read remains definitely undefined.
 False `isset` refinements use the same scope fallback without changing genuine absence.
+Offset unsets transform each member of a template's union bound, retaining the template when every member remains unchanged.
+Virtual offset writes update reference-linked locals without changing independent copies.
 
 Branch joins retain conditional type correlations even when every branch defines the affected variable.
 Narrowing a discriminating guard also narrows its correlated receiver, value, or unpacked array.
@@ -383,7 +385,8 @@ Local `??=` assignments preserve right-hand-side effects and throws, including w
 Supported plain-array targets retain index throw points separately from index impurity and termination, matching PHPStan's target preparation.
 Purity checks include array template bounds for direct locals and single offsets.
 An offset read does not add a possible `offsetGet()` call when its receiver is definitely an array or definitely not `ArrayAccess`.
-Offset writes and unsets still require proven array receivers. References and nested or property roots remain incomplete.
+Offset unsets also avoid possible `ArrayAccess` call effects for proven non-`ArrayAccess` receivers, preserving the index's own effects.
+Offset writes still require proven array receivers. References and nested or property roots remain incomplete.
 Unknown effect producers remain unchecked. Full pure-function and pure-method validation remains incomplete.
 
 Array writes distinguish definite literal keys from literal alternatives within a general string or integer key.

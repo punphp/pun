@@ -1,0 +1,72 @@
+{
+    "values": {
+        "0": [],
+        "4": [
+            [
+                "values.php",
+                9,
+                "void.pure",
+                "Function OffsetCallDeclarationValues\\unionUnset() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "values.php",
+                18,
+                "void.pure",
+                "Function OffsetCallDeclarationValues\\nullableTemplate() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "values.php",
+                27,
+                "void.pure",
+                "Function OffsetCallDeclarationValues\\unionRead() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "values.php",
+                33,
+                "void.pure",
+                "Function OffsetCallDeclarationValues\\nullableUnset() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "values.php",
+                39,
+                "void.pure",
+                "Function OffsetCallDeclarationValues\\nullableRead() returns void but does not have any side effects.",
+                null,
+                true
+            ]
+        ]
+    },
+    "objects": {
+        "0": [],
+        "4": [
+            [
+                "objects.php",
+                18,
+                "void.pure",
+                "Function OffsetCallDeclarationObjects\\closedRead() returns void but does not have any side effects.",
+                null,
+                true
+            ],
+            [
+                "objects.php",
+                39,
+                "void.pure",
+                "Function OffsetCallDeclarationObjects\\closedUnion() returns void but does not have any side effects.",
+                null,
+                true
+            ]
+        ]
+    },
+    "unknown": {
+        "0": [],
+        "4": []
+    }
+}
