@@ -94,6 +94,13 @@ impl<'codebase, 'artifacts, 'block> ProviderContext<'codebase, 'artifacts, 'bloc
         self.artifacts.get_keep_void_expression_type(expr)
     }
 
+    /// Return of an actual selected acceptor with these supplied argument values.
+    pub fn get_callback_return_type<T: HasSpan>(&self, callback: &T, arguments: &[TUnion]) -> Option<&TUnion> {
+        self.artifacts.callback_returns.iter()
+            .find(|(span, supplied, _)| *span == callback.span() && supplied == arguments)
+            .map(|(_, _, result)| result)
+    }
+
     pub fn get_expression_result<T: HasSpan>(&self, expr: &T) -> Option<crate::artifacts::ExpressionResult> {
         self.artifacts.get_expression_result(expr)
     }

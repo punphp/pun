@@ -41,6 +41,7 @@ pub(crate) use resolver::resolve_invocation_type;
 pub(crate) mod arguments;
 
 pub mod analyzer;
+mod callback;
 pub mod post_process;
 pub mod return_type_fetcher;
 pub mod template_result;

@@ -1,6 +1,7 @@
 //! Function return type provider trait.
 
 use mago_codex::ttype::union::TUnion;
+use mago_syntax::cst::Expression;
 use mago_word::starts_with_ignore_case;
 
 use crate::plugin::context::InvocationInfo;
@@ -86,10 +87,24 @@ impl FunctionTarget {
     }
 }
 
+/// A synthetic invocation whose operands have already been evaluated by the real walk.
+pub struct CallbackInvocation<'ast, 'arena> {
+    pub callback: &'ast Expression<'arena>,
+    pub arguments: Vec<TUnion>,
+}
+
 pub trait FunctionReturnTypeProvider: Provider {
     fn targets() -> FunctionTarget
     where
         Self: Sized;
+
+    fn callback_invocations<'ast, 'arena>(
+        &self,
+        _context: &ProviderContext<'_, '_, '_>,
+        _invocation: &InvocationInfo<'_, 'ast, 'arena>,
+    ) -> Vec<CallbackInvocation<'ast, 'arena>> {
+        Vec::new()
+    }
 
     fn get_return_type(
         &self,

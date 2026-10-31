@@ -1463,6 +1463,24 @@ impl PluginRegistry {
         }
     }
 
+    pub(crate) fn callback_invocations<'ctx, 'ast, 'arena>(
+        &self,
+        codebase: &'ctx CodebaseMetadata,
+        source_file: &'ctx File,
+        block_context: &BlockContext<'ctx>,
+        artifacts: &AnalysisArtifacts,
+        invocation: &Invocation<'ctx, 'ast, 'arena>,
+    ) -> Vec<crate::plugin::provider::function::CallbackInvocation<'ast, 'arena>> {
+        let Some(FunctionLikeIdentifier::Function(name)) = invocation.target.get_function_like_identifier() else {
+            return Vec::new();
+        };
+        let context = ProviderContext::new(codebase, source_file, block_context, artifacts);
+        let invocation = InvocationInfo::new(invocation);
+        self.get_function_provider_indices(name.as_bytes()).into_iter()
+            .flat_map(|index| self.function_providers[index].callback_invocations(&context, &invocation))
+            .collect()
+    }
+
     /// Returns a provider result for a function or method invocation.
     ///
     /// External provider failures are logged and preserve the native return type.

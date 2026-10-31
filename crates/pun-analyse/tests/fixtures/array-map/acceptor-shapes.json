@@ -1,0 +1,14 @@
+{
+  "totals": { "errors": 0, "file_errors": 3 },
+  "files": {
+    "acceptor-shapes.php": {
+      "errors": 3,
+      "messages": [
+        { "message": "Dumped type: array{head: 1}", "line": 19, "ignorable": false, "identifier": "phpstan.dumpType" },
+        { "message": "Dumped type: array{head?: int, ...<string, int>}", "line": 20, "ignorable": false, "identifier": "phpstan.dumpType" },
+        { "message": "Dumped type: array{int, ...<int>}", "line": 21, "ignorable": false, "identifier": "phpstan.dumpType" }
+      ]
+    }
+  },
+  "errors": []
+}

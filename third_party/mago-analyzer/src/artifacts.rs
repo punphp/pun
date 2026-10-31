@@ -144,6 +144,8 @@ pub struct AnalysisArtifacts {
     pub case_scopes: Vec<CaseScope>,
     pub fully_matched_switch_offsets: HashSet<u32>,
     pub inferred_parameter_types: Option<HashMap<usize, TUnion>>,
+    /// Results of providers' typed callback invocations, local to the asking call.
+    pub(crate) callback_returns: Vec<(Span, Vec<TUnion>, TUnion)>,
     pub method_initialized_properties: HashMap<(Word, Word), WordSet>,
     pub method_calls_this_methods: HashMap<(Word, Word), HashSet<Word>>,
     pub method_calls_parent_constructor: HashMap<(Word, Word), bool>,
@@ -203,6 +205,7 @@ impl AnalysisArtifacts {
             loop_scope: None,
             fully_matched_switch_offsets: HashSet::default(),
             inferred_parameter_types: None,
+            callback_returns: Vec::new(),
             method_initialized_properties: HashMap::default(),
             method_calls_this_methods: HashMap::default(),
             method_calls_parent_constructor: HashMap::default(),

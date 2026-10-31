@@ -1,6 +1,180 @@
 //! New array values must not inherit callable constraints from their inputs.
 
 #[test]
+fn array_map_selected_acceptors_resolve_actual_template_arguments() {
+    check_native_array_map("acceptor-values");
+}
+
+#[test]
+fn array_map_selected_acceptors_preserve_known_keys_and_open_shape_values() {
+    check_native_array_map("acceptor-shapes");
+}
+
+fn check_native_array_map(case: &str) {
+    use std::borrow::Cow;
+
+    use mago_allocator::LocalArena;
+    use mago_analyzer::{Analyzer, analysis_result::AnalysisResult, plugin::PluginRegistry, settings::Settings};
+    use mago_codex::ttype::atomic::array::TArray;
+    use mago_codex::ttype::union::TUnion;
+    use mago_codex::{populator::populate_codebase, reference::SymbolReferences, scanner::scan_program};
+    use mago_database::file::File;
+    use mago_names::resolver::NameResolver;
+    use mago_php_version::PHPVersion;
+    use mago_span::HasSpan;
+    use mago_syntax::{cst::*, parser::parse_file, walker::MutWalker};
+
+    // Observe the native public artifact, not the shared converter. Expected
+    // values come from the complete, separately retained PHPStan capture.
+    fn describe(ty: &TUnion) -> String {
+        if let Some(value) = ty.get_single_literal_int_value() {
+            value.to_string()
+        } else if ty.is_int() {
+            "int".into()
+        } else if ty.is_bool() {
+            "bool".into()
+        } else if ty.is_string() {
+            "string".into()
+        } else if let Some(array) = ty.get_single_array() {
+            assert!(array.callable().is_none());
+            let (mut values, required, rest): (Vec<_>, _, _) = match array {
+                TArray::List(list) => {
+                    let items = list.known_elements.as_ref().unwrap();
+                    let values = items
+                        .iter()
+                        .enumerate()
+                        .map(|(index, (key, (optional, value)))| {
+                            assert_eq!(*key, index);
+                            assert!(!optional);
+                            describe(value)
+                        })
+                        .collect();
+                    (
+                        values,
+                        items.len(),
+                        (!list.element_type.is_never()).then(|| format!("...<{}>", describe(&list.element_type))),
+                    )
+                }
+                TArray::Keyed(keyed) => {
+                    use mago_codex::ttype::atomic::array::key::ArrayKey;
+                    let items = keyed.known_items.as_ref().unwrap();
+                    let values = items
+                        .iter()
+                        .enumerate()
+                        .map(|(index, (key, (optional, value)))| {
+                            let value = describe(value);
+                            match key {
+                                ArrayKey::Integer(key) => {
+                                    assert_eq!(*key, index as i64);
+                                    assert!(!optional);
+                                    value
+                                }
+                                ArrayKey::String(key) => format!(
+                                    "{}{optional}: {value}",
+                                    String::from_utf8_lossy(key.as_bytes()),
+                                    optional = if *optional { "?" } else { "" }
+                                ),
+                                _ => panic!("unexpected key"),
+                            }
+                        })
+                        .collect();
+                    let required = items.values().filter(|(optional, _)| !optional).count();
+                    let rest = keyed
+                        .parameters
+                        .as_ref()
+                        .map(|(key, value)| format!("...<{}, {}>", describe(key), describe(value)));
+                    (values, required, rest)
+                }
+            };
+            assert_eq!(array.get_minimum_size(), required);
+            values.extend(rest);
+            format!("array{{{}}}", values.join(", "))
+        } else {
+            panic!("unexpected native result {ty:?}")
+        }
+    }
+
+    #[derive(Default)]
+    struct Dumps(Vec<(u32, mago_span::Span)>);
+    impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Dumps {
+        fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
+            if let Expression::Identifier(name) = call.function
+                && name.value() == b"\\PHPStan\\dumpType"
+            {
+                self.0.push((
+                    call.span().start.offset,
+                    call.argument_list.arguments.first().unwrap().value().span(),
+                ));
+            }
+        }
+    }
+
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/array-map");
+    let source = std::fs::read_to_string(root.join(format!("{case}.php"))).unwrap();
+    let oracle: serde_json::Value =
+        serde_json::from_slice(&std::fs::read(root.join(format!("{case}.json"))).unwrap()).unwrap();
+    let arena = LocalArena::new();
+    let file = File::ephemeral(Cow::Owned(case.as_bytes().to_vec()), Cow::Owned(source.as_bytes().to_vec()));
+    let program = parse_file(&arena, &file);
+    assert!(!program.has_errors());
+    let names = NameResolver::new(&arena).resolve(program);
+    let mut codebase = scan_program(&arena, &file, program, &names, PHPVersion::PHP85);
+    let builtins = File::ephemeral(
+        Cow::Borrowed(b"builtins.php"),
+        Cow::Borrowed(
+            b"<?php function array_map(?callable $callback, array $array, array ...$arrays): array { return []; }",
+        ),
+    );
+    let declarations = parse_file(&arena, &builtins);
+    let builtin_names = NameResolver::new(&arena).resolve(declarations);
+    codebase.extend(scan_program(
+        &arena,
+        &builtins,
+        declarations,
+        &builtin_names,
+        PHPVersion::PHP85,
+    ));
+    let mut references = SymbolReferences::new();
+    populate_codebase(&mut codebase, &mut references, Default::default(), Default::default());
+    let registry = PluginRegistry::with_library_providers();
+    let artifacts = Analyzer::new(&arena, &file, &names, &codebase, &registry, Settings::default())
+        .analyze_with_artifacts(program, &mut AnalysisResult::new(references))
+        .unwrap();
+    let mut dumps = Dumps::default();
+    dumps.walk_program(program, &mut ());
+    let actual: Vec<_> = dumps
+        .0
+        .into_iter()
+        .map(|(offset, argument)| {
+            let line = source.as_bytes()[..offset as usize]
+                .iter()
+                .filter(|b| **b == b'\n')
+                .count()
+                + 1;
+            (
+                line,
+                format!(
+                    "Dumped type: {}",
+                    describe(artifacts.get_expression_type(&argument).unwrap())
+                ),
+            )
+        })
+        .collect();
+    let expected: Vec<_> = oracle["files"][format!("{case}.php")]["messages"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|message| {
+            (
+                message["line"].as_u64().unwrap() as usize,
+                message["message"].as_str().unwrap().to_owned(),
+            )
+        })
+        .collect();
+    assert_eq!(actual, expected);
+}
+
+#[test]
 fn library_array_projections_produce_ordinary_values() {
     use std::borrow::Cow;
 
@@ -40,6 +214,11 @@ namespace Flow\Types\DSL {
 function type_structure(array $elements): mixed { return null; }
 }
 namespace Probe {
+function malformed(): void {
+    \array_map();
+    \array_map(null);
+    \array_map(null, 1);
+}
 /**
  * @param \Psl\Async\Awaitable<int> $awaitable
  * @param array<string, \Psl\Async\Awaitable<int>> $awaitables
@@ -115,6 +294,15 @@ function probe($awaitable, array $awaitables, array $tasks, $descriptor, array $
     let artifacts = Analyzer::new(&arena, &file, &names, &codebase, &registry, Settings::default())
         .analyze_with_artifacts(program, &mut AnalysisResult::new(references))
         .unwrap();
+    // PHPStan retains `array` for missing operands. With a null callback its
+    // extension returns the second operand unchanged, even when it is not an array.
+    for call in [r"\array_map()", r"\array_map(null)"] {
+        let start = source.find(call).unwrap() as u32;
+        assert!(artifacts.expression_types[&(start, start + call.len() as u32)].is_array());
+    }
+    let call = r"\array_map(null, 1)";
+    let start = source.find(call).unwrap() as u32;
+    assert_eq!(artifacts.expression_types[&(start, start + call.len() as u32)].get_single_literal_int_value(), Some(1));
     for (call, wrapped, minimum, strings) in [
         (r"\Psl\Async\all([$awaitable])", false, 1, false),
         (r"\Psl\Async\all(['key' => $awaitable])", false, 1, false),

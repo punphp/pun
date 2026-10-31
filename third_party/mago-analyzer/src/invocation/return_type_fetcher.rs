@@ -51,6 +51,20 @@ where
     } else {
         declared
     };
+    let requests = context.plugin_registry.callback_invocations(
+        context.codebase, context.source_file, block_context, artifacts, invocation,
+    );
+    let mut priced = None;
+    if !requests.is_empty() {
+        let mut answers = artifacts.clone();
+        answers.callback_returns.clear();
+        for request in requests {
+            let result = super::callback::evaluate(context, block_context, artifacts, &request)?;
+            answers.callback_returns.push((mago_span::HasSpan::span(request.callback), request.arguments, result));
+        }
+        priced = Some(answers);
+    }
+    let artifacts = priced.as_ref().unwrap_or(artifacts);
     let ty = fetch_invocation_provider_return_type(context, block_context, artifacts, invocation).unwrap_or(declared);
     Ok(InvocationReturnType { ty, always_terminates })
 }
