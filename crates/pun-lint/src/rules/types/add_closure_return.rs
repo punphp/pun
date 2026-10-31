@@ -8,10 +8,11 @@
 //! the docblock type, gets its native type.
 
 use mago_codex::ttype::atomic::TAtomic;
-use mago_syntax::cst::{Node, NodeKind};
+use mago_codex::ttype::union::TUnion;
+use mago_syntax::cst::{Expression, Node, NodeKind};
 
 use super::declare::{expression_order, return_declaration};
-use super::facts::facts;
+use super::facts::{Facts, facts};
 use super::native::native_type;
 use super::silent_void::{Place, has_silent_void};
 use super::{add_return_type, class_scope, returns_scoped};
@@ -47,55 +48,78 @@ impl Rule for AddClosureReturn {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::Closure(closure) = node else {
-            return;
-        };
-        if closure.return_type_hint.is_some() {
-            return;
+        closure_return(node, ancestors, ctx, out, false);
+    }
+}
+
+/// `ClosureReturnTypeRector::refactor()` over the native types of the returns, or, for
+/// `ClosureReturnTypeFromAssertInstanceOfRector`, over the types PHPStan knows there (`full`).
+pub(crate) fn closure_return<'ast, 'arena>(
+    node: Node<'ast, 'arena>,
+    ancestors: &[Node<'ast, 'arena>],
+    ctx: &Context<'_>,
+    out: &mut Vec<Report>,
+    full: bool,
+) {
+    let Node::Closure(closure) = node else {
+        return;
+    };
+    if closure.return_type_hint.is_some() {
+        return;
+    }
+    let facts = facts(ctx);
+    let scope = class_scope(ancestors);
+    let place = Place {
+        facts: &facts,
+        ancestors,
+        scope: scope.as_ref(),
+    };
+    // ReturnedNodesReturnTypeInfererTypeInferer::inferFunctionLike
+    let returns = returns_scoped(&closure.body);
+    if returns.is_empty() {
+        return;
+    }
+    let mut types: Vec<&TAtomic> = Vec::new();
+    let mut has_void = false;
+    for r in &returns {
+        match r.value {
+            None => has_void = true,
+            Some(value) => match expression_order(value, |expr| type_of(&facts, expr, full)) {
+                Some(t) => types.extend(t),
+                None => return,
+            },
         }
-        let facts = facts(ctx);
-        let scope = class_scope(ancestors);
-        let place = Place {
-            facts: &facts,
-            ancestors,
-            scope: scope.as_ref(),
-        };
-        // ReturnedNodesReturnTypeInfererTypeInferer::inferFunctionLike
-        let returns = returns_scoped(&closure.body);
-        if returns.is_empty() {
-            return;
-        }
-        let mut types: Vec<&TAtomic> = Vec::new();
-        let mut has_void = false;
-        for r in &returns {
-            match r.value {
-                None => has_void = true,
-                Some(value) => match expression_order(value, |expr| native_type(&facts, expr)) {
-                    Some(t) => types.extend(t),
-                    None => return,
-                },
-            }
-        }
-        if !has_void && has_silent_void(&place, closure.body.statements.iter()) {
-            has_void = true;
-        }
-        // only `void` is mixed; `void` with others has no declaration; `never` is another rule's
-        if has_void
-            || types
-                .iter()
-                .any(|t| matches!(t, TAtomic::Never | TAtomic::Mixed(_)))
-        {
-            return;
-        }
-        let Some(r#type) = return_declaration(types, &facts.codebase, ctx.php_version, &[], true)
-        else {
-            return;
-        };
-        let at = match &closure.use_clause {
-            Some(uses) => node_span(uses).end,
-            None => node_span(&closure.parameter_list).end,
-        };
-        out.push(add_return_type(node_span(&closure.function), at, &r#type));
+    }
+    if !has_void && has_silent_void(&place, closure.body.statements.iter()) {
+        has_void = true;
+    }
+    // only `void` is mixed; `void` with others has no declaration; `never` is another rule's
+    if has_void
+        || types
+            .iter()
+            .any(|t| matches!(t, TAtomic::Never | TAtomic::Mixed(_)))
+    {
+        return;
+    }
+    let Some(r#type) = return_declaration(types, &facts.codebase, ctx.php_version, &[], true)
+    else {
+        return;
+    };
+    let at = match &closure.use_clause {
+        Some(uses) => node_span(uses).end,
+        None => node_span(&closure.parameter_list).end,
+    };
+    out.push(add_return_type(node_span(&closure.function), at, &r#type));
+}
+
+/// The native type of `expr`, or the type PHPStan knows there.
+fn type_of<'f>(facts: &'f Facts, expr: &Expression<'_>, full: bool) -> Option<&'f TUnion> {
+    if full {
+        facts
+            .full_type(node_span(expr))
+            .filter(|t| !t.types.is_empty())
+    } else {
+        native_type(facts, expr)
     }
 }
 

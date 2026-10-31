@@ -42,6 +42,18 @@
 //! members in an order of its own, so Pun leaves the callback alone. Pun/setup_fails: `setUp()` mocks a class
 //! expression without a name (`('A' . 'B')::class`), which makes Rector fail on the file; Pun leaves it alone.
 //!
+//! AssertEmptyNullableObjectToAssertInstanceofRector/Pun/narrowed: Mago narrows a variable by an earlier PHPUnit
+//! assertion (`self::assertNull($a)` leaves `$a` as `null`), where PHPStan without its PHPUnit extension, as Rector
+//! runs it, keeps the declared type; Pun leaves the later call alone.
+//!
+//! AssertArrayCastedObjectToAssertSameRector/Pun/invalid_name: a key that is not a property name
+//! (`'my-key'`) makes Rector write `$object->my-key`, which is not a property fetch; Pun leaves the call alone. Pun
+//! also leaves an array alone whose values are not literals, nulls, booleans, numbers, strings or arrays of them.
+//!
+//! ClosureReturnTypeFromAssertInstanceOfRector: its fixture expects the type `assertInstanceOf()` narrows to, which
+//! `.oracle/rector-bin` does not give (it has no PHPUnit extension for PHPStan), so Oracle/ holds only closures whose
+//! type does not depend on the narrowing.
+//!
 //! Pun/missing11 (`NamedArgumentForDataProviderRector`): a data provider whose arrays have empty items, which
 //! php-parser does not parse; Pun leaves it alone.
 
@@ -188,6 +200,30 @@ fn assert_comparison_to_specific_method() {
 #[test]
 fn assert_instance_of_comparison() {
     check(PreferAssertInstanceof, "AssertInstanceOfComparisonRector");
+}
+
+#[test]
+fn assert_empty_nullable_object_to_assert_instanceof() {
+    check(
+        PreferAssertInstanceofOverEmpty,
+        "AssertEmptyNullableObjectToAssertInstanceofRector",
+    );
+}
+
+#[test]
+fn assert_array_casted_object_to_assert_same() {
+    check(
+        PreferPropertyAssertions,
+        "AssertArrayCastedObjectToAssertSameRector",
+    );
+}
+
+#[test]
+fn closure_return_type_from_assert_instance_of() {
+    check(
+        AddClosureReturnTypeFromAssert,
+        "ClosureReturnTypeFromAssertInstanceOfRector",
+    );
 }
 
 #[test]

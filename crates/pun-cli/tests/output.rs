@@ -1367,22 +1367,6 @@ fn run_errors_exit_2() {
     for args in [&["config"][..], &["list-files"]] {
         assert_eq!(pun(args), (String::new(), format!("{none}\n"), Some(2)));
     }
-    // An unported rule names pun.toml, the rule and the way out.
-    std::fs::write(
-        dir.join("pun.toml"),
-        "[format]\npreset = \"empty\"\n[lint.rules]\n\"style/prefer-class-constant\" = \"error\"\n",
-    )
-    .unwrap();
-    let line = "✖ pun.toml  rule not supported by Pun yet: `lint/style/prefer-class-constant`";
-    let hint = "  remove it from pun.toml to run the other rules\n";
-    assert_eq!(
-        pun(&["check", "--color=never"]),
-        (String::new(), format!("{line}\n{hint}"), Some(2))
-    );
-    assert_eq!(
-        pun(&["format", "--color=always"]),
-        (String::new(), format!("{}{hint}", red(line)), Some(2))
-    );
     // A bad `--format` (Pint's box, kept for machine formats) and `--output-format`: the files are still checked.
     std::fs::write(
         dir.join("pun.toml"),

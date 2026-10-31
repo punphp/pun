@@ -610,66 +610,6 @@ fn pun_only_behaviour() {
     let (_, err, _) = pun(&dir, &["format", "--test", "-v", "app/Clean.php"]);
     assert_eq!(err, "");
 
-    // No PHP fallback: a rule Pun hasn't ported stops every command, named under its Pun ID (exit 2).
-    std::fs::write(
-        dir.join("pun.toml"),
-        "[format]\npreset = \"empty\"\n[format.rules]\n\"arrays/syntax\" = true\n[lint.rules]\n\"style/prefer-class-constant\" = \"error\"\n",
-    )
-    .unwrap();
-    let toml = dir.join("pun.toml");
-    for cmd in [&["format", "--test"][..], &["lint"], &["check", "--fix"]] {
-        let (out, err, code) = pun(&dir, cmd);
-        assert_eq!(
-            (out.as_str(), err, code),
-            (
-                "",
-                "x pun.toml  rule not supported by Pun yet: `lint/style/prefer-class-constant`\n  remove it from pun.toml to run the other rules\n".to_string(),
-                Some(2)
-            ),
-            "{cmd:?}"
-        );
-    }
-    // Lint rules count too, even for `pun format`; several are listed together.
-    std::fs::write(
-        dir.join("pun.toml"),
-        "[format]\npreset = \"empty\"\n[lint.rules]\n\"style/prefer-class-constant\" = \"error\"\n\"types/add-return-type-from-try-catch\" = \"error\"\n",
-    )
-    .unwrap();
-    let (_, err, code) = pun(&dir, &["format", "--test"]);
-    assert_eq!(
-        (err, code),
-        (
-            "x pun.toml  rules not supported by Pun yet: `lint/style/prefer-class-constant`, `lint/types/add-return-type-from-try-catch`\n  remove them from pun.toml to run the other rules\n".to_string(),
-            Some(2)
-        )
-    );
-    // Agent mode: the same message as its one-line error, same exit code.
-    let (out, _, code) = pun_env(&dir, &["lint"], &[("PUN_AGENT", "1")]);
-    assert_eq!(
-        (out, code),
-        (
-            format!(
-                "pun lint: error: {}: rules not supported by Pun yet: `lint/style/prefer-class-constant`, `lint/types/add-return-type-from-try-catch`\n",
-                toml.display()
-            ),
-            Some(2)
-        )
-    );
-    // A named lint rule Pun can't run yet stops the run too; a set skips the rules Pun can't run yet (code-quality
-    // has unported rules).
-    std::fs::write(
-        dir.join("pun.toml"),
-        "[format]\npreset = \"empty\"\n[lint]\nsets = [\"code-quality\"]\n[lint.rules]\n\"style/prefer-class-constant\" = \"error\"\n",
-    )
-    .unwrap();
-    let (_, err, code) = pun(&dir, &["lint"]);
-    assert_eq!(
-        (err, code),
-        (
-            "x pun.toml  rule not supported by Pun yet: `lint/style/prefer-class-constant`\n  remove it from pun.toml to run the other rules\n".to_string(),
-            Some(2)
-        )
-    );
     std::fs::write(
         dir.join("pun.toml"),
         "[format]\npreset = \"empty\"\n[lint]\nsets = [\"code-quality\"]\n",

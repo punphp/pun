@@ -28,6 +28,8 @@ mod add_bool_return;
 mod add_bool_return_from_const;
 mod add_closure_never_return;
 mod add_closure_return;
+mod implicit_array_observer;
+mod add_return_type_from_try_catch;
 mod add_closure_void_return;
 mod add_fluent_return;
 mod add_function_void_return;
@@ -108,6 +110,8 @@ pub use add_bool_return::AddBoolReturn;
 pub use add_bool_return_from_const::AddBoolReturnFromConst;
 pub use add_closure_never_return::AddClosureNeverReturn;
 pub use add_closure_return::{AddArrowFunctionReturn, AddClosureReturn};
+pub(crate) use add_closure_return::closure_return;
+pub use add_return_type_from_try_catch::AddReturnTypeFromTryCatch;
 pub use add_closure_void_return::AddClosureVoidReturn;
 pub use add_fluent_return::AddFluentReturn;
 pub use add_function_void_return::AddFunctionVoidReturn;
@@ -199,6 +203,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(AddNullableReturn),
         Box::new(AddReturnTypeFromYield),
         Box::new(AddReturnTypeFromNativeCall),
+        Box::new(AddReturnTypeFromTryCatch),
         Box::new(AddReturnTypeFromTypedCall),
         Box::new(AddMagicMethodTypes),
         Box::new(PreferSpecificReturnType),

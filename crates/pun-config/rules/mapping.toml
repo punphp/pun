@@ -254,7 +254,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "whitespace/statement-indentation" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "Each statement must be indented." }
 
 [rules.lint]
-"arrays/no-implicit-array-creation" = { fix = "none", intent = "suspicious", sets = ["code-quality"], status = "decided", summary = "Disallows implicit array creation: appending to or writing an offset of an undefined or `null` variable." }
+"arrays/no-implicit-array-creation" = { fix = "none", intent = "suspicious", sets = ["code-quality"], ported = true, status = "decided", summary = "Disallows implicit array creation: appending to or writing an offset of an undefined or `null` variable." }
 "arrays/prefer-array-append" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use `$array[] =` instead of `array_push()` in a statement." }
 "arrays/prefer-array-spread" = { fix = "unsafe", sets = ["modernize"], ported = true, origin = "mago", status = "decided", summary = "Detects calls to `array_merge()` and suggests using the array spread operator (`...`) in an array literal instead." }
 "classes/add-dynamic-properties" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Add missing dynamic properties" }
@@ -631,7 +631,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpdoc/no-void-on-magic-method" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove useless @return void docblock from magic methods __construct, __destruct, and __clone" }
 "phpdoc/require-no-named-arguments" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "There must be `@no-named-arguments` tag in PHPDoc of a class/enum/interface/trait." }
 "phpunit/add-allow-mock-objects-attribute" = { fix = "safe", ported = true, status = "decided", summary = "Add #[AllowMockObjectsWithoutExpectations] to PHPUnit test classes whose mocks have no expectations." }
-"phpunit/add-closure-return-type-from-assert" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add return type to closures narrowed by assertInstanceOf() inside PHPUnit test case classes" }
+"phpunit/add-closure-return-type-from-assert" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add return type to closures narrowed by assertInstanceOf() inside PHPUnit test case classes" }
 "phpunit/add-data-provider-allow-mock-objects" = { fix = "safe", ported = true, status = "decided", summary = "Add #[AllowMockObjectsWithoutExpectations] attribute to PHPUnit test classes that have methods with data providers and mock objects without expectations" }
 "phpunit/add-data-provider-iterator-return-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add Iterator type on known PHPUnit data providers" }
 "phpunit/add-depended-test-return-type" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Add return type declaration to a test method that returns type" }
@@ -675,7 +675,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpunit/prefer-assert-array-has-key" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Turns assertTrue() + isset() comparisons to more precise assertArrayHasKey() method" }
 "phpunit/prefer-assert-count" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replaces use of assertSame and assertEquals on Countable objects with count method" }
 "phpunit/prefer-assert-instanceof" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Turns instanceof comparisons to their method name alternatives in PHPUnit TestCase" }
-"phpunit/prefer-assert-instanceof-over-empty" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Change assertNotEmpty() and assertNotNull() on an object to more clear assertInstanceof()" }
+"phpunit/prefer-assert-instanceof-over-empty" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change assertNotEmpty() and assertNotNull() on an object to more clear assertInstanceof()" }
 "phpunit/prefer-assert-instances-of" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Simplify unnecessary foreach check of instances" }
 "phpunit/prefer-assert-null-true-false" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Turns same bool and null comparisons to their method name alternatives in PHPUnit TestCase" }
 "phpunit/prefer-assert-same" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "PHPUnit methods like `assertSame` should be used instead of `assertEquals`." }
@@ -704,7 +704,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpunit/prefer-narrow-will-return-callback" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Narrow single-value match willReturnCallback() to with() and willReturn() call" }
 "phpunit/prefer-narrow-with-consecutive" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Narrow identical withConsecutive() and willReturnOnConsecutiveCalls() to single call" }
 "phpunit/prefer-new-assertion-names" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Rename deprecated PHPUnit assertions like `assertFileNotExists` to new methods like `assertFileDoesNotExist`." }
-"phpunit/prefer-property-assertions" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Split object casted to array to assert public properties to standalone assert calls" }
+"phpunit/prefer-property-assertions" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Split object casted to array to assert public properties to standalone assert calls" }
 "phpunit/prefer-requires-attribute" = { fix = "safe", ported = true, status = "decided", summary = "Change Requires annotations with values to attributes" }
 "phpunit/prefer-same-for-scalars" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Turns `assertEquals()` into stricter `assertSame()` for scalar values in PHPUnit TestCase" }
 "phpunit/prefer-short-will-return" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use willReturn() and similar instead of will($this->returnValue())." }
@@ -830,7 +830,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "style/prefer-cast-over-intval" = { fix = "unsafe", ported = true, status = "decided", summary = "Replaces `intval`, `floatval`, `doubleval`, `strval` and `boolval` function calls with according type casting operator." }
 "style/prefer-cast-over-settype" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Cast shall be used, not `settype`." }
 "style/prefer-catch-name-from-type" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Type and name of catch exception should match" }
-"style/prefer-class-constant" = { fix = "unsafe", sets = ["modernize", "coding-style"], ported = false, status = "decided", summary = "Use `Foo::class` instead of class-name strings." }
+"style/prefer-class-constant" = { fix = "unsafe", sets = ["modernize", "coding-style"], ported = true, status = "decided", summary = "Use `Foo::class` instead of class-name strings." }
 "style/prefer-class-keyword" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Use `class` keyword for class name resolution in string instead of hardcoded string reference" }
 "style/prefer-class-keyword-on-object" = { fix = "unsafe", sets = ["modernize"], ported = true, status = "decided", summary = "Replace `get_class` calls on object variables with class keyword syntax." }
 "style/prefer-class-name-constant" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Replace string class names by `<class>::class` constant" }
@@ -938,7 +938,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/add-return-type-from-property" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add return method return type based on strict typed property" }
 "types/add-return-type-from-symfony-serializer" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add return type from symfony serializer" }
 "types/add-return-type-from-ternary" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add method return type based on strict ternary values" }
-"types/add-return-type-from-try-catch" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add known type declarations based on first-level try/catch return values" }
+"types/add-return-type-from-try-catch" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add known type declarations based on first-level try/catch return values" }
 "types/add-return-type-from-typed-call" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add return type from strict return type of call" }
 "types/add-return-type-from-yield" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add return type declarations from yields" }
 "types/add-string-return-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add string return type based on returned strict string values" }

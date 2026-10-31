@@ -9,6 +9,7 @@
 mod add_allow_mock_objects_attribute;
 mod add_data_provider_allow_mock_objects;
 mod add_data_provider_iterator_return_type;
+mod add_closure_return_type_from_assert;
 mod add_depended_test_return_type;
 mod add_instanceof_assert;
 mod add_mock_intersection_param;
@@ -45,6 +46,7 @@ mod prefer_assert;
 mod prefer_assert_array_has_key;
 mod prefer_assert_count;
 mod prefer_assert_instanceof;
+mod prefer_assert_instanceof_over_empty;
 mod prefer_assert_instances_of;
 mod prefer_assert_null_true_false;
 mod prefer_assert_string_contains;
@@ -66,6 +68,7 @@ mod prefer_mock_intersection_return;
 mod prefer_named_data_provider_keys;
 mod prefer_narrow_will_return_callback;
 mod prefer_narrow_with_consecutive;
+mod prefer_property_assertions;
 mod prefer_requires_attribute;
 mod prefer_same_for_scalars;
 mod prefer_simple_callback_assert;
@@ -128,6 +131,7 @@ pub use prefer_assert::PreferAssert;
 pub use prefer_assert_array_has_key::PreferAssertArrayHasKey;
 pub use prefer_assert_count::PreferAssertCount;
 pub use prefer_assert_instanceof::PreferAssertInstanceof;
+pub use prefer_assert_instanceof_over_empty::PreferAssertInstanceofOverEmpty;
 pub use prefer_assert_instances_of::PreferAssertInstancesOf;
 pub use prefer_assert_null_true_false::PreferAssertNullTrueFalse;
 pub use prefer_assert_string_contains::PreferAssertStringContains;
@@ -149,6 +153,8 @@ pub use prefer_mock_intersection_return::PreferMockIntersectionReturn;
 pub use prefer_named_data_provider_keys::PreferNamedDataProviderKeys;
 pub use prefer_narrow_will_return_callback::PreferNarrowWillReturnCallback;
 pub use prefer_narrow_with_consecutive::PreferNarrowWithConsecutive;
+pub use prefer_property_assertions::PreferPropertyAssertions;
+pub use add_closure_return_type_from_assert::AddClosureReturnTypeFromAssert;
 pub use prefer_requires_attribute::PreferRequiresAttribute;
 pub use prefer_same_for_scalars::PreferSameForScalars;
 pub use prefer_simple_callback_assert::PreferSimpleCallbackAssert;
@@ -200,6 +206,9 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(NoAssertContainsOnly),
         Box::new(PreferComparisonAssertion),
         Box::new(PreferAssertInstanceof),
+        Box::new(PreferAssertInstanceofOverEmpty),
+        Box::new(PreferPropertyAssertions),
+        Box::new(AddClosureReturnTypeFromAssert),
         Box::new(NoFlippedAssertion),
         Box::new(NoFloatDeltaParameter),
         Box::new(PreferSpecificTrueFalseAssertion),
