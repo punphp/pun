@@ -11,6 +11,19 @@ Pushpak resumed all commands on 2026-10-25. CI stays disabled.
 
 - **Counts** (local mapping.toml `ported = true`): format 168 of 168, lint 696 of 703, analyse 299 of 385.
   Pending: format 0, lint 7, analyse 86 (93 total). Ported rules still have the explicit parity gaps below.
+- **Callback and unsealed-key integration:** combined main passes 102 analyser tests across nineteen
+  complete targets and 169 lint tests across six complete targets. The targeted original-fixture gate
+  passes all 274 selected cases in 53 partitions: 126 Methods/ReturnTypeRuleTest cases, 107 PHPDoc cases
+  and 41 generics cases. This batch does not replay the broader 405-partition gate below. Existing
+  allowances remain unchanged. All 57 CLI tests across six complete targets pass, with parent/child
+  profiles matched to seven independently restored runtime objects. All 143 changed executable
+  production lines are covered without exclusions; all 26 fresh exact-object exports are warning-free.
+  Source-matched coverage remains analyse 44,370/44,371, PHPStan 10,780/10,780 and lint 72,914/73,443
+  after existing exclusions. Converter line 643 and 529 lint lines remain uncovered. Four fresh
+  PHPStan captures preserve all 49 complete records. The docs build and four rendered HTML text
+  contracts pass. All 18,664 frozen source hashes verify, including both symlinks. Evidence is under
+  `/tmp/pun-callback-prerequisites-main-gate/`; its restoration manifest preserves all 848 compressed
+  closed payloads. Multiple-array activation, source-kind conversion and source identity remain separate.
 - **Unset integration:** the frozen main batch passes all 144 analyser tests across 23 complete targets,
   100 lint tests across four targets and all 405 original-fixture partitions. The fixture audit selects
   all 2,787 level cases and 1,315 rule cases exactly once, preserving 623 level and fourteen rule gaps.
@@ -51,8 +64,11 @@ Pushpak resumed all commands on 2026-10-25. CI stays disabled.
   nineteen native/value-read records, covering 3/3 changed production lines. Four whole-shape records
   remain red. Fresh open-list controls establish that actual constant shapes and generic lists with
   observed offsets need separate source kinds; blanket shape reconstruction is wrong. The native-kind
-  prerequisite and open-shape template-tail traversal are separate worktree tasks. No callable
-  activation or stale-gap removal is integrated.
+  prerequisite is independently green and queued, covering 100/100 changed production lines; its
+  combined export retains seventeen external-function warnings. The template-tail trial repairs two
+  native bound checks but exposes a closed-shape comparator regression. Invocation inference already
+  traverses both prefix and tail. A coherent native validation/comparator repair and the reflected
+  array-map fallback are separate worktree tasks. No callable activation or stale-gap removal is integrated.
 - **Green prerequisite integration:** the ClassView constructor refactor, generic-array declaration
   effects, ArrayAccess-No offset reads, explicit traversal decisions and additive reflection source
   graphs are integrated on main. All 242 analyser tests across 43 complete targets, 92 PHPStan tests
@@ -84,7 +100,11 @@ Pushpak resumed all commands on 2026-10-25. CI stays disabled.
   matched to seven independently verified archived runtime objects. CLI profiles do not contribute
   to the coverage counts above. Evidence is under
   `/tmp/pun-config-constructor-effects-main-gate/` and its adjacent `-fixture-gate/` directory.
-- **Current disk recovery:** free space is 35 GiB (89% used) after the combined unset/remote-lint builds.
+- **Current disk recovery:** free space is 24 GiB (93% used) after the callback/omitted-key integration
+  and concurrent worktree builds. Its gate compresses and independently verifies all 848 closed
+  profile, data and LCOV payloads before retiring their raw copies, recovering 3,814,330,368 allocated
+  bytes net. All archives, proof sources, worktrees, oracles and active targets remain protected.
+  Free space previously reached 35 GiB (89% used) after the combined unset/remote-lint builds.
   The finished unset gate compresses and independently verifies all 1,149 closed profiles, data and
   LCOV payloads before retiring their raw copies, recovering 6,281,576,448 allocated bytes net.
   Its `compressed-closed-payloads.jsonl` records restoration commands and both hashes. Its frozen
@@ -1467,9 +1487,9 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | analyse 3: finish level 0 and the level-2 class rules; the current rule counts are in §0. Not yet: DebugScopeRule, DumpNativeTypeRule and FileAssertRule | todo |
 | analyse level 0 named arguments: complete MethodCallWithPossiblyRenamedNamedArgumentRule before activating its mapping | doing (the corrected snapshot passes all 2,787 level cases, 1,315 rule cases and 782 public/library tests; the expanded mixed-policy generic-proxy regression matches all thirty records and the CLI matches all four JSON records; source-matched coverage is complete; ordinary compound semantic argument/reference/template checks remain explicitly guarded, so the mapping stays inactive) |
 | analyse compound method signatures: retain combined semantic parameter, reference, template and return metadata through the ordinary shared argument checker | doing (queued source-identity bridge matches 129 public declaration/annotation records across 25 configurations, all 132 TemplateMap combinations, 32 private identity records and 128 transformation records; its identity commit covers 1,361/1,361 changed production lines without exclusions and passes 106 PHPStan tests, 447 native units and 146 analyser tests across 28 targets; fresh oracle recaptures preserve every containing Methods/callable family: 571 cases and 2,787 diagnostic records; six stale level gaps are confirmed; the queued singleton callable conversion repair matches all eighty original callable records and twenty mutation controls with 3/3 changed lines covered, while broader conjunction probes remain red; the multiple-array array_map producer remains separate; main integration also needs downstream lint and no-op unset adapters; traversal/export prerequisites pass the complete main gate; staticness is separately verified and queued, while actual body-local purity, compound activation, variance and void authority remain unfinished; no private red ancestry) |
-| analyse native list source kind: retain constant-shape identity separately from generic lists carrying written or asserted offsets | doing (fresh complete PHPStan 2.3.1 controls distinguish declared open prefixes from generic HasOffsetValue constraints; native TList currently stores both alike; an isolated native-kind prerequisite owns constructors, combinations, mutation/reconciliation and transport; the shared converter remains separate; no kind inferred from equal values, count or call syntax) |
-| analyse open-shape template replacement: substitute both known entries and the remaining value tail | doing (definition_type_replacer currently visits entries or the tail; an independent worktree is verifying the actual producer through complete native/public inference, with asymmetric prefix/tail captures; no converter or whole-shape parity claim) |
-| analyse array_map return inference: wire genuine callback invocation into the PHPStan-rule provider registry | doing (the isolated selected-acceptor prerequisite passes 88 tests across fourteen targets, with 140/140 changed production lines covered; the independent fifteen-record PHPStan 2.3.1 matrix remains unchanged at two exact matches and thirteen differences; the original testBug12223 is green on current main but red on the queued identity base, so no newly fixed original-case claim; activation also needs source-owned open-list prefixes, omitted unsealed-key declarations and the reflected builtin fallback for required named-argument holes, including the extension's non-array operand branch; no callback syntax heuristics or blanket provider fallback) |
+| analyse native list source kind: retain constant-shape identity separately from generic lists carrying written or asserted offsets | doing (the queued native-kind prerequisite passes seven owning tests, 446 native analyser units, 304 codex units and 61 neighbors; all 100 changed executable production lines are covered privately without exclusions, with seventeen external-function export warnings retained; main integration must adapt the two newer unset_member sites before combined verification; the shared converter remains separate; no kind inferred from equal values, count or call syntax) |
+| analyse open-shape template bound validation: substitute both known entries and the remaining value tail with the matching comparator contract | doing (the isolated definition_type_replacer trial repairs two missing native class-bound checks but adds an incorrect closed-shape rejection; PHPStan gates extra-key comparison on both explicit unsealed carriers; a coherent traversal/comparator correction is in progress; actual invocation inference already traverses prefix and tail and its twelve-record value family is green before and after; shared generic-checking diagnostics remain separately incomplete) |
+| analyse array_map return inference: wire genuine callback invocation into the PHPStan-rule provider registry | doing (native selected-acceptor callbacks and omitted-unsealed-key producers pass the combined main analyser, lint, selected original-fixture, CLI and coverage gates; all 143 changed executable production lines are covered without exclusions; the independent fifteen-record PHPStan 2.3.1 matrix remains at two exact matches and thirteen differences because registry activation is unchanged; all 126 original Methods/ReturnTypeRuleTest cases pass with existing allowances, including testBug12223, which was already green on main; activation still needs source-owned open-list conversion and the reflected builtin fallback for required named-argument holes, including the extension's non-array operand branch; no callback syntax heuristics or blanket provider fallback) |
 | analyse generic-list literal writes: retain list certainty only where AccessoryArrayListType::setOffsetValueType does | todo (the complete retained open-list control shows that writing offset 2 after offset 0 needs a general nonnegative-key array with both offset constraints, not a native TList; separate from constant-shape classification) |
 | analyse open constant-array slicing: use ConstantArrayType::sliceArray rather than the generic-array tail path | todo (the complete retained open-list control expects array{int} for array_slice(list{int, ...<string>}, 0); current main returns non-empty-list<int|string>; source kind and slice semantics are separate prerequisites) |
 | analyse isset diagnostics: complete IssetCheck and whole-rule activation | doing (live markers, the corrected checker bridge and bounded helper summaries pass the complete combined main fixture, CLI and source-matched coverage gate; private facility coverage is 250/250 changed lines; the corrected bridge matches 129 complete records, passes all six library tests and covers 41/41 changed executable lines; direct-helper captures match 159 diagnostic records; the compound-selection follow-up passes 79 tests, matches 31 marker and 114 diagnostic records, and brings cumulative helper production coverage to 220/220; tied distinct declarations and ambiguous carriers remain conservative; a pruning-only failure was not reproduced; native certainty configuration remains separate; mapping stays inactive) |
