@@ -353,6 +353,10 @@ PHPDoc parsing and tag ingestion preserve raw quoted scalar and array-shape byte
 Prefix and error offsets count original bytes. Diagnostic text can still substitute invalid UTF-8.
 Numeric string keys normalize before overwrite lookup and finite unsealed-extra exclusion.
 Optional non-list shape keys do not make a shape definitely non-list.
+In an unsealed array shape, a single parameter supplies the remaining value type.
+For example, `array{first: int, ...<bool>}` permits additional integer or string keys with boolean values.
+Two parameters specify the remaining key and value types separately, as in `...<string, bool>`.
+Whole-shape inference for open lists and optional nonempty prefixes remains incomplete.
 Class, identifier, and object-property names retain their existing text representation.
 
 `strlen()` inference uses PHP scalar casts and byte lengths, including binary strings.

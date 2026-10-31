@@ -1,0 +1,333 @@
+[
+  {
+    "line": 7,
+    "items": [
+      [
+        "i:0",
+        false,
+        "int"
+      ]
+    ],
+    "extra": [
+      {
+        "integer": true,
+        "string": true
+      },
+      "int"
+    ],
+    "nonempty": true,
+    "size": "int<1,max>"
+  },
+  {
+    "line": 10,
+    "items": [
+      [
+        "s:head",
+        false,
+        "bool"
+      ]
+    ],
+    "extra": [
+      {
+        "integer": true,
+        "string": true
+      },
+      "string"
+    ],
+    "nonempty": true,
+    "size": "int<1,max>"
+  },
+  {
+    "line": 13,
+    "items": [
+      [
+        "s:head",
+        true,
+        "bool"
+      ]
+    ],
+    "extra": [
+      {
+        "integer": true,
+        "string": true
+      },
+      "int"
+    ],
+    "nonempty": false,
+    "size": "int<0,max>"
+  },
+  {
+    "line": 16,
+    "items": [],
+    "extra": [
+      {
+        "integer": true,
+        "string": true
+      },
+      "bool"
+    ],
+    "nonempty": false,
+    "size": "int<0,max>"
+  },
+  {
+    "line": 19,
+    "items": [],
+    "extra": [
+      {
+        "integer": true,
+        "string": true
+      },
+      "string"
+    ],
+    "nonempty": true,
+    "size": "int<1,max>"
+  },
+  {
+    "line": 22,
+    "items": [
+      [
+        "s:head",
+        true,
+        "bool"
+      ]
+    ],
+    "extra": [
+      {
+        "integer": true,
+        "string": true
+      },
+      "int"
+    ],
+    "nonempty": true,
+    "size": "int<1,max>"
+  },
+  {
+    "line": 25,
+    "items": [
+      [
+        "s:head",
+        false,
+        "int"
+      ]
+    ],
+    "extra": [
+      {
+        "integer": true,
+        "string": true
+      },
+      "mixed"
+    ],
+    "nonempty": true,
+    "size": "int<1,max>"
+  },
+  {
+    "line": 28,
+    "items": [],
+    "extra": [
+      {
+        "integer": true,
+        "string": true
+      },
+      "mixed"
+    ],
+    "nonempty": false,
+    "size": "int<0,max>"
+  },
+  {
+    "line": 31,
+    "items": [
+      [
+        "s:head",
+        true,
+        "int"
+      ]
+    ],
+    "extra": [
+      {
+        "integer": false,
+        "string": true
+      },
+      "bool"
+    ],
+    "nonempty": false,
+    "size": "int<0,max>"
+  },
+  {
+    "line": 34,
+    "items": [
+      [
+        "i:0",
+        false,
+        "int"
+      ]
+    ],
+    "extra": [
+      {
+        "integer": true,
+        "string": false
+      },
+      "string"
+    ],
+    "nonempty": true,
+    "size": "int<1,max>"
+  },
+  {
+    "line": 37,
+    "items": [],
+    "extra": [
+      {
+        "integer": false,
+        "string": true
+      },
+      "bool"
+    ],
+    "nonempty": false,
+    "size": "int<0,max>"
+  },
+  {
+    "line": 40,
+    "items": [
+      [
+        "i:0",
+        false,
+        "int"
+      ]
+    ],
+    "extra": [
+      {
+        "integer": true,
+        "string": false
+      },
+      "string"
+    ],
+    "nonempty": true,
+    "size": "int<1,max>"
+  },
+  {
+    "line": 43,
+    "items": [],
+    "extra": [
+      {
+        "integer": true,
+        "string": false
+      },
+      "bool"
+    ],
+    "nonempty": false,
+    "size": "int<0,max>"
+  },
+  {
+    "line": 46,
+    "items": [],
+    "extra": [
+      {
+        "integer": true,
+        "string": false
+      },
+      "int"
+    ],
+    "nonempty": true,
+    "size": "int<1,max>"
+  },
+  {
+    "line": 49,
+    "items": [
+      [
+        "i:0",
+        false,
+        "int"
+      ]
+    ],
+    "extra": [
+      {
+        "integer": true,
+        "string": false
+      },
+      "mixed"
+    ],
+    "nonempty": true,
+    "size": "int<1,max>"
+  },
+  {
+    "line": 52,
+    "items": [
+      [
+        "i:0",
+        false,
+        "int"
+      ]
+    ],
+    "extra": [
+      {
+        "integer": true,
+        "string": false
+      },
+      "bool"
+    ],
+    "nonempty": true,
+    "size": "int<1,max>"
+  },
+  {
+    "line": 55,
+    "items": [
+      [
+        "s:head",
+        false,
+        "int"
+      ]
+    ],
+    "extra": [
+      {
+        "integer": true,
+        "string": true
+      },
+      "bool"
+    ],
+    "nonempty": true,
+    "size": "int<1,max>"
+  },
+  {
+    "line": 58,
+    "items": [
+      [
+        "s:head",
+        true,
+        "bool"
+      ]
+    ],
+    "extra": [
+      {
+        "integer": true,
+        "string": true
+      },
+      "int|string"
+    ],
+    "nonempty": false,
+    "size": "int<0,max>"
+  },
+  {
+    "line": 64,
+    "items": [
+      [
+        "s:head",
+        false,
+        {
+          "template": "T",
+          "bound": "int|string"
+        }
+      ]
+    ],
+    "extra": [
+      {
+        "integer": true,
+        "string": true
+      },
+      {
+        "template": "T",
+        "bound": "int|string"
+      }
+    ],
+    "nonempty": true,
+    "size": "int<1,max>"
+  }
+]

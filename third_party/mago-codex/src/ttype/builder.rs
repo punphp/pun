@@ -812,6 +812,11 @@ fn get_shape_from_type(
 
         keyed_array.parameters = match &shape.additional_fields {
             Some(additional_fields) => Some(match &additional_fields.parameters {
+                // TypeNodeResolver leaves a single unsealed parameter in the value slot.
+                Some(parameters) if parameters.entries.len() == 1 => (
+                    Arc::new(get_arraykey()),
+                    Arc::new(get_union_from_type(&parameters.entries[0].inner, scope, type_context, classname)?),
+                ),
                 Some(parameters) => (
                     Arc::new(if let Some(k) = parameters.entries.first().map(|g| &g.inner) {
                         get_union_from_type(k, scope, type_context, classname)?
