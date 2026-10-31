@@ -15,8 +15,8 @@
 //! parent class declares untyped, are left alone, as is a class with a Doctrine `loadMetadata()` method.
 
 use mago_syntax::cst::{
-    Access, ClassLikeMemberSelector, Expression, FunctionLikeParameter, Method, MethodBody, Node,
-    NodeKind, Variable,
+    Access, Block, ClassLikeMemberSelector, Expression, FunctionLikeParameter, Method, MethodBody,
+    Node, NodeKind, Variable,
 };
 use pun_problem::{Edit, Fix, Safety, Span};
 
@@ -169,8 +169,11 @@ pub(crate) fn infer(
     ctx: &Context<'_>,
     test_case: bool,
 ) -> Ty {
+    let MethodBody::Concrete(body) = &constructor.body else {
+        return Ty::Mixed;
+    };
     let name = prop.name();
-    let assigns = constructor_assigns(constructor, name);
+    let assigns = constructor_assigns(body, name);
     let params: Vec<&FunctionLikeParameter<'_>> =
         constructor.parameter_list.parameters.iter().collect();
     let param_named = |n: &[u8]| params.iter().copied().find(|p| &p.variable.name[1..] == n);
@@ -207,7 +210,7 @@ pub(crate) fn infer(
                 .all(|m| matches!(m, Ty::Array(..) | Ty::ConstArray(_)))
                 || param.ellipsis.is_some()
             {
-                types.push(first_variable_type(facts, constructor, name));
+                types.push(first_variable_type(facts, body, name));
             } else {
                 types.push(t);
             }
@@ -245,10 +248,7 @@ pub(crate) fn infer(
 
 /// The values of the constructor's assignments to a property named `name` (`$x->name`, `X::$name`), outside nested
 /// classes, in source order.
-fn constructor_assigns<'a>(constructor: &'a Method<'a>, name: &[u8]) -> Vec<&'a Expression<'a>> {
-    let MethodBody::Concrete(body) = &constructor.body else {
-        return Vec::new();
-    };
+fn constructor_assigns<'a>(body: &'a Block<'a>, name: &[u8]) -> Vec<&'a Expression<'a>> {
     let mut out = Vec::new();
     let mut stack: Vec<Node<'a, 'a>> = body.statements.iter().rev().map(Node::Statement).collect();
     while let Some(node) = stack.pop() {
@@ -308,10 +308,7 @@ fn get_name(expr: &Expression<'_>) -> Option<Vec<u8>> {
 
 /// `getResolveParamStaticTypeAsPHPStanType`: the type of the first variable named `name` in the constructor's body,
 /// or `array`.
-fn first_variable_type(facts: &Facts, constructor: &Method<'_>, name: &[u8]) -> Ty {
-    let MethodBody::Concrete(body) = &constructor.body else {
-        return Ty::Array(Box::new(Ty::Mixed), Box::new(Ty::Mixed));
-    };
+fn first_variable_type(facts: &Facts, body: &Block<'_>, name: &[u8]) -> Ty {
     let mut stack: Vec<Node<'_, '_>> = body.statements.iter().rev().map(Node::Statement).collect();
     while let Some(node) = stack.pop() {
         if let Node::DirectVariable(v) = node
