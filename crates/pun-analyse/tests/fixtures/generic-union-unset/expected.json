@@ -1,0 +1,504 @@
+{
+    "virtual": {
+        "0": [
+            [
+                "virtual.php",
+                11,
+                "phpstan.dumpType",
+                "Dumped type: T of array<string, int>|string (function OffsetVirtualWriteScope\\repeated(), argument)",
+                null,
+                false
+            ],
+            [
+                "virtual.php",
+                13,
+                "phpstan.dumpType",
+                "Dumped type: *ERROR*",
+                null,
+                false
+            ],
+            [
+                "virtual.php",
+                15,
+                "phpstan.dumpType",
+                "Dumped type: *ERROR*",
+                null,
+                false
+            ]
+        ],
+        "4": [
+            [
+                "virtual.php",
+                11,
+                "phpstan.dumpType",
+                "Dumped type: T of array<string, int>|string (function OffsetVirtualWriteScope\\repeated(), argument)",
+                null,
+                false
+            ],
+            [
+                "virtual.php",
+                13,
+                "phpstan.dumpType",
+                "Dumped type: *ERROR*",
+                null,
+                false
+            ],
+            [
+                "virtual.php",
+                15,
+                "phpstan.dumpType",
+                "Dumped type: *ERROR*",
+                null,
+                false
+            ]
+        ]
+    },
+    "values": [
+        [
+            [
+                "values.php",
+                10,
+                "phpstan.dumpType",
+                "Dumped type: T of array{left?: int}|null (function GenericUnionUnsetValues\\nullableShape(), argument)",
+                null,
+                false
+            ],
+            [
+                "values.php",
+                12,
+                "phpstan.dumpType",
+                "Dumped type: array{}|null",
+                null,
+                false
+            ],
+            [
+                "values.php",
+                13,
+                "unset.offset",
+                "Cannot unset offset 'missing' on array{}|null.",
+                null,
+                true
+            ],
+            [
+                "values.php",
+                14,
+                "phpstan.dumpType",
+                "Dumped type: array{}|null",
+                null,
+                false
+            ],
+            [
+                "values.php",
+                23,
+                "phpstan.dumpType",
+                "Dumped type: array<string, int>|null",
+                null,
+                false
+            ],
+            [
+                "values.php",
+                25,
+                "phpstan.dumpType",
+                "Dumped type: array<string, int>|null",
+                null,
+                false
+            ],
+            [
+                "values.php",
+                33,
+                "unset.offset",
+                "Cannot unset offset 'missing' on T of array{left: int}|null.",
+                null,
+                true
+            ],
+            [
+                "values.php",
+                34,
+                "phpstan.dumpType",
+                "Dumped type: T of array{left: int}|null (function GenericUnionUnsetValues\\unchangedUnion(), argument)",
+                null,
+                false
+            ],
+            [
+                "values.php",
+                43,
+                "phpstan.dumpType",
+                "Dumped type: *ERROR*",
+                null,
+                false
+            ],
+            [
+                "values.php",
+                52,
+                "phpstan.dumpType",
+                "Dumped type: *ERROR*",
+                null,
+                false
+            ],
+            [
+                "values.php",
+                59,
+                "phpstan.dumpType",
+                "Dumped type: array{kept: string}|null",
+                null,
+                false
+            ],
+            [
+                "values.php",
+                68,
+                "phpstan.dumpType",
+                "Dumped type: T of array{kept: string} (function GenericUnionUnsetValues\\singleShape(), argument)",
+                null,
+                false
+            ],
+            [
+                "values.php",
+                74,
+                "phpstan.dumpType",
+                "Dumped type: mixed",
+                null,
+                false
+            ],
+            [
+                "values.php",
+                76,
+                "unset.offset",
+                "Cannot unset offset 'left' on 1.",
+                null,
+                true
+            ],
+            [
+                "values.php",
+                77,
+                "phpstan.dumpType",
+                "Dumped type: *ERROR*",
+                null,
+                false
+            ],
+            [
+                "values.php",
+                79,
+                "phpstan.dumpType",
+                "Dumped type: *ERROR*",
+                null,
+                false
+            ]
+        ]
+    ],
+    "scopes": [
+        [
+            [
+                "scopes.php",
+                12,
+                "phpstan.dumpType",
+                "Dumped type: *ERROR*",
+                null,
+                false
+            ],
+            [
+                "scopes.php",
+                13,
+                "phpstan.dumpType",
+                "Dumped type: T of array<string, int>|string (function GenericUnionUnsetScopes\\copies(), argument)",
+                null,
+                false
+            ],
+            [
+                "scopes.php",
+                15,
+                "phpstan.dumpType",
+                "Dumped type: *ERROR*",
+                null,
+                false
+            ],
+            [
+                "scopes.php",
+                17,
+                "phpstan.dumpType",
+                "Dumped type: T of array<string, int>|string (function GenericUnionUnsetScopes\\copies(), argument)",
+                null,
+                false
+            ],
+            [
+                "scopes.php",
+                19,
+                "phpstan.dumpType",
+                "Dumped type: *ERROR*",
+                null,
+                false
+            ],
+            [
+                "scopes.php",
+                29,
+                "phpstan.dumpType",
+                "Dumped type: array{}|null",
+                null,
+                false
+            ],
+            [
+                "scopes.php",
+                31,
+                "phpstan.dumpType",
+                "Dumped type: T of array{left: int}|null (function GenericUnionUnsetScopes\\branches(), argument)",
+                null,
+                false
+            ],
+            [
+                "scopes.php",
+                33,
+                "phpstan.dumpType",
+                "Dumped type: array{}|(T of array{left: int}|null (function GenericUnionUnsetScopes\\branches(), argument))|null",
+                null,
+                false
+            ],
+            [
+                "scopes.php",
+                43,
+                "phpstan.dumpType",
+                "Dumped type: *ERROR*",
+                null,
+                false
+            ],
+            [
+                "scopes.php",
+                44,
+                "phpstan.dumpType",
+                "Dumped type: *ERROR*",
+                null,
+                false
+            ],
+            [
+                "scopes.php",
+                46,
+                "phpstan.dumpType",
+                "Dumped type: *ERROR*",
+                null,
+                false
+            ],
+            [
+                "scopes.php",
+                47,
+                "phpstan.dumpType",
+                "Dumped type: *ERROR*",
+                null,
+                false
+            ],
+            [
+                "scopes.php",
+                57,
+                "phpstan.dumpType",
+                "Dumped type: array{kept: 2}",
+                null,
+                false
+            ],
+            [
+                "scopes.php",
+                69,
+                "phpstan.dumpType",
+                "Dumped type: *ERROR*",
+                null,
+                false
+            ],
+            [
+                "scopes.php",
+                70,
+                "phpstan.dumpType",
+                "Dumped type: *ERROR*",
+                null,
+                false
+            ],
+            [
+                "scopes.php",
+                71,
+                "phpstan.dumpType",
+                "Dumped type: *ERROR*",
+                null,
+                false
+            ],
+            [
+                "scopes.php",
+                72,
+                "phpstan.dumpType",
+                "Dumped type: T of array<string, int>|string (function GenericUnionUnsetScopes\\chainedAliases(), argument)",
+                null,
+                false
+            ]
+        ]
+    ],
+    "objects": [
+        [
+            [
+                "objects.php",
+                15,
+                "phpstan.dumpType",
+                "Dumped type: *ERROR*",
+                null,
+                false
+            ],
+            [
+                "objects.php",
+                24,
+                "phpstan.dumpType",
+                "Dumped type: array<string, int>|GenericUnionUnsetObjects\\Open",
+                null,
+                false
+            ],
+            [
+                "objects.php",
+                33,
+                "phpstan.dumpType",
+                "Dumped type: T of array{left: int}|GenericUnionUnsetObjects\\Possible (function GenericUnionUnsetObjects\\possibleMember(), argument)",
+                null,
+                false
+            ],
+            [
+                "objects.php",
+                42,
+                "phpstan.dumpType",
+                "Dumped type: array{}|ArrayAccess<string, int>",
+                null,
+                false
+            ],
+            [
+                "objects.php",
+                51,
+                "phpstan.dumpType",
+                "Dumped type: T of array{left: int}|ArrayAccess<string, int> (function GenericUnionUnsetObjects\\unchangedAccess(), argument)",
+                null,
+                false
+            ],
+            [
+                "objects.php",
+                69,
+                "phpstan.dumpType",
+                "Dumped type: array<string, int>|GenericUnionUnsetObjects\\Access",
+                null,
+                false
+            ],
+            [
+                "objects.php",
+                78,
+                "phpstan.dumpType",
+                "Dumped type: array<int<min, -1>|int<1, max>, int>|FFI\\CData",
+                null,
+                false
+            ]
+        ]
+    ],
+    "members": [
+        [
+            [
+                "members.php",
+                11,
+                "phpstan.dumpType",
+                "Dumped type: array<int<1, max>, int>|null",
+                null,
+                false
+            ],
+            [
+                "members.php",
+                19,
+                "unset.offset",
+                "Cannot unset offset 'absent' on T of list<int>|null.",
+                null,
+                true
+            ],
+            [
+                "members.php",
+                20,
+                "phpstan.dumpType",
+                "Dumped type: list<int>|null",
+                null,
+                false
+            ],
+            [
+                "members.php",
+                29,
+                "phpstan.dumpType",
+                "Dumped type: array{1: string}|null",
+                null,
+                false
+            ],
+            [
+                "members.php",
+                38,
+                "phpstan.dumpType",
+                "Dumped type: array{...<int<0, max>, string>}|null",
+                null,
+                false
+            ],
+            [
+                "members.php",
+                47,
+                "phpstan.dumpType",
+                "Dumped type: array{left?: int}|null",
+                null,
+                false
+            ],
+            [
+                "members.php",
+                55,
+                "unset.offset",
+                "Cannot unset offset 'absent' on T of array<int, int>|null.",
+                null,
+                true
+            ],
+            [
+                "members.php",
+                56,
+                "phpstan.dumpType",
+                "Dumped type: T of array<int, int>|null (function GenericUnionUnsetMembers\\missingArrayKey(), argument)",
+                null,
+                false
+            ],
+            [
+                "members.php",
+                65,
+                "phpstan.dumpType",
+                "Dumped type: T of U of array{left: int, kept: string} (function GenericUnionUnsetMembers\\nestedTemplate(), argument)|null (function GenericUnionUnsetMembers\\nestedTemplate(), argument)",
+                null,
+                false
+            ],
+            [
+                "members.php",
+                67,
+                "phpstan.dumpType",
+                "Dumped type: U of array{kept: string} (function GenericUnionUnsetMembers\\nestedTemplate(), argument)|null",
+                null,
+                false
+            ],
+            [
+                "members.php",
+                76,
+                "phpstan.dumpType",
+                "Dumped type: T (function GenericUnionUnsetMembers\\unknownTemplate(), argument)",
+                null,
+                false
+            ],
+            [
+                "members.php",
+                85,
+                "phpstan.dumpType",
+                "Dumped type: *ERROR*",
+                null,
+                false
+            ],
+            [
+                "members.php",
+                94,
+                "phpstan.dumpType",
+                "Dumped type: *ERROR*",
+                null,
+                false
+            ],
+            [
+                "members.php",
+                103,
+                "phpstan.dumpType",
+                "Dumped type: ArrayAccess<string, int>&T of object (function GenericUnionUnsetMembers\\intersectedObject(), argument)",
+                null,
+                false
+            ]
+        ]
+    ]
+}

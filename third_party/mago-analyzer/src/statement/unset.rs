@@ -19,8 +19,10 @@ use mago_codex::ttype::combine_union_types_preserving_array_shapes;
 use mago_codex::ttype::combiner;
 use mago_codex::ttype::comparator::ComparisonResult;
 use mago_codex::ttype::comparator::union_comparator::{can_expression_types_be_identical, is_contained_by};
+use mago_codex::ttype::flags::UnionFlags;
 use mago_codex::ttype::get_error;
 use mago_codex::ttype::get_int;
+use mago_codex::ttype::get_non_negative_int;
 use mago_codex::ttype::union::TUnion;
 use mago_reporting::Annotation;
 use mago_reporting::Issue;
@@ -137,41 +139,9 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
                         continue;
                     }
 
-                    if let TAtomic::GenericParameter(parameter) = &mut atomic {
-                        // TemplateConstantArrayType::recreate preserves the template identity.
-                        // ArrayType::unsetOffset returns an ordinary array for a compatible literal
-                        // key, including when subtraction cannot express a more precise key type.
-                        if let [TAtomic::Array(TArray::Keyed(array))] = parameter.constraint.types.as_ref() {
-                            if array.is_constant_shape() {
-                                let (mut updated, recreated) = unset_keyed(context, array.clone(), key_type);
-                                // TemplateConstantArrayType's parent omits unsealed extras. Its
-                                // displayed bound changes only when ConstantArrayType recreates it.
-                                if recreated {
-                                    updated.parameters = None;
-                                }
-                                parameter.constraint =
-                                    Arc::new(TUnion::from_atomic(TAtomic::Array(TArray::Keyed(updated))));
-                            } else if parameter.intersection_types.is_none()
-                                && let Some((keys, _)) = &array.parameters
-                                && let Some(key) = array_key
-                                && can_expression_types_be_identical(
-                                    context.codebase,
-                                    keys,
-                                    &key.to_union(),
-                                    true,
-                                    false,
-                                )
-                            {
-                                let (array, _) = unset_keyed(context, array.clone(), key_type);
-                                atomics.push(TAtomic::Array(TArray::Keyed(array)));
-                                continue;
-                            }
-                        }
-                        for intersection in parameter.intersection_types.iter_mut().flatten() {
-                            if let TAtomic::Array(TArray::Keyed(array)) = intersection {
-                                *array = unset_keyed(context, array.clone(), key_type).0;
-                            }
-                        }
+                    if matches!(atomic, TAtomic::GenericParameter(_) | TAtomic::Object(_)) {
+                        atomics.extend(unset_member(context, atomic, key_type).0);
+                        continue;
                     }
 
                     let TAtomic::Array(array) = atomic else {
@@ -342,6 +312,151 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
     }
 }
 
+/// VirtualExprResultHelper dispatches unsetOffset on the full value, including each union member.
+/// The flag tracks replacement, not value inequality: UnionType::unionTypes preserves a template
+/// only when every member returns itself. ArrayType may replace itself with an equal-looking value.
+fn unset_member<A: Arena>(
+    context: &mut Context<'_, '_, A>,
+    mut atomic: TAtomic,
+    offset: &TUnion,
+) -> (Vec<TAtomic>, bool) {
+    if let TAtomic::GenericParameter(parameter) = &mut atomic {
+        let mut replaced = false;
+        if let [TAtomic::Array(TArray::Keyed(array))] = parameter.constraint.types.as_ref() {
+            // TemplateConstantArrayType::recreate keeps its template, unlike ArrayType::unsetOffset.
+            if array.is_constant_shape() {
+                let (mut updated, recreated) = unset_keyed(context, array.clone(), offset);
+                if recreated {
+                    updated.parameters = None;
+                }
+                parameter.constraint = Arc::new(TUnion::from_atomic(TAtomic::Array(TArray::Keyed(updated))));
+                replaced = recreated;
+            } else if parameter.intersection_types.is_none()
+                && let Some((keys, _)) = &array.parameters
+                && let Some(key) = offset.get_single_array_key()
+                && can_expression_types_be_identical(context.codebase, keys, &key.to_union(), true, false)
+            {
+                let (array, _) = unset_keyed(context, array.clone(), offset);
+                return (vec![TAtomic::Array(TArray::Keyed(array))], true);
+            }
+        } else if parameter.intersection_types.is_none() {
+            let mut members = Vec::new();
+            for member in parameter.constraint.types.iter().cloned() {
+                let (updated, changed) = unset_member(context, member, offset);
+                members.extend(updated);
+                replaced |= changed;
+            }
+            if replaced {
+                return (
+                    combiner::combine_preserving_array_shapes(
+                        members,
+                        context.codebase,
+                        context.settings.combiner_options(),
+                    ),
+                    true,
+                );
+            }
+        }
+        for intersection in parameter.intersection_types.iter_mut().flatten() {
+            if let TAtomic::Array(TArray::Keyed(array)) = intersection {
+                let (updated, changed) = unset_keyed(context, array.clone(), offset);
+                replaced |= changed || updated != *array;
+                *array = updated;
+            }
+        }
+        return (vec![atomic], replaced);
+    }
+
+    if let TAtomic::Array(array) = &atomic {
+        let keyed = match array {
+            TArray::Keyed(array) => array.clone(),
+            TArray::List(array) => constant_array(&atomic).unwrap_or_else(|| {
+                let mut keys = get_non_negative_int();
+                // A list shape's unsealed tail belongs to ConstantArrayType, not ArrayType.
+                if array.known_elements.is_some() {
+                    keys.flags.insert(UnionFlags::CONSTANT_ARRAY_KEY);
+                }
+                TKeyedArray {
+                    callable: array.callable.clone(),
+                    known_items: array.known_elements.as_ref().map(|items| {
+                        Arc::new(
+                            items
+                                .iter()
+                                .map(|(key, value)| (ArrayKey::Integer(*key as i64), value.clone()))
+                                .collect(),
+                        )
+                    }),
+                    parameters: Some((Arc::new(keys), Arc::clone(&array.element_type))),
+                    non_empty: array.non_empty,
+                    known_non_list: false,
+                }
+            }),
+        };
+        let literal_replacement = !keyed.is_constant_shape()
+            && keyed
+                .parameters
+                .as_ref()
+                .zip(offset.get_single_array_key())
+                .is_some_and(|((keys, _), key)| {
+                    can_expression_types_be_identical(context.codebase, keys, &key.to_union(), true, false)
+                });
+        let (updated, recreated) = unset_keyed(context, keyed.clone(), offset);
+        let replaced = literal_replacement || recreated || updated != keyed;
+        return if replaced {
+            (vec![TAtomic::Array(TArray::Keyed(updated))], true)
+        } else {
+            // IntersectionType rebuilds ArrayType & AccessoryArrayListType even for an absent key.
+            let rebuilt = matches!(array, TArray::List(list) if list.known_elements.is_none());
+            (vec![atomic], rebuilt)
+        };
+    }
+
+    if let TAtomic::Mixed(mixed) = &atomic {
+        // MixedType recreates an exclusion even when removing the empty array changes no values.
+        return (
+            vec![TAtomic::Mixed(mixed.unset_offset(context.codebase))],
+            mixed.get_subtracted_type().is_some(),
+        );
+    }
+    if let TAtomic::Object(object) = &atomic {
+        // ObjectType::isOffsetAccessible is No only for a reflected final class outside both
+        // ArrayAccess and the canonical EXTRA_OFFSET_CLASSES. Open/unknown classes stay possible.
+        let inaccessible = object
+            .get_name()
+            .and_then(|name| context.codebase.get_class_like(name.as_bytes()))
+            .is_some_and(|class| class.flags.is_final())
+            && !atomic.extends_or_implements(context.codebase, b"ArrayAccess")
+            && ![
+                b"DOMNamedNodeMap".as_slice(),
+                b"Dom\\NamedNodeMap",
+                b"DOMNodeList",
+                b"Dom\\NodeList",
+                b"Dom\\HTMLCollection",
+                b"Dom\\DtdNamedNodeMap",
+                b"PDORow",
+                b"ResourceBundle",
+                b"FFI\\CData",
+                b"SimpleXMLElement",
+                b"Threaded",
+            ]
+            .iter()
+            .any(|name| atomic.extends_or_implements(context.codebase, name));
+        return if inaccessible {
+            (get_error().types.into_owned(), true)
+        } else {
+            (vec![atomic], false)
+        };
+    }
+    if matches!(atomic, TAtomic::Scalar(_) | TAtomic::Resource(_) | TAtomic::Void)
+        || matches!(&atomic, TAtomic::Callable(callable) if callable.is_closure())
+    {
+        // StringType and NonOffsetAccessibleTypeTrait return ErrorType. NullType, NeverType,
+        // IterableType/CallableType's MaybeOffsetAccessibleTypeTrait retain their value.
+        return (get_error().types.into_owned(), true);
+    }
+    (vec![atomic], false)
+}
+
 /// UnsetHandler's native virtual assignment, separate from its selected/PHPDoc writer.
 /// Each operand has already run, including key/argument writes. Bound this transfer to
 /// ordinary locals and one-level array offsets with normalized literal or integer keys.
@@ -425,12 +540,32 @@ fn write_back<'ctx, 'arena, A: Arena>(
     if !matches!(receiver, Expression::ArrayAccess(_))
         && let Some(root) = get_block_expression_id(receiver, context, block_context)
     {
-        let previous = block_context.locals.get(&root).cloned();
-        block_context.remove_descendants(context, root, previous.as_deref().unwrap_or(&value), Some(&value));
-        block_context.invalidate_variable_certainty(root);
-        block_context.locals.insert(root, Rc::new(value));
-        block_context.assigned_variable_ids.insert(root, receiver.span().start.offset);
-        block_context.possibly_assigned_variable_ids.insert(root);
+        // AssignHandler's virtual assignment updates intertwined variables too. Copies are not
+        // aliases: use the actual reference graph, never shared Rc/type identity.
+        let mut roots = vec![root];
+        let mut index = 0;
+        while let Some(root) = roots.get(index).copied() {
+            for (&reference, &referenced) in &block_context.references_in_scope {
+                if reference == root && !roots.contains(&referenced) {
+                    roots.push(referenced);
+                }
+                if referenced == root && !roots.contains(&reference) {
+                    roots.push(reference);
+                }
+            }
+            index += 1;
+        }
+        let value = Rc::new(value);
+        for root in roots {
+            let previous = block_context.locals.get(&root).cloned();
+            block_context.remove_descendants(context, root, previous.as_deref().unwrap_or(&value), Some(&value));
+            block_context.invalidate_variable_certainty(root);
+            block_context.locals.insert(root, Rc::clone(&value));
+            block_context
+                .assigned_variable_ids
+                .insert(root, receiver.span().start.offset);
+            block_context.possibly_assigned_variable_ids.insert(root);
+        }
     }
 }
 
