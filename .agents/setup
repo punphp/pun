@@ -82,16 +82,35 @@ pinkary() {
   git -C "$dir" -c advice.detachedHead=false checkout -q FETCH_HEAD
 }
 
-step "apt: php 8.5" apt_packages
-step "composer" composer_bin
-step "rust toolchain" rust
-step "cargo-llvm-cov" llvm_cov
-step "cargo fetch" cargo fetch --locked -q
-step "oracle (.oracle/)" scripts/oracle.sh
-step "pinkary acceptance checkout" pinkary
-step "corpus" scripts/corpus.sh pinkary laravel-framework larastan laravel-pint
-step "npm: crates/pun-fixers" npm install --prefix crates/pun-fixers --no-audit --no-fund --loglevel=error
-step "bun" bun_bin
-step "bun: docs" "$HOME/.bun/bin/bun" install --cwd docs --frozen-lockfile
-# Only the binaries most checks start from: --workspace --all-targets grows target/ past 30 GB.
-step "cargo build (warm target/)" cargo build --locked -p punphp -p punphp-harness
+rust_lane() {
+  step "rust toolchain" rust
+  step "cargo-llvm-cov" llvm_cov
+  step "cargo fetch" cargo fetch --locked -q
+  # Only the binaries most checks start from: --workspace --all-targets grows target/ past 30 GB.
+  step "cargo build (warm target/)" cargo build --locked -p punphp -p punphp-harness
+}
+
+php_lane() {
+  step "apt: php 8.5" apt_packages
+  step "composer" composer_bin
+  step "oracle (.oracle/)" scripts/oracle.sh
+  step "pinkary acceptance checkout" pinkary
+  step "corpus" scripts/corpus.sh pinkary laravel-framework larastan laravel-pint
+}
+
+node_lane() {
+  step "npm: crates/pun-fixers" npm install --prefix crates/pun-fixers --no-audit --no-fund --loglevel=error
+  step "bun" bun_bin
+  step "bun: docs" "$HOME/.bun/bin/bun" install --cwd docs --frozen-lockfile
+}
+
+# The lanes share nothing (the cargo build links only base-image libraries), so run them side by side:
+# a cold setup then takes as long as the Rust lane instead of the sum of all three.
+pids=()
+for lane in rust php node; do
+  ("${lane}_lane" 2>&1 | sed -u "s/^/[$lane] /") &
+  pids+=($!)
+done
+failed=0
+for pid in "${pids[@]}"; do wait "$pid" || failed=1; done
+exit "$failed"
