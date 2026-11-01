@@ -803,8 +803,13 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         }
     }
 
+    /// Whether `invalidate_constant_fetches` could remove a guard, before paying for method reflection.
+    fn has_fetch_guards(&self) -> bool {
+        self.guards.iter().any(|g| matches!(g, Guard::ConstantFetch(_) | Guard::MethodExists(_) | Guard::ExprWhen(..)))
+    }
+
     pub(super) fn invalidate_called_receiver(&mut self, on: &Expression, selector: &ClassLikeMemberSelector) {
-        if self.guard_method(on, selector).is_none_or(|m| self.invalidating_method(&m)) {
+        if self.has_fetch_guards() && self.guard_method(on, selector).is_none_or(|m| self.invalidating_method(&m)) {
             if let Some(key) = expression_key(on, &|id| self.resolved(id), &|id| self.guard_function_name(id)) {
                 self.invalidate_constant_fetches(&key);
             }
@@ -820,7 +825,9 @@ impl<'a, 'arena> Checker<'a, 'arena> {
     }
 
     pub(super) fn invalidate_static_call(&mut self, call: &StaticMethodCall) {
-        if !matches!(call.class, Expression::Identifier(_) | Expression::Self_(_) | Expression::Static(_) | Expression::Parent(_)) {
+        if !self.has_fetch_guards()
+            || !matches!(call.class, Expression::Identifier(_) | Expression::Self_(_) | Expression::Static(_) | Expression::Parent(_))
+        {
             return;
         }
         let invalidate = self.guard_method(call.class, &call.method).is_some_and(|m| {
