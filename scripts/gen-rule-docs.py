@@ -335,7 +335,7 @@ def translation(tool: str) -> str:
 | `preset: per` or `symfony`, and `@PER-CS` rule sets | Expanded explicit rules over the `empty` format preset |
 | `rules` | `[format.rules]` for layout; `[lint.rules]` at `\"error\"` for code edits |
 | Rule options | Pun option names and values, listed on each rule page |
-| `in`, `exclude`, `notName`, `notPath` | `[files] paths`; `[format] exclude`, `not-name`, `not-path` |
+| `in`, `exclude`, `notName`, `notPath` | `[files] paths`, `exclude`; `[format] not-name`, `not-path` |
 | `@php-cs-fixer-ignore` | `@pun-ignore-file` with the full format rule ID |
 """,
         "php-cs-fixer": """Run `pun migrate --from php-cs-fixer`. System PHP reads `.php-cs-fixer.php` or `.php-cs-fixer.dist.php` through PHP-CS-Fixer itself.
@@ -345,7 +345,7 @@ def translation(tool: str) -> str:
 | `setRules()` and rule sets such as `@PER-CS` | Expanded rules, split between `[format.rules]` and `[lint.rules]` |
 | `setRiskyAllowed(true)` | Enabled risky fixers become lint rules at `\"error\"` |
 | Configured options | Pun names and values on the linked rule pages |
-| Finder `in()`, `exclude()`, `notName()`, `notPath()` | `[files] paths`; `[format] exclude`, `not-name`, `not-path` |
+| Finder `in()`, `exclude()`, `notName()`, `notPath()` | `[files] paths`, `exclude`; `[format] not-name`, `not-path` |
 | Custom fixer classes | Unsupported; reported and skipped |
 """,
         "rector": """Run `pun migrate --from rector` after `composer install`. The project's own Rector resolves `rector.php` with system PHP.

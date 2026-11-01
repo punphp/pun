@@ -1183,9 +1183,11 @@ mod migrate {
         assert!(m.unsupported.is_empty());
         assert_eq!(
             m.toml,
-            r#"[format]
-preset = "laravel"
+            r#"[files]
 exclude = ["a"]
+
+[format]
+preset = "laravel"
 not-path = ["y"]
 
 [format.rules]
@@ -1510,7 +1512,7 @@ not-path = ["y"]
         let m = from_pint(&d.join("custom.json"), None, &|_| true).unwrap();
         assert_eq!(
             m.toml,
-            "[files]\npaths = [\"src\"]\n\n[format]\npreset = \"empty\"\nexclude = [\"x\", \"b\"]\nnot-name = [\"n\", \"m\"]\n\n[format.rules]\n\"strings/single-quote\" = true\n\"operators/concat-spacing\" = \"one\"\n"
+            "[files]\npaths = [\"src\"]\nexclude = [\"x\", \"b\"]\n\n[format]\npreset = \"empty\"\nnot-name = [\"n\", \"m\"]\n\n[format.rules]\n\"strings/single-quote\" = true\n\"operators/concat-spacing\" = \"one\"\n"
         );
     }
 }

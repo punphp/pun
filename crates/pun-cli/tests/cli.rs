@@ -756,9 +756,11 @@ fn migrates_php_cs_fixer_config() {
         rest,
         ".php-cs-fixer.php migrated\n.php-cs-fixer.php unsupported Acme/upper_todo: not a PHP-CS-Fixer or Pint rule Pun knows (a custom fixer or rule set)\nsend a PR for what is skipped: https://github.com/punphp/pun\n"
     );
-    // A Finder over the project root: no [files] paths; exclude and notName go to [format]; depth() and
-    // ignoreVCSIgnored() have no key.
+    // A Finder over the project root: no [files] paths; exclude goes to [files] (PHP-CS-Fixer skips the folder for
+    // every fixer, risky ones included) and notName to [format]; depth() and ignoreVCSIgnored() have no key.
     reset(&dir, &tree);
+    std::fs::create_dir_all(dir.join("legacy")).unwrap();
+    std::fs::write(dir.join("legacy/L.php"), "<?php\n$b = sizeof([]);\n").unwrap();
     std::fs::write(
         dir.join(".php-cs-fixer.php"),
         "<?php\nreturn (new PhpCsFixer\\Config())->setRiskyAllowed(true)->setRules(['single_quote' => true, 'no_alias_functions' => true])\n    ->setFinder(PhpCsFixer\\Finder::create()->in(__DIR__)->exclude('legacy')->notName('*.inc')->depth('< 3')->ignoreVCSIgnored(true));\n",
@@ -772,7 +774,7 @@ fn migrates_php_cs_fixer_config() {
     );
     assert_eq!(
         std::fs::read_to_string(dir.join("pun.toml")).unwrap(),
-        "# Written by `pun migrate` from .php-cs-fixer.php.\n[format]\npreset = \"empty\"\nexclude = [\"legacy\"]\nnot-name = [\"*.inc\"]\n\n[format.rules]\n\"strings/single-quote\" = true\n\n[lint.rules]\n\"style/no-alias-function\" = \"error\"\n"
+        "# Written by `pun migrate` from .php-cs-fixer.php.\n[files]\nexclude = [\"legacy\"]\n\n[format]\npreset = \"empty\"\nnot-name = [\"*.inc\"]\n\n[format.rules]\n\"strings/single-quote\" = true\n\n[lint.rules]\n\"style/no-alias-function\" = \"error\"\n"
     );
     // single_quote is format; no_alias_functions (risky) only runs under lint / check.
     pun(&dir, &["format"]);
@@ -780,6 +782,11 @@ fn migrates_php_cs_fixer_config() {
     assert_eq!(a(), "<?php\n$a = 'x';\n$b = sizeof([]);\n");
     pun(&dir, &["check", "--fix"]);
     assert_eq!(a(), "<?php\n$a = 'x';\n$b = count([]);\n");
+    // The excluded folder keeps its `sizeof()`, as under PHP-CS-Fixer.
+    assert_eq!(
+        std::fs::read_to_string(dir.join("legacy/L.php")).unwrap(),
+        "<?php\n$b = sizeof([]);\n"
+    );
 }
 
 /// `pun config` on a hand-written pun.toml. Expected text derived by hand from config.md §3 and mapping.toml: each

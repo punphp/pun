@@ -36,7 +36,7 @@ Pint migration resolves `extend`, `--config`, and `--preset`. PHP-CS-Fixer migra
 
 - Layout rules become `[format.rules]` overrides.
 - Risky and code-deleting fixers become `[lint.rules]` at `"error"`.
-- Finder paths become `[files] paths`; exclusions become format exclusions.
+- Finder paths and `exclude` become `[files] paths` and `exclude`, so lint and analyse skip the excluded folders too. `notName` and `notPath` become format exclusions.
 - `per`, `symfony`, and rule sets such as `@PER-CS` expand into explicit rules over `preset = "empty"`.
 - Options use [Pun names and values](/docs/configuration/pun-toml#rule-options).
 

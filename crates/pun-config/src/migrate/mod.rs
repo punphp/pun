@@ -148,7 +148,8 @@ pub fn from_rules(
     )
 }
 
-/// The Finder keys as pun.toml lines: `in` for `[files] paths`, the rest for `[format]`. A key holds one string or a
+/// The Finder keys as pun.toml lines: `in` and `exclude` for `[files]` (Pint skips an excluded folder for every rule,
+/// so the rules migrated to lint skip it too), `notName` and `notPath` for `[format]`. A key holds one string or a
 /// list, as in pint.json; an empty list is left out.
 fn finder(config: &Map<String, Value>) -> (String, String) {
     let (mut paths, mut finder) = (String::new(), String::new());
@@ -163,7 +164,7 @@ fn finder(config: &Map<String, Value>) -> (String, String) {
             Some(Value::Array(a)) if !a.is_empty() => a.iter().filter_map(Value::as_str).collect(),
             _ => continue,
         };
-        let out = if json == "in" {
+        let out = if matches!(json, "in" | "exclude") {
             &mut paths
         } else {
             &mut finder

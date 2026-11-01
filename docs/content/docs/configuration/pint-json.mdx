@@ -11,7 +11,8 @@ Pun commands read `pun.toml`, not `pint.json`. [`pun migrate --from pint`](/docs
 | `"rules"` that differ from the preset | `[format.rules]`, under Pun IDs and [option names](/docs/configuration/pun-toml#rule-options) |
 | Risky and code-deleting rules | `[lint.rules]` at `"error"` |
 | `"in"` | `[files] paths` |
-| `"exclude"`, `"notName"`, `"notPath"` | `[format] exclude`, `not-name`, `not-path` |
+| `"exclude"` | `[files] exclude`, for every command |
+| `"notName"`, `"notPath"` | `[format] not-name`, `not-path` |
 | `"extend"` | Resolved the way Pint resolves it |
 | `"Pun/prefer_fake_helper": true` | `[lint.rules] "laravel/prefer-fake-helper" = "error"` |
 
