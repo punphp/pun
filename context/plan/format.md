@@ -104,9 +104,9 @@ pint.json, harness and fuzzer. Speed and memory come first (decided). The steps 
 
 1. **Presets cut to three:** remove `per` and `symfony` from `--preset` and pun.toml (migrate expands them).
    *Done when* `--preset per` is an error naming the replacement, and psr12/laravel corpus runs still match.
-   Done (wf/format-1, 2026-10-18). Assistant's calls: the error is a typed `pun_config::RemovedPreset`, and the CLI
-   exits 2 on it, from `--preset` and from pun.toml's `[format] preset = "per"|"symfony"` alike (other config errors
-   keep exit 1); `per` and `symfony` stay in `PRESETS` for `pun migrate` only; the unported-rule message always names
+   Done (wf/format-1, 2026-10-18). Assistant's calls: the error is a plain config error (exit 2, like every config error since
+   2026-11-01, when the typed `RemovedPreset` was dropped), from `--preset` and from pun.toml's
+   `[format] preset = "per"|"symfony"` alike; `per` and `symfony` stay in `PRESETS` for `pun migrate` only; the unported-rule message always names
    the pun.toml path, since every rule of laravel, psr12 and empty runs natively (the `preset <name>` form is gone).
 2. **The new output** (output.md Build 1-3): file lines, the summary, run errors; Pint's human screen removed; machine
    formats (`--format=json|checkstyle|junit|gitlab|github`) unchanged.
