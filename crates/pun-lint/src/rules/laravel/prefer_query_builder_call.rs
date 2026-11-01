@@ -172,9 +172,10 @@ fn object_names(atomic: &TAtomic) -> Vec<String> {
 fn is_magic_method(ctx: &Context<'_>, model: &str, method: &str) -> bool {
     let facts = facts(ctx);
     let codebase = &facts.codebase;
+    // `get_declaring_method`, not `get_method`: `each`, `chunk` and `lazy` come to the builders from `BuildsQueries`.
     let public_instance = |class: &str| {
         codebase
-            .get_method(class.as_bytes(), method.as_bytes())
+            .get_declaring_method(class.as_bytes(), method.as_bytes())
             .and_then(|m| m.method_metadata.as_ref())
             .is_some_and(|m| m.visibility.is_public() && !m.is_static)
     };

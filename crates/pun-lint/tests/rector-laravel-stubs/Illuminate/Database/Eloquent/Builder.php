@@ -15,6 +15,8 @@ if (class_exists('Illuminate\Database\Eloquent\Builder')) {
  */
 class Builder extends QueryBuilder implements \Illuminate\Contracts\Database\Eloquent\Builder
 {
+    use \Illuminate\Database\Concerns\BuildsQueries;
+
     /**
      * The model being queried.
      *
