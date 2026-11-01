@@ -22,7 +22,7 @@ pub use schema::{
 
 use anyhow::{Context, Result, bail};
 use composer::Composer;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use serde_json::{Map, Value};
 use std::path::{Path, PathBuf};
 use std::sync::LazyLock;
@@ -52,29 +52,8 @@ const MAPPING: &str = include_str!("../rules/mapping.toml");
 pub const NO_CONFIG: &str =
     "No pun.toml found. Run `pun migrate`, or `pun init` for a new project.";
 
-/// The format presets pun.toml and `--preset` take. `per` and `symfony` stay in [`PRESETS`] only for `pun migrate`,
-/// which expands them over `empty`; `format`, `lint`, `check` and `config` reject them with [`RemovedPreset`].
-pub const FORMAT_PRESETS: [&str; 3] = [
-    FormatPreset::Laravel.name(),
-    FormatPreset::Psr12.name(),
-    FormatPreset::Empty.name(),
-];
-
-/// A dropped format preset (`per`, `symfony`) in pun.toml or `--preset`: the message names the replacement, and the
-/// CLI exits 2 on it.
-#[derive(Debug)]
-pub struct RemovedPreset(String);
-
-impl std::fmt::Display for RemovedPreset {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(&self.0)
-    }
-}
-
-impl std::error::Error for RemovedPreset {}
-
 /// One enabled fixer (upstream name). `options` is `Null` when the rule is just `true`.
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Rule {
     pub name: String,
     pub options: Value,
@@ -82,18 +61,15 @@ pub struct Rule {
 
 /// `pun format`'s finder options, kept as Pint passes them to Symfony Finder: `in` is `[files] paths`, `exclude`
 /// is `[files] exclude` plus `[format] exclude`.
-#[derive(Debug, Clone, Default, Serialize)]
+#[derive(Debug, Clone, Default)]
 pub struct Finder {
-    #[serde(rename = "in")]
     pub in_dirs: Vec<String>,
     pub exclude: Vec<String>,
-    #[serde(rename = "notName")]
     pub not_name: Vec<String>,
-    #[serde(rename = "notPath")]
     pub not_path: Vec<String>,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone)]
 pub struct Config {
     pub root: PathBuf,
     /// The format preset.
@@ -254,10 +230,10 @@ fn parse(
         bail!("{at}: [format] paths moved to [files] paths, which every command shares");
     }
     match f.preset.as_deref() {
-        Some(p @ ("per" | "symfony")) => bail!(RemovedPreset(format!(
+        Some(p @ ("per" | "symfony")) => bail!(
             "{at}: [format] preset = \"{p}\" was removed: use preset = \"empty\" with its rules under [format.rules] (`pun migrate` expands a pint.json that used it)"
-        ))),
-        Some(p) if !FORMAT_PRESETS.contains(&p) => {
+        ),
+        Some(p) if FormatPreset::parse(p).is_none() => {
             bail!("{at}: [format] preset = \"{p}\": expected `laravel`, `psr12` or `empty`")
         }
         _ => {}
@@ -276,9 +252,9 @@ fn parse(
     let analyse = schema::analyse(path, analyse, &files, &gates)?;
 
     if let Some(p @ ("per" | "symfony")) = opts.preset.as_deref() {
-        bail!(RemovedPreset(format!(
+        bail!(
             "--preset {p} was removed: use --preset empty with its rules under [format.rules] in pun.toml (`pun migrate --preset {p}` expands it)"
-        )));
+        );
     }
     let preset = opts.preset.clone().or(f.preset);
     let preset = match preset.as_deref() {

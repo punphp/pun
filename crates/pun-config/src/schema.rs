@@ -102,12 +102,6 @@ impl FixSafety {
     }
 }
 
-impl PartialEq<&str> for FixSafety {
-    fn eq(&self, other: &&str) -> bool {
-        self.name() == *other
-    }
-}
-
 /// The analyse presets, each including the ones before it (their order).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize)]
 #[serde(rename_all = "lowercase")]
@@ -293,7 +287,7 @@ pub struct Lint {
 }
 
 /// One enabled analyse rule.
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct AnalyseRule {
     /// `analyse/<group>/<name>`.
     pub id: String,
@@ -302,7 +296,7 @@ pub struct AnalyseRule {
 }
 
 /// The resolved `[analyse]`.
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Analyse {
     pub preset: AnalysePreset,
     /// `[analyse] paths`, or `[files] paths` when it has none.

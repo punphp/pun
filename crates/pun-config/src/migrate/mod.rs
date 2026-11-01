@@ -260,10 +260,7 @@ fn write(
     mut unsupported: Vec<String>,
     runs: Runs,
 ) -> Result<Migration> {
-    let preset = (crate::FORMAT_PRESETS.iter())
-        .find(|p| **p == preset)
-        .copied()
-        .unwrap_or("empty");
+    let preset = crate::FormatPreset::parse(preset).map_or("empty", crate::FormatPreset::name);
     // Pun runs the deprecated visibility_required as modifier_keywords (as upstream's proxy does). Both on: one
     // modifier_keywords for the union of their `elements` (no options = all elements).
     if let Some(i) = rules.iter().position(|r| r.name == "visibility_required") {

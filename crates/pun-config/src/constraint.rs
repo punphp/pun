@@ -120,7 +120,8 @@ fn single(p: &str) -> Result<Range> {
         ),
         ">=" => at(full, None),
         ">" => Range {
-            lo: bump_tiny(full),
+            // ">8.3" admits 8.3.1, so the lowest admitted version is just above 8.3.0.
+            lo: (full.0, full.1, full.2 + 1),
             hi: None,
         },
         "<" => Range {
@@ -136,11 +137,6 @@ fn single(p: &str) -> Result<Range> {
         "" | "=" | "==" => at(full, Some((full, true))),
         _ => bail!("unknown operator `{op}`"),
     })
-}
-
-// ">8.3" admits 8.3.1, so the lowest admitted version is just above 8.3.0.
-fn bump_tiny((x, y, z): V) -> V {
-    (x, y, z + 1)
 }
 
 fn is_wild(ver: &str) -> bool {

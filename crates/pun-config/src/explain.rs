@@ -25,7 +25,7 @@ pub fn explain(name: &str) -> Result<String> {
         Some((tool, _, e)) => {
             let str = |k| e.get(k).and_then(toml::Value::as_str).map(str::to_string);
             match str("pun") {
-                Some(pun) if is_rule(&pun) => Some(pun),
+                Some(pun) if crate::rule(&pun).is_some() => Some(pun),
                 Some(pun) => bail!("`{name}` ({tool}) is `{pun}` in pun.toml, not a rule"),
                 None => bail!(
                     "`{name}` ({tool}) has no Pun rule: {}",
@@ -41,10 +41,6 @@ pub fn explain(name: &str) -> Result<String> {
             "`{name}` is not a Pun rule or an upstream rule name (see crates/pun-config/rules/mapping.toml)"
         ),
     }
-}
-
-fn is_rule(id: &str) -> bool {
-    rules().iter().any(|(r, _)| r == id)
 }
 
 /// Every `[upstream.<tool>]` entry, in file order: (tool, upstream key, entry).

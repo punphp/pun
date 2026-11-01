@@ -41,8 +41,6 @@ pub struct Locked {
     pub version: String,
     /// `version` as numbers, `None` for a branch (`dev-main`, `3.x-dev`).
     pub semver: Option<Version>,
-    /// From `packages-dev` (installed only with dev dependencies).
-    pub dev: bool,
 }
 
 /// What composer.json and composer.lock say. Every field is `None` when its file or entry is missing.
@@ -76,7 +74,7 @@ pub fn detect(root: &Path) -> Result<Composer> {
     let mut out = Composer::default();
     out.php = php_require(root, &mut out.sources)?;
     if let Some(lock) = read(&root.join("composer.lock"), &mut out.sources)? {
-        for (key, dev) in [("packages", false), ("packages-dev", true)] {
+        for key in ["packages", "packages-dev"] {
             for p in lock
                 .get(key)
                 .and_then(Value::as_array)
@@ -93,7 +91,6 @@ pub fn detect(root: &Path) -> Result<Composer> {
                 *slot = Some(Locked {
                     version: version.to_string(),
                     semver: semver(version),
-                    dev,
                 });
             }
         }
@@ -178,11 +175,10 @@ mod tests {
         format!(r#"{{"name":"{name}","version":"{version}"}}"#)
     }
 
-    fn locked(version: &str, semver: Option<Version>, dev: bool) -> Option<Locked> {
+    fn locked(version: &str, semver: Option<Version>) -> Option<Locked> {
         Some(Locked {
             version: version.into(),
             semver,
-            dev,
         })
     }
 
@@ -250,7 +246,7 @@ mod tests {
         )]);
         let c = detect(&d).unwrap();
         assert_eq!(c.php, None);
-        assert_eq!(c.laravel, locked("v12.0.1", Some(v(12, 0, 1)), false));
+        assert_eq!(c.laravel, locked("v12.0.1", Some(v(12, 0, 1))));
         assert_eq!(c.sources, [d.join("composer.lock")]);
     }
 
@@ -279,9 +275,9 @@ mod tests {
             c.php_version().map(|v| v.to_string()).as_deref(),
             Some("8.4")
         );
-        assert_eq!(c.laravel, locked("v13.23.0", Some(v(13, 23, 0)), false));
-        assert_eq!(c.pest, locked("v5.0.3", Some(v(5, 0, 3)), true));
-        assert_eq!(c.phpunit, locked("13.2.6", Some(v(13, 2, 6)), true));
+        assert_eq!(c.laravel, locked("v13.23.0", Some(v(13, 23, 0))));
+        assert_eq!(c.pest, locked("v5.0.3", Some(v(5, 0, 3))));
+        assert_eq!(c.phpunit, locked("13.2.6", Some(v(13, 2, 6))));
         assert_eq!(
             c.sources,
             [d.join("composer.json"), d.join("composer.lock")]
@@ -295,14 +291,14 @@ mod tests {
             detect(&dir(&[("composer.lock", &lock(packages, dev))])).unwrap()
         };
         let c = only(&pkg("laravel/framework", "v11.31.0"), "");
-        assert_eq!(c.laravel, locked("v11.31.0", Some(v(11, 31, 0)), false));
+        assert_eq!(c.laravel, locked("v11.31.0", Some(v(11, 31, 0))));
         assert_eq!((c.pest, c.phpunit), (None, None));
         let c = only("", &pkg("pestphp/pest", "v4.1.0"));
-        assert_eq!(c.pest, locked("v4.1.0", Some(v(4, 1, 0)), true));
+        assert_eq!(c.pest, locked("v4.1.0", Some(v(4, 1, 0))));
         assert_eq!((c.laravel, c.phpunit), (None, None));
         // A library that ships PHPUnit as a runtime dependency.
         let c = only(&pkg("phpunit/phpunit", "12.4.1"), "");
-        assert_eq!(c.phpunit, locked("12.4.1", Some(v(12, 4, 1)), false));
+        assert_eq!(c.phpunit, locked("12.4.1", Some(v(12, 4, 1))));
         assert_eq!((c.laravel, c.pest), (None, None));
         // Look-alike names are not the framework.
         let c = only(
@@ -331,15 +327,15 @@ mod tests {
             ),
         )]))
         .unwrap();
-        assert_eq!(c.laravel, locked("dev-main", None, false));
-        assert_eq!(c.phpunit, locked("12.4", Some(v(12, 4, 0)), false));
-        assert_eq!(c.pest, locked("5.0.0-RC1", Some(v(5, 0, 0)), true));
+        assert_eq!(c.laravel, locked("dev-main", None));
+        assert_eq!(c.phpunit, locked("12.4", Some(v(12, 4, 0))));
+        assert_eq!(c.pest, locked("5.0.0-RC1", Some(v(5, 0, 0))));
         let c = detect(&dir(&[(
             "composer.lock",
             &lock(&pkg("pestphp/pest", "3.x-dev"), ""),
         )]))
         .unwrap();
-        assert_eq!(c.pest, locked("3.x-dev", None, false));
+        assert_eq!(c.pest, locked("3.x-dev", None));
         // A lock without a `packages-dev` list.
         let c = detect(&dir(&[("composer.lock", r#"{"packages":[]}"#)])).unwrap();
         assert_eq!(c.pest, None);
