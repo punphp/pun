@@ -239,3 +239,41 @@ fn is_group(id: &str) -> bool {
         !group.contains('/') && pun_config::groups().iter().any(|g| g == group)
     })
 }
+
+#[cfg(test)]
+mod tests {
+    use super::engine;
+    use std::collections::BTreeSet;
+
+    /// rules/mapping.toml's `ported` flag, which the rule docs print as Ported or Planned, matches what Pun runs:
+    /// a lint rule `engine` knows, a format rule backed by a fixer in `pun_fixers::all()`.
+    #[test]
+    fn mapping_ported_matches_engine() {
+        let mapping: toml::Table =
+            toml::from_str(include_str!("../../pun-config/rules/mapping.toml"))
+                .expect("mapping.toml parses");
+        let fixers: BTreeSet<&str> = pun_fixers::all().iter().map(|f| f.name()).collect();
+        let mut wrong = vec![];
+        for command in ["format", "lint"] {
+            for (rule, e) in mapping["rules"][command].as_table().expect("rules table") {
+                let id = format!("{command}/{rule}");
+                let runs = match command {
+                    "lint" => engine(&id).is_some(),
+                    _ => pun_config::fixer_of("format", &id).is_some_and(|f| fixers.contains(f)),
+                };
+                let ported = e
+                    .get("ported")
+                    .and_then(toml::Value::as_bool)
+                    .unwrap_or(false);
+                if runs != ported {
+                    wrong.push(format!("{id}: ported = {ported}, runs = {runs}"));
+                }
+            }
+        }
+        assert!(
+            wrong.is_empty(),
+            "mapping.toml `ported` is out of date:\n{}",
+            wrong.join("\n")
+        );
+    }
+}

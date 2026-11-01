@@ -278,7 +278,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "classes/prefer-unserialize-method" = { fix = "unsafe", sets = ["modernize"], ported = true, status = "decided", summary = "Change __wakeup() to __unserialize()" }
 "classes/require-class-matches-file" = { fix = "unsafe", intent = "correctness", sets = ["code-quality"], ported = true, status = "decided", summary = "Classes must be in a path that matches their namespace, be at least one namespace deep and the class name should match the file name." }
 "classes/require-member-order" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Orders the elements of classes/interfaces/traits/enums." }
-"comments/no-unused-ignore" = { fix = "safe", intent = "suspicious", sets = ["code-quality"], status = "decided", pun_only = true, summary = "A @pun-ignore comment that suppressed nothing. Fix removes it." }
+"comments/no-unused-ignore" = { fix = "safe", intent = "suspicious", sets = ["code-quality"], ported = true, status = "decided", pun_only = true, summary = "A @pun-ignore comment that suppressed nothing. Fix removes it." }
 "complexity/no-and-assignment" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Split 2 assigns with \"and\" to separate lines" }
 "complexity/no-boolean-flag-parameter" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Flags function-like parameters that use a boolean type and drive the function's behaviour." }
 "complexity/no-boolean-literal-compare" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Simplify bool value compare to true or false" }

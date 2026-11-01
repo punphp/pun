@@ -3756,7 +3756,7 @@
       "ecosystem": "core",
       "tools": [],
       "upstream": [],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/complexity/no-and-assignment",
