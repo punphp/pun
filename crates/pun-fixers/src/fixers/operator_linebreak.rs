@@ -17,9 +17,9 @@ struct OperatorLinebreakFixer {
 }
 
 pub(crate) fn fixer() -> Box<dyn Fixer> {
-    Box::new(OperatorLinebreakFixer {
-        beginning: true,
-        operators: [&BOOLEAN_OPERATORS[..], &NON_BOOLEAN_OPERATORS[..]].concat(),
+    crate::configured(OperatorLinebreakFixer {
+        beginning: false,
+        operators: vec![],
     })
 }
 

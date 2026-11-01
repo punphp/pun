@@ -205,11 +205,7 @@ fn is_string_array_key(raw: &[u8]) -> bool {
         b'"' if !inner.iter().any(|&c| c == b'\\' || c == b'$') => inner.to_vec(),
         _ => return false,
     };
-    let digits = value.strip_prefix(b"-").unwrap_or(&value);
-    digits.is_empty()
-        || !digits.iter().all(u8::is_ascii_digit)
-        || (digits[0] == b'0' && value != b"0")
-        || std::str::from_utf8(&value).is_ok_and(|v| v.parse::<i64>().is_err())
+    !std::str::from_utf8(&value).is_ok_and(|v| v.parse::<i64>().is_ok_and(|i| i.to_string() == v))
 }
 
 #[cfg(test)]

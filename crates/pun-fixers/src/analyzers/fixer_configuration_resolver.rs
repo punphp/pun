@@ -284,19 +284,17 @@ impl Resolved {
         let (expected, provided) = (types.join("\" or \""), invalid.join("|"));
         let element = if (v.is_array() || v.is_object()) && types.iter().any(|t| t.ends_with("[]"))
         {
-            "one of the elements"
+            " one of the elements"
         } else {
             ""
         };
-        Err(if element.is_empty() {
-            self.error(
-                key,
-                v,
-                &format!("is expected to be of type \"{expected}\", but is of type \"{provided}\""),
-            )
-        } else {
-            self.error(key, v, &format!("is expected to be of type \"{expected}\", but {element} is of type \"{provided}\""))
-        })
+        Err(self.error(
+            key,
+            v,
+            &format!(
+                "is expected to be of type \"{expected}\", but{element} is of type \"{provided}\""
+            ),
+        ))
     }
 }
 

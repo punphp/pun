@@ -4,11 +4,12 @@ use crate::analyzers::abstract_php_unit_fixer::{
 };
 use crate::analyzers::docblock::DocBlock;
 use crate::analyzers::fixer_configuration_resolver::resolve;
+use crate::analyzers::helpers::contains;
 use crate::analyzers::preg::Preg;
 use crate::analyzers::whitespaces_analyzer::WhitespacesAnalyzer;
 use pun_format::{Fixer, WhitespacesFixerConfig};
 use pun_tokens::Kind::*;
-use pun_tokens::php_compat::{str_replace, stripos, strpos, trim};
+use pun_tokens::php_compat::{str_replace, stripos, trim};
 use pun_tokens::{Token, Tokens, TokensAnalyzer};
 use serde_json::Value;
 use std::path::Path;
@@ -300,8 +301,4 @@ fn find_where_depends_function_name_starts(line: &[u8]) -> usize {
 /// `doesDocBlockContainTest`.
 fn does_doc_block_contain_test(doc: &DocBlock) -> bool {
     !doc.get_annotations_of_type(&["test"]).is_empty()
-}
-
-fn contains(haystack: &[u8], needle: &[u8]) -> bool {
-    strpos(haystack, needle, 0).is_some()
 }

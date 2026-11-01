@@ -4,9 +4,7 @@ pub(super) use pun_tokens::php_compat::{
     isspace as ctype_space, ltrim_chars, rtrim, stripos, strpos, strrpos, substr, trim,
 };
 
-pub(super) fn contains(haystack: &[u8], needle: &[u8]) -> bool {
-    strpos(haystack, needle, 0).is_some()
-}
+pub(super) use crate::analyzers::helpers::contains;
 
 pub(super) fn ltrim(s: &[u8]) -> &[u8] {
     pun_tokens::php_compat::ltrim_chars(s, pun_tokens::php_compat::TRIM_CHARS)

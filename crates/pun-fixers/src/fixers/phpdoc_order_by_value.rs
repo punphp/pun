@@ -33,8 +33,8 @@ struct PhpdocOrderByValueFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(PhpdocOrderByValueFixer {
-        annotations: normalize(&["covers".to_string()]),
+    crate::configured(PhpdocOrderByValueFixer {
+        annotations: vec![],
     })
 }
 

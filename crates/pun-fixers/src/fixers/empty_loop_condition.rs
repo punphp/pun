@@ -11,7 +11,7 @@ struct EmptyLoopConditionFixer {
 }
 
 pub(crate) fn fixer() -> Box<dyn Fixer> {
-    Box::new(EmptyLoopConditionFixer { while_style: true })
+    crate::configured(EmptyLoopConditionFixer { while_style: false })
 }
 
 const TOKEN_LOOP_KINDS: [Kind; 2] = [T_FOR, T_WHILE];

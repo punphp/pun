@@ -4,6 +4,7 @@ pub(crate) mod abstract_function_reference_fixer;
 pub(crate) mod abstract_increment_operator_fixer;
 pub(crate) mod abstract_no_useless_else_fixer;
 pub(crate) mod abstract_php_unit_fixer;
+pub(crate) mod abstract_phpdoc_to_type_declaration_fixer;
 pub(crate) mod abstract_phpdoc_types_fixer;
 pub(crate) mod abstract_short_operator_fixer;
 pub(crate) mod alternative_syntax_analyzer;

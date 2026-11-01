@@ -10,18 +10,10 @@ use pun_tokens::{Token, Tokens};
 use serde_json::Value;
 use std::path::Path;
 
+#[derive(Default)]
 struct PhpUnitDataProviderNameFixer {
     prefix: String,
     suffix: String,
-}
-
-impl Default for PhpUnitDataProviderNameFixer {
-    fn default() -> Self {
-        Self {
-            prefix: "provide".to_string(),
-            suffix: "Cases".to_string(),
-        }
-    }
 }
 
 pub(crate) fn fixer() -> Box<dyn Fixer> {

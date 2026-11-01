@@ -1,6 +1,7 @@
 //! Port of `PhpCsFixer\Tokenizer\Analyzer\CommentsAnalyzer` (`isHeaderComment`, `isBeforeStructuralElement`,
 //! `isBeforeReturn`, `getCommentBlockIndices`). Callers only pass comment indices, so upstream's
 //! `InvalidArgumentException` checks are left out.
+use crate::analyzers::helpers::contains;
 use crate::analyzers::preg::Preg;
 use pun_tokens::Kind::{self, *};
 use pun_tokens::php_compat::strtolower;
@@ -93,10 +94,6 @@ fn is_structural_element(tokens: &Tokens, index: usize) -> bool {
         return !tokens[next].is_kind(T_DOUBLE_COLON);
     }
     false
-}
-
-fn contains(haystack: &[u8], needle: &[u8]) -> bool {
-    haystack.windows(needle.len()).any(|w| w == needle)
 }
 
 fn is_valid_control(tokens: &Tokens, docs_content: &[u8], control_index: usize) -> bool {

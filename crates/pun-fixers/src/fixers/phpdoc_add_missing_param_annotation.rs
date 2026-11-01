@@ -2,6 +2,7 @@
 use crate::analyzers::arguments_analyzer::ArgumentsAnalyzer;
 use crate::analyzers::docblock::DocBlock;
 use crate::analyzers::fixer_configuration_resolver::resolve;
+use crate::analyzers::helpers::contains;
 use crate::analyzers::preg::Preg;
 use anyhow::Result;
 use pun_format::{Fixer, WhitespacesFixerConfig};
@@ -17,8 +18,8 @@ struct PhpdocAddMissingParamAnnotationFixer {
 }
 
 pub(crate) fn fixer() -> Box<dyn Fixer> {
-    Box::new(PhpdocAddMissingParamAnnotationFixer {
-        only_untyped: true,
+    crate::configured(PhpdocAddMissingParamAnnotationFixer {
+        only_untyped: false,
         whitespaces_config: WhitespacesFixerConfig::default(),
     })
 }
@@ -165,10 +166,6 @@ impl Fixer for PhpdocAddMissingParamAnnotationFixer {
             index += 1;
         }
     }
-}
-
-fn contains(haystack: &[u8], needle: &[u8]) -> bool {
-    haystack.windows(needle.len()).any(|w| w == needle)
 }
 
 fn prepare_argument_information(tokens: &Tokens, start: usize, end: usize) -> ArgumentInformation {

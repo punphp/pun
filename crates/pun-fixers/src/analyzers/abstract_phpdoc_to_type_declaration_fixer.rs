@@ -2,10 +2,7 @@
 //! phpdoc_to_property_type and phpdoc_to_return_type, with the parts of `PhpCsFixer\DocBlock\TypeExpression` it calls
 //! that know the namespace (`getCommonType`, `allowsNull`, `getParentType`, `normalize`).
 //!
-//! Each of those fixers includes this file as its own module (`#[path]`), so `analyzers/mod.rs` stays as it is.
 //! The oracle runs on PHP 8.5, so every `\PHP_VERSION_ID` check is true.
-// Each including fixer uses only part of it.
-#![allow(dead_code)]
 use crate::analyzers::analysis::NamespaceUseAnalysis;
 use crate::analyzers::docblock::type_expression::REGEX_IDENTIFIER;
 use crate::analyzers::docblock::{Annotation, DocBlock, TypeExpression};
@@ -35,20 +32,11 @@ fn alias(t: &[u8]) -> Option<&'static [u8]> {
     })
 }
 
+#[derive(Default)]
 pub(crate) struct Options {
     pub scalar_types: bool,
     pub union_types: bool,
     pub types_map: Vec<(Vec<u8>, Vec<u8>)>,
-}
-
-impl Default for Options {
-    fn default() -> Self {
-        Options {
-            scalar_types: true,
-            union_types: true,
-            types_map: Vec::new(),
-        }
-    }
 }
 
 impl Options {

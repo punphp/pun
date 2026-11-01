@@ -1,8 +1,5 @@
 //! Port of `PhpCsFixer\Fixer\FunctionNotation\PhpdocToReturnTypeFixer`.
-#[path = "../analyzers/abstract_phpdoc_to_type_declaration_fixer.rs"]
-mod abstract_phpdoc_to_type;
-
-use abstract_phpdoc_to_type::{
+use crate::analyzers::abstract_phpdoc_to_type_declaration_fixer::{
     Common, Options, create_type_declaration_tokens, doc_comment, find_function_doc_comment,
     get_types_to_exclude, is_valid_syntax, tokens_from_raw_type,
 };
@@ -25,7 +22,7 @@ struct PhpdocToReturnTypeFixer {
 }
 
 pub(crate) fn fixer() -> Box<dyn Fixer> {
-    Box::new(PhpdocToReturnTypeFixer {
+    crate::configured(PhpdocToReturnTypeFixer {
         options: Options::default(),
     })
 }

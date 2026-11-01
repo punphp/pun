@@ -18,9 +18,8 @@ struct PhpdocToCommentFixer {
 }
 
 pub(crate) fn fixer() -> Box<dyn Fixer> {
-    Box::new(PhpdocToCommentFixer {
+    crate::configured(PhpdocToCommentFixer {
         ignored_tags: Vec::new(),
-        // Future::getV4OrV3(true, false): the 3.x default.
         allow_before_return_statement: false,
     })
 }
@@ -46,6 +45,7 @@ impl Fixer for PhpdocToCommentFixer {
             .iter()
             .map(|t| strtolower(t.as_bytes()))
             .collect();
+        // Future::getV4OrV3(true, false): the 3.x default.
         self.allow_before_return_statement = o.bool("allow_before_return_statement", false)?;
         Ok(())
     }

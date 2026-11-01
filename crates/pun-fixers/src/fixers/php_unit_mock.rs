@@ -8,16 +8,9 @@ use pun_tokens::{Token, Tokens};
 use serde_json::Value;
 use std::path::Path;
 
+#[derive(Default)]
 struct PhpUnitMockFixer {
     fix_create_partial_mock: bool,
-}
-
-impl Default for PhpUnitMockFixer {
-    fn default() -> Self {
-        Self {
-            fix_create_partial_mock: true,
-        }
-    }
 }
 
 pub(crate) fn fixer() -> Box<dyn Fixer> {

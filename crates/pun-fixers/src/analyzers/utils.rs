@@ -2,7 +2,7 @@
 use super::preg::Preg;
 pub use pun_config::options::natural_language_join;
 use pun_tokens::Token;
-use pun_tokens::php_compat::mb_strtolower;
+use pun_tokens::php_compat::{mb_strtolower, str_replace};
 
 pub(crate) struct Utils;
 
@@ -22,27 +22,14 @@ impl Utils {
             "The given token must be whitespace, got \"{}\".",
             token.get_name().unwrap_or_default()
         );
-        let content = token.get_content();
-        let mut s = Vec::with_capacity(content.len());
-        let mut i = 0;
-        while i < content.len() {
-            if content[i] == b'\r' {
-                s.push(b'\n');
-                if content.get(i + 1) == Some(&b'\n') {
-                    i += 1;
-                }
-            } else {
-                s.push(content[i]);
-            }
-            i += 1;
-        }
+        let s = str_replace(
+            b"\r",
+            b"\n",
+            &str_replace(b"\r\n", b"\n", token.get_content()),
+        );
         match s.iter().rposition(|&b| b == b'\n') {
             None => Vec::new(),
-            Some(p) => s[p..]
-                .iter()
-                .skip_while(|&&b| b == b'\n')
-                .copied()
-                .collect(),
+            Some(p) => s[p + 1..].to_vec(),
         }
     }
 }
@@ -53,19 +40,8 @@ pub(crate) fn mb_strwidth(s: &[u8]) -> usize {
     String::from_utf8_lossy(s)
         .chars()
         .map(|c| {
-            if c != '\u{FFFD}'
-                && WIDE
-                    .binary_search_by(|&(a, b)| {
-                        if (c as u32) < a {
-                            std::cmp::Ordering::Greater
-                        } else if (c as u32) > b {
-                            std::cmp::Ordering::Less
-                        } else {
-                            std::cmp::Ordering::Equal
-                        }
-                    })
-                    .is_ok()
-            {
+            let i = WIDE.partition_point(|&(_, b)| b < c as u32);
+            if WIDE.get(i).is_some_and(|&(a, _)| a <= c as u32) {
                 2
             } else {
                 1

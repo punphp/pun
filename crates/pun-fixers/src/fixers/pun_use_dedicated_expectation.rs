@@ -6,6 +6,7 @@
 //! directories), `is_readable`/`is_writable` → `toBeReadable`/`toBeWritable` (no such Pest matchers),
 //! `ctype_alpha`/`ctype_alnum` (Pest casts to string first: `ctype_alpha(65)` is true, `toBeAlpha()` of 65 is not),
 //! `is_resource` (PHPUnit also accepts closed resources), and `in_array`/`array_key_exists` (Mago has no fix either).
+use crate::analyzers::helpers::split_list;
 use crate::analyzers::pest::match_expect_matcher;
 use pun_format::Fixer;
 use pun_tokens::Kind::*;
@@ -145,27 +146,11 @@ impl Fixer for UseDedicatedExpectation {
 
 /// (first, last) meaningful token of each argument; `None` for spread or named arguments.
 fn plain_arguments(tokens: &Tokens, open: usize, close: usize) -> Option<Vec<(usize, usize)>> {
-    let mut args = vec![];
-    let mut k = tokens.get_next_meaningful_token(open)?;
-    while k < close {
-        let start = k;
-        let mut last = k;
-        while k < close && !tokens[k].equals(",", true) {
-            if let Some((t, true)) = Tokens::detect_block_type(&tokens[k]) {
-                k = tokens.find_block_end(t, k);
-            }
-            last = k;
-            k = tokens.get_next_meaningful_token(k)?;
-        }
-        if tokens[start].is_given_kind(&[T_ELLIPSIS, CT_NAMED_ARGUMENT_NAME]) {
-            return None;
-        }
-        args.push((start, last));
-        if k < close {
-            k = tokens.get_next_meaningful_token(k)?;
-        }
-    }
-    Some(args)
+    let args = split_list(tokens, open, close);
+    (!args
+        .iter()
+        .any(|&(s, _)| tokens[s].is_given_kind(&[T_ELLIPSIS, CT_NAMED_ARGUMENT_NAME])))
+    .then_some(args)
 }
 
 #[cfg(test)]

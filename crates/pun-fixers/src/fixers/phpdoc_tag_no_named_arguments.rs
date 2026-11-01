@@ -25,11 +25,7 @@ struct PhpdocTagNoNamedArgumentsFixer {
 }
 
 pub(crate) fn fixer() -> Box<dyn Fixer> {
-    Box::new(PhpdocTagNoNamedArgumentsFixer {
-        fix_attribute: true,
-        fix_internal: true,
-        ..Default::default()
-    })
+    crate::configured(PhpdocTagNoNamedArgumentsFixer::default())
 }
 
 impl Fixer for PhpdocTagNoNamedArgumentsFixer {

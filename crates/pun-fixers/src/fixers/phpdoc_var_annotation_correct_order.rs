@@ -1,4 +1,5 @@
 //! Port of `PhpCsFixer\Fixer\Phpdoc\PhpdocVarAnnotationCorrectOrderFixer`.
+use crate::analyzers::helpers::contains;
 use crate::analyzers::preg::Preg;
 use pun_format::Fixer;
 use pun_tokens::Kind::*;
@@ -10,10 +11,6 @@ struct PhpdocVarAnnotationCorrectOrderFixer;
 
 pub(crate) fn fixer() -> Box<dyn Fixer> {
     Box::new(PhpdocVarAnnotationCorrectOrderFixer)
-}
-
-fn contains(haystack: &[u8], needle: &[u8]) -> bool {
-    haystack.windows(needle.len()).any(|w| w == needle)
 }
 
 impl Fixer for PhpdocVarAnnotationCorrectOrderFixer {

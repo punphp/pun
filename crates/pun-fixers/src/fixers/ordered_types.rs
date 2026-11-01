@@ -27,10 +27,9 @@ struct OrderedTypesFixer {
 }
 
 pub(crate) fn fixer() -> Box<dyn Fixer> {
-    Box::new(OrderedTypesFixer {
-        alpha: true,
-        // `Future::getV4OrV3('always_last', 'always_first')`: Pint runs without future mode.
-        null_adjustment: NullAdjustment::AlwaysFirst,
+    crate::configured(OrderedTypesFixer {
+        alpha: false,
+        null_adjustment: NullAdjustment::None,
         case_sensitive: false,
     })
 }
@@ -84,6 +83,7 @@ impl Fixer for OrderedTypesFixer {
             &["sort_algorithm", "null_adjustment", "case_sensitive"],
         )?;
         self.alpha = c.string("sort_algorithm", "alpha", &["alpha", "none"])? == "alpha";
+        // `Future::getV4OrV3('always_last', 'always_first')`: Pint runs without future mode.
         self.null_adjustment = match c
             .string(
                 "null_adjustment",

@@ -11,7 +11,7 @@ struct EmptyLoopBodyFixer {
 }
 
 pub(crate) fn fixer() -> Box<dyn Fixer> {
-    Box::new(EmptyLoopBodyFixer { braces: false })
+    crate::configured(EmptyLoopBodyFixer { braces: false })
 }
 
 const TOKEN_LOOP_KINDS: [pun_tokens::Kind; 3] = [T_FOR, T_FOREACH, T_WHILE];

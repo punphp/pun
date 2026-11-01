@@ -1,12 +1,9 @@
 //! Port of `PhpCsFixer\Fixer\FunctionNotation\PhpdocToParamTypeFixer`.
-#[path = "../analyzers/abstract_phpdoc_to_type_declaration_fixer.rs"]
-mod abstract_phpdoc_to_type;
-
-use crate::analyzers::docblock::Annotation;
-use abstract_phpdoc_to_type::{
+use crate::analyzers::abstract_phpdoc_to_type_declaration_fixer::{
     Common, Options, create_type_declaration_tokens, doc_comment, find_function_doc_comment,
     get_types_to_exclude, is_valid_syntax, tokens_from_raw_type,
 };
+use crate::analyzers::docblock::Annotation;
 use anyhow::Result;
 use pun_format::Fixer;
 use pun_tokens::Kind::*;
@@ -25,7 +22,7 @@ struct PhpdocToParamTypeFixer {
 }
 
 pub(crate) fn fixer() -> Box<dyn Fixer> {
-    Box::new(PhpdocToParamTypeFixer {
+    crate::configured(PhpdocToParamTypeFixer {
         options: Options::default(),
     })
 }
