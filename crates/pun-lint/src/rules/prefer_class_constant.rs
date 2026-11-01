@@ -6,7 +6,7 @@
 //!
 //! The fixer asks PHP's autoloader whether the class exists. Pun asks its codebase: PHP's own classes and the
 //! project's, the same source `prefer-class-keyword` reads. Classes only Pint's own process would know (its vendor
-//! directory) are therefore not known to Pun.
+//! directory) are therefore not known to Pun. The Zend Server classes of Mago's prelude (`java`, ...) are left out.
 
 use mago_syntax::cst::{Literal, Node, NodeKind};
 use pun_problem::{Edit, Fix, Safety};
@@ -14,6 +14,9 @@ use pun_problem::{Edit, Fix, Safety};
 use super::types::facts::facts;
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
+
+/// Classes of the Zend Server extension stubs in Mago's prelude (`zend.php`); PHP itself does not declare them.
+const ZEND_SERVER: [&str; 4] = ["ZendAPI_Queue", "ZendAPI_Job", "java", "JavaException"];
 
 pub struct PreferClassConstant;
 
@@ -51,7 +54,7 @@ impl Rule for PreferClassConstant {
             .codebase
             .get_class_like(name.as_bytes())
             .is_some_and(|c| c.original_name.as_bytes() == name.as_bytes());
-        if !declared {
+        if !declared || ZEND_SERVER.iter().any(|z| z.eq_ignore_ascii_case(&name)) {
             return;
         }
         out.push(Report {

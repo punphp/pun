@@ -19,6 +19,8 @@ $o = '\\';
 $p = 'JsonException';
 $q = 'Traversable';
 echo 'DateTime', "Stringable";
+$s = 'java';
+$t = 'ZendAPI_Job';
 -----
 <?php
 $a = \DateTime::class;
@@ -41,3 +43,5 @@ $o = '\\';
 $p = \JsonException::class;
 $q = \Traversable::class;
 echo \DateTime::class, \Stringable::class;
+$s = 'java';
+$t = 'ZendAPI_Job';

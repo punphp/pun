@@ -299,3 +299,20 @@ fn implicit_array_creation() {
         .collect();
     assert_eq!(found, expected);
 }
+
+#[test]
+fn file_with_only_an_opening_tag_gets_no_strict_types_declaration() {
+    // Regression: `<?php` alone made the strict types rules index an empty statement list.
+    for rule in [
+        Box::new(rules::AddSafeStrictTypes) as Box<dyn Rule>,
+        Box::new(rules::RequireStrictTypesInTests),
+    ] {
+        let linter = Linter::new(vec![rule], 80400);
+        assert!(
+            linter
+                .check(Path::new("a.php"), "<?php\n")
+                .unwrap()
+                .is_empty()
+        );
+    }
+}
