@@ -21,7 +21,7 @@ use pun_phpstan::symbols;
 use pun_phpstan::types::{Level, Type, intersect, is_super_type_of, mixed, union};
 use serde_json::Value;
 
-use super::declarations::{doc_tags, has_tag, is_abstract, is_private};
+use super::declarations::{doc_tags, has_tag};
 use super::declared::{self, default_is_null, original_name};
 
 /// How many ancestors the walks up a class hierarchy visit: a circular one (which PHP refuses) ends there.
@@ -884,7 +884,6 @@ fn compare_parameters(
 /// The analysed method as PhpMethodFromParserNodeReflection gives it, `name` being its name in the class (a trait
 /// method's alias).
 fn analysed(c: &Checker, m: &Method, name: &str, k: &ClassLikeMetadata) -> Facts {
-    let has = |f: fn(&Modifier) -> bool| m.modifiers.iter().any(f);
     let lower = name.to_ascii_lowercase();
     // a trait method keeps its visibility unless the `use` changes it (`foo as public`)
     let aliased = c
@@ -892,9 +891,9 @@ fn analysed(c: &Checker, m: &Method, name: &str, k: &ClassLikeMetadata) -> Facts
         .and_then(|_| k.trait_visibility_map.get(&mago_word::word(&lower)).copied());
     let visibility = if let Some(v) = aliased {
         v
-    } else if has(is_private) {
+    } else if m.modifiers.contains_private() {
         Visibility::Private
-    } else if has(|x| matches!(x, Modifier::Protected(_))) {
+    } else if m.modifiers.contains_protected() {
         Visibility::Protected
     } else {
         Visibility::Public
@@ -934,8 +933,8 @@ fn analysed(c: &Checker, m: &Method, name: &str, k: &ClassLikeMetadata) -> Facts
         accepts_named_arguments: true,
         name: name.to_string(),
         visibility,
-        is_static: has(|x| matches!(x, Modifier::Static(_))),
-        is_abstract: has(is_abstract),
+        is_static: m.modifiers.contains_static(),
+        is_abstract: m.modifiers.contains_abstract(),
         final_by_keyword: false,
         is_final: false,
         builtin: false,
@@ -1163,8 +1162,8 @@ fn overriding_method<'a>(c: &Checker<'a, '_>, m: &Method, name: &str, k: &'a Cla
 fn purity_override<'a>(c: &Checker<'a, '_>, m: &Method, name: &str, k: &'a ClassLikeMetadata) -> Vec<Message> {
     let lower = name.to_ascii_lowercase();
     // ponytail: `reportStaticMethodSignatures` stays at its default, off
-    let is_static = m.modifiers.iter().any(|x| matches!(x, Modifier::Static(_)));
-    if lower == "__construct" || is_static || m.modifiers.iter().any(is_private) {
+    let is_static = m.modifiers.contains_static();
+    if lower == "__construct" || is_static || m.modifiers.contains_private() {
         return Vec::new();
     }
     if declared::method_purity(c, k, lower.as_bytes()).0 != Some(false) {

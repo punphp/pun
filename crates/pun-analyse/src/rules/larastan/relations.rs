@@ -63,9 +63,7 @@ pub(super) fn static_method_call<'arena>(
     call: &StaticMethodCall<'arena>,
 ) {
     let on = match call.class {
-        Expression::Identifier(id) => Some(CalledOn::Class(
-            String::from_utf8_lossy(c.names.get(&id.span())).into_owned(),
-        )),
+        Expression::Identifier(id) => Some(CalledOn::Class(c.resolved_span(id.span()))),
         e => c.type_of(e).cloned().map(CalledOn::Type),
     };
     if let Some((arg, on)) = relation_call(&call.method, &call.argument_list).zip(on) {

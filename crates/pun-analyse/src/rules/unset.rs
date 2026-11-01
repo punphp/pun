@@ -241,13 +241,6 @@ fn scope_type(c: &Checker, e: &Expression) -> Option<Type> {
     c.phpstan_type(e)
 }
 
-/// `TrinaryLogic::extremeIdentity()` for union receivers and finite union offsets.
-fn identity(results: impl Iterator<Item = Tri>) -> Tri {
-    results
-        .reduce(|a, b| if a == b { a } else { Tri::Maybe })
-        .unwrap_or(Tri::No)
-}
-
 /// The result queried by LateResolvableTypeTrait. Resolve the receiver, not templates stored in its values.
 /// Resolving the whole offset to bounds would erase TemplateMixedType and TemplateTypeTrait::toArrayKey.
 pub(super) fn late_offset(on: &Type, index: &Type) -> Option<Type> {
@@ -277,7 +270,7 @@ pub(super) fn late_offset(on: &Type, index: &Type) -> Option<Type> {
             fn scalar(t: &Type) -> Tri {
                 match t {
                     Type::Template(t) => scalar(&t.bound),
-                    Type::Union(ts) | Type::Benevolent(ts) => identity(ts.iter().map(scalar)),
+                    Type::Union(ts) | Type::Benevolent(ts) => Tri::extreme_identity(ts.iter().map(scalar)),
                     Type::ConstInt(_) | Type::ConstString(_) | Type::ConstFloat(_) | Type::ConstBool(_) | Type::Never(_) => Tri::Yes,
                     Type::Mixed { .. } | Type::SubtractedMixed { .. } | Type::Error => Tri::Maybe,
                     _ => Tri::No,
@@ -330,7 +323,7 @@ pub(super) fn late_offset(on: &Type, index: &Type) -> Option<Type> {
 /// `hasOffsetValueType()`: no RuleLevelHelper filtering (in particular, no union member is discarded).
 fn has_offset(c: &Checker, ty: &Type, offset: &Type) -> Tri {
     match ty {
-        Type::Union(ts) => identity(ts.iter().map(|t| has_offset(c, t, offset))),
+        Type::Union(ts) => Tri::extreme_identity(ts.iter().map(|t| has_offset(c, t, offset))),
         Type::Benevolent(ts) => ts
             .iter()
             .map(|t| has_offset(c, t, offset))
@@ -407,7 +400,7 @@ fn has_offset(c: &Checker, ty: &Type, offset: &Type) -> Tri {
 /// `ConstantArrayType::recursiveHasOffsetValueType()` after key conversion.
 fn shape_offset(array: &ConstArray, offset: &Type) -> Tri {
     if let Type::Union(ts) | Type::Benevolent(ts) = offset {
-        return identity(ts.iter().map(|t| shape_offset(array, t)));
+        return Tri::extreme_identity(ts.iter().map(|t| shape_offset(array, t)));
     }
     let mut result = Tri::No;
     for (i, key) in array.keys.iter().enumerate() {

@@ -49,10 +49,7 @@ pub(super) fn function(c: &mut Checker, f: &Function) {
 
 pub(super) fn method(c: &mut Checker, m: &Method) {
     if c.level < 2
-        || !m
-            .modifiers
-            .iter()
-            .any(|m| matches!(m, Modifier::Private(_)))
+        || !m.modifiers.contains_private()
         || m.name.value.eq_ignore_ascii_case(b"__construct")
     {
         return;

@@ -29,6 +29,7 @@ use pun_tokens::php_compat::{ltrim_chars, preg_compile, rtrim_chars};
 
 use crate::Project;
 use crate::codebase::read;
+use crate::text;
 
 const COMMAND: &[u8] = b"illuminate\\console\\command";
 const SYMFONY_COMMAND: &[u8] = b"symfony\\component\\console\\command\\command";
@@ -76,7 +77,7 @@ impl Definition {
         self.options.insert(name.to_string());
         if let Some(shortcut) = shortcut.filter(|s| !s.is_empty()) {
             // preg_split('{(\|)-?}', ltrim($shortcut, '-')), without the empty ones
-            let shortcuts: Vec<String> = lossy(ltrim_chars(shortcut.as_bytes(), b"-"))
+            let shortcuts: Vec<String> = text(ltrim_chars(shortcut.as_bytes(), b"-"))
                 .split('|')
                 .map(|s| s.strip_prefix('-').unwrap_or(s).to_string())
                 .filter(|s| !s.is_empty())
@@ -288,20 +289,16 @@ fn parse(expression: &str) -> Option<Signature> {
     let mut arguments = Vec::new();
     let mut options = Vec::new();
     for m in re(&PARAMETER, r"/\{\s*(.*?)\s*\}/").captures_iter(bytes) {
-        let token = lossy(&m.ok()?[1]);
+        let token = text(&m.ok()?[1]);
         match re(&OPTION, r"/^-{2,}(.*)/")
             .captures(token.as_bytes())
             .ok()?
         {
-            Some(o) => options.push(parse_option(&lossy(&o[1]))),
+            Some(o) => options.push(parse_option(&text(&o[1]))),
             None => arguments.push(parse_argument(&token)),
         }
     }
-    Some((lossy(name.as_bytes()), arguments, options))
-}
-
-fn lossy(b: &[u8]) -> String {
-    String::from_utf8_lossy(b).into_owned()
+    Some((text(name.as_bytes()), arguments, options))
 }
 
 /// `trim($s, $chars)`.
@@ -320,7 +317,7 @@ fn group(
     token: &str,
 ) -> Option<String> {
     let re = cell.get_or_init(|| preg_compile(pattern).expect("a valid pattern"));
-    re.captures(token.as_bytes()).ok()?.map(|c| lossy(&c[1]))
+    re.captures(token.as_bytes()).ok()?.map(|c| text(&c[1]))
 }
 
 static ARRAY_DEFAULT: OnceLock<pcre2::bytes::Regex> = OnceLock::new();
@@ -371,15 +368,15 @@ fn split(
     let re = cell.get_or_init(|| preg_compile(pattern).expect("a valid pattern"));
     let m = re.find(s.as_bytes()).ok()??;
     Some((
-        lossy(&s.as_bytes()[..m.start()]),
-        lossy(&s.as_bytes()[m.end()..]),
+        text(&s.as_bytes()[..m.start()]),
+        text(&s.as_bytes()[m.end()..]),
     ))
 }
 
 /// `Parser::extractDescription()`: the token without its ` : description`.
 fn extract_description(token: &str) -> String {
     static DESCRIPTION: OnceLock<pcre2::bytes::Regex> = OnceLock::new();
-    let trimmed = lossy(pun_tokens::php_compat::trim(token.as_bytes()));
+    let trimmed = text(pun_tokens::php_compat::trim(token.as_bytes()));
     match split(&DESCRIPTION, r"/\s+:\s+/", &trimmed) {
         Some((token, _)) => token,
         None => token.to_string(),
@@ -555,7 +552,7 @@ fn add(
 
 fn string(e: &Expression) -> Option<String> {
     match e {
-        Expression::Literal(Literal::String(s)) => s.value.map(lossy),
+        Expression::Literal(Literal::String(s)) => s.value.map(text),
         _ => None,
     }
 }

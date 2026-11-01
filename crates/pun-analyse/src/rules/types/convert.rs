@@ -25,10 +25,7 @@ use pun_phpstan::types::{
 };
 
 use super::super::{Checker, arrays, declared, doc, infer};
-
-fn text(b: &[u8]) -> String {
-    String::from_utf8_lossy(b).into_owned()
-}
+use crate::text;
 
 #[derive(Clone, Copy)]
 enum ConversionScope {
@@ -1246,9 +1243,8 @@ fn inferred_argument_in(t: &Type, owned: &[Template]) -> Type {
     }
 }
 
-fn literal_elements<'e, 'arena>(mut e: &'e Expression<'arena>) -> Option<&'e TokenSeparatedSequence<'arena, ArrayElement<'arena>>> {
-    while let Expression::Parenthesized(p) = e { e = p.expression; }
-    match e {
+fn literal_elements<'e, 'arena>(e: &'e Expression<'arena>) -> Option<&'e TokenSeparatedSequence<'arena, ArrayElement<'arena>>> {
+    match super::flow::unparen(e) {
         Expression::Array(a) => Some(&a.elements),
         Expression::LegacyArray(a) => Some(&a.elements),
         _ => None,
@@ -1297,7 +1293,7 @@ mod never_identity_tests {
         let file = root.join("conversion.php");
         let oracle: Value = serde_json::from_slice(&std::fs::read(root.join("expected-phpstan.json")).unwrap()).unwrap();
         let project = crate::Project::new(vec![file.clone()], Vec::new());
-        let (mut codebase, sources) = crate::codebase::build_with_sources(&project).unwrap();
+        let (mut codebase, sources) = crate::codebase::build(&project, None).unwrap();
         let mut expected = Vec::new();
         // Model the producer/consumer boundary directly: accepting explicit never has no declaration
         // syntax. Its expression producers and call-evaluation facts are independently maintained.

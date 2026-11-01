@@ -18,7 +18,7 @@ use mago_syntax::parser::parse_file;
 use mago_syntax::walker::MutWalker;
 use pun_phpstan::types::{Level, Type, is_super_type_of};
 
-use super::declarations::{doc_tags, has_tag, is_abstract, is_private};
+use super::declarations::{doc_tags, has_tag};
 use super::declared;
 use super::overriding::{ANCESTRY, Class};
 use super::properties::{PropertyNode, is_virtual};
@@ -403,7 +403,7 @@ fn errors<'a>(
                 ),
             );
         }
-        if node.has(is_abstract) && !prototype.is_abstract {
+        if node.has(|m| m.is_abstract()) && !prototype.is_abstract {
             for (hook, own, theirs) in [("get", hooks.0, prototype.hooks.0), ("set", hooks.1, prototype.hooks.1)] {
                 if own && theirs {
                     error(
@@ -418,7 +418,7 @@ fn errors<'a>(
     }
     if prototype.is_public {
         if !node.is_public() {
-            let visibility = if node.has(is_private) { "Private" } else { "Protected" };
+            let visibility = if node.has(|m| m.is_private()) { "Private" } else { "Protected" };
             error(
                 "property.visibility",
                 format!(
@@ -426,7 +426,7 @@ fn errors<'a>(
                 ),
             );
         }
-    } else if node.has(is_private) {
+    } else if node.has(|m| m.is_private()) {
         error(
             "property.visibility",
             format!(

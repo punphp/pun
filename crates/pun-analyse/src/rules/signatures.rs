@@ -638,7 +638,7 @@ fn phpdoc_applies(
     }
     let native_type = resolve(&native_node, None);
     let mut bounds = to_bounds(c, phpdoc, doc, 0);
-    if !native_type.accepts_null() {
+    if !accepts_null(&native_type) {
         bounds = without_null(bounds);
     }
     let phpdoc_type = resolve(&bounds, None);
@@ -696,17 +696,11 @@ fn callable(c: &Checker, node: &Node) -> bool {
     }
 }
 
-trait AcceptsNull {
-    fn accepts_null(&self) -> bool;
-}
-
-impl AcceptsNull for Type {
-    fn accepts_null(&self) -> bool {
-        match self {
-            Type::Null | Type::Mixed { .. } => true,
-            Type::Union(members) => members.iter().any(AcceptsNull::accepts_null),
-            _ => false,
-        }
+fn accepts_null(t: &Type) -> bool {
+    match t {
+        Type::Null | Type::Mixed { .. } => true,
+        Type::Union(members) => members.iter().any(accepts_null),
+        _ => false,
     }
 }
 

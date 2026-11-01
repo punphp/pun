@@ -183,7 +183,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_> {
     }
     fn walk_in_property_access(&mut self, p: &'ast PropertyAccess<'arena>, _: &mut ()) {
         if !self.check_this_only {
-            access::typed(p.object, &mut self.spans);
+            receivers::typed(p.object, &mut self.spans);
         }
     }
     fn walk_in_null_safe_property_access(&mut self, p: &'ast NullSafePropertyAccess<'arena>, _: &mut ()) {
@@ -207,8 +207,8 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_> {
             self.spans.push(a.value().span());
             if self.check_arguments {
                 match a.value() {
-                    Expression::Array(arr) => self.spans.extend(arr.elements.iter().map(element)),
-                    Expression::LegacyArray(arr) => self.spans.extend(arr.elements.iter().map(element)),
+                    Expression::Array(arr) => self.spans.extend(arr.elements.iter().map(super::params::element)),
+                    Expression::LegacyArray(arr) => self.spans.extend(arr.elements.iter().map(super::params::element)),
                     _ => {}
                 }
             }
@@ -324,14 +324,6 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_> {
             }
             self.spans.extend(c.0);
         }
-    }
-}
-
-/// An array element's value expression.
-fn element(e: &ArrayElement) -> Span {
-    match e {
-        ArrayElement::KeyValue(kv) => kv.value.span(),
-        e => e.span(),
     }
 }
 

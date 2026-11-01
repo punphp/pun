@@ -6,18 +6,12 @@ use mago_syntax::cst::*;
 use mago_syntax::walker::MutWalker;
 
 use super::super::Checker;
+use super::super::types::flow::unparen;
 use super::{is_a, object_names};
 
 const APPLICATION: &[u8] = b"illuminate\\contracts\\foundation\\application";
 
 const TIP: &str = "See: https://laravel.com/docs/octane#dependency-injection-and-octane";
-
-fn unparenthesized<'ast, 'arena>(mut e: &'ast Expression<'arena>) -> &'ast Expression<'arena> {
-    while let Expression::Parenthesized(p) = e {
-        e = p.expression;
-    }
-    e
-}
 
 /// `->singleton()` or `->bind()` with a closure as its second argument.
 pub(super) fn is_binding(call: &MethodCall) -> bool {
@@ -31,7 +25,7 @@ fn binding_closure<'ast, 'arena>(call: &'ast MethodCall<'arena>) -> Option<&'ast
     if m.value != b"singleton" && m.value != b"bind" {
         return None;
     }
-    match unparenthesized(call.argument_list.arguments.get(1)?.value()) {
+    match unparen(call.argument_list.arguments.get(1)?.value()) {
         Expression::Closure(f) => Some(f),
         _ => None,
     }

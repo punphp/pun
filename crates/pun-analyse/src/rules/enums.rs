@@ -216,10 +216,7 @@ fn case_value(c: &Checker, e: &Enum, enum_name: &str, case: &str, depth: usize) 
         }) if b.name.value == case.as_bytes() => Some(b.value),
         _ => None,
     })?;
-    let mut value = value;
-    while let Expression::Parenthesized(p) = value {
-        value = p.expression;
-    }
+    let value = super::types::flow::unparen(value);
     // the codex types a float literal as `float`
     if let Expression::Literal(Literal::Float(f)) = value {
         return Some(Type::ConstFloat(f.value.0));

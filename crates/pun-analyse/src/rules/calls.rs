@@ -273,10 +273,6 @@ fn declaring_display(c: &Checker, method: &members::Method) -> String {
     method.declaring_display(c)
 }
 
-fn written<'arena>(c: &Checker<'_, 'arena>, e: &Expression<'arena>) -> String {
-    String::from_utf8_lossy(&c.file.contents[e.span().to_range_usize()]).into_owned()
-}
-
 /// CallStaticMethodsRule (StaticMethodCallCheck, then the parameters check).
 pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMethodCall<'arena>) {
     check_static_method(c, call.class, &call.method, Some(call));
@@ -300,7 +296,7 @@ pub(super) fn check_static_method<'arena>(
     let class = match (class_expr, scope_class) {
         (Expression::Self_(_) | Expression::Static(_) | Expression::Parent(_), None) => {
             let identifier = super::out_of_class(class_expr);
-            let written = written(c, class_expr);
+            let written = c.written(class_expr.span());
             c.report(
                 name,
                 identifier,

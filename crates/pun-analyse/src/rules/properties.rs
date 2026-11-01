@@ -7,7 +7,7 @@ use mago_syntax::cst::*;
 use mago_syntax::walker::MutWalker;
 
 use super::{Checker, overriding_property};
-use super::declarations::{READONLY_TAGS, has_tag, is_abstract, is_final, is_private};
+use super::declarations::{READONLY_TAGS, has_tag};
 
 /// ClassPropertyNode.
 pub struct PropertyNode<'n, 'arena> {
@@ -39,13 +39,13 @@ impl PropertyNode<'_, '_> {
     }
     pub(super) fn is_public(&self) -> bool {
         // Modifiers::VISIBILITY_MASK: the read visibilities
-        self.has(|m| matches!(m, Modifier::Public(_))) || !self.has(|m| m.is_read_visibility())
+        self.has(|m| m.is_public()) || !self.has(|m| m.is_read_visibility())
     }
     pub(super) fn is_static(&self) -> bool {
-        self.has(|m| matches!(m, Modifier::Static(_)))
+        self.has(|m| m.is_static())
     }
     fn hook_final(h: &PropertyHook) -> bool {
-        h.modifiers.iter().any(is_final)
+        h.modifiers.contains_final()
     }
     fn hook_abstract(h: &PropertyHook) -> bool {
         matches!(h.body, PropertyHookBody::Abstract(_))
@@ -109,7 +109,7 @@ pub fn promoted<'arena>(
 fn check<'arena>(c: &mut Checker<'_, 'arena>, node: &PropertyNode<'_, 'arena>) {
     let decl = c.decls.last().expect("in a class-like");
     let (kind, immutable_doc, parent) = (decl.kind, decl.immutable_doc, decl.parent.clone());
-    let is_readonly = node.has(|m| matches!(m, Modifier::Readonly(_))) || decl.is_readonly;
+    let is_readonly = node.has(|m| m.is_readonly()) || decl.is_readonly;
     if kind == SymbolKind::Interface {
         in_interface(c, node, is_readonly);
     } else if kind == SymbolKind::Class {
@@ -164,12 +164,12 @@ fn in_interface(c: &mut Checker, node: &PropertyNode, is_readonly: bool) {
             "property.hookedStatic",
             "Hooked properties cannot be static.",
         )
-    } else if node.has(is_abstract) {
+    } else if node.has(|m| m.is_abstract()) {
         (
             "property.abstractInInterface",
             "Property in interface cannot be explicitly abstract.",
         )
-    } else if node.has(is_final) {
+    } else if node.has(|m| m.is_final()) {
         (
             "property.finalInInterface",
             "Interfaces cannot include final properties.",
@@ -193,8 +193,8 @@ fn in_interface(c: &mut Checker, node: &PropertyNode, is_readonly: bool) {
 /// PropertyInClassRule.
 fn in_class(c: &mut Checker, node: &PropertyNode, is_readonly: bool) {
     let class_abstract = c.decls.last().is_some_and(|d| d.is_abstract);
-    let abstract_ = node.has(is_abstract);
-    let final_ = node.has(is_final);
+    let abstract_ = node.has(|m| m.is_abstract());
+    let final_ = node.has(|m| m.is_final());
     let hooked = !node.hooks.is_empty();
     let any_abstract_hook = node.hooks.iter().any(PropertyNode::hook_abstract);
     let (identifier, message) = if final_ && !c.surely_at_least(80400) {
@@ -222,17 +222,17 @@ fn in_class(c: &mut Checker, node: &PropertyNode, is_readonly: bool) {
             "property.hookWithoutBody",
             "Non-abstract properties cannot include hooks without bodies.",
         )
-    } else if node.has(is_private) && abstract_ {
+    } else if node.has(|m| m.is_private()) && abstract_ {
         (
             "property.abstractPrivate",
             "Property cannot be both abstract and private.",
         )
-    } else if node.has(is_private) && final_ {
+    } else if node.has(|m| m.is_private()) && final_ {
         (
             "property.finalPrivate",
             "Property cannot be both final and private.",
         )
-    } else if node.has(is_private) && node.hooks.iter().any(PropertyNode::hook_final) {
+    } else if node.has(|m| m.is_private()) && node.hooks.iter().any(PropertyNode::hook_final) {
         (
             "property.finalPrivateHook",
             "Private property cannot have a final hook.",

@@ -7,8 +7,9 @@ use mago_syntax::cst::*;
 use mago_syntax::walker::MutWalker;
 use pun_phpstan::types::{NeverKind, Type, recommended_level};
 
+use super::super::missing_types::declaring;
 use super::super::{Checker, declared};
-use super::missing_return::{declaring, generator_return, late, method_name};
+use super::missing_return::{generator_return, late, method_name};
 
 pub const IDENTIFIERS: &[&str] = &["return.type", "return.empty", "return.void"];
 
@@ -151,7 +152,7 @@ pub(in super::super) fn function(c: &mut Checker, f: &Function) {
     if c.level < 3 {
         return;
     }
-    let name = String::from_utf8_lossy(c.names.get(&f.name.span())).into_owned();
+    let name = c.resolved_span(f.name.span());
     let native = f.return_type_hint.is_some();
     let ret = declared::with_classes(c, || late(c, &declared::function(c, f).ret, None, !native));
     body(c, &f.body, &ret, &format!("Function {name}()"));

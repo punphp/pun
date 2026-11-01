@@ -15,6 +15,7 @@ use pun_phpstan::types::{Accessory, Level, Tri, Type, intersect, is_super_type_o
 use super::super::overriding::Class;
 use super::super::reflection::Lookup;
 use super::super::{Checker, calls, declared, members, method_reflection, params};
+use super::flow::is_this;
 
 pub const IDENTIFIERS: &[&str] = &["method.nonObject", "staticMethod.nonObject"];
 
@@ -359,15 +360,12 @@ pub(super) fn non_null(t: Type) -> Type {
     if t.is_null().yes() { t } else { t.remove_null() }
 }
 
-/// The receivers whose type the check reads: every method call's object but `$this`'s (level 2).
+/// The receivers whose type the check reads: every method call's and non-nullsafe property fetch's object but
+/// `$this`'s (level 2; a `$this` property fetch stays with property_access.rs).
 pub(super) fn typed(object: &Expression, spans: &mut Vec<Span>) {
     if !is_this(object) {
         spans.push(object.span());
     }
-}
-
-fn is_this(e: &Expression) -> bool {
-    matches!(e, Expression::Variable(Variable::Direct(v)) if v.name == b"$this")
 }
 
 /// MethodCallCheck::check() and the parameters check of `$object->name(...)` (`nullsafe` for `?->`).

@@ -14,6 +14,7 @@ use mago_syntax::walker::MutWalker;
 use pun_phpstan::types::{Accessory, ConstArray, NeverKind, Type, intersect, is_super_type_of, union};
 use pun_phpstan::value::{Value, float_var_export, numeric};
 
+use super::types::flow::unparen;
 use super::{Checker, declared, reflection};
 
 /// Level 0 also needs the scope's type of explicit keys and unpacked values.
@@ -113,17 +114,10 @@ impl Key {
     }
 }
 
-fn unparenthesized<'e, 'arena>(mut e: &'e Expression<'arena>) -> &'e Expression<'arena> {
-    while let Expression::Parenthesized(p) = e {
-        e = p.expression;
-    }
-    e
-}
-
 /// A destructuring target (`[...] = `, a `foreach` target): php-parser's `List_` nodes. `short`: a `[...]` here is one
 /// (the target's top level, or in a `[...]` list; in `list()` it is an array literal).
 pub fn destructuring(c: &mut Checker, target: &Expression, short: bool) {
-    let target = unparenthesized(target);
+    let target = unparen(target);
     let (elements, short) = match target {
         Expression::Array(a) if short => (&a.elements, true),
         Expression::List(l) => (&l.elements, false),
@@ -161,7 +155,7 @@ pub fn literal_array<'arena>(
             ArrayElement::KeyValue(kv) => {
                 // PHP compares string keys as bytes. Routing literals through Type::ConstString
                 // would replace distinct invalid UTF-8 bytes with the same replacement character.
-                let values = match unparenthesized(kv.key) {
+                let values = match unparen(kv.key) {
                     Expression::Literal(Literal::String(s)) => {
                         s.value.map(|value| vec![Key::of_string(value)])
                     }
@@ -206,7 +200,7 @@ pub fn literal_array<'arena>(
                 // Only a literal spread reports string-key collisions: other expressions have
                 // array_merge-style string overrides. Integer keys still consume implicit indices.
                 if !matches!(
-                    unparenthesized(v.value),
+                    unparen(v.value),
                     Expression::Array(_) | Expression::LegacyArray(_)
                 ) {
                     keys.retain(|key| !matches!(key, Key::Str(_)));
@@ -395,16 +389,15 @@ fn inferred_keys(t: &Type) -> Option<Vec<Key>> {
 /// ExprPrinter's output for a key after php-parser's NameResolver: a class name and a qualified constant name print
 /// fully qualified.
 fn written(c: &Checker, e: &Expression) -> String {
-    let source =
-        |s: Span| String::from_utf8_lossy(&c.file.contents[s.to_range_usize()]).into_owned();
-    let e = unparenthesized(e);
+    let source = |s: Span| c.written(s);
+    let e = unparen(e);
     match e {
         Expression::Literal(Literal::Float(f)) => float_var_export(f.value.0),
         Expression::UnaryPrefix(u)
             if matches!(
                 u.operator,
                 UnaryPrefixOperator::Negation(_) | UnaryPrefixOperator::Plus(_)
-            ) && matches!(unparenthesized(u.operand), Expression::Literal(_)) =>
+            ) && matches!(unparen(u.operand), Expression::Literal(_)) =>
         {
             format!("{}{}", source(u.operator.span()), written(c, u.operand))
         }
@@ -477,7 +470,7 @@ fn key_type_with(
     context: Option<&ClassLikeMetadata>,
     types: &ExpressionTypes<impl BuildHasher>,
 ) -> Option<Type> {
-    let key = unparenthesized(key);
+    let key = unparen(key);
     Some(match key {
         Expression::Literal(Literal::Integer(i)) => {
             let v = i.value?;
@@ -535,7 +528,7 @@ fn key_type_with(
             let ClassLikeConstantSelector::Identifier(name) = &a.constant else {
                 return None;
             };
-            let (holder, late) = match unparenthesized(a.class) {
+            let (holder, late) = match unparen(a.class) {
                 Expression::Identifier(id) => (
                     Type::ConstString(names.get(id).to_vec()),
                     false,

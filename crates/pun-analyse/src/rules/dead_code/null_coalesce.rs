@@ -10,8 +10,8 @@ use mago_syntax::cst::*;
 use mago_syntax::walker::MutWalker;
 use pun_phpstan::types::{ConstArray, Level, Tri, Type, is_super_type_of, union};
 
+use super::super::types::flow::unparen;
 use super::super::{Checker, declared, types::offset_accessible};
-use super::no_discard::unparen;
 
 const SUPERGLOBALS: [&[u8]; 9] =
     [b"$GLOBALS", b"$_SERVER", b"$_GET", b"$_POST", b"$_FILES", b"$_COOKIE", b"$_SESSION", b"$_REQUEST", b"$_ENV"];

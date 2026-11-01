@@ -292,21 +292,8 @@ const CHUNK: usize = 32;
 /// Analysed files and loaded global-constant declaration files, as the scan read them.
 pub(crate) type Sources = HashMap<PathBuf, Arc<File>>;
 
-pub(crate) fn build(
-    project: &Project,
-    laravel_root: Option<&Path>,
-) -> Result<CodebaseMetadata, CouldNotReadFile> {
-    Ok(build_with_sources_at(project, laravel_root)?.0)
-}
-
 /// The codebase, and the analysed files' [`Sources`].
-pub(crate) fn build_with_sources(
-    project: &Project,
-) -> Result<(CodebaseMetadata, Sources), CouldNotReadFile> {
-    build_with_sources_at(project, None)
-}
-
-fn build_with_sources_at(
+pub(crate) fn build(
     project: &Project,
     laravel_root: Option<&Path>,
 ) -> Result<(CodebaseMetadata, Sources), CouldNotReadFile> {

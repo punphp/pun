@@ -20,8 +20,10 @@ use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use mago_syntax::walker::MutWalker;
 
+use super::super::types::flow::{is_this, unparen};
 use super::super::{Checker, assign};
 use crate::codebase::parse;
+use crate::text;
 
 /// `$classType->isSuperTypeOf($calledOnType)`, without its yes/maybe distinction.
 fn related(c: &Checker, k: &ClassLikeMetadata, name: &[u8]) -> bool {
@@ -80,21 +82,6 @@ struct Gatherer<'g, 'a, 'arena> {
     arrays: Vec<(String, Option<String>)>,
     /// The parameters of the constructor the class declares.
     constructor: Vec<String>,
-}
-
-fn text(b: &[u8]) -> String {
-    String::from_utf8_lossy(b).into_owned()
-}
-
-fn is_this(e: &Expression) -> bool {
-    matches!(e, Expression::Variable(Variable::Direct(v)) if v.name == b"$this")
-}
-
-fn unparen<'e, 'arena>(mut e: &'e Expression<'arena>) -> &'e Expression<'arena> {
-    while let Expression::Parenthesized(p) = e {
-        e = p.expression;
-    }
-    e
 }
 
 impl<'g, 'a, 'arena> Gatherer<'g, 'a, 'arena> {
@@ -663,10 +650,6 @@ fn traits_in<'p>(statements: &'p [Statement<'p>], spans: &[Span], out: &mut Vec<
     }
 }
 
-fn is_private(modifiers: &Sequence<Modifier>) -> bool {
-    modifiers.iter().any(|m| matches!(m, Modifier::Private(_)))
-}
-
 /// The rules on class or enum `k` declared with `members`.
 pub(in super::super) fn class(c: &mut Checker, k: &ClassLikeMetadata, members: &[ClassLikeMember]) {
     if c.level < 4 || !matches!(k.kind, SymbolKind::Class | SymbolKind::Enum) {
@@ -682,27 +665,24 @@ pub(in super::super) fn class(c: &mut Checker, k: &ClassLikeMetadata, members: &
     let mut properties = HashMap::new();
     for member in members {
         match member {
-            ClassLikeMember::Constant(k) if is_private(&k.modifiers) => {
+            ClassLikeMember::Constant(k) if k.modifiers.contains_private() => {
                 for item in k.items.iter() {
                     constants.insert(text(item.name.value), c.line_of(item.span()));
                 }
             }
-            ClassLikeMember::Method(m) if is_private(&m.modifiers) => {
+            ClassLikeMember::Method(m) if m.modifiers.contains_private() => {
                 let name = text(m.name.value);
                 let lower = name.to_ascii_lowercase();
                 if lower == "__construct" || lower == "__clone" {
                     continue;
                 }
-                let is_static = m.modifiers.iter().any(|m| matches!(m, Modifier::Static(_)));
+                let is_static = m.modifiers.contains_static();
                 methods.insert(lower, (name, m.span(), is_static));
             }
             ClassLikeMember::Property(p)
-                if is_private(p.modifiers()) && k.kind == SymbolKind::Class =>
+                if p.modifiers().contains_private() && k.kind == SymbolKind::Class =>
             {
-                let is_static = p
-                    .modifiers()
-                    .iter()
-                    .any(|m| matches!(m, Modifier::Static(_)));
+                let is_static = p.modifiers().contains_static();
                 let items: Vec<&PropertyItem> = match p {
                     Property::Plain(plain) => plain.items.iter().collect(),
                     Property::Hooked(h) => vec![&h.item],
@@ -741,7 +721,7 @@ pub(in super::super) fn class(c: &mut Checker, k: &ClassLikeMetadata, members: &
             continue;
         }
         for p in m.parameter_list.parameters.iter() {
-            if !is_private(&p.modifiers) {
+            if !p.modifiers.contains_private() {
                 continue;
             }
             let hooks: Vec<&[u8]> = p
@@ -797,7 +777,7 @@ pub(in super::super) fn class(c: &mut Checker, k: &ClassLikeMetadata, members: &
     for (i, t) in &found {
         for member in t.members.iter() {
             if let ClassLikeMember::Constant(k) = member
-                && is_private(&k.modifiers)
+                && k.modifiers.contains_private()
             {
                 for item in k.items.iter() {
                     let line = i64::from(files[*i].line_number(item.span().start.offset)) + 1;

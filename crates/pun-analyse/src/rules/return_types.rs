@@ -272,11 +272,7 @@ impl FunctionCallHook for BuiltinFunctions {
         // FuncCallHandler::resolveReturnType only applies extensions to named functions, literal-string
         // callees and immediately invoked named first-class functions, not stored callable signatures.
         // Mago retains the source identifier even on those signatures; record the actual CST boundary.
-        let mut callee = call.function;
-        while let Expression::Parenthesized(expression) = callee {
-            callee = expression.expression;
-        }
-        let eligible = match callee {
+        let eligible = match super::types::flow::unparen(call.function) {
             Expression::Identifier(_) | Expression::Literal(Literal::String(_)) => true,
             Expression::CompositeString(CompositeString::Document(document)) => document
                 .parts

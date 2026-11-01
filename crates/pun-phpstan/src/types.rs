@@ -69,7 +69,7 @@ impl Tri {
         }
     }
     /// `TrinaryLogic::extremeIdentity()`: all equal → that value, else maybe.
-    fn extreme_identity(results: impl IntoIterator<Item = Tri>) -> Tri {
+    pub fn extreme_identity(results: impl IntoIterator<Item = Tri>) -> Tri {
         let mut it = results.into_iter();
         let first = it.next().unwrap_or(Tri::No);
         if it.all(|r| r == first) {

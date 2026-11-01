@@ -173,7 +173,7 @@ impl<'a> Method<'a> {
         };
         let mut acceptor = params::select_in(c, variants, counts, scope);
         acceptor.builtin = self.builtin();
-        acceptor.accepts_named_arguments = if self.accepts { Tri::Yes } else { Tri::No };
+        acceptor.accepts_named_arguments = Tri::from(self.accepts);
         acceptor
     }
 }

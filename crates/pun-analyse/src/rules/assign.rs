@@ -12,6 +12,7 @@ use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use pun_phpstan::symbols::ByRef;
 
+use super::types::flow::unparen;
 use super::{Checker, members};
 
 /// What these checks remember during a walk.
@@ -56,13 +57,6 @@ fn expression_scope(c: &mut Checker, e: &Expression) {
         c.assign.enter.insert(e.span(), key.clone());
         c.assign.exit.insert(e.span(), key);
     }
-}
-
-fn unparenthesized<'e, 'arena>(mut e: &'e Expression<'arena>) -> &'e Expression<'arena> {
-    while let Expression::Parenthesized(p) = e {
-        e = p.expression;
-    }
-    e
 }
 
 /// PHPParser converts a root short-array target, then recursively converts both Array_ kinds in its values.
@@ -124,7 +118,7 @@ pub fn contains_nullsafe(e: &Expression) -> bool {
 
 /// NullsafeCheck::containsNullSafe() on the PHPParser expression projected by [`list_items()`].
 fn nullsafe(e: &Expression, role: ListRole) -> bool {
-    let e = unparenthesized(e);
+    let e = unparen(e);
     match e {
         Expression::Access(Access::NullSafeProperty(_))
         | Expression::Call(Call::NullSafeMethod(_)) => true,
@@ -159,7 +153,7 @@ fn is_expr_class(class: &Expression) -> bool {
 
 /// InvalidAssignVarRule's containsNonAssignableExpression().
 fn non_assignable(e: &Expression, role: ListRole) -> bool {
-    let e = unparenthesized(e);
+    let e = unparen(e);
     match e {
         Expression::Variable(_)
         | Expression::Access(Access::Property(_) | Access::StaticProperty(_))
@@ -201,7 +195,7 @@ fn invalid_assign_var(c: &mut Checker, at: Span, var: &Expression, expr: Option<
 
 /// An `Assign`, `AssignOp` or `AssignRef`.
 pub fn assignment(c: &mut Checker, a: &Assignment) {
-    let referenced = match (&a.operator, unparenthesized(a.rhs)) {
+    let referenced = match (&a.operator, unparen(a.rhs)) {
         (AssignmentOperator::Assign(_), Expression::UnaryPrefix(u))
             if u.operator.is_reference() =>
         {
@@ -216,20 +210,20 @@ pub fn assignment(c: &mut Checker, a: &Assignment) {
     ) {
         mark_assigned(c, a.lhs, ListRole::Target);
         if let Some(r) = referenced {
-            c.assign.assigned.insert(unparenthesized(r).span());
-            expression_scope(c, unparenthesized(r));
+            c.assign.assigned.insert(unparen(r).span());
+            expression_scope(c, unparen(r));
         }
     }
     assign_var(c, a.lhs, ListRole::Target);
 }
 
 pub(super) fn is_list_target(e: &Expression) -> bool {
-    list_items(unparenthesized(e), ListRole::Target).is_some()
+    list_items(unparen(e), ListRole::Target).is_some()
 }
 
 /// processAssignVar() with `$enterExpressionAssign`: the `[]` fetches of the target's dim-fetch chains.
 fn mark_assigned(c: &mut Checker, var: &Expression, role: ListRole) {
-    let mut var = unparenthesized(var);
+    let mut var = unparen(var);
     if let Some(items) = list_items(var, role) {
         for (key, value, role) in items {
             // applyWrite(KIND_LIST) enters the value on itemScope. Only a written key's ExpressionResult
@@ -245,7 +239,7 @@ fn mark_assigned(c: &mut Checker, var: &Expression, role: ListRole) {
         match var {
             Expression::ArrayAppend(a) => {
                 c.assign.assigned.insert(var.span());
-                var = unparenthesized(a.array);
+                var = unparen(a.array);
             }
             Expression::ArrayAccess(a) => {
                 // prepareTarget exits each written dimension after its result. The attempted enter there
@@ -253,7 +247,7 @@ fn mark_assigned(c: &mut Checker, var: &Expression, role: ListRole) {
                 if let Some(key) = c.assignment_key(a.index) {
                     c.assign.exit.insert(a.index.span(), key);
                 }
-                var = unparenthesized(a.array);
+                var = unparen(a.array);
             }
             _ => {
                 expression_scope(c, var);
@@ -266,7 +260,7 @@ fn mark_assigned(c: &mut Checker, var: &Expression, role: ListRole) {
 /// The VariableAssignNodes processAssignVar() emits for `var`: a variable, the variable a dim-fetch chain starts
 /// at, and those of a list's items.
 fn assign_var(c: &mut Checker, var: &Expression, role: ListRole) {
-    let mut var = unparenthesized(var);
+    let mut var = unparen(var);
     if let Some(items) = list_items(var, role) {
         for (_, value, role) in items {
             assign_var(c, value, role);
@@ -276,7 +270,7 @@ fn assign_var(c: &mut Checker, var: &Expression, role: ListRole) {
     while let Expression::ArrayAccess(ArrayAccess { array, .. })
     | Expression::ArrayAppend(ArrayAppend { array, .. }) = var
     {
-        var = unparenthesized(array);
+        var = unparen(array);
     }
     if let Expression::Variable(Variable::Direct(v)) = var {
         variable_assign(c, v);
@@ -311,11 +305,11 @@ pub fn foreach(c: &mut Checker, f: &Foreach) {
         ForeachTarget::Value(t) => (None, t.value),
         ForeachTarget::KeyValue(t) => (Some(t.key), t.value),
     };
-    let value = match unparenthesized(value) {
+    let value = match unparen(value) {
         Expression::UnaryPrefix(u) if u.operator.is_reference() => u.operand,
         v => v,
     };
-    if list_items(unparenthesized(value), ListRole::Target).is_some() {
+    if list_items(unparen(value), ListRole::Target).is_some() {
         invalid_assign_var(c, value.span(), value, None);
     }
     for target in key.into_iter().chain([value]) {
@@ -339,7 +333,7 @@ pub fn increment(c: &mut Checker, operand: &Expression) {
 /// `unset($a[$k])` assigns its dim-fetch chain virtually.
 pub fn unset(c: &mut Checker, u: &Unset) {
     for value in u.values.iter() {
-        if let Expression::ArrayAccess(_) = unparenthesized(value) {
+        if let Expression::ArrayAccess(_) = unparen(value) {
             assign_var(c, value, ListRole::Read);
         }
     }
@@ -437,7 +431,7 @@ pub enum Callee<'e, 'arena> {
 /// The callee's parameters (`$parametersAcceptor->getParameters()`), when PHPStan knows it here.
 fn callee_params(c: &Checker, call: &Callee, n: usize) -> Option<Vec<Param>> {
     match call {
-        Callee::Function(f) => match unparenthesized(f.function) {
+        Callee::Function(f) => match unparen(f.function) {
             Expression::Closure(k) => Some(of_syntax(&k.parameter_list)),
             Expression::ArrowFunction(k) => Some(of_syntax(&k.parameter_list)),
             Expression::Identifier(id) => {
@@ -618,7 +612,7 @@ pub fn arguments(c: &mut Checker, call: Callee) {
         if !param.is_some_and(|p| p.by_ref) {
             continue;
         }
-        let value = unparenthesized(arg.value());
+        let value = unparen(arg.value());
         if let Expression::ArrayAppend(_) = value {
             c.assign.assigned.insert(value.span());
             expression_scope(c, value);
@@ -667,7 +661,7 @@ pub(super) fn by_ref_call_arguments(c: &Checker, call: Callee, args: &ArgumentLi
 
 /// An argument whose parameter decides an error: a `[]` fetch or a dim-fetch chain on `$this`.
 fn by_ref_candidate(value: &Expression) -> bool {
-    let value = unparenthesized(value);
+    let value = unparen(value);
     if let Expression::ArrayAppend(_) = value {
         return true;
     }
@@ -675,7 +669,7 @@ fn by_ref_candidate(value: &Expression) -> bool {
     while let Expression::ArrayAccess(ArrayAccess { array, .. })
     | Expression::ArrayAppend(ArrayAppend { array, .. }) = var
     {
-        var = unparenthesized(array);
+        var = unparen(array);
     }
     !std::ptr::eq(var, value)
         && matches!(var, Expression::Variable(Variable::Direct(v)) if v.name == b"$this")
@@ -695,16 +689,11 @@ pub fn typed_object<'e, 'arena>(
 pub fn referenced_property<'e, 'arena>(
     a: &'e Assignment<'arena>,
 ) -> Option<&'e PropertyAccess<'arena>> {
-    let (AssignmentOperator::Assign(_), Expression::UnaryPrefix(u)) =
-        (&a.operator, unparenthesized(a.rhs))
+    let (AssignmentOperator::Assign(_), Expression::UnaryPrefix(u)) = (&a.operator, unparen(a.rhs))
     else {
         return None;
     };
-    match u
-        .operator
-        .is_reference()
-        .then(|| unparenthesized(u.operand))?
-    {
+    match u.operator.is_reference().then(|| unparen(u.operand))? {
         Expression::Access(Access::Property(p)) => Some(p),
         _ => None,
     }
@@ -724,7 +713,7 @@ pub fn property_assign_ref(c: &mut Checker, a: &Assignment) {
         return;
     };
     let scope = c.class_scope();
-    let holder = match unparenthesized(fetch.object) {
+    let holder = match unparen(fetch.object) {
         Expression::Variable(Variable::Direct(v)) if v.name == b"$this" => scope,
         object => object_class(c, object),
     };

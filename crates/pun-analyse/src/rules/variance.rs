@@ -213,7 +213,7 @@ pub fn method(c: &mut Checker, m: &Method, method: &str) {
     }
     let (k, display) = c.member_scope();
     let declaring = super::missing_types::declaring(c, m.span()).expect("a method is declared by its class or a used trait");
-    let skip = m.modifiers.iter().any(super::declarations::is_private) || method.eq_ignore_ascii_case("__construct");
+    let skip = m.modifiers.contains_private() || method.eq_ignore_ascii_case("__construct");
     let subject = format!("method {display}::{method}()");
     parameters_acceptor(c, m.span(), "method", &subject, |c| declared::method(c, m, declaring, k), skip);
 }
@@ -245,7 +245,7 @@ fn position(restricted: bool) -> Variance {
 
 /// PropertyVarianceRule of a declared property (`decl` is where its PHPDoc is read from).
 pub fn property(c: &mut Checker, node: &PropertyNode, decl: Span, by_phpdoc: bool) {
-    if c.level < 2 || node.has(super::declarations::is_private) {
+    if c.level < 2 || node.has(|m| m.is_private()) {
         return;
     }
     let position = position(restricted(c, node.modifiers, node.hooks, by_phpdoc));
@@ -267,7 +267,7 @@ pub fn promoted(c: &mut Checker, m: &Method) {
     let declaring = super::missing_types::declaring(c, m.span()).expect("a method is declared by its class or a used trait");
     for (i, p) in m.parameter_list.parameters.iter().enumerate() {
         let hooks = p.hooks.as_ref().map_or(&[][..], |h| h.hooks.as_slice());
-        if (p.modifiers.is_empty() && hooks.is_empty()) || p.modifiers.iter().any(super::declarations::is_private) {
+        if (p.modifiers.is_empty() && hooks.is_empty()) || p.modifiers.contains_private() {
             continue;
         }
         let position = position(restricted(c, p.modifiers.as_slice(), hooks, by_phpdoc));

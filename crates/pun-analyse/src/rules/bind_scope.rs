@@ -6,6 +6,7 @@ use mago_codex::metadata::function_like::FunctionLikeMetadata;
 use mago_syntax::cst::*;
 use pun_phpstan::types::Type;
 
+use super::types::flow::unparen;
 use super::{Checker, declared, members, params};
 
 /// A PHPDoc binding assigns `$this` as well as a visibility scope. Explicit `Closure::bind()` keeps the existing
@@ -17,11 +18,10 @@ pub(super) struct Binding {
 
 pub(super) fn has_inline_closure(args: &ArgumentList) -> bool {
     args.arguments.iter().any(|a| {
-        let mut value = a.value();
-        while let Expression::Parenthesized(p) = value {
-            value = p.expression;
-        }
-        matches!(value, Expression::Closure(_) | Expression::ArrowFunction(_))
+        matches!(
+            unparen(a.value()),
+            Expression::Closure(_) | Expression::ArrowFunction(_)
+        )
     })
 }
 
@@ -63,10 +63,7 @@ impl<'arena> Checker<'_, 'arena> {
             return;
         };
         let original_receiver = receiver;
-        let mut receiver = receiver;
-        while let Expression::Parenthesized(p) = receiver {
-            receiver = p.expression;
-        }
+        let receiver = unparen(receiver);
         let class = match receiver {
             Expression::Identifier(id) if is_static => self.class_like(&self.resolved(id)).found(),
             Expression::Self_(_) | Expression::Static(_) if is_static => self.class_scope(),
@@ -162,10 +159,7 @@ impl<'arena> Checker<'_, 'arena> {
                 _ => None,
             };
             let Some(class) = class else { continue };
-            let mut value = arg.value();
-            while let Expression::Parenthesized(p) = value {
-                value = p.expression;
-            }
+            let value = unparen(arg.value());
             if matches!(value, Expression::Closure(f) if f.r#static.is_none())
                 || matches!(value, Expression::ArrowFunction(f) if f.r#static.is_none())
             {

@@ -67,7 +67,7 @@ pub struct Analysis {
 
 /// [`run`], with PHPStan's not-file-specific errors.
 pub fn analyse_project(project: &Project) -> Result<Analysis, CouldNotReadFile> {
-    let (codebase, sources) = codebase::build_with_sources(project)?;
+    let (codebase, sources) = codebase::build(project, None)?;
     let files: std::collections::HashMap<_, _> = project
         .analysed
         .iter()
@@ -125,6 +125,11 @@ pub fn analyse_project(project: &Project) -> Result<Analysis, CouldNotReadFile> 
 
 fn display(p: &Path) -> String {
     p.to_string_lossy().into_owned()
+}
+
+/// `b` as text, invalid UTF-8 replaced.
+pub(crate) fn text(b: &[u8]) -> String {
+    String::from_utf8_lossy(b).into_owned()
 }
 
 /// Files below `dir` with one of `extensions`, sorted. Subdirectories are walked in parallel.

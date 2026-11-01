@@ -13,7 +13,7 @@ use mago_syntax::walker::MutWalker;
 use pun_phpstan::ignore::Error;
 
 use super::super::Checker;
-use super::no_discard::unparen;
+use super::super::types::flow::unparen;
 
 /// The prefix of an encoded entry: a declaration without impure points or a possibly pure call statement.
 const ENTRY: &str = "\u{1e}impure-points\u{1f}";
@@ -44,7 +44,7 @@ fn declare(c: &mut Checker, at: Span, f: &FunctionLikeMetadata, kind: &str, key:
 }
 
 pub(in super::super) fn function(c: &mut Checker, f: &Function) {
-    let name = String::from_utf8_lossy(c.names.get(&f.name.span())).into_owned();
+    let name = c.resolved_span(f.name.span());
     let Some(meta) = c.codebase.get_function(name.as_bytes()) else { return };
     let display = String::from_utf8_lossy(meta.original_name.as_bytes()).into_owned();
     declare(c, f.span(), meta, "f", function_key(&display), display, f.body.statements.as_slice());

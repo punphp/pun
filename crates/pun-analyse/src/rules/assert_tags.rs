@@ -3,7 +3,7 @@
 //! resolvable, known, and neither impossible nor already certain for it.
 
 use mago_span::{HasSpan, Span};
-use mago_syntax::cst::{Function, Method, Modifier};
+use mago_syntax::cst::{Function, Method, ModifierSequenceExt};
 use pun_phpstan::phpdoc::{self, TagValue};
 use pun_phpstan::resolve::resolve_in;
 use pun_phpstan::types::{Level, NeverKind, Type, is_super_type_of};
@@ -38,7 +38,7 @@ pub fn method(c: &mut Checker, m: &Method) {
     }
     let Some(context) = c.class_scope() else { return };
     let declaring = missing_types::declaring(c, m.span()).expect("a method is declared by its class or a used trait");
-    let this = (!m.modifiers.iter().any(|x| matches!(x, Modifier::Static(_))))
+    let this = (!m.modifiers.contains_static())
         .then(|| Type::Object(declared::original_name(context), vec![], false));
     let own = doc_before(&c.file.contents, m.span().start.offset as usize).filter(|doc| !asserts(doc).is_empty());
     let errors = declared::with_classes(c, || {

@@ -11,6 +11,7 @@ use pun_phpstan::types::{Level, Type};
 
 use super::Checker;
 use super::declared;
+use super::generics::resolved_names;
 
 pub const IDENTIFIERS: &[&str] = &[
     "missingType.parameter",
@@ -410,7 +411,7 @@ pub fn function(c: &mut Checker, f: &Function) {
     if c.level < 6 {
         return;
     }
-    let name = String::from_utf8_lossy(c.names.get(&f.name.span())).into_owned();
+    let name = c.resolved_span(f.name.span());
     let subject = format!("Function {name}()");
     let iterables = Opts::of(c);
     let found = declared::with_classes(c, || {
@@ -669,26 +670,21 @@ fn class_level(
     report(c, span, found);
 }
 
-fn names<'a>(c: &Checker, ids: impl Iterator<Item = &'a Identifier<'a>>) -> Vec<String> {
-    ids.map(|id| String::from_utf8_lossy(c.names.get(&id.span())).into_owned())
-        .collect()
-}
-
 pub fn class(c: &mut Checker, class: &Class) {
-    let name = String::from_utf8_lossy(c.names.get(&class.name.span)).into_owned();
+    let name = c.resolved_span(class.name.span);
     let extends = format!("Class {name} extends generic class");
     let implements = format!("Class {name} implements generic interface");
     let mut natives: Vec<(String, &str)> = Vec::new();
     if let Some(e) = &class.extends {
         natives.extend(
-            names(c, e.types.iter())
+            resolved_names(c, e.types.iter())
                 .into_iter()
                 .map(|n| (n, extends.as_str())),
         );
     }
     if let Some(i) = &class.implements {
         natives.extend(
-            names(c, i.types.iter())
+            resolved_names(c, i.types.iter())
                 .into_iter()
                 .map(|n| (n, implements.as_str())),
         );
@@ -697,13 +693,13 @@ pub fn class(c: &mut Checker, class: &Class) {
 }
 
 pub fn interface(c: &mut Checker, i: &Interface) {
-    let name = String::from_utf8_lossy(c.names.get(&i.name.span)).into_owned();
+    let name = c.resolved_span(i.name.span);
     let extends = format!("Interface {name} extends generic interface");
     let natives: Vec<(String, &str)> = i
         .extends
         .as_ref()
         .map(|e| {
-            names(c, e.types.iter())
+            resolved_names(c, e.types.iter())
                 .into_iter()
                 .map(|n| (n, extends.as_str()))
                 .collect()
@@ -713,13 +709,13 @@ pub fn interface(c: &mut Checker, i: &Interface) {
 }
 
 pub fn enum_(c: &mut Checker, e: &Enum) {
-    let name = String::from_utf8_lossy(c.names.get(&e.name.span)).into_owned();
+    let name = c.resolved_span(e.name.span);
     let implements = format!("Enum {name} implements generic interface");
     let natives: Vec<(String, &str)> = e
         .implements
         .as_ref()
         .map(|i| {
-            names(c, i.types.iter())
+            resolved_names(c, i.types.iter())
                 .into_iter()
                 .map(|n| (n, implements.as_str()))
                 .collect()
@@ -730,6 +726,6 @@ pub fn enum_(c: &mut Checker, e: &Enum) {
 
 /// A trait's own node (MethodTagTraitRule, PropertyTagTraitRule, MixinTraitRule in the definition context).
 pub fn trait_(c: &mut Checker, t: &Trait) {
-    let name = String::from_utf8_lossy(c.names.get(&t.name.span)).into_owned();
+    let name = c.resolved_span(t.name.span);
     class_level(c, t.span(), &name, "Trait", &[]);
 }

@@ -211,8 +211,7 @@ pub fn declare(c: &mut Checker, d: &Declare) {
 /// ExprPrinter for a declare value: a constant prints by its resolved name (`\true`), anything else as written.
 // assistant's call: php-parser's printer reprints literals in their written form, so the source text stands in for it
 fn print_expr(c: &Checker, e: &Expression) -> String {
-    let written =
-        || String::from_utf8_lossy(&c.file.contents[e.span().to_range_usize()]).into_owned();
+    let written = || c.written(e.span());
     match e {
         Expression::Literal(Literal::True(_) | Literal::False(_) | Literal::Null(_)) => {
             format!("\\{}", written())
@@ -355,11 +354,7 @@ pub fn noncapturing_catch(c: &mut Checker, clause: &TryCatchClause) {
 
 /// StandaloneThrowExprVisitor: a `throw` that is an expression statement.
 pub fn standalone_throw(c: &mut Checker, s: &ExpressionStatement) {
-    let mut e = s.expression;
-    while let Expression::Parenthesized(p) = e {
-        e = p.expression;
-    }
-    if let Expression::Throw(t) = e {
+    if let Expression::Throw(t) = super::types::flow::unparen(s.expression) {
         c.standalone_throws.insert(t.span());
     }
 }

@@ -406,7 +406,7 @@ pub(in super::super) fn arguments(
             }
             ArgKind::StaticCall(class, Some(name)) => {
                 let class = match class {
-                    Some(id) => Some(String::from_utf8_lossy(c.names.get(id)).into_owned()),
+                    Some(id) => Some(c.resolved_span(*id)),
                     None => c.class_scope().map(|k| String::from_utf8_lossy(k.name.as_bytes()).into_owned()),
                 };
                 returns_by_ref(c, class.as_deref(), name)

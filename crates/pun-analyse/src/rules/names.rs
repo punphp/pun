@@ -93,8 +93,7 @@ pub(super) fn constant_strings(ty: &Type) -> Vec<String> {
 /// ClassConstantRule::processSingleClassConstFetch() for the class names/keywords this rule resolves.
 fn class_constant_named(c: &mut Checker, access: &ClassConstantAccess, constant_name: &str) {
     let is_class = constant_name.eq_ignore_ascii_case("class");
-    let written = String::from_utf8_lossy(&c.file.contents[access.class.span().to_range_usize()])
-        .into_owned();
+    let written = c.written(access.class.span());
     let (class, described) = match (access.class, c.class_scope()) {
         (Expression::Self_(_) | Expression::Static(_) | Expression::Parent(_), None) => {
             let identifier = super::out_of_class(access.class);
@@ -396,13 +395,6 @@ fn class_constant_expression(c: &mut Checker, access: &ClassConstantAccess, name
     }
 }
 
-/// UnionType's extreme identity, not selecting a representative class from the union.
-fn constant_all(results: impl Iterator<Item = Tri>) -> Tri {
-    results
-        .reduce(|a, b| if a == b { a } else { Tri::Maybe })
-        .unwrap_or(Tri::No)
-}
-
 /// `canAccessConstants()`: the checked StrictMixedType is distinct from ordinary mixed.
 fn constant_capable(c: &Checker, ty: &Type) -> Tri {
     ty.query_members(&|ty| match ty {
@@ -431,7 +423,7 @@ fn constant_capable(c: &Checker, ty: &Type) -> Tri {
 fn has_class_constant(c: &Checker, ty: &Type, name: &str) -> Tri {
     match ty {
         Type::Union(ts) | Type::Benevolent(ts) => {
-            constant_all(ts.iter().map(|t| has_class_constant(c, t, name)))
+            Tri::extreme_identity(ts.iter().map(|t| has_class_constant(c, t, name)))
         }
         Type::Intersection(ts) => {
             Tri::max_min(ts.iter().map(|t| has_class_constant(c, t, name)))
@@ -1059,7 +1051,7 @@ pub fn constant_fetch(c: &mut Checker, id: &Identifier) {
     if c.level < 1 {
         return;
     }
-    let resolved = String::from_utf8_lossy(c.names.get(&id.span())).into_owned();
+    let resolved = c.resolved_span(id.span());
     let written = String::from_utf8_lossy(id.value()).trim_start_matches('\\').to_string();
     // an unqualified name that no `use const` imports falls back to the global constant
     let fallback = matches!(id, Identifier::Local(l) if !c.names.is_imported(&l.span));

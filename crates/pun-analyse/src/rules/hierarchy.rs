@@ -9,7 +9,7 @@ use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 
 use super::class_names::{self, Pair};
-use super::declarations::{doc_before, doc_tags, has_tag, is_abstract, is_private};
+use super::declarations::{doc_before, doc_tags, has_tag};
 use super::members;
 use super::reflection::{Known, known};
 use super::{Checker, DISCOVERING_SYMBOLS_TIP};
@@ -222,7 +222,7 @@ pub fn method<'arena>(c: &mut Checker<'_, 'arena>, m: &Method<'arena>, name: &st
     let (kind, class_abstract) = (decl.kind, decl.is_abstract);
     let class = c.class_scope();
     let modifiers = m.modifiers.as_slice();
-    if !class_abstract && modifiers.iter().any(is_abstract) {
+    if !class_abstract && modifiers.iter().any(Modifier::is_abstract) {
         let lower = name.to_ascii_lowercase();
         // an enum's native cases(), and a backed enum's from() and tryFrom()
         let native = kind == SymbolKind::Enum
@@ -255,7 +255,7 @@ pub fn method<'arena>(c: &mut Checker<'_, 'arena>, m: &Method<'arena>, name: &st
     }
     // ConsistentConstructorDeclarationRule (InClassMethodNode)
     if name.eq_ignore_ascii_case("__construct")
-        && modifiers.iter().any(is_private)
+        && modifiers.iter().any(Modifier::is_private)
         && let Some(k) = class
         && !k.flags.is_final()
         && has_tag(

@@ -6,6 +6,7 @@ use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::symbol::SymbolKind;
 use pun_phpstan::types::{Level, NeverKind, Type, intersect, is_super_type_of, union};
 
+use super::super::missing_types::declaring;
 use super::super::{Checker, declared};
 use super::flow::list;
 
@@ -18,7 +19,7 @@ struct Declared {
 
 /// A function-like body, its own start (an empty body reports there) and how it is described.
 pub(in super::super) fn function(c: &mut Checker, f: &Function) {
-    let name = String::from_utf8_lossy(c.names.get(&f.name.span())).into_owned();
+    let name = c.resolved_span(f.name.span());
     let native = f.return_type_hint.is_some();
     let ret = declared::with_classes(c, || late(c, &declared::function(c, f).ret, None, !native));
     let d = Declared {
@@ -101,26 +102,6 @@ pub(super) fn method_name(c: &Checker, m: &Method) -> String {
         .as_ref()
         .filter(|(span, _)| *span == m.span())
         .map_or_else(|| String::from_utf8_lossy(m.name.value).into_owned(), |(_, n)| n.clone())
-}
-
-pub(super) fn declaring<'a>(
-    c: &Checker<'a, '_>,
-    span: Span,
-) -> Option<&'a mago_codex::metadata::class_like::ClassLikeMetadata> {
-    let inside = |k: &&mago_codex::metadata::class_like::ClassLikeMetadata| {
-        k.span.file_id == span.file_id
-            && k.span.start.offset <= span.start.offset
-            && span.end.offset <= k.span.end.offset
-    };
-    let class = c.class_scope()?;
-    if inside(&class) {
-        return Some(class);
-    }
-    class
-        .used_traits
-        .iter()
-        .filter_map(|t| c.codebase.get_class_like(t.as_bytes()))
-        .find(inside)
 }
 
 /// The return type as the function reflection gives it: `resolveLateResolvableTypes()` (a conditional type is

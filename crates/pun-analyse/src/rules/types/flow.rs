@@ -594,6 +594,10 @@ pub fn unparen<'s, 'arena>(mut e: &'s Expression<'arena>) -> &'s Expression<'are
     e
 }
 
+pub fn is_this(e: &Expression) -> bool {
+    matches!(e, Expression::Variable(Variable::Direct(v)) if v.name == b"$this")
+}
+
 /// A literal condition's truthiness (`while (true)`, `for (;;1)`).
 fn constant_truth(e: &Expression) -> Option<bool> {
     match unparen(e) {

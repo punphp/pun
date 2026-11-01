@@ -12,10 +12,7 @@ use pun_phpstan::resolve::resolve_str;
 use pun_phpstan::types::{Level, Type, decide_type, is_super_type_of};
 
 use super::{Checker, declared};
-
-fn text(b: &[u8]) -> String {
-    String::from_utf8_lossy(b).into_owned()
-}
+use crate::text;
 
 /// The visibility a declaration's modifiers give (public without one).
 fn visibility(modifiers: &[Modifier]) -> Visibility {
@@ -30,14 +27,9 @@ fn visibility(modifiers: &[Modifier]) -> Visibility {
         .unwrap_or(Visibility::Public)
 }
 
-fn is_final(modifiers: &[Modifier]) -> bool {
-    modifiers.iter().any(|m| matches!(m, Modifier::Final(_)))
-}
-
 /// The rules registered for `Node\Stmt\ClassConst`.
 pub fn class_constant<'arena>(c: &mut Checker<'_, 'arena>, k: &ClassLikeConstant<'arena>) {
     class_as_class_constant(c, k);
-    let modifiers = k.modifiers.as_slice();
     // ConstantsInTraitsRule (`$scope->isInTrait()`), PhpVersion::supportsConstantsInTraits()
     if !c.surely_at_least(80200) && c.in_target {
         c.report_non_ignorable(
@@ -49,7 +41,7 @@ pub fn class_constant<'arena>(c: &mut Checker<'_, 'arena>, k: &ClassLikeConstant
         );
     }
     // FinalConstantRule, PhpVersion::supportsFinalConstants()
-    if is_final(modifiers) && !c.surely_at_least(80100) {
+    if k.modifiers.contains_final() && !c.surely_at_least(80100) {
         c.report_non_ignorable(
             k,
             "classConstant.finalNotSupported",
@@ -94,7 +86,7 @@ fn class_as_class_constant(c: &mut Checker, k: &ClassLikeConstant) {
 /// ReadOnlyClassRule (`InClassNode`): a `readonly` class declared at `at`.
 pub fn read_only_class(c: &mut Checker, at: Span, modifiers: &[Modifier], anonymous: bool) {
     // Below PHP 8.1 php-parser lexes `readonly` as a name: PHPStan reports a parse error and never reaches the rule.
-    if c.php_version < 80100 || !modifiers.iter().any(|m| matches!(m, Modifier::Readonly(_))) {
+    if c.php_version < 80100 || !modifiers.iter().any(Modifier::is_readonly) {
         return;
     }
     let message = if anonymous {
@@ -276,7 +268,7 @@ fn single_trait_constant<'arena>(
             None,
         );
     }
-    let final_here = is_final(k.modifiers.as_slice());
+    let final_here = k.modifiers.contains_final();
     // assistant's call: the codex's FINAL flag (also set by `@final`) stands in for ReflectionClassConstant::isFinal()
     if theirs.flags.is_final() {
         if !final_here {

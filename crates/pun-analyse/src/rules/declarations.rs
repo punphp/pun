@@ -98,20 +98,6 @@ pub fn immutable_tags(tags: &[String]) -> bool {
     has_tag(tags, IMMUTABLE_TAGS) || has_tag(tags, READONLY_TAGS)
 }
 
-fn has(modifiers: &[Modifier], f: impl Fn(&Modifier) -> bool) -> bool {
-    modifiers.iter().any(f)
-}
-
-pub fn is_abstract(m: &Modifier) -> bool {
-    matches!(m, Modifier::Abstract(_))
-}
-pub fn is_final(m: &Modifier) -> bool {
-    matches!(m, Modifier::Final(_))
-}
-pub fn is_private(m: &Modifier) -> bool {
-    matches!(m, Modifier::Private(_))
-}
-
 impl<'arena> Checker<'_, 'arena> {
     /// The tags of the PHPDoc right before `node` in this file.
     pub(super) fn tags_before(&self, node: impl HasSpan) -> Vec<String> {
@@ -132,8 +118,8 @@ impl<'arena> Checker<'_, 'arena> {
         Decl {
             display: name.map(|n| self.resolved_span(n)),
             kind,
-            is_abstract: has(modifiers, is_abstract),
-            is_readonly: has(modifiers, |m| matches!(m, Modifier::Readonly(_))),
+            is_abstract: modifiers.iter().any(Modifier::is_abstract),
+            is_readonly: modifiers.iter().any(Modifier::is_readonly),
             immutable_doc: immutable_tags(&self.tags_before(at)),
             parent: extends
                 .filter(|_| kind == SymbolKind::Class)
@@ -290,10 +276,10 @@ fn duplicates_as<'arena>(
 pub fn method<'arena>(c: &mut Checker<'_, 'arena>, m: &Method<'arena>, name: &str) {
     let decl = c.decls.last().expect("in a class-like");
     let (display, class_abstract, kind) = (decl.display.clone(), decl.is_abstract, decl.kind);
-    let private = has(m.modifiers.as_slice(), is_private);
+    let private = m.modifiers.contains_private();
     if let Some(display) = &display
         && private
-        && has(m.modifiers.as_slice(), is_abstract)
+        && m.modifiers.contains_abstract()
         && c.trait_context.is_none()
         && (class_abstract || kind == SymbolKind::Interface)
     {
@@ -308,7 +294,7 @@ pub fn method<'arena>(c: &mut Checker<'_, 'arena>, m: &Method<'arena>, name: &st
         && name != "__construct"
         && c.may_be_at_least(80000)
         && private
-        && (has(m.modifiers.as_slice(), is_final) || has_tag(&c.tags_before(m), &["@final"]))
+        && (m.modifiers.contains_final() || has_tag(&c.tags_before(m), &["@final"]))
     {
         c.report(
             m,
@@ -323,12 +309,10 @@ pub fn method<'arena>(c: &mut Checker<'_, 'arena>, m: &Method<'arena>, name: &st
 
 /// FinalPrivateConstantRule.
 pub fn constant<'arena>(c: &mut Checker<'_, 'arena>, constant: &ClassLikeConstant<'arena>) {
-    let modifiers = constant.modifiers.as_slice();
-    let Some(display) = c
-        .decls
-        .last()
-        .and_then(|d| d.display.clone())
-        .filter(|_| has(modifiers, is_final) && has(modifiers, is_private))
+    let Some(display) =
+        c.decls.last().and_then(|d| d.display.clone()).filter(|_| {
+            constant.modifiers.contains_final() && constant.modifiers.contains_private()
+        })
     else {
         return;
     };
@@ -411,7 +395,7 @@ pub fn promoted<'arena>(
         if p.modifiers.is_empty() {
             continue;
         }
-        if has(p.modifiers.as_slice(), is_final) && !c.surely_at_least(80500) {
+        if p.modifiers.contains_final() && !c.surely_at_least(80500) {
             c.report_non_ignorable(
                 p,
                 "property.invalidPromoted",

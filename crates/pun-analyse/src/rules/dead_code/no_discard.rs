@@ -4,6 +4,7 @@ use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 
+use super::super::types::flow::unparen;
 use super::super::{Checker, members};
 
 struct Target<'e, 'arena> {
@@ -12,13 +13,6 @@ struct Target<'e, 'arena> {
     is_static: bool,
     nullsafe: bool,
     void: bool,
-}
-
-pub(super) fn unparen<'e, 'arena>(mut e: &'e Expression<'arena>) -> &'e Expression<'arena> {
-    while let Expression::Parenthesized(p) = e {
-        e = p.expression;
-    }
-    e
 }
 
 fn is_void(e: &Expression) -> bool {

@@ -73,7 +73,7 @@ pub(in super::super) fn interpolated(c: &mut Checker, parts: &[StringPart]) {
     for e in parts.iter().filter_map(part) {
         if let Some(t) = invalid(c, e, Cast::String) {
             // assistant's call: the part as written stands in for php-parser's printer
-            let printed = String::from_utf8_lossy(&c.file.contents[e.span().to_range_usize()]).into_owned();
+            let printed = c.written(e.span());
             let message = format!(
                 "Part {printed} ({}) of encapsed string cannot be cast to string.",
                 value(c, &t)

@@ -1003,9 +1003,11 @@ fn ancestors_check(names: &[String], types: &[Type], m: &AncestorMessages, out: 
     }
 }
 
-fn resolved_names<'a>(c: &Checker, ids: impl Iterator<Item = &'a Identifier<'a>>) -> Vec<String> {
-    ids.map(|id| String::from_utf8_lossy(c.names.get(&id.span())).into_owned())
-        .collect()
+pub(super) fn resolved_names<'a>(
+    c: &Checker,
+    ids: impl Iterator<Item = &'a Identifier<'a>>,
+) -> Vec<String> {
+    ids.map(|id| c.resolved_span(id.span())).collect()
 }
 
 /// The PHPDoc before `offset` in the walked file and the namespace scope there.

@@ -1046,10 +1046,8 @@ impl<'a, 'arena> Checker<'a, 'arena> {
     }
 
     /// A rebound closure literal and the class of its bound `$this` (see [`Checker::bind_class()`]).
-    fn rebind(&mut self, mut e: &Expression, class: Option<String>, defines_this: bool) {
-        while let Expression::Parenthesized(p) = e {
-            e = p.expression;
-        }
+    fn rebind(&mut self, e: &Expression, class: Option<String>, defines_this: bool) {
+        let e = types::flow::unparen(e);
         if matches!(e, Expression::Closure(_) | Expression::ArrowFunction(_)) {
             self.rebound.insert(e.span(), bind_scope::Binding { class, defines_this });
         }
@@ -1179,10 +1177,8 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         });
     }
 
-    fn mark_top_level(&mut self, mut e: &Expression) {
-        while let Expression::Parenthesized(p) = e {
-            e = p.expression;
-        }
+    fn mark_top_level(&mut self, e: &Expression) {
+        let e = types::flow::unparen(e);
         let span = e.span();
         self.top_level.insert((span.start.offset, span.end.offset));
         // PHPStan passes the statement's context on to a ternary's branches, the right side of `&&` / `||` and
@@ -1236,10 +1232,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             class.extends.as_ref(),
             class.implements.as_ref(),
             false,
-            class
-                .modifiers
-                .iter()
-                .any(|m| matches!(m, Modifier::Readonly(_))),
+            class.modifiers.contains_readonly(),
         );
         if self.trait_context.is_none() {
             let name = self.resolved_span(class.name.span);
@@ -1266,10 +1259,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             class.span(),
             class.attribute_lists.as_slice(),
             SymbolKind::Class,
-            class
-                .modifiers
-                .iter()
-                .any(|m| matches!(m, Modifier::Readonly(_))),
+            class.modifiers.contains_readonly(),
             &name,
         );
         if let Some(k) = self.codebase.get_class_like(name.as_bytes()) {
@@ -1492,9 +1482,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             a.extends.as_ref(),
             a.implements.as_ref(),
             false,
-            a.modifiers
-                .iter()
-                .any(|m| matches!(m, Modifier::Readonly(_))),
+            a.modifiers.contains_readonly(),
         );
         let name = String::from_utf8_lossy(
             mago_codex::get_anonymous_class_name(self.file, a.span()).as_bytes(),
@@ -1522,9 +1510,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             a.span(),
             a.attribute_lists.as_slice(),
             SymbolKind::Class,
-            a.modifiers
-                .iter()
-                .any(|m| matches!(m, Modifier::Readonly(_))),
+            a.modifiers.contains_readonly(),
             &display,
         );
         if let Some(k) = self.codebase.get_class_like(name.as_bytes()) {
@@ -1642,7 +1628,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         phpdoc_types::method(self, m);
         invalid_throws::method(self, m);
         phpdoc_types::promoted(self, m);
-        self.enter_this(!m.modifiers.iter().any(|x| matches!(x, Modifier::Static(_))));
+        self.enter_this(!m.modifiers.contains_static());
         functions::function_like(self, m, &m.parameter_list);
         statements::constructor_return_type(self, m);
         larastan::method(self, m);
@@ -1784,16 +1770,15 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             "method",
         );
         // a static method can run before any instance exists
-        let guards = if m.name.value.eq_ignore_ascii_case(b"__construct")
-            || m.modifiers.iter().any(|m| matches!(m, Modifier::Static(_)))
-        {
-            Vec::new()
-        } else {
-            self.classes
-                .last()
-                .map(|c| c.constructor_guards.clone())
-                .unwrap_or_default()
-        };
+        let guards =
+            if m.name.value.eq_ignore_ascii_case(b"__construct") || m.modifiers.contains_static() {
+                Vec::new()
+            } else {
+                self.classes
+                    .last()
+                    .map(|c| c.constructor_guards.clone())
+                    .unwrap_or_default()
+            };
         self.enter_function(guards);
         self.var_tag_functions.push(m.span());
         let deprecated = self.entered_deprecated(&method, true, m.span());
@@ -1802,7 +1787,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             start: m.span().start.offset,
             name: method,
             kind: FunctionScopeKind::Method {
-                is_static: m.modifiers.iter().any(|m| matches!(m, Modifier::Static(_))),
+                is_static: m.modifiers.contains_static(),
             },
         });
     }

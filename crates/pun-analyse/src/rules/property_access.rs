@@ -12,6 +12,7 @@ use mago_word::word;
 
 use super::Checker;
 use super::scope::Guard;
+use super::types::flow::unparen;
 
 pub(super) const TIP: &str =
     "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property";
@@ -41,13 +42,6 @@ fn key(s: Span) -> (u32, u32) {
     (s.start.offset, s.end.offset)
 }
 
-fn unparenthesized<'e, 'arena>(mut e: &'e Expression<'arena>) -> &'e Expression<'arena> {
-    while let Expression::Parenthesized(p) = e {
-        e = p.expression;
-    }
-    e
-}
-
 struct Contexts<'s> {
     state: &'s mut State,
 }
@@ -55,7 +49,7 @@ struct Contexts<'s> {
 impl Contexts<'_> {
     /// lookForExpressionCallback().
     fn allow(&mut self, e: &Expression) {
-        let e = unparenthesized(e);
+        let e = unparen(e);
         if !matches!(e, Expression::ArrayAppend(_)) {
             self.state.allowed.insert(key(e.span()));
         }
@@ -65,7 +59,9 @@ impl Contexts<'_> {
             Expression::Access(Access::Property(p)) => self.allow(p.object),
             Expression::Access(Access::NullSafeProperty(p)) => self.allow(p.object),
             Expression::Call(Call::NullSafeMethod(m)) => self.allow(m.object),
-            Expression::Access(Access::StaticProperty(p)) if !is_name(p.class) => {
+            Expression::Access(Access::StaticProperty(p))
+                if !super::method_callable::named_class(p.class) =>
+            {
                 self.allow(p.class);
             }
             Expression::List(l) => l.elements.iter().for_each(|el| self.element(el)),
@@ -84,7 +80,7 @@ impl Contexts<'_> {
 
     /// The root of an assignment target (through its offsets), and a destructuring's items.
     fn assigned(&mut self, e: &Expression) {
-        match unparenthesized(e) {
+        match unparen(e) {
             Expression::ArrayAccess(a) => self.assigned(a.array),
             Expression::ArrayAppend(a) => self.assigned(a.array),
             e @ Expression::Access(Access::Property(_) | Access::StaticProperty(_)) => {
@@ -99,12 +95,12 @@ impl Contexts<'_> {
 
     /// A target [`State::expression_assign`] adds (through a `&`).
     fn expression_assigned(&mut self, e: &Expression) {
-        let mut root = unparenthesized(e);
+        let mut root = unparen(e);
         loop {
             match root {
-                Expression::UnaryPrefix(u) if u.operator.is_reference() => root = unparenthesized(u.operand),
-                Expression::ArrayAccess(a) => root = unparenthesized(a.array),
-                Expression::ArrayAppend(a) => root = unparenthesized(a.array),
+                Expression::UnaryPrefix(u) if u.operator.is_reference() => root = unparen(u.operand),
+                Expression::ArrayAccess(a) => root = unparen(a.array),
+                Expression::ArrayAppend(a) => root = unparen(a.array),
                 _ => break,
             }
         }
@@ -132,16 +128,6 @@ impl Contexts<'_> {
     }
 }
 
-fn is_name(e: &Expression) -> bool {
-    matches!(
-        e,
-        Expression::Identifier(_)
-            | Expression::Self_(_)
-            | Expression::Static(_)
-            | Expression::Parent(_)
-    )
-}
-
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Contexts<'_> {
     fn walk_in_isset_construct(&mut self, i: &'ast IssetConstruct<'arena>, _: &mut ()) {
         for v in i.values.iter() {
@@ -164,7 +150,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Contexts<'_> {
     fn walk_in_assignment(&mut self, a: &'ast Assignment<'arena>, _: &mut ()) {
         if matches!(a.operator, AssignmentOperator::Assign(_)) {
             self.assigned(a.lhs);
-            if let Expression::UnaryPrefix(u) = unparenthesized(a.rhs)
+            if let Expression::UnaryPrefix(u) = unparen(a.rhs)
                 && u.operator.is_reference()
             {
                 self.expression_assigned(u.operand);
@@ -190,11 +176,11 @@ pub fn state(program: &Program) -> State {
 
 /// The guard of `$variable->name` with a written name (`$this` included).
 fn fetch_guard(e: &Expression) -> Option<Guard> {
-    let Expression::Access(Access::Property(p)) = unparenthesized(e) else {
+    let Expression::Access(Access::Property(p)) = unparen(e) else {
         return None;
     };
     let (Expression::Variable(Variable::Direct(v)), ClassLikeMemberSelector::Identifier(id)) =
-        (unparenthesized(p.object), &p.property)
+        (unparen(p.object), &p.property)
     else {
         return None;
     };
@@ -211,7 +197,7 @@ pub fn offset_guard(var: &[u8]) -> Guard {
 }
 
 fn this_name<'a>(p: &'a PropertyAccess) -> Option<&'a [u8]> {
-    let is_this = matches!(unparenthesized(p.object), Expression::Variable(Variable::Direct(v)) if v.name == b"$this");
+    let is_this = matches!(unparen(p.object), Expression::Variable(Variable::Direct(v)) if v.name == b"$this");
     match &p.property {
         ClassLikeMemberSelector::Identifier(id) if is_this => Some(id.value),
         _ => None,
@@ -230,7 +216,7 @@ pub fn narrowed(
     resolve: &dyn Fn(&Identifier) -> String,
     out: &mut Vec<Guard>,
 ) {
-    let e = unparenthesized(e);
+    let e = unparen(e);
     if let Some(g) = fetch_guard(e) {
         out.push(g);
         return;
@@ -266,7 +252,7 @@ pub fn narrowed(
 
 /// `isset()` specifies every fetch of the chain.
 fn chain(e: &Expression, resolve: &dyn Fn(&Identifier) -> String, out: &mut Vec<Guard>) {
-    let e = unparenthesized(e);
+    let e = unparen(e);
     if let Some(g) = fetch_guard(e) {
         out.push(g);
     }
@@ -276,7 +262,7 @@ fn chain(e: &Expression, resolve: &dyn Fn(&Identifier) -> String, out: &mut Vec<
     match e {
         Expression::ArrayAccess(a) => {
             // a variable's offset: the variable is an intersection with HasOffsetType
-            if let Expression::Variable(Variable::Direct(v)) = unparenthesized(a.array) {
+            if let Expression::Variable(Variable::Direct(v)) = unparen(a.array) {
                 out.push(offset_guard(v.name));
             }
             chain(a.array, resolve, out)
@@ -289,7 +275,7 @@ fn chain(e: &Expression, resolve: &dyn Fn(&Identifier) -> String, out: &mut Vec<
 
 /// How a static fetch's class is written in a scope key: `self`, `static`, `parent` or the resolved name.
 fn class_key(e: &Expression, resolve: &dyn Fn(&Identifier) -> String) -> Option<String> {
-    Some(match unparenthesized(e) {
+    Some(match unparen(e) {
         Expression::Self_(_) => "self".to_string(),
         Expression::Static(_) => "static".to_string(),
         Expression::Parent(_) => "parent".to_string(),
@@ -318,7 +304,7 @@ fn static_selector_key(v: &Variable) -> Option<String> {
     match v {
         Variable::Direct(v) => Some(String::from_utf8_lossy(v.name).into_owned()),
         Variable::Nested(v) => Some(format!("${{{}}}", static_selector_key(v.variable)?)),
-        Variable::Indirect(v) => match unparenthesized(v.expression) {
+        Variable::Indirect(v) => match unparen(v.expression) {
             Expression::Variable(v) => Some(format!("${{{}}}", static_selector_key(v)?)),
             Expression::Literal(Literal::String(s)) => {
                 static IDENTIFIER: std::sync::LazyLock<pcre2::bytes::Regex> = std::sync::LazyLock::new(|| {
@@ -360,11 +346,11 @@ fn property_exists(f: &FunctionCall, resolve: &dyn Fn(&Identifier) -> String) ->
     }
     let mut args = f.argument_list.arguments.iter();
     let (object, name) = (args.next()?, args.next()?);
-    let Expression::Literal(Literal::String(s)) = unparenthesized(name.value()) else {
+    let Expression::Literal(Literal::String(s)) = unparen(name.value()) else {
         return None;
     };
     let name = String::from_utf8_lossy(s.value?).into_owned();
-    match unparenthesized(object.value()) {
+    match unparen(object.value()) {
         Expression::Variable(Variable::Direct(v)) => Some(var_guard(v.name, name.as_bytes())),
         Expression::Access(Access::ClassConstant(cc)) => match &cc.constant {
             ClassLikeConstantSelector::Identifier(c) if c.value.eq_ignore_ascii_case(b"class") => {
@@ -392,11 +378,11 @@ impl Checker<'_, '_> {
     // ArrayAccess, after which PHPStan describes `$this` as `ArrayAccess&C`
     pub(super) fn incremented(&mut self, operand: &Expression) {
         // Inc/dec also produces a PropertyAssignNode, for direct and expression names alike.
-        if let Expression::Access(Access::StaticProperty(p)) = unparenthesized(operand)
+        if let Expression::Access(Access::StaticProperty(p)) = unparen(operand)
         {
             static_check(self, p);
         }
-        if matches!(unparenthesized(operand), Expression::Variable(Variable::Direct(v)) if v.name == b"$this")
+        if matches!(unparen(operand), Expression::Variable(Variable::Direct(v)) if v.name == b"$this")
             && let Some(this) = self.property_access.this.last_mut()
         {
             *this = false;
@@ -423,7 +409,7 @@ impl Checker<'_, '_> {
 
     /// `hasExpressionType()` of `$object->name` (a variable's).
     pub(super) fn has_fetch_type(&self, object: &Expression, name: &str) -> bool {
-        match unparenthesized(object) {
+        match unparen(object) {
             Expression::Variable(Variable::Direct(v)) => self.guards.contains(&var_guard(v.name, name.as_bytes())),
             _ => false,
         }
@@ -436,7 +422,7 @@ pub fn assigned(c: &mut Checker, a: &Assignment) {
 }
 
 fn remember(c: &mut Checker, e: &Expression) {
-    let e = unparenthesized(e);
+    let e = unparen(e);
     if let Some(g) = fetch_guard(e) {
         c.guards.push(g);
         return;
@@ -486,7 +472,7 @@ pub fn assign(c: &mut Checker, a: &Assignment) {
 }
 
 fn written(c: &mut Checker, e: &Expression) {
-    match unparenthesized(e) {
+    match unparen(e) {
         Expression::ArrayAccess(x) => written(c, x.array),
         Expression::ArrayAppend(x) => written(c, x.array),
         Expression::Access(Access::Property(p)) => check(c, p, true),
@@ -743,7 +729,7 @@ fn static_check(c: &mut Checker, p: &StaticPropertyAccess) {
 fn static_check_named(c: &mut Checker, p: &StaticPropertyAccess, property: &[u8]) {
     let name = String::from_utf8_lossy(&property[1..]).into_owned();
     let at = super::types::dynamic_names::static_property(&p.property).unwrap_or_else(|| p.property.span());
-    let holder = match (unparenthesized(p.class), c.class_scope()) {
+    let holder = match (unparen(p.class), c.class_scope()) {
         (e @ (Expression::Self_(_) | Expression::Static(_)), scope) => {
             let written = if matches!(e, Expression::Self_(_)) {
                 "self"

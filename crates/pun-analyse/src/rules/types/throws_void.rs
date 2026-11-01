@@ -161,7 +161,7 @@ fn check(c: &mut Checker, at: Span, of: &str, walk: impl FnOnce(&mut Points)) {
 }
 
 pub(in super::super) fn function(c: &mut Checker, f: &Function) {
-    let name = String::from_utf8_lossy(c.names.get(&f.name.span())).into_owned();
+    let name = c.resolved_span(f.name.span());
     check(c, f.span(), &format!("Function {name}()"), |p| p.walk_block(&f.body, &mut ()));
 }
 

@@ -5,7 +5,7 @@ use mago_syntax::cst::*;
 use mago_syntax::walker::MutWalker;
 
 use super::super::Checker;
-use super::no_discard::unparen;
+use super::super::types::flow::unparen;
 
 #[derive(Default)]
 pub(super) struct Result {

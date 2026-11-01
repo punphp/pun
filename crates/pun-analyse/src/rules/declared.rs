@@ -26,10 +26,7 @@ use pun_phpstan::types::{
 use super::Checker;
 use super::doc::doc_before;
 use super::doc::{Doc, FileScopes, NameScope, scopes_of};
-
-fn text(b: &[u8]) -> String {
-    String::from_utf8_lossy(b).into_owned()
-}
+use crate::text;
 
 /// A class-like's name as declared.
 pub fn original_name(k: &ClassLikeMetadata) -> String {

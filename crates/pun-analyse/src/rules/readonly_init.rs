@@ -25,18 +25,12 @@ use pun_phpstan::types::Tri;
 
 use super::Checker;
 use super::declarations::{READONLY_TAGS, doc_before, doc_tags, has_tag};
+use super::types::flow::is_this;
 use crate::codebase::parse;
+use crate::text;
 
 /// The certainty of each property's PropertyInitializationExpr; a property not in it is not initialized.
 type State = HashMap<String, Tri>;
-
-fn or(a: Tri, b: Tri) -> Tri {
-    if a as u8 >= b as u8 { a } else { b }
-}
-
-fn and(a: Tri, b: Tri) -> Tri {
-    if a as u8 <= b as u8 { a } else { b }
-}
 
 fn get(s: &State, p: &str) -> Tri {
     s.get(p).copied().unwrap_or(Tri::No)
@@ -46,7 +40,7 @@ fn get(s: &State, p: &str) -> Tri {
 fn merge(a: &State, b: &State) -> State {
     let mut out = State::new();
     for (p, t) in a {
-        out.insert(p.clone(), b.get(p).map_or(Tri::Maybe, |u| and(*t, *u)));
+        out.insert(p.clone(), b.get(p).map_or(Tri::Maybe, |u| t.and(*u)));
     }
     for p in b.keys().filter(|p| !a.contains_key(*p)) {
         out.insert(p.clone(), Tri::Maybe);
@@ -57,7 +51,7 @@ fn merge(a: &State, b: &State) -> State {
 /// MutatingScope::mergeInitializedProperties().
 fn merge_initialized(scope: &mut State, called: &State) {
     for (p, t) in called {
-        let certainty = scope.get(p).map_or(*t, |u| or(*t, *u));
+        let certainty = scope.get(p).map_or(*t, |u| t.or(*u));
         scope.insert(p.clone(), certainty);
     }
 }
@@ -153,10 +147,6 @@ struct Walk<'w, 'c, 'x> {
     returns: Vec<State>,
 }
 
-fn is_this(e: &Expression) -> bool {
-    matches!(e, Expression::Variable(Variable::Direct(v)) if v.name == b"$this")
-}
-
 fn this_property<'e>(e: &'e Expression) -> Option<&'e [u8]> {
     match e {
         Expression::Access(Access::Property(p)) if is_this(p.object) => match &p.property {
@@ -166,10 +156,6 @@ fn this_property<'e>(e: &'e Expression) -> Option<&'e [u8]> {
         Expression::Parenthesized(p) => this_property(p.expression),
         _ => None,
     }
-}
-
-fn text(b: &[u8]) -> String {
-    String::from_utf8_lossy(b).into_owned()
 }
 
 impl<'w, 'c, 'x> Walk<'w, 'c, 'x> {
@@ -804,7 +790,7 @@ impl<'c, 'x> Ctx<'c, 'x> {
     /// Walks method `name`: what it gathers and its end state (its execution ends and returns merged; `None`
     /// when it has none).
     fn walk(&self, m: &MethodAst<'x>, nested: bool, carried: &State) -> (Gathered, Option<State>) {
-        let is_static = m.method.modifiers.iter().any(|x| matches!(x, Modifier::Static(_)));
+        let is_static = m.method.modifiers.contains_static();
         let mut walk = Walk {
             ctx: self,
             source: m.source,
@@ -1012,7 +998,7 @@ pub fn class<'arena>(c: &mut Checker<'_, 'arena>, k: &ClassLikeMetadata, members
         if modifiers.iter().any(|m| matches!(m, Modifier::Static(_) | Modifier::Abstract(_))) {
             continue;
         }
-        let readonly = class_readonly || modifiers.iter().any(|m| matches!(m, Modifier::Readonly(_)));
+        let readonly = class_readonly || modifiers.contains_readonly();
         let tags = doc_before(&file.contents, p.span().start.offset as usize).map(doc_tags).unwrap_or_default();
         let by_phpdoc = immutable || has_tag(&tags, READONLY_TAGS);
         let items: Vec<&PropertyItem> = match p {
@@ -1044,7 +1030,7 @@ pub fn class<'arena>(c: &mut Checker<'_, 'arena>, k: &ClassLikeMetadata, members
                 line: i64::from(file.line_number(item.span().start.offset)) + 1,
                 readonly,
                 readonly_by_phpdoc: by_phpdoc,
-                initial: if inherited { Tri::Yes } else { Tri::No },
+                initial: Tri::from(inherited),
                 offsets: offsets(c, &sources[source], hint),
             });
         }
@@ -1064,9 +1050,9 @@ pub fn class<'arena>(c: &mut Checker<'_, 'arena>, k: &ClassLikeMetadata, members
             nodes.push(PropertyNode {
                 name: text(&p.variable.name[1..]),
                 line: i64::from(file.line_number(p.span().start.offset)) + 1,
-                readonly: class_readonly || p.modifiers.iter().any(|m| matches!(m, Modifier::Readonly(_))),
+                readonly: class_readonly || p.modifiers.contains_readonly(),
                 readonly_by_phpdoc: by_phpdoc,
-                initial: if m.source == 0 { Tri::Yes } else { Tri::No },
+                initial: Tri::from(m.source == 0),
                 offsets: offsets(c, &sources[m.source], hint),
             });
         }
@@ -1107,7 +1093,7 @@ type Reported = (&'static str, String, i64, Option<(String, String)>);
 
 /// `getInitializedProperties()`: `base`, or initialized in `scope`.
 fn initialized_in(scope: &State, base: &State) -> State {
-    base.iter().map(|(p, t)| (p.clone(), or(*t, get(scope, p)))).collect()
+    base.iter().map(|(p, t)| (p.clone(), t.or(get(scope, p)))).collect()
 }
 
 /// ClassPropertiesNode::getUninitializedProperties() and the two rules' errors.
@@ -1182,7 +1168,7 @@ fn uninitialized(ctx: &Ctx, nodes: Vec<PropertyNode>, constructor: Option<String
                         if let Some(known) = map.get_mut(&call.method) {
                             for (p, t) in now {
                                 let old = get(known, &p);
-                                known.insert(p, and(old, t));
+                                known.insert(p, old.and(t));
                             }
                             continue;
                         }
@@ -1210,7 +1196,7 @@ fn uninitialized(ctx: &Ctx, nodes: Vec<PropertyNode>, constructor: Option<String
                         Some(via_offset) => {
                             let mut has = known;
                             if constructors.contains(function) {
-                                has = or(has, usage.state);
+                                has = has.or(usage.state);
                             }
                             if has != Tri::No && !via_offset {
                                 additional.push((usage.property.clone(), usage.line));
@@ -1219,11 +1205,11 @@ fn uninitialized(ctx: &Ctx, nodes: Vec<PropertyNode>, constructor: Option<String
                         // (a read in an additional constructor of a property the constructor initializes is skipped
                         // upstream; Pun has no additional constructors)
                         None => {
-                            let mut has = or(known, usage.state);
+                            let mut has = known.or(usage.state);
                             if has != Tri::Yes
                                 && let Some(parent) = usage.parent
                             {
-                                has = or(has, parent);
+                                has = has.or(parent);
                             }
                             if has != Tri::Yes {
                                 premature.push((usage.property.clone(), usage.line, usage.source));

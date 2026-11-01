@@ -137,7 +137,7 @@ pub(super) fn method<'arena>(c: &mut Checker<'_, 'arena>, m: &MethodPartialAppli
     }
 }
 
-fn named_class(e: &Expression) -> bool {
+pub(super) fn named_class(e: &Expression) -> bool {
     matches!(
         e,
         Expression::Identifier(_)

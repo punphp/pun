@@ -63,10 +63,7 @@ pub(crate) fn method<'arena>(c: &mut Checker<'_, 'arena>, m: &Method<'arena>) {
     {
         return;
     }
-    if m.modifiers
-        .iter()
-        .any(|m| matches!(m, Modifier::Protected(_)))
-    {
+    if m.modifiers.contains_protected() {
         return;
     }
     let (identifier, message) = if is_scope(c, m) {

@@ -11,9 +11,10 @@ use pun_phpstan::types::{Type, is_super_type_of, mixed, recommended_level, union
 
 use super::super::assign::{Callee, by_ref_arguments, by_ref_call_arguments};
 use super::super::declarations::has_tag;
+use super::super::missing_types::declaring;
 use super::super::{Checker, declared};
 use super::flow::{list, unparen};
-use super::missing_return::{declaring, late, method_name};
+use super::missing_return::{late, method_name};
 use super::returns::returns;
 
 pub const IDENTIFIERS: &[&str] = &["return.unusedType", "property.unusedType"];
@@ -99,7 +100,7 @@ pub(in super::super) fn function(c: &mut Checker, f: &Function) {
     if c.level < 4 {
         return;
     }
-    let name = String::from_utf8_lossy(c.names.get(&f.name.span())).into_owned();
+    let name = c.resolved_span(f.name.span());
     let native = f.return_type_hint.is_some();
     let ret = declared::with_classes(c, || late(c, &resolved(&declared::function(c, f).ret), None, !native));
     body(c, &f.body, f.span(), native, &ret, &format!("Function {name}()"), false);

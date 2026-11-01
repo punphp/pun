@@ -30,8 +30,8 @@ use super::super::members;
 use mago_codex::symbol::SymbolKind;
 use pun_phpstan::ignore::Error;
 use pun_phpstan::types::{Accessory, Level, NeverKind, Tri, Type, float_to_string, intersect, is_super_type_of, recommended_level, union};
+use super::super::types::flow::unparen;
 use super::finally;
-use super::no_discard::unparen;
 use super::noop::{self, asserts, function_of};
 
 const REMOVE_TIP: &str = "Remove remaining cases below this one and this error will disappear too.";
@@ -914,7 +914,7 @@ pub(in super::super) fn function_check(c: &mut Checker, call: &FunctionCall) {
     if !c.conditions_checked() || !c.owned_function(call) {
         return;
     }
-    let name = noop::source(c, call.function.span());
+    let name = c.written(call.function.span());
     let subject = format!("function {}", name.trim_start_matches('\\'));
     let value = c.function_decision(call, CheckTypes::Full).flatten();
     // ImpossibleCheckTypeFunctionCallRule reruns the same helper without PHPDoc certainty.
@@ -1157,7 +1157,8 @@ impl Checker<'_, '_> {
     /// None is unavailable/unported. Some(None) means the supported helper genuinely cannot decide.
     fn function_decision(&self, call: &FunctionCall, types: CheckTypes) -> Option<Option<bool>> {
         let args = &call.argument_list;
-        if noop::source(self, call.function.span())
+        if self
+            .written(call.function.span())
             .trim_start_matches('\\')
             .eq_ignore_ascii_case("assert")
         {

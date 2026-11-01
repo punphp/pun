@@ -9,6 +9,7 @@ use pun_phpstan::types::{Level, Tri, Type};
 
 use super::super::reflection::Lookup;
 use super::super::{Checker, calls, declared, property_access};
+use super::flow::is_this;
 
 pub const IDENTIFIERS: &[&str] = &["property.nonObject", "property.protected", "staticProperty.nonObject", "staticProperty.protected"];
 
@@ -100,17 +101,6 @@ impl<'a> Checker<'a, '_> {
             }
         }
     }
-}
-
-/// The non-nullsafe receivers whose type the check reads; `$this` stays with property_access.rs.
-pub(super) fn typed(object: &Expression, spans: &mut Vec<Span>) {
-    if !is_this(object) {
-        spans.push(object.span());
-    }
-}
-
-fn is_this(e: &Expression) -> bool {
-    matches!(e, Expression::Variable(Variable::Direct(v)) if v.name == b"$this")
 }
 
 /// AccessPropertiesCheck::processSingleProperty() on `$object->name` (`nullsafe` for `?->`, `allowed` when an

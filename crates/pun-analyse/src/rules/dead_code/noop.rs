@@ -17,7 +17,7 @@ use super::super::Checker;
 use super::super::declaration_effects::TESTING_FUNCTIONS;
 use super::super::declarations::{doc_before, doc_tags, has_tag};
 use super::super::members::{self, Method};
-use super::no_discard::unparen;
+use super::super::types::flow::unparen;
 use pun_phpstan::symbols;
 
 const SUPERGLOBALS: &[&[u8]] = &[
@@ -1128,8 +1128,7 @@ pub(super) fn typed(s: &ExpressionStatement) -> Vec<Span> {
 
 /// php-parser's Standard printer, for the expressions NoopRule prints; other nodes print as written.
 pub(super) fn print(c: &Checker, e: &Expression) -> String {
-    let written =
-        || String::from_utf8_lossy(&c.file.contents[e.span().to_range_usize()]).into_owned();
+    let written = || c.written(e.span());
     match e {
         Expression::Variable(Variable::Direct(v)) => String::from_utf8_lossy(v.name).into_owned(),
         Expression::Match(m) => format!("match ({}) {{\n", print(c, m.expression)),
@@ -1179,18 +1178,18 @@ pub(super) fn print(c: &Checker, e: &Expression) -> String {
         Expression::Access(Access::ClassConstant(a)) => {
             let constant = match &a.constant {
                 ClassLikeConstantSelector::Expression(e) => braced(c, e.expression),
-                other => source(c, other.span()),
+                other => c.written(other.span()),
             };
             format!("{}::{constant}", print(c, a.class))
         }
         Expression::Identifier(id) => format!("\\{}", c.resolved(id)),
         // the operator as written; a cast in php-parser's canonical spelling
         Expression::UnaryPrefix(u) => {
-            let op: String =
-                String::from_utf8_lossy(&c.file.contents[u.operator.span().to_range_usize()])
-                    .to_ascii_lowercase()
-                    .split_whitespace()
-                    .collect();
+            let op: String = c
+                .written(u.operator.span())
+                .to_ascii_lowercase()
+                .split_whitespace()
+                .collect();
             let op = match op.as_str() {
                 "(integer)" => "(int) ".to_string(),
                 "(boolean)" => "(bool) ".to_string(),
@@ -1246,7 +1245,7 @@ pub(super) fn print(c: &Checker, e: &Expression) -> String {
                 .argument_list
                 .iter()
                 .flat_map(|args| args.arguments.iter())
-                .map(|arg| source(c, arg.span()))
+                .map(|arg| c.written(arg.span()))
                 .collect();
             if !args.is_empty() {
                 out.push_str(&format!("({})", args.join(", ")));
@@ -1269,15 +1268,11 @@ pub(super) fn print(c: &Checker, e: &Expression) -> String {
     }
 }
 
-pub(super) fn source(c: &Checker, span: Span) -> String {
-    String::from_utf8_lossy(&c.file.contents[span.to_range_usize()]).into_owned()
-}
-
 fn print_element(c: &Checker, e: &ArrayElement) -> String {
     match e {
         ArrayElement::KeyValue(kv) => format!("{} => {}", print(c, kv.key), print(c, kv.value)),
         ArrayElement::Value(v) => print(c, v.value),
-        e => source(c, e.span()),
+        e => c.written(e.span()),
     }
 }
 
@@ -1285,7 +1280,7 @@ fn selector(c: &Checker, s: &ClassLikeMemberSelector) -> String {
     match s {
         ClassLikeMemberSelector::Variable(v) => braced(c, &Expression::Variable(v.clone())),
         ClassLikeMemberSelector::Expression(e) => braced(c, e.expression),
-        s => source(c, s.span()),
+        s => c.written(s.span()),
     }
 }
 

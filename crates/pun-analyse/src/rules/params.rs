@@ -68,7 +68,7 @@ pub(super) fn accepts_named(c: &Checker, f: &FunctionLikeMetadata, class: Option
             super::declarations::has_tag(&super::declarations::doc_tags(&doc), &["@no-named-arguments"])
         }),
     };
-    if yes { Tri::Yes } else { Tri::No }
+    Tri::from(yes)
 }
 
 impl Acceptor {
@@ -672,7 +672,7 @@ impl Counts {
 }
 
 /// A constant array element's value expression (only values and key-values make one).
-fn element(e: &ArrayElement) -> Span {
+pub(super) fn element(e: &ArrayElement) -> Span {
     match e {
         ArrayElement::KeyValue(kv) => kv.value.span(),
         e => e.span(),

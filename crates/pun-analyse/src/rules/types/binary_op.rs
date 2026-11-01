@@ -208,7 +208,7 @@ fn check(c: &mut Checker, op: Op, left: &Expression, right: &Expression, sigil: 
     if !error {
         return;
     }
-    let sigil = String::from_utf8_lossy(&c.file.contents[sigil.start.offset as usize..sigil.end.offset as usize]).into_owned();
+    let sigil = c.written(sigil);
     let message = format!(
         "Binary operation \"{sigil}\" between {} and {} results in an error.",
         l.describe(Level::Value),

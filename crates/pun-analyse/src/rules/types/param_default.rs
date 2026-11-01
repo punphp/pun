@@ -47,7 +47,7 @@ pub(in super::super) fn function(c: &mut Checker, f: &Function) {
     if c.level < 2 {
         return;
     }
-    let name = String::from_utf8_lossy(c.names.get(&f.name.span())).into_owned();
+    let name = c.resolved_span(f.name.span());
     let types: Vec<Type> =
         declared::with_classes(c, || declared::function(c, f).params.into_iter().map(|p| p.1).collect());
     check(c, &f.parameter_list, &types, &format!("function {name}()"));
@@ -58,7 +58,7 @@ pub(in super::super) fn method(c: &mut Checker, m: &Method) {
         return;
     }
     let Some(context) = c.class_scope() else { return };
-    let Some(declaring) = super::missing_return::declaring(c, m.span()) else { return };
+    let Some(declaring) = super::super::missing_types::declaring(c, m.span()) else { return };
     let name = super::missing_return::method_name(c, m);
     let types: Vec<Type> = declared::with_classes(c, || {
         declared::method(c, m, declaring, context).params.into_iter().map(|p| p.1).collect()

@@ -13,8 +13,9 @@ use mago_syntax::cst::*;
 use pun_phpstan::resolve::resolve_str;
 use pun_phpstan::types::{ConstArray, Level, Param, Signature, Tri, Type, mixed, union};
 
+use super::super::types::flow::unparen;
 use super::super::{Checker, enums, members};
-use super::no_discard::{expression, unparen};
+use super::no_discard::expression;
 
 fn target<'e, 'arena>(
     s: &'e ExpressionStatement<'arena>,

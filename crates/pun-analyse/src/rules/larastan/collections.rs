@@ -177,7 +177,7 @@ pub(super) fn unnecessary<'arena>(
             let Expression::Identifier(class) = p.class else {
                 return;
             };
-            let class = String::from_utf8_lossy(c.names.get(&class.span())).into_owned();
+            let class = c.resolved_span(class.span());
             let is_query = is_a(c, class.as_bytes(), super::MODEL)
                 && matches!(&p.method, ClassLikeMemberSelector::Identifier(m)
                     if matches!(m.value.to_ascii_lowercase().as_slice(), b"get" | b"all" | b"pluck"));

@@ -5,6 +5,7 @@ use mago_span::HasSpan;
 use mago_syntax::cst::*;
 
 use super::Checker;
+use crate::text;
 
 /// `Scope::SUPERGLOBAL_VARIABLES`.
 pub const SUPERGLOBALS: [&[u8]; 9] = [
@@ -22,10 +23,6 @@ pub const SUPERGLOBALS: [&[u8]; 9] = [
 /// `$param->var->name`: the parameter's name without its `$`.
 fn name<'arena>(v: &DirectVariable<'arena>) -> &'arena [u8] {
     &v.name[1..]
-}
-
-fn text(name: &[u8]) -> String {
-    String::from_utf8_lossy(name).into_owned()
 }
 
 /// The rules registered for `Node\FunctionLike` (functions, methods, closures, arrow functions, property hooks),
