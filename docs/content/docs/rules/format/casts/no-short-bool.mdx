@@ -30,6 +30,10 @@ Enabled by the [`format-laravel`](/docs/rules/presets/format-laravel) preset. Fi
 
 Short cast `bool` using double exclamation mark should not be used.
 
+### Why
+
+`(bool)` binds tighter than `instanceof`, but `!` does not. So `!!$a instanceof Foo` is true when `$a` is a `Foo`, while the rewritten `(bool) $a instanceof Foo` is always false. Pint rewrites it the same way. Write `!!($a instanceof Foo)` to keep the check.
+
 ## Options
 
 No configurable options.

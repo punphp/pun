@@ -61,7 +61,9 @@ exclude = ["tests/**"]
 
 Entries containing `*`, `?`, `[` or `{` are globs relative to the project root. `*` also matches `/`. For example, `storage/**` skips root-level `storage`, not `app/storage`.
 
-Other entries exclude a project-relative path and its descendants. Format retains Pint's exception: plain entries match folders at any depth. [`pun list-files`](/docs/commands/list-files) shows the selected files.
+Other entries are plain paths. Lint and analyse skip that path, relative to the project root, and everything under it. Format keeps Pint's rule instead: a plain folder name matches a folder of that name at any depth. With `exclude = ["tmp"]`, format skips `tmp/` and `app/tmp/`, while lint and analyse skip only `tmp/`. To skip a folder at any depth in every command, write a glob such as `**/tmp`.
+
+[`pun list-files --command <command>`](/docs/commands/list-files) shows the files each command selects.
 
 ## [format]
 

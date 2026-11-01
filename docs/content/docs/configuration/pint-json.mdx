@@ -11,10 +11,15 @@ Pun commands read `pun.toml`, not `pint.json`. [`pun migrate --from pint`](/docs
 | `"rules"` that differ from the preset | `[format.rules]`, under Pun IDs and [option names](/docs/configuration/pun-toml#rule-options) |
 | Risky and code-deleting rules | `[lint.rules]` at `"error"` |
 | `"in"` | `[files] paths` |
-| `"exclude"` | `[files] exclude`, for every command |
-| `"notName"`, `"notPath"` | `[format] not-name`, `not-path` |
+| `"exclude"` | `[files] exclude`, so every command skips it, including the lint rules that came from Pint |
+| `"notName"`, `"notPath"` | `[format] not-name`, `not-path`, which only format applies |
 | `"extend"` | Resolved the way Pint resolves it |
 | `"Pun/prefer_fake_helper": true` | `[lint.rules] "laravel/prefer-fake-helper" = "error"` |
+
+Two Pint behaviours carry over only partly:
+
+- **A plain folder name** in `exclude`, such as `tmp`, matches at any depth in Pint. In Pun, only format matches it at any depth; lint and analyse skip only the folder at the project root. Change the entry to `**/tmp` to skip it everywhere. See [exclusions](/docs/configuration/pun-toml#php-and-files).
+- **`notName` and `notPath`** apply only to format. Lint rules that came from Pint, such as `imports/no-unused`, still check those files.
 
 A `.php-cs-fixer.php` is read through PHP-CS-Fixer with system PHP. When both configs are selected, Pint takes precedence.
 

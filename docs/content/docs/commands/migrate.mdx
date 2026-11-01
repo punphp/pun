@@ -36,7 +36,7 @@ Pint migration resolves `extend`, `--config`, and `--preset`. PHP-CS-Fixer migra
 
 - Layout rules become `[format.rules]` overrides.
 - Risky and code-deleting fixers become `[lint.rules]` at `"error"`.
-- Finder paths and `exclude` become `[files] paths` and `exclude`, so lint and analyse skip the excluded folders too. `notName` and `notPath` become format exclusions.
+- Finder paths and `exclude` become `[files] paths` and `exclude`, so lint and analyse skip the excluded folders too. `notName` and `notPath` become format exclusions. [Two exclusion details](/docs/configuration/pint-json) differ from Pint.
 - `per`, `symfony`, and rule sets such as `@PER-CS` expand into explicit rules over `preset = "empty"`.
 - Options use [Pun names and values](/docs/configuration/pun-toml#rule-options).
 
@@ -46,15 +46,19 @@ See the [Pint mapping](/docs/migrate/from/pint) and [PHP-CS-Fixer mapping](/docs
 
 ## Rector
 
-Rector migration requires system PHP and the project's installed Rector. Prepared sets map to lint sets; `type-declaration` maps to `types`.
+Rector migration requires system PHP and the project's installed Rector, so run `composer install` first. Prepared sets map to lint sets; `type-declaration` maps to `types`.
 
-Explicit rules, set differences, and path skips become rule settings, exclusions, and path overrides. Configured rule keys use kebab-case; lists use `items`. Layout-only rules remain in `[format]`.
+Explicit rules, set differences, and path skips become rule settings, exclusions, and path overrides. Configured rule keys use kebab-case; lists use `items`.
+
+Some Rector rules only change layout, such as `ReplaceMultipleBooleanNotRector` (`!!$x` to `(bool) $x`). In Pun these are format rules, and Rector migration never writes format settings. If your format config already runs the rule, nothing changes. Otherwise migration reports the rule and names the format rule to turn on in `[format.rules]`. The `laravel` preset runs all of them except `NewMethodCallWithoutParenthesesRector` and `ShellExecFunctionCallOverBackticksRector`.
 
 Custom rules, closures, null configurations, and out-of-scope upgrade rules are skipped. See the [Rector mapping](/docs/migrate/from/rector).
 
 ## PHPStan and Larastan
 
-Migration resolves includes and converts levels to an analyse preset with explicit rule differences. It also converts paths, exclusions, stubs, ignore entries, and supported extension settings.
+Migration resolves includes the way PHPStan does, so an include under `vendor/`, such as Larastan's `extension.neon`, needs `composer install` first. A missing include stops the whole migration with exit code 2; `--from pint` still works without `vendor/`.
+
+Migration converts levels to an analyse preset with explicit rule differences. It also converts paths, exclusions, stubs, ignore entries, and supported extension settings.
 
 The analysis CLI does not yet apply every migrated setting, including stubs and ignore tables. See [analysis limitations](/docs/commands/analyse#configuration), the [PHPStan mapping](/docs/migrate/from/phpstan), and the [Larastan mapping](/docs/migrate/from/larastan).
 

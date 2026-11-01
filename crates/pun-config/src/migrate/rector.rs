@@ -289,7 +289,7 @@ pub fn compose(root: &Path, parts: &mut Parts, rector: &Rector) -> Result<Reconc
     let want: HashSet<&str> = rector.want.iter().map(|w| w.0.as_str()).collect();
     for (id, class) in &rector.want {
         if !id.starts_with("lint/") {
-            // Rector's coding-style rules that are format rules in Pun: the format config decides whether they run.
+            // Rector's layout-only rules are format rules in Pun: the format config decides whether they run.
             let runs = (cfg.rules.iter()).any(|r| crate::rule_of(&r.name) == Some(id.as_str()));
             let why = format!("the format rule `{id}` in Pun; turn it on in [format.rules]");
             out.unsupported
