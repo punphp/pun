@@ -30,6 +30,7 @@ use mago_syntax::cst::{
 use pun_phpstan::types::{Param, Signature, Type, to_phpdoc};
 use pun_problem::{Edit, Fix, Safety, Span};
 
+use super::class_method::qualified;
 use super::phpdoc_writer::type_mapper::{
     create_mixed_passed_or_union_type, generalize_constant_types, is_mixed, map_to_phpdoc,
 };
@@ -37,7 +38,6 @@ use super::phpdoc_writer::{expr_type, phpstan_type};
 use super::rector_batch5::has_attribute;
 use super::types::facts::{Facts, facts};
 use super::types::names::resolve_class_name;
-use super::types::namespace_of;
 use super::types::property_type::{self, TYPED_PROPERTIES, Ty, property_declaration};
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -63,7 +63,7 @@ impl Rule for AddDynamicProperties {
     ) {
         let Node::Class(class) = node else { return };
         let facts = facts(ctx);
-        let name = class_name(ancestors, class);
+        let name = qualified(ancestors, class.name.value);
         if should_skip_class(&facts, ancestors, class, &name) {
             return;
         }
@@ -99,15 +99,6 @@ impl Rule for AddDynamicProperties {
                 edits: vec![Edit::new(Span::new(at, at), text)],
             }),
         });
-    }
-}
-
-/// The class's name as the codebase knows it.
-fn class_name(ancestors: &[Node<'_, '_>], class: &Class<'_>) -> String {
-    let short = String::from_utf8_lossy(class.name.value);
-    match namespace_of(ancestors) {
-        Some(ns) => format!("{ns}\\{short}"),
-        None => short.into_owned(),
     }
 }
 
@@ -268,7 +259,10 @@ fn value_types(
     {
         let class = resolve_class_name(ancestors, id);
         if facts.codebase.get_class_like(class.as_bytes()).is_none() {
-            return (Type::Object(class.clone(), vec![], false), Ty::Object(class));
+            return (
+                Type::Object(class.clone(), vec![], false),
+                Ty::Object(class),
+            );
         }
     }
     // Mago types each closure it reaches as its signature alone (`resolve_closure_like_type`)

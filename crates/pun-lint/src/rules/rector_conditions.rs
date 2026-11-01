@@ -2,15 +2,14 @@
 //! and `IfManipulator::matchIfNotNullReturnValue`, php-parser's `BinaryOp` and `Assign` node classes, and the
 //! statements of an `if` as php-parser keeps them.
 
-use mago_syntax::cst::{
-    Assignment, AssignmentOperator, BinaryOperator, Expression, If, IfBody, Node, Statement,
-};
+use mago_syntax::cst::{BinaryOperator, Expression, If, IfBody, Node, Statement};
 
 use mago_syntax::token::TokenKind;
 use pun_problem::Span;
 
 use super::php_parser::{List, Token, body_list, line_indent, open_list};
 use super::rector_code_quality::{equal, is_constant};
+use super::rector_stmts::is_plain_assign;
 use crate::Context;
 use crate::syntax::unparenthesize;
 
@@ -44,13 +43,7 @@ pub fn match_first_and_second<'a>(
 
 /// php-parser's `Assign`: `=`, not a compound assignment or `= &`.
 pub fn is_assign(expr: &Expression<'_>) -> bool {
-    matches!(unparenthesize(expr), Expression::Assignment(a) if is_plain(a))
-}
-
-/// [`is_assign`] for an assignment node.
-pub fn is_plain(a: &Assignment<'_>) -> bool {
-    matches!(a.operator, AssignmentOperator::Assign(_))
-        && !matches!(a.rhs, Expression::UnaryPrefix(u) if u.operator.is_reference())
+    matches!(unparenthesize(expr), Expression::Assignment(a) if is_plain_assign(a))
 }
 
 /// An `if` as php-parser's `If_` has it: its statements, and whether it has `elseif`s and an `else`.

@@ -26,7 +26,8 @@ use mago_syntax::cst::{
 };
 use pun_problem::{Fix, Safety};
 
-use super::class_method::walk;
+use super::class_method::{type_of, walk};
+use super::no_implode_ternary::is_empty_array;
 use super::php_parser::{Token, enclosing, previous_token_end, remove, tokens};
 use super::rector_code_quality::{args, call_to};
 use super::rector_conditions::{comments_between, if_parts, is_stmts_aware};
@@ -199,7 +200,7 @@ fn is_useless(
                 return false;
             };
             same_expression(source, empty.value, items)
-                && full(facts, empty.value).is_some_and(is_array)
+                && type_of(facts, empty.value).is_some_and(is_array)
         }
         _ => is_counter_higher_than_one(source, facts, cond, items),
     }
@@ -240,7 +241,7 @@ fn should_skip_items(
         Expression::ArrayAccess(access) => {
             !has_offset(facts, access.array, access.index)
                 && !(native(facts, access.array).is_some_and(|t| t.is_mixed())
-                    && full(facts, access.array).is_some_and(is_array)
+                    && type_of(facts, access.array).is_some_and(is_array)
                     && assigned_offset(source, facts, preceding, access))
         }
         Expression::Variable(Variable::Direct(v)) if SUPERGLOBALS.contains(&v.name) => true,
@@ -374,21 +375,8 @@ fn is_empty_guard(
     body && native(facts, empty.value).is_some_and(is_array)
 }
 
-fn is_empty_array(expr: &Expression<'_>) -> bool {
-    match unparenthesize(expr) {
-        Expression::Array(a) => a.elements.is_empty(),
-        Expression::LegacyArray(a) => a.elements.is_empty(),
-        _ => false,
-    }
-}
-
 fn native<'f>(facts: &'f Facts, expr: &Expression<'_>) -> Option<&'f TUnion> {
     facts.native_type(node_span(unparenthesize(expr)))
-}
-
-fn full<'f>(facts: &'f Facts, expr: &Expression<'_>) -> Option<&'f TUnion> {
-    let span = node_span(unparenthesize(expr));
-    facts.full_type(span).or_else(|| facts.native_type(span))
 }
 
 /// `isArray()->yes()`.

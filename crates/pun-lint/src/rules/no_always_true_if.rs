@@ -22,6 +22,7 @@ use super::php_parser::{Token, previous_token_end, tokens};
 use super::prefer_empty_array_identical::is_non_typed_from_param;
 use super::rector_batch5::called_function_name;
 use super::rector_conditions::{comments_between, if_parts};
+use super::side_effect::any_node;
 use super::stmt_splice::{Change, NewStatement, run_edits};
 use super::types::facts::{Facts, facts, is_builtin_function};
 use crate::syntax::{node_span, unparenthesize};
@@ -131,34 +132,25 @@ fn is_true(t: &mago_codex::ttype::union::TUnion) -> bool {
     matches!(&t.types[..], [TAtomic::Scalar(s)] if s.is_true())
 }
 
-/// Whether some expression in `expr` passes `test`.
-fn any_expression(expr: &Expression<'_>, test: &dyn Fn(&Expression<'_>) -> bool) -> bool {
-    let mut found = false;
-    walk(Node::Expression(expr), &mut |n, _| {
-        if let Node::Expression(e) = n {
-            found |= test(e);
-        }
-        !found
-    });
-    found
-}
-
 /// `shouldSkipExpr`: a property, an array item, a method or static call, or a call of a runtime state function;
 /// here also a call of a built-in or dynamic function.
 fn should_skip_expr(ancestors: &[Node<'_, '_>], expr: &Expression<'_>) -> bool {
-    any_expression(expr, &|e| match e {
-        Expression::Access(Access::Property(_) | Access::StaticProperty(_))
-        | Expression::ArrayAccess(_)
-        | Expression::Call(Call::Method(_) | Call::StaticMethod(_)) => true,
+    any_node(Node::Expression(expr), &|n| match n {
+        Node::Expression(
+            Expression::Access(Access::Property(_) | Access::StaticProperty(_))
+            | Expression::ArrayAccess(_)
+            | Expression::Call(Call::Method(_) | Call::StaticMethod(_)),
+        ) => true,
         // PHPStan's native scope does not narrow a call of a built-in function (`is_int($int)` is `bool` there,
         // where Mago types it `true`), so a condition with one (or with a dynamic call) is never natively `true`
-        Expression::Call(Call::Function(f)) => called_function_name(ancestors, f.function)
-            .is_none_or(|n| {
+        Node::Expression(Expression::Call(Call::Function(f))) => {
+            called_function_name(ancestors, f.function).is_none_or(|n| {
                 RUNTIME_STATE_FUNCTIONS
                     .iter()
                     .any(|r| n.eq_ignore_ascii_case(r))
                     || is_builtin_function(n.trim_start_matches('\\').as_bytes())
-            }),
+            })
+        }
         _ => false,
     })
 }
@@ -170,9 +162,10 @@ fn should_skip_expr(ancestors: &[Node<'_, '_>], expr: &Expression<'_>) -> bool {
 /// none of the refined arrays PHPStan's native scope gives (`non-empty-array`, `non-empty-array&hasOffset('k')`,
 /// `list`) is one by then.
 fn should_skip_from_variable(facts: &Facts, expr: &Expression<'_>) -> bool {
-    any_expression(expr, &|e| {
-        matches!(e, Expression::Variable(_)) && is_non_typed_from_param(facts, e)
-    })
+    any_node(
+        Node::Expression(expr),
+        &|n| matches!(n, Node::Expression(e @ Expression::Variable(_)) if is_non_typed_from_param(facts, e)),
+    )
 }
 
 /// Whether the function-like around the `if` (before `at`) assigns a variable variable (`${$name} = ...`): PHPStan

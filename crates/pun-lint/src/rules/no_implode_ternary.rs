@@ -71,7 +71,7 @@ impl Rule for NoImplodeTernary {
 }
 
 /// php-parser's `Array_` without items: `[]` or `array()`.
-fn is_empty_array(expr: &Expression<'_>) -> bool {
+pub(super) fn is_empty_array(expr: &Expression<'_>) -> bool {
     match unparenthesize(expr) {
         Expression::Array(a) => a.elements.is_empty(),
         Expression::LegacyArray(a) => a.elements.is_empty(),

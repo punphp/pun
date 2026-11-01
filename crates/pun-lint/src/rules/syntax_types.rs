@@ -130,7 +130,8 @@ fn parameter<'ast, 'arena>(
     Some(param)
 }
 
-fn is_this(expr: &Expression<'_>) -> bool {
+/// Whether `expr` is `$this`, parentheses aside.
+pub(crate) fn is_this(expr: &Expression<'_>) -> bool {
     matches!(unparenthesize(expr), Expression::Variable(Variable::Direct(v)) if v.name == b"$this")
 }
 

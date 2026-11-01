@@ -11,9 +11,9 @@ use mago_span::HasSpan;
 use mago_syntax::cst::*;
 use pun_problem::{Fix, Safety};
 
+use super::class_method::qualified;
 use super::rector_batch5::{doc_comment, has_attribute, member_from, param_used, remove_params};
 use super::types::facts::facts;
-use super::types::namespace_of;
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
 
@@ -38,11 +38,7 @@ impl Rule for NoUnusedConstructorParam {
         let facts = facts(ctx);
         let (members, left_brace, attributes, name) = match node {
             Node::Class(class) => {
-                let name = String::from_utf8_lossy(class.name.value);
-                let name = match namespace_of(ancestors) {
-                    Some(ns) => format!("{ns}\\{name}"),
-                    None => name.into_owned(),
-                };
+                let name = qualified(ancestors, class.name.value);
                 (
                     &class.members,
                     class.left_brace,

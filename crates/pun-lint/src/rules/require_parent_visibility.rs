@@ -9,9 +9,8 @@ use mago_codex::visibility::Visibility;
 use mago_syntax::cst::{ClassLikeMember, Modifier, Node, NodeKind};
 use pun_problem::{Edit, Fix, Safety, Span};
 
-use super::no_unused_public_method_param::MAGIC;
+use super::class_method::{is_magic, qualified};
 use super::types::facts::facts;
-use super::types::namespace_of;
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
 
@@ -36,11 +35,7 @@ impl Rule for RequireParentVisibility {
         let Node::Class(class) = node else {
             return;
         };
-        let name = String::from_utf8_lossy(class.name.value);
-        let name = match namespace_of(ancestors) {
-            Some(ns) => format!("{ns}\\{name}"),
-            None => name.into_owned(),
-        };
+        let name = qualified(ancestors, class.name.value);
         let facts = facts(ctx);
         let codebase = &facts.codebase;
         let own = codebase.get_class_like(name.as_bytes());
@@ -62,8 +57,7 @@ impl Rule for RequireParentVisibility {
                 continue;
             };
             let method_name = method.name.value;
-            let lower = String::from_utf8_lossy(method_name).to_ascii_lowercase();
-            if MAGIC.contains(&lower.as_str()) {
+            if is_magic(method_name) {
                 continue;
             }
             let current = method.modifiers.iter().find_map(|m| match m {

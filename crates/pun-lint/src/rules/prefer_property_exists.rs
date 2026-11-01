@@ -21,7 +21,7 @@ use mago_syntax::cst::{
 use pun_problem::{Edit, Fix, Safety};
 
 use super::class_method::{object_class_names, qualified, type_of};
-use super::rector_code_quality::{Prec, in_parent, wrap};
+use super::rector_code_quality::{Prec, in_parent, text, wrap};
 use super::types::facts::{Facts, facts, is_builtin_class};
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -234,9 +234,4 @@ fn this_class(facts: &Facts, ancestors: &[Node<'_, '_>]) -> Option<String> {
         }
     }
     None
-}
-
-fn text<'s>(ctx: &Context<'s>, node: &Expression<'_>) -> &'s str {
-    let span = node_span(node);
-    &ctx.source[span.start..span.end]
 }

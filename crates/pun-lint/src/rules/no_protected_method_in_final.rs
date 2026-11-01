@@ -8,32 +8,12 @@
 use mago_syntax::cst::{ClassLikeMember, Node, NodeKind};
 use pun_problem::{Fix, Safety};
 
+use super::class_method::is_magic;
 use super::lint_b_privatize::{final_class, is_protected, make_private};
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
 
 pub struct NoProtectedMethodInFinal;
-
-/// php-parser's `MAGIC_METHODS` (`ClassMethod::isMagic()`), lowercase.
-const MAGIC: [&str; 17] = [
-    "__construct",
-    "__destruct",
-    "__call",
-    "__callstatic",
-    "__get",
-    "__set",
-    "__isset",
-    "__unset",
-    "__sleep",
-    "__wakeup",
-    "__tostring",
-    "__set_state",
-    "__clone",
-    "__invoke",
-    "__debuginfo",
-    "__serialize",
-    "__unserialize",
-];
 
 impl Rule for NoProtectedMethodInFinal {
     fn id(&self) -> &'static str {
@@ -61,9 +41,7 @@ impl Rule for NoProtectedMethodInFinal {
             let name = method.name.value;
             if name.starts_with(b"createComponent")
                 || !is_protected(&method.modifiers)
-                || MAGIC
-                    .iter()
-                    .any(|m| name.eq_ignore_ascii_case(m.as_bytes()))
+                || is_magic(name)
             {
                 continue;
             }

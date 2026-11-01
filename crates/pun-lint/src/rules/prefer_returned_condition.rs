@@ -33,7 +33,7 @@ use pun_problem::{Fix, Safety, Span};
 
 use super::class_method::type_of;
 use super::php_parser::{List, Token, enclosing, previous_token_end, tokens};
-use super::rector_code_quality::{binary, is_constant, needs_parens, prec};
+use super::rector_code_quality::{binary, is_constant, needs_parens, prec, text};
 use super::rector_conditions::{comments_between, if_parts};
 use super::stmt_splice::{Change, Code, NewStatement, run_edits};
 use super::types::facts::{Facts, facts};
@@ -338,9 +338,4 @@ fn operator(op: &BinaryOperator<'_>) -> Option<&'static str> {
         BinaryOperator::NullCoalesce(_) => "??",
         _ => return None,
     })
-}
-
-fn text<'s>(ctx: &Context<'s>, expr: &Expression<'_>) -> &'s str {
-    let span = node_span(expr);
-    &ctx.source[span.start..span.end]
 }

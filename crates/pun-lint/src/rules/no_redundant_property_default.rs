@@ -22,6 +22,7 @@ use super::rector_batch5::{
     doc_comment, has_attribute, method, resolve_class_name, scope_statements,
 };
 use super::rector_stmts::previous_token_end;
+use super::syntax_types::is_this;
 use super::types::compare::classes::with_classes;
 use super::types::compare::mapper::expr_type;
 use super::types::facts::{self, facts, path_of};
@@ -194,10 +195,6 @@ fn first_level<'a>(method: &'a Method<'a>) -> impl Iterator<Item = &'a Statement
         MethodBody::Abstract(_) => Vec::new(),
     };
     statements.into_iter()
-}
-
-fn is_this(expr: &Expression<'_>) -> bool {
-    matches!(unparenthesize(expr), Expression::Variable(Variable::Direct(v)) if v.name == b"$this")
 }
 
 /// Calls resolve the declaring class through reflection, while local fetches compare the documented object type's

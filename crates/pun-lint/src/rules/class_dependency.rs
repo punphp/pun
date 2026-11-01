@@ -46,7 +46,7 @@ use mago_names::ResolvedNames;
 use mago_syntax::cst::*;
 use pun_problem::{Edit, Fix, Safety, Span};
 
-use super::class_method::walk;
+use super::class_method::{is_magic, qualified, walk};
 use super::laravel::property_attribute::ClassView;
 use super::no_redundant_readonly_property::print_modifiers;
 use super::php_parser::{Token, block_list, previous_token_end, tokens};
@@ -55,7 +55,6 @@ use super::prefer_catch_name_from_type::fqn_to_variable_name;
 use super::rector_batch5::{doc_comment, has_attribute, member_from, merge, resolve_class_name};
 use super::rector_conditions::{comments_between, indentation, print_comments, reprint};
 use super::types::facts::{Facts, facts};
-use super::types::namespace_of;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report};
 
@@ -1035,32 +1034,6 @@ fn params_of(method: &Method<'_>) -> Vec<(String, bool)> {
         .collect()
 }
 
-/// `ClassMethod::isMagic()`.
-fn is_magic(name: &[u8]) -> bool {
-    const MAGIC: [&str; 17] = [
-        "__construct",
-        "__destruct",
-        "__call",
-        "__callstatic",
-        "__get",
-        "__set",
-        "__isset",
-        "__unset",
-        "__sleep",
-        "__wakeup",
-        "__tostring",
-        "__set_state",
-        "__clone",
-        "__invoke",
-        "__debuginfo",
-        "__serialize",
-        "__unserialize",
-    ];
-    MAGIC
-        .iter()
-        .any(|m| m.as_bytes().eq_ignore_ascii_case(name))
-}
-
 /// `isMatchingType`: not `mixed`, and without `null` exactly the object type of `class`.
 fn is_matching_type(t: &TUnion, class: &str) -> bool {
     if t.is_mixed() {
@@ -1312,13 +1285,6 @@ fn shape_of(
         if shape.is_some() {
             return false;
         }
-        let qualified = |local: &[u8]| {
-            let local = String::from_utf8_lossy(local);
-            match namespace_of(path) {
-                Some(ns) => format!("{ns}\\{local}"),
-                None => local.into_owned(),
-            }
-        };
         let names_of = |types: Option<&TokenSeparatedSequence<'_, Identifier<'_>>>| -> Vec<String> {
             types
                 .into_iter()
@@ -1326,7 +1292,7 @@ fn shape_of(
                 .collect()
         };
         let found = match n {
-            Node::Class(c) if qualified(c.name.value).eq_ignore_ascii_case(&wanted) => {
+            Node::Class(c) if qualified(path, c.name.value).eq_ignore_ascii_case(&wanted) => {
                 Some(shape_from(
                     &c.members,
                     c.extends
@@ -1337,7 +1303,7 @@ fn shape_of(
                     &resolve,
                 ))
             }
-            Node::Interface(i) if qualified(i.name.value).eq_ignore_ascii_case(&wanted) => {
+            Node::Interface(i) if qualified(path, i.name.value).eq_ignore_ascii_case(&wanted) => {
                 Some(shape_from(
                     &i.members,
                     None,
@@ -1345,7 +1311,7 @@ fn shape_of(
                     &resolve,
                 ))
             }
-            Node::Trait(t) if qualified(t.name.value).eq_ignore_ascii_case(&wanted) => {
+            Node::Trait(t) if qualified(path, t.name.value).eq_ignore_ascii_case(&wanted) => {
                 Some(shape_from(&t.members, None, Vec::new(), &resolve))
             }
             _ => None,

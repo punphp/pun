@@ -16,6 +16,7 @@ use mago_syntax::token::TokenKind;
 use mago_syntax_core::input::Input;
 use pun_problem::{Edit, Span};
 
+pub(crate) use super::php_parser::{Frame, line_indent};
 use crate::syntax::{node_span, unparenthesize};
 
 /// One token of a region of the file: its kind and byte range in the file.
@@ -84,25 +85,6 @@ pub fn first_comment(source: &str, from: usize, to: usize) -> Option<usize> {
         .into_iter()
         .find(|t| t.kind.is_comment())
         .map(|t| t.start)
-}
-
-/// The whitespace at the start of the line that holds `pos`.
-pub fn line_indent(source: &str, pos: usize) -> &str {
-    let line_start = source[..pos].rfind('\n').map_or(0, |i| i + 1);
-    let rest = &source[line_start..];
-    let len = rest.len() - rest.trim_start_matches([' ', '\t']).len();
-    &rest[..len]
-}
-
-/// How a statement list is delimited, which decides what the printer writes when the list ends up empty.
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
-pub enum Frame {
-    /// `{ ... }`: `open` is just after `{`, `close` is at `}`. An emptied block prints as `{`, a newline and `}`.
-    Braces { open: usize, close: usize },
-    /// The single statement of a control structure written without braces. Emptied, it prints as `{`, `}`.
-    Bare,
-    /// A file, a namespace without braces, a `case`, or an alternative-syntax body (`:` ... `endif;`).
-    Open,
 }
 
 /// A statement list as php-parser keeps it.

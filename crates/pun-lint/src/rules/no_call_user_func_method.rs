@@ -12,6 +12,7 @@ use mago_syntax::cst::{
 use pun_problem::{Edit, Fix, Safety};
 
 use super::lint_b_helpers::{Known, known, unpacked, value};
+use super::prefer_serialize_method::is_identifier;
 use super::rector_code_quality::named;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -131,13 +132,4 @@ fn this_available(ancestors: &[Node<'_, '_>]) -> bool {
         }
     }
     false
-}
-
-/// A method name php-parser prints as it is after `->`.
-fn is_identifier(name: &str) -> bool {
-    let mut bytes = name.bytes();
-    bytes
-        .next()
-        .is_some_and(|b| b == b'_' || b.is_ascii_alphabetic() || b >= 0x80)
-        && bytes.all(|b| b == b'_' || b.is_ascii_alphanumeric() || b >= 0x80)
 }

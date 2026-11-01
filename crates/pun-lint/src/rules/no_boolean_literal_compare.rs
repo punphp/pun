@@ -85,7 +85,8 @@ impl Rule for NoBooleanLiteralCompare {
     }
 }
 
-fn truth(expr: &Expression<'_>) -> Option<bool> {
+/// `ValueResolver::isTrue` / `isFalse`.
+pub(super) fn truth(expr: &Expression<'_>) -> Option<bool> {
     match unparenthesize(expr) {
         Expression::Literal(Literal::True(_)) => Some(true),
         Expression::Literal(Literal::False(_)) => Some(false),

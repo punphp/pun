@@ -8,6 +8,8 @@
 use mago_syntax::cst::*;
 use pun_problem::{Edit, Fix, Safety};
 
+use super::no_boolean_literal_compare::truth;
+use super::rector_code_quality::inverse;
 use super::syntax_types::is_bool;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -80,30 +82,6 @@ impl Rule for NoBoolTernary {
             }),
         });
     }
-}
-
-/// `ValueResolver::isTrue` / `isFalse`.
-fn truth(expr: &Expression<'_>) -> Option<bool> {
-    match unparenthesize(expr) {
-        Expression::Literal(Literal::True(_)) => Some(true),
-        Expression::Literal(Literal::False(_)) => Some(false),
-        _ => None,
-    }
-}
-
-/// `AssignAndBinaryMap::getInversed`.
-fn inverse(op: &BinaryOperator<'_>) -> Option<&'static str> {
-    Some(match op {
-        BinaryOperator::Identical(_) => "!==",
-        BinaryOperator::NotIdentical(_) => "===",
-        BinaryOperator::Equal(_) => "!=",
-        BinaryOperator::NotEqual(_) | BinaryOperator::AngledNotEqual(_) => "==",
-        BinaryOperator::GreaterThan(_) => "<=",
-        BinaryOperator::LessThan(_) => ">=",
-        BinaryOperator::GreaterThanOrEqual(_) => "<",
-        BinaryOperator::LessThanOrEqual(_) => ">",
-        _ => return None,
-    })
 }
 
 /// The expression itself when it is a `bool`, else `(bool) expr`.

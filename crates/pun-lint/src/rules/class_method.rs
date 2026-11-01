@@ -20,7 +20,7 @@ use mago_syntax::cst::*;
 
 use super::rector_batch5::{doc_comment, member_from, resolve_class_name};
 use super::types::facts::Facts;
-use super::types::namespace_of;
+use super::types::{MAGIC, namespace_of};
 use crate::syntax::{node_span, unparenthesize};
 
 /// The class (php-parser's `Class_`, named or anonymous) a rule looks at.
@@ -124,26 +124,9 @@ pub(crate) fn is_static(method: &Method<'_>) -> bool {
 
 /// php-parser's `ClassMethod::isMagic()`.
 pub(crate) fn is_magic(name: &[u8]) -> bool {
-    const MAGIC: [&[u8]; 17] = [
-        b"__construct",
-        b"__destruct",
-        b"__call",
-        b"__callstatic",
-        b"__get",
-        b"__set",
-        b"__isset",
-        b"__unset",
-        b"__sleep",
-        b"__wakeup",
-        b"__tostring",
-        b"__set_state",
-        b"__clone",
-        b"__invoke",
-        b"__debuginfo",
-        b"__serialize",
-        b"__unserialize",
-    ];
-    MAGIC.iter().any(|m| m.eq_ignore_ascii_case(name))
+    MAGIC
+        .iter()
+        .any(|m| m.as_bytes().eq_ignore_ascii_case(name))
 }
 
 /// The doc comment php-parser gives the member at `index` of `class`.

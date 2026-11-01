@@ -9,8 +9,8 @@ use mago_codex::ttype::atomic::TAtomic;
 use mago_syntax::cst::{Access, BinaryOperator, Expression, Node, NodeKind};
 use pun_problem::{Edit, Fix, Safety};
 
-use super::class_method::walk;
 use super::prefer_empty_array_identical::is_non_typed_from_param;
+use super::side_effect::any_node;
 use super::types::facts::{Facts, facts};
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -65,14 +65,10 @@ impl Rule for NoAlwaysFalseCondition {
 /// `SafeLeftTypeBooleanAndOrAnalyzer::isSafe` on the left side `left`.
 pub(crate) fn is_safe(facts: &Facts, ancestors: &[Node<'_, '_>], left: &Expression<'_>) -> bool {
     let found = |test: &dyn Fn(&Expression<'_>) -> bool| {
-        let mut found = false;
-        walk(Node::Expression(left), &mut |n, _| {
-            if let Node::Expression(e) = n {
-                found |= test(e);
-            }
-            !found
-        });
-        found
+        any_node(
+            Node::Expression(left),
+            &|n| matches!(n, Node::Expression(e) if test(e)),
+        )
     };
     if found(&|e| matches!(e, Expression::Variable(_)) && is_non_typed_from_param(facts, e)) {
         return false;

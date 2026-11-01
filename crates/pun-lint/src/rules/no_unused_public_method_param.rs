@@ -10,32 +10,12 @@
 use mago_syntax::cst::*;
 use pun_problem::{Fix, Safety};
 
+use super::class_method::is_magic;
 use super::rector_batch5::{has_attribute, member_from, param_used, remove_params};
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
 
 pub struct NoUnusedPublicMethodParam;
-
-/// php-parser's `ClassMethod::isMagic` names, lowercase.
-pub(super) const MAGIC: &[&str] = &[
-    "__construct",
-    "__destruct",
-    "__call",
-    "__callstatic",
-    "__get",
-    "__set",
-    "__isset",
-    "__unset",
-    "__sleep",
-    "__wakeup",
-    "__tostring",
-    "__set_state",
-    "__clone",
-    "__invoke",
-    "__debuginfo",
-    "__serialize",
-    "__unserialize",
-];
 
 impl Rule for NoUnusedPublicMethodParam {
     fn id(&self) -> &'static str {
@@ -115,5 +95,5 @@ fn skip(ancestors: &[Node<'_, '_>], class: &Class<'_>, method: &Method<'_>) -> b
             "Symfony\\Component\\Messenger\\Attribute\\AsMessageHandler",
         );
     }
-    MAGIC.contains(&name.as_str())
+    is_magic(method.name.value)
 }

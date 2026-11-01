@@ -181,7 +181,7 @@ fn always_ends(source: &str, list: &List<'_>) -> bool {
 }
 
 /// A name `$this->name` can take: a letter, `_` or a byte from 0x80, then those and digits.
-fn is_identifier(name: &str) -> bool {
+pub(super) fn is_identifier(name: &str) -> bool {
     let mut bytes = name.bytes();
     bytes
         .next()

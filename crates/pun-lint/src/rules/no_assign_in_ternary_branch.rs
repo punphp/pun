@@ -9,7 +9,8 @@ use mago_syntax::cst::{Expression, Node, NodeKind, Variable};
 use pun_problem::{Edit, Fix, Safety};
 
 use super::rector_code_quality::{Prec, in_parent, operand};
-use super::rector_conditions::{is_assign, is_plain};
+use super::rector_conditions::is_assign;
+use super::rector_stmts::is_plain_assign;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -61,7 +62,7 @@ impl Rule for NoAssignInTernaryBranch {
             .iter()
             .rev()
             .find(|a| !matches!(a, Node::Expression(_) | Node::Parenthesized(_)))
-            && is_plain(parent)
+            && is_plain_assign(parent)
             && node_span(unparenthesize(parent.rhs)) == span
         {
             return;

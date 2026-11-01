@@ -13,11 +13,11 @@
 use mago_syntax::cst::*;
 use pun_problem::{Edit, Fix, Safety, Span};
 
+use super::class_method::qualified;
 use super::rector_batch5::{member_from, remove_params};
 use super::rector_code_quality::named;
 use super::side_effect::any_node;
 use super::types::facts::facts;
-use super::types::namespace_of;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -162,13 +162,7 @@ fn constructor_from_interface(
 ) -> bool {
     let facts = facts(ctx);
     let name = match node {
-        Node::Class(c) => {
-            let name = String::from_utf8_lossy(c.name.value);
-            match namespace_of(ancestors) {
-                Some(ns) => format!("{ns}\\{name}"),
-                None => name.into_owned(),
-            }
-        }
+        Node::Class(c) => qualified(ancestors, c.name.value),
         _ => facts.anonymous_class_name(mago_span::HasSpan::span(&node)),
     };
     let codebase = &facts.codebase;

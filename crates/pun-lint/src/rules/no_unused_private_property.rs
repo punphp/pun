@@ -22,6 +22,7 @@ use super::rector_batch5::{
 };
 use super::rector_code_quality::{named, text};
 use super::rector_stmts::{List, enclosing};
+use super::syntax_types::is_this;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -388,8 +389,4 @@ impl<'a> Fetches<'_, 'a> {
             _ => None,
         }
     }
-}
-
-fn is_this(expr: &Expression<'_>) -> bool {
-    matches!(unparenthesize(expr), Expression::Variable(Variable::Direct(v)) if v.name == b"$this")
 }

@@ -18,6 +18,7 @@ use mago_syntax::cst::*;
 use pun_problem::{Edit, Fix, Safety};
 
 use super::rector_code_quality::{binary, is_constant, operand as kept_operand, prec, text, wrap};
+use super::rector_stmts::is_plain_assign;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -93,12 +94,6 @@ fn in_refactored_chain(b: &Binary<'_>, ancestors: &[Node<'_, '_>]) -> bool {
         }
     }
     false
-}
-
-/// An `Assign` node of php-parser: `=`, not `=&` (`AssignRef`) nor a compound assignment (`AssignOp`).
-fn is_plain_assign(a: &Assignment<'_>) -> bool {
-    matches!(a.operator, AssignmentOperator::Assign(_))
-        && !matches!(a.rhs, Expression::UnaryPrefix(u) if u.operator.is_reference())
 }
 
 /// Whether PHPStan's native type of `expr` is a boolean, decided from the syntax alone.

@@ -12,6 +12,7 @@ use mago_codex::ttype::atomic::object::TObject;
 use mago_syntax::cst::*;
 use pun_problem::{Fix, Safety};
 
+use super::class_method::qualified;
 use super::rector_batch5::{remove_members, resolve_class_name};
 use super::side_effect::any_node;
 use super::types::facts::facts;
@@ -167,18 +168,6 @@ fn is_name_match(
             });
             is_class && named.unwrap_or(true)
         }
-    }
-}
-
-/// The fully qualified name of a class-like named `name` declared at `ancestors`.
-fn qualified(ancestors: &[Node<'_, '_>], name: &[u8]) -> String {
-    let name = String::from_utf8_lossy(name);
-    match ancestors.iter().rev().find_map(|a| match a {
-        Node::Namespace(ns) => ns.name.as_ref(),
-        _ => None,
-    }) {
-        Some(ns) => format!("{}\\{name}", String::from_utf8_lossy(ns.value())),
-        None => name.into_owned(),
     }
 }
 

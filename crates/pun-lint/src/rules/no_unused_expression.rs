@@ -21,6 +21,7 @@ use super::rector_stmts::{
     Frame, HOLDERS, block_list, body_list, holder_list, line_indent, remove,
 };
 use super::side_effect::any_node;
+use super::syntax_types::is_this;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -170,10 +171,6 @@ fn declared_property(scope: &[Node<'_, '_>], expr: &Expression<'_>) -> bool {
             .any(|p| p.is_promoted_property() && &p.variable.name[1..] == name),
         _ => false,
     })
-}
-
-fn is_this(expr: &Expression<'_>) -> bool {
-    matches!(unparenthesize(expr), Expression::Variable(Variable::Direct(v)) if v.name == b"$this")
 }
 
 /// `LivingCodeManipulator::keepLivingCodeFromExpr`: the parts of `expr` that may do something, in source order.

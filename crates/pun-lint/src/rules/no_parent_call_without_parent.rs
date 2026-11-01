@@ -10,6 +10,7 @@
 use mago_syntax::cst::*;
 use pun_problem::{Edit, Fix, Safety};
 
+use super::class_method::qualified;
 use super::rector_batch5::resolve_class_name;
 use super::rector_stmts::{block_list, remove};
 use super::types::facts::facts;
@@ -122,14 +123,5 @@ impl Rule for NoParentCallWithoutParent {
                 });
             }
         }
-    }
-}
-
-/// The fully qualified name of a class named `name` declared at `ancestors`.
-fn qualified(ancestors: &[Node<'_, '_>], name: &[u8]) -> String {
-    let name = String::from_utf8_lossy(name);
-    match super::types::namespace_of(ancestors) {
-        Some(ns) => format!("{ns}\\{name}"),
-        None => name.into_owned(),
     }
 }
