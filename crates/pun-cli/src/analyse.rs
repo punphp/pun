@@ -7,7 +7,7 @@
 //! `--error-format`) prints PHPStan's machine formats byte for byte (`analyse_report`). The exit code is PHPStan's:
 //! 1 with errors, 0 without, and 2 when Pun couldn't run.
 
-use crate::render::{Look, Renderer, RunError, Summary};
+use crate::render::{Look, Renderer, Summary};
 use crate::report::Abort;
 use crate::{agent, analyse_report, baseline, github, render, root};
 use anyhow::Result;
@@ -133,13 +133,7 @@ pub(crate) fn load_config(root: &Path, config: Option<PathBuf>) -> Result<Config
 const UNMATCHED_IGNORE: &str = "unmatched-ignore";
 
 fn run_error(message: String, hint: Option<String>) -> anyhow::Error {
-    let error = RunError {
-        path: None,
-        line: None,
-        message: message.clone(),
-        hint,
-    };
-    Abort::pun(message, error).into()
+    Abort::plain(message, hint).into()
 }
 
 /// The project pun-analyse works on: the analysed files, Composer's autoloaded files for symbols (minus the
@@ -179,14 +173,26 @@ fn project(cfg: &Config, analysed: Vec<PathBuf>) -> Result<pun_analyse::Project>
     project.reported = Some(std::sync::Arc::new(move |id| {
         // Both registered comparison owners emit these identifiers. Their invocation gates, not the
         // identifier's single canonical mapping, decide which owner's errors exist.
-        if method_rules.consistent_constructor && matches!(id,
-            "method.childParameterType" | "method.visibility" | "parameter.byRef" | "parameter.missing"
-            | "parameter.notByRef" | "parameter.notOptional" | "parameter.notVariadic" | "parameter.variadic"
-        ) {
+        if method_rules.consistent_constructor
+            && matches!(
+                id,
+                "method.childParameterType"
+                    | "method.visibility"
+                    | "parameter.byRef"
+                    | "parameter.missing"
+                    | "parameter.notByRef"
+                    | "parameter.notOptional"
+                    | "parameter.notVariadic"
+                    | "parameter.variadic"
+            )
+        {
             return true;
         }
         // Unmatched/comment-policy errors come from ignore processing, not a configurable rule.
-        rule_of_identifier(id).map_or_else(|| id == "phpstan.parse" || id.starts_with("ignore."), |r| on.contains(r))
+        rule_of_identifier(id).map_or_else(
+            || id == "phpstan.parse" || id.starts_with("ignore."),
+            |r| on.contains(r),
+        )
     }));
     Ok(project)
 }
@@ -212,11 +218,12 @@ pub(crate) fn analyse(cfg: &Config, paths: &[PathBuf], use_baseline: bool) -> Re
     // pun-analyse reported the enabled rules' errors only, and the errors about ignores
     let mut findings: Vec<Finding> = (errors.into_iter())
         .map(|e| {
-            let rule = rule_of_identifier(&e.identifier).unwrap_or(if e.identifier == "phpstan.parse" {
-                "parser-error"
-            } else {
-                UNMATCHED_IGNORE
-            });
+            let rule =
+                rule_of_identifier(&e.identifier).unwrap_or(if e.identifier == "phpstan.parse" {
+                    "parser-error"
+                } else {
+                    UNMATCHED_IGNORE
+                });
             // PHPStan reports, sorts and relativises normalised paths (a configured `../x` included).
             let file = PathBuf::from(normalize_path(&e.file));
             Finding {
@@ -232,9 +239,16 @@ pub(crate) fn analyse(cfg: &Config, paths: &[PathBuf], use_baseline: bool) -> Re
             }
         })
         .collect();
-    let malformed = if severe { Vec::new() } else { apply_ignores(&mut findings, &cfg.root) };
+    let malformed = if severe {
+        Vec::new()
+    } else {
+        apply_ignores(&mut findings, &cfg.root)
+    };
     let mut unmatched_baseline = 0;
-    if !severe && use_baseline && let Some(path) = &cfg.analyse.baseline {
+    if !severe
+        && use_baseline
+        && let Some(path) = &cfg.analyse.baseline
+    {
         let b = baseline::Baseline::read(&cfg.root.join(path))?;
         unmatched_baseline = b.filter(&mut findings);
     }
@@ -388,7 +402,11 @@ fn generate_baseline(
         None => PathBuf::from(cfg.analyse.baseline.as_deref().unwrap_or(baseline::DEFAULT)),
     };
     let mut analysed = analyse(cfg, &a.paths, false)?;
-    if analysed.findings.iter().any(|e| e.identifier == "phpstan.parse") {
+    if analysed
+        .findings
+        .iter()
+        .any(|e| e.identifier == "phpstan.parse")
+    {
         return present(a, cfg, &analysed, started);
     }
     // PHPStan's baseline leaves out the errors that can't be ignored

@@ -608,31 +608,13 @@ fn outside(root: &Path, files: &[PathBuf], paths: &[String]) -> Vec<String> {
 /// A rector.php as Rector resolves it, read through the project's own Rector (the config is PHP code). Like
 /// [`php_cs_fixer_config`], migrate is the only place Pun runs PHP.
 fn rector_config(root: &Path, config: &Path) -> Result<migrate::RectorConfig> {
-    let out = std::process::Command::new("php")
-        .args([
-            "-d",
-            "display_errors=stderr",
-            // One error message whatever the php.ini: no logged copy, no PHP 8.5 fatal backtrace.
-            "-d",
-            "log_errors=0",
-            "-d",
-            "fatal_error_backtraces=0",
-            "-r",
-            include_str!("rector_config.php"),
-            "--",
-        ])
-        .arg(root.join("vendor/autoload.php"))
-        .arg(config)
-        .current_dir(root)
-        .output()
-        .context("reading rector.php needs `php` on PATH")?;
-    if !out.status.success() {
-        if out.stdout.is_empty() {
-            bail!("{}", String::from_utf8_lossy(&out.stderr).trim());
-        }
-        bail!("{}", String::from_utf8_lossy(&out.stdout));
-    }
-    Ok(serde_json::from_slice(&out.stdout)?)
+    let out = read_php(
+        root,
+        config,
+        include_str!("rector_config.php"),
+        "rector.php",
+    )?;
+    Ok(serde_json::from_slice(&out)?)
 }
 
 /// Writes the edits, or with `--dry-run` returns their diffs instead.
@@ -641,7 +623,7 @@ fn apply(root: &Path, edits: &[(PathBuf, Vec<u8>, Vec<u8>)], dry_run: bool) -> R
     for (f, old, new) in edits {
         if dry_run {
             let (old, new) = (String::from_utf8_lossy(old), String::from_utf8_lossy(new));
-            diffs += &report::diff(&old, &new, Path::new(&rel(root, f)));
+            diffs += &report::diff_bytes(old.as_bytes(), new.as_bytes(), Path::new(&rel(root, f)));
         } else {
             std::fs::write(f, new).with_context(|| format!("can't write {}", f.display()))?;
         }
@@ -947,6 +929,20 @@ fn php_cs_fixer_config(root: &Path, config: &Path) -> Result<(Object, Object)> {
             "no vendor/friendsofphp/php-cs-fixer: run `composer install` so Pun can read the config"
         );
     }
+    let out = read_php(
+        root,
+        config,
+        include_str!("php_cs_fixer_rules.php"),
+        ".php-cs-fixer.php",
+    )?;
+    let mut v: Object = serde_json::from_slice(&out)?;
+    let mut take = |k: &str| serde_json::from_value(v.remove(k).unwrap_or_default());
+    Ok((take("rules")?, take("finder")?))
+}
+
+/// Runs `script` on `config` with the project's autoloader and returns its stdout (JSON). `what` names the config in
+/// the error when `php` is missing.
+fn read_php(root: &Path, config: &Path, script: &str, what: &str) -> Result<Vec<u8>> {
     let out = std::process::Command::new("php")
         // Startup warnings (a broken php.ini) go to stderr, off the JSON; a fatal error is printed once (no php.ini
         // log_errors copy) and without PHP 8.5's backtrace.
@@ -959,14 +955,14 @@ fn php_cs_fixer_config(root: &Path, config: &Path) -> Result<(Object, Object)> {
             "-d",
             "fatal_error_backtraces=0",
             "-r",
-            include_str!("php_cs_fixer_rules.php"),
+            script,
             "--",
         ])
         .arg(root.join("vendor/autoload.php"))
         .arg(config)
         .current_dir(root)
         .output()
-        .context("reading .php-cs-fixer.php needs `php` on PATH")?;
+        .with_context(|| format!("reading {what} needs `php` on PATH"))?;
     if !out.status.success() {
         // A caught exception's message is on stdout; a fatal error (uncatchable) only on stderr.
         if out.stdout.is_empty() {
@@ -974,9 +970,7 @@ fn php_cs_fixer_config(root: &Path, config: &Path) -> Result<(Object, Object)> {
         }
         bail!("{}", String::from_utf8_lossy(&out.stdout));
     }
-    let mut v: Object = serde_json::from_slice(&out.stdout)?;
-    let mut take = |k: &str| serde_json::from_value(v.remove(k).unwrap_or_default());
-    Ok((take("rules")?, take("finder")?))
+    Ok(out.stdout)
 }
 
 #[cfg(test)]

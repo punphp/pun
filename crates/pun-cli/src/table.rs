@@ -81,11 +81,6 @@ impl Style {
         Style { width }
     }
 
-    /// SymfonyStyle's line length: the terminal width, at most 120.
-    fn line_length(&self) -> usize {
-        self.width.min(MAX_LINE_LENGTH)
-    }
-
     /// ErrorsConsoleStyle::table, undecorated: the header row, a separator, the rows (a cell's lines on lines of
     /// their own), a newline after the bottom border. The second column wraps at the terminal width less the first
     /// column and five spaces of padding.
@@ -136,10 +131,13 @@ impl Style {
     /// SymfonyStyle::block with a type and padding, undecorated, after `tables` tables: autoPrependBlock's blank
     /// lines (two less the newlines among the last two characters SymfonyStyle buffered, and the tables bypass that
     /// buffer, so it holds only the newline after each table), ` [TYPE] message` padded to the line length, then a
-    /// blank line.
+    /// blank line. SymfonyStyle's line length is the terminal width, at most 120.
     pub(crate) fn block(&self, kind: &str, message: &str, tables: usize) -> String {
         let line = format!(" [{kind}] {message}");
         let before = if tables >= 2 { "" } else { "\n" };
-        format!("{before}{}\n\n", pad(&line, self.line_length()))
+        format!(
+            "{before}{}\n\n",
+            pad(&line, self.width.min(MAX_LINE_LENGTH))
+        )
     }
 }

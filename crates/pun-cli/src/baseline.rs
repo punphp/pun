@@ -82,13 +82,7 @@ impl Baseline {
         let text = format!("{HEADER}{}", toml::to_string(self)?);
         std::fs::write(path, text).map_err(|e| {
             let message = format!("can't write the baseline to {}: {e}", path.display());
-            let error = RunError {
-                path: None,
-                line: None,
-                message: message.clone(),
-                hint: None,
-            };
-            Abort::pun(message, error).into()
+            Abort::plain(message, None).into()
         })
     }
 

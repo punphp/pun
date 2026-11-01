@@ -103,14 +103,7 @@ fn configure(cfg: &Config, rule: &mut dyn pun_lint::Rule) -> Result<()> {
 
 /// A config error: Pun's own run error, never a Pint box (Pint never reads pun.toml).
 fn config_error(e: anyhow::Error) -> anyhow::Error {
-    let message = format!("{e:#}");
-    let error = RunError {
-        path: None,
-        line: None,
-        message: message.clone(),
-        hint: None,
-    };
-    Abort::pun(message, error).into()
+    Abort::plain(format!("{e:#}"), None).into()
 }
 
 /// The token pipelines of a run, one per distinct set of token lint rules (overrides and `@pun-ignore-file` change

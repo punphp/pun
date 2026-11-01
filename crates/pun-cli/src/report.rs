@@ -188,6 +188,17 @@ impl Abort {
             thrown: pint_error::Thrown::Console,
         }
     }
+
+    /// Pun's own run error with no file: `message` is both the one-line message and the run error.
+    pub(crate) fn plain(message: String, hint: Option<String>) -> Abort {
+        let error = RunError {
+            path: None,
+            line: None,
+            message: message.clone(),
+            hint,
+        };
+        Abort::pun(message, error)
+    }
 }
 
 impl std::fmt::Display for Abort {
@@ -221,18 +232,7 @@ pub(crate) fn fail(e: anyhow::Error, f: &Failure) -> u8 {
             abort.thrown = pint_error::Thrown::of(&e);
             abort
         }
-        Err(e) => {
-            let message = format!("{e:#}");
-            Abort::pun(
-                message.clone(),
-                RunError {
-                    path: None,
-                    line: None,
-                    message,
-                    hint: None,
-                },
-            )
-        }
+        Err(e) => Abort::plain(format!("{e:#}"), None),
     };
     if crate::agent::enabled() {
         print!("{}", crate::agent::error(&abort.to_string()));
@@ -598,7 +598,11 @@ fn agent(ctx: &Ctx, results: &[FileResult]) -> String {
                 0 => String::new(),
                 n => format!(":{n}"),
             };
-            items.push(format!("{}{at} {rule} {}", r.rel, console::lossy(&r.message)));
+            items.push(format!(
+                "{}{at} {rule} {}",
+                r.rel,
+                console::lossy(&r.message)
+            ));
         } else if r.status == Status::Fixed {
             if remaining {
                 left += 1;
@@ -802,7 +806,9 @@ fn reporter(
             fix_report::txt(&changes, ctx.verbose, ctx.dry_run, ctx.total, decorated)
         }
         ReportFormat::Agent => {
-            let messages: Vec<String> = errors(results).map(|r| console::lossy(&r.message)).collect();
+            let messages: Vec<String> = errors(results)
+                .map(|r| console::lossy(&r.message))
+                .collect();
             let errors: Vec<(&str, &str)> = (errors(results).map(|r| r.rel.as_str()))
                 .zip(messages.iter().map(String::as_str))
                 .collect();
@@ -816,12 +822,8 @@ fn reporter(
     })
 }
 
-/// PHP-CS-Fixer UnifiedDiffer (sebastian/diff strict unified, 3 lines of context, real path in headers).
-pub(crate) fn diff(old: &str, new: &str, path: &Path) -> String {
-    diff_bytes(old.as_bytes(), new.as_bytes(), path)
-}
-
-/// `diff` of a file's bytes: those that aren't UTF-8 are carried to the output as they are (`console::carry`).
+/// PHP-CS-Fixer UnifiedDiffer (sebastian/diff strict unified, 3 lines of context, real path in headers) of a file's
+/// bytes: those that aren't UTF-8 are carried to the output as they are (`console::carry`).
 pub(crate) fn diff_bytes(old: &[u8], new: &[u8], path: &Path) -> String {
     let mut p = path.to_string_lossy().into_owned();
     if p.contains(char::is_whitespace) {

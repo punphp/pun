@@ -351,8 +351,6 @@ impl Renderer {
 
     /// The last line of a run: the non-zero counts in a fixed order, then the file count and the time.
     pub(crate) fn summary(&self, s: &Summary) -> String {
-        let plural =
-            |n: usize, one: &str, many: &str| format!("{n} {}", if n == 1 { one } else { many });
         let mut parts = Vec::new();
         if s.errors > 0 {
             parts.push(
@@ -401,8 +399,6 @@ impl Renderer {
     /// `N of T files need formatting · run \`pun format\` to fix · Xs` (`All T files formatted · Xs` when none
     /// does). Files that failed add a red `E errors` before the time.
     pub(crate) fn format_summary(&self, s: &FormatSummary) -> String {
-        let plural =
-            |n: usize, one: &str, many: &str| format!("{n} {}", if n == 1 { one } else { many });
         let time = format!("{:.2}s", s.elapsed.as_secs_f64());
         let files = plural(s.files, "file", "files");
         let mut parts = vec![];
@@ -492,6 +488,11 @@ fn level(look: &Look, level: Level) -> (&'static str, Role) {
 /// `text` with each tab as [`INDENT`] spaces.
 fn expand(text: &str) -> String {
     text.replace('\t', &" ".repeat(INDENT))
+}
+
+/// `n` and the noun: `one` for 1, else `many`.
+fn plural(n: usize, one: &str, many: &str) -> String {
+    format!("{n} {}", if n == 1 { one } else { many })
 }
 
 /// How many columns `text` takes in a frame: one per character, [`INDENT`] per tab.
