@@ -3281,7 +3281,7 @@
         "PHPStan\\Rules\\DisallowedConstructs\\DisallowedImplicitArrayCreationRule",
         "variable.implicitArray"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/arrays/prefer-array-append",
@@ -10760,7 +10760,7 @@
         "ClosureReturnTypeFromAssertInstanceOfRector",
         "Rector\\TypeDeclaration\\Rector\\Closure\\ClosureReturnTypeFromAssertInstanceOfRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/add-data-provider-allow-mock-objects",
@@ -11663,7 +11663,7 @@
         "AssertEmptyNullableObjectToAssertInstanceofRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\MethodCall\\AssertEmptyNullableObjectToAssertInstanceofRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-assert-instances-of",
@@ -12248,7 +12248,7 @@
         "AssertArrayCastedObjectToAssertSameRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\Expression\\AssertArrayCastedObjectToAssertSameRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-requires-attribute",
@@ -14644,7 +14644,7 @@
         "class_keyword",
         "no-literal-namespace-string"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/style/prefer-class-keyword",
@@ -16737,7 +16737,7 @@
         "AddReturnTypeFromTryCatchTypeRector",
         "Rector\\TypeDeclaration\\Rector\\ClassMethod\\AddReturnTypeFromTryCatchTypeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-return-type-from-typed-call",

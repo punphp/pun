@@ -197,7 +197,7 @@
         "rules": [
           "lint/style/prefer-class-constant"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -3183,7 +3183,7 @@
         "rules": [
           "lint/style/prefer-class-constant"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6387,7 +6387,7 @@
         "rules": [
           "lint/types/add-return-type-from-try-catch"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6891,7 +6891,7 @@
         "rules": [
           "lint/phpunit/add-closure-return-type-from-assert"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12505,7 +12505,7 @@
         "rules": [
           "lint/phpunit/prefer-property-assertions"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12553,7 +12553,7 @@
         "rules": [
           "lint/phpunit/prefer-assert-instanceof-over-empty"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -24401,7 +24401,7 @@
         "rules": [
           "lint/arrays/no-implicit-array-creation"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -25617,7 +25617,7 @@
         "rules": [
           "lint/style/prefer-class-constant"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {

@@ -50,7 +50,7 @@ pub mod telemetry;
 mod analyzable;
 mod assertion;
 mod common;
-mod context;
+pub mod context;
 mod expression;
 mod formula;
 mod invocation;

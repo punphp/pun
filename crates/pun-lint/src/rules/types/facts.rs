@@ -366,15 +366,19 @@ thread_local! {
     static SOURCES: RefCell<Vec<(String, String)>> = const { RefCell::new(Vec::new()) };
     /// Facts belong to a path, source, PHP version and project snapshot, not just source bytes.
     static LAST: RefCell<Option<Rc<Facts>>> = const { RefCell::new(None) };
+    /// [`LAST`] for the facts that analyse dead code.
+    static LAST_DEAD: RefCell<Option<Rc<Facts>>> = const { RefCell::new(None) };
 }
 
 /// Run `f` with the symbols of `sources` (path, code) visible to the files analysed on their own on this thread.
 pub fn with_sources<R>(sources: Vec<(String, String)>, f: impl FnOnce() -> R) -> R {
     SOURCES.with(|s| *s.borrow_mut() = sources);
     LAST.with(|l| *l.borrow_mut() = None);
+    LAST_DEAD.with(|l| *l.borrow_mut() = None);
     let result = f();
     SOURCES.with(|s| s.borrow_mut().clear());
     LAST.with(|l| *l.borrow_mut() = None);
+    LAST_DEAD.with(|l| *l.borrow_mut() = None);
     result
 }
 
@@ -404,9 +408,44 @@ pub(crate) struct Facts {
     artifacts: OnceCell<Analysis>,
     /// The analysis of the file as written, docblocks read, run the first time a type of it is needed.
     documented_artifacts: OnceCell<Option<AnalysisArtifacts>>,
+    /// Analyse the code Mago finds unreachable too, and the `catch` blocks no throw point reaches: PHPStan types them.
+    dead_code: bool,
 }
 
 impl Facts {
+    /// `$scope->hasVariableType()` of the variable at the root of each `$v[...] = ...` / `$v[] = ...` (an `Assign`),
+    /// read before the assignment: the assignment's span, the variable's name, and whether it is maybe (`true`) or
+    /// surely not (`false`) defined. Defined variables are left out.
+    pub fn implicit_array_writes(&self) -> Vec<((u32, u32), String, bool)> {
+        let file = mago_file(&self.path, &self.native_source, FileType::Host);
+        let arena = LocalArena::new();
+        let program = parse_file(&arena, &file);
+        let names = NameResolver::new(&arena).resolve(program);
+        let found = Arc::new(Mutex::new(HashMap::new()));
+        let mut registry = create_registry_with_plugins(&[], false);
+        super::union_method::register(&mut registry);
+        registry.register_expression_hook(super::implicit_array_observer::Observer(Arc::clone(&found)));
+        let analyzer = Analyzer::new(
+            &arena,
+            &file,
+            &names,
+            &self.codebase,
+            &registry,
+            Settings::new(self.version),
+        );
+        let mut result = AnalysisResult::new(SymbolReferences::new());
+        let _ = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+            analyzer.analyze_with_artifacts(program, &mut result)
+        }));
+        let found = found.lock().unwrap_or_else(|e| e.into_inner());
+        let mut out: Vec<_> = (found.iter())
+            .filter(|(_, (_, state))| *state != super::implicit_array_observer::YES)
+            .map(|(span, (name, state))| (*span, name.clone(), *state == super::implicit_array_observer::MAYBE))
+            .collect();
+        out.sort();
+        out
+    }
+
     /// The native type of the expression at `span`, if the analyser reached it. Inside a trait, PHPStan 2.2.7 (as
     /// Rector runs it, at the version Pinkary pins) does not know `$this`, so a value that comes from it has no type.
     pub fn native_type(&self, span: Span) -> Option<&TUnion> {
@@ -794,7 +833,10 @@ impl Facts {
             &names,
             &self.codebase,
             &PLUGINS,
-            Settings::new(self.version),
+            Settings {
+                analyze_dead_code: self.dead_code,
+                ..Settings::new(self.version)
+            },
         );
         let mut result = AnalysisResult::new(SymbolReferences::new());
         let artifacts = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
@@ -1146,6 +1188,19 @@ pub(crate) fn without_docblocks(code: &str) -> String {
 
 /// The facts of the file `ctx` is about.
 pub(crate) fn facts(ctx: &Context<'_>) -> Rc<Facts> {
+    cached(ctx, &LAST, false)
+}
+
+/// [`facts`] whose analysis reaches the code after a `return` and the `catch` blocks no throw point reaches.
+pub(crate) fn facts_with_dead_code(ctx: &Context<'_>) -> Rc<Facts> {
+    cached(ctx, &LAST_DEAD, true)
+}
+
+fn cached(
+    ctx: &Context<'_>,
+    last: &'static std::thread::LocalKey<RefCell<Option<Rc<Facts>>>>,
+    dead_code: bool,
+) -> Rc<Facts> {
     let mut pending = PENDING.lock().unwrap_or_else(|e| e.into_inner());
     if let Some(build) = pending.take() {
         set_project_codebase(Some(build()));
@@ -1156,7 +1211,7 @@ pub(crate) fn facts(ctx: &Context<'_>) -> Rc<Facts> {
         .unwrap_or_else(|e| e.into_inner())
         .as_ref()
         .map(Arc::clone);
-    let cached = LAST.with(|l| {
+    let cached = last.with(|l| {
         l.borrow()
             .as_ref()
             .filter(|facts| {
@@ -1174,8 +1229,8 @@ pub(crate) fn facts(ctx: &Context<'_>) -> Rc<Facts> {
     if let Some(facts) = cached {
         return facts;
     }
-    let facts = Rc::new(scan(ctx, project));
-    LAST.with(|l| *l.borrow_mut() = Some(Rc::clone(&facts)));
+    let facts = Rc::new(scan(ctx, project, dead_code));
+    last.with(|l| *l.borrow_mut() = Some(Rc::clone(&facts)));
     facts
 }
 
@@ -1270,7 +1325,7 @@ fn refresh_closures(
 }
 
 /// The facts of a file: shared project declarations with current anonymous signatures.
-fn scan(ctx: &Context<'_>, project: Option<Arc<ProjectCodebase>>) -> Facts {
+fn scan(ctx: &Context<'_>, project: Option<Arc<ProjectCodebase>>, dead_code: bool) -> Facts {
     let path = ctx.path.to_string_lossy().into_owned();
     let identity = project.clone();
     let project = project.unwrap_or_else(|| {
@@ -1290,6 +1345,7 @@ fn scan(ctx: &Context<'_>, project: Option<Arc<ProjectCodebase>>) -> Facts {
         version,
         artifacts: OnceCell::new(),
         documented_artifacts: OnceCell::new(),
+        dead_code,
     }
 }
 

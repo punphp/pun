@@ -38,7 +38,7 @@ use pun_lint::rules::{
     AddPropertyTypeSetup, AddPropertyTypeSetupDocblock, AddReturnTypeFromCast,
     AddReturnTypeFromConstant, AddReturnTypeFromNativeCall, AddReturnTypeFromNew,
     AddReturnTypeFromParam, AddReturnTypeFromParent, AddReturnTypeFromProperty,
-    AddReturnTypeFromSymfonySerializer, AddReturnTypeFromTernary, AddReturnTypeFromTypedCall,
+    AddReturnTypeFromSymfonySerializer, AddReturnTypeFromTernary, AddReturnTypeFromTryCatch, AddReturnTypeFromTypedCall,
     AddReturnTypeFromYield, AddStringReturn, AddStringReturnFromScalar, AddUnionReturn,
     NoNullsafeOnNonNull, PreferIdenticalSameType, PreferInstanceof,
 };
@@ -208,6 +208,15 @@ fn add_arrow_function_return_type() {
         vec![Box::new(AddArrowFunctionReturn)],
         "AddArrowFunctionReturnTypeRector",
         80000,
+    );
+}
+
+#[test]
+fn add_return_type_from_try_catch_type() {
+    run_class_at(
+        vec![Box::new(AddReturnTypeFromTryCatch)],
+        "AddReturnTypeFromTryCatchTypeRector",
+        80400,
     );
 }
 

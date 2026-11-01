@@ -79,7 +79,9 @@ impl Rule for AddSafeStrictTypes {
         }) {
             return;
         }
-        let (at, edit) = declare_strict_types(ctx.source, &program.statements);
+        let Some((at, edit)) = declare_strict_types(ctx.source, &program.statements) else {
+            return;
+        };
         out.push(Report {
             span: at,
             message: "This file never relies on scalar type coercion: declare strict types."

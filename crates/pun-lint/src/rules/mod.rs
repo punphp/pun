@@ -29,6 +29,8 @@ mod require_parent_visibility;
 mod add_datetime_property_type;
 mod no_dead_catch;
 mod prefer_class_keyword;
+mod no_implicit_array_creation;
+mod prefer_class_constant;
 mod prefer_class_name_constant;
 mod no_unused_constructor_param;
 mod no_null_default_argument;
@@ -289,6 +291,8 @@ pub use no_unused_promoted_property::NoUnusedPromotedProperty;
 pub use require_parent_visibility::RequireParentVisibility;
 pub use no_dead_catch::NoDeadCatch;
 pub use prefer_class_keyword::PreferClassKeyword;
+pub use no_implicit_array_creation::NoImplicitArrayCreation;
+pub use prefer_class_constant::PreferClassConstant;
 pub use prefer_class_name_constant::PreferClassNameConstant;
 pub use no_unused_constructor_param::NoUnusedConstructorParam;
 pub use no_null_default_argument::{NoNullDefaultArgument, NoNullDefaultNamedArgument};
@@ -686,6 +690,8 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(AddParamTypeSprintf),
         Box::new(AddDatetimePropertyType),
         Box::new(PreferClassKeyword),
+        Box::new(NoImplicitArrayCreation),
+        Box::new(PreferClassConstant),
         Box::new(RequireParentVisibility),
         Box::new(NoUnusedPromotedProperty),
         Box::new(NoBooleanFlagParameter::default()),

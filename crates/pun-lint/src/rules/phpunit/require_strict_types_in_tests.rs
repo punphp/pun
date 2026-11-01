@@ -46,7 +46,9 @@ impl Rule for RequireStrictTypesInTests {
         {
             return;
         }
-        let (at, edit) = declare_strict_types(ctx.source, &program.statements);
+        let Some((at, edit)) = declare_strict_types(ctx.source, &program.statements) else {
+            return;
+        };
         out.push(report(
             at,
             "Declare strict types in a test file.",
@@ -68,8 +70,12 @@ pub(crate) fn has_strict_types(statements: &Sequence<'_, Statement<'_>>) -> bool
 pub(crate) fn declare_strict_types(
     source: &str,
     statements: &Sequence<'_, Statement<'_>>,
-) -> (Span, Edit) {
+) -> Option<(Span, Edit)> {
     let list = open_list(source, statements, 0, source.len());
+    // a file without statements (only the opening tag) has no first statement to put the declaration before
+    if list.stmts.is_empty() {
+        return None;
+    }
     let first = list.with_comments(source, 0);
     let last_end = list.stmts.last().map_or(0, |s| node_span(*s).end);
     // php-parser moves the statements after a namespace without braces into it, a trailing `Nop` too
@@ -114,7 +120,7 @@ pub(crate) fn declare_strict_types(
             format!("{DECLARE}\n\n"),
         )
     };
-    (Span::new(first.start, first.start), edit)
+    Some((Span::new(first.start, first.start), edit))
 }
 
 /// The end of a `?>` among `statements` after `after` with comments before it: php-parser reads the tag as `;`, and

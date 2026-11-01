@@ -257,3 +257,62 @@ fn statement_padding_skips_a_file_with_inline_html() {
         "require_statement_padding_html.php.inc",
     );
 }
+
+#[test]
+fn class_keyword() {
+    // PHP-CS-Fixer's `class_keyword` (.oracle/php-cs-fixer, `--allow-risky=yes`) on PHP's own classes: a quoted string
+    // that is a class name spelt as declared, with or without a leading `\`. Classes only the fixer's own process
+    // knows (`PhpCsFixer\...`) are not known to Pun.
+    check_rule_oracle(rules::PreferClassConstant, "prefer_class_constant.php.inc");
+}
+
+#[test]
+fn implicit_array_creation() {
+    // phpstan-strict-rules 's `disallowedImplicitArrayCreation` (.oracle/phpstan, level 0) on the same file reports
+    // exactly these lines and messages; `$t` after a `try`, `static`, `global`, `null` and a compound write stay quiet.
+    let path =
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/oracle/no_implicit_array_creation.php");
+    let source = std::fs::read_to_string(&path).unwrap();
+    let linter = Linter::new(vec![Box::new(rules::NoImplicitArrayCreation)], 80400);
+    let found: Vec<(usize, String)> = linter
+        .check(&path, &source)
+        .unwrap()
+        .iter()
+        .map(|p| {
+            (
+                source[..p.span.start].matches('\n').count() + 1,
+                p.message.clone(),
+            )
+        })
+        .collect();
+    let expected = [
+        (2, "variable $a does not exist."),
+        (3, "variable $b might not exist."),
+        (5, "variable $n does not exist."),
+        (7, "variable $acc might not exist."),
+        (9, "variable $w might not exist."),
+        (11, "variable $top might not exist."),
+    ];
+    let expected: Vec<(usize, String)> = expected
+        .iter()
+        .map(|(l, m)| (*l, format!("Implicit array creation is not allowed - {m}")))
+        .collect();
+    assert_eq!(found, expected);
+}
+
+#[test]
+fn file_with_only_an_opening_tag_gets_no_strict_types_declaration() {
+    // Regression: `<?php` alone made the strict types rules index an empty statement list.
+    for rule in [
+        Box::new(rules::AddSafeStrictTypes) as Box<dyn Rule>,
+        Box::new(rules::RequireStrictTypesInTests),
+    ] {
+        let linter = Linter::new(vec![rule], 80400);
+        assert!(
+            linter
+                .check(Path::new("a.php"), "<?php\n")
+                .unwrap()
+                .is_empty()
+        );
+    }
+}
