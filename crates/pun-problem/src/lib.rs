@@ -11,12 +11,10 @@
 use std::ops::Range;
 use std::path::PathBuf;
 
-use serde::{Deserialize, Serialize};
-
 pub mod ignore;
 
 /// A byte range `start..end` in a file's source.
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub struct Span {
     pub start: usize,
     pub end: usize,
@@ -29,23 +27,21 @@ impl Span {
 }
 
 /// How bad a problem is. Lint rules are `error` or `warn` (`off` rules report nothing); analyse is always `Error`.
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase")]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum Level {
     Error,
     Warning,
 }
 
 /// Whether a fix keeps the code's behaviour (`safe`) or may change it (`unsafe`).
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase")]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum Safety {
     Safe,
     Unsafe,
 }
 
 /// Replace the bytes in `span` with `text`. An empty span inserts.
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Edit {
     pub span: Span,
     pub text: String,
@@ -61,14 +57,14 @@ impl Edit {
 }
 
 /// A fix: edits that apply together or not at all.
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Fix {
     pub safety: Safety,
     pub edits: Vec<Edit>,
 }
 
 /// One finding. `rule` is the full ID (`lint/laravel/no-debug-calls`), `path` is relative to the project root.
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Problem {
     pub rule: String,
     pub path: PathBuf,

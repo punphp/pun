@@ -1540,8 +1540,6 @@ name = "punphp-problem"
 version = "0.0.1"
 dependencies = [
  "punphp-tokens",
- "serde",
- "serde_json",
 ]
 
 [[package]]

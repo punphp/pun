@@ -1,8 +1,6 @@
 //! Every expected value here is derived by hand from the input bytes (written out in the comments).
 
-use std::path::PathBuf;
-
-use pun_problem::{Edit, Fix, Level, LineCol, LineIndex, Problem, Safety, Span, apply_fixes};
+use pun_problem::{Edit, Fix, LineCol, LineIndex, Safety, Span, apply_fixes};
 
 fn lc(line: usize, column: usize) -> LineCol {
     LineCol { line, column }
@@ -181,41 +179,4 @@ fn invalid_fixes_never_apply() {
     assert_eq!(out.applied, vec![3]);
     assert_eq!(out.invalid, vec![0, 1, 2]);
     assert_eq!(out.deferred, [] as [usize; 0]);
-}
-
-#[test]
-fn problem_json_shape() {
-    let problem = Problem {
-        rule: "lint/laravel/no-debug-calls".into(),
-        path: PathBuf::from("app/Http/Controllers/PostController.php"),
-        span: Span::new(10, 19),
-        message: "dd() left in the code".into(),
-        help: Some("remove the dd() call".into()),
-        level: Level::Error,
-        fix: Some(Fix {
-            safety: Safety::Unsafe,
-            edits: vec![Edit::new(Span::new(10, 20), "")],
-        }),
-    };
-    let json = r#"{"rule":"lint/laravel/no-debug-calls","path":"app/Http/Controllers/PostController.php","span":{"start":10,"end":19},"message":"dd() left in the code","help":"remove the dd() call","level":"error","fix":{"safety":"unsafe","edits":[{"span":{"start":10,"end":20},"text":""}]}}"#;
-    assert_eq!(serde_json::to_string(&problem).unwrap(), json);
-    assert_eq!(serde_json::from_str::<Problem>(json).unwrap(), problem);
-
-    let warning = Problem {
-        help: None,
-        level: Level::Warning,
-        fix: None,
-        ..problem
-    };
-    let json = r#"{"rule":"lint/laravel/no-debug-calls","path":"app/Http/Controllers/PostController.php","span":{"start":10,"end":19},"message":"dd() left in the code","help":null,"level":"warning","fix":null}"#;
-    assert_eq!(serde_json::to_string(&warning).unwrap(), json);
-    assert_eq!(serde_json::from_str::<Problem>(json).unwrap(), warning);
-    let safe = r#"{"safety":"safe","edits":[]}"#;
-    assert_eq!(
-        serde_json::from_str::<Fix>(safe).unwrap(),
-        Fix {
-            safety: Safety::Safe,
-            edits: vec![]
-        }
-    );
 }
