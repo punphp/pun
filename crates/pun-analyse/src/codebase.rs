@@ -3,6 +3,7 @@
 use std::borrow::Cow;
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
+use std::rc::Rc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, LazyLock, OnceLock};
 
@@ -607,11 +608,28 @@ fn resolve_initializers(metadata: &mut CodebaseMetadata, sources: &Sources, proj
         .filter_map(|path| read(path, FileType::Vendored).ok().flatten())
         .collect();
     initializer_sources.extend(attribute_sources.iter().map(|file| (file.id, file)));
+    let mut copies: HashMap<_, Vec<_>> = HashMap::new();
+    let mut classes: HashMap<_, Vec<_>> = HashMap::new();
+    for (class, k) in &metadata.class_likes {
+        classes.entry(k.span.file_id).or_default().push(*class);
+        for (name, constant) in &k.constants {
+            copies
+                .entry((constant.span, *name))
+                .or_default()
+                .push(*class);
+        }
+    }
+    let arena = LocalArena::new();
     let mut resolver = Initializers {
         metadata,
         sources: initializer_sources,
+        arena: &arena,
+        parsed: HashMap::new(),
         version: php_version(project.php_version),
         visited: HashSet::new(),
+        requested: HashSet::new(),
+        copies,
+        classes,
         path_constants: project.use_path_constants_as_constant_string,
     };
     for name in roots {
@@ -667,16 +685,20 @@ pub(crate) fn initializer_class(
     metadata: &CodebaseMetadata,
     at: Span,
 ) -> Option<&ClassLikeMetadata> {
-    metadata
-        .class_likes
-        .values()
+    smallest_containing(metadata.class_likes.values().map(Box::as_ref), at)
+}
+
+fn smallest_containing<'m>(
+    classes: impl Iterator<Item = &'m ClassLikeMetadata>,
+    at: Span,
+) -> Option<&'m ClassLikeMetadata> {
+    classes
         .filter(|class| {
             class.span.file_id == at.file_id
                 && class.span.start.offset <= at.start.offset
                 && at.end.offset <= class.span.end.offset
         })
         .min_by_key(|class| class.span.end.offset - class.span.start.offset)
-        .map(Box::as_ref)
 }
 
 /// A trait copy is implemented by its consuming class, unless a non-private parent constant was
@@ -687,7 +709,23 @@ pub(crate) fn initializer_owner(
     name: mago_word::Word,
 ) -> Option<mago_word::Word> {
     let constant = metadata.get_class_constant(class.as_bytes(), name.as_bytes())?;
-    let source = initializer_class(metadata, constant.span)?;
+    copy_owner(
+        metadata,
+        class,
+        name,
+        constant.span,
+        initializer_class(metadata, constant.span)?,
+    )
+}
+
+/// The owner of `class`'s copy of the constant declared at `span` in `source`.
+fn copy_owner(
+    metadata: &CodebaseMetadata,
+    class: mago_word::Word,
+    name: mago_word::Word,
+    span: Span,
+    source: &ClassLikeMetadata,
+) -> Option<mago_word::Word> {
     if !source.kind.is_trait() {
         return Some(source.name);
     }
@@ -699,7 +737,7 @@ pub(crate) fn initializer_owner(
             .and_then(|p| metadata.get_class_like_by_name(p))
     {
         if !parent.constants.get(&name).is_some_and(|k| {
-            k.span == constant.span && k.visibility != mago_codex::visibility::Visibility::Private
+            k.span == span && k.visibility != mago_codex::visibility::Visibility::Private
         }) {
             break;
         }
@@ -764,8 +802,17 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for ConstantInputs<'_, 'arena> {
 struct Initializers<'a> {
     metadata: &'a mut CodebaseMetadata,
     sources: HashMap<FileId, &'a File>,
+    /// Each source is parsed once into `arena`; a file declares many constants.
+    arena: &'a LocalArena,
+    parsed: HashMap<FileId, (&'a Program<'a>, Rc<ResolvedNames<'a>>)>,
     version: PHPVersion,
     visited: HashSet<(Span, Option<mago_word::Word>)>,
+    /// Class constants already requested: a repeat selects the same declaration and owner.
+    requested: HashSet<(mago_word::Word, mago_word::Word)>,
+    /// The classes holding each class constant declaration, by its span and name.
+    copies: HashMap<(Span, mago_word::Word), Vec<mago_word::Word>>,
+    /// The classes declared in each file.
+    classes: HashMap<FileId, Vec<mago_word::Word>>,
     path_constants: bool,
 }
 
@@ -778,6 +825,9 @@ impl Initializers<'_> {
     }
 
     fn resolve_class(&mut self, class: mago_word::Word, name: mago_word::Word) {
+        if !self.requested.insert((class, name)) {
+            return;
+        }
         let at = self
             .metadata
             .get_class_constant(class.as_bytes(), name.as_bytes())
@@ -788,9 +838,20 @@ impl Initializers<'_> {
         if !self.sources.contains_key(&at.file_id) {
             return;
         }
-        let Some(owner) = initializer_owner(self.metadata, class, name) else {
+        let in_file = (self.classes.get(&at.file_id).into_iter().flatten())
+            .filter_map(|class| self.metadata.class_likes.get(class).map(Box::as_ref));
+        let Some(source) = smallest_containing(in_file, at) else {
             return;
         };
+        let Some(owner) = copy_owner(self.metadata, class, name, at, source) else {
+            return;
+        };
+        // Population copies ordinary class/interface constants, keeping the declaration's span.
+        // Every copy with that declaring source identity gets the one raw initializer below.
+        let copies: Vec<_> = (self.copies.get(&(at, name)).into_iter().flatten())
+            .copied()
+            .filter(|class| copy_owner(self.metadata, *class, name, at, source) == Some(owner))
+            .collect();
         if !self.visited.insert((at, Some(owner))) {
             return;
         }
@@ -812,15 +873,7 @@ impl Initializers<'_> {
         }
         let previous = declaration.inferred_type.take();
         let value = self.evaluate(at, false, Some(owner)).or(previous);
-        // Population copies ordinary class/interface constants. Publish one raw initializer to every
-        // copy with that declaring source identity, without changing native/PHPDoc declarations.
-        let copies: Vec<_> = self
-            .metadata
-            .class_likes
-            .keys()
-            .copied()
-            .filter(|class| initializer_owner(self.metadata, *class, name) == Some(owner))
-            .collect();
+        // Native/PHPDoc declarations of the copies stay unchanged.
         for class in copies {
             self.metadata
                 .class_likes
@@ -879,8 +932,15 @@ impl Initializers<'_> {
         class: Option<mago_word::Word>,
     ) -> Option<TUnion> {
         let file = *self.sources.get(&at.file_id)?;
-        let arena = LocalArena::new();
-        let (program, names) = parse(&arena, file);
+        let arena = self.arena;
+        let (program, names) = self
+            .parsed
+            .entry(at.file_id)
+            .or_insert_with(|| {
+                let (program, names) = parse(arena, file);
+                (program, Rc::new(names))
+            })
+            .clone();
         let mut find = FindInitializer {
             at,
             argument: require_global,
