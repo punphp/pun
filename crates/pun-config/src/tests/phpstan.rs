@@ -391,6 +391,24 @@ fn reads_max_and_rejects_bad_levels() {
     );
 }
 
+/// The include PHPStan's docs recommend, `phar://phpstan.phar/conf/bleedingEdge.neon`, is PHPStan's bleeding edge, not
+/// a project config, and keeps its `phar://` path.
+#[test]
+fn names_phar_bleeding_edge() {
+    let d = project(
+        "includes:\n    - phar://phpstan.phar/conf/bleedingEdge.neon\nparameters:\n    level: 0\n",
+        &[],
+    );
+    let p = from_phpstan(&d, &d.join("phpstan.neon")).unwrap();
+    assert_eq!(
+        p.unsupported,
+        [(
+            "phar://phpstan.phar/conf/bleedingEdge.neon".to_string(),
+            "Pun checks as PHPStan does without bleeding edge".to_string()
+        )]
+    );
+}
+
 /// Level 5 is the `recommended` preset: every core rule up to level 5 stays on, deprecation-rules' checks (in
 /// `recommended`) are off without their include, and so is a check a PHPStan parameter keeps off; at level 4 the level-5 checks are off too. strict-rules' checks run
 /// with the include when their parameter is on: an analyse rule outside the preset gets `"on"`, a lint rule Pun hasn't

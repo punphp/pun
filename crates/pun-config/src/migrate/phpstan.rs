@@ -275,8 +275,12 @@ fn includes(root: &Path, config: &Path) -> Vec<String> {
         let dir = Path::new(&file).parent().unwrap_or(root).to_path_buf();
         for inc in strings(neon(&file).get_str("includes")) {
             // As PHPStan normalizes it (`../vendor/...` from a subdirectory is a package's); an absolute include
-            // replaces `dir`.
-            let path = pun_phpstan::php::normalize_path(&dir.join(inc).display().to_string());
+            // replaces `dir`, and so does a `phar://` one (phpstan.phar's own `conf/`).
+            let path = if inc.starts_with("phar://") {
+                inc
+            } else {
+                pun_phpstan::php::normalize_path(&dir.join(inc).display().to_string())
+            };
             out.push(path.clone());
             // A package's own includes belong to it.
             if package(&relative(root, &path)).is_none() {
@@ -295,8 +299,11 @@ fn neon(file: &str) -> Array {
         .unwrap_or_default()
 }
 
-/// `vendor/<vendor>/<package>/...` as `<vendor>/<package>`.
+/// `vendor/<vendor>/<package>/...` as `<vendor>/<package>`; `phar://phpstan.phar/...` is phpstan/phpstan's.
 fn package(rel: &str) -> Option<String> {
+    if rel.starts_with("phar://phpstan.phar/") {
+        return Some("phpstan/phpstan".into());
+    }
     let rest = rel.strip_prefix("vendor/")?;
     let mut parts = rest.splitn(3, '/');
     Some(format!("{}/{}", parts.next()?, parts.next()?))
