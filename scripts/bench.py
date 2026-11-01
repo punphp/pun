@@ -14,6 +14,7 @@ Pun's mago crates pin) under .oracle/mago/ or MAGO_BIN. Every tool is check-only
 - pint-parallel: `pint --test --parallel` in corpus/<name>, with the project's pint.json.
 - pint: `pint --test` (one process), same place.
 - pun: `pun check --test --no-cache` in a scratch copy (no .git, node_modules symlinked) after `pun migrate --yes`.
+- pun-format: `pun format --test --no-cache`, same scratch copy (`pun` also runs lint and the analyser).
 - mago: `mago fmt --check .` in the same scratch copy, default config. Mago's style is not Pint's: a speed and memory
   reference, not a parity check. Without a path and without mago.toml it checks nothing.
 
@@ -41,7 +42,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 PROJECTS = ["pinkary", "pinkary-dirty", "laravel-framework", "laravel-laravel", "laravel-pint", "pest", "larastan"]
-TOOLS = ["pint-parallel", "pint", "pun", "mago"]
+TOOLS = ["pint-parallel", "pint", "pun", "pun-format", "mago"]
 
 
 def tree_rss_bytes(root: int) -> int:
@@ -106,12 +107,16 @@ def bench_format() -> None:
             shutil.copytree(src, work, symlinks=True, ignore=shutil.ignore_patterns(".git", "node_modules"))
             if (src / "node_modules").is_dir():
                 (work / "node_modules").symlink_to((src / "node_modules").resolve())
+            # A phpstan include from vendor/ (the checkout has none) would make `pun migrate` fail; format needs neither.
+            for extra in [*work.glob("phpstan*.neon*"), work / "rector.php"]:
+                extra.unlink(missing_ok=True)
             subprocess.run([pun, "migrate", "--yes"], cwd=work, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             files = sum(1 for p in src.rglob("*.php") if not {"vendor", "node_modules", ".git"} & set(p.parts))
             commands = {
                 "pint-parallel": (["php", str(pint), "--test", "--parallel"], src),
                 "pint": (["php", str(pint), "--test"], src),
                 "pun": ([pun, "check", "--test", "--no-cache"], work),
+                "pun-format": ([pun, "format", "--test", "--no-cache"], work),
                 "mago": ([mago or "mago", "fmt", "--check", "."], work),
             }
             for tool in tools:
@@ -251,9 +256,10 @@ def write_configs(mode: str, name: str, work: Path, rector_rules: list[str]) -> 
         (work / "pun-bench-analyse.toml").write_text(
             '[analyse]\npreset = "basic"\npaths = [' + ", ".join(f'"{p}"' for p in paths) + f"]\nexclude = [{exclude}]\n")
     else:
-        # Every native lint rule, at `error`.
+        # Only the lint rules that have a Rector class, at `error`: the rules Rector runs here too, for a like-for-like
+        # comparison (Pun's other rules, from PHP-CS-Fixer, Mago and PHPStan, have no Rector counterpart).
         (work / "pun-bench-lint.toml").write_text(
-            "[lint.rules]\n" + "".join(f'"{i.removeprefix("lint/")}" = "error"\n' for i in native_rules()))
+            "[lint.rules]\n" + "".join(f'"{i.removeprefix("lint/")}" = "error"\n' for i in rector_mapped_rules()))
         # The pinned Rector needs the project's classes, loaded after its own: Composer prepends its loader, which
         # would let the project's rector-laravel shadow the pinned one.
         (work / "pun-bench-autoload.php").write_text(
@@ -317,6 +323,15 @@ def native_rules() -> list[str]:
         ids.update(re.findall(r'fn id\(&self\) -> &\'static str \{\s*"(lint/[^"]+)"', f.read_text()))
     lint = tomllib.loads((ROOT / "crates/pun-config/rules/mapping.toml").read_text())["rules"]["lint"]
     return sorted(i for i in ids if lint.get(i.removeprefix("lint/"), {}).get("ported"))
+
+
+def rector_mapped_rules() -> list[str]:
+    """The ported native lint rules that map to at least one Rector class."""
+    import tomllib
+    ids = set(native_rules())
+    mapping = tomllib.loads((ROOT / "crates/pun-config/rules/mapping.toml").read_text())
+    return sorted({entry["pun"] for table, rules in mapping["upstream"].items() if "rector" in table
+                   for entry in rules.values() if isinstance(entry, dict) and entry.get("pun") in ids and "class" in entry})
 
 
 def ported_rector_rules() -> list[str]:
