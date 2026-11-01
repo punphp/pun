@@ -1,7 +1,7 @@
 //! `pun lint` and the lint half of `pun check` (context/plan/lint.md): levels, overrides, the command-line levels,
 //! warnings and exit codes, `@pun-ignore` comments, `--fix`. Expected values are derived by hand from each rule's
-//! definition (Mago's `no-eval`/`no-global` report the construct; Rector's `RemoveDoubleNegationRector`-style
-//! `no-double-negation` rewrites `!!$x` to `(bool) $x`) and from rules.md §4 for the comments.
+//! definition (Mago's `no-eval`/`no-global` report the construct; Rector's `ReplaceConstantBooleanNotRector`
+//! `no-negated-boolean-literal` rewrites `!true` to `false`) and from rules.md §4 for the comments.
 mod common;
 
 use common::{PUN, clean_env, project, read};
@@ -14,7 +14,7 @@ preset = "empty"
 [lint.rules]
 "security/no-eval" = "error"
 "security/no-global" = "warn"
-"complexity/no-double-negation" = "error"
+"complexity/no-negated-boolean-literal" = "error"
 "comments/no-unused-ignore" = "error"
 
 [[lint.overrides]]
@@ -22,7 +22,7 @@ files = ["src/legacy/**"]
 rules = { "security/no-eval" = "off" }
 "#;
 
-const A: &str = "<?php\n\nfunction f()\n{\n    global $y;\n    eval('1;');\n}\n\n$a = !!$b; // @pun-ignore lint/security/no-eval\n";
+const A: &str = "<?php\n\nfunction f()\n{\n    global $y;\n    eval('1;');\n}\n\n$a = !true; // @pun-ignore lint/security/no-eval\n";
 const LEGACY: &str = "<?php\n\neval('2;');\n";
 
 /// `pun <args>` in `dir` under agent mode: (the lines after the summary, the summary up to its timing, exit code).
@@ -64,8 +64,8 @@ fn levels_overrides_and_ignores() {
         [
             "src/a.php:5:5 lint/security/no-global [warn] Unsafe use of `global` keyword.",
             "src/a.php:6:5 lint/security/no-eval Unsafe use of `eval` construct.",
-            "src/a.php:9:6 lint/complexity/no-double-negation [fix:safe] Use a `(bool)` cast instead of `!!`.",
-            "src/a.php:9:27 lint/comments/no-unused-ignore [fix:safe] `lint/security/no-eval` suppresses no problem here",
+            "src/a.php:9:6 lint/complexity/no-negated-boolean-literal [fix:safe] Use `false` instead of negating a boolean literal.",
+            "src/a.php:9:28 lint/comments/no-unused-ignore [fix:safe] `lint/security/no-eval` suppresses no problem here",
         ]
     );
     assert_eq!(code, Some(1));
@@ -74,7 +74,7 @@ fn levels_overrides_and_ignores() {
 #[test]
 fn command_line_levels_apply_in_order() {
     let d = sample();
-    // Everything in `security` off, then `no-global` back on as an error; the double negation is allowed too. The
+    // Everything in `security` off, then `no-global` back on as an error; the negated literal is allowed too. The
     // ignore comment names `no-eval`, which is off, so it isn't judged unused.
     let (lines, _, code) = agent(
         &d,
@@ -85,7 +85,7 @@ fn command_line_levels_apply_in_order() {
             "-D",
             "security/no-global",
             "-A",
-            "complexity/no-double-negation",
+            "complexity/no-negated-boolean-literal",
         ],
     );
     assert_eq!(
@@ -128,7 +128,7 @@ fn fix_applies_safe_fixes_and_deletes_unused_ignores() {
     let (lines, summary, code) = agent(&d, &["lint", "--fix"]);
     assert_eq!(
         read(&d, "src/a.php"),
-        "<?php\n\nfunction f()\n{\n    global $y;\n    eval('1;');\n}\n\n$a = (bool) $b;\n"
+        "<?php\n\nfunction f()\n{\n    global $y;\n    eval('1;');\n}\n\n$a = false;\n"
     );
     assert_eq!(read(&d, "src/legacy/b.php"), LEGACY);
     assert_eq!(summary, "pun lint: fail, 1 error, 1 file fixed, 1 warning");
@@ -141,19 +141,19 @@ fn fix_applies_safe_fixes_and_deletes_unused_ignores() {
 #[test]
 fn fix_off_keeps_a_rule_report_only() {
     let toml = TOML.replace(
-        "\"complexity/no-double-negation\" = \"error\"",
-        "\"complexity/no-double-negation\" = { level = \"error\", fix = \"off\" }",
+        "\"complexity/no-negated-boolean-literal\" = \"error\"",
+        "\"complexity/no-negated-boolean-literal\" = { level = \"error\", fix = \"off\" }",
     );
     let d = project(
         "lint",
         "fix-off",
-        &[("pun.toml", &toml), ("a.php", "<?php\n\n$a = !!$b;\n")],
+        &[("pun.toml", &toml), ("a.php", "<?php\n\n$a = !true;\n")],
     );
     let (lines, _, code) = agent(&d, &["lint", "--fix"]);
-    assert_eq!(read(&d, "a.php"), "<?php\n\n$a = !!$b;\n");
+    assert_eq!(read(&d, "a.php"), "<?php\n\n$a = !true;\n");
     assert_eq!(
         lines,
-        ["a.php:3:6 lint/complexity/no-double-negation Use a `(bool)` cast instead of `!!`."]
+        ["a.php:3:6 lint/complexity/no-negated-boolean-literal Use `false` instead of negating a boolean literal."]
     );
     assert_eq!(code, Some(1));
 }

@@ -286,7 +286,6 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "complexity/no-concat-assign-new-item" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change concat assign on a new array item to plain assign, as the new item is always null" }
 "complexity/no-constant-condition" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Detects `if` statements where the condition is a constant that always" }
 "complexity/no-constant-via-variable" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change variable class constant fetch to direct class constant fetch when class or constant target is final" }
-"complexity/no-double-negation" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace the Double not operator (!!) by type-casting to boolean" }
 "complexity/no-duplicate-match-arm" = { fix = "none", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects `match` arms that produce the same result as an earlier arm." }
 "complexity/no-else-clause" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Flags `if` statements that include an `else` or `elseif` branch." }
 "complexity/no-empty-file" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Detects redundant files that contain no executable code or declarations." }
@@ -316,7 +315,6 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "complexity/no-sole-value-sprintf" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Remove `sprintf()` wrapper if not needed" }
 "complexity/no-unused-label" = { fix = "none", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects redundant `goto` labels that are declared but not used." }
 "complexity/no-useless-array-values" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Removes unneeded array_values() in in_array() call" }
-"complexity/no-useless-block" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove `{ }` blocks that do not belong to a control structure." }
 "complexity/prefer-absolute-include" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Migrate include/require to absolute path. This Rector might introduce backwards incompatible code, when the include/require being changed depends on the current working directory." }
 "complexity/prefer-array-literal" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change array_merge of non arrays to array directly" }
 "complexity/prefer-coalesce-chain" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Turn consecutive `if ($x !== null) return $x;` checks into one `??` chain." }
@@ -2553,11 +2551,11 @@ RenameVariableToMatchNewType = { class = "Rector\\Naming\\Rector\\ClassMethod\\R
 RepeatedAndNotEqualToNotInArray = { class = "Rector\\CodeQuality\\Rector\\BooleanAnd\\RepeatedAndNotEqualToNotInArrayRector", pun = "lint/complexity/prefer-not-in-array", sets = ["code-quality"], options = "none", status = "decided" }
 RepeatedOrEqualToInArray = { class = "Rector\\CodeQuality\\Rector\\BooleanOr\\RepeatedOrEqualToInArrayRector", pun = "lint/complexity/prefer-in-array", sets = ["code-quality"], options = "none", status = "decided" }
 ReplaceArgumentDefaultValue = { class = "Rector\\Arguments\\Rector\\ClassMethod\\ReplaceArgumentDefaultValueRector", unsupported = "in no set", status = "decided" }
-ReplaceBlockToItsStmts = { class = "Rector\\DeadCode\\Rector\\Block\\ReplaceBlockToItsStmtsRector", pun = "lint/complexity/no-useless-block", sets = ["dead-code"], options = "none", status = "decided" }
+ReplaceBlockToItsStmts = { class = "Rector\\DeadCode\\Rector\\Block\\ReplaceBlockToItsStmtsRector", pun = "format/control-flow/no-unneeded-braces", sets = ["dead-code"], options = "none", status = "decided" }
 ReplaceConstantBooleanNot = { class = "Rector\\CodeQuality\\Rector\\BooleanNot\\ReplaceConstantBooleanNotRector", pun = "lint/complexity/no-negated-boolean-literal", sets = ["code-quality"], options = "none", status = "decided" }
 ReplaceEachAssignmentWithKeyCurrent = { class = "Rector\\Php72\\Rector\\Assign\\ReplaceEachAssignmentWithKeyCurrentRector", unsupported = "only in php52..php83 upgrade sets (below the PHP 8.4 floor)", sets = ["php72"], status = "decided" }
 ReplaceHttpServerVarsByServer = { class = "Rector\\Php53\\Rector\\Variable\\ReplaceHttpServerVarsByServerRector", unsupported = "only in php52..php83 upgrade sets (below the PHP 8.4 floor)", sets = ["php53"], status = "decided" }
-ReplaceMultipleBooleanNot = { class = "Rector\\CodeQuality\\Rector\\BooleanNot\\ReplaceMultipleBooleanNotRector", pun = "lint/complexity/no-double-negation", sets = ["code-quality"], options = "none", status = "decided" }
+ReplaceMultipleBooleanNot = { class = "Rector\\CodeQuality\\Rector\\BooleanNot\\ReplaceMultipleBooleanNotRector", pun = "format/casts/no-short-bool", sets = ["code-quality"], options = "none", status = "decided" }
 RestoreDefaultNullToNullableTypeProperty = { class = "Rector\\Php74\\Rector\\Property\\RestoreDefaultNullToNullableTypePropertyRector", unsupported = "only in php52..php83 upgrade sets (below the PHP 8.4 floor)", sets = ["php74"], status = "decided" }
 RestoreIncludePathToIniRestore = { class = "Rector\\Php74\\Rector\\FuncCall\\RestoreIncludePathToIniRestoreRector", unsupported = "only in php52..php83 upgrade sets (below the PHP 8.4 floor)", sets = ["php74"], status = "decided" }
 ReturnBinaryOrToEarlyReturn = { class = "Rector\\EarlyReturn\\Rector\\Return_\\ReturnBinaryOrToEarlyReturnRector", unsupported = "deprecated upstream (2.7.0, main)", sets = ["early-return"], status = "decided" }
@@ -4525,7 +4523,7 @@ no-parameter-shadowing = { pun = "lint/style/no-parameter-shadowing", options = 
 no-php-tag-terminator = { pun = "format/tags/no-closing", options = "none (Mago options do not carry; Pun uses the CS-Fixer rule options)", status = "decided" }
 no-protected-in-final = { pun = "lint/classes/no-protected-in-final", options = "none (Mago options do not carry; Pun uses the CS-Fixer rule options)", status = "decided" }
 no-redundant-binary-string-prefix = { pun = "format/strings/no-binary", options = "none (Mago options do not carry; Pun uses the CS-Fixer rule options)", status = "decided" }
-no-redundant-block = { pun = "lint/complexity/no-useless-block", options = "same", status = "decided" }
+no-redundant-block = { pun = "format/control-flow/no-unneeded-braces", options = "none (Mago options do not carry; Pun uses the CS-Fixer rule options)", status = "decided" }
 no-redundant-continue = { pun = "lint/dead-code/no-useless-continue", options = "same", status = "decided" }
 no-redundant-else = { pun = "lint/control-flow/no-useless-else", options = "none (Mago options do not carry; Pun uses the CS-Fixer rule options)", status = "decided" }
 no-redundant-file = { pun = "lint/complexity/no-empty-file", options = "same", status = "decided" }

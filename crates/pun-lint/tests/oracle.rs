@@ -227,11 +227,6 @@ fn return_in_constructor_in_parentheses() {
 }
 
 #[test]
-fn useless_block() {
-    check_rule_oracle(rules::NoUselessBlock, "no_useless_block.php.inc");
-}
-
-#[test]
 fn empty_array_identical_on_a_parameter_written_later() {
     // PHPStan's scope keeps a parameter's native type until a write; one after the check (outside a loop) leaves it.
     check_rule_oracle(

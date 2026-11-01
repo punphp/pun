@@ -24,10 +24,9 @@ use pun_lint::rules::PreferEarlyReturnOverPreparedValue;
 use pun_lint::rules::PreferInArray;
 use pun_lint::rules::PreferNotInArray;
 use pun_lint::rules::{
-    NoAndAssignment, NoConcatAssignNewItem, NoDoubleNegation, NoNegatedAnd,
-    NoNegatedBooleanLiteral, NoNegatedGroup, NoSingleArgumentSprintf, NoSingleItemInArray,
-    NoTautologyTernary, NoUselessArrayValues, PreferArrayAppend, PreferEmptyArrayCompare,
-    PreferFuncNumArgs, PreferNullCoalesce,
+    NoAndAssignment, NoConcatAssignNewItem, NoNegatedAnd, NoNegatedBooleanLiteral, NoNegatedGroup,
+    NoSingleArgumentSprintf, NoSingleItemInArray, NoTautologyTernary, NoUselessArrayValues,
+    PreferArrayAppend, PreferEmptyArrayCompare, PreferFuncNumArgs, PreferNullCoalesce,
 };
 
 fn fixtures(dir: &str) -> Vec<(PathBuf, String, String)> {
@@ -173,18 +172,6 @@ fn replace_constant_boolean_not() {
 }
 
 #[test]
-fn replace_multiple_boolean_not() {
-    // config/configured_rule.php: the rule alone, Rector's default PHP version.
-    // Pint's laravel preset has no_short_bool_cast, which also turns `!!$value` into `(bool) $value`.
-    let linter = Linter::new(vec![Box::new(NoDoubleNegation)], 80400);
-    run_format_agrees(&linter, "ReplaceMultipleBooleanNotRector/Fixture");
-    // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone).
-    run_format_agrees(&linter, "ReplaceMultipleBooleanNotRector/Oracle");
-    // Where Rector drops parentheses the meaning needs, or cannot run; the expected code is derived by hand.
-    run_format_agrees(&linter, "ReplaceMultipleBooleanNotRector/Pun");
-}
-
-#[test]
 fn simplify_de_morgan_binary() {
     // config/configured_rule.php: the rule alone, Rector's default PHP version.
     let linter = Linter::new(vec![Box::new(NoNegatedGroup)], 80400);
@@ -253,23 +240,6 @@ fn unwrap_sprintf_one_argument() {
     run(&linter, "UnwrapSprintfOneArgumentRector/Oracle");
     // Where Rector drops parentheses the meaning needs, or cannot run; the expected code is derived by hand.
     run(&linter, "UnwrapSprintfOneArgumentRector/Pun");
-}
-
-/// [`run`] for a rule whose fix the laravel preset's format makes too: the formatted input may already equal the
-/// expected code, so only the rule's own bytes and its applied fixes tell that the rule did the work.
-fn run_format_agrees(linter: &Linter, dir: &str) {
-    let pipeline = laravel();
-    for (path, input, expected) in fixtures(dir) {
-        let name = path.file_name().unwrap().to_string_lossy();
-        let fixed = linter.fix(&path, &input).unwrap();
-        assert_eq!(fixed.source, expected, "{name}: lint --fix");
-        assert_eq!(
-            format(&pipeline, &fixed.source),
-            format(&pipeline, &expected),
-            "{name}: format(lint --fix)"
-        );
-        assert_eq!(fixed.applied.is_empty(), input == expected, "{name}");
-    }
 }
 
 #[test]
@@ -425,17 +395,6 @@ fn remove_useless_return_expr_in_construct() {
     run(
         &only(rules::NoReturnInConstructor, 80400),
         "RemoveUselessReturnExprInConstructRector/Fixture",
-    );
-}
-
-#[test]
-fn replace_block_to_its_stmts() {
-    run_with_whitespace_exceptions(
-        &only(rules::NoUselessBlock, 80400),
-        "ReplaceBlockToItsStmtsRector/Fixture",
-        // The removed empty block is the namespace's first statement: Rector's printer drops the newline after it,
-        // Pun's removal the blanks before it (as for any other removed statement), so one blank line fewer stays.
-        &["no_stmts.php.inc"],
     );
 }
 

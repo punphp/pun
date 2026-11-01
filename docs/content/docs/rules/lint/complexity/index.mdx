@@ -7,7 +7,7 @@ pagination: false
 
 Code that can be written more simply, and size and complexity limits.
 
-Across commands: format: 0, lint: 63, analyse: 0.
+Across commands: format: 0, lint: 61, analyse: 0.
 
 <CardGroup cols={2}>
 <Card title="lint/complexity/no-and-assignment">
@@ -69,15 +69,6 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 [`lint/complexity/no-constant-via-variable`](/docs/rules/lint/complexity/no-constant-via-variable)
 
 Change variable class constant fetch to direct class constant fetch when class or constant target is final
-
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
-
-</Card>
-<Card title="lint/complexity/no-double-negation">
-
-[`lint/complexity/no-double-negation`](/docs/rules/lint/complexity/no-double-negation)
-
-Replace the Double not operator (!!) by type-casting to boolean
 
 Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
@@ -341,15 +332,6 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: none (r
 Removes unneeded array_values() in in_array() call
 
 Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
-
-</Card>
-<Card title="lint/complexity/no-useless-block">
-
-[`lint/complexity/no-useless-block`](/docs/rules/lint/complexity/no-useless-block)
-
-Remove `{ }` blocks that do not belong to a control structure.
-
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/complexity/prefer-absolute-include">

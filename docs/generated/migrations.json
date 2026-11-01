@@ -9345,7 +9345,7 @@
         "tool": "rector",
         "url": "https://getrector.com/rule-detail/replace-block-to-its-stmts-rector",
         "rules": [
-          "lint/complexity/no-useless-block"
+          "format/control-flow/no-unneeded-braces"
         ],
         "note": "Same.",
         "unsupported": false
@@ -9381,7 +9381,7 @@
         "tool": "rector",
         "url": "https://getrector.com/rule-detail/replace-multiple-boolean-not-rector",
         "rules": [
-          "lint/complexity/no-double-negation"
+          "format/casts/no-short-bool"
         ],
         "note": "Same.",
         "unsupported": false
@@ -25745,9 +25745,9 @@
         "tool": "mago-linter",
         "url": "https://mago.carthage.software/1.57.0/en/tools/linter/rules/#no-redundant-block",
         "rules": [
-          "lint/complexity/no-useless-block"
+          "format/control-flow/no-unneeded-braces"
         ],
-        "note": "Same. Options: same.",
+        "note": "Same. Options: none (Mago options do not carry; Pun uses the CS-Fixer rule options).",
         "unsupported": false
       },
       {

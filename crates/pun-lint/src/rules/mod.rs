@@ -71,7 +71,6 @@ mod no_constant_condition;
 mod no_constant_via_variable;
 mod no_dead_php_version_check;
 mod no_debug_calls;
-mod no_double_negation;
 mod no_double_self_assignment;
 mod no_duplicate_array_key;
 mod no_duplicate_case_body;
@@ -165,7 +164,6 @@ mod no_unused_public_method_param;
 mod no_unused_static;
 mod no_unused_test_method_param;
 mod no_useless_array_values;
-mod no_useless_block;
 mod no_useless_cast;
 mod no_useless_catch;
 mod no_useless_condition;
@@ -322,7 +320,6 @@ pub use no_constant_condition::NoConstantCondition;
 pub use no_constant_via_variable::NoConstantViaVariable;
 pub use no_dead_php_version_check::NoDeadPhpVersionCheck;
 pub use no_debug_calls::NoDebugCalls;
-pub use no_double_negation::NoDoubleNegation;
 pub use no_double_self_assignment::NoDoubleSelfAssignment;
 pub use no_duplicate_array_key::NoDuplicateArrayKey;
 pub use no_duplicate_case_body::NoDuplicateCaseBody;
@@ -421,7 +418,6 @@ pub use no_unused_public_method_param::NoUnusedPublicMethodParam;
 pub use no_unused_static::NoUnusedStatic;
 pub use no_unused_test_method_param::NoUnusedTestMethodParam;
 pub use no_useless_array_values::NoUselessArrayValues;
-pub use no_useless_block::NoUselessBlock;
 pub use no_useless_cast::NoUselessCast;
 pub use no_useless_catch::NoUselessCatch;
 pub use no_useless_condition::NoUselessCondition;
@@ -528,7 +524,6 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(NoNegatedAnd),
         Box::new(NoConcatAssignNewItem),
         Box::new(NoNegatedBooleanLiteral),
-        Box::new(NoDoubleNegation),
         Box::new(NoNegatedGroup),
         Box::new(PreferEmptyArrayCompare),
         Box::new(PreferFuncNumArgs),
@@ -548,7 +543,6 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(NoUnusedClosureVariable),
         Box::new(NoUnusedForeachKey),
         Box::new(NoReturnInConstructor),
-        Box::new(NoUselessBlock),
         Box::new(NoUnreachableCode),
         Box::new(NoMirrorAssignment),
         Box::new(NoRedundantPromotedAssign),

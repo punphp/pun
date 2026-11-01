@@ -9,7 +9,7 @@ DECISIONS.md, TASKS.md and REQUESTS.md (their history is in git). Finished work 
 One lead agent works on `main` and spawns subagents for independent slices in worktrees (AGENTS.md "How work runs").
 Pushpak resumed all commands on 2026-10-25. CI stays disabled.
 
-- **Counts** (local mapping.toml `ported = true`): format 168 of 168, lint 703 of 703, analyse 299 of 385.
+- **Counts** (local mapping.toml `ported = true`): format 168 of 168, lint 701 of 701, analyse 299 of 385.
   Pending: format 0, lint 0, analyse 86 (86 total). Ported rules still have the explicit parity gaps below.
 - **Callback and unsealed-key integration:** combined main passes 102 analyser tests across nineteen
   complete targets and 169 lint tests across six complete targets. The targeted original-fixture gate

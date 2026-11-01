@@ -507,9 +507,13 @@
       "tools": [
         "mago",
         "php-cs-fixer",
-        "pint"
+        "pint",
+        "rector"
       ],
       "upstream": [
+        "Rector\\CodeQuality\\Rector\\BooleanNot\\ReplaceMultipleBooleanNotRector",
+        "ReplaceMultipleBooleanNot",
+        "ReplaceMultipleBooleanNotRector",
         "no-short-bool-cast",
         "no_short_bool_cast"
       ],
@@ -1042,10 +1046,16 @@
       "fix": "safe",
       "ecosystem": "core",
       "tools": [
+        "mago",
         "php-cs-fixer",
-        "pint"
+        "pint",
+        "rector"
       ],
       "upstream": [
+        "Rector\\DeadCode\\Rector\\Block\\ReplaceBlockToItsStmtsRector",
+        "ReplaceBlockToItsStmts",
+        "ReplaceBlockToItsStmtsRector",
+        "no-redundant-block",
         "no_unneeded_braces"
       ],
       "ported": true
@@ -3897,26 +3907,6 @@
       "ported": true
     },
     {
-      "id": "lint/complexity/no-double-negation",
-      "command": "lint",
-      "group": "complexity",
-      "summary": "Replace the Double not operator (!!) by type-casting to boolean",
-      "enabled": [
-        "code-quality"
-      ],
-      "fix": "safe",
-      "ecosystem": "core",
-      "tools": [
-        "rector"
-      ],
-      "upstream": [
-        "Rector\\CodeQuality\\Rector\\BooleanNot\\ReplaceMultipleBooleanNotRector",
-        "ReplaceMultipleBooleanNot",
-        "ReplaceMultipleBooleanNotRector"
-      ],
-      "ported": true
-    },
-    {
       "id": "lint/complexity/no-duplicate-match-arm",
       "command": "lint",
       "group": "complexity",
@@ -4438,28 +4428,6 @@
         "Rector\\CodeQuality\\Rector\\FuncCall\\SimplifyInArrayValuesRector",
         "SimplifyInArrayValues",
         "SimplifyInArrayValuesRector"
-      ],
-      "ported": true
-    },
-    {
-      "id": "lint/complexity/no-useless-block",
-      "command": "lint",
-      "group": "complexity",
-      "summary": "Remove { } blocks that do not belong to a control structure.",
-      "enabled": [
-        "dead-code"
-      ],
-      "fix": "safe",
-      "ecosystem": "core",
-      "tools": [
-        "mago",
-        "rector"
-      ],
-      "upstream": [
-        "Rector\\DeadCode\\Rector\\Block\\ReplaceBlockToItsStmtsRector",
-        "ReplaceBlockToItsStmts",
-        "ReplaceBlockToItsStmtsRector",
-        "no-redundant-block"
       ],
       "ported": true
     },
