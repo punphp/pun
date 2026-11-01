@@ -5,6 +5,9 @@
 //! Pun's own extension, used by the generated symbol data (scripts/export-phpstan-symbols.php) for types PHPStan's
 //! `toPhpDocNode()` cannot write: a whole type string `*ERROR*` or `*NEVER*` ([`parse`] only).
 
+// `StringUnescaper::unescapeString()`.
+use pun_tokens::php_compat::unescape_phpdoc_string as unescape;
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum Tok {
     Reference,
@@ -1845,9 +1848,4 @@ fn parse_doctrine_array_key(t: &mut Tokens) -> R<()> {
         }
     }
     Ok(())
-}
-
-/// `StringUnescaper::unescapeString()`.
-fn unescape(quoted: &[u8]) -> Vec<u8> {
-    pun_tokens::php_compat::unescape_phpdoc_string(quoted)
 }

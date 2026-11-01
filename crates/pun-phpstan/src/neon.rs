@@ -60,24 +60,18 @@ static TOKENS: LazyLock<Regex> = LazyLock::new(|| {
     build(&p, true, true, true, false)
 });
 static REQUIRES_DELIMITERS: LazyLock<Regex> = LazyLock::new(|| {
-    build(
-        r"[\x00-\x1F]|^[+-.]?\d|^(true|false|yes|no|on|off|null)$(?!\n)",
-        true,
-        false,
-        false,
-        false,
-    )
+    RegexBuilder::new()
+        .caseless(true)
+        .build(r"[\x00-\x1F]|^[+-.]?\d|^(true|false|yes|no|on|off|null)$(?!\n)")
+        .unwrap()
 });
 static LITERAL_ONLY: LazyLock<Regex> =
     LazyLock::new(|| build(&format!(r"^{LITERAL}$(?!\n)"), false, false, true, false));
 static DATETIME: LazyLock<Regex> = LazyLock::new(|| {
-    build(
+    Regex::new(
         r"\G\d\d\d\d-\d\d?-\d\d?(?:(?:[Tt]| ++)\d\d?:\d\d:\d\d(?:\.\d*+)? *+(?:Z|[-+]\d\d?(?::?\d\d)?)?)?$(?!\n)",
-        false,
-        false,
-        false,
-        false,
     )
+    .unwrap()
 });
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -483,10 +477,6 @@ fn parse_string(s: &str) -> Result<String, String> {
     unescape(&res)
 }
 
-fn hex(c: u8) -> bool {
-    c.is_ascii_hexdigit()
-}
-
 /// `preg_replace_callback('#\\(?:ud[89ab][0-9a-f]{2}\\ud[c-f][0-9a-f]{2}|u[0-9a-f]{4}|x[0-9a-f]{2}|.)#i', ...)`.
 fn unescape(s: &str) -> Result<String, String> {
     let b = s.as_bytes();
@@ -499,8 +489,9 @@ fn unescape(s: &str) -> Result<String, String> {
             continue;
         }
         let rest = &b[i + 1..];
-        let is_u =
-            |r: &[u8]| r.len() >= 5 && (r[0] | 0x20) == b'u' && r[1..5].iter().all(|&c| hex(c));
+        let is_u = |r: &[u8]| {
+            r.len() >= 5 && (r[0] | 0x20) == b'u' && r[1..5].iter().all(u8::is_ascii_hexdigit)
+        };
         let pair = is_u(rest)
             && (rest[1] | 0x20) == b'd'
             && matches!(rest[2] | 0x20, b'8' | b'9' | b'a' | b'b')
@@ -513,7 +504,11 @@ fn unescape(s: &str) -> Result<String, String> {
             12
         } else if is_u(rest) {
             6
-        } else if rest.len() >= 3 && (rest[0] | 0x20) == b'x' && hex(rest[1]) && hex(rest[2]) {
+        } else if rest.len() >= 3
+            && (rest[0] | 0x20) == b'x'
+            && rest[1].is_ascii_hexdigit()
+            && rest[2].is_ascii_hexdigit()
+        {
             4
         } else {
             2 // one byte, as PCRE without /u: the message may show half a character

@@ -13,7 +13,7 @@ fn prevent_key() -> Key {
 }
 
 /// `isset($value['_prevent_merging'])`
-fn has_prevent(a: &Array) -> bool {
+pub(crate) fn has_prevent(a: &Array) -> bool {
     a.get(&prevent_key()).is_some_and(|v| *v != Value::Null)
 }
 
@@ -237,10 +237,7 @@ pub(crate) fn expand_array(
     let mut res = Array::new();
     for (k, v) in a.iter() {
         let k = match k {
-            Key::Str(s) => match expand_string(s, params, recursive, false)? {
-                Value::Int(i) => Key::Int(i),
-                other => Key::from_string(other.to_php_string().unwrap_or_default()),
-            },
+            Key::Str(s) => expand_string(s, params, recursive, false)?.into(),
             k => k.clone(),
         };
         res.set(k, expand(v, params, recursive)?);

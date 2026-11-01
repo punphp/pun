@@ -1,6 +1,6 @@
 //! MixedType's excluded set, distinct from ErrorType's subtract override.
 
-use super::{NeverKind, Tri, Type, bx, intersect, is_super_type_of, union};
+use super::{NeverKind, Tri, Type, intersect, is_super_type_of, union};
 
 impl Type {
     /// `instanceof MixedType`, including ErrorType and nested TemplateMixedType bounds. A template is
@@ -37,7 +37,7 @@ impl Type {
         } else {
             Type::SubtractedMixed {
                 explicit,
-                excluded: bx(excluded),
+                excluded: Box::new(excluded),
             }
         }
     }
@@ -48,8 +48,8 @@ impl Type {
             object
         } else {
             Type::SubtractedObject {
-                object: bx(object),
-                excluded: bx(excluded),
+                object: Box::new(object),
+                excluded: Box::new(excluded),
             }
         }
     }

@@ -2,7 +2,8 @@
 //! `Expect::structure/anyOf/arrayOf/listOf/<type>()` plus `nullable/min/max/pattern/default/...`, then
 //! `Processor::process()` with its exact messages.
 
-use crate::value::{Array, Key, Value, float_to_string};
+use crate::value::{Array, Key, Value};
+use pun_tokens::php_compat::float_to_string;
 
 #[derive(Clone, Debug)]
 enum Kind {
@@ -427,13 +428,9 @@ fn is_type(v: &Value, expected: &str) -> bool {
     })
 }
 
-fn has_prevent(v: &Value) -> bool {
-    matches!(v, Value::Array(a) if a.get_str(crate::di::PREVENT_MERGING).is_some_and(|x| *x != Value::Null))
-}
-
 fn strip_prevent(v: &mut Value) -> bool {
     if let Value::Array(a) = v
-        && has_prevent(&Value::Array(a.clone()))
+        && crate::di::has_prevent(a)
     {
         a.remove(&Key::from(crate::di::PREVENT_MERGING));
         return true;
@@ -462,7 +459,7 @@ impl Schema {
                         ctx.path.push(k.as_string());
                         ctx.is_key = true;
                         let k = match key {
-                            Some(ks) => to_key(ks.normalize(key_value(&k), ctx)),
+                            Some(ks) => Key::from(ks.normalize(Value::from(k), ctx)),
                             None => k,
                         };
                         ctx.is_key = false;
@@ -541,7 +538,7 @@ impl Schema {
                         ctx.path.push(k.as_string());
                         ctx.is_key = true;
                         let k = match key {
-                            Some(ks) => to_key(ks.complete(key_value(&k), ctx)),
+                            Some(ks) => Key::from(ks.complete(Value::from(k), ctx)),
                             None => k,
                         };
                         ctx.is_key = false;
@@ -702,20 +699,6 @@ impl Schema {
             self.complete(n, &mut ctx);
         }
         ctx.errors.iter().map(Message::render).collect()
-    }
-}
-
-fn key_value(k: &Key) -> Value {
-    match k {
-        Key::Int(i) => Value::Int(*i),
-        Key::Str(s) => Value::Str(s.clone()),
-    }
-}
-
-fn to_key(v: Value) -> Key {
-    match v {
-        Value::Int(i) => Key::Int(i),
-        v => Key::from_string(v.to_php_string().unwrap_or_default()),
     }
 }
 

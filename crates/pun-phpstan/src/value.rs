@@ -2,6 +2,7 @@
 //! next-index rules), entities/statements, and the scalar conversions PHP applies on the way.
 
 use indexmap::IndexMap;
+use pun_tokens::php_compat::float_to_string;
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum Key {
@@ -32,6 +33,26 @@ impl From<&str> for Key {
     }
 }
 
+/// An array key as a value: PHP gives back numeric string keys as ints.
+impl From<Key> for Value {
+    fn from(k: Key) -> Value {
+        match k {
+            Key::Int(i) => Value::Int(i),
+            Key::Str(s) => Value::Str(s),
+        }
+    }
+}
+
+/// A value used as an array key: ints stay, everything else goes through `(string)` and PHP's key coercion.
+impl From<Value> for Key {
+    fn from(v: Value) -> Key {
+        match v {
+            Value::Int(i) => Key::Int(i),
+            v => Key::from_string(v.to_php_string().unwrap_or_default()),
+        }
+    }
+}
+
 /// `"123"`, `"-5"`, not `"0123"`, `"-0"`, `"+1"` or out of i64 range (zend_handle_numeric_str).
 fn canonical_int(s: &str) -> Option<i64> {
     let digits = s.strip_prefix('-').unwrap_or(s);
@@ -57,8 +78,7 @@ pub struct Array {
 impl PartialEq for Array {
     /// Ordered comparison (PHP `===` on arrays also compares order).
     fn eq(&self, other: &Array) -> bool {
-        self.map.len() == other.map.len()
-            && self.map.iter().zip(other.map.iter()).all(|(a, b)| a == b)
+        self.map.iter().eq(&other.map)
     }
 }
 
@@ -274,15 +294,6 @@ fn split_exp(s: &str) -> (String, i32) {
 fn special(f: f64) -> Option<String> {
     f.is_infinite()
         .then(|| if f > 0.0 { "INF" } else { "-INF" }.into())
-}
-
-/// `(string) $float` (precision=14).
-pub fn float_to_string(f: f64) -> String {
-    if let Some(s) = special(f) {
-        return s;
-    }
-    let (d, e) = split_exp(&format!("{f:.13e}"));
-    gcvt(f, d, e, 14, 'E')
 }
 
 /// Shortest round-trip digits (serialize_precision=-1), as `json_encode` prints them.

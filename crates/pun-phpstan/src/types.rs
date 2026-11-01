@@ -28,7 +28,7 @@ mod templates;
 mod unresolvable;
 mod verbosity;
 pub use accepts::{StrictMixed, accepts, accepts_with};
-pub use casts::{Cast, cast_is_error, is_numeric};
+pub use casts::{Cast, cast_is_error};
 pub use late_shape::LateArrayShape;
 pub use reasons::accepts_reasons;
 pub use templates::{TemplateMap, infer_template_types, remove_final_by_keyword_overrides, resolve_template_types};
@@ -324,10 +324,6 @@ pub fn mixed() -> Type {
     Type::Mixed { explicit: false }
 }
 
-fn bx(t: Type) -> Box<Type> {
-    Box::new(t)
-}
-
 /// `(new BenevolentUnionType([int, string]))->toArrayKey()`
 fn array_key() -> Type {
     Type::Benevolent(vec![Type::Int, Type::String])
@@ -344,7 +340,7 @@ impl Type {
         } else {
             key
         };
-        Type::Array(bx(key), bx(item))
+        Type::Array(Box::new(key), Box::new(item))
     }
 
     pub fn list(item: Type) -> Type {
@@ -693,7 +689,7 @@ impl Type {
         if self.is_never() {
             return Tri::Yes;
         }
-        self.query_c_with_mixed_domain(Self::is_iterable, || Type::Iterable(bx(mixed()), bx(mixed())), true, &|t| match t {
+        self.query_c_with_mixed_domain(Self::is_iterable, || Type::Iterable(Box::new(mixed()), Box::new(mixed())), true, &|t| match t {
             Type::Array(..)
             | Type::ConstArray(_)
             | Type::Iterable(..)
@@ -741,7 +737,7 @@ impl Type {
                 }
                 Tri::max_min(iterable.into_iter().map(Type::is_iterable_at_least_once))
             }
-            _ => self.query_with_mixed_domain(Self::is_iterable_at_least_once, || Type::Iterable(bx(mixed()), bx(mixed())), true, &|t| match t {
+            _ => self.query_with_mixed_domain(Self::is_iterable_at_least_once, || Type::Iterable(Box::new(mixed()), Box::new(mixed())), true, &|t| match t {
                 Type::Never(_) => Tri::Maybe,
                 Type::ConstArray(a) => a.is_iterable_at_least_once(),
                 Type::Accessory(Accessory::NonEmptyArray | Accessory::HasOffsetValue(..)) => Tri::Yes,
@@ -1370,15 +1366,15 @@ impl Type {
         match self {
             Type::Reasoned(t, reason) => f(t).with_unresolvable_reason(reason.clone()),
             Type::SubtractedObject { object, excluded } => Type::SubtractedObject {
-                object: bx(f(object)),
-                excluded: bx(f(excluded)),
+                object: Box::new(f(object)),
+                excluded: Box::new(f(excluded)),
             },
             Type::LateArrayShape(s) => s.traverse(f),
             Type::Array(k, v) => Type::array(f(k), f(v)),
             Type::Accessory(Accessory::HasOffsetValue(k, v)) => {
-                Type::Accessory(Accessory::HasOffsetValue(k.clone(), bx(f(v))))
+                Type::Accessory(Accessory::HasOffsetValue(k.clone(), Box::new(f(v))))
             }
-            Type::Iterable(k, v) => Type::Iterable(bx(f(k)), bx(f(v))),
+            Type::Iterable(k, v) => Type::Iterable(Box::new(f(k)), Box::new(f(v))),
             Type::Union(types) => union(types.iter().map(f).collect()),
             Type::Benevolent(types) => to_benevolent(union(types.iter().map(f).collect())),
             Type::Intersection(types) => {
@@ -1394,9 +1390,9 @@ impl Type {
             Type::Object(class, args, exact) if !args.is_empty() => {
                 Type::Object(class.clone(), args.iter().map(f).collect(), *exact)
             }
-            Type::Projection(c, t) => Type::Projection(*c, bx(f(t))),
-            Type::OffsetAccess(t, o) => Type::OffsetAccess(bx(f(t)), bx(f(o))),
-            Type::ClassString(Some(g)) => Type::ClassString(Some(bx(f(g)))),
+            Type::Projection(c, t) => Type::Projection(*c, Box::new(f(t))),
+            Type::OffsetAccess(t, o) => Type::OffsetAccess(Box::new(f(t)), Box::new(f(o))),
+            Type::ClassString(Some(g)) => Type::ClassString(Some(Box::new(f(g)))),
             Type::Static(class, args) if !args.is_empty() => {
                 Type::Static(class.clone(), args.iter().map(f).collect())
             }
@@ -4016,8 +4012,8 @@ fn compare_in_union_merge(a: &Type, b: &Type) -> Option<Merge> {
     }
     if let (Type::Iterable(ak, av), Type::Iterable(bk, bv)) = (a, b) {
         return Some(Merge::A(Type::Iterable(
-            bx(union(vec![(**ak).clone(), (**bk).clone()])),
-            bx(union(vec![(**av).clone(), (**bv).clone()])),
+            Box::new(union(vec![(**ak).clone(), (**bk).clone()])),
+            Box::new(union(vec![(**av).clone(), (**bv).clone()])),
         )));
     }
     // SubtractableType (object and mixed types) keeps the first of two equivalent types
@@ -4526,7 +4522,7 @@ pub fn intersect(types: Vec<Type>) -> Type {
                     (&types[i], &types[j])
                 {
                     types[i] =
-                        Type::ClassString(Some(bx(intersect(vec![(**x).clone(), (**y).clone()]))));
+                        Type::ClassString(Some(Box::new(intersect(vec![(**x).clone(), (**y).clone()]))));
                     types.remove(j);
                     continue;
                 }
@@ -4583,7 +4579,7 @@ pub fn intersect(types: Vec<Type>) -> Type {
                         (types[i].array_class(), types[j].array_class()),
                         (Type::Iterable(..), Type::Iterable(..))
                     ) {
-                        Type::Iterable(bx(key), bx(item))
+                        Type::Iterable(Box::new(key), Box::new(item))
                     } else {
                         Type::array(key, item)
                     };

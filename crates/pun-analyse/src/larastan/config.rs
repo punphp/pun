@@ -24,7 +24,7 @@ use mago_syntax::parser::parse_file;
 use mago_syntax::walker::MutWalker;
 use pun_phpstan::phpdoc::{self, ConstExpr, Node, ShapeKey};
 use pun_phpstan::resolve::{Scope, resolve_in, resolve_late};
-use pun_phpstan::types::{LateArrayShape, Type, is_numeric, mixed};
+use pun_phpstan::types::{LateArrayShape, Type, mixed};
 
 use crate::codebase::read;
 
@@ -159,7 +159,7 @@ fn lookup(items: &[Item], parts: &[&str]) -> Option<IsArray> {
 fn doc_type(node: &Node, parts: &[&str], scope: &dyn Scope) -> IsArray {
     let mut ty = doc_shape(node, scope);
     for part in parts {
-        let offset = if is_numeric(part) {
+        let offset = if pun_phpstan::value::numeric(part).is_some() {
             Type::ConstInt(pun_tokens::php_compat::intval(part))
         } else {
             Type::ConstString(part.as_bytes().to_vec())

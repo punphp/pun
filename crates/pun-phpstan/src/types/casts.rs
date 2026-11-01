@@ -37,7 +37,7 @@ pub fn cast_is_error(t: &Type, cast: Cast, sm: StrictMixed) -> bool {
         T::String | T::StringAcceptingStringable | T::StringNotAcceptingStringable | T::ClassString(_) => {
             cast == C::Number
         }
-        T::ConstString(v) => cast == C::Number && !std::str::from_utf8(v).is_ok_and(is_numeric),
+        T::ConstString(v) => cast == C::Number && !std::str::from_utf8(v).is_ok_and(|s| crate::value::numeric(s).is_some()),
         T::Resource => matches!(cast, C::Number | C::BitwiseNot),
         T::ObjectWithoutClass | T::ObjectShape(_) | T::Closure(_) | T::Callable(_) | T::Iterable(..) => true,
         T::Object(..) | T::EnumCase(..) => object(t, cast),
@@ -75,56 +75,5 @@ fn object(t: &Type, cast: Cast) -> bool {
         Cast::Number | Cast::Float => !numeric,
         // (a boolean cast never reaches here)
         Cast::BitwiseNot | Cast::Boolean => true,
-    }
-}
-
-/// PHP's `is_numeric()` of a string: optional leading whitespace, a sign, digits with an optional fraction and
-/// exponent, optional trailing whitespace.
-pub fn is_numeric(s: &str) -> bool {
-    let t = s.trim_start_matches([' ', '\t', '\n', '\r', '\x0b', '\x0c']);
-    let t = t.trim_end_matches([' ', '\t', '\n', '\r', '\x0b', '\x0c']);
-    let t = t.strip_prefix(['+', '-']).unwrap_or(t);
-    let b = t.as_bytes();
-    let mut i = 0;
-    let digits = |i: &mut usize| {
-        let start = *i;
-        while *i < b.len() && b[*i].is_ascii_digit() {
-            *i += 1;
-        }
-        *i - start
-    };
-    let int = digits(&mut i);
-    let mut frac = 0;
-    if i < b.len() && b[i] == b'.' {
-        i += 1;
-        frac = digits(&mut i);
-    }
-    if int + frac == 0 {
-        return false;
-    }
-    if i < b.len() && (b[i] == b'e' || b[i] == b'E') {
-        i += 1;
-        if i < b.len() && (b[i] == b'+' || b[i] == b'-') {
-            i += 1;
-        }
-        if digits(&mut i) == 0 {
-            return false;
-        }
-    }
-    i == b.len()
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn numeric_strings() {
-        for s in ["1", " 1", "1 ", "-1.5", ".5", "5.", "1e3", "+1E-3"] {
-            assert!(is_numeric(s), "{s}");
-        }
-        for s in ["", "bla", "1e", ".", "1x", "--1", "e3"] {
-            assert!(!is_numeric(s), "{s}");
-        }
     }
 }

@@ -18,10 +18,7 @@ struct Entry {
 
 /// PHP array keys: `ksort(SORT_STRING)` order, but numeric strings come back as ints.
 fn php_key(s: &str) -> Value {
-    match Key::from_string(s.to_string()) {
-        Key::Int(i) => Value::Int(i),
-        Key::Str(s) => Value::Str(s),
-    }
+    Key::from(s).into()
 }
 
 fn entries(baseline_dir: &str, errors: &[Error], raw: bool, path_prefix: &str) -> Vec<Entry> {
