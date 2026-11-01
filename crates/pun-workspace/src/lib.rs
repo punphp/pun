@@ -43,6 +43,8 @@ fn real_path(cfg: &Config, p: &Path) -> Result<PathBuf, FinderError> {
         .map_err(|_| FinderError::NotReadable(p.to_path_buf()))
 }
 
+/// Pint's default excludes (compiled views, the config cache, build output, Node packages). `pun lint` and
+/// `pun analyse` skip them too, besides pun.toml's excludes, matched as root-relative prefixes.
 const PINT_EXCLUDE: [&str; 4] = ["bootstrap/cache", "build", "node_modules", "storage"];
 const VCS: [&str; 9] = [
     ".svn",
@@ -251,7 +253,11 @@ pub fn discover(cfg: &Config, paths: &[PathBuf]) -> Result<Vec<PathBuf>> {
         }
         f
     };
-    Ok(dedup(f.files()?))
+    let mut seen = std::collections::HashSet::new();
+    Ok((f.files()?)
+        .into_iter()
+        .filter(|p| seen.insert(p.clone()))
+        .collect())
 }
 
 /// The command whose file set [`files`] lists (`pun list-files --command`).
@@ -266,7 +272,7 @@ pub enum Command {
 /// the `[files]` set, `[files] paths` (or `paths`) walked like PHP-CS-Fixer's `Finder::create()` (`*.php`, no
 /// `vendor`, dot or VCS directories) minus `[files] exclude`. `Lint` and `Analyse` add their own `exclude` (and
 /// analyse's `paths`) and skip Blade templates and the directories Pint skips, as root-relative prefixes
-/// ([`LINT_EXCLUDE`]); `Format` is Pint's finder, [`discover`]. Outside `Format` an explicit file is excluded like
+/// ([`PINT_EXCLUDE`]); `Format` is Pint's finder, [`discover`]. Outside `Format` an explicit file is excluded like
 /// any other, as in Mago.
 pub fn files(cfg: &Config, command: Option<Command>, paths: &[PathBuf]) -> Result<Vec<PathBuf>> {
     let dirs = match command {
@@ -305,18 +311,14 @@ pub fn files(cfg: &Config, command: Option<Command>, paths: &[PathBuf]) -> Resul
     Ok(out)
 }
 
-/// The directories `pun lint` and `pun analyse` skip besides pun.toml's excludes: Pint's defaults (compiled views,
-/// the config cache, build output, Node packages), matched as root-relative prefixes.
-pub const LINT_EXCLUDE: [&str; 4] = PINT_EXCLUDE;
-
-/// A command's exclude patterns: `[files] exclude` and its own, plus [`LINT_EXCLUDE`] for lint and analyse.
+/// A command's exclude patterns: `[files] exclude` and its own, plus [`PINT_EXCLUDE`] for lint and analyse.
 fn exclude_patterns(cfg: &Config, command: Option<Command>) -> Vec<String> {
     let own = match command {
         None | Some(Command::Format) => &cfg.files.exclude,
         Some(Command::Lint) => &cfg.lint.exclude,
         Some(Command::Analyse) => &cfg.analyse.exclude,
     };
-    let defaults = command.map_or(&[][..], |_| &LINT_EXCLUDE[..]);
+    let defaults = command.map_or(&[][..], |_| &PINT_EXCLUDE[..]);
     (own.iter().cloned())
         .chain(defaults.iter().map(ToString::to_string))
         .collect()
@@ -378,6 +380,14 @@ pub fn git_paths(cfg: &Config, sel: &GitSelect) -> Result<Vec<PathBuf>> {
         }
         Some(all)
     };
+    // `git diff --name-only --diff-filter=AMR [rev] -- **.php`.
+    fn diff(rev: Option<&str>) -> Vec<&str> {
+        ["diff", "--name-only", "--diff-filter=AMR"]
+            .into_iter()
+            .chain(rev)
+            .chain(["--", "**.php"])
+            .collect()
+    }
     let untracked: &[&str] = &["ls-files", "--others", "--exclude-standard", "--", "**.php"];
     let names = match sel {
         GitSelect::Dirty => git(&cfg.root, &["status", "--short", "--", "**.php"]).map(|out| {
@@ -403,44 +413,13 @@ pub fn git_paths(cfg: &Config, sel: &GitSelect) -> Result<Vec<PathBuf>> {
                 .collect()
         }),
         GitSelect::Diff(branch) => lists(&[
-            &[
-                "diff",
-                "--name-only",
-                "--diff-filter=AMR",
-                &format!("{branch}...HEAD"),
-                "--",
-                "**.php",
-            ],
-            &[
-                "diff",
-                "--name-only",
-                "--diff-filter=AMR",
-                "--cached",
-                "--",
-                "**.php",
-            ],
-            &["diff", "--name-only", "--diff-filter=AMR", "--", "**.php"],
+            &diff(Some(&format!("{branch}...HEAD"))),
+            &diff(Some("--cached")),
+            &diff(None),
             untracked,
         ]),
-        GitSelect::Staged => lists(&[&[
-            "diff",
-            "--name-only",
-            "--diff-filter=AMR",
-            "--cached",
-            "--",
-            "**.php",
-        ]]),
-        GitSelect::Since(r) => lists(&[
-            &[
-                "diff",
-                "--name-only",
-                "--diff-filter=AMR",
-                r,
-                "--",
-                "**.php",
-            ],
-            untracked,
-        ]),
+        GitSelect::Staged => lists(&[&diff(Some("--cached"))]),
+        GitSelect::Since(r) => lists(&[&diff(Some(r)), untracked]),
     };
     let wanted: std::collections::HashSet<PathBuf> = names
         .unwrap_or_default()
@@ -463,14 +442,6 @@ pub fn git_paths(cfg: &Config, sel: &GitSelect) -> Result<Vec<PathBuf>> {
     } else {
         discover(cfg, &picked)
     }
-}
-
-fn dedup(files: Vec<PathBuf>) -> Vec<PathBuf> {
-    let mut seen = std::collections::HashSet::new();
-    files
-        .into_iter()
-        .filter(|p| seen.insert(p.clone()))
-        .collect()
 }
 
 /// ConfigurationFactory::isPathExcluded (used for `--stdin-filename`): fnmatch-based, not the finder.
