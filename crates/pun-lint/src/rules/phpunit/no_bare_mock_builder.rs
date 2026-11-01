@@ -8,7 +8,7 @@
 use mago_syntax::cst::{Call, Expression, Node, NodeKind};
 use pun_problem::{Edit, Safety, Span};
 
-use super::{AnyCall, TEST_CASE, maybe_multiline, receiver_is, report};
+use super::{AnyCall, TEST_CASE, maybe_multiline, receiver_is};
 use crate::rules::laravel::is_variable;
 use crate::rules::rector_stmts::line_indent;
 use crate::syntax::{node_span, unparenthesize};
@@ -71,7 +71,7 @@ impl Rule for NoBareMockBuilder {
                 line_indent(ctx.source, call.span.start)
             )
         );
-        out.push(report(
+        out.push(Report::fixed(
             call.span,
             "Use `createMock()` instead of a bare mock builder.",
             Safety::Safe,

@@ -5,11 +5,11 @@
 //! method call, a static call or a `new`, or an array item's value, becomes `new \...\Request()`.
 
 use mago_syntax::cst::{
-    ArgumentList, ArrayElement, Call, Expression, Node, NodeKind, PartialArgument,
+    Argument, ArgumentList, ArrayElement, Call, Expression, Node, NodeKind, PartialArgument,
 };
 use pun_problem::{Edit, Safety};
 
-use super::{AnyCall, TEST_CASE, arg_value, class_is, class_string, report};
+use super::{AnyCall, TEST_CASE, class_is, class_string};
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -45,7 +45,7 @@ impl Rule for NoValueObjectMock {
             Node::ArrayElement(ArrayElement::Value(v)) => vec![v.value],
             Node::ArrayElement(ArrayElement::Variadic(v)) => vec![v.value],
             Node::MethodCall(_) | Node::StaticMethodCall(_) => AnyCall::of(node)
-                .map(|c| c.args().into_iter().map(arg_value).collect())
+                .map(|c| c.args().into_iter().map(Argument::value).collect())
                 .unwrap_or_default(),
             Node::Instantiation(new) => args(new.argument_list.as_ref()),
             Node::AnonymousClass(new) => new
@@ -81,7 +81,7 @@ impl Rule for NoValueObjectMock {
             return;
         }
         for (value, class) in mocks {
-            out.push(report(
+            out.push(Report::fixed(
                 node_span(value),
                 "Use a real instance instead of mocking this value object.",
                 Safety::Safe,
@@ -104,7 +104,7 @@ fn mocked_class(
     if !call.is_name(&["createMock"]) {
         return None;
     }
-    let class = class_string(ctx, ancestors, arg_value(call.args().into_iter().next()?))?;
+    let class = class_string(ctx, ancestors, call.args().into_iter().next()?.value())?;
     [REQUEST, REQUEST_STACK]
         .contains(&class.as_str())
         .then_some(class)
@@ -113,6 +113,6 @@ fn mocked_class(
 fn args<'a>(list: Option<&'a ArgumentList<'a>>) -> Vec<&'a Expression<'a>> {
     list.iter()
         .flat_map(|l| l.arguments.iter())
-        .map(arg_value)
+        .map(Argument::value)
         .collect()
 }

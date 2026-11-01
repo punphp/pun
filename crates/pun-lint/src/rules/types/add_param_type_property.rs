@@ -13,11 +13,11 @@ use mago_syntax::cst::{
     AssignmentOperator, ClassLikeMemberSelector, Expression, IfBody, MethodBody, Modifier, Node, NodeKind,
     UnaryPrefixOperator, Variable,
 };
-use pun_problem::Span;
+use pun_problem::{Safety, Span};
 
 use super::facts::{Facts, facts};
 use super::has_parent_class_method;
-use super::param::{add_hint, is_mixed, param_declaration, report};
+use super::param::{add_hint, is_mixed, param_declaration};
 use super::class_scope;
 use crate::rules::class_method::qualified;
 use crate::rules::add_param_type_sprintf::is_legal;
@@ -85,9 +85,10 @@ impl Rule for AddParamTypeProperty {
         if edits.is_empty() {
             return;
         }
-        out.push(report(
+        out.push(Report::fixed(
             node_span(&node),
             "Add the type of the property a parameter is assigned to.",
+            Safety::Unsafe,
             edits,
         ));
     }

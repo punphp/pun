@@ -10,7 +10,7 @@
 use mago_syntax::cst::{ClassLikeMember, Method, MethodBody, Node, NodeKind};
 use pun_problem::{Edit, Safety, Span};
 
-use super::{class_body, is_in_test_class, is_public, report};
+use super::{class_body, is_in_test_class, is_public};
 use crate::rules::rector_batch5::{doc_comment, has_attribute, member_from};
 use crate::rules::types::declare::{return_declaration, union_order};
 use crate::rules::types::facts::facts;
@@ -89,9 +89,9 @@ impl Rule for AddDependedTestReturnType {
                 continue;
             };
             let end = method.parameter_list.right_parenthesis.end.offset as usize;
-            out.push(report(
+            out.push(Report::fixed(
                 node_span(&method.name),
-                &format!("Add the `{declared}` return type: a test that depends on this one gets its value."),
+                format!("Add the `{declared}` return type: a test that depends on this one gets its value."),
                 Safety::Unsafe,
                 vec![Edit::new(Span::new(end, end), format!(": {declared}"))],
             ));

@@ -8,7 +8,7 @@
 use mago_syntax::cst::{Call, Expression, Node, NodeKind};
 use pun_problem::Safety;
 
-use super::{AnyCall, NewArg, arg_value, is_in_test_class, report, resolve, rewrite_args, text};
+use super::{AnyCall, NewArg, is_in_test_class, resolve, rewrite_args, text};
 use crate::syntax::unparenthesize;
 use crate::{Context, Report, Rule};
 
@@ -47,7 +47,7 @@ impl Rule for PreferSpecificWillMethod {
         let Some(first) = call.args().first().copied() else {
             return;
         };
-        let (name, inner) = match unparenthesize(arg_value(first)) {
+        let (name, inner) = match unparenthesize(first.value()) {
             Expression::Instantiation(new) => {
                 let Expression::Identifier(class) = new.class else {
                     return;
@@ -90,9 +90,9 @@ impl Rule for PreferSpecificWillMethod {
             .iter()
             .map(|a| NewArg::New(text(ctx, *a).to_string()))
             .collect();
-        out.push(report(
+        out.push(Report::fixed(
             call.span,
-            &format!("Use `{name}()` instead of `will()`."),
+            format!("Use `{name}()` instead of `will()`."),
             Safety::Unsafe,
             rewrite_args(ctx, &call, Some(name), &new),
         ));

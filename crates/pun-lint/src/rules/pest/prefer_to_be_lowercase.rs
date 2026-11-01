@@ -5,9 +5,7 @@
 use mago_syntax::cst::{BinaryOperator, Expression, Node, NodeKind};
 use pun_problem::Safety;
 
-use super::{
-    Is, Trinary, first_value, func_call, is_name, rename, report, subject_holder, type_is,
-};
+use super::{Is, Trinary, first_value, func_call, is_name, rename, subject_holder, type_is};
 use crate::rules::rector_code_quality::named;
 use crate::syntax::same_expression;
 use crate::syntax::{node_span, unparenthesize};
@@ -66,9 +64,9 @@ impl Rule for PreferToBeLowercase {
         }
         let mut edits = holder.set_arguments(ctx, value);
         edits.push(rename(call, "toBeLowercase"));
-        out.push(report(
+        out.push(Report::fixed(
             node_span(call),
-            "Use `toBeLowercase()` instead of comparing with `strtolower()`.".to_string(),
+            "Use `toBeLowercase()` instead of comparing with `strtolower()`.",
             Safety::Unsafe,
             edits,
         ));

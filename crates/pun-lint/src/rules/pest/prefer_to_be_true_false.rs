@@ -6,10 +6,7 @@
 use mago_syntax::cst::{Expression, Literal, MethodCall, Node, NodeKind};
 use pun_problem::Safety;
 
-use super::{
-    Is, Trinary, argument_value, is_expect_chain, is_name, matcher_subject, report,
-    set_call_arguments, type_is,
-};
+use super::{Is, Trinary, is_expect_chain, is_name, matcher_subject, set_call_arguments, type_is};
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -42,10 +39,10 @@ impl Rule for PreferToBeTrueFalse {
         let [argument] = call.argument_list.arguments.as_slice() else {
             return;
         };
-        let Some(matcher) = matcher_for_literal(ctx, call, argument_value(argument)) else {
+        let Some(matcher) = matcher_for_literal(ctx, call, argument.value()) else {
             return;
         };
-        out.push(report(
+        out.push(Report::fixed(
             node_span(call),
             format!("Use `{matcher}()` instead of comparing with a literal."),
             Safety::Safe,

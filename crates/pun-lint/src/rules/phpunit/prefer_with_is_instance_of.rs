@@ -8,7 +8,7 @@
 use mago_syntax::cst::{BinaryOperator, Call, Expression, Node, NodeKind, Statement};
 use pun_problem::{Edit, Safety};
 
-use super::{AnyCall, arg_value, expr_text, is_in_test_class, report, resolve};
+use super::{AnyCall, expr_text, is_in_test_class, resolve};
 use crate::rules::rector_stmts::block_list;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -36,12 +36,12 @@ impl Rule for PreferWithIsInstanceOf {
             return;
         }
         for arg in call.args() {
-            let value = arg_value(arg);
+            let value = arg.value();
             let Some(class) = sole_instanceof_class(ctx, ancestors, value) else {
                 continue;
             };
             let span = node_span(value);
-            out.push(report(
+            out.push(Report::fixed(
                 span,
                 "Use `isInstanceOf()` instead of a callback that checks the type.",
                 Safety::Safe,
@@ -62,7 +62,7 @@ fn sole_instanceof_class(
     };
     let callback = AnyCall::of(Node::MethodCall(callback)).filter(|c| c.is_name(&["callback"]))?;
     let first = callback.args().into_iter().next()?;
-    let Expression::Closure(closure) = unparenthesize(arg_value(first)) else {
+    let Expression::Closure(closure) = unparenthesize(first.value()) else {
         return None;
     };
     let list = block_list(ctx.source, &closure.body);
@@ -74,7 +74,7 @@ fn sole_instanceof_class(
             let assert = AnyCall::of(Node::MethodCall(assert))
                 .filter(|c| c.is_name(&["assertInstanceOf"]))?;
             let class = assert.args().into_iter().next()?;
-            Some(expr_text(ctx, arg_value(class)).to_string())
+            Some(expr_text(ctx, class.value()).to_string())
         }
         (1, [Statement::Return(r)]) => {
             let Expression::Binary(binary) = unparenthesize(r.value?) else {

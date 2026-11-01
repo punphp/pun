@@ -7,8 +7,8 @@ use pun_problem::Safety;
 
 use super::{
     Item, Link, STATEMENT_LISTS, chain_links, chain_root, expect_argument, has_not,
-    is_expect_chain, kept_text, method_call, print_links, report, rewrite_list,
-    statement_expression, statement_list,
+    is_expect_chain, kept_text, method_call, print_links, rewrite_list, statement_expression,
+    statement_list,
 };
 use crate::syntax::{node_span, same_expression};
 use crate::{Context, Report, Rule};
@@ -128,9 +128,9 @@ impl Rule for RequireTypeMatcherFirst {
             items.push(Item::Old(stmts.len()));
         }
         if let Some(edits) = rewrite_list(ctx, node, ancestors, &list, &items) {
-            out.push(report(
+            out.push(Report::fixed(
                 node_span(stmts[0]),
-                "Check the type before the value in `expect()` chains.".to_string(),
+                "Check the type before the value in `expect()` chains.",
                 Safety::Safe,
                 edits,
             ));

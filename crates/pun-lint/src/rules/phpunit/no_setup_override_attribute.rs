@@ -8,7 +8,7 @@
 use mago_syntax::cst::{Expression, MethodBody, Node, NodeKind, Statement};
 use pun_problem::{Edit, Safety};
 
-use super::{is_in_test_class, method_anew, report, resolve};
+use super::{is_in_test_class, method_anew, resolve};
 use crate::rules::rector_batch5::{has_attribute, list_removal, merge};
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
@@ -83,7 +83,7 @@ impl Rule for NoSetupOverrideAttribute {
                 method_anew(ctx.source, method, block),
             )],
         };
-        out.push(report(
+        out.push(Report::fixed(
             node_span(&method.name),
             "Remove `#[Override]`: the method calls its parent's.",
             Safety::Safe,

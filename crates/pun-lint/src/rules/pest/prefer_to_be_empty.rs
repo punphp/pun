@@ -7,8 +7,8 @@ use mago_syntax::cst::{Construct, Expression, Literal, MethodCall, Node, NodeKin
 use pun_problem::{Edit, Safety, Span};
 
 use super::{
-    argument_value, func_call, has_not, identifier, is_expect_chain, is_name, matcher_subject,
-    report, set_call_arguments, subject_holder,
+    func_call, has_not, identifier, is_expect_chain, is_name, matcher_subject, set_call_arguments,
+    subject_holder,
 };
 use crate::rules::rector_code_quality::named;
 use crate::syntax::{node_span, unparenthesize};
@@ -40,7 +40,7 @@ impl Rule for PreferToBeEmpty {
         }
         let message = "Use `toBeEmpty()` instead of checking the count or `empty()`.".to_string();
         if is_name(&call.method, "toHaveCount") && has_zero_arg(call) {
-            out.push(report(
+            out.push(Report::fixed(
                 node_span(call),
                 message,
                 Safety::Unsafe,
@@ -62,9 +62,14 @@ impl Rule for PreferToBeEmpty {
             let [argument] = count.argument_list.arguments.as_slice() else {
                 return;
             };
-            let mut edits = holder.set_arguments(ctx, argument_value(argument));
+            let mut edits = holder.set_arguments(ctx, argument.value());
             edits.extend(set_call_arguments(call, "toBeEmpty", &[]));
-            out.push(report(node_span(call), message, Safety::Unsafe, edits));
+            out.push(Report::fixed(
+                node_span(call),
+                message,
+                Safety::Unsafe,
+                edits,
+            ));
             return;
         }
         if is_name(&call.method, "toBeTrue") || is_name(&call.method, "toBeFalse") {
@@ -82,7 +87,12 @@ impl Rule for PreferToBeEmpty {
                 Span::new(holder.span.end, node_span(call).end),
                 format!("{not}->toBeEmpty()"),
             ));
-            out.push(report(node_span(call), message, Safety::Unsafe, edits));
+            out.push(Report::fixed(
+                node_span(call),
+                message,
+                Safety::Unsafe,
+                edits,
+            ));
         }
     }
 }
@@ -91,6 +101,6 @@ impl Rule for PreferToBeEmpty {
 fn has_zero_arg(call: &MethodCall<'_>) -> bool {
     matches!(
         call.argument_list.arguments.as_slice(),
-        [argument] if matches!(unparenthesize(argument_value(argument)), Expression::Literal(Literal::Integer(i)) if i.value == Some(0))
+        [argument] if matches!(unparenthesize(argument.value()), Expression::Literal(Literal::Integer(i)) if i.value == Some(0))
     )
 }

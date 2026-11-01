@@ -11,10 +11,11 @@
 
 use mago_codex::ttype::union::TUnion;
 use mago_syntax::cst::{Argument, Expression, Node, NodeKind};
+use pun_problem::Safety;
 
 use super::facts::facts;
 use super::param::{
-    ArrayShape, add_hint, array_shape_of, doc_order, is_mixed, own_static, param_declaration_in, report,
+    ArrayShape, add_hint, array_shape_of, doc_order, is_mixed, own_static, param_declaration_in,
 };
 use super::class_scope;
 use crate::rules::lint_b_helpers::value;
@@ -77,9 +78,10 @@ impl Rule for AddParamTypeArrayMap {
         if edits.is_empty() {
             return;
         }
-        out.push(report(
+        out.push(Report::fixed(
             node_span(call),
             "Add the arrays' item types to the array_map() closure's parameters.",
+            Safety::Unsafe,
             edits,
         ));
     }

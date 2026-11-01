@@ -23,7 +23,7 @@ use mago_codex::ttype::atomic::reference::TReference;
 use mago_syntax::cst::{
     Argument, Call, ClassLikeMemberSelector, Expression, Hint, MethodBody, Node, NodeKind,
 };
-use pun_problem::{Fix, Safety};
+use pun_problem::Safety;
 
 use super::add_factory_extends_phpdoc::tag_name;
 use super::names::{resolve_class_name, resolve_doc_class_name, resolve_doc_string_name};
@@ -151,10 +151,7 @@ impl Rule for AddRelationGenerics {
             .map(String::from_utf8_lossy)
             .unwrap_or_default();
         let args: Vec<&Expression<'_>> = (call.argument_list.arguments.iter())
-            .map(|a| match a {
-                Argument::Positional(a) => a.value,
-                Argument::Named(a) => a.value,
-            })
+            .map(Argument::value)
             .collect();
         let class_of = |e: &Expression<'_>| {
             facts
@@ -290,15 +287,12 @@ impl AddRelationGenerics {
         let Some(edits) = annotated.edits(ctx.source, Some(&new_doc), &[]) else {
             return;
         };
-        out.push(Report {
-            span: node_span(&method.name),
-            message: "Add the relation's generics to its `@return` type.".to_string(),
-            help: None,
-            fix: Some(Fix {
-                safety: Safety::Unsafe,
-                edits,
-            }),
-        });
+        out.push(Report::fixed(
+            node_span(&method.name),
+            "Add the relation's generics to its `@return` type.",
+            Safety::Unsafe,
+            edits,
+        ));
     }
 }
 

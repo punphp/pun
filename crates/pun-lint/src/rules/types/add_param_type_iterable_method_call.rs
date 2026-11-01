@@ -11,11 +11,11 @@ use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::reference::TReference;
 use mago_codex::ttype::union::TUnion;
 use mago_syntax::cst::{Argument, ClassLikeMemberSelector, Expression, FunctionLikeParameter, Hint, Node, NodeKind};
-use pun_problem::Edit;
+use pun_problem::{Edit, Safety};
 
 use super::facts::{Facts, facts};
 use super::names::resolve_class_name;
-use super::param::{add_hint, param_declaration, report};
+use super::param::{add_hint, param_declaration};
 use crate::rules::class_method::type_of;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -69,10 +69,7 @@ impl Rule for AddParamTypeIterableMethodCall {
             .argument_list
             .arguments
             .iter()
-            .map(|a| match a {
-                Argument::Positional(p) => p.value,
-                Argument::Named(n) => n.value,
-            })
+            .map(Argument::value)
             .collect();
         // callUsesClosures
         if !args.iter().any(|v| matches!(unparenthesize(v), Expression::Closure(_))) {
@@ -103,9 +100,10 @@ impl Rule for AddParamTypeIterableMethodCall {
         if edits.is_empty() {
             return;
         }
-        out.push(report(
+        out.push(Report::fixed(
             node_span(call),
             "Add the iterable's key and value types to the closure's parameters.",
+            Safety::Unsafe,
             edits,
         ));
     }

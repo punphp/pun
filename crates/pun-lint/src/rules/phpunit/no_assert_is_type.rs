@@ -7,7 +7,7 @@
 use mago_syntax::cst::{Node, NodeKind};
 use pun_problem::{Edit, Safety};
 
-use super::{AnyCall, arg_value, is_test_case_call, new_call, report, string_value};
+use super::{AnyCall, is_test_case_call, new_call, string_value};
 use crate::rules::laravel::get_arg;
 use crate::{Context, Report, Rule};
 
@@ -59,15 +59,15 @@ impl Rule for NoAssertIsType {
         let Some(arg) = get_arg(call.args, "type", 0) else {
             return;
         };
-        let Some(value) = string_value(arg_value(arg)) else {
+        let Some(value) = string_value(arg.value()) else {
             return;
         };
         let Some((_, method)) = IS_TYPE_VALUE_TO_METHOD.iter().find(|(k, _)| *k == value) else {
             return;
         };
-        out.push(report(
+        out.push(Report::fixed(
             call.span,
-            &format!("Use `{method}()` instead of `isType()`."),
+            format!("Use `{method}()` instead of `isType()`."),
             Safety::Safe,
             vec![Edit::new(call.span, new_call(ctx, &call, method, &[]))],
         ));

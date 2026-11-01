@@ -7,8 +7,9 @@ use pun_problem::{Edit, Safety, Span};
 
 use super::{
     Is, Trinary, expect_call, first_value, func_call, function_name, has_not, identifier,
-    is_bool_constant, report, set_first_argument, type_is,
+    set_first_argument, type_is,
 };
+use crate::rules::rector_code_quality::is_constant;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -66,9 +67,9 @@ impl Rule for PreferToBeJson {
             Span::new(node_span(expect).end, node_span(call).end),
             format!("{not}->toBeJson()"),
         ));
-        out.push(report(
+        out.push(Report::fixed(
             node_span(call),
-            "Use `toBeJson()` instead of checking `json_decode()` against null.".to_string(),
+            "Use `toBeJson()` instead of checking `json_decode()` against null.",
             Safety::Unsafe,
             edits,
         ));
@@ -82,8 +83,8 @@ fn json_decode_call<'a>(
     right: &'a Expression<'a>,
 ) -> Option<&'a FunctionCall<'a>> {
     let call = match (func_call(left), func_call(right)) {
-        (Some(f), _) if is_bool_constant(right, "null") => f,
-        (_, Some(f)) if is_bool_constant(left, "null") => f,
+        (Some(f), _) if is_constant(right, "null") => f,
+        (_, Some(f)) if is_constant(left, "null") => f,
         _ => return None,
     };
     (function_name(call) == Some(b"json_decode")).then_some(call)

@@ -15,12 +15,12 @@
 //! them, the body one level below the line the function starts on. Each moved expression keeps its text, reindented.
 
 use mago_syntax::cst::{
-    ArrowFunction, Binary, BinaryOperator, Call, Closure, Construct, Expression, Node, NodeKind,
-    Statement,
+    Argument, ArrowFunction, Binary, BinaryOperator, Call, Closure, Construct, Expression, Node,
+    NodeKind, Statement,
 };
 use pun_problem::{Edit, Safety, Span};
 
-use super::{AnyCall, arg_value, is_in_test_class, maybe_multiline, report, resolve};
+use super::{AnyCall, is_in_test_class, maybe_multiline, resolve};
 use crate::rules::rector_stmts::{List, block_list, line_indent, reindent};
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -51,7 +51,7 @@ impl Rule for PreferStandaloneAssertsOverCallback {
         scope.push(node);
         let mut edits = Vec::new();
         for arg in call.args() {
-            let Some(function) = match_callback_function_like(arg_value(arg)) else {
+            let Some(function) = match_callback_function_like(arg.value()) else {
                 continue;
             };
             let Some(joined_exprs) = resolve_inner_return_joined_exprs(&function) else {
@@ -69,7 +69,7 @@ impl Rule for PreferStandaloneAssertsOverCallback {
         if edits.is_empty() {
             return;
         }
-        out.push(report(
+        out.push(Report::fixed(
             call.name_span(),
             "Assert each condition in the callback instead of returning their combination.",
             Safety::Safe,
@@ -104,7 +104,7 @@ fn match_callback_function_like<'a>(value: &'a Expression<'a>) -> Option<Functio
     if !call.is_name(&["callback"]) {
         return None;
     }
-    match unparenthesize(arg_value(call.args().into_iter().next()?)) {
+    match unparenthesize(call.args().into_iter().next()?.value()) {
         Expression::Closure(closure) => Some(FunctionLike::Closure(closure)),
         Expression::ArrowFunction(arrow) => Some(FunctionLike::Arrow(arrow)),
         _ => None,
@@ -178,9 +178,13 @@ fn function_call_named<'a>(
     };
     let written = id.value();
     let written = written.strip_prefix(b"\\").unwrap_or(written);
-    written
-        .eq_ignore_ascii_case(name.as_bytes())
-        .then(|| call.argument_list.arguments.iter().map(arg_value).collect())
+    written.eq_ignore_ascii_case(name.as_bytes()).then(|| {
+        call.argument_list
+            .arguments
+            .iter()
+            .map(Argument::value)
+            .collect()
+    })
 }
 
 /// `FromBinaryAndAssertExpressionsFactory::create`, without the call: the assertions in the order of the operands.

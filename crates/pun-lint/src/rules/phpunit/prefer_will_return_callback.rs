@@ -37,7 +37,7 @@ use mago_syntax::cst::{
 use mago_syntax::token::TokenKind;
 use pun_problem::{Edit, Safety, Span};
 
-use super::{TEST_CASE, TEST_CASE_LEGACY, class_body, class_is, report, resolve, string_value};
+use super::{TEST_CASE, TEST_CASE_LEGACY, class_body, class_is, resolve, string_value};
 use crate::rules::rector_stmts::{
     assign, block_list, expression, first_comment, line_indent, previous_token_end, reindent,
     tokens,
@@ -96,7 +96,7 @@ impl Rule for PreferWillReturnCallback {
             return;
         };
         let name = node_span(&call.method);
-        out.push(report(
+        out.push(Report::fixed(
             name,
             "Use willReturnCallback() for a callback on a method that returns void.",
             Safety::Safe,
@@ -120,22 +120,15 @@ fn match_callback_closure<'a>(
         return None;
     }
     let arg = args.first()?;
-    let Expression::Call(Call::Method(nested)) = argument_value(arg) else {
+    let Expression::Call(Call::Method(nested)) = arg.value() else {
         return None;
     };
     if !is_named(&nested.method, "callback") {
         return None;
     }
-    match argument_value(nested.argument_list.arguments.first()?) {
+    match nested.argument_list.arguments.first()?.value() {
         Expression::Closure(closure) => Some((arg, closure)),
         _ => None,
-    }
-}
-
-fn argument_value<'a>(arg: &'a Argument<'a>) -> &'a Expression<'a> {
-    match arg {
-        Argument::Positional(a) => a.value,
-        Argument::Named(a) => a.value,
     }
 }
 
@@ -185,7 +178,7 @@ fn is_mocked_void_method_call(
         .argument_list
         .arguments
         .first()
-        .map(argument_value)
+        .map(Argument::value)
         .filter(|v| matches!(v, Expression::Literal(Literal::String(_))))
         .and_then(string_value)
     else {
@@ -321,7 +314,7 @@ pub(super) fn setup_assigned_mock_types(
             _ => continue,
         };
         let Some(Expression::Access(Access::ClassConstant(fetch))) =
-            call.argument_list.arguments.first().map(argument_value)
+            call.argument_list.arguments.first().map(Argument::value)
         else {
             continue;
         };

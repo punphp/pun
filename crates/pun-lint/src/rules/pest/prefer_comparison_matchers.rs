@@ -5,7 +5,7 @@
 use mago_syntax::cst::{BinaryOperator, Expression, Node, NodeKind};
 use pun_problem::Safety;
 
-use super::{first_value, is_name, report, set_call_arguments, subject_holder, texts};
+use super::{first_value, is_name, set_call_arguments, subject_holder, texts};
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -54,7 +54,7 @@ impl Rule for PreferComparisonMatchers {
             matcher,
             &texts(ctx, &[comparison.rhs]),
         ));
-        out.push(report(
+        out.push(Report::fixed(
             node_span(call),
             format!("Use `{matcher}()` instead of checking a comparison."),
             Safety::Safe,

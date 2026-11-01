@@ -11,7 +11,7 @@ use pun_problem::Safety;
 use serde_json::Value;
 
 use super::annotations::{Annotated, TagValue, map_item, named_tags};
-use super::{is_public, report};
+use super::is_public;
 use crate::rules::lint_b_doc::Doc;
 use crate::rules::rector_batch5::has_attribute;
 use crate::rules::types::facts::facts;
@@ -83,7 +83,7 @@ impl Rule for PreferTestWithAttribute {
         let Some(edits) = annotated.edits(ctx.source, Some(&new_doc), &groups) else {
             return;
         };
-        out.push(report(
+        out.push(Report::fixed(
             doc.span,
             "Use the `#[TestWith]` attribute instead of the `@testWith` annotation.",
             Safety::Safe,
@@ -116,7 +116,7 @@ fn is_test_class_method(
 }
 
 /// PHP's `trim()`.
-fn php_trim(s: &str) -> &str {
+pub(super) fn php_trim(s: &str) -> &str {
     s.trim_matches([' ', '\t', '\n', '\r', '\0', '\x0B'])
 }
 

@@ -11,7 +11,8 @@ use pun_problem::{Edit, Safety, Span};
 use serde_json::Value;
 
 use super::annotations::{Annotated, TagValue, named_tags};
-use super::{class_body, is_in_test_class, report};
+use super::prefer_test_with_attribute::php_trim;
+use super::{class_body, is_in_test_class};
 use crate::rules::prefer_absolute_include::print_string;
 use crate::rules::rector_batch5::merge;
 use crate::rules::rector_stmts::{line_indent, previous_token_end};
@@ -151,7 +152,7 @@ impl Rule for PreferDataProvider {
             })
             .collect();
         edits.push(Edit::new(Span::new(at, at), text));
-        out.push(report(
+        out.push(Report::fixed(
             span,
             "Use a data provider method instead of the `@testWith` annotation.",
             Safety::Safe,
@@ -173,11 +174,6 @@ fn data_provider_name(method: &str) -> String {
         ),
         None => "dataProvider".to_string(),
     }
-}
-
-/// PHP's `trim()`.
-fn php_trim(s: &str) -> &str {
-    s.trim_matches([' ', '\t', '\n', '\r', '\0', '\x0B'])
 }
 
 /// `Json::decode($json, forceArrays: true)`; `None` where it throws, or for an integer past 64 bits

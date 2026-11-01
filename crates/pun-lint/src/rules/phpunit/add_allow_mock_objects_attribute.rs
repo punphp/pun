@@ -8,7 +8,7 @@ use mago_syntax::cst::{Node, NodeKind};
 use pun_problem::Safety;
 
 use super::annotations::Annotated;
-use super::{class_is, is_in_test_class, report};
+use super::{class_is, is_in_test_class};
 use crate::rules::rector_batch5::resolve_class_name;
 use crate::rules::types::facts::facts;
 use crate::syntax::node_span;
@@ -87,7 +87,7 @@ pub(super) fn add_attribute(
     else {
         return;
     };
-    out.push(report(
+    out.push(Report::fixed(
         node_span(&node),
         "Allow mock objects without expectations in this test class.",
         Safety::Safe,

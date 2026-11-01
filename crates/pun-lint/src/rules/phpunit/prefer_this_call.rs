@@ -11,7 +11,7 @@
 use mago_syntax::cst::{ClassLikeMemberSelector, Expression, Modifier, Node, NodeKind};
 use pun_problem::{Edit, Safety, Span};
 
-use super::{ASSERT, TEST_CASE, is_in_test_class, maybe_multiline, report};
+use super::{ASSERT, TEST_CASE, is_in_test_class, maybe_multiline};
 use crate::rules::laravel::is_a;
 use crate::rules::rector_stmts::line_indent;
 use crate::rules::types::class_scope;
@@ -127,7 +127,7 @@ impl Rule for PreferThisCall {
                     line_indent(ctx.source, span.start),
                 )
             );
-            out.push(report(
+            out.push(Report::fixed(
                 span,
                 "Call the PHPUnit method on `$this`.",
                 Safety::Safe,

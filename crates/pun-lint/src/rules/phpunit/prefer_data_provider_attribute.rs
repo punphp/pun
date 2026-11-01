@@ -14,7 +14,7 @@ use mago_syntax::cst::{
 use pun_problem::Safety;
 
 use super::annotations::{Annotated, TagValue, map_item, named_tags};
-use super::{is_in_test_class, report};
+use super::is_in_test_class;
 use crate::rules::prefer_absolute_include::print_string;
 use crate::rules::rector_batch5::resolve_class_name;
 use crate::rules::types::facts::facts;
@@ -97,7 +97,7 @@ impl Rule for PreferDataProviderAttribute {
         let Some(edits) = annotated.edits(ctx.source, Some(&new_doc), &groups) else {
             return;
         };
-        out.push(report(
+        out.push(Report::fixed(
             doc.span,
             "Use the `#[DataProvider]` attribute instead of the `@dataProvider` annotation.",
             Safety::Safe,

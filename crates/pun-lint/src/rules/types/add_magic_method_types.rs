@@ -4,7 +4,7 @@
 //! `__set`'s value), and `__get` returns `mixed`, in a class whose parents do not declare the method.
 
 use mago_syntax::cst::{FunctionLikeParameter, Modifier, Node, NodeKind};
-use pun_problem::{Edit, Fix, Safety, Span};
+use pun_problem::{Edit, Safety, Span};
 
 use super::class_scope;
 use super::facts::facts;
@@ -92,17 +92,14 @@ impl Rule for AddMagicMethodTypes {
         if edits.is_empty() {
             return;
         }
-        out.push(Report {
-            span: node_span(&method.name),
-            message: format!(
+        out.push(Report::fixed(
+            node_span(&method.name),
+            format!(
                 "Add the known types of `{}`.",
                 String::from_utf8_lossy(method.name.value)
             ),
-            help: None,
-            fix: Some(Fix {
-                safety: Safety::Unsafe,
-                edits,
-            }),
-        });
+            Safety::Unsafe,
+            edits,
+        ));
     }
 }

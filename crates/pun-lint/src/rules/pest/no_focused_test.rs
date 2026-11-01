@@ -4,7 +4,7 @@
 use mago_syntax::cst::{MethodCall, Node, NodeKind};
 use pun_problem::{Edit, Safety, Span};
 
-use super::{identifier, report, root_func_call};
+use super::{identifier, root_func_call};
 use crate::rules::rector_code_quality::named;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -33,9 +33,9 @@ impl Rule for NoFocusedTest {
         if identifier(&call.method) != Some(b"only") || !is_pest_test_chain(call) {
             return;
         }
-        out.push(report(
+        out.push(Report::fixed(
             node_span(call),
-            "Remove `->only()`, which runs this test alone.".to_string(),
+            "Remove `->only()`, which runs this test alone.",
             Safety::Unsafe,
             vec![Edit::new(
                 Span::new(

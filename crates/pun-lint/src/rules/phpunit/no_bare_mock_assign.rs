@@ -10,14 +10,14 @@
 
 use mago_codex::symbol::SymbolKind;
 use mago_syntax::cst::{
-    Call, Expression, ForeachBody, MethodBody, Node, NodeKind, PartialArgument, Variable,
+    Argument, Call, Expression, ForeachBody, MethodBody, Node, NodeKind, PartialArgument, Variable,
 };
 use pun_problem::{Edit, Safety};
 
 use super::prefer_this_call::NON_ASSERT;
 use super::{
-    ASSERT, AnyCall, TEST_CASE, arg_value, class_string, expr_name, is_in_test_class,
-    own_class_reflection, receiver_is, report, text,
+    ASSERT, AnyCall, TEST_CASE, class_string, expr_name, is_in_test_class, own_class_reflection,
+    receiver_is, text,
 };
 use crate::rules::rector_batch5::remove_statements;
 use crate::rules::rector_stmts::{List, assign, block_list, body_list, expression, holder_list};
@@ -111,7 +111,7 @@ impl Rule for NoBareMockAssign {
         }
         edits.extend(remove_statements(ctx.source, &list, &removed));
         let first = removed.iter().position(|r| *r).unwrap();
-        out.push(report(
+        out.push(Report::fixed(
             node_span(list.stmts[first]),
             "Pass the mock directly instead of assigning it to a variable first.",
             Safety::Safe,
@@ -162,11 +162,11 @@ fn create_mock_arg<'a>(expr: &'a Expression<'a>) -> Option<&'a Expression<'a>> {
     if !call.is_name(&["createMock"]) {
         return None;
     }
-    Some(arg_value(call.args().into_iter().next()?))
+    Some(call.args().into_iter().next()?.value())
 }
 
 /// A plain variable's name, without the `$`.
-fn variable_name<'a>(expr: &'a Expression<'a>) -> Option<&'a [u8]> {
+pub(super) fn variable_name<'a>(expr: &'a Expression<'a>) -> Option<&'a [u8]> {
     match unparenthesize(expr) {
         Expression::Variable(Variable::Direct(v)) => Some(&v.name[1..]),
         _ => None,
@@ -219,15 +219,17 @@ fn is_variable_used_as_part_of_method_call(roots: &[Node<'_, '_>], name: &str) -
 fn call_like_args<'a>(roots: &[Node<'a, 'a>]) -> Vec<&'a Expression<'a>> {
     let mut values = Vec::new();
     scoped(roots, &mut |node| match node {
-        Node::MethodCall(call) => values.extend(call.argument_list.arguments.iter().map(arg_value)),
+        Node::MethodCall(call) => {
+            values.extend(call.argument_list.arguments.iter().map(Argument::value))
+        }
         Node::StaticMethodCall(call) => {
-            values.extend(call.argument_list.arguments.iter().map(arg_value))
+            values.extend(call.argument_list.arguments.iter().map(Argument::value))
         }
         Node::Instantiation(new) => values.extend(
             new.argument_list
                 .iter()
                 .flat_map(|l| l.arguments.iter())
-                .map(arg_value),
+                .map(Argument::value),
         ),
         Node::AnonymousClass(new) => values.extend(
             new.argument_list
@@ -288,7 +290,7 @@ fn is_used_in_assert_call(
             && call
                 .args()
                 .into_iter()
-                .any(|arg| is_variable(arg_value(arg), name));
+                .any(|arg| is_variable(arg.value(), name));
     });
     used
 }

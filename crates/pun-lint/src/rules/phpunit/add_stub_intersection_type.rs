@@ -12,7 +12,7 @@ use pun_problem::Safety;
 
 use super::add_mock_intersection_type::{created_properties, is_typed, mocked_class, set_var_type};
 use super::phpdoc_type::{TagType, short_name};
-use super::{class_body, is_in_test_class, report};
+use super::{class_body, is_in_test_class};
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
 
@@ -78,7 +78,7 @@ impl Rule for AddStubIntersectionType {
         let Some(first) = first else {
             return;
         };
-        out.push(report(
+        out.push(Report::fixed(
             first,
             "Add the stubbed class to the stub property's @var as an intersection.",
             Safety::Safe,

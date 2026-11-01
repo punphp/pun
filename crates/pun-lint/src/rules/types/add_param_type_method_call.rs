@@ -13,13 +13,13 @@ use mago_codex::ttype::atomic::array::key::ArrayKey;
 use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_syntax::cst::{
-    Argument, ClassLikeMember, ClassLikeMemberSelector, Expression, Literal, Method, Modifier, Node, NodeKind,
+    ClassLikeMember, ClassLikeMemberSelector, Expression, Literal, Method, Modifier, Node, NodeKind,
 };
-use pun_problem::Edit;
+use pun_problem::{Edit, Safety};
 
 use super::facts::{Facts, facts};
 use super::names::resolve_class_name;
-use super::param::{add_hint, param_declaration_unsorted, report};
+use super::param::{add_hint, param_declaration_unsorted};
 use crate::rules::class_method::{qualified, type_of};
 use crate::rules::mago_helpers::{boolean, configure};
 use crate::syntax::{node_span, unparenthesize};
@@ -123,9 +123,10 @@ impl Rule for AddParamTypeMethodCall {
         if edits.is_empty() {
             return;
         }
-        out.push(report(
+        out.push(Report::fixed(
             node_span(&node),
             "Add the native types of the arguments the class's own calls pass to its private methods' parameters.",
+            Safety::Unsafe,
             edits,
         ));
     }
@@ -183,14 +184,11 @@ fn call_types(
                 return;
             }
             for (position, arg) in args.arguments.iter().enumerate() {
-                let value = match arg {
-                    Argument::Positional(p) if p.ellipsis.is_some() => {
-                        unpacked = true;
-                        return;
-                    }
-                    Argument::Positional(p) => p.value,
-                    Argument::Named(n) => n.value,
-                };
+                if arg.is_unpacked() {
+                    unpacked = true;
+                    return;
+                }
+                let value = arg.value();
                 if positions.len() <= position {
                     positions.resize(position + 1, Some(Vec::new()));
                 }
@@ -239,8 +237,9 @@ fn strict_types(facts: &Facts, types: &[TAtomic]) -> Option<Vec<TAtomic>> {
     (!out.is_empty()).then_some(out)
 }
 
-/// Add `atomic` unless an equal type is in already: an object of the same class, or an array.
-fn push_unique(types: &mut Vec<TAtomic>, atomic: TAtomic) {
+/// Add `atomic` unless an equal type is in already: an object of the same class, or an array (`unwrapConstantArrayTypes`
+/// makes every array an `array`).
+pub(super) fn push_unique(types: &mut Vec<TAtomic>, atomic: TAtomic) {
     let class = |a: &TAtomic| match a {
         TAtomic::Object(TObject::Named(n)) => Some(n.name.as_bytes().to_ascii_lowercase()),
         _ => None,

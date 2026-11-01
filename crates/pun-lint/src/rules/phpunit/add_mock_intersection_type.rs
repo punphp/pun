@@ -13,7 +13,7 @@ use pun_problem::{Edit, Safety};
 
 use super::annotations::Annotated;
 use super::phpdoc_type::{TagType, typed_tag, with_tag_type};
-use super::{AnyCall, arg_value, class_body, expr_name, is_in_test_class, report, resolve};
+use super::{AnyCall, class_body, expr_name, is_in_test_class, resolve};
 use crate::Context;
 use crate::rules::rector_stmts::{assign, block_list, expression};
 use crate::syntax::unparenthesize;
@@ -77,7 +77,7 @@ impl Rule for AddMockIntersectionType {
         if edits.is_empty() {
             return;
         }
-        out.push(report(
+        out.push(Report::fixed(
             crate::syntax::node_span(&members[changed[0]]),
             "Add the mocked class to the mock property's @var as an intersection.",
             Safety::Safe,
@@ -148,7 +148,7 @@ pub(super) fn is_typed(scope: &[Node<'_, '_>], property: &Property<'_>, class: &
 /// `resolveMockedClass()`: the class of an `X::...` first argument, as Rector names it (`self` and `static` as such).
 pub(super) fn mocked_class(scope: &[Node<'_, '_>], call: &AnyCall<'_>) -> Option<String> {
     let arg = call.args().into_iter().next()?;
-    let Expression::Access(Access::ClassConstant(fetch)) = arg_value(arg) else {
+    let Expression::Access(Access::ClassConstant(fetch)) = arg.value() else {
         return None;
     };
     match fetch.class {

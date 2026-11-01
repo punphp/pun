@@ -16,7 +16,7 @@
 //! statement (php-parser keeps a trailing comment as a `Nop`) makes php-parser print the whole class anew.
 
 use mago_syntax::cst::*;
-use pun_problem::{Edit, Fix, Safety, Span};
+use pun_problem::{Edit, Safety, Span};
 
 use crate::rules::php_parser::tokens;
 use crate::rules::rector_batch5::{has_attribute, member_from, remove_items};
@@ -415,15 +415,12 @@ impl Config {
 
 /// The report of a rule's change to the class.
 pub(crate) fn report(class: &ClassView<'_, '_>, message: &str, edits: Vec<Edit>) -> Report {
-    Report {
-        span: node_span(&class.node),
-        message: message.to_string(),
-        help: None,
-        fix: Some(Fix {
-            safety: Safety::Unsafe,
-            edits,
-        }),
-    }
+    Report::fixed(
+        node_span(&class.node),
+        message.to_string(),
+        Safety::Unsafe,
+        edits,
+    )
 }
 
 /// The source of `expr` as php-parser prints a kept node in a new one at the class's indentation: every line after

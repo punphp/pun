@@ -11,7 +11,7 @@
 //! (its comments, or the rest of a line) follows them.
 
 use mago_syntax::cst::{AssignmentOperator, Expression, ExpressionStatement, Node, NodeKind};
-use pun_problem::{Edit, Fix, Safety, Span};
+use pun_problem::{Edit, Safety, Span};
 
 use super::object_type::is_object_type;
 use super::prefer_latest_oldest::{Got, get_value};
@@ -77,18 +77,9 @@ impl Rule for NoAppArrayAccess {
             "\n\n{indent}/**\n{indent} * @var \\Illuminate\\Validation\\Factory $validationFactory\n{indent} */\n\
              {indent}$validationFactory = {fetch};"
         );
-        out.push(Report {
-            span: node_span(access),
-            message: "Assign the `validator` service to a typed variable instead of calling on the array access."
-                .to_string(),
-            help: None,
-            fix: Some(Fix {
-                safety: Safety::Unsafe,
-                edits: vec![
+        out.push(Report::fixed(node_span(access), "Assign the `validator` service to a typed variable instead of calling on the array access.", Safety::Unsafe, vec![
                     Edit::new(Span::new(at, at), inserted),
                     Edit::new(node_span(access), "$validationFactory"),
-                ],
-            }),
-        });
+                ]));
     }
 }

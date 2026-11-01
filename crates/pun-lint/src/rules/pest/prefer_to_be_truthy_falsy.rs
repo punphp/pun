@@ -5,7 +5,7 @@
 use mago_syntax::cst::{Expression, Node, NodeKind, UnaryPrefixOperator};
 use pun_problem::Safety;
 
-use super::{argument_value, func_call, is_name, matcher_subject, rename, report, subject_holder};
+use super::{func_call, is_name, matcher_subject, rename, subject_holder};
 use crate::rules::rector_code_quality::named;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -48,7 +48,7 @@ impl Rule for PreferToBeTruthyFalsy {
             }
             _ => match func_call(subject) {
                 Some(f) if named(f, "boolval") => match f.argument_list.arguments.as_slice() {
-                    [argument] => argument_value(argument),
+                    [argument] => argument.value(),
                     _ => return,
                 },
                 _ => return,
@@ -61,7 +61,7 @@ impl Rule for PreferToBeTruthyFalsy {
         };
         let mut edits = holder.set_arguments(ctx, value);
         edits.push(rename(call, matcher));
-        out.push(report(
+        out.push(Report::fixed(
             node_span(call),
             format!("Use `{matcher}()` instead of casting to bool."),
             Safety::Safe,

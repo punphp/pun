@@ -14,14 +14,16 @@ use mago_syntax::cst::{
     ArrayElement, ClassLikeMember, Expression, Method, MethodBody, Modifier, Node, NodeKind,
     UnaryPrefixOperator, Variable,
 };
+use pun_problem::Safety;
 
 use super::add_param_type_array_dim_fetch::is_variable;
+use super::add_param_type_method_call::push_unique;
 use super::class_scope;
 use super::facts::{Facts, facts};
 use super::names::resolve_written_class_name;
 use super::never::is_test_class;
 use super::param::{
-    Flow, add_hint, own_static, param_declaration_unsorted, phpstan_union, report, traverse,
+    Flow, add_hint, own_static, param_declaration_unsorted, phpstan_union, traverse,
 };
 use crate::rules::class_method::{class_info, method_data_providers, type_of};
 use crate::syntax::{node_span, unparenthesize};
@@ -114,9 +116,10 @@ impl Rule for AddParamTypeDataProvider {
         if edits.is_empty() {
             return;
         }
-        out.push(report(
+        out.push(Report::fixed(
             node_span(&node),
             "Add the types of the values the data providers give to the test methods' parameters.",
+            Safety::Unsafe,
             edits,
         ));
     }
@@ -278,22 +281,5 @@ fn general(atomic: &TAtomic) -> TAtomic {
         TAtomic::Scalar(s) if s.is_any_string() => TAtomic::Scalar(TScalar::string()),
         TAtomic::Scalar(s) if s.is_bool() => TAtomic::Scalar(TScalar::bool()),
         other => other.clone(),
-    }
-}
-
-/// Add `atomic` unless an equal type is in already: an object of the same class, or an array (`unwrapConstantArrayTypes`
-/// makes every array an `array`).
-fn push_unique(types: &mut Vec<TAtomic>, atomic: TAtomic) {
-    let class = |a: &TAtomic| match a {
-        TAtomic::Object(TObject::Named(n)) => Some(n.name.as_bytes().to_ascii_lowercase()),
-        _ => None,
-    };
-    let seen = types.iter().any(|t| {
-        t == &atomic
-            || matches!(t, TAtomic::Array(_)) && matches!(atomic, TAtomic::Array(_))
-            || class(t).is_some() && class(t) == class(&atomic)
-    });
-    if !seen {
-        types.push(atomic);
     }
 }

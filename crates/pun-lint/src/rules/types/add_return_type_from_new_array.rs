@@ -11,7 +11,7 @@ use mago_codex::ttype::atomic::array::TArray;
 use mago_codex::ttype::union::TUnion;
 use mago_syntax::cst::{AssignmentOperator, Expression, Node, NodeKind, Statement};
 use pun_phpstan::types::{Accessory, Type, intersect, mixed};
-use pun_problem::{Edit, Fix, Safety, Span};
+use pun_problem::{Edit, Safety, Span};
 
 use super::docblock::{FunctionLike, assignments, class_name, variable_name};
 use super::declare::expression_order;
@@ -198,16 +198,12 @@ fn resolve(
         }
     }
     edits.push(Edit::new(Span::new(at, at), ": array".to_string()));
-    Some(Report {
-        span: f.name,
-        message: "Add the `array` return type of the array the function builds and returns."
-            .to_string(),
-        help: None,
-        fix: Some(Fix {
-            safety: Safety::Unsafe,
-            edits,
-        }),
-    })
+    Some(Report::fixed(
+        f.name,
+        "Add the `array` return type of the array the function builds and returns.",
+        Safety::Unsafe,
+        edits,
+    ))
 }
 
 /// `matchArrayAssignedVariable()`: the variables the body's own statements assign a native array.

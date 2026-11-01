@@ -3,6 +3,8 @@
 //! `AttributeArrayNameInliner` and `AttributeNameFactory` (`UseAliasNameMatcher`), the Php80 attribute decorators,
 //! `AttributeValueResolver`, and php-parser's printer for the nodes they make.
 
+use mago_syntax::cst::LiteralStringKind;
+
 use super::doc::{Annotation, is_class_name};
 use super::phpdoc_parser::{ArrayItem, Key, Val, print_string};
 use pun_tokens::Kind;
@@ -646,7 +648,11 @@ fn print_args(args: &[Arg]) -> String {
 /// php-parser's printer (with Rector's short arrays) on `expr`.
 fn print(expr: &Expr) -> String {
     match expr {
-        Expr::Str(value, Quote::Single) => single_quoted(value),
+        Expr::Str(value, Quote::Single) => crate::rules::prefer_absolute_include::print_string(
+            LiteralStringKind::SingleQuoted,
+            value.as_bytes(),
+        )
+        .unwrap(),
         // `escapeString()`, as `ConstExprStringNode` does
         Expr::Str(value, Quote::Double) => {
             print_string(value.as_bytes(), "\"").expect("a Rust string is UTF-8")
@@ -668,27 +674,6 @@ fn print(expr: &Expr) -> String {
         ),
         Expr::New(class, args) => format!("new {class}({})", print_args(args)),
     }
-}
-
-/// `pSingleQuotedString()`: a `'` escaped, and a `\` that a `'`, a `\` or the end follows or a `\` precedes.
-fn single_quoted(value: &str) -> String {
-    let b = value.as_bytes();
-    let mut out = String::from("'");
-    for (i, c) in value.char_indices() {
-        let escape = match c {
-            '\'' => true,
-            '\\' => {
-                matches!(b.get(i + 1), None | Some(b'\'' | b'\\')) || (i > 0 && b[i - 1] == b'\\')
-            }
-            _ => false,
-        };
-        if escape {
-            out.push('\\');
-        }
-        out.push(c);
-    }
-    out.push('\'');
-    out
 }
 
 /// `pScalar_Float()`: `%.16G`, or `%.17G` where that does not give the value back. (Its `.0` after an integer never

@@ -3,7 +3,8 @@
 
 use mago_syntax::cst::{Node, NodeKind};
 
-use super::{Is, Trinary, function_matcher, is_bool_constant, type_is};
+use super::{Is, Trinary, function_matcher, type_is};
+use crate::rules::rector_code_quality::is_constant;
 use crate::{Context, Report, Rule};
 
 pub struct PreferToContainEqual;
@@ -34,7 +35,7 @@ impl Rule for PreferToContainEqual {
             "toContainEqual",
             |values| match values {
                 [needle, haystack, strict, ..]
-                    if is_bool_constant(strict, "false")
+                    if is_constant(strict, "false")
                         && type_is(ctx, haystack, Is::Array) != Trinary::No =>
                 {
                     Some((*haystack, vec![*needle]))

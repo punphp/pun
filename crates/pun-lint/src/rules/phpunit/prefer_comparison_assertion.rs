@@ -9,8 +9,8 @@ use mago_syntax::cst::{BinaryOperator, Expression, Node, NodeKind};
 use pun_problem::Safety;
 
 use super::{
-    AnyCall, NewArg, arg_value, expr_text, is_constant_value, is_test_case_call_named, old_args,
-    renamed, report, rewrite_args,
+    AnyCall, NewArg, expr_text, is_constant_value, is_test_case_call_named, old_args, renamed,
+    rewrite_args,
 };
 use crate::syntax::unparenthesize;
 use crate::{Context, Report, Rule};
@@ -40,7 +40,7 @@ impl Rule for PreferComparisonAssertion {
         let Some(first) = call.args().first().copied() else {
             return;
         };
-        let Expression::Binary(binary) = unparenthesize(arg_value(first)) else {
+        let Expression::Binary(binary) = unparenthesize(first.value()) else {
             return;
         };
         let (method, not_method, keep_order) = match binary.operator {
@@ -76,9 +76,9 @@ impl Rule for PreferComparisonAssertion {
             .into_iter()
             .chain(old_args(&call, 1))
             .collect();
-        out.push(report(
+        out.push(Report::fixed(
             call.span,
-            &format!("Use `{name}()` instead of asserting a comparison."),
+            format!("Use `{name}()` instead of asserting a comparison."),
             Safety::Safe,
             rewrite_args(ctx, &call, Some(name), &args),
         ));

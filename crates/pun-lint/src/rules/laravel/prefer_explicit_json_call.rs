@@ -7,7 +7,7 @@
 //! with headers or options, or with a `route()` call of several arguments, is left alone.
 
 use mago_syntax::cst::{Argument, Call, Expression, Literal, Node, NodeKind};
-use pun_problem::{Edit, Fix, Safety};
+use pun_problem::{Edit, Safety};
 
 use super::{is_object, member_name};
 use crate::rules::lint_b_helpers::{remove_argument, value};
@@ -86,14 +86,11 @@ impl Rule for PreferExplicitJsonCall {
         } else {
             edits.push(remove_argument(&call.argument_list, 0));
         }
-        out.push(Report {
-            span: node_span(call),
-            message: format!("Use `{verb}Json()` instead of `json('{verb}', ...)`."),
-            help: None,
-            fix: Some(Fix {
-                safety: Safety::Unsafe,
-                edits,
-            }),
-        });
+        out.push(Report::fixed(
+            node_span(call),
+            format!("Use `{verb}Json()` instead of `json('{verb}', ...)`."),
+            Safety::Unsafe,
+            edits,
+        ));
     }
 }

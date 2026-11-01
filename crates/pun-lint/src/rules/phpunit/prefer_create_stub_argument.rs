@@ -23,7 +23,7 @@ use super::no_stub_with_expectations::called_classes;
 use super::prefer_create_stub_expression::{
     is_super_type_of_mock_object, is_test_class_method, is_used_for_mocking,
 };
-use super::{AnyCall, is_in_test_class, object_class, own_class, report, resolve};
+use super::{AnyCall, is_in_test_class, object_class, own_class, resolve};
 use crate::rules::rector_stmts::{assign, block_list, expression};
 use crate::rules::types::facts::facts;
 use crate::syntax::{node_span, unparenthesize};
@@ -79,7 +79,7 @@ impl Rule for PreferCreateStubArgument {
         let Some(first) = edits.first().map(|e: &Edit| e.span) else {
             return;
         };
-        out.push(report(first, MESSAGE, Safety::Safe, edits));
+        out.push(Report::fixed(first, MESSAGE, Safety::Safe, edits));
     }
 }
 

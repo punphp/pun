@@ -8,8 +8,7 @@ use mago_syntax::cst::{Call, Expression, Node, NodeKind};
 use pun_problem::Safety;
 
 use super::{
-    AnyCall, NewArg, arg_value, expr_name, is_test_case_call_named, old_args, renamed, report,
-    rewrite_args, text,
+    AnyCall, NewArg, expr_name, is_test_case_call_named, old_args, renamed, rewrite_args, text,
 };
 use crate::syntax::unparenthesize;
 use crate::{Context, Report, Rule};
@@ -44,7 +43,7 @@ impl Rule for PreferAssertStringContains {
         let Some(first) = call.args().first().copied() else {
             return;
         };
-        let value = unparenthesize(arg_value(first));
+        let value = unparenthesize(first.value());
         if matches!(
             value,
             Expression::Call(Call::Method(_) | Call::StaticMethod(_))
@@ -62,9 +61,9 @@ impl Rule for PreferAssertStringContains {
         };
         let Expression::Call(Call::Function(strpos)) = value else {
             // Upstream renames the call before it finds no function call to take the arguments from.
-            out.push(report(
+            out.push(Report::fixed(
                 call.span,
-                &format!("Use `{name}()` instead of comparing `strpos()` with `false`."),
+                format!("Use `{name}()` instead of comparing `strpos()` with `false`."),
                 Safety::Safe,
                 vec![pun_problem::Edit::new(call.name_span(), name)],
             ));
@@ -74,9 +73,9 @@ impl Rule for PreferAssertStringContains {
         let (Some(haystack), Some(needle)) = (inner.first(), inner.get(1)) else {
             return;
         };
-        out.push(report(
+        out.push(Report::fixed(
             call.span,
-            &format!("Use `{name}()` instead of comparing `strpos()` with `false`."),
+            format!("Use `{name}()` instead of comparing `strpos()` with `false`."),
             Safety::Safe,
             rewrite_args(
                 ctx,

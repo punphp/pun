@@ -20,7 +20,7 @@ use mago_syntax::cst::{
     Access, Argument, BinaryOperator, ClassConstantAccess, ClassLikeConstantSelector, Expression,
     Literal, Node, NodeKind, Variable,
 };
-use pun_problem::{Edit, Fix, Safety, Span};
+use pun_problem::{Edit, Safety, Span};
 use pun_tokens::php_compat::fnmatch;
 
 use super::object_type::{
@@ -150,18 +150,15 @@ impl Rule for PreferLatestOldest {
             }
             edits
         };
-        out.push(Report {
-            span: node_span(call),
-            message: format!(
+        out.push(Report::fixed(
+            node_span(call),
+            format!(
                 "Use `{method}()` instead of `{}()`.",
                 String::from_utf8_lossy(name)
             ),
-            help: None,
-            fix: Some(Fix {
-                safety: Safety::Unsafe,
-                edits,
-            }),
-        });
+            Safety::Unsafe,
+            edits,
+        ));
     }
 }
 

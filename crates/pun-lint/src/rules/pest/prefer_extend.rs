@@ -8,8 +8,8 @@ use mago_syntax::cst::{
 use pun_problem::{Edit, Safety, Span};
 
 use super::{
-    argument_value, function_name, indent_at, is_name, kept_text, method_call, print_args,
-    print_member, report, root_func_call,
+    function_name, indent_at, is_name, kept_text, method_call, print_args, print_member,
+    root_func_call,
 };
 use crate::rules::lint_b_names::resolve_class;
 use crate::rules::types::facts::facts;
@@ -54,9 +54,9 @@ impl Rule for PreferExtend {
         let Some(printed) = printed else {
             return;
         };
-        out.push(report(
+        out.push(Report::fixed(
             span,
-            "Use `pest()->extend()` and `pest()->use()` instead of `uses()`.".to_string(),
+            "Use `pest()->extend()` and `pest()->use()` instead of `uses()`.",
             Safety::Safe,
             vec![Edit::new(span, printed)],
         ));
@@ -169,7 +169,7 @@ fn classes_and_traits(
     let facts = facts(ctx);
     let (mut classes, mut traits) = (Vec::new(), Vec::new());
     for argument in arguments.arguments.iter() {
-        let value = unparenthesize(argument_value(argument));
+        let value = unparenthesize(argument.value());
         let Expression::Access(Access::ClassConstant(fetch)) = value else {
             continue;
         };

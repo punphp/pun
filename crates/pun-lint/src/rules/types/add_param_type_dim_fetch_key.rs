@@ -17,12 +17,13 @@ use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::union::TUnion;
 use mago_syntax::cst::{Access, ArrayAccess, ClassLikeMemberSelector, ArrayElement, Expression, Literal, MethodBody, Modifier, Node, NodeKind, Variable};
+use pun_problem::Safety;
 
 use super::class_scope;
 use super::facts::{Facts, facts};
 use super::has_parent_class_method;
 use super::names::resolve_class_name;
-use super::param::{Flow, add_hint, param_declaration, report, traverse};
+use super::param::{Flow, add_hint, param_declaration, traverse};
 use crate::rules::add_param_type_sprintf::is_legal;
 use crate::rules::class_method::type_of;
 use crate::syntax::{node_span, unparenthesize};
@@ -107,9 +108,10 @@ impl Rule for AddParamTypeDimFetchKey {
         if edits.is_empty() {
             return;
         }
-        out.push(report(
+        out.push(Report::fixed(
             node_span(&node),
             "Add the key type of the arrays a parameter indexes to it.",
+            Safety::Unsafe,
             edits,
         ));
     }

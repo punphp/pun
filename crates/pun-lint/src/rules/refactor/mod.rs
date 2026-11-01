@@ -43,7 +43,6 @@ use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::reference::TReference;
 use mago_syntax::cst::{Expression, Identifier, Node, PartialArgument};
-use pun_problem::{Edit, Fix, Safety, Span};
 use regex::bytes::Regex;
 use serde_json::{Map, Value};
 
@@ -51,7 +50,7 @@ use super::rector_batch5::{imported, imported_member, resolve_class_name, scope_
 use super::types::class_scope;
 use super::types::facts::facts;
 use crate::syntax::{node_span, unparenthesize};
-use crate::{Context, Report, Rule};
+use crate::{Context, Rule};
 
 /// Every rule of the group, in a fixed order, unconfigured.
 pub fn all() -> Vec<Box<dyn Rule>> {
@@ -261,19 +260,6 @@ pub(crate) fn is_name(resolved: &str, desired: &str) -> bool {
 /// `FullyQualified`.
 pub(crate) fn fully_qualified(name: &str) -> String {
     format!("\\{name}")
-}
-
-/// A report whose fix is `edits`, unsafe as every codemod is (it changes which code runs).
-pub(crate) fn report(span: Span, message: String, edits: Vec<Edit>) -> Report {
-    Report {
-        span,
-        message,
-        help: None,
-        fix: Some(Fix {
-            safety: Safety::Unsafe,
-            edits,
-        }),
-    }
 }
 
 /// `isObjectTypeOfObjectType`: the same name, or, when the codebase knows `required`, a class it knows to extend or

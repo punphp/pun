@@ -8,10 +8,8 @@ use mago_syntax::cst::{
 };
 use pun_problem::{Edit, Safety};
 
-use super::{
-    func_call, has_comments, identifier, is_expect_chain, method_call, property_fetch, report,
-    value_text,
-};
+use super::{func_call, has_comments, identifier, is_expect_chain, method_call, property_fetch};
+use crate::rules::phpunit::expr_text;
 use crate::rules::rector_code_quality::is_constant;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -96,11 +94,11 @@ impl Rule for NoRedundantTypeExpectation {
         if negated && let Some(not) = property_fetch(var) {
             var = not.object;
         }
-        out.push(report(
+        out.push(Report::fixed(
             current_span,
-            "Remove the type matcher: the literal always has that type.".to_string(),
+            "Remove the type matcher: the literal always has that type.",
             Safety::Safe,
-            vec![Edit::new(inner_span, value_text(ctx, var))],
+            vec![Edit::new(inner_span, expr_text(ctx, var))],
         ));
     }
 }

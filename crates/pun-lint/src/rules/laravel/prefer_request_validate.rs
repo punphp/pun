@@ -15,7 +15,7 @@ use mago_syntax::cst::{
     ArgumentList, Expression, FunctionCall, FunctionLikeParameter, FunctionLikeParameterList,
     Identifier, Method, MethodBody, Node, NodeKind, StaticMethodCall,
 };
-use pun_problem::{Edit, Fix, Safety, Span};
+use pun_problem::{Edit, Safety, Span};
 
 use super::member_name;
 use super::object_type::{is_hint_type, is_object_type};
@@ -134,16 +134,7 @@ impl Rule for PreferRequestValidate {
         if edits.is_empty() {
             return;
         }
-        out.push(Report {
-            span: node_span(&method.name),
-            message: "Use the injected request instead of the `request()` helper or a static `Request` call."
-                .to_string(),
-            help: None,
-            fix: Some(Fix {
-                safety: Safety::Unsafe,
-                edits,
-            }),
-        });
+        out.push(Report::fixed(node_span(&method.name), "Use the injected request instead of the `request()` helper or a static `Request` call.", Safety::Unsafe, edits));
     }
 }
 

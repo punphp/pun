@@ -6,8 +6,8 @@ use mago_syntax::cst::{BinaryOperator, Expression, Node, NodeKind};
 use pun_problem::{Edit, Safety, Span};
 
 use super::{
-    argument_value, func_call, function_name, identifier, is_expect_chain, is_name,
-    matcher_subject, method_call, rename, report, subject_holder,
+    func_call, function_name, identifier, is_expect_chain, is_name, matcher_subject, method_call,
+    rename, subject_holder,
 };
 use crate::syntax::same_expression;
 use crate::syntax::{node_span, unparenthesize};
@@ -50,8 +50,8 @@ impl Rule for PreferFilesystemMatchers {
                 right.argument_list.arguments.as_slice(),
             )
         {
-            let value = argument_value(left_argument);
-            if !same_expression(ctx.source, value, argument_value(right_argument)) {
+            let value = left_argument.value();
+            if !same_expression(ctx.source, value, right_argument.value()) {
                 return;
             }
             let Some(matcher) = function_matcher(left_name, right_name)
@@ -74,7 +74,12 @@ impl Rule for PreferFilesystemMatchers {
                     format!("->{matcher}()"),
                 ));
             }
-            out.push(report(node_span(call), message, Safety::Unsafe, edits));
+            out.push(Report::fixed(
+                node_span(call),
+                message,
+                Safety::Unsafe,
+                edits,
+            ));
             return;
         }
         // `refactorChainedMatchers`.
@@ -91,7 +96,7 @@ impl Rule for PreferFilesystemMatchers {
         if !call.argument_list.arguments.is_empty() || !inner.argument_list.arguments.is_empty() {
             return;
         }
-        out.push(report(
+        out.push(Report::fixed(
             node_span(call),
             message,
             Safety::Unsafe,

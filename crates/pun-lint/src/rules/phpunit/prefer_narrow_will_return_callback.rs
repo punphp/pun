@@ -7,14 +7,11 @@
 //! `->willReturn(...)` of the returned match's first arm.
 
 use mago_syntax::cst::{
-    ArrayElement, Call, Expression, Literal, Match, MatchArm, Node, NodeKind, Statement,
+    Argument, ArrayElement, Call, Expression, Literal, Match, MatchArm, Node, NodeKind, Statement,
 };
 use pun_problem::{Edit, Safety, Span};
 
-use super::{
-    AnyCall, NewArg, arg_value, expr_text, is_in_test_class, is_test_case_call_named, report,
-    rewrite_args,
-};
+use super::{AnyCall, NewArg, expr_text, is_in_test_class, is_test_case_call_named, rewrite_args};
 use crate::rules::rector_batch5::merge;
 use crate::rules::rector_stmts::block_list;
 use crate::syntax::unparenthesize;
@@ -45,7 +42,7 @@ impl Rule for PreferNarrowWillReturnCallback {
         let [arg] = call.args()[..] else {
             return;
         };
-        let Expression::Closure(closure) = unparenthesize(arg_value(arg)) else {
+        let Expression::Closure(closure) = unparenthesize(arg.value()) else {
             return;
         };
         let list = block_list(ctx.source, &closure.body);
@@ -77,7 +74,7 @@ impl Rule for PreferNarrowWillReturnCallback {
         if !is_test_case_call_named(ctx, &scope, &assert, &["assertSame", "assertEquals"]) {
             return;
         }
-        let Some(expected) = assert.args().into_iter().next().map(arg_value) else {
+        let Some(expected) = assert.args().into_iter().next().map(Argument::value) else {
             return;
         };
         let elements: Option<Vec<&ArrayElement<'_>>> = match unparenthesize(expected) {
@@ -112,7 +109,7 @@ impl Rule for PreferNarrowWillReturnCallback {
                 format!("->willReturn({})", expr_text(ctx, first.expression())),
             ));
         }
-        out.push(report(
+        out.push(Report::fixed(
             call.span,
             "Use `with()` instead of a callback that matches a single invocation.",
             Safety::Safe,

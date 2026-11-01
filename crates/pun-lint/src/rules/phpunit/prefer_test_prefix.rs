@@ -8,7 +8,7 @@
 use mago_syntax::cst::{Node, NodeKind};
 use pun_problem::{Edit, Safety, Span};
 
-use super::{class_body, is_in_test_class, report};
+use super::{class_body, is_in_test_class};
 use crate::rules::rector_batch5::{doc_comment, list_removal, member_from, merge};
 use crate::rules::rector_stmts::line_indent;
 use crate::syntax::node_span;
@@ -73,7 +73,7 @@ impl Rule for PreferTestPrefix {
             renamed.push_str(chars.as_str());
         }
         edits.push(Edit::new(node_span(&method.name), renamed));
-        out.push(report(
+        out.push(Report::fixed(
             node_span(&method.name),
             "Prefix the test's name with `test` instead of a `@test` tag.",
             Safety::Unsafe,

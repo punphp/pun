@@ -14,10 +14,10 @@
 //! closing parenthesis stays), and the attributes come after the node's own.
 
 use mago_syntax::cst::{Node, NodeKind, Program};
-use pun_problem::{Edit, Span};
+use pun_problem::{Edit, Safety, Span};
 use serde_json::Value;
 
-use super::{items, object, report};
+use super::{items, object};
 use crate::rules::phpunit::annotations::Annotated;
 use crate::rules::rector_names::attribute::{self, Attribute, AttributeConfig};
 use crate::rules::rector_names::doc::{Doc, Value as DocValue};
@@ -124,9 +124,10 @@ impl Rule for AnnotationToAttribute {
             return;
         };
         for edit in edits {
-            out.push(report(
+            out.push(Report::fixed(
                 edit.span,
-                "Replace the annotation by an attribute.".into(),
+                "Replace the annotation by an attribute.",
+                Safety::Unsafe,
                 vec![edit],
             ));
         }

@@ -7,11 +7,12 @@
 //! variable); a property's docblock union keeps its written order.
 
 use mago_syntax::cst::{Node, NodeKind};
+use pun_problem::Safety;
 
 use super::add_param_type_array_any_all::closure_params;
 use super::facts::facts;
 use super::param::{
-    ArrayShape, add_hint, array_shape_of, constant_values, constant_values_union, is_mixed, item_declaration, item_type, param_declaration_unsorted, report,
+    ArrayShape, add_hint, array_shape_of, constant_values, constant_values_union, is_mixed, item_declaration, item_type, param_declaration_unsorted,
 };
 use crate::rules::laravel::get_arg;
 use crate::rules::lint_b_helpers::value;
@@ -92,9 +93,10 @@ impl Rule for AddParamTypeArrayFunction {
             ArrayShape::General(_) => item_declaration(&facts, ancestors, value(array), &item, ctx.php_version),
         };
         let Some(declaration) = declaration else { return };
-        out.push(report(
+        out.push(Report::fixed(
             node_span(call),
             "Add the array's item type to the callback's parameter.",
+            Safety::Unsafe,
             vec![add_hint(param, &declaration)],
         ));
     }

@@ -16,7 +16,7 @@ use mago_syntax::cst::{
 use pun_problem::{Edit, Safety};
 
 use super::no_unused_mock_property::traits_in_file;
-use super::{class_body, is_in_test_class, remove_class_members, report};
+use super::{class_body, is_in_test_class, remove_class_members};
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -111,7 +111,7 @@ impl Rule for PreferLocalOverSetupProperty {
             return;
         };
         edits.extend(remove_class_members(ctx.source, node, &removed));
-        out.push(report(
+        out.push(Report::fixed(
             node_span(members.iter().nth(first).unwrap()),
             "Use a local variable in setUp() for a property no test reads.",
             Safety::Safe,

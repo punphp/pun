@@ -4,7 +4,7 @@
 use mago_syntax::cst::{Expression, Literal, Node, NodeKind, UnaryPrefixOperator};
 use pun_problem::{Edit, Safety};
 
-use super::{argument_value, function_name, has_comments, identifier, report, root_func_call};
+use super::{function_name, has_comments, identifier, root_func_call};
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -39,7 +39,7 @@ impl Rule for NoInvalidRepeat {
         let Some(first) = call.argument_list.arguments.first() else {
             return;
         };
-        let value = argument_value(first);
+        let value = first.value();
         let edit = match unparenthesize(value) {
             Expression::Literal(Literal::Integer(int)) => {
                 if int.value.is_none_or(|v| v >= 1) {
@@ -76,9 +76,9 @@ impl Rule for NoInvalidRepeat {
             }
             _ => return,
         };
-        out.push(report(
+        out.push(Report::fixed(
             node_span(call),
-            "Repeat a test at least once.".to_string(),
+            "Repeat a test at least once.",
             Safety::Safe,
             vec![edit],
         ));

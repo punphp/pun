@@ -25,7 +25,7 @@ use pun_problem::{Edit, Safety, Span};
 use super::prefer_will_return_callback::{
     is_named, mocked_classes, setup_assigned_mock_types, test_classes,
 };
-use super::{report, string_value};
+use super::string_value;
 use crate::rules::types::compare::classes::with_classes;
 use crate::rules::types::compare::mapper::{expr_type, from_mago};
 use crate::rules::types::compare::{RType, is_super};
@@ -66,7 +66,7 @@ impl Rule for AddWillReturnCallbackParamType {
             .argument_list
             .arguments
             .first()
-            .map(argument_value)
+            .map(Argument::value)
             .filter(|v| matches!(v, Expression::Literal(Literal::String(_))))
             .and_then(string_value)
         else {
@@ -78,7 +78,7 @@ impl Rule for AddWillReturnCallbackParamType {
             let class = &ancestors[..=at];
             let edits = decorate(ctx, class, parent, method.as_bytes(), &inner);
             if !edits.is_empty() {
-                out.push(report(
+                out.push(Report::fixed(
                     edits[0].span,
                     "Type the callback from the mocked method's native types.",
                     Safety::Unsafe,
@@ -138,16 +138,9 @@ impl<'a> Inner<'a> {
     }
 }
 
-fn argument_value<'a>(arg: &'a Argument<'a>) -> &'a Expression<'a> {
-    match arg {
-        Argument::Positional(a) => a.value,
-        Argument::Named(a) => a.value,
-    }
-}
-
 /// `matchInnerClosure()`: the closure of `with($this->callback(fn))` or `willReturnCallback(fn)`.
 fn match_inner_closure<'a>(call: &'a MethodCall<'a>) -> Option<Inner<'a>> {
-    let first = call.argument_list.arguments.first().map(argument_value)?;
+    let first = call.argument_list.arguments.first().map(Argument::value)?;
     if is_named(&call.method, "with")
         && let Expression::Call(Call::Method(nested)) = first
         && is_named(&nested.method, "callback")
@@ -155,7 +148,7 @@ fn match_inner_closure<'a>(call: &'a MethodCall<'a>) -> Option<Inner<'a>> {
             .argument_list
             .arguments
             .first()
-            .map(argument_value)
+            .map(Argument::value)
             .and_then(Inner::of)
     {
         return Some(inner);

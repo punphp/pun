@@ -5,7 +5,7 @@
 use mago_syntax::cst::{Node, NodeKind};
 use pun_problem::{Edit, Safety, Span};
 
-use super::{function_name, pest_callback, report, requires_instance_binding};
+use super::{function_name, pest_callback, requires_instance_binding};
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
 
@@ -45,9 +45,9 @@ impl Rule for NoStaticTestClosure {
         if !requires_instance_binding(callback) {
             return;
         }
-        out.push(report(
+        out.push(Report::fixed(
             node_span(call),
-            "Remove `static` from a Pest callback that uses `$this`.".to_string(),
+            "Remove `static` from a Pest callback that uses `$this`.",
             Safety::Safe,
             vec![Edit::new(
                 Span::new(node_span(&r#static).start, node_span(&keyword).start),

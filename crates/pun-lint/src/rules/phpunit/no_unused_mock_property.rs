@@ -17,8 +17,7 @@ use pun_problem::Safety;
 
 use super::no_bare_mock_assign::scoped;
 use super::{
-    AnyCall, class_body, is_in_test_class, object_class, own_class, remove_class_members, report,
-    resolve,
+    AnyCall, class_body, is_in_test_class, object_class, own_class, remove_class_members, resolve,
 };
 use crate::rules::rector_batch5::remove_statements;
 use crate::rules::rector_stmts::{assign, block_list, expression};
@@ -157,7 +156,7 @@ impl Rule for NoUnusedMockProperty {
                 edits.extend(remove_statements(ctx.source, &list, &removed));
             }
         }
-        out.push(report(
+        out.push(Report::fixed(
             node_span(&node),
             "Remove the mock property that only gets expectations and is never used.",
             Safety::Safe,
@@ -193,7 +192,7 @@ fn collect_from_class_method<'a>(stmts: &[&'a Statement<'a>]) -> Vec<&'a [u8]> {
 }
 
 /// The name of a `PropertyFetch` (`$any->name`, not `?->`) with an identifier name.
-fn property_fetch_name<'a>(expr: &'a Expression<'a>) -> Option<&'a [u8]> {
+pub(super) fn property_fetch_name<'a>(expr: &'a Expression<'a>) -> Option<&'a [u8]> {
     match unparenthesize(expr) {
         Expression::Access(Access::Property(a)) => match &a.property {
             ClassLikeMemberSelector::Identifier(id) => Some(id.value),

@@ -4,7 +4,7 @@
 use mago_syntax::cst::{Node, NodeKind};
 use pun_problem::Safety;
 
-use super::{is_expect_chain, is_name, rename, report};
+use super::{is_expect_chain, is_name, rename};
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
 
@@ -32,9 +32,9 @@ impl Rule for PreferDefer {
         if !is_expect_chain(call) || !is_name(&call.method, "tap") {
             return;
         }
-        out.push(report(
+        out.push(Report::fixed(
             node_span(&call.method),
-            "Use `->defer()` instead of the deprecated `->tap()`.".to_string(),
+            "Use `->defer()` instead of the deprecated `->tap()`.",
             Safety::Safe,
             vec![rename(call, "defer")],
         ));

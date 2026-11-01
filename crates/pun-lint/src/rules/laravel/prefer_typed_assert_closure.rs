@@ -7,7 +7,7 @@
 //! the closure's lines to the indentation of the call's line.
 
 use mago_syntax::cst::{ClassLikeMemberSelector, Expression, Node, NodeKind, StaticMethodCall};
-use pun_problem::{Edit, Fix, Safety};
+use pun_problem::{Edit, Safety};
 
 use super::is_name;
 use super::object_type::{class_string_class, is_object_type};
@@ -81,19 +81,14 @@ impl Rule for PreferTypedAssertClosure {
             &set_param_type(param, &format!("\\{class}")),
             node_span(call).start,
         );
-        out.push(Report {
-            span: node_span(call),
-            message: format!(
-                "Type the closure's parameter as `{class}` instead of passing its class."
-            ),
-            help: None,
-            fix: Some(Fix {
-                safety: Safety::Unsafe,
-                edits: vec![Edit::new(
-                    node_span(&call.argument_list),
-                    format!("({typed})"),
-                )],
-            }),
-        });
+        out.push(Report::fixed(
+            node_span(call),
+            format!("Type the closure's parameter as `{class}` instead of passing its class."),
+            Safety::Unsafe,
+            vec![Edit::new(
+                node_span(&call.argument_list),
+                format!("({typed})"),
+            )],
+        ));
     }
 }

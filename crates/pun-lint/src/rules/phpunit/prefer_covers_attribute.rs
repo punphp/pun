@@ -12,7 +12,7 @@ use mago_syntax::cst::{ClassLikeMember, Method, Node, NodeKind};
 use pun_problem::{Edit, Safety, Span};
 
 use super::annotations::{Annotated, TagValue, is_class_constant_item, map_item, named_tags};
-use super::{class_body, is_in_test_class, report};
+use super::{class_body, is_in_test_class};
 use crate::rules::lint_b_doc::Doc;
 use crate::rules::types::facts::facts;
 use crate::syntax::node_span;
@@ -98,7 +98,7 @@ impl Rule for PreferCoversAttribute {
         let Some(edits) = annotated.edits(ctx.source, Some(&new_doc), &[]) else {
             return;
         };
-        out.push(report(
+        out.push(Report::fixed(
             doc.span,
             "Use the `#[Covers*]` attributes on the class instead of the `@covers` annotation.",
             Safety::Safe,
@@ -204,7 +204,7 @@ fn class_attributes(
         },
         |d: &Doc<'_>| d.span,
     );
-    Ok(Some(report(span, message, Safety::Safe, edits)))
+    Ok(Some(Report::fixed(span, message, Safety::Safe, edits)))
 }
 
 /// `resolveMethodAttributes()`: the groups of a method's `@covers` tags that start with `\` or `::`, keyed by the

@@ -8,8 +8,8 @@ use mago_syntax::cst::{BinaryOperator, Call, Expression, Node, NodeKind};
 use pun_problem::Safety;
 
 use super::{
-    AnyCall, NewArg, arg_value, expr_name, expr_text, is_test_case_call_named, old_args, renamed,
-    report, resolve, rewrite_args, text,
+    AnyCall, NewArg, expr_name, expr_text, is_test_case_call_named, old_args, renamed, resolve,
+    rewrite_args, text,
 };
 use crate::rules::rector_code_quality::named;
 use crate::syntax::unparenthesize;
@@ -49,8 +49,7 @@ impl Rule for PreferAssertInstanceof {
             let Some(second) = call.args().get(1).copied() else {
                 return;
             };
-            let Expression::Call(Call::Function(get_class)) = unparenthesize(arg_value(second))
-            else {
+            let Expression::Call(Call::Function(get_class)) = unparenthesize(second.value()) else {
                 return;
             };
             if !named(get_class, "get_class") {
@@ -64,9 +63,9 @@ impl Rule for PreferAssertInstanceof {
             } else {
                 "assertNotInstanceOf"
             };
-            out.push(report(
+            out.push(Report::fixed(
                 call.span,
-                &format!("Use `{name}()` instead of comparing `get_class()`."),
+                format!("Use `{name}()` instead of comparing `get_class()`."),
                 Safety::Safe,
                 rewrite_args(
                     ctx,
@@ -86,7 +85,7 @@ impl Rule for PreferAssertInstanceof {
         let Some(first) = call.args().first().copied() else {
             return;
         };
-        let Expression::Binary(binary) = unparenthesize(arg_value(first)) else {
+        let Expression::Binary(binary) = unparenthesize(first.value()) else {
             return;
         };
         if !matches!(binary.operator, BinaryOperator::Instanceof(_)) {
@@ -104,9 +103,9 @@ impl Rule for PreferAssertInstanceof {
         let Some(name) = renamed(&call, RENAME) else {
             return;
         };
-        out.push(report(
+        out.push(Report::fixed(
             call.span,
-            &format!("Use `{name}()` instead of asserting `instanceof`."),
+            format!("Use `{name}()` instead of asserting `instanceof`."),
             Safety::Safe,
             rewrite_args(
                 ctx,

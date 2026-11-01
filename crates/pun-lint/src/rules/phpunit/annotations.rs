@@ -988,27 +988,3 @@ fn is_name(name: &str, high: u8) -> bool {
     let letter = |c: u8| c.is_ascii_alphabetic() || c == b'_' || c >= high;
     !b.is_empty() && letter(b[0]) && b[1..].iter().all(|&c| letter(c) || c.is_ascii_digit())
 }
-
-/// php-parser's `pSingleQuotedString`: `'`, the backslashes before a `'`, a `\` or the end, and those after a `\`
-/// are escaped.
-pub(crate) fn single_quoted(value: &str) -> String {
-    let bytes = value.as_bytes();
-    let mut out = String::with_capacity(value.len() + 2);
-    out.push('\'');
-    for (i, c) in value.char_indices() {
-        let escape = match c {
-            '\'' => true,
-            '\\' => {
-                matches!(bytes.get(i + 1), None | Some(b'\'') | Some(b'\\'))
-                    || (i > 0 && bytes[i - 1] == b'\\')
-            }
-            _ => false,
-        };
-        if escape {
-            out.push('\\');
-        }
-        out.push(c);
-    }
-    out.push('\'');
-    out
-}

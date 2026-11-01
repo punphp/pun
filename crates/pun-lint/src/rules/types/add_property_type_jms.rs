@@ -21,7 +21,7 @@ use mago_syntax::cst::{
     Access, Attribute, ClassLikeConstantSelector, Expression, Literal, Node, NodeKind,
     PartialArgument, Property,
 };
-use pun_problem::{Edit, Fix, Safety, Span};
+use pun_problem::{Edit, Safety, Span};
 
 use super::facts::facts;
 use super::property_type::{ClassView, Prop, VarTag, is_legal, variable_span};
@@ -182,15 +182,12 @@ fn visit<'ast, 'arena>(
         edits.push(Edit::new(Span::new(at.end, at.end), " = null"));
     }
     let Some(first) = edits.first() else { return };
-    out.push(Report {
-        span: first.span,
-        message: "Type the properties from their JMS Serializer type.".to_string(),
-        help: None,
-        fix: Some(Fix {
-            safety: Safety::Unsafe,
-            edits,
-        }),
-    });
+    out.push(Report::fixed(
+        first.span,
+        "Type the properties from their JMS Serializer type.",
+        Safety::Unsafe,
+        edits,
+    ));
 }
 
 fn attribute_lists<'a>(

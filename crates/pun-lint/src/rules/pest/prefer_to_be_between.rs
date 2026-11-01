@@ -6,7 +6,7 @@ use mago_syntax::cst::{BinaryOperator, Expression, Node, NodeKind};
 use pun_problem::Safety;
 
 use super::{
-    Is, Trinary, first_value, is_name, report, set_call_arguments, subject_holder, texts, type_is,
+    Is, Trinary, first_value, is_name, set_call_arguments, subject_holder, texts, type_is,
 };
 use crate::syntax::same_expression;
 use crate::syntax::{node_span, unparenthesize};
@@ -69,9 +69,9 @@ impl Rule for PreferToBeBetween {
             "toBeBetween",
             &texts(ctx, &[left.rhs, right.rhs]),
         ));
-        out.push(report(
+        out.push(Report::fixed(
             node_span(call),
-            "Use `toBeBetween()` instead of checking both bounds.".to_string(),
+            "Use `toBeBetween()` instead of checking both bounds.",
             Safety::Safe,
             edits,
         ));

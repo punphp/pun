@@ -453,7 +453,11 @@ fn php_ltrim<'a>(s: &'a str, characters: &str) -> &'a str {
 }
 
 /// The members of a union (`union`) or intersection, nested ones flattened as php-parser keeps them.
-fn flatten<'h, 'arena>(hint: &'h Hint<'arena>, union: bool, out: &mut Vec<&'h Hint<'arena>>) {
+pub(crate) fn flatten<'h, 'arena>(
+    hint: &'h Hint<'arena>,
+    union: bool,
+    out: &mut Vec<&'h Hint<'arena>>,
+) {
     match hint {
         Hint::Union(u) if union => {
             flatten(u.left, union, out);

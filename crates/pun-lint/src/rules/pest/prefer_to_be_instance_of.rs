@@ -4,7 +4,8 @@
 use mago_syntax::cst::{BinaryOperator, Expression, Node, NodeKind};
 use pun_problem::Safety;
 
-use super::{first_value, is_name, report, set_call_arguments, subject_holder, value_text};
+use super::{first_value, is_name, set_call_arguments, subject_holder};
+use crate::rules::phpunit::expr_text;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -51,12 +52,12 @@ impl Rule for PreferToBeInstanceOf {
         {
             return;
         }
-        let class = format!("{}::class", value_text(ctx, check.rhs));
+        let class = format!("{}::class", expr_text(ctx, check.rhs));
         let mut edits = holder.set_arguments(ctx, check.lhs);
         edits.extend(set_call_arguments(call, "toBeInstanceOf", &[class]));
-        out.push(report(
+        out.push(Report::fixed(
             node_span(call),
-            "Use `toBeInstanceOf()` instead of checking `instanceof`.".to_string(),
+            "Use `toBeInstanceOf()` instead of checking `instanceof`.",
             Safety::Safe,
             edits,
         ));

@@ -6,9 +6,9 @@ use mago_syntax::cst::{BinaryOperator, Expression, FunctionCall, MethodCall, Nod
 use pun_problem::{Edit, Safety, Span};
 
 use super::{
-    Is, Trinary, first_value, func_call, is_bool_constant, is_name, property_fetch, rename, report,
-    subject_holder, type_is,
+    Is, Trinary, first_value, func_call, is_name, property_fetch, rename, subject_holder, type_is,
 };
+use crate::rules::rector_code_quality::is_constant;
 use crate::rules::rector_code_quality::named;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -62,7 +62,7 @@ impl Rule for PreferToBeUrl {
                 return;
             };
             if !matches!(comparison.operator, BinaryOperator::NotIdentical(_))
-                || !is_bool_constant(comparison.rhs, "false")
+                || !is_constant(comparison.rhs, "false")
             {
                 return;
             }
@@ -80,9 +80,9 @@ impl Rule for PreferToBeUrl {
         }
         edits.extend(holder.set_arguments(ctx, url));
         edits.push(rename(call, "toBeUrl"));
-        out.push(report(
+        out.push(Report::fixed(
             node_span(call),
-            "Use `toBeUrl()` instead of `filter_var()` with `FILTER_VALIDATE_URL`.".to_string(),
+            "Use `toBeUrl()` instead of `filter_var()` with `FILTER_VALIDATE_URL`.",
             Safety::Unsafe,
             edits,
         ));
@@ -93,7 +93,7 @@ impl Rule for PreferToBeUrl {
 fn filter_var_validate_url<'a>(expr: &'a Expression<'a>) -> Option<&'a FunctionCall<'a>> {
     let call = func_call(expr).filter(|f| named(f, "filter_var"))?;
     let filter = call.argument_list.arguments.get(1)?;
-    match unparenthesize(super::argument_value(filter)) {
+    match unparenthesize(filter.value()) {
         Expression::ConstantAccess(c) => {
             let name = c.name.value();
             (name.strip_prefix(b"\\").unwrap_or(name))

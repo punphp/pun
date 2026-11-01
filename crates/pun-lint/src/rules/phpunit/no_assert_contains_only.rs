@@ -8,10 +8,9 @@
 use mago_syntax::cst::{Node, NodeKind};
 use pun_problem::{Edit, Safety};
 
-use super::{
-    AnyCall, arg_value, expr_text, is_constant, is_test_case_call, new_call, report, string_value,
-};
+use super::{AnyCall, expr_text, is_test_case_call, new_call, string_value};
 use crate::rules::laravel::get_arg;
+use crate::rules::rector_code_quality::is_constant;
 use crate::{Context, Report, Rule};
 
 const TYPE_VALUE_TO_METHOD: &[(&str, &str)] = &[
@@ -62,25 +61,25 @@ impl Rule for NoAssertContainsOnly {
         ) else {
             return;
         };
-        let Some(value) = string_value(arg_value(type_arg)) else {
+        let Some(value) = string_value(type_arg.value()) else {
             return;
         };
         let Some((_, method)) = TYPE_VALUE_TO_METHOD.iter().find(|(k, _)| *k == value) else {
             return;
         };
         if let Some(native) = get_arg(call.args, "isNativeType", 2)
-            && !is_constant(arg_value(native), "true")
-            && !is_constant(arg_value(native), "null")
+            && !is_constant(native.value(), "true")
+            && !is_constant(native.value(), "null")
         {
             return;
         }
-        let mut args = vec![expr_text(ctx, arg_value(haystack))];
+        let mut args = vec![expr_text(ctx, haystack.value())];
         if let Some(message) = get_arg(call.args, "message", 3) {
-            args.push(expr_text(ctx, arg_value(message)));
+            args.push(expr_text(ctx, message.value()));
         }
-        out.push(report(
+        out.push(Report::fixed(
             call.span,
-            &format!("Use `{method}()` instead of `assertContainsOnly()`."),
+            format!("Use `{method}()` instead of `assertContainsOnly()`."),
             Safety::Safe,
             vec![Edit::new(call.span, new_call(ctx, &call, method, &args))],
         ));

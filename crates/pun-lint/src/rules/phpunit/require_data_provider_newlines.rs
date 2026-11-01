@@ -10,7 +10,7 @@
 use mago_syntax::cst::{ArrayElement, Expression, MethodBody, Node, NodeKind};
 use pun_problem::{Edit, Safety, Span};
 
-use super::{is_in_test_class, is_public, report};
+use super::{is_in_test_class, is_public};
 use crate::rules::rector_batch5::has_attribute;
 use crate::rules::rector_stmts::{line_indent, previous_token_end, reindent, tokens};
 use crate::syntax::{node_span, unparenthesize};
@@ -112,7 +112,7 @@ impl Rule for RequireDataProviderNewlines {
             text.push_str(indent);
             text.push(']');
             let span = node_span(array);
-            out.push(report(
+            out.push(Report::fixed(
                 span,
                 "Put each item of the data provider's array on a line of its own.",
                 Safety::Safe,

@@ -31,7 +31,7 @@ use mago_syntax::cst::{
     ArrayAccess, Construct, Expression, IssetConstruct, Node, NodeKind, Statement, StringPart,
     Unset,
 };
-use pun_problem::{Edit, Fix, Safety, Span};
+use pun_problem::{Edit, Safety, Span};
 use serde_json::Value;
 
 use super::super::lint_b_helpers::replace_run;
@@ -198,15 +198,12 @@ fn interpolated_key(key: &str) -> String {
 }
 
 fn report(span: Span, method: &str, edits: Vec<Edit>) -> Report {
-    Report {
+    Report::fixed(
         span,
-        message: format!("Call `{method}()` instead of the array access."),
-        help: None,
-        fix: Some(Fix {
-            safety: Safety::Unsafe,
-            edits,
-        }),
-    }
+        format!("Call `{method}()` instead of the array access."),
+        Safety::Unsafe,
+        edits,
+    )
 }
 
 impl Rule for ReplaceArrayAccess {

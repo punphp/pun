@@ -18,7 +18,7 @@ use mago_syntax::cst::{
     Access, ClassLikeMember, ClassLikeMemberSelector, Expression, Hint, Method, MethodBody, Node,
     NodeKind, Statement, Variable,
 };
-use pun_problem::{Edit, Fix, Safety, Span};
+use pun_problem::{Edit, Safety, Span};
 
 use super::facts::facts;
 use super::property_type::{
@@ -99,15 +99,12 @@ impl Rule for AddPropertyTypeSetterGetter {
             edits.extend(default_edit(prop, &t, default_null, at.end));
         }
         let Some(first) = edits.first() else { return };
-        out.push(Report {
-            span: first.span,
-            message: "Type the properties from their getter and setter.".to_string(),
-            help: None,
-            fix: Some(Fix {
-                safety: Safety::Unsafe,
-                edits,
-            }),
-        });
+        out.push(Report::fixed(
+            first.span,
+            "Type the properties from their getter and setter.",
+            Safety::Unsafe,
+            edits,
+        ));
     }
 }
 

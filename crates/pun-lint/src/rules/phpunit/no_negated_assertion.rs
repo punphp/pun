@@ -6,10 +6,7 @@
 use mago_syntax::cst::{Expression, Node, NodeKind, UnaryPrefixOperator};
 use pun_problem::Safety;
 
-use super::{
-    AnyCall, NewArg, arg_value, expr_text, is_test_case_call_named, old_args, renamed, report,
-    rewrite_args,
-};
+use super::{AnyCall, NewArg, expr_text, is_test_case_call_named, old_args, renamed, rewrite_args};
 use crate::syntax::unparenthesize;
 use crate::{Context, Report, Rule};
 
@@ -40,7 +37,7 @@ impl Rule for NoNegatedAssertion {
         let Some(first) = call.args().first().copied() else {
             return;
         };
-        let Expression::UnaryPrefix(not) = unparenthesize(arg_value(first)) else {
+        let Expression::UnaryPrefix(not) = unparenthesize(first.value()) else {
             return;
         };
         if !matches!(not.operator, UnaryPrefixOperator::Not(_)) {
@@ -49,9 +46,9 @@ impl Rule for NoNegatedAssertion {
         let Some(name) = renamed(&call, RENAME) else {
             return;
         };
-        out.push(report(
+        out.push(Report::fixed(
             call.span,
-            &format!("Use `{name}()` instead of negating the condition."),
+            format!("Use `{name}()` instead of negating the condition."),
             Safety::Safe,
             rewrite_args(
                 ctx,

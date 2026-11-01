@@ -6,7 +6,7 @@
 //! written other than `when` in lowercase (`When`, `UNLESS`) becomes `when`.
 
 use mago_syntax::cst::{Expression, Node, NodeKind};
-use pun_problem::{Edit, Fix, Safety};
+use pun_problem::{Edit, Safety};
 
 use super::object_type::is_object_type;
 use super::{is_name, member_name};
@@ -58,17 +58,14 @@ impl Rule for NoNegatedWhen {
         }
         let to = if name == b"when" { "unless" } else { "when" };
         let argument = node_span(first);
-        out.push(Report {
-            span: node_span(call),
-            message: format!("Use `{to}()` instead of negating its condition."),
-            help: None,
-            fix: Some(Fix {
-                safety: Safety::Unsafe,
-                edits: vec![
-                    Edit::new(node_span(&call.method), to),
-                    Edit::new(argument, text(ctx, unparenthesize(not.operand))),
-                ],
-            }),
-        });
+        out.push(Report::fixed(
+            node_span(call),
+            format!("Use `{to}()` instead of negating its condition."),
+            Safety::Unsafe,
+            vec![
+                Edit::new(node_span(&call.method), to),
+                Edit::new(argument, text(ctx, unparenthesize(not.operand))),
+            ],
+        ));
     }
 }

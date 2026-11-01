@@ -10,9 +10,7 @@ use mago_codex::ttype::atomic::object::TObject;
 use mago_syntax::cst::{Node, NodeKind};
 use pun_problem::Safety;
 
-use super::{
-    AnyCall, NewArg, arg_value, expr_text, is_in_test_class, old_args, report, rewrite_args,
-};
+use super::{AnyCall, NewArg, expr_text, is_in_test_class, old_args, rewrite_args};
 use crate::rules::types::facts::facts;
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
@@ -50,7 +48,7 @@ impl Rule for PreferAssertInstanceofOverEmpty {
         let Some(first) = args.first().copied() else {
             return;
         };
-        let value = arg_value(first);
+        let value = first.value();
         // a `UnionType` whose type without `null` is an `ObjectType`
         let facts = facts(ctx);
         let Some(ty) = facts.full_type(node_span(value)) else {
@@ -83,9 +81,9 @@ impl Rule for PreferAssertInstanceofOverEmpty {
             NewArg::New(expr_text(ctx, value).to_string()),
         ];
         new.extend(old_args(&call, 1));
-        out.push(report(
+        out.push(Report::fixed(
             call.span,
-            &format!("Use `{name}()` on the nullable object."),
+            format!("Use `{name}()` on the nullable object."),
             Safety::Safe,
             rewrite_args(ctx, &call, Some(name), &new),
         ));

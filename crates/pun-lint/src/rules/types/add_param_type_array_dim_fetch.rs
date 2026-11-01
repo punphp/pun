@@ -23,13 +23,13 @@ use mago_syntax::cst::{
 use super::class_scope;
 use super::facts::{Facts, facts};
 use super::has_parent_class_method;
-use super::param::{Flow, add_hint, report, traverse};
+use super::param::{Flow, add_hint, traverse};
 use crate::rules::class_method::type_of;
 use crate::rules::lint_b_helpers::value;
 use crate::rules::phpunit::string_value;
 use crate::rules::rector_code_quality::named;
 use crate::syntax::{node_span, unparenthesize};
-use pun_problem::Span;
+use pun_problem::{Safety, Span};
 use crate::{Context, Report, Rule};
 
 pub struct AddParamTypeArrayDimFetch;
@@ -127,9 +127,10 @@ impl Rule for AddParamTypeArrayDimFetch {
         if edits.is_empty() {
             return;
         }
-        out.push(report(
+        out.push(Report::fixed(
             node_span(&node),
             "Add the `array` type to parameters read with a key.",
+            Safety::Unsafe,
             edits,
         ));
     }

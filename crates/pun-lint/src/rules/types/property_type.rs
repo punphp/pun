@@ -30,6 +30,7 @@ use super::names::resolve_class_name;
 use crate::rules::lint_b_doc::Doc;
 use crate::rules::phpunit::annotations::Annotated;
 use crate::rules::phpunit::phpdoc_type::{TagType, TypedTag, typed_tag, with_tag_type};
+use crate::rules::types::compare::mapper::flatten;
 use crate::syntax::{node_span, unparenthesize};
 
 /// `PhpVersionFeature::NULLABLE_TYPE`.
@@ -508,7 +509,7 @@ pub(crate) fn hint_ty(
         }
         Hint::Union(_) => {
             let mut members = Vec::new();
-            union_members(hint, &mut members);
+            flatten(hint, true, &mut members);
             mixed_passed_or_union(
                 members
                     .into_iter()
@@ -547,16 +548,6 @@ pub(crate) fn hint_ty(
         Hint::Object(_) => Ty::ObjectAny,
         Hint::Mixed(_) => Ty::Mixed,
         Hint::Iterable(_) => Ty::Iterable,
-    }
-}
-
-fn union_members<'a>(hint: &'a Hint<'a>, out: &mut Vec<&'a Hint<'a>>) {
-    match hint {
-        Hint::Union(u) => {
-            union_members(u.left, out);
-            union_members(u.right, out);
-        }
-        other => out.push(other),
     }
 }
 

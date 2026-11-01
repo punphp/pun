@@ -9,7 +9,7 @@
 use mago_syntax::cst::{Call, Expression, Literal, Node, NodeKind};
 use pun_problem::{Edit, Safety};
 
-use super::{AnyCall, arg_value, expr_text, is_in_test_class, report};
+use super::{AnyCall, expr_text, is_in_test_class};
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -38,22 +38,25 @@ impl Rule for NoAtMatcher {
         if !is_in_test_class(ctx, ancestors, None) {
             return;
         }
-        let at = var.argument_list.arguments.iter().find_map(|arg| {
-            match unparenthesize(arg_value(arg)) {
-                Expression::Call(Call::Method(at))
-                    if AnyCall::of(Node::MethodCall(at)).is_some_and(|c| c.is_name(&["at"])) =>
-                {
-                    Some(at)
-                }
-                _ => None,
-            }
-        });
+        let at =
+            var.argument_list
+                .arguments
+                .iter()
+                .find_map(|arg| match unparenthesize(arg.value()) {
+                    Expression::Call(Call::Method(at))
+                        if AnyCall::of(Node::MethodCall(at))
+                            .is_some_and(|c| c.is_name(&["at"])) =>
+                    {
+                        Some(at)
+                    }
+                    _ => None,
+                });
         let Some(at) = at else {
             return;
         };
         let count =
             at.argument_list.arguments.iter().fold(None, |count, arg| {
-                match unparenthesize(arg_value(arg)) {
+                match unparenthesize(arg.value()) {
                     Expression::Literal(Literal::Integer(i)) => i.value,
                     _ => count,
                 }
@@ -65,7 +68,7 @@ impl Rule for NoAtMatcher {
             None => return,
         };
         let span = node_span(at);
-        out.push(report(
+        out.push(Report::fixed(
             span,
             "Use a matcher for the count instead of `at()`.",
             Safety::Unsafe,

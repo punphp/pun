@@ -168,7 +168,7 @@ pub use prefer_specific_return_type::PreferSpecificReturnType;
 use mago_syntax::cst::{
     Block, Expression, Extends, Identifier, MethodBody, Modifier, Node, Return, Sequence, Statement,
 };
-use pun_problem::{Edit, Fix, Safety, Span};
+use pun_problem::{Edit, Safety, Span};
 
 use crate::syntax::node_span;
 use crate::{Report, Rule};
@@ -293,18 +293,15 @@ pub(crate) const VOID_TYPE: u32 = 70100;
 
 /// A report at `span` whose fix inserts `: type` at `at`.
 pub(crate) fn add_return_type(span: Span, at: usize, r#type: &str) -> Report {
-    Report {
+    Report::fixed(
         span,
-        message: format!("Add the `{type}` return type.", type = r#type),
-        help: None,
-        fix: Some(Fix {
-            safety: Safety::Unsafe,
-            edits: vec![Edit::new(
-                Span::new(at, at),
-                format!(": {type}", type = r#type),
-            )],
-        }),
-    }
+        format!("Add the `{type}` return type.", type = r#type),
+        Safety::Unsafe,
+        vec![Edit::new(
+            Span::new(at, at),
+            format!(": {type}", type = r#type),
+        )],
+    )
 }
 
 /// `BetterNodeFinder::findFirstInFunctionLikeScoped`: whether `found` holds for a node in `node`'s body, without

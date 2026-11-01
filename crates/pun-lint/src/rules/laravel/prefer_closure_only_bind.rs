@@ -11,7 +11,7 @@
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::TObject;
 use mago_syntax::cst::{Closure, Expression, Node, NodeKind, Variable};
-use pun_problem::{Edit, Fix, Safety, Span};
+use pun_problem::{Edit, Safety, Span};
 
 use super::object_type::{
     Tri, class_string_class, class_super_of, exact_class_super_of, is_object_type, object_class,
@@ -87,23 +87,18 @@ impl Rule for PreferClosureOnlyBind {
                 Edit::new(Span::new(at, at), format!(": {hint}"))
             }
         };
-        out.push(Report {
-            span: node_span(call),
-            message: format!(
-                "Declare `{class}` as the closure's return type instead of passing it."
-            ),
-            help: None,
-            fix: Some(Fix {
-                safety: Safety::Safe,
-                edits: vec![
-                    Edit::new(
-                        Span::new(node_span(first).start, node_span(second).start),
-                        "",
-                    ),
-                    type_edit,
-                ],
-            }),
-        });
+        out.push(Report::fixed(
+            node_span(call),
+            format!("Declare `{class}` as the closure's return type instead of passing it."),
+            Safety::Safe,
+            vec![
+                Edit::new(
+                    Span::new(node_span(first).start, node_span(second).start),
+                    "",
+                ),
+                type_edit,
+            ],
+        ));
     }
 }
 

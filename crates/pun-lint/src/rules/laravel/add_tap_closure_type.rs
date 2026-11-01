@@ -32,7 +32,7 @@ use mago_span::HasSpan;
 use mago_syntax::cst::{
     Access, Argument, ClassLikeMemberSelector, Closure, Expression, Hint, Node, NodeKind,
 };
-use pun_problem::{Edit, Fix, Safety, Span};
+use pun_problem::{Edit, Safety, Span};
 
 use super::names::resolve_class_name;
 use super::object_type::{is_object_type, object_class};
@@ -71,7 +71,7 @@ impl Rule for AddTapClosureType {
                     .argument_list
                     .arguments
                     .iter()
-                    .map(argument_value)
+                    .map(Argument::value)
                     .collect();
                 if !named(call, "tap") || args.len() < 2 {
                     return;
@@ -84,7 +84,7 @@ impl Rule for AddTapClosureType {
                     .argument_list
                     .arguments
                     .iter()
-                    .map(argument_value)
+                    .map(Argument::value)
                     .collect();
                 if !member_name(&call.method).is_some_and(|n| is_name(n, "tap"))
                     || args.is_empty()
@@ -99,25 +99,13 @@ impl Rule for AddTapClosureType {
             return;
         };
         if let Some(fix) = refactor_parameter(ctx, ancestors, closure, value) {
-            out.push(Report {
-                span: node_span(closure.parameter_list.parameters.first().unwrap()),
-                message: "Type the tap closure's parameter with the tapped value's type."
-                    .to_string(),
-                help: None,
-                fix: Some(Fix {
-                    safety: Safety::Unsafe,
-                    edits: vec![fix],
-                }),
-            });
+            out.push(Report::fixed(
+                node_span(closure.parameter_list.parameters.first().unwrap()),
+                "Type the tap closure's parameter with the tapped value's type.",
+                Safety::Unsafe,
+                vec![fix],
+            ));
         }
-    }
-}
-
-/// `Arg::$value`, unpacked or named.
-fn argument_value<'a>(argument: &'a Argument<'a>) -> &'a Expression<'a> {
-    match argument {
-        Argument::Positional(a) => a.value,
-        Argument::Named(a) => a.value,
     }
 }
 

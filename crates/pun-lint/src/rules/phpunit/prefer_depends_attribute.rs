@@ -10,7 +10,7 @@ use mago_syntax::cst::{ClassLikeMember, Method, Node, NodeKind};
 use pun_problem::Safety;
 
 use super::annotations::{Annotated, TagValue, map_item, named_tags};
-use super::{class_body, is_in_test_class, report};
+use super::{class_body, is_in_test_class};
 use crate::rules::types::facts::facts;
 use crate::{Context, Report, Rule};
 
@@ -93,7 +93,7 @@ impl Rule for PreferDependsAttribute {
         let Some(span) = span else {
             return;
         };
-        out.push(report(
+        out.push(Report::fixed(
             span,
             "Use the `#[Depends*]` attributes instead of the `@depends` annotation.",
             Safety::Safe,

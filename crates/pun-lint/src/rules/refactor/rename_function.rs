@@ -5,9 +5,9 @@
 //! new name, fully qualified when it holds a `\`.
 
 use mago_syntax::cst::{Expression, Node, NodeKind};
-use pun_problem::Edit;
+use pun_problem::{Edit, Safety};
 
-use super::{called, fully_qualified, function_name, is_name, report, string_map};
+use super::{called, fully_qualified, function_name, is_name, string_map};
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
 
@@ -57,9 +57,10 @@ impl Rule for RenameFunction {
         if text == String::from_utf8_lossy(name.value()) {
             return;
         }
-        out.push(report(
+        out.push(Report::fixed(
             node_span(&node),
             format!("Rename the function `{old}()` to `{new}()`."),
+            Safety::Unsafe,
             vec![Edit::new(node_span(name), text)],
         ));
     }

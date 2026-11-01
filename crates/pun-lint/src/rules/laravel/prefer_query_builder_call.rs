@@ -14,7 +14,7 @@ use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_syntax::cst::{ClassLikeMemberSelector, Expression, Node, NodeKind, StaticMethodCall};
-use pun_problem::{Edit, Fix, Safety};
+use pun_problem::{Edit, Safety};
 use serde_json::Value;
 
 use super::is_a;
@@ -103,20 +103,17 @@ impl Rule for PreferQueryBuilderCall {
         let class = &source[node_span(call.class).start..node_span(call.class).end];
         let start = node_span(call).start;
         let args = kept_arguments(source, &call.argument_list, start).join(", ");
-        out.push(Report {
-            span: node_span(call),
-            message: format!(
+        out.push(Report::fixed(
+            node_span(call),
+            format!(
                 "Call `{method}()` on `query()` instead of through the model's magic static call."
             ),
-            help: None,
-            fix: Some(Fix {
-                safety: Safety::Unsafe,
-                edits: vec![Edit::new(
-                    node_span(call),
-                    format!("{class}::query()->{method}({args})"),
-                )],
-            }),
-        });
+            Safety::Unsafe,
+            vec![Edit::new(
+                node_span(call),
+                format!("{class}::query()->{method}({args})"),
+            )],
+        ));
     }
 }
 

@@ -6,7 +6,7 @@ use mago_syntax::cst::{Node, NodeKind};
 use pun_problem::{Edit, Safety, Span};
 
 use super::{
-    Is, Trinary, is_expect_chain, is_name, matcher_subject, property_fetch, rename, report, type_is,
+    Is, Trinary, is_expect_chain, is_name, matcher_subject, property_fetch, rename, type_is,
 };
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -48,9 +48,9 @@ impl Rule for PreferToContainOnlyInstancesOf {
         if property_fetch(each.object).is_some_and(|p| is_name(&p.property, "not")) {
             return;
         }
-        out.push(report(
+        out.push(Report::fixed(
             node_span(call),
-            "Use `toContainOnlyInstancesOf()` instead of `->each->toBeInstanceOf()`.".to_string(),
+            "Use `toContainOnlyInstancesOf()` instead of `->each->toBeInstanceOf()`.",
             Safety::Unsafe,
             vec![
                 // `$node->var = $node->var->var`.

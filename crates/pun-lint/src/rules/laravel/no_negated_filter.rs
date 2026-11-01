@@ -8,7 +8,7 @@
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_syntax::cst::{Expression, Node, NodeKind};
-use pun_problem::{Edit, Fix, Safety, Span};
+use pun_problem::{Edit, Safety, Span};
 
 use super::object_type::is_object_type;
 use super::{is_name, member_name};
@@ -85,18 +85,15 @@ impl Rule for NoNegatedFilter {
                 Edit::new(Span::new(at, at), ": bool")
             }
         };
-        out.push(Report {
-            span: node_span(call),
-            message: format!("Use `{to}()` instead of `{from}()` with a negated condition."),
-            help: None,
-            fix: Some(Fix {
-                safety: Safety::Unsafe,
-                edits: vec![
-                    Edit::new(node_span(&call.method), to),
-                    return_type,
-                    Edit::new(node_span(not), body),
-                ],
-            }),
-        });
+        out.push(Report::fixed(
+            node_span(call),
+            format!("Use `{to}()` instead of `{from}()` with a negated condition."),
+            Safety::Unsafe,
+            vec![
+                Edit::new(node_span(&call.method), to),
+                return_type,
+                Edit::new(node_span(not), body),
+            ],
+        ));
     }
 }

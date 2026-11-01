@@ -16,7 +16,7 @@ use mago_codex::metadata::function_like::FunctionLikeMetadata;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::TObject;
 use mago_syntax::cst::{Call, ClassLikeMemberSelector, Expression, Node, NodeKind};
-use pun_problem::{Edit, Fix, Safety};
+use pun_problem::{Edit, Safety};
 
 use super::facts::{Facts, facts, is_builtin_class, is_builtin_function};
 use super::names::resolve_class_name;
@@ -77,15 +77,12 @@ impl Rule for NoNullsafeOnNonNull {
             String::from_utf8_lossy(name.value),
             print_args(ctx, &call.argument_list, indent_at(ctx, span.start)),
         );
-        out.push(Report {
+        out.push(Report::fixed(
             span,
-            message: "The call before `?->` never returns `null`: use `->`.".to_string(),
-            help: None,
-            fix: Some(Fix {
-                safety: Safety::Safe,
-                edits: vec![Edit::new(span, text)],
-            }),
-        });
+            "The call before `?->` never returns `null`: use `->`.",
+            Safety::Safe,
+            vec![Edit::new(span, text)],
+        ));
     }
 }
 

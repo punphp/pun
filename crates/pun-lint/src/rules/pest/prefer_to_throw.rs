@@ -9,9 +9,8 @@ use mago_syntax::cst::{
 use pun_problem::{Edit, Safety, Span};
 
 use super::{
-    Item, argument_value, comments_start, expect_argument, function_name, indent_at,
-    is_expect_chain, is_name, kept_text, method_call, old_statements, p_stmts, report,
-    statement_expression,
+    Item, comments_start, expect_argument, function_name, indent_at, is_expect_chain, is_name,
+    kept_text, method_call, old_statements, p_stmts, statement_expression,
 };
 use crate::rules::php_parser::{block_list, tokens};
 use crate::syntax::{node_span, unparenthesize};
@@ -68,16 +67,16 @@ impl Rule for PreferToThrow {
         }
         let mut edits = Vec::new();
         for argument in call.argument_list.arguments.iter() {
-            if let Expression::Closure(closure) = unparenthesize(argument_value(argument)) {
+            if let Expression::Closure(closure) = unparenthesize(argument.value()) {
                 find_try(ctx, Node::Block(&closure.body), &mut edits);
             }
         }
         if edits.is_empty() {
             return;
         }
-        out.push(report(
+        out.push(Report::fixed(
             node_span(call),
-            "Use `expect(...)->toThrow()` instead of a `try`/`catch`.".to_string(),
+            "Use `expect(...)->toThrow()` instead of a `try`/`catch`.",
             Safety::Safe,
             edits,
         ));
@@ -177,7 +176,7 @@ fn message_assertion<'a>(
     let Expression::Variable(Variable::Direct(object)) = unparenthesize(subject.object) else {
         return None;
     };
-    (Some(object.name) == var).then(|| argument_value(argument))
+    (Some(object.name) == var).then(|| argument.value())
 }
 
 /// `AnonymousFunctionFactory::createUseVariablesFromParams` with no parameters: the variables of `stmts` in order,

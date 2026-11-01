@@ -13,7 +13,7 @@ use serde_json::Value;
 
 use super::annotations::{Annotated, TagValue, map_item, named_tags};
 use super::prefer_test_with_attribute::print_float;
-use super::{class_body, is_in_test_class, report};
+use super::{class_body, is_in_test_class};
 use crate::{Context, Report, Rule};
 
 /// One `AnnotationWithValueToAttribute`.
@@ -170,7 +170,7 @@ impl Rule for PreferAttributeOverAnnotation {
         }
         // a group or an edit comes from a doc that changed
         let span = class_doc_span.or(span).unwrap();
-        out.push(report(
+        out.push(Report::fixed(
             span,
             "Use attributes instead of the PHPUnit annotations with a value.",
             Safety::Safe,

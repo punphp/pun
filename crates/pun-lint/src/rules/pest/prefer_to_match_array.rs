@@ -6,9 +6,9 @@ use mago_syntax::cst::{Expression, MethodCall, Node, NodeKind};
 use pun_problem::{Safety, Span};
 
 use super::{
-    Is, Item, STATEMENT_LISTS, Trinary, argument_value, comment_spans, expect_argument,
-    expect_call, has_not, is_expect_chain, is_name, kept_text, method_call, report, rewrite_list,
-    shift, statement_expression, statement_list, type_is,
+    Is, Item, STATEMENT_LISTS, Trinary, comment_spans, expect_argument, expect_call, has_not,
+    is_expect_chain, is_name, kept_text, method_call, rewrite_list, shift, statement_expression,
+    statement_list, type_is,
 };
 use crate::syntax::{node_span, same_expression, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -125,10 +125,9 @@ impl Rule for PreferToMatchArray {
             return;
         }
         if let Some(edits) = rewrite_list(ctx, node, ancestors, &list, &items) {
-            out.push(report(
+            out.push(Report::fixed(
                 node_span(stmts[0]),
-                "Use `toMatchArray()` instead of consecutive checks of an array's keys."
-                    .to_string(),
+                "Use `toMatchArray()` instead of consecutive checks of an array's keys.",
                 Safety::Safe,
                 edits,
             ));
@@ -154,7 +153,7 @@ fn assertion(call: &MethodCall<'_>) -> bool {
 /// `getExpectedValue`: the only argument's value.
 fn expected_value<'a>(call: &'a MethodCall<'a>) -> Option<&'a Expression<'a>> {
     match call.argument_list.arguments.as_slice() {
-        [argument] => Some(argument_value(argument)),
+        [argument] => Some(argument.value()),
         _ => None,
     }
 }

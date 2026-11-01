@@ -8,7 +8,8 @@
 use mago_syntax::cst::{Call, Expression, Node, NodeKind, Statement, Variable};
 use pun_problem::{Edit, Safety};
 
-use super::{AnyCall, arg_value, expr_text, is_constant, is_in_test_class, report};
+use super::{AnyCall, expr_text, is_in_test_class};
+use crate::rules::rector_code_quality::is_constant;
 use crate::rules::rector_stmts::block_list;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -36,12 +37,12 @@ impl Rule for PreferSimpleCallbackAssert {
             return;
         }
         for arg in call.args() {
-            let value = arg_value(arg);
+            let value = arg.value();
             let Some(expected) = sole_assert_same_expected(ctx, value) else {
                 continue;
             };
             let span = node_span(value);
-            out.push(report(
+            out.push(Report::fixed(
                 span,
                 "Use `equalTo()` instead of a callback that only asserts the value.",
                 Safety::Safe,
@@ -64,7 +65,7 @@ fn sole_assert_same_expected<'a>(
     };
     let callback = AnyCall::of(Node::MethodCall(callback)).filter(|c| c.is_name(&["callback"]))?;
     let first = callback.args().into_iter().next()?;
-    let Expression::Closure(closure) = unparenthesize(arg_value(first)) else {
+    let Expression::Closure(closure) = unparenthesize(first.value()) else {
         return None;
     };
     if closure
@@ -98,11 +99,11 @@ fn sole_assert_same_expected<'a>(
         params.len() == 1
             && matches!(unparenthesize(e), Expression::Variable(Variable::Direct(v)) if v.name == params[0].variable.name)
     };
-    if is_sole_param(arg_value(b)) {
-        return Some(arg_value(a));
+    if is_sole_param(b.value()) {
+        return Some(a.value());
     }
-    if is_sole_param(arg_value(a)) {
-        return Some(arg_value(b));
+    if is_sole_param(a.value()) {
+        return Some(b.value());
     }
     None
 }

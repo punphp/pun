@@ -5,7 +5,7 @@
 //! than the new declaration (`DeadVarTagValueNodeAnalyzer::isDead`).
 
 use mago_syntax::cst::{Modifier, Node, NodeKind};
-use pun_problem::{Edit, Fix, Safety, Span};
+use pun_problem::{Edit, Safety, Span};
 
 use super::add_property_type_constructor::is_test_case;
 use super::add_property_type_setup::untyped_properties;
@@ -98,15 +98,12 @@ impl Rule for AddPropertyTypeSetupDocblock {
             }
         }
         let Some(first) = edits.first() else { return };
-        out.push(Report {
-            span: first.span,
-            message: "Type the properties `setUp()` assigns from their `@var`.".to_string(),
-            help: None,
-            fix: Some(Fix {
-                safety: Safety::Unsafe,
-                edits,
-            }),
-        });
+        out.push(Report::fixed(
+            first.span,
+            "Type the properties `setUp()` assigns from their `@var`.",
+            Safety::Unsafe,
+            edits,
+        ));
     }
 }
 

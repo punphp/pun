@@ -5,7 +5,7 @@ use mago_syntax::cst::{Identifier, NamespaceBody, Node, Statement, UseItem, UseI
 
 /// The namespace (`None` for the global one) and the statements of the scope `ancestors` lead to: the nearest
 /// `namespace` or the file.
-fn scope<'a>(ancestors: &[Node<'a, 'a>]) -> (Option<&'a [u8]>, Vec<&'a Statement<'a>>) {
+pub(crate) fn scope<'a>(ancestors: &[Node<'a, 'a>]) -> (Option<&'a [u8]>, Vec<&'a Statement<'a>>) {
     for node in ancestors.iter().rev() {
         if let Node::Namespace(ns) = node {
             let statements = match &ns.body {

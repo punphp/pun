@@ -12,7 +12,7 @@
 //! wide as the property's line, a tab counting four spaces (`TokenStream::getIndent`).
 
 use mago_syntax::cst::{ClassLikeMember, Modifier, Node, NodeKind, Property};
-use pun_problem::{Edit, Fix, Safety, Span};
+use pun_problem::{Edit, Safety, Span};
 
 use super::super::class_method::qualified;
 use super::super::rector_batch5::resolve_class_name;
@@ -110,15 +110,11 @@ impl Rule for AddOverrideAttribute {
         if edits.is_empty() {
             return;
         }
-        out.push(Report {
-            span: node_span(&class.name),
-            message: "Add `#[\\Override]` to the properties that override a parent's property."
-                .to_string(),
-            help: None,
-            fix: Some(Fix {
-                safety: Safety::Unsafe,
-                edits,
-            }),
-        });
+        out.push(Report::fixed(
+            node_span(&class.name),
+            "Add `#[\\Override]` to the properties that override a parent's property.",
+            Safety::Unsafe,
+            edits,
+        ));
     }
 }

@@ -19,7 +19,7 @@ use mago_syntax::cst::{
 };
 use pun_problem::{Edit, Safety, Span};
 
-use super::{is_in_test_class, is_public, report, resolve};
+use super::{is_in_test_class, is_public, resolve};
 use crate::rules::rector_stmts::assign;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -144,7 +144,7 @@ impl Rule for PreferNamedDataProviderKeys {
             .map(|(span, text)| Edit::new(span, text))
             .collect();
         edits.sort_by_key(|e| e.span.start);
-        out.push(report(
+        out.push(Report::fixed(
             node_span(&class.name),
             "Name the data provider's keys after the test's parameters.",
             Safety::Unsafe,

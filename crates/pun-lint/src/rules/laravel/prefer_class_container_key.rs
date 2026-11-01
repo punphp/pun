@@ -12,7 +12,7 @@
 use mago_syntax::cst::{
     Access, CompositeString, Expression, FunctionCall, Identifier, Literal, Node, NodeKind,
 };
-use pun_problem::{Edit, Fix, Safety};
+use pun_problem::{Edit, Safety};
 use serde_json::Value;
 
 use super::names::resolve_class_name;
@@ -140,15 +140,12 @@ impl Rule for PreferClassContainerKey {
             }
             ContainerService::Constant(class, constant) => format!("\\{class}::{constant}"),
         };
-        out.push(Report {
-            span: node_span(value),
-            message: "Use the configured service container key.".to_string(),
-            help: None,
-            fix: Some(Fix {
-                safety: Safety::Unsafe,
-                edits: vec![Edit::new(node_span(unparenthesize(value)), code)],
-            }),
-        });
+        out.push(Report::fixed(
+            node_span(value),
+            "Use the configured service container key.",
+            Safety::Unsafe,
+            vec![Edit::new(node_span(unparenthesize(value)), code)],
+        ));
     }
 }
 

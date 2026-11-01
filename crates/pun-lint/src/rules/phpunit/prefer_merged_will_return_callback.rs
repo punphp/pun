@@ -7,12 +7,11 @@
 //! value's type as Rector declares it (`mapPHPStanTypeToPhpParserNode` of the scope's type, `true` and `false` kept).
 //! Arguments of `with()` after the callback go.
 
-use mago_syntax::cst::{Call, Expression, Node, NodeKind, Statement, Variable};
+use mago_syntax::cst::{Argument, Call, Expression, Node, NodeKind, Statement, Variable};
 use pun_problem::{Edit, Safety, Span};
 
-use super::{
-    AnyCall, NewArg, arg_value, expr_text, is_constant, is_in_test_class, report, rewrite_args,
-};
+use super::{AnyCall, NewArg, expr_text, is_in_test_class, rewrite_args};
+use crate::rules::rector_code_quality::is_constant;
 use crate::rules::rector_stmts::block_list;
 use crate::rules::types::declare::{expression_order, return_declaration};
 use crate::rules::types::facts::facts;
@@ -51,7 +50,7 @@ impl Rule for PreferMergedWillReturnCallback {
         let Some(first) = with.args().into_iter().next() else {
             return;
         };
-        let Expression::Call(Call::Method(callback)) = arg_value(first) else {
+        let Expression::Call(Call::Method(callback)) = first.value() else {
             return;
         };
         let Some(callback) =
@@ -62,7 +61,7 @@ impl Rule for PreferMergedWillReturnCallback {
         let Some(closure_arg) = callback.args().into_iter().next() else {
             return;
         };
-        let Expression::Closure(closure) = arg_value(closure_arg) else {
+        let Expression::Closure(closure) = closure_arg.value() else {
             return;
         };
         let source = ctx.source;
@@ -76,7 +75,7 @@ impl Rule for PreferMergedWillReturnCallback {
         let Some(old_value) = last.value.filter(|v| is_constant(v, "true")) else {
             return;
         };
-        let Some(returned) = call.args().into_iter().next().map(arg_value) else {
+        let Some(returned) = call.args().into_iter().next().map(Argument::value) else {
             return;
         };
         let facts = facts(ctx);
@@ -166,7 +165,7 @@ impl Rule for PreferMergedWillReturnCallback {
             &[NewArg::New(closure_text)],
         );
         let text = applied(source, with.span, with_edits);
-        out.push(report(
+        out.push(Report::fixed(
             call.span,
             "Merge `with()` of a callback and `willReturn()` into `willReturnCallback()`.",
             Safety::Safe,

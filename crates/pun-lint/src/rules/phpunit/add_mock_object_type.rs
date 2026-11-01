@@ -13,7 +13,7 @@ use pun_problem::{Edit, Safety, Span};
 use super::annotations::Annotated;
 use super::no_bare_mock_assign::scoped;
 use super::phpdoc_type::typed_tag;
-use super::{AnyCall, is_in_test_class, report, resolve};
+use super::{AnyCall, is_in_test_class, resolve};
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -81,7 +81,7 @@ impl Rule for AddMockObjectType {
         if edits.is_empty() {
             return;
         }
-        out.push(report(
+        out.push(Report::fixed(
             node_span(&method.name),
             "Type the parameter that gets expects() as a MockObject.",
             Safety::Safe,

@@ -8,7 +8,7 @@ use mago_syntax::cst::{
     Block, Expression, FunctionLikeReturnTypeHint, Hint, Method, MethodBody, Node, NodeKind,
     Statement,
 };
-use pun_problem::{Edit, Fix, Safety, Span};
+use pun_problem::{Edit, Safety, Span};
 
 use super::facts::facts;
 use super::names::resolve_class_name;
@@ -93,15 +93,12 @@ impl Rule for AddReturnTypeFromYield {
         {
             return;
         }
-        out.push(Report {
-            span: name,
-            message: "Add the `\\Generator` return type.".to_string(),
-            help: None,
-            fix: Some(Fix {
-                safety: Safety::Unsafe,
-                edits: vec![edit],
-            }),
-        });
+        out.push(Report::fixed(
+            name,
+            "Add the `\\Generator` return type.",
+            Safety::Unsafe,
+            vec![edit],
+        ));
     }
 }
 

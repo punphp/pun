@@ -9,9 +9,10 @@ use mago_codex::ttype::union::TUnion;
 use mago_syntax::cst::{
     Argument, AssignmentOperator, Closure, Expression, MethodBody, Node, NodeKind, Variable,
 };
+use pun_problem::Safety;
 
 use super::facts::{Facts, facts};
-use super::param::{Flow, add_hint, param_declaration, report, traverse};
+use super::param::{Flow, add_hint, param_declaration, traverse};
 use crate::rules::class_method::type_of;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -82,9 +83,10 @@ impl Rule for AddParamTypeVariableCall {
         if edits.is_empty() {
             return;
         }
-        out.push(report(
+        out.push(Report::fixed(
             node_span(&node),
             "Add the class of the objects a closure variable is called with to its parameters.",
+            Safety::Unsafe,
             edits,
         ));
     }

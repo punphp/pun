@@ -5,7 +5,7 @@
 use mago_syntax::cst::{Closure, Node, NodeKind, Statement};
 use pun_problem::{Edit, Safety};
 
-use super::{Callback, func_call, function_name, pest_callback, report};
+use super::{Callback, func_call, function_name, pest_callback};
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -41,9 +41,9 @@ impl Rule for NoBeforeAllInDescribe {
         if edits.is_empty() {
             return;
         }
-        out.push(report(
+        out.push(Report::fixed(
             node_span(call),
-            "Use `beforeEach()` and `afterEach()` inside `describe()`.".to_string(),
+            "Use `beforeEach()` and `afterEach()` inside `describe()`.",
             Safety::Safe,
             edits,
         ));

@@ -11,7 +11,7 @@ use mago_syntax::cst::{
     Block, Call, ClassLikeMemberSelector, Construct, Expression, FunctionLikeReturnTypeHint, Hint,
     Identifier, Method, Modifier, Node, Statement,
 };
-use pun_problem::{Edit, Fix, Safety, Span};
+use pun_problem::{Edit, Safety, Span};
 
 use super::facts::{Facts, facts, is_builtin_class, is_vendor_file};
 use super::{ClassScope, MAGIC, class_scope, namespace_of};
@@ -72,15 +72,12 @@ pub(crate) fn add_never(
         Some(hint) => Edit::new(node_span(&hint.hint), "never".to_string()),
         None => Edit::new(Span::new(f.at, f.at), ": never".to_string()),
     };
-    Some(Report {
-        span: f.span,
-        message: "Add the `never` return type.".to_string(),
-        help: None,
-        fix: Some(Fix {
-            safety: Safety::Unsafe,
-            edits: vec![edit],
-        }),
-    })
+    Some(Report::fixed(
+        f.span,
+        "Add the `never` return type.",
+        Safety::Unsafe,
+        vec![edit],
+    ))
 }
 
 /// `hasReturnOrYields`: a `return`, a `yield`, or a node that runs only on a condition

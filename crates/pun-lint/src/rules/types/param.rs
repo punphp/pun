@@ -9,12 +9,11 @@ use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::union::TUnion;
 use mago_syntax::cst::{Expression, FunctionLikeParameter, Node};
-use pun_problem::{Edit, Fix, Safety, Span};
+use pun_problem::{Edit, Span};
 
 use super::declare::{atomic_declaration, union_order};
 use super::facts::Facts;
 use crate::rules::class_method::type_of;
-use crate::Report;
 
 /// `PhpVersionFeature::NULL_FALSE_TRUE_STANDALONE_TYPE`.
 const NULL_FALSE_TRUE_STANDALONE_TYPE: u32 = 80200;
@@ -39,18 +38,6 @@ pub(crate) fn add_hint(param: &FunctionLikeParameter<'_>, declaration: &str) -> 
     Edit::new(Span::new(at, at), format!("{declaration} "))
 }
 
-/// A report at `span` whose fix applies `edits`.
-pub(crate) fn report(span: Span, message: &str, edits: Vec<Edit>) -> Report {
-    Report {
-        span,
-        message: message.to_string(),
-        help: None,
-        fix: Some(Fix {
-            safety: Safety::Unsafe,
-            edits,
-        }),
-    }
-}
 
 /// Whether PHPStan's type is a `MixedType`: Mago's union holds `mixed` (a union with `mixed` is `mixed` in PHPStan).
 pub(crate) fn is_mixed(t: &TUnion) -> bool {

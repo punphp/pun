@@ -6,8 +6,8 @@ use mago_syntax::cst::{Node, NodeKind};
 use pun_problem::Safety;
 
 use super::{
-    Is, Trinary, argument_value, func_call, is_name, matcher_subject, rename, report,
-    set_first_argument, subject_holder, type_is,
+    Is, Trinary, func_call, is_name, matcher_subject, rename, set_first_argument, subject_holder,
+    type_is,
 };
 use crate::rules::rector_code_quality::named;
 use crate::syntax::node_span;
@@ -49,7 +49,7 @@ impl Rule for PreferToHaveCount {
         let [argument] = count.argument_list.arguments.as_slice() else {
             return;
         };
-        let value = argument_value(argument);
+        let value = argument.value();
         if type_is(ctx, value, Is::Array) == Trinary::No
             && type_is(ctx, value, Is::Iterable) == Trinary::No
         {
@@ -57,9 +57,9 @@ impl Rule for PreferToHaveCount {
         }
         let mut edits = set_first_argument(ctx, holder.arguments, value);
         edits.push(rename(call, "toHaveCount"));
-        out.push(report(
+        out.push(Report::fixed(
             node_span(call),
-            "Use `toHaveCount()` instead of comparing `count()`.".to_string(),
+            "Use `toHaveCount()` instead of comparing `count()`.",
             Safety::Unsafe,
             edits,
         ));

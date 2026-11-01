@@ -9,7 +9,7 @@ use pun_problem::{Edit, Safety, Span};
 
 use super::{
     Link, chain_links, comments_start, expect_call, first_value, indent_at, kept_text, method_call,
-    print_links, report, shift,
+    print_links, shift,
 };
 use crate::rules::php_parser::{block_list, open_list, tokens};
 use crate::syntax::{node_span, unparenthesize};
@@ -114,9 +114,9 @@ impl Rule for PreferEachModifier {
             shift(ctx, Span::new(argument.end, expect_span.end), delta),
             print_links(ctx, &links, indent),
         );
-        out.push(report(
+        out.push(Report::fixed(
             span,
-            "Use the `->each` modifier instead of a `foreach` of `expect()` calls.".to_string(),
+            "Use the `->each` modifier instead of a `foreach` of `expect()` calls.",
             Safety::Safe,
             vec![Edit::new(
                 Span::new(comments_start(ctx, span.start), span.end),

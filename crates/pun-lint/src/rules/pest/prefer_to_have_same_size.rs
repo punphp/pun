@@ -6,8 +6,8 @@ use mago_syntax::cst::{Expression, Node, NodeKind};
 use pun_problem::Safety;
 
 use super::{
-    Is, Trinary, argument_value, first_value, func_call, is_name, report, set_call_arguments,
-    subject_holder, texts, type_is,
+    Is, Trinary, first_value, func_call, is_name, set_call_arguments, subject_holder, texts,
+    type_is,
 };
 use crate::rules::rector_code_quality::named;
 use crate::syntax::node_span;
@@ -54,7 +54,7 @@ impl Rule for PreferToHaveSameSize {
         if is_name(&call.method, "toBe") || is_name(&call.method, "toEqual") {
             let (Some(first), Some(second)) = (
                 counted(first_value(holder.arguments)),
-                counted(Some(argument_value(argument))),
+                counted(Some(argument.value())),
             ) else {
                 return;
             };
@@ -70,15 +70,20 @@ impl Rule for PreferToHaveSameSize {
                 "toHaveSameSize",
                 &texts(ctx, &[second]),
             ));
-            out.push(report(node_span(call), message, Safety::Unsafe, edits));
+            out.push(Report::fixed(
+                node_span(call),
+                message,
+                Safety::Unsafe,
+                edits,
+            ));
         } else if is_name(&call.method, "toHaveCount") {
-            let Some(Some(second)) = counted(Some(argument_value(argument))) else {
+            let Some(Some(second)) = counted(Some(argument.value())) else {
                 return;
             };
             if first_value(holder.arguments).is_some_and(|s| !countable(s)) {
                 return;
             }
-            out.push(report(
+            out.push(Report::fixed(
                 node_span(call),
                 message,
                 Safety::Unsafe,

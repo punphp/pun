@@ -8,7 +8,7 @@
 //! A method the parent class has as a public method (its own, an `@method`, or one of a `@mixin`) stays.
 
 use mago_syntax::cst::{Method, Modifier, Node, NodeKind};
-use pun_problem::{Edit, Fix, Safety, Span};
+use pun_problem::{Edit, Safety, Span};
 
 use super::is_a;
 use super::object_type::{is_hint_type, object_class};
@@ -69,15 +69,12 @@ impl Rule for PreferProtectedModelMethods {
         if !is_trait && !is_a(ctx, &own, &[MODEL]) {
             return;
         }
-        out.push(Report {
-            span: node_span(&method.name),
-            message: "Make the model's attribute or scope method protected.".to_string(),
-            help: None,
-            fix: Some(Fix {
-                safety: Safety::Unsafe,
-                edits: vec![make_protected(ctx.source, method)],
-            }),
-        });
+        out.push(Report::fixed(
+            node_span(&method.name),
+            "Make the model's attribute or scope method protected.",
+            Safety::Unsafe,
+            vec![make_protected(ctx.source, method)],
+        ));
     }
 }
 

@@ -6,9 +6,8 @@
 use mago_syntax::cst::{Node, NodeKind};
 use pun_problem::Safety;
 
-use super::{
-    AnyCall, arg_value, is_constant, is_test_case_call_named, remove_first_arg, renamed, report,
-};
+use super::{AnyCall, is_test_case_call_named, remove_first_arg, renamed};
+use crate::rules::rector_code_quality::is_constant;
 use crate::{Context, Report, Rule};
 
 const CONSTANTS: &[(&str, &str, &str)] = &[
@@ -42,7 +41,7 @@ impl Rule for PreferAssertNullTrueFalse {
         let Some(first) = call.args().first().copied() else {
             return;
         };
-        let value = arg_value(first);
+        let value = first.value();
         let Some((_, same, not_same)) = CONSTANTS.iter().find(|(c, _, _)| is_constant(value, c))
         else {
             return;
@@ -52,9 +51,9 @@ impl Rule for PreferAssertNullTrueFalse {
             return;
         };
         let edits = remove_first_arg(ctx, &call, name);
-        out.push(report(
+        out.push(Report::fixed(
             call.span,
-            &format!("Use `{name}()` for a comparison with a constant."),
+            format!("Use `{name}()` for a comparison with a constant."),
             Safety::Unsafe,
             edits,
         ));

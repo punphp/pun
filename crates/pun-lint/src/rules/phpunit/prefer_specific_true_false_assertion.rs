@@ -10,8 +10,7 @@ use mago_syntax::cst::{Call, Construct, Expression, Identifier, Node, NodeKind};
 use pun_problem::Safety;
 
 use super::{
-    ASSERT, AnyCall, NewArg, arg_value, expr_text, is_test_case_call_named, old_args, report,
-    rewrite_args, text,
+    ASSERT, AnyCall, NewArg, expr_text, is_test_case_call_named, old_args, rewrite_args, text,
 };
 use crate::rules::types::facts::facts;
 use crate::syntax::{node_span, unparenthesize};
@@ -81,7 +80,7 @@ impl Rule for PreferSpecificTrueFalseAssertion {
         let Some(first) = call.args().first().copied() else {
             return;
         };
-        let value = unparenthesize(arg_value(first));
+        let value = unparenthesize(first.value());
         // the function's arguments, or the operand of `empty()`
         let (function, inner): (&str, Result<Vec<_>, &Expression<'_>>) = match value {
             Expression::Construct(Construct::Empty(empty)) => ("empty", Err(empty.value)),
@@ -107,7 +106,7 @@ impl Rule for PreferSpecificTrueFalseAssertion {
             let Some(subject) = inner.as_ref().ok().and_then(|args| args.first()) else {
                 return;
             };
-            if is_string_type(ctx, arg_value(subject)) {
+            if is_string_type(ctx, subject.value()) {
                 return;
             }
         }
@@ -139,7 +138,7 @@ impl Rule for PreferSpecificTrueFalseAssertion {
             }
         };
         let message = format!("Use a dedicated assertion instead of asserting `{function}()`.");
-        out.push(report(
+        out.push(Report::fixed(
             call.span,
             &message,
             Safety::Unsafe,

@@ -7,7 +7,7 @@
 //! method or static call of that name too.
 
 use mago_syntax::cst::{ArgumentList, BinaryOperator, Call, Expression, Node, NodeKind};
-use pun_problem::{Edit, Fix, Safety, Span};
+use pun_problem::{Edit, Safety, Span};
 
 use super::{class_name, is_a, is_name, member_name};
 use crate::rules::lint_b_helpers::{Constant, append_argument, constant};
@@ -97,14 +97,11 @@ impl Rule for PreferDefaultArgument {
         if constant(ancestors, coalesce.rhs, node_span(coalesce).start) != Some(Constant::Null) {
             edits.push(append_argument(ctx.source, list, text(ctx, coalesce.rhs)));
         }
-        out.push(Report {
-            span: node_span(coalesce),
-            message: format!("Pass the default to `{method}()` instead of using `??`."),
-            help: None,
-            fix: Some(Fix {
-                safety: Safety::Unsafe,
-                edits,
-            }),
-        });
+        out.push(Report::fixed(
+            node_span(coalesce),
+            format!("Pass the default to `{method}()` instead of using `??`."),
+            Safety::Unsafe,
+            edits,
+        ));
     }
 }

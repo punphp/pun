@@ -7,7 +7,7 @@
 use mago_syntax::cst::{Call, Expression, MethodBody, Node, NodeKind, Statement};
 use pun_problem::Safety;
 
-use super::{AnyCall, is_in_test_class, report};
+use super::{AnyCall, is_in_test_class};
 use crate::rules::rector_batch5::remove_statements;
 use crate::rules::rector_stmts::block_list;
 use crate::syntax::{node_span, unparenthesize};
@@ -61,7 +61,7 @@ impl Rule for NoUnusedMock {
             if removed[at] {
                 let mut only = vec![false; removed.len()];
                 only[at] = true;
-                out.push(report(
+                out.push(Report::fixed(
                     node_span(*statement),
                     "Remove the mock: nothing uses it.",
                     Safety::Safe,

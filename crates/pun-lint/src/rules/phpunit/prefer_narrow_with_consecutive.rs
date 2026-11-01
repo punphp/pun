@@ -7,9 +7,7 @@
 use mago_syntax::cst::{Node, NodeKind};
 use pun_problem::Safety;
 
-use super::{
-    AnyCall, NewArg, arg_value, contains, expr_text, is_in_test_class, report, rewrite_args,
-};
+use super::{AnyCall, NewArg, contains, expr_text, is_in_test_class, rewrite_args};
 use crate::syntax::same_expression;
 use crate::{Context, Report, Rule};
 
@@ -44,7 +42,7 @@ impl Rule for PreferNarrowWithConsecutive {
             return;
         }
         let creates = args.iter().any(|a| {
-            contains(Node::Expression(arg_value(a)), &|n| {
+            contains(Node::Expression(a.value()), &|n| {
                 matches!(n, Node::Instantiation(_) | Node::AnonymousClass(_))
             })
         });
@@ -53,7 +51,7 @@ impl Rule for PreferNarrowWithConsecutive {
         }
         if !args
             .iter()
-            .all(|a| same_expression(ctx.source, arg_value(a), arg_value(first)))
+            .all(|a| same_expression(ctx.source, a.value(), first.value()))
         {
             return;
         }
@@ -62,15 +60,15 @@ impl Rule for PreferNarrowWithConsecutive {
         } else {
             "willReturn"
         };
-        out.push(report(
+        out.push(Report::fixed(
             call.span,
-            &format!("Use `{name}()` for identical values."),
+            format!("Use `{name}()` for identical values."),
             Safety::Safe,
             rewrite_args(
                 ctx,
                 &call,
                 Some(name),
-                &[NewArg::New(expr_text(ctx, arg_value(first)).to_string())],
+                &[NewArg::New(expr_text(ctx, first.value()).to_string())],
             ),
         ));
     }

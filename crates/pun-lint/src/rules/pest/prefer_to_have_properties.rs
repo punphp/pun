@@ -5,10 +5,8 @@
 use mago_syntax::cst::{Expression, Literal, Node, NodeKind};
 use pun_problem::{Edit, Safety, Span};
 
-use super::{
-    Is, Trinary, argument_value, has_not, is_name, matcher_subject, method_call, rename, report,
-    type_is, value_text,
-};
+use super::{Is, Trinary, has_not, is_name, matcher_subject, method_call, rename, type_is};
+use crate::rules::phpunit::expr_text;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -49,20 +47,20 @@ impl Rule for PreferToHaveProperties {
             let [argument] = c.argument_list.arguments.as_slice() else {
                 return;
             };
-            let key = argument_value(argument);
+            let key = argument.value();
             if !matches!(unparenthesize(key), Expression::Literal(Literal::String(_))) {
                 return;
             }
-            keys.insert(0, value_text(ctx, key));
+            keys.insert(0, expr_text(ctx, key));
             first = Some((c, argument));
             current = method_call(c.object);
         }
         let (Some((first, argument)), 2..) = (first, keys.len()) else {
             return;
         };
-        out.push(report(
+        out.push(Report::fixed(
             node_span(call),
-            "Use `toHaveProperties()` instead of a run of `toHaveProperty()`.".to_string(),
+            "Use `toHaveProperties()` instead of a run of `toHaveProperty()`.",
             Safety::Safe,
             vec![
                 rename(first, "toHaveProperties"),

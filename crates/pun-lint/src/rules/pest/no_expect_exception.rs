@@ -6,8 +6,8 @@ use mago_syntax::cst::{Expression, MethodCall, Node, NodeKind, Statement, Variab
 use pun_problem::{Safety, Span};
 
 use super::{
-    Item, STATEMENT_LISTS, argument_value, comment_spans, identifier, kept_text, method_call,
-    report, rewrite_list, statement_expression, statement_list,
+    Item, STATEMENT_LISTS, comment_spans, identifier, kept_text, method_call, rewrite_list,
+    statement_expression, statement_list,
 };
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -95,10 +95,9 @@ impl Rule for NoExpectException {
             return;
         }
         if let Some(edits) = rewrite_list(ctx, node, ancestors, &list, &items) {
-            out.push(report(
+            out.push(Report::fixed(
                 node_span(stmts[0]),
-                "Use `expect(fn() => ...)->toThrow()` instead of `$this->expectException()`."
-                    .to_string(),
+                "Use `expect(fn() => ...)->toThrow()` instead of `$this->expectException()`.",
                 Safety::Safe,
                 edits,
             ));
@@ -122,7 +121,7 @@ fn collect_conversion<'a>(stmts: &[&'a Statement<'a>], start: usize) -> Option<C
         let [argument] = call.argument_list.arguments.as_slice() else {
             return None;
         };
-        let value = argument_value(argument);
+        let value = argument.value();
         if name == b"expectExceptionMessage" {
             if exception_method == Some(b"expectExceptionObject") || message.is_some() {
                 return None;

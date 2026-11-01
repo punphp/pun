@@ -4,13 +4,14 @@
 //! from the parent's source (as Rector's `AstResolver` reads it), class names fully qualified.
 
 use mago_syntax::cst::{
-    Argument, ClassLikeMember, ClassLikeMemberSelector, Expression, Hint, Method, MethodBody, Node,
-    NodeKind, StaticMethodCall, Variable,
+    ClassLikeMember, ClassLikeMemberSelector, Expression, Hint, Method, MethodBody, Node, NodeKind,
+    StaticMethodCall, Variable,
 };
+use pun_problem::Safety;
 
 use super::facts::{Facts, facts};
 use super::names::resolve_written_class_name;
-use super::param::{add_hint, report};
+use super::param::add_hint;
 use crate::rules::class_method::{qualified, walk};
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -80,11 +81,7 @@ impl Rule for AddParamTypeParentCall {
                     continue;
                 }
                 let Some(position) = call.argument_list.arguments.iter().position(|a| {
-                    let value = match a {
-                        Argument::Positional(p) => p.value,
-                        Argument::Named(n) => n.value,
-                    };
-                    matches!(value, Expression::Variable(Variable::Direct(v)) if v.name == name)
+                    matches!(a.value(), Expression::Variable(Variable::Direct(v)) if v.name == name)
                 }) else {
                     continue;
                 };
@@ -96,9 +93,10 @@ impl Rule for AddParamTypeParentCall {
         if edits.is_empty() {
             return;
         }
-        out.push(report(
+        out.push(Report::fixed(
             node_span(&node),
             "Add the parameter types of the parent method the call passes them to.",
+            Safety::Unsafe,
             edits,
         ));
     }

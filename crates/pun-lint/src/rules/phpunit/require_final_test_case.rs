@@ -7,7 +7,7 @@
 use mago_syntax::cst::{Modifier, Node, NodeKind};
 use pun_problem::{Edit, Safety, Span};
 
-use super::{TEST_CASE, class_is, report};
+use super::{TEST_CASE, class_is};
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
 
@@ -55,7 +55,7 @@ impl Rule for RequireFinalTestCase {
             .map_or(class.class.span.start.offset as usize, |m| {
                 node_span(m).start
             });
-        out.push(report(
+        out.push(Report::fixed(
             node_span(&class.name),
             "Make the test case final.",
             Safety::Safe,

@@ -6,7 +6,8 @@
 use mago_syntax::cst::{Access, Call, Expression, Literal, Node, NodeKind};
 use pun_problem::{Edit, Safety};
 
-use super::{Is, Trinary, argument_value, expect_call, is_name, report, type_is, value_text};
+use super::{Is, Trinary, expect_call, is_name, type_is};
+use crate::rules::phpunit::expr_text;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -37,7 +38,7 @@ impl Rule for PreferToHaveMethodOnClass {
         let Some(first) = expect_call(call).and_then(|e| e.argument_list.arguments.first()) else {
             return;
         };
-        let value = unparenthesize(argument_value(first));
+        let value = unparenthesize(first.value());
         if matches!(
             value,
             Expression::Access(Access::ClassConstant(_)) | Expression::Literal(Literal::String(_))
@@ -63,15 +64,15 @@ impl Rule for PreferToHaveMethodOnClass {
                 | Expression::Array(_)
                 | Expression::LegacyArray(_)
         );
-        let class = value_text(ctx, value);
+        let class = expr_text(ctx, value);
         let class = if bare {
             format!("{class}::class")
         } else {
             format!("({class})::class")
         };
-        out.push(report(
+        out.push(Report::fixed(
             node_span(call),
-            "Check the methods of the object's class, as Pest 3 does.".to_string(),
+            "Check the methods of the object's class, as Pest 3 does.",
             Safety::Safe,
             vec![Edit::new(node_span(first), class)],
         ));

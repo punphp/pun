@@ -15,7 +15,7 @@ use mago_syntax::cst::{
     Access, ClassLikeMember, CompositeString, Expression, Literal, Node, NodeKind, Property,
     PropertyItem,
 };
-use pun_problem::{Edit, Fix, Safety, Span};
+use pun_problem::{Edit, Safety, Span};
 
 use super::is_a;
 use super::names::resolve_class_name;
@@ -93,15 +93,12 @@ impl Rule for AddFactoryExtendsPhpdoc {
                 )
             }
         };
-        out.push(Report {
-            span: node_span(&class.name),
-            message: "Add the `@extends` tag with the factory's model.".to_string(),
-            help: None,
-            fix: Some(Fix {
-                safety: Safety::Unsafe,
-                edits: vec![edit],
-            }),
-        });
+        out.push(Report::fixed(
+            node_span(&class.name),
+            "Add the `@extends` tag with the factory's model.",
+            Safety::Unsafe,
+            vec![edit],
+        ));
     }
 }
 

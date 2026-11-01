@@ -8,7 +8,7 @@ use mago_syntax::cst::{
     NodeKind,
 };
 use pun_phpstan::types::Type;
-use pun_problem::{Edit, Fix, Safety, Span};
+use pun_problem::{Edit, Safety, Span};
 
 use super::compare::classes::with_classes;
 use super::compare::mapper::{TypeScope, expr_type};
@@ -81,20 +81,15 @@ impl Rule for AddReturnTypeFromGetRepository {
         }
         let at = node_span(f.parameters).end;
         let removed = removed_by_type(&doc, Kind::Return, "");
-        out.push(Report {
-            span: f.name,
-            message: format!(
-                "Add the `{class}` return type of the repository `getRepository()` returns."
-            ),
-            help: None,
-            fix: Some(Fix {
-                safety: Safety::Unsafe,
-                edits: vec![
-                    doc.remove_last(ctx.source, &removed),
-                    Edit::new(Span::new(at, at), format!(": \\{class}")),
-                ],
-            }),
-        });
+        out.push(Report::fixed(
+            f.name,
+            format!("Add the `{class}` return type of the repository `getRepository()` returns."),
+            Safety::Unsafe,
+            vec![
+                doc.remove_last(ctx.source, &removed),
+                Edit::new(Span::new(at, at), format!(": \\{class}")),
+            ],
+        ));
     }
 }
 

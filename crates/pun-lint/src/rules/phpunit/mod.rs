@@ -94,6 +94,8 @@ mod require_mock_expects;
 pub(crate) mod require_strict_types_in_tests;
 mod require_string_assert_argument;
 
+pub(crate) use crate::rules::rector_batch5::resolve_class_name as resolve;
+pub(crate) use crate::rules::rector_code_quality::text;
 pub use add_allow_mock_objects_attribute::AddAllowMockObjectsAttribute;
 pub use add_data_provider_allow_mock_objects::AddDataProviderAllowMockObjects;
 pub use add_data_provider_iterator_return_type::AddDataProviderIteratorReturnType;
@@ -186,13 +188,13 @@ use mago_syntax::cst::{
     Argument, ArgumentList, ClassLikeMemberSelector, Expression, Identifier, Method, Modifier,
     Node, Variable,
 };
-use pun_problem::{Edit, Fix, Safety, Span};
+use pun_problem::{Edit, Span};
 
 use crate::rules::laravel::is_a;
 use crate::rules::types::class_scope;
 use crate::rules::types::facts::facts;
 use crate::syntax::{node_span, unparenthesize};
-use crate::{Context, Report, Rule};
+use crate::{Context, Rule};
 
 /// The group's rules, in a fixed order.
 pub(crate) fn all() -> Vec<Box<dyn Rule>> {
@@ -542,21 +544,6 @@ pub(crate) fn own_class_reflection(
     })
 }
 
-/// A class name as written at the node `ancestors` lead to, resolved.
-pub(crate) fn resolve(ancestors: &[Node<'_, '_>], id: &Identifier<'_>) -> String {
-    crate::rules::rector_batch5::resolve_class_name(ancestors, id)
-}
-
-/// A report on `span` with a fix made of `edits`.
-pub(crate) fn report(span: Span, message: &str, safety: Safety, edits: Vec<Edit>) -> Report {
-    Report {
-        span,
-        message: message.to_string(),
-        help: None,
-        fix: Some(Fix { safety, edits }),
-    }
-}
-
 /// The members of a class-like and the spans of its braces.
 pub(crate) fn class_body<'a>(
     node: Node<'a, 'a>,
@@ -583,20 +570,6 @@ pub(crate) const CLASS_LIKES: &[mago_syntax::cst::NodeKind] = &[
     mago_syntax::cst::NodeKind::Interface,
     mago_syntax::cst::NodeKind::Enum,
 ];
-
-/// An argument's value.
-pub(crate) fn arg_value<'a>(arg: &'a Argument<'a>) -> &'a Expression<'a> {
-    match arg {
-        Argument::Positional(p) => p.value,
-        Argument::Named(n) => n.value,
-    }
-}
-
-/// The source text of a node.
-pub(crate) fn text<'s>(ctx: &Context<'s>, node: &impl mago_span::HasSpan) -> &'s str {
-    let s = node_span(node);
-    &ctx.source[s.start..s.end]
-}
 
 /// The text php-parser prints for an expression node it keeps: the node without the parentheses around it.
 pub(crate) fn expr_text<'s>(ctx: &Context<'s>, expr: &Expression<'_>) -> &'s str {
@@ -626,23 +599,6 @@ pub(crate) fn renamed(call: &AnyCall<'_>, map: &[(&str, &'static str)]) -> Optio
 /// kept receiver, the name and the arguments joined with `, `.
 pub(crate) fn new_call(ctx: &Context<'_>, call: &AnyCall<'_>, name: &str, args: &[&str]) -> String {
     format!("{}{name}({})", call.receiver_text(ctx), args.join(", "))
-}
-
-/// Whether the expression is the constant `true`, `false` or `null` named `name` (ASCII case-insensitive).
-pub(crate) fn is_constant(expr: &Expression<'_>, name: &str) -> bool {
-    use mago_syntax::cst::Literal;
-    match unparenthesize(expr) {
-        Expression::Literal(Literal::True(_)) => name == "true",
-        Expression::Literal(Literal::False(_)) => name == "false",
-        Expression::Literal(Literal::Null(_)) => name == "null",
-        Expression::ConstantAccess(c) => {
-            let n = c.name.value();
-            n.strip_prefix(b"\\")
-                .unwrap_or(n)
-                .eq_ignore_ascii_case(name.as_bytes())
-        }
-        _ => false,
-    }
 }
 
 /// `ValueResolver::getValue` for a string: a string literal.
@@ -1017,7 +973,7 @@ pub(crate) fn without_equal_to(ctx: &Context<'_>, expr: &Expression<'_>) -> Stri
 /// replaced; the call as it is without one (`$node->getArgs()[0]->value` is `null`, which replaces nothing).
 fn replaced_equal_to(ctx: &Context<'_>, call: &mago_syntax::cst::MethodCall<'_>) -> String {
     match call.argument_list.arguments.first() {
-        Some(first) => inner_without_equal_to(ctx, arg_value(first)),
+        Some(first) => inner_without_equal_to(ctx, first.value()),
         None => text(ctx, call).to_string(),
     }
 }

@@ -6,8 +6,8 @@ use mago_syntax::cst::{Node, NodeKind};
 use pun_problem::Safety;
 
 use super::{
-    Is, Trinary, argument_value, first_value, func_call, function_name, identifier, report,
-    set_call_arguments, set_first_argument, subject_holder, texts, type_is,
+    Is, Trinary, first_value, func_call, function_name, identifier, set_call_arguments,
+    set_first_argument, subject_holder, texts, type_is,
 };
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
@@ -58,11 +58,11 @@ impl Rule for PreferToHaveLength {
         edits.extend(set_call_arguments(
             call,
             "toHaveLength",
-            &texts(ctx, &[argument_value(length)]),
+            &texts(ctx, &[length.value()]),
         ));
-        out.push(report(
+        out.push(Report::fixed(
             node_span(call),
-            "Use `toHaveLength()` instead of comparing the string's length.".to_string(),
+            "Use `toHaveLength()` instead of comparing the string's length.",
             Safety::Unsafe,
             edits,
         ));

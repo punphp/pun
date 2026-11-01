@@ -15,7 +15,7 @@ use pun_problem::{Edit, Safety};
 
 use super::no_bare_mock_assign::scoped;
 use super::prefer_create_stub_expression::is_mock_object;
-use super::{AnyCall, class_parents, is_in_test_class, object_class, own_class, report, resolve};
+use super::{AnyCall, class_parents, is_in_test_class, object_class, own_class, resolve};
 use crate::rules::rector_stmts::{assign, block_list, expression};
 use crate::rules::types::facts::facts;
 use crate::syntax::{node_span, unparenthesize};
@@ -83,7 +83,7 @@ impl Rule for NoStubWithExpectations {
         let Some(first) = edits.first().map(|e| e.span) else {
             return;
         };
-        out.push(report(
+        out.push(Report::fixed(
             first,
             "Create a mock, not a stub, for a value passed where a MockObject is expected.",
             Safety::Safe,
@@ -108,10 +108,7 @@ fn is_passed_as_mock_object_arg(
             return;
         };
         for (index, arg) in call.args().into_iter().enumerate() {
-            let value = match arg {
-                Argument::Positional(p) => p.value,
-                Argument::Named(n) => n.value,
-            };
+            let value = arg.value();
             let Expression::Variable(Variable::Direct(v)) = value else {
                 continue;
             };

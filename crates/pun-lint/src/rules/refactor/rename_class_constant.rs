@@ -13,9 +13,9 @@
 //! codebase.
 
 use mago_syntax::cst::{ClassLikeConstantSelector, Node, NodeKind};
-use pun_problem::Edit;
+use pun_problem::{Edit, Safety};
 
-use super::{assert_class, assert_constant, is_object_type, items, object, report, string};
+use super::{assert_class, assert_constant, is_object_type, items, object, string};
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
 
@@ -108,7 +108,7 @@ impl Rule for RenameClassConstant {
             if ctx.source[span.start..span.end] == text {
                 return;
             }
-            out.push(report(
+            out.push(Report::fixed(
                 node_span(fetch),
                 format!(
                     "Rename the class constant `{}::{}` to `{}::{}`.",
@@ -117,6 +117,7 @@ impl Rule for RenameClassConstant {
                     rename.new_class.as_deref().unwrap_or(&rename.old_class),
                     rename.new_constant
                 ),
+                Safety::Unsafe,
                 vec![Edit::new(span, text)],
             ));
             return;

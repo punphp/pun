@@ -10,7 +10,7 @@ use pun_problem::Safety;
 
 use super::add_mock_object_type::type_edit;
 use super::annotations::{TagValue, named_tags};
-use super::{class_body, is_in_test_class, is_public, report, resolve, string_value, text};
+use super::{class_body, is_in_test_class, is_public, resolve, string_value, text};
 use crate::rules::lint_b_doc::Doc;
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
@@ -76,7 +76,7 @@ impl Rule for AddParamTypeDepends {
         if edits.is_empty() {
             return;
         }
-        out.push(report(
+        out.push(Report::fixed(
             node_span(&node),
             "Type the parameter with the return type of the test it depends on.",
             Safety::Safe,

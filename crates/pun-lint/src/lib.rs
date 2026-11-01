@@ -18,7 +18,7 @@ use mago_span::HasSpan;
 use mago_syntax::cst::{Node, NodeKind};
 use mago_syntax::settings::ParserSettings;
 use mago_syntax::walker::Walker;
-use pun_problem::{Fix, Level, Problem, Span, apply_fixes};
+use pun_problem::{Edit, Fix, Level, Problem, Safety, Span, apply_fixes};
 
 pub mod rules;
 pub mod syntax;
@@ -39,6 +39,18 @@ pub struct Report {
     pub message: String,
     pub help: Option<String>,
     pub fix: Option<Fix>,
+}
+
+impl Report {
+    /// A report on `span` with no help line and a fix made of `edits`.
+    pub fn fixed(span: Span, message: impl Into<String>, safety: Safety, edits: Vec<Edit>) -> Self {
+        Report {
+            span,
+            message: message.into(),
+            help: None,
+            fix: Some(Fix { safety, edits }),
+        }
+    }
 }
 
 /// A lint rule. `visit` is called for every node of the rule's [`Rule::targets`]; `ancestors` lists the node's

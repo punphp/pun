@@ -7,7 +7,7 @@
 use mago_syntax::cst::{Expression, Node, NodeKind};
 use pun_problem::{Edit, Safety};
 
-use super::{AnyCall, arg_value, is_test_case_call_named, report};
+use super::{AnyCall, is_test_case_call_named};
 use crate::rules::types::facts::facts;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -41,7 +41,7 @@ impl Rule for RequireStringAssertArgument {
         let Some(second) = call.args().get(1).copied() else {
             return;
         };
-        let value = arg_value(second);
+        let value = second.value();
         let facts = facts(ctx);
         let is_string = facts.full_type(node_span(value)).is_some_and(|t| {
             !t.types.is_empty()
@@ -60,7 +60,7 @@ impl Rule for RequireStringAssertArgument {
         } else {
             format!("(string) {code}")
         };
-        out.push(report(
+        out.push(Report::fixed(
             node_span(value),
             "Cast the haystack to a string.",
             Safety::Safe,

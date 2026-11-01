@@ -14,11 +14,10 @@ use mago_syntax::cst::{
 };
 use pun_problem::{Edit, Safety};
 
-use super::{
-    arg_value, class_body, expr_text, is_constant, is_in_test_class, own_class_reflection, report,
-};
+use super::{class_body, expr_text, is_in_test_class, own_class_reflection};
 use crate::rules::laravel::is_a;
 use crate::rules::rector_batch5::imported_function;
+use crate::rules::rector_code_quality::is_constant;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -72,7 +71,7 @@ impl Rule for PreferAssert {
                     Node::FunctionCall(call) => {
                         if let Some(text) = assert_call(ctx, &path, call, use_static) {
                             let span = node_span(call);
-                            out.push(report(
+                            out.push(Report::fixed(
                                 span,
                                 "Use a PHPUnit assertion instead of `assert()`.",
                                 Safety::Unsafe,
@@ -134,7 +133,7 @@ fn assert_call(
         return None;
     }
     let args: Vec<_> = call.argument_list.arguments.iter().collect();
-    let compared = unparenthesize(arg_value(args.first()?));
+    let compared = unparenthesize(args.first()?.value());
     let text = |e: &Expression<'_>| expr_text(ctx, e).to_string();
     let (method, mut exprs) = match compared {
         Expression::Binary(b) => match b.operator {
@@ -168,7 +167,7 @@ fn assert_call(
         _ => return None,
     };
     if let Some(message) = args.get(1) {
-        exprs.push(text(arg_value(message)));
+        exprs.push(text(message.value()));
     }
     let receiver = if use_static {
         "\\PHPUnit\\Framework\\Assert::"

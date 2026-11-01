@@ -7,9 +7,9 @@
 //! `...`.
 
 use mago_syntax::cst::{Expression, Node, NodeKind};
-use pun_problem::{Edit, Span};
+use pun_problem::{Edit, Safety, Span};
 
-use super::{Kind, assert_function, called, int, is_name, items, name_of, object, report, string};
+use super::{Kind, assert_function, called, int, is_name, items, name_of, object, string};
 use crate::rules::rector_batch5::list_removal;
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
@@ -87,12 +87,13 @@ impl Rule for RemoveFunctionArgument {
             .filter(|(_, r)| **r)
             .map(|(i, _)| i.to_string())
             .collect();
-        out.push(report(
+        out.push(Report::fixed(
             node_span(&node),
             format!(
                 "Remove the argument at position {} of `{resolved}()`.",
                 positions.join(", ")
             ),
+            Safety::Unsafe,
             edits,
         ));
     }

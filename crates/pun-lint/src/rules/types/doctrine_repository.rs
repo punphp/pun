@@ -17,7 +17,7 @@ use mago_syntax::cst::{
     Call, ClassLikeMember, ClassLikeMemberSelector, Expression, Method, MethodBody, Modifier, Node,
     NodeKind, Variable,
 };
-use pun_problem::{Edit, Fix, Safety, Span};
+use pun_problem::{Edit, Safety, Span};
 
 use super::add_property_type_constructor::is_test_case;
 use super::facts::facts;
@@ -148,15 +148,12 @@ fn type_from_var<'ast, 'arena>(
         edits.extend(removed);
     }
     let Some(first) = edits.first() else { return };
-    out.push(Report {
-        span: first.span,
-        message: message.to_string(),
-        help: None,
-        fix: Some(Fix {
-            safety: Safety::Unsafe,
-            edits,
-        }),
-    });
+    out.push(Report::fixed(
+        first.span,
+        message.to_string(),
+        Safety::Unsafe,
+        edits,
+    ));
 }
 
 /// The class a name written in a doc names, resolved against the file's namespace and imports (`path` ends at the
@@ -362,15 +359,12 @@ impl Rule for AddDoctrineRepositoryReturnType {
             edits.push(Edit::new(Span::new(at, at), format!(": {return_type}")));
         }
         let Some(first) = edits.first() else { return };
-        out.push(Report {
-            span: first.span,
-            message: "Type the repository's finder methods with its entity.".to_string(),
-            help: None,
-            fix: Some(Fix {
-                safety: Safety::Unsafe,
-                edits,
-            }),
-        });
+        out.push(Report::fixed(
+            first.span,
+            "Type the repository's finder methods with its entity.",
+            Safety::Unsafe,
+            edits,
+        ));
     }
 }
 

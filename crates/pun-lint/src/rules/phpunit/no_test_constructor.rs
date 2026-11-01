@@ -18,7 +18,7 @@ use mago_syntax::cst::{
 };
 use pun_problem::{Edit, Safety, Span};
 
-use super::{TEST_CASE, class_parents, is_in_test_class, own_class, remove_class_members, report};
+use super::{TEST_CASE, class_parents, is_in_test_class, own_class, remove_class_members};
 use crate::rules::rector_batch5::{merge, remove_statements};
 use crate::rules::rector_stmts::{
     List, block_list, inserted_statements, line_indent, reindent, tokens,
@@ -110,7 +110,7 @@ impl Rule for NoTestConstructor {
                 merge(edits)
             }
         };
-        out.push(report(
+        out.push(Report::fixed(
             node_span(&constructor.name),
             "Move the test's constructor to `setUp()`.",
             Safety::Unsafe,

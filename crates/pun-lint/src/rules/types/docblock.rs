@@ -8,7 +8,7 @@ use mago_syntax::cst::{
     Return, Sequence, Statement, Variable,
 };
 use pun_phpstan::types::Type;
-use pun_problem::{Edit, Fix, Safety, Span};
+use pun_problem::{Edit, Safety, Span};
 
 use super::silent_void::Place;
 use super::{class_scope, has_only_return_with_expr, returns_scoped};
@@ -130,15 +130,7 @@ pub(crate) fn docs_report(
 /// The report with the `edits` that change the source, if any does.
 fn report(span: Span, message: &str, source: &str, mut edits: Vec<Edit>) -> Option<Report> {
     edits.retain(|edit| source[edit.span.start..edit.span.end] != edit.text);
-    (!edits.is_empty()).then(|| Report {
-        span,
-        message: message.to_string(),
-        help: None,
-        fix: Some(Fix {
-            safety: Safety::Unsafe,
-            edits,
-        }),
-    })
+    (!edits.is_empty()).then(|| Report::fixed(span, message.to_string(), Safety::Unsafe, edits))
 }
 
 /// `Type::getReferencedClasses()`.

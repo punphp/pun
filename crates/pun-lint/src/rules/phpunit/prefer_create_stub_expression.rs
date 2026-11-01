@@ -21,7 +21,7 @@ use pun_problem::{Edit, Safety};
 
 use super::annotations::named_tags;
 use super::no_bare_mock_assign::scoped;
-use super::{AnyCall, is_public, object_class, own_class, report};
+use super::{AnyCall, is_public, object_class, own_class};
 use crate::rules::lint_b_doc::Doc;
 use crate::rules::rector_batch5::has_attribute;
 use crate::rules::rector_stmts::{assign, expression};
@@ -84,7 +84,7 @@ impl Rule for PreferCreateStubExpression {
             if is_used_for_mocking(ctx, ancestors, &roots, &variable.name[1..], false) {
                 continue;
             }
-            out.push(report(
+            out.push(Report::fixed(
                 node_span(statement),
                 "Use createStub() for a mock that expects no calls.",
                 Safety::Safe,
@@ -143,10 +143,7 @@ pub(super) fn is_used_for_mocking(
         }
         // check if variable is passed as arg to a method that declares MockObject type parameter
         for (index, arg) in call.argument_list.arguments.iter().enumerate() {
-            let value = match arg {
-                Argument::Positional(a) => a.value,
-                Argument::Named(a) => a.value,
-            };
+            let value = arg.value();
             if !is_name(value) {
                 continue;
             }

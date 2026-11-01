@@ -6,8 +6,7 @@ use mago_syntax::cst::{BinaryOperator, Expression, Node, NodeKind};
 use pun_problem::{Edit, Safety, Span};
 
 use super::{
-    argument_value, arguments_text, expect_call, first_value, func_call, has_not, identifier,
-    report, set_first_argument,
+    arguments_text, expect_call, first_value, func_call, has_not, identifier, set_first_argument,
 };
 use crate::rules::rector_code_quality::named;
 use crate::syntax::{node_span, unparenthesize};
@@ -57,7 +56,7 @@ impl Rule for PreferToEqualWithDelta {
         let [argument] = abs.argument_list.arguments.as_slice() else {
             return;
         };
-        let Expression::Binary(minus) = unparenthesize(argument_value(argument)) else {
+        let Expression::Binary(minus) = unparenthesize(argument.value()) else {
             return;
         };
         if !matches!(minus.operator, BinaryOperator::Subtraction(_)) {
@@ -72,9 +71,9 @@ impl Rule for PreferToEqualWithDelta {
                 arguments_text(ctx, &[minus.rhs, comparison.rhs])
             ),
         ));
-        out.push(report(
+        out.push(Report::fixed(
             node_span(call),
-            "Use `toEqualWithDelta()` instead of comparing the difference.".to_string(),
+            "Use `toEqualWithDelta()` instead of comparing the difference.",
             Safety::Safe,
             edits,
         ));

@@ -13,7 +13,7 @@
 use mago_syntax::cst::{Namespace, NamespaceBody, Node, NodeKind, Sequence, Statement};
 use pun_problem::{Edit, Safety, Span};
 
-use super::{is_in_test_class, report};
+use super::is_in_test_class;
 use crate::rules::lint_b_helpers::contains_html;
 use crate::rules::rector_stmts::{open_list, printed, tokens, trailing_comment};
 use crate::syntax::node_span;
@@ -49,7 +49,7 @@ impl Rule for RequireStrictTypesInTests {
         let Some((at, edit)) = declare_strict_types(ctx.source, &program.statements) else {
             return;
         };
-        out.push(report(
+        out.push(Report::fixed(
             at,
             "Declare strict types in a test file.",
             Safety::Unsafe,

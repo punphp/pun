@@ -10,7 +10,7 @@ use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::union::TUnion;
 use mago_syntax::cst::{Hint, Modifier, Node, NodeKind};
 use pun_phpstan::types::{Type, is_super_type_of};
-use pun_problem::{Edit, Fix, Safety};
+use pun_problem::{Edit, Safety};
 
 use super::compare::classes::with_classes;
 use super::compare::mapper::{TypeScope, expr_type};
@@ -126,17 +126,12 @@ impl Rule for PreferSpecificReturnType {
                 edits.push(target.edit(ctx.source, &info.print()));
             }
         }
-        out.push(Report {
-            span: f.name,
-            message: format!(
-                "Narrow the return type to `{actual}`, the class every `return` returns."
-            ),
-            help: None,
-            fix: Some(Fix {
-                safety: Safety::Unsafe,
-                edits,
-            }),
-        });
+        out.push(Report::fixed(
+            f.name,
+            format!("Narrow the return type to `{actual}`, the class every `return` returns."),
+            Safety::Unsafe,
+            edits,
+        ));
     }
 }
 

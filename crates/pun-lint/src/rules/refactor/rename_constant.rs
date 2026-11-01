@@ -6,9 +6,9 @@
 //! [`super::name_of`]), is an old one compared without case gets the new name as written.
 
 use mago_syntax::cst::{Node, NodeKind};
-use pun_problem::Edit;
+use pun_problem::{Edit, Safety};
 
-use super::{Kind, assert_constant, is_name, name_of, report, string_map};
+use super::{Kind, assert_constant, is_name, name_of, string_map};
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
 
@@ -59,9 +59,10 @@ impl Rule for RenameConstant {
         if resolved == *new {
             return;
         }
-        out.push(report(
+        out.push(Report::fixed(
             node_span(constant),
             format!("Rename the constant `{old}` to `{new}`."),
+            Safety::Unsafe,
             vec![Edit::new(node_span(&constant.name), new.clone())],
         ));
     }

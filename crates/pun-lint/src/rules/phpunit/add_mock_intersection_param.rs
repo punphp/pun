@@ -16,7 +16,7 @@ use super::add_mock_intersection_type::mocked_class;
 use super::annotations::Annotated;
 use super::no_bare_mock_assign::scoped;
 use super::phpdoc_type::typed_tag;
-use super::{AnyCall, class_body, is_in_test_class, report, resolve};
+use super::{AnyCall, class_body, is_in_test_class, resolve};
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -149,7 +149,7 @@ impl Rule for AddMockIntersectionParam {
         if edits.is_empty() {
             return;
         }
-        out.push(report(
+        out.push(Report::fixed(
             node_span(&targets[0].name),
             "Add the mocked class to the mock parameter's @param as an intersection.",
             Safety::Safe,

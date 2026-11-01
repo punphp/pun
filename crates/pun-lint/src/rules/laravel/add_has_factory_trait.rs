@@ -13,7 +13,7 @@
 use mago_syntax::cst::{
     AttributeList, ClassLikeMember, Extends, Implements, Modifier, Node, NodeKind, Sequence,
 };
-use pun_problem::{Edit, Fix, Safety, Span};
+use pun_problem::{Edit, Safety, Span};
 use serde_json::Value;
 
 use super::is_a;
@@ -151,18 +151,15 @@ impl Rule for AddHasFactoryTrait {
             let indent = " ".repeat(indentation(source, at));
             Edit::new(Span::new(at, at), format!("{USE}\n{indent}"))
         };
-        out.push(Report {
-            span: match node {
+        out.push(Report::fixed(
+            match node {
                 Node::Class(c) => node_span(&c.name),
                 _ => Span::new(start, parts.left_brace),
             },
-            message: "Add the `HasFactory` trait to the model.".to_string(),
-            help: None,
-            fix: Some(Fix {
-                safety: Safety::Unsafe,
-                edits: vec![edit],
-            }),
-        });
+            "Add the `HasFactory` trait to the model.",
+            Safety::Unsafe,
+            vec![edit],
+        ));
     }
 }
 

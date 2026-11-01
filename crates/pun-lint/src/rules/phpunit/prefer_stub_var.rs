@@ -11,7 +11,7 @@ use pun_problem::Safety;
 
 use super::annotations::Annotated;
 use super::phpdoc_type::{TagType, is_name, short_name, typed_tag, with_tag_type};
-use super::{is_in_test_class, report, resolve};
+use super::{is_in_test_class, resolve};
 use crate::{Context, Report, Rule};
 
 /// `PHPUnitClassName::STUB`.
@@ -99,7 +99,7 @@ impl Rule for PreferStubVar {
         let Some(edits) = annotated.edits(ctx.source, Some(&new_doc), &[]) else {
             return;
         };
-        out.push(report(
+        out.push(Report::fixed(
             doc.span,
             "Type the stub property's @var as a Stub.",
             Safety::Safe,

@@ -5,9 +5,7 @@
 use mago_syntax::cst::{Node, NodeKind};
 use pun_problem::{Edit, Safety, Span};
 
-use super::{
-    Is, Trinary, identifier, is_name, matcher_subject, property_fetch, rename, report, type_is,
-};
+use super::{Is, Trinary, identifier, is_name, matcher_subject, property_fetch, rename, type_is};
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -46,7 +44,7 @@ impl Rule for NoNegatedBooleanMatcher {
         if type_is(ctx, subject, Is::Boolean) != Trinary::Yes {
             return;
         }
-        out.push(report(
+        out.push(Report::fixed(
             node_span(call),
             format!("Use `{opposite}()` instead of a negated boolean matcher."),
             Safety::Safe,

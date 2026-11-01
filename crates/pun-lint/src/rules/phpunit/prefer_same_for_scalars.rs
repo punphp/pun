@@ -13,7 +13,7 @@ use mago_syntax::cst::{
 use pun_problem::Safety;
 
 use super::ptype::{Key, PType, native, native_without_null};
-use super::{AnyCall, arg_value, is_in_test_class, renamed, report, rewrite_args};
+use super::{AnyCall, is_in_test_class, renamed, rewrite_args};
 use crate::rules::laravel::is_a;
 use crate::syntax::unparenthesize;
 use crate::{Context, Report, Rule};
@@ -51,7 +51,7 @@ impl Rule for PreferSameForScalars {
         if args.len() < 2 {
             return;
         }
-        let (expected, actual) = (arg_value(args[0]), arg_value(args[1]));
+        let (expected, actual) = (args[0].value(), args[1].value());
         if !is_scalar_or_enum_value(ctx, expected) {
             return;
         }
@@ -63,9 +63,9 @@ impl Rule for PreferSameForScalars {
         let Some(name) = renamed(&call, RENAME) else {
             return;
         };
-        out.push(report(
+        out.push(Report::fixed(
             call.span,
-            &format!("Use `{name}()` to compare scalars strictly."),
+            format!("Use `{name}()` to compare scalars strictly."),
             Safety::Unsafe,
             rewrite_args(
                 ctx,

@@ -20,7 +20,7 @@ use mago_codex::ttype::union::TUnion;
 use mago_syntax::cst::{
     Access, BinaryOperator, ClassLikeConstantSelector, Expression, Node, NodeKind,
 };
-use pun_problem::{Edit, Fix, Safety};
+use pun_problem::{Edit, Safety};
 
 use super::facts::{Facts, facts};
 use super::native::native_type;
@@ -79,15 +79,12 @@ impl Rule for PreferIdenticalSameType {
             operand(ctx.source, left),
             operand(ctx.source, right)
         );
-        out.push(Report {
-            span: node_span(binary),
-            message: format!("Use `{operator}`: both sides have the same type."),
-            help: None,
-            fix: Some(Fix {
-                safety: Safety::Safe,
-                edits: vec![Edit::new(node_span(binary), text)],
-            }),
-        });
+        out.push(Report::fixed(
+            node_span(binary),
+            format!("Use `{operator}`: both sides have the same type."),
+            Safety::Safe,
+            vec![Edit::new(node_span(binary), text)],
+        ));
     }
 }
 

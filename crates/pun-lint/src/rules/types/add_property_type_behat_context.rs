@@ -8,7 +8,7 @@
 //! namespace, whether the class exists or not, as Rector's phpdoc types are.
 
 use mago_syntax::cst::{Modifier, Node, NodeKind};
-use pun_problem::{Edit, Fix, Safety, Span};
+use pun_problem::{Edit, Safety, Span};
 
 use super::facts::facts;
 use super::property_type::{
@@ -138,15 +138,12 @@ impl Rule for AddPropertyTypeBehatContext {
             }
         }
         let Some(first) = edits.first() else { return };
-        out.push(Report {
-            span: first.span,
-            message: "Type the Behat context's static properties from their `@var`.".to_string(),
-            help: None,
-            fix: Some(Fix {
-                safety: Safety::Unsafe,
-                edits,
-            }),
-        });
+        out.push(Report::fixed(
+            first.span,
+            "Type the Behat context's static properties from their `@var`.",
+            Safety::Unsafe,
+            edits,
+        ));
     }
 }
 

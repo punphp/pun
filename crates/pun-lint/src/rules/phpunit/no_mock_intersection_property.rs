@@ -7,7 +7,7 @@
 use mago_syntax::cst::{ClassLikeMember, Hint, Node, NodeKind, Property};
 use pun_problem::{Edit, Safety};
 
-use super::{class_body, is_in_test_class, report, resolve, text};
+use super::{class_body, is_in_test_class, resolve, text};
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
 
@@ -60,7 +60,7 @@ impl Rule for NoMockIntersectionProperty {
                 continue;
             };
             let hint = hint.unwrap();
-            out.push(report(
+            out.push(Report::fixed(
                 node_span(hint),
                 "Type a mock property with MockObject alone.",
                 Safety::Safe,

@@ -9,7 +9,7 @@ use mago_syntax::cst::{Expression, Literal, Node, NodeKind};
 use pun_problem::{Edit, Safety};
 
 use super::ptype::{native_is_integer, native_is_string};
-use super::{AnyCall, arg_value, is_test_case_call_named, report};
+use super::{AnyCall, is_test_case_call_named};
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -39,8 +39,8 @@ impl Rule for NoAssertSameTypeMismatch {
         if args.len() < 2 {
             return;
         }
-        let expected = arg_value(args[0]);
-        let actual = arg_value(args[1]);
+        let expected = args[0].value();
+        let actual = args[1].value();
         let code = match unparenthesize(expected) {
             Expression::Literal(Literal::String(s)) if native_is_integer(ctx, actual) => {
                 let value = String::from_utf8_lossy(s.value.unwrap_or_default());
@@ -54,7 +54,7 @@ impl Rule for NoAssertSameTypeMismatch {
             }
             _ => return,
         };
-        out.push(report(
+        out.push(Report::fixed(
             node_span(expected),
             "Match the expected value's type to the actual one's.",
             Safety::Safe,

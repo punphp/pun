@@ -9,17 +9,14 @@
 //! statement that uses it.
 
 use mago_syntax::cst::{
-    Access, ArrayElement, Call, ClassLikeMember, ClassLikeMemberSelector, Expression, Hint,
-    MethodBody, Node, NodeKind, PartialArgument, Property,
+    Access, Argument, ArrayElement, Call, ClassLikeMember, ClassLikeMemberSelector, Expression,
+    Hint, MethodBody, Node, NodeKind, PartialArgument, Property,
 };
 use pun_problem::{Edit, Safety, Span};
 
 use super::no_bare_mock_assign::scoped;
 use super::no_unused_mock_property::local_property_fetches;
-use super::{
-    AnyCall, arg_value, class_body, class_string, is_in_test_class, remove_class_members, report,
-    resolve,
-};
+use super::{AnyCall, class_body, class_string, is_in_test_class, remove_class_members, resolve};
 use crate::rules::laravel::is_a;
 use crate::rules::rector_batch5::remove_statements;
 use crate::rules::rector_stmts::{assign, block_list, expression, first_comment, line_indent};
@@ -91,7 +88,7 @@ impl Rule for PreferInlineCreateStub {
             let class = call
                 .args()
                 .first()
-                .and_then(|a| class_string(ctx, &scope, arg_value(a)))
+                .and_then(|a| class_string(ctx, &scope, a.value()))
                 .filter(|c| !c.is_empty() && !c.starts_with('\\'));
             match stubs.iter_mut().find(|(n, _)| *n == name) {
                 Some(entry) => entry.1 = class,
@@ -228,7 +225,7 @@ impl Rule for PreferInlineCreateStub {
                 edits.extend(remove_statements(ctx.source, list, &removed_stmts[m]));
             }
         }
-        out.push(report(
+        out.push(Report::fixed(
             first,
             "Create the stub where it is used instead of in a property.",
             Safety::Safe,
@@ -279,21 +276,35 @@ fn in_call_likes_and_arrays(roots: &[Node<'_, '_>], name: &[u8]) -> usize {
     let mut count = 0;
     scoped(roots, &mut |node| {
         let values: Vec<&Expression<'_>> = match node {
-            Node::FunctionCall(call) => {
-                call.argument_list.arguments.iter().map(arg_value).collect()
-            }
-            Node::MethodCall(call) => call.argument_list.arguments.iter().map(arg_value).collect(),
-            Node::NullSafeMethodCall(call) => {
-                call.argument_list.arguments.iter().map(arg_value).collect()
-            }
-            Node::StaticMethodCall(call) => {
-                call.argument_list.arguments.iter().map(arg_value).collect()
-            }
+            Node::FunctionCall(call) => call
+                .argument_list
+                .arguments
+                .iter()
+                .map(Argument::value)
+                .collect(),
+            Node::MethodCall(call) => call
+                .argument_list
+                .arguments
+                .iter()
+                .map(Argument::value)
+                .collect(),
+            Node::NullSafeMethodCall(call) => call
+                .argument_list
+                .arguments
+                .iter()
+                .map(Argument::value)
+                .collect(),
+            Node::StaticMethodCall(call) => call
+                .argument_list
+                .arguments
+                .iter()
+                .map(Argument::value)
+                .collect(),
             Node::Instantiation(new) => new
                 .argument_list
                 .iter()
                 .flat_map(|l| l.arguments.iter())
-                .map(arg_value)
+                .map(Argument::value)
                 .collect(),
             Node::AnonymousClass(new) => new
                 .argument_list

@@ -9,8 +9,8 @@ use mago_syntax::cst::{ArrayElement, Expression, Node, NodeKind};
 use pun_problem::Safety;
 
 use super::{
-    AnyCall, NewArg, arg_value, contains, inner_without_equal_to, is_in_test_class,
-    is_method_call_named, report, rewrite_args, without_equal_to,
+    AnyCall, NewArg, contains, inner_without_equal_to, is_in_test_class, is_method_call_named,
+    rewrite_args, without_equal_to,
 };
 use crate::syntax::unparenthesize;
 use crate::{Context, Report, Rule};
@@ -47,7 +47,7 @@ impl Rule for PreferSimpleMockExpectation {
         } else {
             "willReturn"
         };
-        let value = arg_value(args[0]);
+        let value = args[0].value();
         let has_assert_inside = contains(Node::Expression(value), &|n| {
             is_method_call_named(n, &["equalTo", "instanceOf"])
         });
@@ -70,9 +70,9 @@ impl Rule for PreferSimpleMockExpectation {
                 vec![NewArg::New(without_equal_to(ctx, value))]
             }
         };
-        out.push(report(
+        out.push(Report::fixed(
             call.span,
-            &format!("Use `{name}()` for a single set of values."),
+            format!("Use `{name}()` for a single set of values."),
             Safety::Safe,
             rewrite_args(ctx, &call, Some(name), &new),
         ));

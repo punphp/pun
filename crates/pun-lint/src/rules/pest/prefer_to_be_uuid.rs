@@ -6,8 +6,7 @@ use mago_syntax::cst::{Expression, Literal, Node, NodeKind};
 use pun_problem::Safety;
 
 use super::{
-    Is, Trinary, argument_value, func_call, is_name, matcher_subject, report, set_call_arguments,
-    subject_holder, type_is,
+    Is, Trinary, func_call, is_name, matcher_subject, set_call_arguments, subject_holder, type_is,
 };
 use crate::rules::rector_code_quality::named;
 use crate::syntax::{node_span, unparenthesize};
@@ -49,8 +48,7 @@ impl Rule for PreferToBeUuid {
         let [pattern, value, ..] = matcher.argument_list.arguments.as_slice() else {
             return;
         };
-        let Expression::Literal(Literal::String(pattern)) = unparenthesize(argument_value(pattern))
-        else {
+        let Expression::Literal(Literal::String(pattern)) = unparenthesize(pattern.value()) else {
             return;
         };
         if !pattern
@@ -59,15 +57,14 @@ impl Rule for PreferToBeUuid {
         {
             return;
         }
-        let value = argument_value(value);
+        let value = value.value();
         if type_is(ctx, value, Is::String) == Trinary::No {
             return;
         }
         let [expected] = call.argument_list.arguments.as_slice() else {
             return;
         };
-        let Expression::Literal(Literal::Integer(expected)) =
-            unparenthesize(argument_value(expected))
+        let Expression::Literal(Literal::Integer(expected)) = unparenthesize(expected.value())
         else {
             return;
         };
@@ -81,9 +78,9 @@ impl Rule for PreferToBeUuid {
         }
         let mut edits = holder.set_arguments(ctx, value);
         edits.extend(set_call_arguments(call, "toBeUuid", &[]));
-        out.push(report(
+        out.push(Report::fixed(
             node_span(call),
-            "Use `toBeUuid()` instead of matching a UUID pattern.".to_string(),
+            "Use `toBeUuid()` instead of matching a UUID pattern.",
             Safety::Unsafe,
             edits,
         ));

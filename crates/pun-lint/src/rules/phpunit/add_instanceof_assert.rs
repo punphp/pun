@@ -20,12 +20,12 @@ use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::union::TUnion;
 use mago_syntax::cst::{
-    Argument, Call, ClassLikeMemberSelector, Expression, ForeachBody, MethodBody, Node, NodeKind,
-    Statement, Variable,
+    Call, ClassLikeMemberSelector, Expression, ForeachBody, MethodBody, Node, NodeKind, Statement,
+    Variable,
 };
 use pun_problem::{Edit, Safety, Span};
 
-use super::{is_in_test_class, report};
+use super::is_in_test_class;
 use crate::rules::rector_stmts::{
     List, assign, block_list, body_list, expression, first_comment, holder_list, line_indent,
 };
@@ -143,7 +143,7 @@ fn run(
     let Some(first) = edits.first().map(|e: &Edit| e.span) else {
         return;
     };
-    out.push(report(first, MESSAGE, Safety::Safe, edits));
+    out.push(Report::fixed(first, MESSAGE, Safety::Safe, edits));
 }
 
 /// `NullableObjectAssignCollector::collect()`: nothing when a statement is not an expression statement (php-parser's
@@ -270,10 +270,7 @@ fn matched_argument(
         }
         let parameter_types = parameter_types(ctx, call);
         for (position, arg) in call.argument_list.arguments.iter().enumerate() {
-            let value = match arg {
-                Argument::Positional(a) => a.value,
-                Argument::Named(a) => a.value,
-            };
+            let value = arg.value();
             let Expression::Variable(variable) = value else {
                 continue;
             };

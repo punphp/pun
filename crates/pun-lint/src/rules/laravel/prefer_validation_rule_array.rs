@@ -16,7 +16,7 @@ use mago_syntax::cst::{
     StringPart,
 };
 use mago_syntax_core::utils::parse_literal_string_in;
-use pun_problem::{Edit, Fix, Safety};
+use pun_problem::{Edit, Safety};
 
 use super::object_type::is_object_type;
 use super::{is_a, is_name, member_name};
@@ -123,17 +123,12 @@ fn report(node: Node<'_, '_>, edits: Vec<Edit>, out: &mut Vec<Report>) {
     if edits.is_empty() {
         return;
     }
-    out.push(Report {
-        span: node_span(&node),
-        message:
-            "Write each validation rule as an item of an array instead of joining them with `|`."
-                .to_string(),
-        help: None,
-        fix: Some(Fix {
-            safety: Safety::Safe,
-            edits,
-        }),
-    });
+    out.push(Report::fixed(
+        node_span(&node),
+        "Write each validation rule as an item of an array instead of joining them with `|`.",
+        Safety::Safe,
+        edits,
+    ));
 }
 
 /// The edits of the first `return [...]` under `node` (in source order, parents first, closures included) whose

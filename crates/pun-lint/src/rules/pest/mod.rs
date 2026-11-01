@@ -132,10 +132,11 @@ use mago_syntax::cst::{
     Expression, FunctionCall, Identifier, Keyword, MethodCall, Node, NodeKind, PropertyAccess,
     Statement,
 };
-use pun_problem::{Edit, Fix, Safety, Span};
+use pun_problem::{Edit, Safety, Span};
 
-use super::rector_code_quality::{is_constant, text};
+use super::rector_code_quality::text;
 use super::types::facts::facts;
+use crate::rules::phpunit::expr_text;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -283,15 +284,7 @@ pub(crate) fn expect_argument<'a>(call: &'a MethodCall<'a>) -> Option<&'a Expres
 
 /// The value of the first argument of a list.
 pub(crate) fn first_value<'a>(list: &'a ArgumentList<'a>) -> Option<&'a Expression<'a>> {
-    list.arguments.first().map(argument_value)
-}
-
-/// An argument's value (`Arg::$value`).
-pub(crate) fn argument_value<'a>(argument: &'a Argument<'a>) -> &'a Expression<'a> {
-    match argument {
-        Argument::Positional(p) => p.value,
-        Argument::Named(n) => n.value,
-    }
+    list.arguments.first().map(Argument::value)
 }
 
 /// What `getMatcherSubjectHolder` finds: the `expect()` call or the `->and()` call whose first argument a matcher
@@ -328,7 +321,7 @@ impl<'a> Holder<'a> {
     /// `$holder->args = [new Arg($value)]`: the arguments become `value` alone. One argument is replaced where it
     /// stands; when arguments go, php-parser prints the whole call again (`expect(value)`, `$var->and(value)`).
     pub(crate) fn set_arguments(&self, ctx: &Context<'_>, value: &Expression<'_>) -> Vec<Edit> {
-        let value = value_text(ctx, value);
+        let value = expr_text(ctx, value);
         match (self.arguments.arguments.as_slice(), self.method) {
             ([only], _) => vec![Edit::new(node_span(only), value)],
             (_, None) => vec![Edit::new(
@@ -380,11 +373,6 @@ pub(crate) fn has_not(call: &MethodCall<'_>) -> bool {
     property_fetch(call.object).is_some_and(|p| is_name(&p.property, "not"))
 }
 
-/// The source of an expression as php-parser's printer keeps it: without its own parentheses.
-pub(crate) fn value_text<'s>(ctx: &Context<'s>, expr: &Expression<'_>) -> &'s str {
-    text(ctx, unparenthesize(expr))
-}
-
 /// `$holder->args[0] = new Arg($value)`: the first argument (its name or `...` too) becomes `value`. Every caller
 /// takes `value` from that argument, so the list is never empty there.
 pub(crate) fn set_first_argument(
@@ -393,7 +381,7 @@ pub(crate) fn set_first_argument(
     value: &Expression<'_>,
 ) -> Vec<Edit> {
     (list.arguments.iter().take(1))
-        .map(|first| Edit::new(node_span(first), value_text(ctx, value)))
+        .map(|first| Edit::new(node_span(first), expr_text(ctx, value)))
         .collect()
 }
 
@@ -431,7 +419,7 @@ pub(crate) fn set_call_arguments(
 pub(crate) fn texts(ctx: &Context<'_>, values: &[&Expression<'_>]) -> Vec<String> {
     values
         .iter()
-        .map(|v| value_text(ctx, v).to_string())
+        .map(|v| expr_text(ctx, v).to_string())
         .collect()
 }
 
@@ -451,19 +439,9 @@ pub(crate) fn reprint_from_object(object: &Expression<'_>, end: usize, rest: Str
 pub(crate) fn arguments_text(ctx: &Context<'_>, values: &[&Expression<'_>]) -> String {
     values
         .iter()
-        .map(|v| value_text(ctx, v))
+        .map(|v| expr_text(ctx, v))
         .collect::<Vec<_>>()
         .join(", ")
-}
-
-/// A report on `span` whose fix makes `edits`.
-pub(crate) fn report(span: Span, message: String, safety: Safety, edits: Vec<Edit>) -> Report {
-    Report {
-        span,
-        message,
-        help: None,
-        fix: Some(Fix { safety, edits }),
-    }
 }
 
 /// The edit that renames the method of `call` (`$node->name = new Identifier($name)`).
@@ -533,11 +511,6 @@ pub(crate) fn build_matcher_call(
     edits
 }
 
-/// `ExpectChainValidation::isFalse` / `isTrue`: the constant `false` / `true`.
-pub(crate) fn is_bool_constant(expr: &Expression<'_>, name: &str) -> bool {
-    is_constant(expr, name)
-}
-
 /// The rules of the `extractFunctionFromExpect` family: `expect(function(args))->toBeTrue()` (or `toBeFalse()`, or
 /// after `->not`) becomes `expect(subject)->matcher(rest)`. `shape` picks the subject and the matcher's arguments
 /// from the call's arguments, or refuses them.
@@ -553,14 +526,14 @@ pub(crate) fn function_matcher<'a>(
         return;
     };
     let values: Vec<&Expression<'_>> = (extracted.function.argument_list.arguments.iter())
-        .map(argument_value)
+        .map(Argument::value)
         .collect();
     let Some((subject, args)) = shape(&values) else {
         return;
     };
     let not = needs_not(extracted.method, call);
     let edits = build_matcher_call(ctx, call, extracted.holder, subject, matcher, &args, not);
-    out.push(report(
+    out.push(Report::fixed(
         node_span(call),
         format!("Use `{matcher}()` instead of checking `{function}()`."),
         Safety::Unsafe,
@@ -666,7 +639,7 @@ pub(crate) fn pest_callback<'a>(
     let (_, index) = CLOSURE_FUNCTIONS
         .iter()
         .find(|(f, _)| f.as_bytes() == name)?;
-    let value = argument_value(call.argument_list.arguments.get(*index)?);
+    let value = call.argument_list.arguments.get(*index)?.value();
     match unparenthesize(value) {
         Expression::Closure(c) => Some((Callback::Closure(c), c.function, c.r#static)),
         Expression::ArrowFunction(a) => Some((Callback::Arrow(a), a.r#fn, a.r#static)),
@@ -693,7 +666,7 @@ fn uses_this(node: Node<'_, '_>) -> bool {
             // `funcCallUsesThis`: the arguments, without the call's own Pest callback; the name is not looked at.
             let callback = pest_callback(call).map(|(c, ..)| node_span(&c.node()));
             call.argument_list.arguments.iter().any(|a| {
-                let value = argument_value(a);
+                let value = a.value();
                 Some(node_span(unparenthesize(value))) != callback
                     && uses_this(Node::Expression(value))
             })

@@ -6,10 +6,11 @@
 
 use mago_codex::ttype::atomic::TAtomic;
 use mago_syntax::cst::{Argument, BinaryOperator, Expression, Node, NodeKind, Variable};
+use pun_problem::Safety;
 
 use super::add_param_type_array_function::ARRAY_AND_CALLBACK_POSITIONS;
 use super::facts::facts;
-use super::param::{ArrayShape, Flow, add_hint, array_shape_of, report, traverse};
+use super::param::{ArrayShape, Flow, add_hint, array_shape_of, traverse};
 use crate::rules::lint_b_helpers::value;
 use crate::rules::rector_code_quality::named;
 use crate::syntax::{node_span, unparenthesize};
@@ -111,9 +112,10 @@ impl Rule for AddParamTypeArrowDimFetch {
         if edits.is_empty() {
             return;
         }
-        out.push(report(
+        out.push(Report::fixed(
             node_span(call),
             "Add the `array` type to callback parameters read with a key.",
+            Safety::Unsafe,
             edits,
         ));
     }

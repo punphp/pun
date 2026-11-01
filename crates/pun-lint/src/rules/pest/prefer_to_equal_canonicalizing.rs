@@ -4,10 +4,7 @@
 use mago_syntax::cst::{Node, NodeKind};
 use pun_problem::Safety;
 
-use super::{
-    argument_value, func_call, is_name, matcher_subject, report, set_call_arguments,
-    subject_holder, texts,
-};
+use super::{func_call, is_name, matcher_subject, set_call_arguments, subject_holder, texts};
 use crate::rules::rector_code_quality::named;
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
@@ -44,13 +41,12 @@ impl Rule for PreferToEqualCanonicalizing {
         };
         let sorted = |e| match func_call(e).filter(|f| named(f, "sort")) {
             Some(f) => match f.argument_list.arguments.as_slice() {
-                [argument] => Some(argument_value(argument)),
+                [argument] => Some(argument.value()),
                 _ => None,
             },
             None => None,
         };
-        let (Some(actual), Some(expected)) = (sorted(subject), sorted(argument_value(compare)))
-        else {
+        let (Some(actual), Some(expected)) = (sorted(subject), sorted(compare.value())) else {
             return;
         };
         let mut edits = holder.set_arguments(ctx, actual);
@@ -59,9 +55,9 @@ impl Rule for PreferToEqualCanonicalizing {
             "toEqualCanonicalizing",
             &texts(ctx, &[expected]),
         ));
-        out.push(report(
+        out.push(Report::fixed(
             node_span(call),
-            "Use `toEqualCanonicalizing()` instead of comparing sorted values.".to_string(),
+            "Use `toEqualCanonicalizing()` instead of comparing sorted values.",
             Safety::Unsafe,
             edits,
         ));

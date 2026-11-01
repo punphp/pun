@@ -11,13 +11,13 @@ use mago_codex::ttype::union::TUnion;
 use mago_syntax::cst::{
     AssignmentOperator, Closure, Expression, FunctionLikeParameter, Identifier, Node, NodeKind,
 };
-use pun_problem::Edit;
+use pun_problem::{Edit, Safety};
 
 use super::add_param_type_array_dim_fetch::is_variable;
 use super::facts::{Facts, facts};
 use super::namespace_of;
 use super::param::{
-    Flow, add_hint, array_shape_of, doc_order, is_mixed, item_type, param_declaration_unsorted, report,
+    Flow, add_hint, array_shape_of, doc_order, is_mixed, item_type, param_declaration_unsorted,
     traverse,
 };
 use crate::rules::class_method::type_of;
@@ -85,9 +85,10 @@ impl Rule for AddParamTypeArrayReduce {
         if edits.is_empty() {
             return;
         }
-        out.push(report(
+        out.push(Report::fixed(
             node_span(call),
             "Add the item and carry types to the array_reduce() closure's parameters.",
+            Safety::Unsafe,
             edits,
         ));
     }

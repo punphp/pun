@@ -2,7 +2,7 @@
 //! rules that type a query closure's parameter share.
 
 use mago_syntax::cst::{Expression, FunctionLikeParameter, Hint, Node};
-use pun_problem::{Fix, Safety};
+use pun_problem::Safety;
 
 use super::object_type::{is_object_type, name_class, object_class, special_class};
 use super::print::set_param_type;
@@ -111,13 +111,10 @@ pub(crate) fn type_param(
     if is_name_type(param) {
         return None;
     }
-    Some(Report {
-        span: node_span(node),
-        message: format!("Type the query closure's parameter as `{class}`."),
-        help: None,
-        fix: Some(Fix {
-            safety: Safety::Unsafe,
-            edits: vec![set_param_type(param, &format!("\\{class}"))],
-        }),
-    })
+    Some(Report::fixed(
+        node_span(node),
+        format!("Type the query closure's parameter as `{class}`."),
+        Safety::Unsafe,
+        vec![set_param_type(param, &format!("\\{class}"))],
+    ))
 }

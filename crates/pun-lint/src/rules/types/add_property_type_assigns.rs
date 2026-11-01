@@ -15,7 +15,7 @@
 //! attribute or an annotation) are left alone, as is a class with a Doctrine `loadMetadata()` method.
 
 use mago_syntax::cst::{Node, NodeKind, PlainProperty};
-use pun_problem::{Edit, Fix, Safety, Span};
+use pun_problem::{Edit, Safety, Span};
 
 use super::add_property_type_constructor::is_test_case;
 use super::facts::facts;
@@ -138,15 +138,12 @@ impl Rule for AddPropertyTypeAssigns {
             }
         }
         let Some(first) = edits.first() else { return };
-        out.push(Report {
-            span: first.span,
-            message: "Type the properties from what the class assigns to them.".to_string(),
-            help: None,
-            fix: Some(Fix {
-                safety: Safety::Unsafe,
-                edits,
-            }),
-        });
+        out.push(Report::fixed(
+            first.span,
+            "Type the properties from what the class assigns to them.",
+            Safety::Unsafe,
+            edits,
+        ));
     }
 }
 

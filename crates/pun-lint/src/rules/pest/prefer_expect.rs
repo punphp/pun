@@ -5,7 +5,7 @@
 use mago_syntax::cst::{Expression, Node, NodeKind, Variable};
 use pun_problem::{Edit, Safety};
 
-use super::{argument_value, identifier, indent_at, kept_text, report};
+use super::{identifier, indent_at, kept_text};
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -122,20 +122,15 @@ impl Rule for PreferExpect {
         // The checked value is the only argument, or the second; the expected value and the third go to the matcher.
         let span = node_span(call);
         let indent = indent_at(ctx, span.start);
-        let text = |i: usize| {
-            kept_text(
-                ctx,
-                node_span(unparenthesize(argument_value(&arguments[i]))),
-                indent,
-            )
-        };
+        let text =
+            |i: usize| kept_text(ctx, node_span(unparenthesize(arguments[i].value())), indent);
         let (subject, args) = match needed {
             1 => (text(0), String::new()),
             2 => (text(1), text(0)),
             _ => (text(1), format!("{}, {}", text(0), text(2))),
         };
         let not = if negated { "->not" } else { "" };
-        out.push(report(
+        out.push(Report::fixed(
             span,
             format!(
                 "Use `expect()->{matcher}()` instead of `$this->{}()`.",

@@ -7,7 +7,7 @@
 use mago_syntax::cst::{Call, Expression, Node, NodeKind};
 use pun_problem::{Edit, Safety};
 
-use super::{AnyCall, arg_value, is_in_test_class, report, text};
+use super::{AnyCall, is_in_test_class, text};
 use crate::rules::laravel::is_variable;
 use crate::syntax::unparenthesize;
 use crate::{Context, Report, Rule};
@@ -38,14 +38,14 @@ impl Rule for NoExpectsAny {
         if args.len() != 1 {
             return;
         }
-        let Expression::Call(Call::Method(any)) = unparenthesize(arg_value(args[0])) else {
+        let Expression::Call(Call::Method(any)) = unparenthesize(args[0].value()) else {
             return;
         };
         let is_any = AnyCall::of(Node::MethodCall(any)).is_some_and(|c| c.is_name(&["any"]));
         if !is_any || !is_variable(any.object, "this") {
             return;
         }
-        out.push(report(
+        out.push(Report::fixed(
             call.span,
             "Remove `expects($this->any())`: it expects nothing.",
             Safety::Safe,

@@ -7,8 +7,7 @@ use pun_problem::{Safety, Span};
 
 use super::{
     Item, STATEMENT_LISTS, comment_spans, expect_call, first_value, kept_text, method_call,
-    print_args, print_member, property_fetch, report, rewrite_list, statement_expression,
-    statement_list,
+    print_args, print_member, property_fetch, rewrite_list, statement_expression, statement_list,
 };
 use crate::syntax::{node_span, same_expression, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -76,9 +75,9 @@ impl Rule for PreferSequence {
             return;
         }
         if let Some(edits) = rewrite_list(ctx, node, ancestors, &list, &items) {
-            out.push(report(
+            out.push(Report::fixed(
                 node_span(stmts[0]),
-                "Use `sequence()` instead of consecutive `expect()` calls on indexes.".to_string(),
+                "Use `sequence()` instead of consecutive `expect()` calls on indexes.",
                 Safety::Safe,
                 edits,
             ));

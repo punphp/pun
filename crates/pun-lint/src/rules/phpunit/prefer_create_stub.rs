@@ -9,13 +9,14 @@
 //! only for PHPUnit 11 and later; Pun leaves that to the rule's group.
 
 use mago_syntax::cst::{
-    Access, Call, ClassLikeMember, ClassLikeMemberSelector, Expression, Hint, MethodBody, Modifier,
-    Node, NodeKind, Property,
+    Call, ClassLikeMember, Expression, Hint, MethodBody, Modifier, Node, NodeKind, Property,
 };
 use pun_problem::{Edit, Safety};
 
-use super::{AnyCall, class_body, is_in_test_class, report, resolve, text};
+use super::no_unused_mock_property::property_fetch_name;
+use super::{AnyCall, class_body, is_in_test_class, resolve, text};
 use crate::rules::rector_stmts::{assign, block_list, expression};
+use crate::rules::types::compare::mapper::flatten;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -118,7 +119,7 @@ impl Rule for PreferCreateStub {
             match hint {
                 Some(Hint::Intersection(_)) => {
                     let mut parts = Vec::new();
-                    flatten(hint.unwrap(), &mut parts);
+                    flatten(hint.unwrap(), false, &mut parts);
                     let matched = |h: &Hint<'_>| matches!(h, Hint::Identifier(id) if resolve(&scope, id) == MOCK_OBJECT);
                     if parts.iter().any(|h| matched(h)) {
                         let printed: Vec<&str> = parts
@@ -149,7 +150,7 @@ impl Rule for PreferCreateStub {
         let Some(first) = first else {
             return;
         };
-        out.push(report(
+        out.push(Report::fixed(
             first,
             "Use createStub() for a mock property that expects no calls.",
             Safety::Safe,
@@ -163,17 +164,6 @@ fn declares(property: &Property<'_>, name: &[u8]) -> bool {
     match property {
         Property::Plain(p) => p.items.iter().any(|i| i.variable().name[1..] == *name),
         Property::Hooked(p) => p.item.variable().name[1..] == *name,
-    }
-}
-
-/// The name of a `PropertyFetch` (`$any->name`, not `?->`) with an identifier name.
-fn property_fetch_name<'a>(expr: &'a Expression<'a>) -> Option<&'a [u8]> {
-    match unparenthesize(expr) {
-        Expression::Access(Access::Property(a)) => match &a.property {
-            ClassLikeMemberSelector::Identifier(id) => Some(id.value),
-            _ => None,
-        },
-        _ => None,
     }
 }
 
@@ -196,15 +186,4 @@ fn is_called_on(class: Node<'_, '_>, name: &[u8]) -> bool {
         node.visit_children(|child| stack.push(child));
     }
     false
-}
-
-/// The types of an intersection, as php-parser lists them in its `IntersectionType`.
-fn flatten<'a>(hint: &'a Hint<'a>, out: &mut Vec<&'a Hint<'a>>) {
-    match hint {
-        Hint::Intersection(i) => {
-            flatten(i.left, out);
-            flatten(i.right, out);
-        }
-        _ => out.push(hint),
-    }
 }

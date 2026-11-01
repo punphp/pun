@@ -5,9 +5,7 @@
 use mago_syntax::cst::{BinaryOperator, Expression, Node, NodeKind};
 use pun_problem::{Edit, Safety, Span};
 
-use super::{
-    arguments_text, expect_call, first_value, has_not, identifier, report, set_first_argument,
-};
+use super::{arguments_text, expect_call, first_value, has_not, identifier, set_first_argument};
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -57,9 +55,9 @@ impl Rule for PreferStrictEqualityMatchers {
             format!("{not}->toBe({})", arguments_text(ctx, &[comparison.rhs])),
         );
         edits.push(tail);
-        out.push(report(
+        out.push(Report::fixed(
             node_span(call),
-            "Use `toBe()` instead of checking a strict comparison.".to_string(),
+            "Use `toBe()` instead of checking a strict comparison.",
             Safety::Safe,
             edits,
         ));

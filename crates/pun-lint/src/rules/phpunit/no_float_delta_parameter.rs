@@ -7,7 +7,7 @@
 use mago_syntax::cst::{Expression, Literal, Node, NodeKind};
 use pun_problem::{Edit, Safety};
 
-use super::{AnyCall, arg_value, is_test_case_call_named, new_call, report, text};
+use super::{AnyCall, is_test_case_call_named, new_call, text};
 use crate::syntax::unparenthesize;
 use crate::{Context, Report, Rule};
 
@@ -43,7 +43,7 @@ impl Rule for NoFloatDeltaParameter {
         };
         // php-parser's `Float_`, which also holds an integer above `PHP_INT_MAX`
         if !matches!(
-            unparenthesize(arg_value(first)),
+            unparenthesize(first.value()),
             Expression::Literal(Literal::Float(_))
         ) {
             return;
@@ -52,7 +52,7 @@ impl Rule for NoFloatDeltaParameter {
         if let Some(message) = args.get(2) {
             new_args.push(text(ctx, *message));
         }
-        out.push(report(
+        out.push(Report::fixed(
             call.span,
             "Use `assertEqualsWithDelta()` to compare floats.",
             Safety::Safe,

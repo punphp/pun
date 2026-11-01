@@ -6,7 +6,7 @@
 use mago_syntax::cst::{ClassLikeMember, Node, NodeKind};
 use pun_problem::Safety;
 
-use super::{class_body, is_in_test_class, remove_class_members, report};
+use super::{class_body, is_in_test_class, remove_class_members};
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
 
@@ -48,7 +48,7 @@ impl Rule for NoFinalConstructorOverride {
         };
         let mut only = vec![false; members.len()];
         only[at] = true;
-        out.push(report(
+        out.push(Report::fixed(
             node_span(&method.name),
             "Remove the constructor: `TestCase::__construct()` is final since PHPUnit 12.",
             Safety::Unsafe,

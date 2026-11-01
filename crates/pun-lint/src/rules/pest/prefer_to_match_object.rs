@@ -6,9 +6,9 @@ use mago_syntax::cst::{Expression, MethodCall, Node, NodeKind};
 use pun_problem::{Safety, Span};
 
 use super::{
-    Is, Item, STATEMENT_LISTS, Trinary, argument_value, comment_spans, expect_argument,
-    expect_call, has_not, is_expect_chain, is_name, kept_text, method_call, report, rewrite_list,
-    statement_expression, statement_list, type_is,
+    Is, Item, STATEMENT_LISTS, Trinary, comment_spans, expect_argument, expect_call, has_not,
+    is_expect_chain, is_name, kept_text, method_call, rewrite_list, statement_expression,
+    statement_list, type_is,
 };
 use crate::syntax::{node_span, same_expression, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -112,10 +112,9 @@ impl Rule for PreferToMatchObject {
             return;
         }
         if let Some(edits) = rewrite_list(ctx, node, ancestors, &list, &items) {
-            out.push(report(
+            out.push(Report::fixed(
                 node_span(stmts[0]),
-                "Use `toMatchObject()` instead of consecutive `toHaveProperty()` checks."
-                    .to_string(),
+                "Use `toMatchObject()` instead of consecutive `toHaveProperty()` checks.",
                 Safety::Safe,
                 edits,
             ));
@@ -133,5 +132,5 @@ fn property_with_value<'a>(
     let [key, value] = call.argument_list.arguments.as_slice() else {
         return None;
     };
-    Some((argument_value(key), argument_value(value)))
+    Some((key.value(), value.value()))
 }

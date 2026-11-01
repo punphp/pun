@@ -8,7 +8,8 @@
 use mago_syntax::cst::{Node, NodeKind};
 use pun_problem::Safety;
 
-use super::{AnyCall, arg_value, is_constant, is_test_case_call_named, remove_first_arg, report};
+use super::{AnyCall, is_test_case_call_named, remove_first_arg};
+use crate::rules::rector_code_quality::is_constant;
 use crate::{Context, Report, Rule};
 
 pub struct PreferAssertTrueFalse;
@@ -42,17 +43,17 @@ impl Rule for PreferAssertTrueFalse {
         let Some(first) = call.args().first().copied() else {
             return;
         };
-        let name = if is_constant(arg_value(first), "true") {
+        let name = if is_constant(first.value(), "true") {
             "assertTrue"
-        } else if is_constant(arg_value(first), "false") {
+        } else if is_constant(first.value(), "false") {
             "assertFalse"
         } else {
             return;
         };
         let edits = remove_first_arg(ctx, &call, name);
-        out.push(report(
+        out.push(Report::fixed(
             call.span,
-            &format!("Use `{name}()` for a comparison with a boolean."),
+            format!("Use `{name}()` for a comparison with a boolean."),
             Safety::Unsafe,
             edits,
         ));

@@ -19,13 +19,14 @@
 
 use mago_codex::symbol::SymbolKind;
 use mago_syntax::cst::{
-    Call, ClassLikeMemberSelector, Expression, Literal, MethodBody, Node, NodeKind,
+    Argument, Call, ClassLikeMemberSelector, Expression, Literal, MethodBody, Node, NodeKind,
     PartialApplication, StringPart, Variable,
 };
 use mago_syntax::token::TokenKind;
 use pun_problem::{Edit, Safety, Span};
 
-use super::{class_string, report};
+use super::class_string;
+use super::no_bare_mock_assign::variable_name;
 use crate::rules::class_method::walk;
 use crate::rules::php_parser::{previous_token_end, tokens};
 use crate::rules::rector_batch5::remove_statements;
@@ -78,7 +79,7 @@ fn find_call<'a>(
         Node::MethodCall(m) => Some((
             m.object,
             name(&m.method),
-            m.argument_list.arguments.first().map(super::arg_value),
+            m.argument_list.arguments.first().map(Argument::value),
         )),
         Node::MethodPartialApplication(m) => Some((m.object, name(&m.method), None)),
         _ => None,
@@ -111,14 +112,6 @@ fn find_in<'a>(
             find_call(Node::Expression(arg), found)
         }
         _ => find_call(Node::Expression(expr), found),
-    }
-}
-
-/// A direct variable's name, without the `$`.
-fn variable_name<'a>(expr: &'a Expression<'a>) -> Option<&'a [u8]> {
-    match unparenthesize(expr) {
-        Expression::Variable(Variable::Direct(v)) => Some(&v.name[1..]),
-        _ => None,
     }
 }
 
@@ -328,7 +321,7 @@ impl Rule for NoEntityMock {
             }
         }
         edits.extend(remove_statements(ctx.source, &list, &removed));
-        out.push(report(
+        out.push(Report::fixed(
             node_span(&method.name),
             "Use the entity class directly instead of a mock of it.",
             Safety::Safe,
@@ -408,7 +401,7 @@ fn collect_entity_classes(
         if !is_create_mock {
             continue;
         }
-        let Some(class) = class_string(ctx, ancestors, super::arg_value(first)) else {
+        let Some(class) = class_string(ctx, ancestors, first.value()) else {
             continue;
         };
         let Some(metadata) = facts.codebase.get_class_like(lookup(&class).as_bytes()) else {

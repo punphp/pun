@@ -8,8 +8,8 @@ use mago_syntax::cst::{Node, NodeKind};
 use pun_problem::Safety;
 
 use super::annotations::Annotated;
+use super::is_in_test_class;
 use super::phpdoc_type::{TagType, typed_tag, with_tag_type};
-use super::{is_in_test_class, report};
 use crate::{Context, Report, Rule};
 
 pub struct PreferMockIntersectionReturn;
@@ -61,7 +61,7 @@ impl Rule for PreferMockIntersectionReturn {
         let Some(edits) = annotated.edits(ctx.source, Some(&new_doc), &[]) else {
             return;
         };
-        out.push(report(
+        out.push(Report::fixed(
             doc.span,
             "Return the mock as an intersection type, not a union.",
             Safety::Safe,

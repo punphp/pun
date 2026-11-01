@@ -5,8 +5,8 @@ use mago_syntax::cst::{Expression, Literal, Node, NodeKind};
 use pun_problem::Safety;
 
 use super::{
-    Is, Trinary, argument_value, func_call, is_name, matcher_subject, report, set_call_arguments,
-    subject_holder, texts, type_is,
+    Is, Trinary, func_call, is_name, matcher_subject, set_call_arguments, subject_holder, texts,
+    type_is,
 };
 use crate::rules::rector_code_quality::named;
 use crate::syntax::{node_span, unparenthesize};
@@ -39,7 +39,7 @@ impl Rule for PreferToMatch {
         let [expected] = call.argument_list.arguments.as_slice() else {
             return;
         };
-        if !matches!(unparenthesize(argument_value(expected)), Expression::Literal(Literal::Integer(i)) if i.value == Some(1))
+        if !matches!(unparenthesize(expected.value()), Expression::Literal(Literal::Integer(i)) if i.value == Some(1))
         {
             return;
         }
@@ -52,7 +52,7 @@ impl Rule for PreferToMatch {
         let [pattern, value, ..] = matcher.argument_list.arguments.as_slice() else {
             return;
         };
-        let value = argument_value(value);
+        let value = value.value();
         if type_is(ctx, value, Is::String) == Trinary::No {
             return;
         }
@@ -60,11 +60,11 @@ impl Rule for PreferToMatch {
         edits.extend(set_call_arguments(
             call,
             "toMatch",
-            &texts(ctx, &[argument_value(pattern)]),
+            &texts(ctx, &[pattern.value()]),
         ));
-        out.push(report(
+        out.push(Report::fixed(
             node_span(call),
-            "Use `toMatch()` instead of checking `preg_match()`.".to_string(),
+            "Use `toMatch()` instead of checking `preg_match()`.",
             Safety::Unsafe,
             edits,
         ));

@@ -13,7 +13,7 @@ use pun_problem::{Edit, Safety, Span};
 
 use super::annotations::named_tags;
 use super::prefer_create_stub_expression::is_mock_object;
-use super::{AnyCall, arg_value, is_public, report};
+use super::{AnyCall, is_public};
 use crate::rules::lint_b_doc::Doc;
 use crate::rules::rector_batch5::has_attribute;
 use crate::rules::types::facts::facts;
@@ -65,7 +65,7 @@ impl Rule for RequireMockExpects {
             if let Node::Statement(Statement::Expression(statement)) = node
                 && let Some(edit) = refactor_expression(ctx, statement.expression)
             {
-                out.push(report(
+                out.push(Report::fixed(
                     node_span(statement),
                     "Add expects() to a mock configured with willReturnMap().",
                     Safety::Safe,
@@ -104,7 +104,7 @@ fn refactor_expression(ctx: &Context<'_>, expr: &Expression<'_>) -> Option<Edit>
     }
     // count values in will map arg
     let arg = method_call.args().into_iter().next()?;
-    let Expression::Array(Array { elements, .. }) = unparenthesize(arg_value(arg)) else {
+    let Expression::Array(Array { elements, .. }) = unparenthesize(arg.value()) else {
         return None;
     };
     let at = node_span(receiver).end;

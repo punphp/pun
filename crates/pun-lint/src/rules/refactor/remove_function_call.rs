@@ -5,8 +5,9 @@
 //! is compared without case as `NodeNameResolver::getName()` reads it, which for `$name()` is the variable's name.
 
 use mago_syntax::cst::{Expression, Node, NodeKind, Statement, Variable};
+use pun_problem::Safety;
 
-use super::{Kind, called, is_name, items, name_of, report};
+use super::{Kind, called, is_name, items, name_of};
 use crate::rules::rector_stmts::{enclosing, remove};
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -65,9 +66,10 @@ impl Rule for RemoveFunctionCall {
             return;
         };
         let (list, index) = enclosing(ctx.source, statement, ancestors);
-        out.push(report(
+        out.push(Report::fixed(
             node_span(statement),
             format!("Remove the call to `{function}()`."),
+            Safety::Unsafe,
             remove(ctx.source, &list, &[index]),
         ));
     }

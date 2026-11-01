@@ -18,7 +18,7 @@ use mago_syntax::cst::{
     Access, Block, ClassLikeMemberSelector, Expression, FunctionLikeParameter, Method, MethodBody,
     Node, NodeKind, Variable,
 };
-use pun_problem::{Edit, Fix, Safety, Span};
+use pun_problem::{Edit, Safety, Span};
 
 use super::facts::{Facts, facts};
 use super::property_type::{
@@ -129,15 +129,12 @@ impl Rule for AddPropertyTypeConstructor {
             }
         }
         let Some(first) = edits.first() else { return };
-        out.push(Report {
-            span: first.span,
-            message: "Type the properties the constructor assigns.".to_string(),
-            help: None,
-            fix: Some(Fix {
-                safety: Safety::Unsafe,
-                edits,
-            }),
-        });
+        out.push(Report::fixed(
+            first.span,
+            "Type the properties the constructor assigns.",
+            Safety::Unsafe,
+            edits,
+        ));
     }
 }
 

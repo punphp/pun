@@ -5,7 +5,7 @@
 //! `whenNotEmpty()` and `unlessNotEmpty()` `whenEmpty()`.
 
 use mago_syntax::cst::{Node, NodeKind};
-use pun_problem::{Edit, Fix, Safety};
+use pun_problem::{Edit, Safety};
 
 use super::object_type::is_object_type;
 use super::{is_name, member_name};
@@ -54,14 +54,11 @@ impl Rule for NoCollectionAliases {
             return;
         }
         let span = node_span(&call.method);
-        out.push(Report {
+        out.push(Report::fixed(
             span,
-            message: format!("Use `{replacement}()` instead of its alias `{alias}()`."),
-            help: None,
-            fix: Some(Fix {
-                safety: Safety::Unsafe,
-                edits: vec![Edit::new(span, replacement)],
-            }),
-        });
+            format!("Use `{replacement}()` instead of its alias `{alias}()`."),
+            Safety::Unsafe,
+            vec![Edit::new(span, replacement)],
+        ));
     }
 }

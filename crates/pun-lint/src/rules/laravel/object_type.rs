@@ -19,6 +19,7 @@ use super::is_a;
 use super::names::resolve_class_name;
 use crate::Context;
 use crate::rules::types::class_scope;
+use crate::rules::types::compare::mapper::flatten;
 use crate::rules::types::facts::{Facts, facts};
 use crate::syntax::{node_span, unparenthesize};
 
@@ -246,7 +247,7 @@ pub(crate) fn is_hint_type(
         Hint::Identifier(_) | Hint::Self_(_) | Hint::Parent(_) => return named(hint),
         // `?T` is `T|null` when `T` is not `mixed`
         Hint::Nullable(n) => return named(n.hint) || matches!(n.hint, Hint::False(_)),
-        Hint::Union(_) | Hint::False(_) => flatten(hint, &mut parts),
+        Hint::Union(_) | Hint::False(_) => flatten(hint, true, &mut parts),
         _ => return false,
     }
     let without_null: Vec<&Hint<'_>> = parts
@@ -258,16 +259,6 @@ pub(crate) fn is_hint_type(
             .into_iter()
             .filter(|h| !matches!(h, Hint::False(_)))
             .all(named)
-}
-
-fn flatten<'a>(hint: &'a Hint<'a>, parts: &mut Vec<&'a Hint<'a>>) {
-    match hint {
-        Hint::Union(u) => {
-            flatten(u.left, parts);
-            flatten(u.right, parts);
-        }
-        h => parts.push(h),
-    }
 }
 
 /// The class of an object type (a named object, `$this`, `static`, or an enum case). Mago types a value of a class it

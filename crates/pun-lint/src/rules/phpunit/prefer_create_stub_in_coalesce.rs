@@ -6,11 +6,12 @@
 //! it only for PHPUnit 11 and later; Pun leaves that to the rule's group.
 
 use mago_syntax::cst::{
-    ArgumentList, ArrayElement, BinaryOperator, Call, Expression, Node, NodeKind, PartialArgument,
+    Argument, ArgumentList, ArrayElement, BinaryOperator, Call, Expression, Node, NodeKind,
+    PartialArgument,
 };
 use pun_problem::{Edit, Safety};
 
-use super::{AnyCall, arg_value, is_in_test_class, report};
+use super::{AnyCall, is_in_test_class};
 use crate::syntax::unparenthesize;
 use crate::{Context, Report, Rule};
 
@@ -43,7 +44,7 @@ impl Rule for PreferCreateStubInCoalesce {
             Node::ArrayElement(ArrayElement::Value(v)) => vec![v.value],
             Node::ArrayElement(ArrayElement::Variadic(v)) => vec![v.value],
             Node::MethodCall(_) | Node::StaticMethodCall(_) => AnyCall::of(node)
-                .map(|c| c.args().into_iter().map(arg_value).collect())
+                .map(|c| c.args().into_iter().map(Argument::value).collect())
                 .unwrap_or_default(),
             Node::Instantiation(new) => args(new.argument_list.as_ref()),
             Node::AnonymousClass(new) => new
@@ -73,7 +74,7 @@ impl Rule for PreferCreateStubInCoalesce {
             return;
         }
         for call in names {
-            out.push(report(
+            out.push(Report::fixed(
                 call.name_span(),
                 "Use `createStub()`: nothing expects calls on this mock.",
                 Safety::Safe,
@@ -86,6 +87,6 @@ impl Rule for PreferCreateStubInCoalesce {
 fn args<'a>(list: Option<&'a ArgumentList<'a>>) -> Vec<&'a Expression<'a>> {
     list.iter()
         .flat_map(|l| l.arguments.iter())
-        .map(arg_value)
+        .map(Argument::value)
         .collect()
 }

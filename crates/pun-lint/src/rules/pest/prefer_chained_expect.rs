@@ -10,8 +10,8 @@ use pun_problem::{Safety, Span};
 
 use super::{
     Item, Link, STATEMENT_LISTS, chain_links, expect_argument, has_comments, identifier,
-    is_expect_chain, kept_text, method_call, print_args, print_member, print_nodes, report,
-    rewrite_list, statement_expression, statement_list,
+    is_expect_chain, kept_text, method_call, print_args, print_member, print_nodes, rewrite_list,
+    statement_expression, statement_list,
 };
 use crate::syntax::{node_span, same_expression, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -190,9 +190,9 @@ impl Rule for PreferChainedExpect {
             items.push(Item::Old(list.stmts.len()));
         }
         if let Some(edits) = rewrite_list(ctx, node, ancestors, &list, &items) {
-            out.push(report(
+            out.push(Report::fixed(
                 node_span(list.stmts[0]),
-                "Chain consecutive `expect()` calls.".to_string(),
+                "Chain consecutive `expect()` calls.",
                 Safety::Safe,
                 edits,
             ));

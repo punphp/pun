@@ -37,7 +37,7 @@ use mago_syntax::cst::{
 use pun_problem::{Edit, Safety, Span};
 
 use super::annotations::{Annotated, TagValue, named_tags};
-use super::{TEST_CASE, class_parents, is_in_test_class, report, resolve};
+use super::{TEST_CASE, class_parents, is_in_test_class, resolve};
 use crate::rules::class_method::{ClassInfo, class_info, is_class_method_used, walk};
 use crate::rules::lint_b_doc::Doc;
 use crate::rules::lint_b_names::resolve_class_at;
@@ -155,7 +155,7 @@ impl Rule for PreferYieldDataProvider {
             first.get_or_insert(node_span(&provider.name));
         }
         if let Some(span) = first {
-            out.push(report(
+            out.push(Report::fixed(
                 span,
                 "Yield the data provider's items instead of returning an array.",
                 Safety::Safe,

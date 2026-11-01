@@ -11,7 +11,7 @@
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_syntax::cst::{Node, NodeKind};
-use pun_problem::{Fix, Safety};
+use pun_problem::Safety;
 
 use super::object_type::is_object_type;
 use super::print::reprinted_call;
@@ -80,19 +80,16 @@ impl Rule for PreferStatusAssertionMethod {
             503 => "assertServiceUnavailable",
             _ => return,
         };
-        out.push(Report {
-            span: node_span(call),
-            message: format!("Use `{method}()` instead of `assertStatus({value})`."),
-            help: None,
-            fix: Some(Fix {
-                safety: Safety::Safe,
-                edits: reprinted_call(
-                    ctx.source,
-                    call.object,
-                    node_span(call).end,
-                    &format!("->{method}()"),
-                ),
-            }),
-        });
+        out.push(Report::fixed(
+            node_span(call),
+            format!("Use `{method}()` instead of `assertStatus({value})`."),
+            Safety::Safe,
+            reprinted_call(
+                ctx.source,
+                call.object,
+                node_span(call).end,
+                &format!("->{method}()"),
+            ),
+        ));
     }
 }

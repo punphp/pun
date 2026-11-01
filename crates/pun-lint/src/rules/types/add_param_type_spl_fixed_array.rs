@@ -3,9 +3,9 @@
 //! method declared as PHP-CS-Fixer's `Tokens` class gets the generic `@param Tokens<Token>` type in the docblock.
 
 use mago_syntax::cst::{FunctionLikeParameterList, Hint, Node, NodeKind};
+use pun_problem::Safety;
 
 use super::names::resolve_class_name;
-use super::param::report;
 use crate::rules::phpunit::annotations::Annotated;
 use crate::rules::phpunit::phpdoc_type::{TagType, typed_tag};
 use crate::syntax::node_span;
@@ -113,9 +113,10 @@ impl Rule for AddParamTypeSplFixedArray {
         let Some(edits) = annotated.edits(ctx.source, Some(&new_doc), &[]) else {
             return;
         };
-        out.push(report(
+        out.push(Report::fixed(
             node_span(&node),
             "Add the generic `Tokens<Token>` type to the parameter's @param tag.",
+            Safety::Unsafe,
             edits,
         ));
     }

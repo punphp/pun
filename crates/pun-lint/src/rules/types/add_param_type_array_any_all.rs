@@ -9,11 +9,12 @@
 
 use mago_codex::ttype::atomic::TAtomic;
 use mago_syntax::cst::{Expression, FunctionLikeParameterList, Hint, Node, NodeKind};
+use pun_problem::Safety;
 
 use super::facts::facts;
 use super::param::{
     ArrayShape, add_hint, array_shape_of, constant_values, constant_values_union, is_mixed, item_declaration, item_type,
-    param_declaration_unsorted, report,
+    param_declaration_unsorted,
 };
 use crate::rules::laravel::get_arg;
 use crate::rules::lint_b_helpers::value;
@@ -136,9 +137,10 @@ fn visit(
         Some(span) => pun_problem::Edit::new(span, declaration),
         None => add_hint(param, &declaration),
     };
-    out.push(report(
+    out.push(Report::fixed(
         node_span(call),
         "Add the array's item type to the callback's parameter.",
+        Safety::Unsafe,
         vec![edit],
     ));
 }

@@ -14,7 +14,7 @@ use mago_syntax::cst::{ArgumentList, Expression, Literal, Node, NodeKind, Variab
 use pun_problem::{Edit, Safety};
 
 use super::prefer_test_with_attribute::php_g;
-use super::{AnyCall, class_is, class_parents, is_in_test_class, own_class, report, resolve};
+use super::{AnyCall, class_is, class_parents, is_in_test_class, own_class, resolve};
 use crate::rules::types::facts::facts;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -118,7 +118,7 @@ impl Rule for RequireExactTestArgumentType {
         if edits.is_empty() {
             return;
         }
-        out.push(report(
+        out.push(Report::fixed(
             node_span(&node),
             "Pass literal arguments of the type the parameter declares.",
             Safety::Safe,

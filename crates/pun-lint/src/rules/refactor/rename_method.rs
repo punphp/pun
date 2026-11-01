@@ -23,14 +23,13 @@ use mago_codex::symbol::SymbolKind;
 use mago_syntax::cst::{
     ClassLikeMember, ClassLikeMemberSelector, Expression, LocalIdentifier, Node, NodeKind, Sequence,
 };
-use pun_problem::{Edit, Span};
+use pun_problem::{Edit, Safety, Span};
 use serde_json::Value;
 
 use super::super::class_method::qualified;
 use super::super::types::facts::facts;
 use super::{
-    assert_class, assert_method, is_class, is_object_type, items, object, object_class_name,
-    report, string,
+    assert_class, assert_method, is_class, is_object_type, items, object, object_class_name, string,
 };
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -118,9 +117,10 @@ impl RenameMethod {
                     format!("[{}]", key_text(key)),
                 ));
             }
-            out.push(report(
+            out.push(Report::fixed(
                 node_span(&node),
                 format!("Call `{}()` instead of `{}()`.", rename.new, rename.old),
+                Safety::Unsafe,
                 edits,
             ));
             return;
@@ -227,9 +227,10 @@ impl RenameMethod {
         if edits.is_empty() {
             return;
         }
-        out.push(report(
+        out.push(Report::fixed(
             span,
-            "Rename the methods the configuration renames.".to_string(),
+            "Rename the methods the configuration renames.",
+            Safety::Unsafe,
             edits,
         ));
     }

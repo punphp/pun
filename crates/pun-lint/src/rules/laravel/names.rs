@@ -3,79 +3,8 @@
 
 use mago_syntax::cst::{Identifier, Namespace, NamespaceBody, Node, Statement, UseItem, UseItems};
 
-/// The namespace (`None` for the global one) and the statements of the scope `ancestors` lead to: the nearest
-/// `namespace` or the file.
-fn scope<'a>(ancestors: &[Node<'a, 'a>]) -> (Option<&'a [u8]>, Vec<&'a Statement<'a>>) {
-    for node in ancestors.iter().rev() {
-        if let Node::Namespace(ns) = node {
-            let statements = match &ns.body {
-                NamespaceBody::Implicit(body) => body.statements.iter().collect(),
-                NamespaceBody::BraceDelimited(block) => block.statements.iter().collect(),
-            };
-            return (ns.name.as_ref().map(|n| n.value()), statements);
-        }
-    }
-    match ancestors.first() {
-        Some(Node::Program(program)) => (None, program.statements.iter().collect()),
-        _ => (None, Vec::new()),
-    }
-}
-
-/// The fully qualified class name (without the leading `\`) that `name`, written at the node `ancestors` lead to,
-/// stands for.
-pub(crate) fn resolve_class_name(ancestors: &[Node<'_, '_>], name: &Identifier<'_>) -> String {
-    resolve_name(ancestors, &String::from_utf8_lossy(name.value()))
-}
-
-/// [`resolve_class_name`] for a name `written` as text (PHPStan's `NameScope::resolveStringName` does the same).
-pub(crate) fn resolve_name(ancestors: &[Node<'_, '_>], written: &str) -> String {
-    let written = written.to_string();
-    if let Some(fq) = written.strip_prefix('\\') {
-        return fq.to_string();
-    }
-    let (namespace, statements) = scope(ancestors);
-    let (first, rest) = match written.split_once('\\') {
-        Some((first, rest)) => (first, Some(rest)),
-        None => (written.as_str(), None),
-    };
-    for statement in statements {
-        let Statement::Use(r#use) = statement else {
-            continue;
-        };
-        let items: Vec<(Option<&[u8]>, &UseItem)> = match &r#use.items {
-            UseItems::Sequence(s) => s.items.iter().map(|i| (None, i)).collect(),
-            UseItems::MixedList(l) => l
-                .items
-                .iter()
-                .filter(|i| i.r#type.is_none())
-                .map(|i| (Some(l.namespace.value()), &i.item))
-                .collect(),
-            UseItems::TypedSequence(_) | UseItems::TypedList(_) => continue,
-        };
-        for (prefix, item) in items {
-            let name = String::from_utf8_lossy(item.name.value());
-            let full = match prefix {
-                Some(prefix) => format!("{}\\{name}", String::from_utf8_lossy(prefix)),
-                None => name.into_owned(),
-            };
-            let full = full.trim_start_matches('\\');
-            let alias = match &item.alias {
-                Some(alias) => String::from_utf8_lossy(alias.identifier.value).into_owned(),
-                None => full.rsplit('\\').next().unwrap_or(full).to_string(),
-            };
-            if alias.eq_ignore_ascii_case(first) {
-                return match rest {
-                    Some(rest) => format!("{full}\\{rest}"),
-                    None => full.to_string(),
-                };
-            }
-        }
-    }
-    match namespace {
-        Some(ns) => format!("{}\\{written}", String::from_utf8_lossy(ns)),
-        None => written,
-    }
-}
+pub(crate) use crate::rules::types::names::resolve_class_name;
+use crate::rules::types::names::scope;
 
 /// PHPStan's `NameScope::resolveStringName` for a class name `written` in a doc comment at the node `ancestors` lead
 /// to, in the name scope Rector makes (`NameScopeFactory`): the namespace, and every import of the file by its alias

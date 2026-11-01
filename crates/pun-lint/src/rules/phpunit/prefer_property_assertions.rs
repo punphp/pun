@@ -15,7 +15,7 @@ use mago_syntax::cst::{
 };
 use pun_problem::{Edit, Safety, Span};
 
-use super::{AnyCall, arg_value, is_in_test_class, report};
+use super::{AnyCall, is_in_test_class};
 use crate::rules::rector_batch5::{Value, float_string, value};
 use crate::rules::rector_stmts::{Frame, enclosing, line_indent};
 use crate::rules::types::facts::facts;
@@ -60,10 +60,10 @@ impl Rule for PreferPropertyAssertions {
         let (Some(expected), Some(actual)) = (args.first(), args.get(1)) else {
             return;
         };
-        let Expression::Array(array) = unparenthesize(arg_value(expected)) else {
+        let Expression::Array(array) = unparenthesize(expected.value()) else {
             return;
         };
-        let Expression::UnaryPrefix(cast) = unparenthesize(arg_value(actual)) else {
+        let Expression::UnaryPrefix(cast) = unparenthesize(actual.value()) else {
             return;
         };
         if !matches!(cast.operator, UnaryPrefixOperator::ArrayCast(..)) {
@@ -116,7 +116,7 @@ impl Rule for PreferPropertyAssertions {
         } else {
             Edit::new(span, lines.join(&format!("\n{indent}")))
         };
-        out.push(report(
+        out.push(Report::fixed(
             span,
             "Assert the properties of the object one by one.",
             Safety::Safe,

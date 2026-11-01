@@ -8,10 +8,7 @@
 use mago_syntax::cst::{Node, NodeKind};
 use pun_problem::Safety;
 
-use super::{
-    AnyCall, NewArg, arg_value, is_scalar_value, is_test_case_call_named, old_args, report,
-    rewrite_args,
-};
+use super::{AnyCall, NewArg, is_scalar_value, is_test_case_call_named, old_args, rewrite_args};
 use crate::{Context, Report, Rule};
 
 const METHOD_NAMES: &[&str] = &[
@@ -48,10 +45,10 @@ impl Rule for NoFlippedAssertion {
         let (Some(first), Some(second)) = (args.first().copied(), args.get(1).copied()) else {
             return;
         };
-        if is_scalar_value(arg_value(first)) || !is_scalar_value(arg_value(second)) {
+        if is_scalar_value(first.value()) || !is_scalar_value(second.value()) {
             return;
         }
-        out.push(report(
+        out.push(Report::fixed(
             call.span,
             "Put the expected value first.",
             Safety::Safe,

@@ -6,7 +6,7 @@ use mago_syntax::cst::{Expression, Node, NodeKind};
 use pun_problem::{Edit, Safety, Span};
 
 use super::{
-    Is, Trinary, expect_call, first_value, identifier, is_name, property_fetch, rename, report,
+    Is, Trinary, expect_call, first_value, identifier, is_name, property_fetch, rename,
     set_first_argument, type_is,
 };
 use crate::syntax::{node_span, unparenthesize};
@@ -83,9 +83,9 @@ impl Rule for PreferNotModifier {
             _ => return,
         };
         edits.push(toggled);
-        out.push(report(
+        out.push(Report::fixed(
             node_span(call),
-            "Negate the expectation instead of its value.".to_string(),
+            "Negate the expectation instead of its value.",
             Safety::Safe,
             edits,
         ));

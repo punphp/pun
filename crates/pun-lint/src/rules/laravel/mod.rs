@@ -139,7 +139,7 @@ use mago_syntax::cst::{
     Argument, ArgumentList, Assignment, AssignmentOperator, Call, ClassLikeMemberSelector,
     CompositeString, Expression, Node, UnaryPrefixOperator, Variable,
 };
-use pun_problem::{Edit, Fix, Safety, Span};
+use pun_problem::{Edit, Safety, Span};
 
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -402,15 +402,7 @@ pub(crate) fn is_bare_call(expr: &Expression<'_>, name: &str) -> bool {
 
 /// A report on `span` whose fix writes `code` there.
 pub(crate) fn replace(span: Span, message: String, code: String) -> Report {
-    Report {
-        span,
-        message,
-        help: None,
-        fix: Some(Fix {
-            safety: Safety::Unsafe,
-            edits: vec![Edit::new(span, code)],
-        }),
-    }
+    Report::fixed(span, message, Safety::Unsafe, vec![Edit::new(span, code)])
 }
 
 /// `RedirectBackToBackHelperRector` and `RedirectRouteToToRouteHelperRector`: `redirect()->method(...)` (the helper

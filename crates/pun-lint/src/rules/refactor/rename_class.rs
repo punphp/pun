@@ -14,10 +14,9 @@
 //! annotations) name an old class. Rector runs the rule once per file.
 
 use mago_syntax::cst::{Node, NodeKind};
-use pun_problem::{Edit, Span};
+use pun_problem::{Edit, Safety, Span};
 use serde_json::Value;
 
-use super::report;
 use crate::rules::rector_names::phpdoc_parser::Val;
 use crate::rules::rector_names::post::{Carry, Options, Session, doc_type};
 use crate::rules::rector_names::resolve::{has_class, resolve_tag};
@@ -117,9 +116,10 @@ impl Rule for RenameClass {
             .map(|(a, _)| a.len_utf8())
             .sum();
         let (start, end, new_end) = (prefix, source.len() - suffix, fixed.len() - suffix);
-        out.push(report(
+        out.push(Report::fixed(
             Span::new(start, end),
-            "Replace the renamed classes by their new names.".into(),
+            "Replace the renamed classes by their new names.",
+            Safety::Unsafe,
             vec![Edit::new(
                 Span::new(start, end),
                 fixed[start..new_end].to_string(),

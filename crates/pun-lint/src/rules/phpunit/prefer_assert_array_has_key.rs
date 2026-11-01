@@ -9,10 +9,7 @@ use mago_codex::ttype::atomic::object::TObject;
 use mago_syntax::cst::{Construct, Expression, Node, NodeKind, Variable};
 use pun_problem::Safety;
 
-use super::{
-    AnyCall, NewArg, arg_value, expr_text, is_test_case_call_named, old_args, renamed, report,
-    rewrite_args,
-};
+use super::{AnyCall, NewArg, expr_text, is_test_case_call_named, old_args, renamed, rewrite_args};
 use crate::rules::laravel::is_a;
 use crate::rules::types::facts::facts;
 use crate::syntax::{node_span, unparenthesize};
@@ -52,8 +49,7 @@ impl Rule for PreferAssertArrayHasKey {
         let Some(first) = call.args().first().copied() else {
             return;
         };
-        let Expression::Construct(Construct::Isset(isset)) = unparenthesize(arg_value(first))
-        else {
+        let Expression::Construct(Construct::Isset(isset)) = unparenthesize(first.value()) else {
             return;
         };
         let Some(Expression::ArrayAccess(access)) = isset.values.first().map(|e| unparenthesize(e))
@@ -80,9 +76,9 @@ impl Rule for PreferAssertArrayHasKey {
         .into_iter()
         .chain(old_args(&call, 1))
         .collect();
-        out.push(report(
+        out.push(Report::fixed(
             call.span,
-            &format!("Use `{name}()` instead of asserting `isset()`."),
+            format!("Use `{name}()` instead of asserting `isset()`."),
             Safety::Safe,
             rewrite_args(ctx, &call, Some(name), &new),
         ));

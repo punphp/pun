@@ -17,8 +17,8 @@ use mago_syntax::cst::{
 use pun_problem::{Edit, Safety, Span};
 
 use super::{
-    Item, argument_value, func_call, function_name, identifier, method_call, old_statements,
-    p_stmts, report, rewrite_list, statement_expression, statement_list,
+    Item, func_call, function_name, identifier, method_call, old_statements, p_stmts, rewrite_list,
+    statement_expression, statement_list,
 };
 use crate::rules::lint_b_names::resolve_class;
 use crate::rules::rector_code_quality::text;
@@ -71,9 +71,9 @@ impl Rule for NoRedundantUses {
         if edits.is_empty() {
             return;
         }
-        out.push(report(
+        out.push(Report::fixed(
             node_span(program),
-            "Remove the Pest uses that tests/Pest.php already applies.".to_string(),
+            "Remove the Pest uses that tests/Pest.php already applies.",
             Safety::Safe,
             edits,
         ));
@@ -101,8 +101,7 @@ fn refactor_list(
         let args = arguments.arguments.as_slice();
         let kept: Vec<usize> = (0..args.len())
             .filter(|&i| {
-                local_class_name(scope, argument_value(&args[i]))
-                    .is_none_or(|c| !global.contains(&c))
+                local_class_name(scope, args[i].value()).is_none_or(|c| !global.contains(&c))
             })
             .collect();
         if kept.len() == args.len() {
@@ -353,7 +352,7 @@ fn match_global_use(
 fn static_class_names(scope: &[Node<'_, '_>], list: &ArgumentList<'_>) -> Vec<Vec<u8>> {
     list.arguments
         .iter()
-        .map(|a| local_class_name(scope, argument_value(a)))
+        .map(|a| local_class_name(scope, a.value()))
         .collect::<Option<Vec<_>>>()
         .unwrap_or_default()
 }
@@ -386,7 +385,7 @@ fn static_paths(list: &ArgumentList<'_>) -> Vec<String> {
 /// The value of an argument that php-parser reads as a `String_`: a quoted string, or a heredoc without
 /// interpolation. An unpacked argument has the same value.
 fn string_value(argument: &Argument<'_>) -> Option<Vec<u8>> {
-    match unparenthesize(argument_value(argument)) {
+    match unparenthesize(argument.value()) {
         Expression::Literal(Literal::String(s)) => s.value.map(<[u8]>::to_vec),
         Expression::CompositeString(CompositeString::Document(d)) => d
             .parts

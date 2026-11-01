@@ -5,11 +5,12 @@
 //! groups after its attributes, when that attribute class exists. Rector runs it only for PHPUnit 10 and later; Pun
 //! leaves that to the rule's group.
 
-use mago_syntax::cst::{Node, NodeKind};
+use mago_syntax::cst::{LiteralStringKind, Node, NodeKind};
 use pun_problem::Safety;
 
-use super::annotations::{Annotated, TagValue, named_tags, single_quoted};
-use super::{is_in_test_class, report};
+use super::annotations::{Annotated, TagValue, named_tags};
+use super::is_in_test_class;
+use crate::rules::prefer_absolute_include::print_string;
 use crate::rules::types::facts::facts;
 use crate::{Context, Report, Rule};
 
@@ -65,7 +66,10 @@ impl Rule for PreferTicketAttribute {
         for (i, value) in tags {
             if let TagValue::Generic(value) = value {
                 removed[i] = true;
-                groups.push(format!("#[\\{TICKET_CLASS}({})]", single_quoted(&value)));
+                groups.push(format!(
+                    "#[\\{TICKET_CLASS}({})]",
+                    print_string(LiteralStringKind::SingleQuoted, value.as_bytes()).unwrap()
+                ));
             }
         }
         if groups.is_empty() {
@@ -75,7 +79,7 @@ impl Rule for PreferTicketAttribute {
         let Some(edits) = annotated.edits(ctx.source, Some(&new_doc), &groups) else {
             return;
         };
-        out.push(report(
+        out.push(Report::fixed(
             doc.span,
             "Use the `#[Ticket]` attribute instead of the `@ticket` annotation.",
             Safety::Safe,

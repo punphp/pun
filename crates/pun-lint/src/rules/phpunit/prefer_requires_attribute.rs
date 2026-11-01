@@ -10,7 +10,7 @@ use mago_syntax::cst::{Node, NodeKind};
 use pun_problem::Safety;
 
 use super::annotations::{Annotated, TagValue, map_item, named_tags};
-use super::{is_in_test_class, report};
+use super::is_in_test_class;
 use crate::{Context, Report, Rule};
 
 pub struct PreferRequiresAttribute;
@@ -75,7 +75,7 @@ impl Rule for PreferRequiresAttribute {
         let Some(edits) = annotated.edits(ctx.source, Some(&new_doc), &groups) else {
             return;
         };
-        out.push(report(
+        out.push(Report::fixed(
             doc.span,
             "Use the `#[Requires*]` attributes instead of the `@requires` annotation.",
             Safety::Safe,

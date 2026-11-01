@@ -15,11 +15,11 @@
 //! `new \Collection(...)`, which PHP rejects, and stops with an error on `view(...)` for a static call.
 
 use mago_syntax::cst::{Expression, FunctionCall, Node, NodeKind};
-use pun_problem::{Edit, Span};
+use pun_problem::{Edit, Safety, Span};
 
 use super::{
-    assert_class, assert_function, assert_method, function_name, is_name, items, object, report,
-    string, string_map,
+    assert_class, assert_function, assert_method, function_name, is_name, items, object, string,
+    string_map,
 };
 use crate::rules::phpunit::maybe_multiline;
 use crate::rules::rector_stmts::line_indent;
@@ -111,9 +111,10 @@ impl Rule for ReplaceFunctionWithConstant {
         let Some((_, constant)) = self.replacements.iter().find(|(f, _)| *f == name) else {
             return;
         };
-        out.push(report(
+        out.push(Report::fixed(
             node_span(&node),
             format!("Replace the call to `{name}()` with the constant `{constant}`."),
+            Safety::Unsafe,
             vec![Edit::new(node_span(&node), constant.clone())],
         ));
     }
@@ -158,9 +159,10 @@ impl Rule for ReplaceFunctionWithNew {
         let args = printed_args(ctx, call);
         let span = node_span(&node);
         let code = dereferenced(span, ancestors, format!("new \\{class}({args})"));
-        out.push(report(
+        out.push(Report::fixed(
             span,
             format!("Replace the call to `{function}()` with `new \\{class}()`."),
+            Safety::Unsafe,
             vec![Edit::new(span, code)],
         ));
     }
@@ -231,12 +233,13 @@ impl Rule for ReplaceFunctionWithStatic {
             other => format!("\\{other}"),
         };
         let args = printed_args(ctx, call);
-        out.push(report(
+        out.push(Report::fixed(
             node_span(&node),
             format!(
                 "Replace the call to `{}()` with `{class}::{}()`.",
                 r.function, r.method
             ),
+            Safety::Unsafe,
             vec![Edit::new(
                 node_span(&node),
                 format!("{class}::{}({args})", r.method),

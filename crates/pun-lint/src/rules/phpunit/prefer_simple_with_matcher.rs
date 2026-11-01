@@ -6,7 +6,7 @@
 use mago_syntax::cst::{Call, Expression, Node, NodeKind};
 use pun_problem::Safety;
 
-use super::{AnyCall, NewArg, arg_value, is_in_test_class, report, rewrite_args, text};
+use super::{AnyCall, NewArg, is_in_test_class, rewrite_args, text};
 use crate::syntax::unparenthesize;
 use crate::{Context, Report, Rule};
 
@@ -36,7 +36,7 @@ impl Rule for PreferSimpleWithMatcher {
         let mut changed = false;
         let mut new = Vec::new();
         for (i, arg) in args.iter().enumerate() {
-            if let Expression::Call(Call::Method(m)) = unparenthesize(arg_value(arg))
+            if let Expression::Call(Call::Method(m)) = unparenthesize(arg.value())
                 && AnyCall::of(Node::MethodCall(m)).is_some_and(|c| c.is_name(&["equalTo"]))
             {
                 let Some(inner) = m.argument_list.arguments.first() else {
@@ -51,7 +51,7 @@ impl Rule for PreferSimpleWithMatcher {
         if !changed {
             return;
         }
-        out.push(report(
+        out.push(Report::fixed(
             call.span,
             "Pass the value itself instead of `equalTo()`.",
             Safety::Safe,

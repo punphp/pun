@@ -11,9 +11,9 @@
 
 use mago_span::HasSpan;
 use mago_syntax::cst::{Node, NodeKind, UnaryPrefixOperator};
-use pun_problem::Edit;
+use pun_problem::{Edit, Safety};
 
-use super::{assert_class, int, items, object, report, string};
+use super::{assert_class, int, items, object, string};
 use crate::rules::rector_code_quality::{operand, text};
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
@@ -121,12 +121,13 @@ impl Rule for RenameCast {
         if code == text(ctx, cast) {
             return;
         }
-        out.push(report(
+        out.push(Report::fixed(
             node_span(cast),
             format!(
                 "Rename the cast `{}` to `{new}`.",
                 text(ctx, &cast.operator.span())
             ),
+            Safety::Unsafe,
             vec![Edit::new(node_span(cast), code)],
         ));
     }

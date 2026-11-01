@@ -14,6 +14,7 @@ use pun_problem::{Edit, Span};
 use super::property_attribute::{ClassView, MODEL, report};
 use crate::rules::rector_batch5::{has_attribute, resolve_class_name};
 use crate::rules::rector_stmts::line_indent;
+use crate::rules::types::compare::mapper::flatten;
 use crate::rules::types::facts::facts;
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
@@ -111,7 +112,7 @@ fn is_builder(ctx: &Context<'_>, scope: &[Node<'_, '_>], hint: &Hint<'_>, top: b
         Hint::Nullable(n) => top && matches!(n.hint, Hint::Identifier(id) if builder(id)),
         Hint::Union(_) if top => {
             let mut members = Vec::new();
-            union_members(hint, &mut members);
+            flatten(hint, true, &mut members);
             let classes: Vec<_> = members
                 .iter()
                 .filter(|h| !matches!(h, Hint::Null(_)))
@@ -119,16 +120,6 @@ fn is_builder(ctx: &Context<'_>, scope: &[Node<'_, '_>], hint: &Hint<'_>, top: b
             !classes.is_empty() && classes.iter().all(|h| is_builder(ctx, scope, h, false))
         }
         _ => false,
-    }
-}
-
-fn union_members<'a>(hint: &'a Hint<'a>, out: &mut Vec<&'a Hint<'a>>) {
-    match hint {
-        Hint::Union(u) => {
-            union_members(u.left, out);
-            union_members(u.right, out);
-        }
-        other => out.push(other),
     }
 }
 

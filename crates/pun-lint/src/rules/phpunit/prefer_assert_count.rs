@@ -9,7 +9,7 @@ use mago_codex::ttype::atomic::object::TObject;
 use mago_syntax::cst::{Call, Expression, Node, NodeKind};
 use pun_problem::Safety;
 
-use super::{AnyCall, NewArg, arg_value, expr_text, is_test_case_call_named, report, rewrite_args};
+use super::{AnyCall, NewArg, expr_text, is_test_case_call_named, rewrite_args};
 use crate::rules::laravel::is_a;
 use crate::rules::rector_code_quality::named;
 use crate::rules::types::facts::facts;
@@ -48,14 +48,14 @@ impl Rule for PreferAssertCount {
         if args.len() < 2 {
             return;
         }
-        let counted = match unparenthesize(arg_value(args[1])) {
+        let counted = match unparenthesize(args[1].value()) {
             Expression::Call(Call::Function(f))
                 if named(f, "count") || named(f, "sizeof") || named(f, "iterator_count") =>
             {
                 let Some(first) = f.argument_list.arguments.first() else {
                     return;
                 };
-                let value = arg_value(first);
+                let value = first.value();
                 if all_objects_of(ctx, value, "Generator") {
                     return;
                 }
@@ -87,9 +87,9 @@ impl Rule for PreferAssertCount {
                 }
             })
             .collect();
-        out.push(report(
+        out.push(Report::fixed(
             call.span,
-            &format!("Use `{name}()` to compare a count."),
+            format!("Use `{name}()` to compare a count."),
             Safety::Safe,
             rewrite_args(ctx, &call, Some(name), &new),
         ));

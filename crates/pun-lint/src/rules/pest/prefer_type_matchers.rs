@@ -5,10 +5,7 @@
 use mago_syntax::cst::{Node, NodeKind};
 use pun_problem::Safety;
 
-use super::{
-    argument_value, func_call, function_name, is_name, matcher_subject, rename, report,
-    subject_holder,
-};
+use super::{func_call, function_name, is_name, matcher_subject, rename, subject_holder};
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
 
@@ -52,9 +49,9 @@ impl Rule for PreferTypeMatchers {
         let [argument] = function.argument_list.arguments.as_slice() else {
             return;
         };
-        let mut edits = holder.set_arguments(ctx, argument_value(argument));
+        let mut edits = holder.set_arguments(ctx, argument.value());
         edits.push(rename(call, matcher));
-        out.push(report(
+        out.push(Report::fixed(
             node_span(call),
             format!("Use `{matcher}()` instead of checking the type with a function."),
             Safety::Unsafe,

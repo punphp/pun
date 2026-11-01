@@ -18,13 +18,14 @@ use mago_syntax::cst::{
     Argument, BinaryOperator, ClassLikeConstantSelector, Expression, Node, NodeKind,
     UnaryPrefixOperator,
 };
-use pun_problem::{Edit, Fix, Safety};
+use pun_problem::{Edit, Safety};
 
 use super::facts::{Facts, facts};
 use super::names::resolve_class_name;
 use super::rector_type::{RectorType, get_type};
 use super::{ClassScope, class_scope};
 use crate::rules::rector_batch5::called_function_name;
+use crate::rules::rector_code_quality::text;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -71,7 +72,7 @@ impl Rule for PreferInstanceof {
             return;
         }
         let class = match unparenthesize(class) {
-            Expression::Variable(v) => node_text(ctx, v).to_string(),
+            Expression::Variable(v) => text(ctx, v).to_string(),
             Expression::Access(mago_syntax::cst::Access::ClassConstant(fetch)) => {
                 let Some(name) = class_name(&facts, ancestors, fetch) else {
                     return;
@@ -81,7 +82,7 @@ impl Rule for PreferInstanceof {
             _ => return,
         };
         let object = unparenthesize(object);
-        let left = node_text(ctx, object);
+        let left = text(ctx, object);
         let left = if needs_parentheses(object) {
             format!("({left})")
         } else {
@@ -93,21 +94,13 @@ impl Rule for PreferInstanceof {
         if wraps(parent) {
             text = format!("({text})");
         }
-        out.push(Report {
-            span: node_span(call),
-            message: "Use `instanceof` instead of `is_a()` on an object.".to_string(),
-            help: None,
-            fix: Some(Fix {
-                safety: Safety::Unsafe,
-                edits: vec![Edit::new(node_span(call), text)],
-            }),
-        });
+        out.push(Report::fixed(
+            node_span(call),
+            "Use `instanceof` instead of `is_a()` on an object.",
+            Safety::Unsafe,
+            vec![Edit::new(node_span(call), text)],
+        ));
     }
-}
-
-fn node_text<'s>(ctx: &Context<'s>, node: &impl mago_span::HasSpan) -> &'s str {
-    let span = node_span(node);
-    &ctx.source[span.start..span.end]
 }
 
 /// `isFirstObjectType`: an `ObjectType` (a class, an enum, a closure, an anonymous class; generics allowed) or
