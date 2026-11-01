@@ -10,7 +10,7 @@ ported fixer reads like the PHP. Indices are `usize`; upstream's `?int` is `Opti
 
 | Rust | Upstream |
 |---|---|
-| `Kind::T_STRING`, `Kind::CT_ARRAY_BRACKET_OPEN`, `kind.name()` (`"T_STRING"`, `"CT::T_ARRAY_BRACKET_OPEN"`), `Kind::from_name` | `T_*` constants, `CT::T_*`, `Token::getNameForId`. Aliases: `Kind::T_PAAMAYIM_NEKUDOTAYIM`, `Kind::CT_ARRAY_SQUARE_BRACE_OPEN` and the other deprecated `CT::` names |
+| `Kind::T_STRING`, `Kind::CT_ARRAY_BRACKET_OPEN`, `kind.name()` (`"T_STRING"`, `"CT::T_ARRAY_BRACKET_OPEN"`), `Kind::from_name` | `T_*` constants, `CT::T_*`, `Token::getNameForId`. Alias: `Kind::T_PAAMAYIM_NEKUDOTAYIM` |
 | `Token { id: Option<Kind>, content: Vec<u8> }`, `Token::new(kind, content)`, `Token::char("(")` | `new Token([T_X, 'x'])`, `new Token('(')` |
 | `Proto`: `"(".into()`, `T_STRING.into()`, `(T_STRING, "foo").into()` | token prototypes `'('`, `[T_STRING]`, `[T_STRING, 'foo']` |
 | `token.equals(proto, case_sensitive)`, `equals_any(&[..], cs)`, `equals_token(&Token, cs)` | `equals` / `equalsAny` (incl. the `&` special case) |

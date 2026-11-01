@@ -114,18 +114,6 @@ impl Tokens {
         BlockType::DynamicClassConstantFetchBrace;
     pub const BLOCK_TYPE_COMPLEX_STRING_VARIABLE: BlockType = BlockType::ComplexStringVariable;
     pub const BLOCK_TYPE_PROPERTY_HOOK: BlockType = BlockType::PropertyHook;
-    // deprecated upstream aliases
-    pub const BLOCK_TYPE_PARENTHESIS_BRACE: BlockType = Self::BLOCK_TYPE_PARENTHESIS;
-    pub const BLOCK_TYPE_CURLY_BRACE: BlockType = Self::BLOCK_TYPE_BRACE;
-    pub const BLOCK_TYPE_INDEX_SQUARE_BRACE: BlockType = Self::BLOCK_TYPE_INDEX_BRACKET;
-    pub const BLOCK_TYPE_ARRAY_SQUARE_BRACE: BlockType = Self::BLOCK_TYPE_ARRAY_BRACKET;
-    pub const BLOCK_TYPE_ARRAY_INDEX_CURLY_BRACE: BlockType = Self::BLOCK_TYPE_INDEX_BRACE;
-    pub const BLOCK_TYPE_DESTRUCTURING_SQUARE_BRACE: BlockType =
-        Self::BLOCK_TYPE_DESTRUCTURING_BRACKET;
-    pub const BLOCK_TYPE_BRACE_CLASS_INSTANTIATION: BlockType =
-        Self::BLOCK_TYPE_CLASS_INSTANTIATION_PARENTHESIS;
-    pub const BLOCK_TYPE_DYNAMIC_CLASS_CONSTANT_FETCH_CURLY_BRACE: BlockType =
-        Self::BLOCK_TYPE_DYNAMIC_CLASS_CONSTANT_FETCH_BRACE;
 
     /// `getBlockEdgeDefinitions()[$type]`: (start, end).
     pub fn block_edges(t: BlockType) -> (Proto<'static>, Proto<'static>) {
