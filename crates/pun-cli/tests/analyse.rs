@@ -116,6 +116,15 @@ fn formats_match_phpstan_non_ignorable() {
     formats_match_phpstan("non-ignorable", NON_IGNORABLE);
 }
 
+/// A trait's errors are reported "in context of class App\Models\C"; the class keeps its backslashes.
+#[test]
+fn formats_match_phpstan_trait_context() {
+    formats_match_phpstan(
+        "trait-context",
+        "<?php\n\nnamespace App\\Models;\n\ntrait T\n{\n    public function make(): static\n    {\n        return new static();\n    }\n}\n\nclass C\n{\n    use T;\n}\n",
+    );
+}
+
 #[test]
 fn formats_match_phpstan_dumps() {
     formats_match_phpstan(

@@ -225,9 +225,17 @@ pub(crate) fn analyse(cfg: &Config, paths: &[PathBuf], use_baseline: bool) -> Re
                     UNMATCHED_IGNORE
                 });
             // PHPStan reports, sorts and relativises normalised paths (a configured `../x` included).
-            let file = PathBuf::from(normalize_path(&e.file));
+            // A trait's "T.php (in context of class A\B)" keeps the class name's backslashes.
+            let file = match e.file.split_once(" (in context of ") {
+                Some((path, class)) => {
+                    format!("{} (in context of {class}", normalize_path(path))
+                }
+                None => normalize_path(&e.file),
+            };
+            let file = PathBuf::from(file);
             Finding {
-                rel: relative(&cfg.root, &file),
+                // SimpleRelativePathHelper turns every backslash, the context's class name's included, into `/`.
+                rel: relative(&cfg.root, &file).replace('\\', "/"),
                 file,
                 // ponytail: PHPStan's -1 (a node without a position) prints as 0
                 line: u32::try_from(e.line).unwrap_or(0),

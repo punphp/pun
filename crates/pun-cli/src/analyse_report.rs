@@ -134,23 +134,30 @@ fn xml(text: &str) -> String {
         .replace('"', "&quot;")
 }
 
-/// The findings grouped by file, the files in the order they first appear.
-fn by_file(findings: &[Finding]) -> Vec<(&str, Vec<&Finding>)> {
+/// The findings grouped by `file` (a relative path), the files in the order they first appear.
+fn by_file<'f>(
+    findings: &'f [Finding],
+    file: impl Fn(&'f Finding) -> &'f str,
+) -> Vec<(&'f str, Vec<&'f Finding>)> {
     let mut files: Vec<(&str, Vec<&Finding>)> = vec![];
     for f in findings {
-        match files.iter_mut().find(|(rel, _)| *rel == f.rel) {
+        match files.iter_mut().find(|(rel, _)| *rel == file(f)) {
             Some((_, list)) => list.push(f),
-            None => files.push((&f.rel, vec![f])),
+            None => files.push((file(f), vec![f])),
         }
     }
     files
 }
 
 /// CheckstyleErrorFormatter: one `<file>` per file in error order, column 1; the not-file-specific errors in a
-/// `<file>` without a name.
+/// `<file>` without a name. A trait's errors go under the trait's own file (`getTraitFilePath()`).
 fn checkstyle(findings: &[Finding], general: &[String]) -> String {
     let mut out = String::from("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<checkstyle>\n");
-    let files = by_file(findings);
+    let files = by_file(findings, |f| {
+        f.rel
+            .split_once(" (in context of ")
+            .map_or(&f.rel, |(path, _)| path)
+    });
     for (rel, list) in files {
         let _ = writeln!(out, "<file name=\"{}\">", xml(rel));
         for f in list {
@@ -315,7 +322,7 @@ fn table(findings: &[Finding], cx: &Context, width: usize) -> String {
         return style.block("OK", "No errors", 0);
     }
     let mut out = String::new();
-    let files = by_file(findings);
+    let files = by_file(findings, |f| &f.rel);
     let mut tables = files.len();
     for (_, list) in files {
         let rows: Vec<[String; 2]> = list
