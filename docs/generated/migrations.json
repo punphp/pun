@@ -16645,7 +16645,7 @@
         "rules": [
           "analyse/casts/useless"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -17635,7 +17635,7 @@
         "rules": [
           "analyse/control-flow/non-boolean-do-while"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -17675,7 +17675,7 @@
         "rules": [
           "analyse/control-flow/non-boolean-elseif"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -18715,7 +18715,7 @@
         "rules": [
           "analyse/control-flow/non-boolean-condition"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -23811,7 +23811,7 @@
         "rules": [
           "analyse/control-flow/switch-type-mismatch"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -23841,7 +23841,7 @@
         "rules": [
           "analyse/control-flow/non-boolean-ternary"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -24461,7 +24461,7 @@
         "rules": [
           "analyse/control-flow/non-boolean-while"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -29098,7 +29098,7 @@
         "rules": [
           "analyse/casts/useless"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

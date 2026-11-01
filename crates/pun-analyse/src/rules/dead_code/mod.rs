@@ -15,7 +15,7 @@ pub(super) use conditions::{
     if_statement, match_expression, match_subject_types, method_check, static_method_check, ternary, while_loop,
 };
 pub(super) use conditions::switch_statement;
-mod sort;
+pub(super) mod sort;
 pub(super) use sort::call as sort_call;
 pub(crate) use conditions::conditions_in_traits;
 pub(crate) use impure_points::resolve as impure_points;

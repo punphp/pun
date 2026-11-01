@@ -82,7 +82,7 @@ fn at_most_one(t: &Type) -> bool {
 /// The argument's native type: a parameter's declared type, a local variable's type, or unknown.
 // ponytail: a parameter is its native declaration even after the body assigns it, and a property or offset has no
 // native type known (its PHPDoc type always gets the tip)
-fn native(c: &Checker, e: &Expression) -> Option<Type> {
+pub(crate) fn native(c: &Checker, e: &Expression) -> Option<Type> {
     let Expression::Variable(Variable::Direct(v)) = e else {
         return None;
     };

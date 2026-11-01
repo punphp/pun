@@ -1,0 +1,411 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "casts.php",
+   "line": 21,
+   "identifier": "cast.useless",
+   "message": "Casting to int something that's already int.",
+   "tip": null
+  },
+  {
+   "file": "casts.php",
+   "line": 22,
+   "identifier": "cast.useless",
+   "message": "Casting to string something that's already string.",
+   "tip": null
+  },
+  {
+   "file": "casts.php",
+   "line": 23,
+   "identifier": "cast.useless",
+   "message": "Casting to float something that's already float.",
+   "tip": null
+  },
+  {
+   "file": "casts.php",
+   "line": 24,
+   "identifier": "cast.useless",
+   "message": "Casting to bool something that's already bool.",
+   "tip": null
+  },
+  {
+   "file": "casts.php",
+   "line": 25,
+   "identifier": "cast.useless",
+   "message": "Casting to array something that's already array.",
+   "tip": null
+  },
+  {
+   "file": "casts.php",
+   "line": 26,
+   "identifier": "cast.useless",
+   "message": "Casting to object something that's already object.",
+   "tip": null
+  },
+  {
+   "file": "casts.php",
+   "line": 28,
+   "identifier": "cast.useless",
+   "message": "Casting to int something that's already int.",
+   "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+  },
+  {
+   "file": "casts.php",
+   "line": 29,
+   "identifier": "cast.useless",
+   "message": "Casting to string something that's already string.",
+   "tip": null
+  },
+  {
+   "file": "casts.php",
+   "line": 30,
+   "identifier": "cast.useless",
+   "message": "Casting to list<int> something that's already list<int>.",
+   "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+  },
+  {
+   "file": "casts.php",
+   "line": 31,
+   "identifier": "cast.useless",
+   "message": "Casting to int something that's already int<0, 10>.",
+   "tip": null
+  },
+  {
+   "file": "casts.php",
+   "line": 34,
+   "identifier": "cast.useless",
+   "message": "Casting to int something that's already int.",
+   "tip": null
+  },
+  {
+   "file": "casts.php",
+   "line": 35,
+   "identifier": "cast.useless",
+   "message": "Casting to string something that's already string.",
+   "tip": null
+  },
+  {
+   "file": "casts.php",
+   "line": 36,
+   "identifier": "cast.useless",
+   "message": "Casting to bool something that's already true.",
+   "tip": null
+  },
+  {
+   "file": "casts.php",
+   "line": 37,
+   "identifier": "cast.useless",
+   "message": "Casting to float something that's already float.",
+   "tip": null
+  },
+  {
+   "file": "casts.php",
+   "line": 40,
+   "identifier": "cast.useless",
+   "message": "Casting to string something that's already string.",
+   "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+  },
+  {
+   "file": "casts.php",
+   "line": 41,
+   "identifier": "cast.useless",
+   "message": "Casting to list<int> something that's already array<int, int>.",
+   "tip": null
+  },
+  {
+   "file": "casts.php",
+   "line": 42,
+   "identifier": "cast.useless",
+   "message": "Casting to int something that's already int.",
+   "tip": null
+  },
+  {
+   "file": "casts.php",
+   "line": 42,
+   "identifier": "cast.deprecated",
+   "message": "Non-standard (integer) cast is deprecated in PHP 8.5. Use (int) instead.",
+   "tip": null
+  },
+  {
+   "file": "casts.php",
+   "line": 43,
+   "identifier": "cast.useless",
+   "message": "Casting to bool something that's already bool.",
+   "tip": null
+  },
+  {
+   "file": "casts.php",
+   "line": 43,
+   "identifier": "cast.deprecated",
+   "message": "Non-standard (boolean) cast is deprecated in PHP 8.5. Use (bool) instead.",
+   "tip": null
+  },
+  {
+   "file": "casts.php",
+   "line": 44,
+   "identifier": "cast.useless",
+   "message": "Casting to float something that's already float.",
+   "tip": null
+  },
+  {
+   "file": "casts.php",
+   "line": 44,
+   "identifier": "cast.deprecated",
+   "message": "Non-standard (double) cast is deprecated in PHP 8.5. Use (float) instead.",
+   "tip": null
+  },
+  {
+   "file": "casts.php",
+   "line": 45,
+   "identifier": "cast.useless",
+   "message": "Casting to string something that's already string.",
+   "tip": null
+  },
+  {
+   "file": "casts.php",
+   "line": 45,
+   "identifier": "cast.deprecated",
+   "message": "Non-standard (binary) cast is deprecated in PHP 8.5. Use (string) instead.",
+   "tip": null
+  },
+  {
+   "file": "casts.php",
+   "line": 46,
+   "identifier": "cast.useless",
+   "message": "Casting to string something that's already string.",
+   "tip": null
+  },
+  {
+   "file": "casts.php",
+   "line": 47,
+   "identifier": "cast.useless",
+   "message": "Casting to int something that's already int.",
+   "tip": null
+  },
+  {
+   "file": "casts.php",
+   "line": 49,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"(void) $int\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "conditions.php",
+   "line": 15,
+   "identifier": "elseif.condNotBoolean",
+   "message": "Only booleans are allowed in an elseif condition, int given.",
+   "tip": null
+  },
+  {
+   "file": "conditions.php",
+   "line": 17,
+   "identifier": "if.condNotBoolean",
+   "message": "Only booleans are allowed in an if condition, string given.",
+   "tip": null
+  },
+  {
+   "file": "conditions.php",
+   "line": 21,
+   "identifier": "if.condNotBoolean",
+   "message": "Only booleans are allowed in an if condition, mixed given.",
+   "tip": null
+  },
+  {
+   "file": "conditions.php",
+   "line": 23,
+   "identifier": "if.condNotBoolean",
+   "message": "Only booleans are allowed in an if condition, array given.",
+   "tip": null
+  },
+  {
+   "file": "conditions.php",
+   "line": 24,
+   "identifier": "elseif.condNotBoolean",
+   "message": "Only booleans are allowed in an elseif condition, $this(StrictConditions\\Conditions) given.",
+   "tip": null
+  },
+  {
+   "file": "conditions.php",
+   "line": 28,
+   "identifier": "booleanNot.exprNotBoolean",
+   "message": "Only booleans are allowed in a negated boolean, string given.",
+   "tip": null
+  },
+  {
+   "file": "conditions.php",
+   "line": 35,
+   "identifier": "ternary.condNotBoolean",
+   "message": "Only booleans are allowed in a ternary operator condition, int given.",
+   "tip": null
+  },
+  {
+   "file": "conditions.php",
+   "line": 37,
+   "identifier": "ternary.condNotBoolean",
+   "message": "Only booleans are allowed in a ternary operator condition, string|null given.",
+   "tip": null
+  },
+  {
+   "file": "conditions.php",
+   "line": 38,
+   "identifier": "ternary.condNotBoolean",
+   "message": "Only booleans are allowed in a ternary operator condition, $this(StrictConditions\\Conditions) given.",
+   "tip": null
+  },
+  {
+   "file": "conditions.php",
+   "line": 38,
+   "identifier": "ternary.alwaysTrue",
+   "message": "Ternary operator condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "conditions.php",
+   "line": 44,
+   "identifier": "while.condNotBoolean",
+   "message": "Only booleans are allowed in a while condition, int given.",
+   "tip": null
+  },
+  {
+   "file": "conditions.php",
+   "line": 52,
+   "identifier": "doWhile.condNotBoolean",
+   "message": "Only booleans are allowed in a do-while condition, int given.",
+   "tip": null
+  },
+  {
+   "file": "conditions.php",
+   "line": 57,
+   "identifier": "while.condNotBoolean",
+   "message": "Only booleans are allowed in a while condition, $this(StrictConditions\\Conditions) given.",
+   "tip": null
+  },
+  {
+   "file": "conditions.php",
+   "line": 60,
+   "identifier": "while.condNotBoolean",
+   "message": "Only booleans are allowed in a while condition, int given.",
+   "tip": null
+  },
+  {
+   "file": "conditions.php",
+   "line": 60,
+   "identifier": "while.alwaysFalse",
+   "message": "While loop condition is always false.",
+   "tip": null
+  },
+  {
+   "file": "conditions.php",
+   "line": 68,
+   "identifier": "if.condNotBoolean",
+   "message": "Only booleans are allowed in an if condition, int given.",
+   "tip": null
+  },
+  {
+   "file": "conditions.php",
+   "line": 72,
+   "identifier": "ternary.condNotBoolean",
+   "message": "Only booleans are allowed in a ternary operator condition, int given.",
+   "tip": null
+  },
+  {
+   "file": "switches.php",
+   "line": 22,
+   "identifier": "switch.type",
+   "message": "Switch condition type (int) does not match case condition '1' (string).",
+   "tip": null
+  },
+  {
+   "file": "switches.php",
+   "line": 23,
+   "identifier": "switch.type",
+   "message": "Switch condition type (int) does not match case condition 1.5 (float).",
+   "tip": null
+  },
+  {
+   "file": "switches.php",
+   "line": 25,
+   "identifier": "switch.type",
+   "message": "Switch condition type (int) does not match case condition self::NAME (string).",
+   "tip": null
+  },
+  {
+   "file": "switches.php",
+   "line": 28,
+   "identifier": "switch.type",
+   "message": "Switch condition type (int) does not match case condition null (null).",
+   "tip": null
+  },
+  {
+   "file": "switches.php",
+   "line": 29,
+   "identifier": "switch.type",
+   "message": "Switch condition type (int) does not match case condition true (true).",
+   "tip": null
+  },
+  {
+   "file": "switches.php",
+   "line": 30,
+   "identifier": "switch.type",
+   "message": "Switch condition type (int) does not match case condition [1] (array<int, int>).",
+   "tip": null
+  },
+  {
+   "file": "switches.php",
+   "line": 36,
+   "identifier": "switch.type",
+   "message": "Switch condition type (string) does not match case condition 2 (int).",
+   "tip": null
+  },
+  {
+   "file": "switches.php",
+   "line": 38,
+   "identifier": "switch.type",
+   "message": "Switch condition type (string) does not match case condition \\StrictConditions\\Switches::COUNT (int).",
+   "tip": null
+  },
+  {
+   "file": "switches.php",
+   "line": 44,
+   "identifier": "switch.type",
+   "message": "Switch condition type (int|null) does not match case condition 'x' (string).",
+   "tip": null
+  },
+  {
+   "file": "switches.php",
+   "line": 49,
+   "identifier": "switch.type",
+   "message": "Switch condition type (StrictConditions\\Status) does not match case condition 'active' (string).",
+   "tip": null
+  },
+  {
+   "file": "switches.php",
+   "line": 54,
+   "identifier": "switch.type",
+   "message": "Switch condition type (int|string) does not match case condition 1.0 (float).",
+   "tip": null
+  },
+  {
+   "file": "switches.php",
+   "line": 58,
+   "identifier": "switch.type",
+   "message": "Switch condition type (true) does not match case condition $string (string).",
+   "tip": null
+  },
+  {
+   "file": "switches.php",
+   "line": 72,
+   "identifier": "switch.type",
+   "message": "Switch condition type (int) does not match case condition 'x' . 'y' (string).",
+   "tip": null
+  },
+  {
+   "file": "switches.php",
+   "line": 74,
+   "identifier": "switch.type",
+   "message": "Switch condition type (int) does not match case condition $this->name() (string).",
+   "tip": null
+  }
+ ]
+}

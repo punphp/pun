@@ -17601,7 +17601,7 @@
         "UselessCastRule",
         "cast.useless"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/classes/abstract-method-in-concrete-class",
@@ -19402,7 +19402,7 @@
         "PHPStan\\Rules\\BooleansInConditions\\BooleanInIfConditionRule",
         "if.condNotBoolean"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/control-flow/non-boolean-do-while",
@@ -19424,7 +19424,7 @@
         "PHPStan\\Rules\\BooleansInConditions\\BooleanInDoWhileConditionRule",
         "doWhile.condNotBoolean"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/control-flow/non-boolean-elseif",
@@ -19446,7 +19446,7 @@
         "PHPStan\\Rules\\BooleansInConditions\\BooleanInElseIfConditionRule",
         "elseif.condNotBoolean"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/control-flow/non-boolean-ternary",
@@ -19468,7 +19468,7 @@
         "PHPStan\\Rules\\BooleansInConditions\\BooleanInTernaryOperatorRule",
         "ternary.condNotBoolean"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/control-flow/non-boolean-while",
@@ -19490,7 +19490,7 @@
         "PHPStan\\Rules\\BooleansInConditions\\BooleanInWhileConditionRule",
         "while.condNotBoolean"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/control-flow/switch-type-mismatch",
@@ -19512,7 +19512,7 @@
         "PHPStan\\Rules\\SwitchConditions\\MatchingTypeInSwitchCaseConditionRule",
         "switch.type"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/control-flow/unhandled-match",

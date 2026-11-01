@@ -400,6 +400,13 @@ where
         let mut case_has_direct_entry = result != Some(false);
         let mut case_statements_are_reachable = self.has_reachable_fallthrough || case_has_direct_entry;
 
+        // The empty cases before a `default` are evaluated (and typed) as well.
+        if switch_case.is_default() {
+            for previous_empty_case in previous_empty_cases {
+                previous_empty_case.expression.analyze(self.context, self.block_context, self.artifacts)?;
+            }
+        }
+
         if let Some(case_condition) = switch_case.expression() {
             let mut has_non_duplicate_empty_case = false;
             for previous_empty_case in previous_empty_cases {

@@ -157,12 +157,23 @@ pub struct StrictRules {
     pub booleans_in_conditions: bool,
     /// `numericOperandsInArithmeticOperators`: OperandsInArithmetic*Rule and OperandInArithmetic*Rule.
     pub numeric_operands_in_arithmetic_operators: bool,
+    /// `booleansInLoopConditions`: BooleanInWhileConditionRule and BooleanInDoWhileConditionRule.
+    pub booleans_in_loop_conditions: bool,
+    /// `uselessCast`: UselessCastRule.
+    pub useless_cast: bool,
+    /// `switchConditionsMatchingType`: MatchingTypeInSwitchCaseConditionRule.
+    pub switch_conditions_matching_type: bool,
 }
 
 impl StrictRules {
     fn from_params(params: &Array) -> StrictRules {
         let strict = params.get_str("strictRules").and_then(Value::as_array);
-        let on = |k: &str| strict.and_then(|s| s.get_str(k)) == Some(&Value::Bool(true));
+        // ConditionalTagsExtension: a list of switches is on when all of them are
+        let on = |k: &str| match strict.and_then(|s| s.get_str(k)) {
+            Some(Value::Bool(b)) => *b,
+            Some(Value::Array(a)) => a.values().all(|v| *v == Value::Bool(true)),
+            _ => false,
+        };
         StrictRules {
             closure_uses_this: on("closureUsesThis"),
             require_parent_constructor_call: on("requireParentConstructorCall"),
@@ -170,6 +181,9 @@ impl StrictRules {
             dynamic_call_on_static_method: on("dynamicCallOnStaticMethod"),
             booleans_in_conditions: on("booleansInConditions"),
             numeric_operands_in_arithmetic_operators: on("numericOperandsInArithmeticOperators"),
+            booleans_in_loop_conditions: on("booleansInLoopConditions"),
+            useless_cast: on("uselessCast"),
+            switch_conditions_matching_type: on("switchConditionsMatchingType"),
         }
     }
 }

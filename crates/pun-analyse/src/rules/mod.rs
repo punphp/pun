@@ -245,6 +245,8 @@ pub const IDENTIFIERS: &[&str] = &[
     "propertyGetHook.noRead",
     "propertySetHook.noAssign",
     "staticMethod.dynamicCall",
+    "cast.useless",
+    "switch.type",
     "method.nameCase",
     "constant.notFound",
     "class.missingExtends",
@@ -1811,6 +1813,12 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
 
     fn walk_if(&mut self, r#if: &'ast If<'arena>, c: &mut ()) {
         dead_code::if_statement(self, r#if);
+        if self.strict.booleans_in_conditions {
+            operators::condition(self, r#if.span(), r#if.condition, "an if condition", "if.condNotBoolean");
+            for (at, cond) in operators::else_if_conditions(r#if) {
+                operators::condition(self, at, cond, "an elseif condition", "elseif.condNotBoolean");
+            }
+        }
         self.walk_expression(r#if.condition, c);
         // (condition, statements) per branch; `None` is the `else`
         let mut branches: Vec<(Option<&Expression<'arena>>, Vec<&Statement<'arena>>)> = Vec::new();
@@ -1919,6 +1927,11 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
 
     fn walk_conditional(&mut self, cond: &'ast Conditional<'arena>, c: &mut ()) {
         dead_code::ternary(self, cond);
+        // an elvis `?:` is not checked
+        if self.strict.booleans_in_conditions && cond.then.is_some() {
+            let place = "a ternary operator condition";
+            operators::condition(self, cond.span(), cond.condition, place, "ternary.condNotBoolean");
+        }
         self.walk_expression(cond.condition, c);
         let t = self.truthy(cond.condition);
         let yes = if let Some(then) = cond.then {
@@ -2622,6 +2635,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_in_unary_prefix(&mut self, u: &'ast UnaryPrefix<'arena>, _: &mut ()) {
         dead_code::boolean_not(self, u);
         statements::cast(self, u);
+        strict::cast(self, u);
         types::prefix(self, u);
         types::unary(self, u);
         operators::unary_prefix(self, u);
@@ -2667,6 +2681,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_while(&mut self, w: &'ast While<'arena>, c: &mut ()) {
         dead_code::while_loop(self, w);
+        if self.strict.booleans_in_loop_conditions {
+            operators::condition(self, w.span(), w.condition, "a while condition", "while.condNotBoolean");
+        }
         self.syntax.parents.push(syntax::Parent::Loop);
         self.walk_expression(w.condition, c);
         // the body starts where the condition held
@@ -2680,6 +2697,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_in_do_while(&mut self, d: &'ast DoWhile<'arena>, _: &mut ()) {
         dead_code::do_while(self, d);
+        if self.strict.booleans_in_loop_conditions {
+            operators::condition(self, d.span(), d.condition, "a do-while condition", "doWhile.condNotBoolean");
+        }
         self.syntax.parents.push(syntax::Parent::Loop);
     }
     fn walk_out_do_while(&mut self, _: &'ast DoWhile<'arena>, _: &mut ()) {
@@ -2687,6 +2707,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_in_switch(&mut self, s: &'ast Switch<'arena>, _: &mut ()) {
         dead_code::switch_statement(self, s);
+        strict::switch(self, s);
         self.syntax.parents.push(syntax::Parent::Loop);
     }
     fn walk_out_switch(&mut self, _: &'ast Switch<'arena>, _: &mut ()) {

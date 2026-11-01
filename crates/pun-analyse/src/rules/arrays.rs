@@ -388,7 +388,7 @@ fn inferred_keys(t: &Type) -> Option<Vec<Key>> {
 
 /// ExprPrinter's output for a key after php-parser's NameResolver: a class name and a qualified constant name print
 /// fully qualified.
-fn written(c: &Checker, e: &Expression) -> String {
+pub(super) fn written(c: &Checker, e: &Expression) -> String {
     let source = |s: Span| c.written(s);
     let e = unparen(e);
     match e {

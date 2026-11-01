@@ -977,7 +977,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "attributes/trait-as-attribute" = { preset = "basic", ported = true, status = "decided" }
 "casing/inherited-method-case" = { preset = "basic", ported = true, status = "decided" }
 "casts/unset-not-supported" = { preset = "basic", ported = true, status = "decided" }
-"casts/useless" = { preset = "recommended", fixed_by = ["lint/dead-code/no-useless-cast"], status = "decided" }
+"casts/useless" = { preset = "recommended", fixed_by = ["lint/dead-code/no-useless-cast"], ported = true, status = "decided" }
 "classes/abstract-method-in-concrete-class" = { preset = "basic", ported = true, status = "decided" }
 "classes/abstract-private-method" = { preset = "basic", ported = true, status = "decided" }
 "classes/callable-property-type" = { preset = "basic", ported = true, status = "decided" }
@@ -1043,12 +1043,12 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "classes/unsafe-new-static" = { preset = "basic", ported = true, status = "decided" }
 "comments/invalid-ignore" = { preset = "basic", ported = true, status = "decided" }
 "control-flow/break-outside-loop" = { preset = "basic", ported = true, status = "decided" }
-"control-flow/non-boolean-condition" = { preset = "strict", status = "decided" }
-"control-flow/non-boolean-do-while" = { preset = "strict", status = "decided" }
-"control-flow/non-boolean-elseif" = { preset = "strict", status = "decided" }
-"control-flow/non-boolean-ternary" = { preset = "strict", status = "decided" }
-"control-flow/non-boolean-while" = { preset = "strict", status = "decided" }
-"control-flow/switch-type-mismatch" = { preset = "strict", status = "decided" }
+"control-flow/non-boolean-condition" = { preset = "strict", ported = true, status = "decided" }
+"control-flow/non-boolean-do-while" = { preset = "strict", ported = true, status = "decided" }
+"control-flow/non-boolean-elseif" = { preset = "strict", ported = true, status = "decided" }
+"control-flow/non-boolean-ternary" = { preset = "strict", ported = true, status = "decided" }
+"control-flow/non-boolean-while" = { preset = "strict", ported = true, status = "decided" }
+"control-flow/switch-type-mismatch" = { preset = "strict", ported = true, status = "decided" }
 "control-flow/unhandled-match" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/boolean-and-always-constant" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/boolean-not-always-constant" = { preset = "recommended", ported = true, status = "decided" }

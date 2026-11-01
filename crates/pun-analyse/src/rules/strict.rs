@@ -1,6 +1,7 @@
 //! phpstan-strict-rules (rules.neon, each rule on with its `strictRules.*` switch): ClosureUsesThisRule,
 //! RequireParentConstructCallRule, DynamicCallOnStaticMethodsRule and DynamicCallOnStaticMethodsCallableRule.
-//! WrongCaseOfInheritedMethodRule is in overriding.rs, next to the ancestry it reads.
+//! UselessCastRule and MatchingTypeInSwitchCaseConditionRule. WrongCaseOfInheritedMethodRule is in overriding.rs,
+//! next to the ancestry it reads.
 
 use std::collections::HashSet;
 
@@ -12,14 +13,20 @@ use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use mago_syntax::walker::MutWalker;
 
-use super::Checker;
-use super::members;
+use pun_phpstan::types::{Level, Type, is_super_type_of};
+
+use super::{Checker, declared, members};
 
 /// The expressions whose types the rules read: the variables a non-static closure imports (ClosureUsesThisRule),
-/// and from level 2 the object of a call to a method name some class declares static.
+/// from level 2 the object of a call to a method name some class declares static, a cast and its operand
+/// (UselessCastRule), and a switch's condition and case conditions.
 pub fn typed_expressions(project: &super::Checks, codebase: &CodebaseMetadata, program: &Program) -> Vec<Span> {
     let strict = project.strict;
-    if !strict.closure_uses_this && !(strict.dynamic_call_on_static_method && project.level >= 2) {
+    if !strict.closure_uses_this
+        && !(strict.dynamic_call_on_static_method && project.level >= 2)
+        && !strict.useless_cast
+        && !strict.switch_conditions_matching_type
+    {
         return Vec::new();
     }
     let statics: HashSet<Vec<u8>> = if strict.dynamic_call_on_static_method && project.level >= 2 {
@@ -35,6 +42,8 @@ pub fn typed_expressions(project: &super::Checks, codebase: &CodebaseMetadata, p
     let mut typed = Typed {
         closures: strict.closure_uses_this,
         statics,
+        casts: strict.useless_cast,
+        switches: strict.switch_conditions_matching_type,
         spans: Vec::new(),
     };
     typed.walk_program(program, &mut ());
@@ -44,6 +53,8 @@ pub fn typed_expressions(project: &super::Checks, codebase: &CodebaseMetadata, p
 struct Typed {
     closures: bool,
     statics: HashSet<Vec<u8>>,
+    casts: bool,
+    switches: bool,
     spans: Vec<Span>,
 }
 
@@ -74,6 +85,89 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Typed {
     }
     fn walk_in_method_partial_application(&mut self, m: &'ast MethodPartialApplication<'arena>, _: &mut ()) {
         self.call(m.object, &m.method);
+    }
+    fn walk_in_unary_prefix(&mut self, u: &'ast UnaryPrefix<'arena>, _: &mut ()) {
+        if self.casts && u.operator.is_cast() {
+            self.spans.extend([u.span(), u.operand.span()]);
+        }
+    }
+    fn walk_in_switch(&mut self, s: &'ast Switch<'arena>, _: &mut ()) {
+        if self.switches {
+            self.spans.push(s.expression.span());
+            self.spans.extend(s.body.cases().iter().filter_map(SwitchCase::expression).map(HasSpan::span));
+        }
+    }
+}
+
+const TIP: &str = "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%.";
+
+/// UselessCastRule: a cast whose (generalized) type already holds its operand's type.
+pub fn cast(c: &mut Checker, u: &UnaryPrefix) {
+    if !c.strict.useless_cast
+        || !u.operator.is_cast()
+        || matches!(u.operator, UnaryPrefixOperator::VoidCast(..) | UnaryPrefixOperator::UnsetCast(..))
+    {
+        return;
+    }
+    let Some(cast) = c.phpstan_type_at(u.span()).filter(|t| !matches!(t, Type::Error)) else {
+        return;
+    };
+    let cast = cast.generalize();
+    // ponytail: Mago tracks native types only in fully supported functions; otherwise a parameter is its declaration
+    // and a literal or constant has no PHPDoc input, and anything else has no native type known (it gets the tip)
+    let native = || {
+        c.phpstan_type_in(u.operand, &c.native_types).or_else(|| match u.operand {
+            Expression::Literal(_) | Expression::Array(_) | Expression::ConstantAccess(_) => c.phpstan_type(u.operand),
+            Expression::Variable(_) => super::dead_code::sort::native(c, u.operand),
+            _ => None,
+        })
+    };
+    let operand = if c.treat_php_doc_types_as_certain { c.phpstan_type(u.operand) } else { native() };
+    let Some(operand) = operand else {
+        return;
+    };
+    let holds = |t: &Type| declared::with_classes(c, || is_super_type_of(&cast, t).yes());
+    if !holds(&operand) {
+        return;
+    }
+    let tip = (c.treat_php_doc_types_as_certain && !native().is_some_and(|n| holds(&n))).then_some(TIP);
+    let message = declared::with_classes(c, || {
+        format!(
+            "Casting to {} something that's already {}.",
+            cast.describe(Level::TypeOnly),
+            operand.describe(Level::TypeOnly)
+        )
+    });
+    c.report(u, "cast.useless", message, tip);
+}
+
+/// MatchingTypeInSwitchCaseConditionRule: a case whose type the switch condition's type can never be.
+pub fn switch(c: &mut Checker, s: &Switch) {
+    if !c.strict.switch_conditions_matching_type {
+        return;
+    }
+    let Some(condition) = c.phpstan_type(s.expression) else {
+        return;
+    };
+    for case in s.body.cases() {
+        let SwitchCase::Expression(case) = case else {
+            continue;
+        };
+        let Some(t) = c.phpstan_type(case.expression) else {
+            continue;
+        };
+        if !declared::with_classes(c, || is_super_type_of(&condition, &t).no()) {
+            continue;
+        }
+        let message = declared::with_classes(c, || {
+            format!(
+                "Switch condition type ({}) does not match case condition {} ({}).",
+                condition.describe(Level::Value),
+                super::arrays::written(c, case.expression),
+                t.describe(Level::TypeOnly)
+            )
+        });
+        c.report(case, "switch.type", message, None);
     }
 }
 

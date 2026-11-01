@@ -1,5 +1,7 @@
 //! phpstan-strict-rules' operand rules: BooleanInBooleanAndRule, BooleanInBooleanOrRule and BooleanInBooleanNotRule
-//! (`strictRules.booleansInConditions`, over BooleanRuleHelper), and the OperandsInArithmetic*Rule /
+//! (`strictRules.booleansInConditions`, over BooleanRuleHelper) with the condition rules over the same helper
+//! (BooleanInIf/ElseIf/TernaryOperatorRule, and BooleanInWhile/DoWhileConditionRule of
+//! `strictRules.booleansInLoopConditions`), and the OperandsInArithmetic*Rule /
 //! OperandInArithmetic*Rule of `strictRules.numericOperandsInArithmeticOperators` (over OperatorRuleHelper; unary
 //! `-` and `+` only with bleeding edge).
 
@@ -20,6 +22,11 @@ pub const IDENTIFIERS: &[&str] = &[
     "logicalOr.leftNotBoolean",
     "logicalOr.rightNotBoolean",
     "booleanNot.exprNotBoolean",
+    "if.condNotBoolean",
+    "elseif.condNotBoolean",
+    "ternary.condNotBoolean",
+    "while.condNotBoolean",
+    "doWhile.condNotBoolean",
     "plus.leftNonNumeric",
     "plus.rightNonNumeric",
     "minus.leftNonNumeric",
@@ -44,10 +51,11 @@ pub const IDENTIFIERS: &[&str] = &[
 pub(super) fn typed_expressions(strict: crate::StrictRules, program: &Program) -> Vec<Span> {
     let mut t = Typed {
         booleans: strict.booleans_in_conditions,
+        loops: strict.booleans_in_loop_conditions,
         numbers: strict.numeric_operands_in_arithmetic_operators,
         spans: Vec::new(),
     };
-    if t.booleans || t.numbers {
+    if t.booleans || t.loops || t.numbers {
         t.walk_program(program, &mut ());
     }
     t.spans
@@ -55,6 +63,7 @@ pub(super) fn typed_expressions(strict: crate::StrictRules, program: &Program) -
 
 struct Typed {
     booleans: bool,
+    loops: bool,
     numbers: bool,
     spans: Vec<Span>,
 }
@@ -79,6 +88,49 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Typed {
         if self.numbers {
             self.spans.push(u.operand.span());
         }
+    }
+    fn walk_in_if(&mut self, i: &'ast If<'arena>, _: &mut ()) {
+        if self.booleans {
+            self.spans.push(i.condition.span());
+            self.spans.extend(else_if_conditions(i).map(|(_, e)| e.span()));
+        }
+    }
+    fn walk_in_conditional(&mut self, t: &'ast Conditional<'arena>, _: &mut ()) {
+        if self.booleans && t.then.is_some() {
+            self.spans.push(t.condition.span());
+        }
+    }
+    fn walk_in_while(&mut self, w: &'ast While<'arena>, _: &mut ()) {
+        if self.loops {
+            self.spans.push(w.condition.span());
+        }
+    }
+    fn walk_in_do_while(&mut self, d: &'ast DoWhile<'arena>, _: &mut ()) {
+        if self.loops {
+            self.spans.push(d.condition.span());
+        }
+    }
+}
+
+/// The `elseif` clauses of an `if`, each with its condition (`else if` is an `if` of its own).
+pub(super) fn else_if_conditions<'a, 'arena>(
+    i: &'a If<'arena>,
+) -> impl Iterator<Item = (Span, &'a Expression<'arena>)> {
+    let (statement, colon) = match &i.body {
+        IfBody::Statement(b) => (Some(b.else_if_clauses.iter().map(|e| (e.span(), e.condition))), None),
+        IfBody::ColonDelimited(b) => (None, Some(b.else_if_clauses.iter().map(|e| (e.span(), e.condition)))),
+    };
+    statement.into_iter().flatten().chain(colon.into_iter().flatten())
+}
+
+/// The Boolean*ConditionRule of a statement or ternary whose condition is `cond`: `place` is its message's.
+pub(super) fn condition(c: &mut Checker, at: Span, cond: &Expression, place: &str, identifier: &'static str) {
+    let Some(t) = c.phpstan_type(cond) else {
+        return;
+    };
+    if !passes_as_boolean(c, cond, &t) {
+        let message = format!("Only booleans are allowed in {place}, {} given.", describe(c, &t));
+        c.report(at, identifier, message, None);
     }
 }
 

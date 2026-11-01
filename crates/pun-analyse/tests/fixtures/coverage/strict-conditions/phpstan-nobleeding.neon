@@ -1,0 +1,13 @@
+includes:
+    - conf/rules.neon
+parameters:
+    level: 5
+    phpVersion: 80500
+    paths: [.]
+    treatPhpDocTypesAsCertain: false
+    strictRules:
+        allRules: false
+        booleansInConditions: true
+        booleansInLoopConditions: [true, %featureToggles.bleedingEdge%]
+        uselessCast: true
+        switchConditionsMatchingType: true
