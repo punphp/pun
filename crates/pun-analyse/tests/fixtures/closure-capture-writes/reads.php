@@ -83,3 +83,16 @@ function reads(int $value, bool $flag, string $name): void
         echo $value;
     };
 }
+
+final class Selectors
+{
+    /** @return list<\Closure> */
+    public function selectors(string $method, string $property, string $class): array
+    {
+        return [
+            function () use ($method): mixed { return $this->$method(); },
+            function () use ($property): mixed { return $this->$property; },
+            function () use ($class): string { return 'x' . \strlen($class) . 'y'; },
+        ];
+    }
+}

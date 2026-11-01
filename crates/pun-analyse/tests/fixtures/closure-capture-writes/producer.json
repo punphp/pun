@@ -927,6 +927,42 @@
             "referenced": false,
             "allNames": false,
             "opaque": false
+        },
+        {
+            "closureLine": 93,
+            "captureLine": 93,
+            "name": "method",
+            "byRef": false,
+            "tracked": true,
+            "read": true,
+            "used": true,
+            "referenced": true,
+            "allNames": false,
+            "opaque": false
+        },
+        {
+            "closureLine": 94,
+            "captureLine": 94,
+            "name": "property",
+            "byRef": false,
+            "tracked": true,
+            "read": true,
+            "used": true,
+            "referenced": true,
+            "allNames": false,
+            "opaque": false
+        },
+        {
+            "closureLine": 95,
+            "captureLine": 95,
+            "name": "class",
+            "byRef": false,
+            "tracked": true,
+            "read": true,
+            "used": true,
+            "referenced": true,
+            "allNames": false,
+            "opaque": false
         }
     ],
     "boundaries": [

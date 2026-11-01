@@ -64,6 +64,26 @@ pub(crate) fn expression<A: Arena>(
         empty()
     };
     let state = &mut context.variable_flow;
+    // The concat analyzer flattens a chain and analyzes only its operands. Give the nested
+    // concatenations their fragments, innermost first, before the outer one composes them.
+    if let Expression::Binary(binary) = expr
+        && matches!(binary.operator, BinaryOperator::StringConcat(_))
+    {
+        let mut nested = Vec::new();
+        let mut stack = vec![binary.lhs, binary.rhs];
+        while let Some(operand) = stack.pop() {
+            if let Expression::Binary(inner) = operand
+                && matches!(inner.operator, BinaryOperator::StringConcat(_))
+            {
+                nested.push(operand);
+                stack.extend([inner.lhs, inner.rhs]);
+            }
+        }
+        for operand in nested.into_iter().rev() {
+            let flow = state.expression(operand, artifacts, None);
+            state.expressions.insert(operand.span(), flow);
+        }
+    }
     let flow = sequence([
         state.expression(expr, artifacts, function_name.as_deref()),
         scope_guard,
@@ -156,6 +176,14 @@ impl State {
                 .get(&stmt.span())
                 .cloned()
                 .unwrap_or_else(empty),
+            // `$this->$name`: the analyzer reads a selector variable without analyzing it.
+            Node::ClassLikeMemberSelector(ClassLikeMemberSelector::Variable(Variable::Direct(
+                variable,
+            ))) => self
+                .expressions
+                .get(&variable.span())
+                .cloned()
+                .unwrap_or_else(|| F::read(word(variable.name), None)),
             Node::Variable(variable) => self
                 .expressions
                 .get(&variable.span())
