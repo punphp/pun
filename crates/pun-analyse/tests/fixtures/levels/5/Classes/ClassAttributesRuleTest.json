@@ -1,0 +1,284 @@
+{
+    "test": "Classes/ClassAttributesRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Classes/data/class-attributes.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/class-attributes.php",
+                    "line": 22,
+                    "identifier": "attribute.notFound",
+                    "message": "Attribute class ClassAttributes\\Nonexistent does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-attributes.php",
+                    "line": 28,
+                    "identifier": "attribute.notAttribute",
+                    "message": "Class ClassAttributes\\Foo is not an Attribute class.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-attributes.php",
+                    "line": 34,
+                    "identifier": "class.nameCase",
+                    "message": "Class ClassAttributes\\Bar referenced with incorrect case: ClassAttributes\\baR.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-attributes.php",
+                    "line": 46,
+                    "identifier": "attribute.target",
+                    "message": "Attribute class ClassAttributes\\Baz does not have the class target.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-attributes.php",
+                    "line": 59,
+                    "identifier": "attribute.nonRepeatable",
+                    "message": "Attribute class ClassAttributes\\Bar is not repeatable but is already present above the class.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-attributes.php",
+                    "line": 65,
+                    "identifier": "attribute.notFound",
+                    "message": "Attribute class self does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-attributes.php",
+                    "line": 71,
+                    "identifier": "attribute.abstract",
+                    "message": "Abstract class ClassAttributes\\AbstractAttribute cannot be an Attribute class.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-attributes.php",
+                    "line": 77,
+                    "identifier": "attribute.abstract",
+                    "message": "Attribute class ClassAttributes\\AbstractAttribute is abstract.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-attributes.php",
+                    "line": 83,
+                    "identifier": "attribute.noConstructor",
+                    "message": "Attribute class ClassAttributes\\Bar does not have a constructor and must be instantiated without any parameters.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-attributes.php",
+                    "line": 89,
+                    "identifier": "attribute.constructorNotPublic",
+                    "message": "Attribute class ClassAttributes\\NonPublicConstructor constructor must be public.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-attributes.php",
+                    "line": 100,
+                    "identifier": "attribute.constructorNotPublic",
+                    "message": "Constructor of attribute class ClassAttributes\\NonPublicConstructor is not public.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-attributes.php",
+                    "line": 118,
+                    "identifier": "arguments.count",
+                    "message": "Attribute class ClassAttributes\\AttributeWithConstructor constructor invoked with 0 parameters, 2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-attributes.php",
+                    "line": 119,
+                    "identifier": "arguments.count",
+                    "message": "Attribute class ClassAttributes\\AttributeWithConstructor constructor invoked with 1 parameter, 2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-attributes.php",
+                    "line": 120,
+                    "identifier": "argument.unknown",
+                    "message": "Unknown parameter $r in call to ClassAttributes\\AttributeWithConstructor constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-attributes.php",
+                    "line": 126,
+                    "identifier": "attribute.interface",
+                    "message": "Interface cannot be an Attribute class.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-attributes.php",
+                    "line": 132,
+                    "identifier": "attribute.notAttribute",
+                    "message": "Interface ClassAttributes\\InterfaceAsAttribute is not an Attribute class.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-attributes.php",
+                    "line": 136,
+                    "identifier": "attribute.trait",
+                    "message": "Trait cannot be an Attribute class.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-attributes.php",
+                    "line": 142,
+                    "identifier": "attribute.notAttribute",
+                    "message": "Trait ClassAttributes\\TraitAsAttribute is not an Attribute class.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-attributes.php",
+                    "line": 164,
+                    "identifier": "attribute.target",
+                    "message": "Attribute class ClassAttributes\\FlagsAttributeWithPropertyTarget does not have the class target.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleForEnums",
+            "files": [
+                "Classes/data/enum-attributes.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/enum-attributes.php",
+                    "line": 23,
+                    "identifier": "attribute.target",
+                    "message": "Attribute class EnumAttributes\\AttributeWithPropertyTarget does not have the class target.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/enum-attributes.php",
+                    "line": 29,
+                    "identifier": "attribute.enum",
+                    "message": "Enum cannot be an Attribute class.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/enum-attributes.php",
+                    "line": 35,
+                    "identifier": "attribute.notAttribute",
+                    "message": "Enum EnumAttributes\\EnumAsAttribute is not an Attribute class.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7171",
+            "files": [
+                "Classes/data/bug-7171.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/bug-7171.php",
+                    "line": 66,
+                    "identifier": "argument.type",
+                    "message": "Parameter $repositoryClass of attribute class Bug7171\\Entity constructor expects class-string<Bug7171\\EntityRepository<T of object>>|null, 'stdClass' given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testAllowDynamicPropertiesAttribute",
+            "files": [
+                "Classes/data/allow-dynamic-properties-attribute.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12011",
+            "files": [
+                "Classes/data/bug-12011.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/bug-12011.php",
+                    "line": 23,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $name of attribute class Bug12011\\Table constructor expects string|null, int given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12281",
+            "files": [
+                "Classes/data/bug-12281.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/bug-12281.php",
+                    "line": 5,
+                    "identifier": "class.allowDynamicPropertiesReadonly",
+                    "message": "Attribute class AllowDynamicProperties cannot be used with readonly class.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-12281.php",
+                    "line": 12,
+                    "identifier": "enum.allowDynamicProperties",
+                    "message": "Attribute class AllowDynamicProperties cannot be used with enum.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-12281.php",
+                    "line": 15,
+                    "identifier": "interface.allowDynamicProperties",
+                    "message": "Attribute class AllowDynamicProperties cannot be used with interface.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testDeprecatedAttribute",
+            "files": [
+                "Classes/data/deprecated-attr-on-class.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/deprecated-attr-on-class.php",
+                    "line": 7,
+                    "identifier": "class.deprecatedAttribute",
+                    "message": "Attribute class Deprecated cannot be used with class DeprecatedAttrOnClass\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/deprecated-attr-on-class.php",
+                    "line": 13,
+                    "identifier": "interface.deprecatedAttribute",
+                    "message": "Attribute class Deprecated cannot be used with interface DeprecatedAttrOnClass\\Bar.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/deprecated-attr-on-class.php",
+                    "line": 19,
+                    "identifier": "enum.deprecatedAttribute",
+                    "message": "Attribute class Deprecated cannot be used with enum DeprecatedAttrOnClass\\Baz.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

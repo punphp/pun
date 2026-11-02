@@ -152,6 +152,15 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_> {
         if self.level >= 2 {
             properties::typed(e, &mut self.spans);
             binary_op::typed(e, &mut self.spans);
+            // InstantiationRule's `new.nonObject` (checkThisOnly below level 2)
+            if let Expression::Instantiation(new) = e
+                && !matches!(
+                    new.class,
+                    Expression::Identifier(_) | Expression::Static(_) | Expression::Self_(_) | Expression::Parent(_)
+                )
+            {
+                self.spans.push(flow::unparen(new.class).span());
+            }
         }
         if self.level >= 3 {
             offsets::typed(e, &mut self.spans);

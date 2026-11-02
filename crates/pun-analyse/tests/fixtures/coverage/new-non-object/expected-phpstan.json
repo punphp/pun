@@ -1,0 +1,75 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "extra.php",
+   "line": 9,
+   "identifier": "class.notFound",
+   "message": "Parameter $unknown of function NewNonObjectExtra\\doFoo() has invalid type Unknown.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 14,
+   "identifier": "class.notFound",
+   "message": "Instantiated class Unknown not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "extra.php",
+   "line": 15,
+   "identifier": "new.nonObject",
+   "message": "Cannot instantiate class using int.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 17,
+   "identifier": "new.nonObject",
+   "message": "Cannot instantiate class using float.",
+   "tip": null
+  },
+  {
+   "file": "instantiation-non-object.php",
+   "line": 35,
+   "identifier": "new.nonObject",
+   "message": "Cannot instantiate class using int.",
+   "tip": null
+  },
+  {
+   "file": "instantiation-non-object.php",
+   "line": 39,
+   "identifier": "new.nonObject",
+   "message": "Cannot instantiate class using int.",
+   "tip": null
+  },
+  {
+   "file": "instantiation-non-object.php",
+   "line": 40,
+   "identifier": "new.nonObject",
+   "message": "Cannot instantiate class using float.",
+   "tip": null
+  },
+  {
+   "file": "instantiation-non-object.php",
+   "line": 41,
+   "identifier": "new.nonObject",
+   "message": "Cannot instantiate class using bool.",
+   "tip": null
+  },
+  {
+   "file": "instantiation-non-object.php",
+   "line": 43,
+   "identifier": "new.nonObject",
+   "message": "Cannot instantiate class using float|int.",
+   "tip": null
+  },
+  {
+   "file": "instantiation-non-object.php",
+   "line": 50,
+   "identifier": "new.nonObject",
+   "message": "Cannot instantiate class using array<int, string>.",
+   "tip": null
+  }
+ ]
+}

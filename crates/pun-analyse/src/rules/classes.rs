@@ -34,12 +34,40 @@ pub fn instantiation<'arena>(c: &mut Checker<'_, 'arena>, new: &Instantiation<'a
             );
         }
         expr => {
+            // php-parser drops the parentheses of `new ($expr)`
+            let expr = super::types::flow::unparen(expr);
+            if c.toggled.new_on_non_object && non_object(c, new, expr) {
+                return;
+            }
             for (name, is_name) in class_names(c, expr) {
                 let pair = Pair::node(name.clone(), expr.span());
                 named(c, new, &name, is_name, pair);
             }
         }
     }
+}
+
+/// `checkClassNameExprType()` (`featureToggles.newOnNonObject`): `new $expr` whose type is not `string|object`.
+/// Whether it reported, which ends the rule for this node.
+fn non_object(c: &mut Checker, new: &Instantiation, expr: &Expression) -> bool {
+    let accepted = Type::Union(vec![Type::String, Type::ObjectWithoutClass]);
+    let accepts = |t: &Type| pun_phpstan::types::is_super_type_of(&accepted, t).yes();
+    let described = declared::with_classes(c, || {
+        c.find_type_to_check(expr, &accepts)
+            .ty
+            .filter(|t| !accepts(t))
+            .map(|t| t.describe(pun_phpstan::types::Level::TypeOnly))
+    });
+    let Some(described) = described else {
+        return false;
+    };
+    c.report(
+        new,
+        "new.nonObject",
+        format!("Cannot instantiate class using {described}."),
+        None,
+    );
+    true
 }
 
 /// `getClassNames()` for `new $expr`: the class-strings' concrete classes, else the constant strings (as names)
@@ -343,9 +371,11 @@ fn check_class(
         );
     }
     let counts = args.unwrap_or_default();
+    let mut acceptor = params::select(c, constructor.variants(), &counts);
+    in_class_context(c, &mut acceptor, class);
     params::check(
         c,
-        &params::select(c, constructor.variants(), &counts),
+        &acceptor,
         &counts,
         new,
         params::Call {
@@ -356,6 +386,44 @@ fn check_class(
         },
         false,
     );
+}
+
+/// `getConstructor()` of a class without templates of its own resolves the declaring ancestor's class templates with
+/// the arguments the class gives it (`@extends`, bug 14138).
+fn in_class_context(c: &Checker, acceptor: &mut params::Acceptor, class: &ClassLikeMetadata) {
+    let Some(declaring) = acceptor
+        .class
+        .as_deref()
+        .filter(|d| !d.as_bytes().eq_ignore_ascii_case(class.name.as_bytes()))
+        .and_then(|d| c.codebase.get_class_like(d.as_bytes()))
+    else {
+        return;
+    };
+    let names: Vec<String> = declared::class_templates(c, declaring)
+        .into_iter()
+        .map(|t| t.name)
+        .collect();
+    if names.is_empty() || !declared::class_templates(c, class).is_empty() {
+        return;
+    }
+    let ancestor = declared::original_name(declaring);
+    let Some(args) = declared::with_classes(c, || {
+        pun_phpstan::symbols::lookup(&declared::original_name(class))
+            .and_then(|k| pun_phpstan::types::ancestor_args(&k, &ancestor, &[]))
+    }) else {
+        return;
+    };
+    let scope = format!("class {ancestor}");
+    for p in 0..acceptor.param_types.len() {
+        if acceptor.param_types[p] != params::ParamType::User {
+            continue;
+        }
+        let Some(t) = super::types::declared_type(c, acceptor, p) else {
+            continue;
+        };
+        acceptor.param_types[p] =
+            params::ParamType::Typed(super::types::with_args(&t, &scope, &names, &args));
+    }
 }
 
 /// The constructor checks NewStaticRule and InstantiationRule share: `@phpstan-consistent-constructor` on the

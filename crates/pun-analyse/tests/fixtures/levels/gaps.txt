@@ -199,12 +199,6 @@
 2 Operators/InvalidComparisonOperationRuleTest::testBug9386
 2 PhpDoc/WrongVariableNameInVarTagRuleTest::testRule
 4 DeadCode/UnusedPrivateMethodRuleTest::testFalsePositiveWithTraitUse
-5 Classes/InstantiationRuleTest::testBug14138
-5 Classes/InstantiationRuleTest::testBug3425
-5 Classes/InstantiationRuleTest::testBug7048
-5 Classes/InstantiationRuleTest::testClassString
-5 Classes/InstantiationRuleTest::testNewStaticWithConsistentConstructor
-5 Classes/InstantiationRuleTest::testPromotedProperties
 5 Functions/ArrayFilterRuleTest::testBug2065WithPhpDocTypesAsCertain
 5 Functions/ArrayFilterRuleTest::testBug2065WithoutPhpDocTypesAsCertain
 5 Functions/ArrayFilterRuleTest::testFile
@@ -619,7 +613,6 @@
 4 Comparison/ImpossibleCheckTypeMethodCallRuleTest::testBug15328
 4 Comparison/ImpossibleCheckTypeStaticMethodCallRuleTest::testBug15328
 5 Classes/InstantiationRuleTest::testBug4548
-5 Classes/InstantiationRuleTest::testTemplateArgumentNestedCollection
 5 Functions/CallToFunctionParametersRuleTest::testBug11510
 5 Functions/CallToFunctionParametersRuleTest::testBug13114#0
 5 Functions/CallToFunctionParametersRuleTest::testBug13114#1
@@ -683,10 +676,9 @@
 4 Classes/ImpossibleInstanceOfRuleTest::testBug13975#0
 4 Classes/ImpossibleInstanceOfRuleTest::testPossiblyImpureTip
 4 Classes/ImpossibleInstanceOfRuleTest::testInTrait
-# an-types: too-wide returns where Mago's types differ (an arrow function's printed `fn ():`, is_subclass_of() narrowing a class-string, a $_GET element)
+# an-types: too-wide returns where Mago's types differ (is_subclass_of() narrowing a class-string, a $_GET element)
 4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug8954
 5 Functions/CallToFunctionParametersRuleTest::testBug9580
-4 TooWideTypehints/TooWideArrowFunctionReturnTypehintRuleTest::testRule
 # an-phpdoc: Mago's inferred type of a trait method's `callable(self)` parameter resolves `self` to the trait, not to
 # the using class (CallCallablesRule's argument.type)
 6 Classes/LocalTypeTraitAliasesRuleTest::testBug11591

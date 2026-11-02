@@ -7,7 +7,7 @@ use mago_codex::ttype::expander;
 use mago_codex::ttype::expander::TypeExpansionOptions;
 use mago_codex::ttype::get_iterable_parameters;
 use mago_codex::ttype::get_mixed;
-use mago_codex::ttype::get_non_negative_int;
+use mago_codex::ttype::get_int;
 use mago_codex::ttype::get_null;
 use mago_codex::ttype::union::TUnion;
 use mago_reporting::Annotation;
@@ -55,7 +55,8 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for YieldValue<'arena> {
     where
         A: Arena,
     {
-        let key_type = get_non_negative_int();
+        // Pun: PHPStan's ClosureTypeResolver gives a keyless yield the key type `int`, not `int<0, max>`.
+        let key_type = get_int();
         let value_type = if let Some(value) = self.value.as_ref() {
             let was_inside_call = block_context.flags.inside_call();
             block_context.flags.set_inside_call(true);

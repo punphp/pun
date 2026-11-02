@@ -16,7 +16,9 @@ use super::returns::strict_types;
 pub const IDENTIFIERS: &[&str] =
     &["argument.type", "argument.byRef", "argument.unpackNonIterable", "argument.templateType", "argument.named",
       "argument.invalidConstant", "argument.exclusiveConstants", "argument.bitmaskNotAllowed",
-      "argument.staticClosure", "argument.unresolvableType"];
+      "argument.staticClosure", "argument.unresolvableType", "function.unresolvableReturnType",
+      "method.unresolvableReturnType", "staticMethod.unresolvableReturnType", "callable.unresolvableReturnType",
+      "new.unresolvableReturnType", "attribute.unresolvableReturnType"];
 
 /// `describeParameter()`: `Parameter #1 $a`, `Parameter $a` (named), `Named argument b for variadic parameter ...$a`.
 fn describe(acceptor: &Acceptor, p: usize, position_or_name: Option<Result<usize, &str>>) -> String {
@@ -67,10 +69,25 @@ pub(in super::super) fn is_late(t: &Type) -> bool {
     late.get()
 }
 
-/// The parameter's type for the check, `None` when it is not checked.
-// ponytail: the types resolved per call in PHPStan (see [`is_late()`]) other than the callee's own templates are skipped
-fn parameter_type(resolved: &[Option<Type>], p: usize) -> Option<Type> {
-    resolved[p].clone().filter(|t| !is_late(t) && *t != mixed())
+/// The parameter's type for the check, `None` when it is not checked. A constructor's class templates the arguments
+/// did not infer are checked as templates (`T of Bound`, bug 3425).
+// ponytail: the other types resolved per call in PHPStan (see [`is_late()`]) are skipped
+fn parameter_type(resolved: &[Option<Type>], p: usize, constructor: bool) -> Option<Type> {
+    fn late(t: &Type, constructor: bool) -> bool {
+        let found = std::cell::Cell::new(match t {
+            Type::Template(tt) => !constructor || is_callees(tt),
+            Type::Static(..) | Type::This(_) | Type::Conditional(_) => true,
+            _ => false,
+        });
+        if !found.get() {
+            t.traverse(&|i| {
+                found.set(found.get() || late(i, constructor));
+                i.clone()
+            });
+        }
+        found.get()
+    }
+    resolved[p].clone().filter(|t| !late(t, constructor) && *t != mixed())
 }
 
 /// `GenericParametersAcceptorResolver::resolve()`: the declared parameter types, the callee's templates in them, the
@@ -88,7 +105,6 @@ fn infer(c: &Checker, acceptor: &Acceptor, args: &[Entry], parameters: &[Option<
     let templates = std::cell::RefCell::new(Vec::new());
     fn collect(t: &Type, out: &std::cell::RefCell<Vec<Template>>) {
         if let Type::Template(tt) = t
-            && is_callees(tt)
             && !out.borrow().contains(&**tt)
         {
             out.borrow_mut().push((**tt).clone());
@@ -99,7 +115,10 @@ fn infer(c: &Checker, acceptor: &Acceptor, args: &[Entry], parameters: &[Option<
         });
     }
     declared.iter().flatten().for_each(|t| collect(t, &templates));
-    let templates = templates.into_inner();
+    // ponytail: a constructor's parameters keep the class's templates, which PHPStan's accepts() checks in place;
+    // Pun infers them from the arguments like the callee's own (bug 7171), but leaves uninferred ones as templates
+    let any_template = !templates.borrow().is_empty();
+    let templates: Vec<Template> = templates.into_inner().into_iter().filter(is_callees).collect();
     let mut passed: Vec<Option<Type>> = vec![None; declared.len()];
     for (e, p) in args.iter().zip(parameters) {
         if let Some(p) = *p
@@ -119,7 +138,7 @@ fn infer(c: &Checker, acceptor: &Acceptor, args: &[Entry], parameters: &[Option<
             None => None,
         };
     }
-    let map = if templates.is_empty() {
+    let map = if !any_template {
         TemplateMap::default()
     } else {
         let map = declared.iter().zip(&passed).fold(TemplateMap::default(), |map, (d, a)| match (d, a) {
@@ -341,7 +360,7 @@ pub(in super::super) fn arguments(
         let value = e.value_type(c).map(|t| if e.unpack { t.iterable_value_type() } else { t });
         // a built-in's by-reference parameter that creates the variable takes anything
         if c.check_argument_types && (by_ref != ByRef::CreatesNewVariable || !acceptor.builtin)
-            && let (Some(param), Some(value)) = (parameter_type(&resolved, p), value)
+            && let (Some(param), Some(value)) = (parameter_type(&resolved, p, matches!(call.kind, CallKind::New | CallKind::Attribute)), value)
         {
             let strict = strict && (!acceptor.builtin || !param.is_callable().yes());
             let message = declared::with_classes(c, || {
@@ -441,6 +460,36 @@ pub(in super::super) fn arguments(
             let message = format!("Unable to resolve the template type {name} in {site}");
             let tip = "See: https://phpstan.org/blog/solving-phpstan-error-unable-to-resolve-template-type";
             c.report(at, "argument.templateType", message, Some(tip));
+        }
+        // `$unresolvableReturnTypeMessage`, when the call resolved any template
+        if !inference.map.types().is_empty()
+            && let Some(original) = return_type(c, acceptor)
+            && unresolvable(&original).is_none()
+        {
+            let argument = |name: &str| inference.passed[acceptor.names.iter().position(|n| name[1..] == **n)?].clone();
+            let ret = declared::with_classes(c, || {
+                late_parameter_type(&resolve_template_types(&original, &inference.map), &argument)
+            });
+            if let Some(reasons) = unresolvable(&ret) {
+                let reasons: Vec<_> = reasons.into_iter().map(|r| r.replace("<fg=cyan>", "").replace("</>", "")).collect();
+                let tip = match reasons.as_slice() {
+                    [] => None,
+                    [one] => Some(one.clone()),
+                    all => Some(all.iter().map(|r| format!("• {r}")).collect::<Vec<_>>().join("\n")),
+                };
+                let (identifier, callee) = match call.kind {
+                    CallKind::Function | CallKind::CallUserFunc => ("function.unresolvableReturnType", of.clone()),
+                    CallKind::Method => ("method.unresolvableReturnType", of.clone()),
+                    CallKind::StaticMethod => ("staticMethod.unresolvableReturnType", of.clone()),
+                    CallKind::Callable => ("callable.unresolvableReturnType", of.clone()),
+                    CallKind::New => ("new.unresolvableReturnType", of.trim_start_matches("class ").to_string()),
+                    CallKind::Attribute => {
+                        ("attribute.unresolvableReturnType", of.trim_start_matches("attribute class ").to_string())
+                    }
+                };
+                let message = format!("Return type of call to {callee} contains unresolvable type.");
+                c.report(at, identifier, message, tip.as_deref());
+            }
         }
     }
 }

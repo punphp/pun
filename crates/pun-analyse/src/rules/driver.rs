@@ -128,6 +128,8 @@ pub(super) struct Toggled {
     pub(super) unused_parameters: bool,
     /// `featureToggles.unusedParameters` itself: the closure use and constructor parameter flow findings.
     pub(super) unused_flow: bool,
+    /// InstantiationRule's `featureToggles.newOnNonObject` check.
+    pub(super) new_on_non_object: bool,
 }
 
 impl Checks {
@@ -210,6 +212,7 @@ impl Checks {
                 unused_variable: project.level >= 4 && project.unused_variable,
                 unused_parameters: project.level >= 4 && project.unused_parameters,
                 unused_flow: project.unused_parameters,
+                new_on_non_object: project.new_on_non_object,
             },
         }
     }

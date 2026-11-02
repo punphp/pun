@@ -192,6 +192,7 @@ pub const IDENTIFIERS: &[&str] = &[
     "argument.vsprintf",
     "class.notFound",
     "new.static",
+    "new.nonObject",
     "new.trait",
     "new.enum",
     "new.interface",
@@ -1322,7 +1323,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             hierarchy::allowed_subtypes(self, class.span(), k);
             require_tags::class_like(self, class.span(), k);
             class_tags::class_like(self, class.span(), k);
-            dead_code::unused_private(self, k, class.members.as_slice());
+            dead_code::unused_private(self, k, class.attribute_lists.as_slice(), class.members.as_slice());
             readonly_init::class(self, k, class.members.as_slice());
             types::too_wide_properties(self, k, class.members.as_slice());
         }
@@ -1424,7 +1425,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             hierarchy::allowed_subtypes(self, e.span(), k);
             require_tags::class_like(self, e.span(), k);
             class_tags::class_like(self, e.span(), k);
-            dead_code::unused_private(self, k, e.members.as_slice());
+            dead_code::unused_private(self, k, e.attribute_lists.as_slice(), e.members.as_slice());
         }
         type_aliases::class_like(self, e.span());
         invalid_throws::node(self, e.span());
@@ -1573,7 +1574,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             hierarchy::allowed_subtypes(self, a.span(), k);
             require_tags::class_like(self, a.span(), k);
             class_tags::class_like(self, a.span(), k);
-            dead_code::unused_private(self, k, a.members.as_slice());
+            dead_code::unused_private(self, k, a.attribute_lists.as_slice(), a.members.as_slice());
             readonly_init::class(self, k, a.members.as_slice());
             types::too_wide_properties(self, k, a.members.as_slice());
         }

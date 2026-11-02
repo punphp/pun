@@ -341,6 +341,7 @@ pub(super) fn reflected_params(c: &Checker, f: &FunctionLikeMetadata, declaring:
 }
 
 fn codex_parameter_types(c: &Checker, f: &FunctionLikeMetadata, declaring: Option<&ClassLikeMetadata>, doc: Resolved) -> Vec<Type> {
+    let constructor = declaring.is_some() && f.name.as_bytes().eq_ignore_ascii_case(b"__construct");
     f.parameters
         .iter()
         .map(|p| {
@@ -352,7 +353,10 @@ fn codex_parameter_types(c: &Checker, f: &FunctionLikeMetadata, declaring: Optio
                 let t = native_declaration(c, t, declaring);
                 if null_default { t.add_null() } else { t }
             });
-            let mut phpdoc = doc.params.get(&name).cloned();
+            let promoted = (constructor && p.flags.is_promoted_property())
+                .then(|| codex_promoted_var(c, p.span, &name, declaring))
+                .flatten();
+            let mut phpdoc = promoted.or_else(|| doc.params.get(&name).cloned());
             if p.default_type.as_ref().is_some_and(|d| d.type_union.is_null())
                 && let Some(t) = &phpdoc
                 && !has_template(t)
@@ -1201,6 +1205,17 @@ fn promoted_var(
     match vars.as_slice() {
         [(n, t)] if n.is_empty() => Some(t.clone()),
         _ => vars.into_iter().find(|(n, _)| *n == name).map(|(_, t)| t),
+    }
+}
+
+/// [`promoted_var()`] of a promoted parameter the codex holds, declared at `span` in any file.
+fn codex_promoted_var(c: &Checker, span: Span, name: &str, class: Option<&ClassLikeMetadata>) -> Option<Type> {
+    let (raw, _) = doc_at(c, span)?;
+    let doc = Doc::parse(&raw);
+    let vars = doc.var_types(&scope_at(c, span, class));
+    match vars.as_slice() {
+        [(n, t)] if n.is_empty() => Some(t.clone()),
+        _ => vars.into_iter().find(|(n, _)| n == name).map(|(_, t)| t),
     }
 }
 

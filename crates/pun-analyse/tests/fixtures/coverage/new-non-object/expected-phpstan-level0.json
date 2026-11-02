@@ -1,0 +1,19 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "extra.php",
+   "line": 9,
+   "identifier": "class.notFound",
+   "message": "Parameter $unknown of function NewNonObjectExtra\\doFoo() has invalid type Unknown.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 14,
+   "identifier": "class.notFound",
+   "message": "Instantiated class Unknown not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  }
+ ]
+}

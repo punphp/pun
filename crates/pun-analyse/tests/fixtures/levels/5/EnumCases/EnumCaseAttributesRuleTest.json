@@ -1,0 +1,22 @@
+{
+    "test": "EnumCases/EnumCaseAttributesRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "EnumCases/data/enum-case-attributes.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "EnumCases/data/enum-case-attributes.php",
+                    "line": 26,
+                    "identifier": "attribute.target",
+                    "message": "Attribute class EnumCaseAttributes\\AttributeWithPropertyTarget does not have the class constant target.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

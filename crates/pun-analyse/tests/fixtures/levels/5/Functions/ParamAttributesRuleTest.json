@@ -1,0 +1,76 @@
+{
+    "test": "Functions/ParamAttributesRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Functions/data/param-attributes.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/param-attributes.php",
+                    "line": 33,
+                    "identifier": "attribute.target",
+                    "message": "Attribute class ParamAttributes\\Foo does not have the parameter target.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-attributes.php",
+                    "line": 71,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class ParamAttributes\\Sit has an unused parameter $qux4.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-attributes.php",
+                    "line": 72,
+                    "identifier": "attribute.target",
+                    "message": "Attribute class ParamAttributes\\Foo does not have the parameter or property target.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-attributes.php",
+                    "line": 80,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property ParamAttributes\\Sit::$qux3 is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Functions/data/param-attributes.php",
+                    "line": 82,
+                    "identifier": "attribute.target",
+                    "message": "Attribute class ParamAttributes\\Qux does not have the parameter target.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testSensitiveParameterAttribute",
+            "files": [
+                "Functions/data/sensitive-parameter.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/sensitive-parameter.php",
+                    "line": 7,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class SensitiveParameter\\HelloWorld has an unused parameter $password.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10298",
+            "files": [
+                "Functions/data/bug-10298.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

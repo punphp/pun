@@ -113,6 +113,8 @@ pub struct Project {
     /// `featureToggles.unusedParameters` (on with bleedingEdge): Unused{Function,Method}ParametersRule and the
     /// `*.unusedParameterFlow`/`closure.unusedUseFlow` findings.
     pub unused_parameters: bool,
+    /// `featureToggles.newOnNonObject` (on with bleedingEdge): InstantiationRule's `new.nonObject`.
+    pub new_on_non_object: bool,
     /// `dynamicConstantNames`' entries with a configured type (name, type string).
     pub dynamic_constant_types: Vec<(String, String)>,
     /// `checkUninitializedProperties`: UninitializedPropertyRule (config.neon's conditional rule).
@@ -451,6 +453,7 @@ impl Project {
             finite_types_in_haystack: toggle("finiteTypesInHaystack"),
             unused_variable: toggle("unusedVariable"),
             unused_parameters: toggle("unusedParameters"),
+            new_on_non_object: toggle("newOnNonObject"),
             // ConstantResolver::getConfiguredGlobalConstantType(): only the string keys have a type
             dynamic_constant_types: params
                 .get_str("dynamicConstantNames")
@@ -543,6 +546,7 @@ impl Project {
             finite_types_in_haystack: false,
             unused_variable: false,
             unused_parameters: false,
+            new_on_non_object: false,
             dynamic_constant_types: Vec::new(),
             check_uninitialized_properties: false,
             check_missing_callable_signature: false,

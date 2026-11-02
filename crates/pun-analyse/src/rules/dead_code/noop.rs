@@ -1278,6 +1278,49 @@ pub(super) fn print(c: &Checker, e: &Expression) -> String {
             out.push('\n');
             out
         }
+        // pExpr_ArrowFunction(): inline attribute groups with resolved names, then `fn(...) => `
+        Expression::ArrowFunction(f) => {
+            let mut out = String::new();
+            for list in f.attribute_lists.iter() {
+                let attributes: Vec<String> = list
+                    .attributes
+                    .iter()
+                    .map(|a| {
+                        let args: Vec<String> = a
+                            .argument_list
+                            .iter()
+                            .flat_map(|args| args.arguments.iter())
+                            .map(|arg| c.written(arg.span()))
+                            .collect();
+                        let name = format!("\\{}", c.resolved(&a.name));
+                        match a.argument_list {
+                            Some(_) => format!("{name}({})", args.join(", ")),
+                            None => name,
+                        }
+                    })
+                    .collect();
+                out.push_str(&format!("#[{}] ", attributes.join(", ")));
+            }
+            if f.r#static.is_some() {
+                out.push_str("static ");
+            }
+            out.push_str("fn");
+            if f.ampersand.is_some() {
+                out.push('&');
+            }
+            let params: Vec<String> = f
+                .parameter_list
+                .parameters
+                .iter()
+                .map(|p| c.written(p.span()))
+                .collect();
+            out.push_str(&format!("({})", params.join(", ")));
+            if let Some(hint) = &f.return_type_hint {
+                out.push_str(&format!(": {}", c.written(hint.hint.span())));
+            }
+            out.push_str(&format!(" => {}", print(c, f.expression)));
+            out
+        }
         _ => written(),
     }
 }

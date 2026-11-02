@@ -962,18 +962,18 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "arrays/invalid-destructuring" = { preset = "essential", status = "decided" }
 "arrays/read-without-offset" = { preset = "basic", ported = true, status = "decided" }
 "attributes/invalid" = { preset = "basic", ported = true, status = "decided" }
-"attributes/invalid-arrow-function-attribute" = { preset = "basic", status = "decided" }
-"attributes/invalid-class-attribute" = { preset = "basic", status = "decided" }
-"attributes/invalid-class-constant-attribute" = { preset = "basic", status = "decided" }
-"attributes/invalid-closure-attribute" = { preset = "basic", status = "decided" }
-"attributes/invalid-constant-attribute" = { preset = "basic", status = "decided" }
-"attributes/invalid-enum-case-attribute" = { preset = "basic", status = "decided" }
-"attributes/invalid-function-attribute" = { preset = "basic", status = "decided" }
-"attributes/invalid-hook-attribute" = { preset = "basic", status = "decided" }
-"attributes/invalid-method-attribute" = { preset = "basic", status = "decided" }
-"attributes/invalid-parameter-attribute" = { preset = "basic", status = "decided" }
-"attributes/invalid-property-attribute" = { preset = "basic", status = "decided" }
-"attributes/invalid-trait-attribute" = { preset = "basic", status = "decided" }
+"attributes/invalid-arrow-function-attribute" = { preset = "basic", ported = true, status = "decided" }
+"attributes/invalid-class-attribute" = { preset = "basic", ported = true, status = "decided" }
+"attributes/invalid-class-constant-attribute" = { preset = "basic", ported = true, status = "decided" }
+"attributes/invalid-closure-attribute" = { preset = "basic", ported = true, status = "decided" }
+"attributes/invalid-constant-attribute" = { preset = "basic", ported = true, status = "decided" }
+"attributes/invalid-enum-case-attribute" = { preset = "basic", ported = true, status = "decided" }
+"attributes/invalid-function-attribute" = { preset = "basic", ported = true, status = "decided" }
+"attributes/invalid-hook-attribute" = { preset = "basic", ported = true, status = "decided" }
+"attributes/invalid-method-attribute" = { preset = "basic", ported = true, status = "decided" }
+"attributes/invalid-parameter-attribute" = { preset = "basic", ported = true, status = "decided" }
+"attributes/invalid-property-attribute" = { preset = "basic", ported = true, status = "decided" }
+"attributes/invalid-trait-attribute" = { preset = "basic", ported = true, status = "decided" }
 "attributes/trait-as-attribute" = { preset = "basic", ported = true, status = "decided" }
 "casing/inherited-method-case" = { preset = "basic", ported = true, status = "decided" }
 "casts/unset-not-supported" = { preset = "basic", ported = true, status = "decided" }

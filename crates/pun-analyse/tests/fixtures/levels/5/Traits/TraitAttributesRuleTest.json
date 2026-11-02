@@ -1,0 +1,100 @@
+{
+    "test": "Traits/TraitAttributesRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Traits/data/trait-attributes.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Traits/data/trait-attributes.php",
+                    "line": 5,
+                    "identifier": "attribute.abstract",
+                    "message": "Abstract class TraitAttributes\\AbstractAttribute cannot be an Attribute class.",
+                    "tip": null
+                },
+                {
+                    "file": "Traits/data/trait-attributes.php (in context of class TraitAttributes\\Uses)",
+                    "line": 8,
+                    "identifier": "attribute.abstract",
+                    "message": "Attribute class TraitAttributes\\AbstractAttribute is abstract.",
+                    "tip": null
+                },
+                {
+                    "file": "Traits/data/trait-attributes.php (in context of class TraitAttributes\\Uses)",
+                    "line": 20,
+                    "identifier": "attribute.target",
+                    "message": "Attribute class TraitAttributes\\MyTargettedAttribute does not have the class target.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12011",
+            "files": [
+                "Traits/data/bug-12011.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Traits/data/bug-12011.php",
+                    "line": 11,
+                    "identifier": "classConstant.unused",
+                    "message": "Constant Bug12011Trait\\X::TABLE_NAME is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-used-class-constants"
+                },
+                {
+                    "file": "Traits/data/bug-12011.php (in context of class Bug12011Trait\\X)",
+                    "line": 8,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $name of attribute class Bug12011Trait\\Table constructor expects string|null, int given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12281",
+            "files": [
+                "Traits/data/bug-12281.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Traits/data/bug-12281.php",
+                    "line": 5,
+                    "identifier": "enum.allowDynamicProperties",
+                    "message": "Attribute class AllowDynamicProperties cannot be used with enum.",
+                    "tip": null
+                },
+                {
+                    "file": "Traits/data/bug-12281.php",
+                    "line": 8,
+                    "identifier": "interface.allowDynamicProperties",
+                    "message": "Attribute class AllowDynamicProperties cannot be used with interface.",
+                    "tip": null
+                },
+                {
+                    "file": "Traits/data/bug-12281.php (in context of class Bug12281Traits\\Uses)",
+                    "line": 11,
+                    "identifier": "trait.allowDynamicProperties",
+                    "message": "Attribute class AllowDynamicProperties cannot be used with trait.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBugDeprecatedAttributeAllowed",
+            "files": [
+                "Traits/data/deprecated-attr-on-trait.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

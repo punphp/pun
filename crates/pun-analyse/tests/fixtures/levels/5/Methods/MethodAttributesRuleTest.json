@@ -1,0 +1,79 @@
+{
+    "test": "Methods/MethodAttributesRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Methods/data/method-attributes.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/method-attributes.php",
+                    "line": 26,
+                    "identifier": "attribute.target",
+                    "message": "Attribute class MethodAttributes\\Foo does not have the method target.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/method-attributes.php",
+                    "line": 26,
+                    "identifier": "method.unused",
+                    "message": "Method MethodAttributes\\Lorem::doFoo() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/method-attributes.php",
+                    "line": 37,
+                    "identifier": "method.unused",
+                    "message": "Method MethodAttributes\\Ipsum::doFoo() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/method-attributes.php",
+                    "line": 48,
+                    "identifier": "method.unused",
+                    "message": "Method MethodAttributes\\Dolor::doFoo() is unused.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug5898",
+            "files": [
+                "Methods/data/bug-5898.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testDeprecatedAttribute",
+            "files": [
+                "Methods/data/deprecated-attribute.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12827#0",
+            "files": [
+                "Methods/data/bug-12827.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12827#1",
+            "files": [
+                "Methods/data/bug-12827.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

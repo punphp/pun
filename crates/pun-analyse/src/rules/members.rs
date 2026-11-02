@@ -219,6 +219,9 @@ fn declared<'a>(
             && f.span.file_id == k.span.file_id
             && k.span.start.offset <= f.span.start.offset
             && f.span.end.offset <= k.span.end.offset
+            // Mago's implicit constructor of a `@phpstan-consistent-constructor` class (spanning the class) is not
+            // PHPStan's: the class inherits its parent's
+            && !(f.span == k.span && lower.as_bytes() == b"__construct")
         {
             return Some(user(c, k, f, *lower));
         }

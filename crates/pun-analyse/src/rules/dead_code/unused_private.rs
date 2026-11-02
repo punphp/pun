@@ -651,7 +651,12 @@ fn traits_in<'p>(statements: &'p [Statement<'p>], spans: &[Span], out: &mut Vec<
 }
 
 /// The rules on class or enum `k` declared with `members`.
-pub(in super::super) fn class(c: &mut Checker, k: &ClassLikeMetadata, members: &[ClassLikeMember]) {
+pub(in super::super) fn class(
+    c: &mut Checker,
+    k: &ClassLikeMetadata,
+    attributes: &[AttributeList],
+    members: &[ClassLikeMember],
+) {
     if c.level < 4 || !matches!(k.kind, SymbolKind::Class | SymbolKind::Enum) {
         return;
     }
@@ -697,7 +702,8 @@ pub(in super::super) fn class(c: &mut Checker, k: &ClassLikeMetadata, members: &
                     properties.insert(
                         text(name),
                         Prop {
-                            line_at: p.span(),
+                            // the item's line: PropertyHandler gives ClassPropertyNode the PropertyItem's attributes
+                            line_at: item.span(),
                             is_static,
                             promoted: false,
                             read: !readable,
@@ -821,6 +827,10 @@ pub(in super::super) fn class(c: &mut Checker, k: &ClassLikeMetadata, members: &
         arrays: Vec::new(),
         constructor: constructor.clone(),
     };
+    // the class's own attributes are processed in its scope (bug 12011)
+    for list in attributes {
+        g.node(Node::AttributeList(list));
+    }
     for member in members {
         g.node(Node::ClassLikeMember(member));
     }

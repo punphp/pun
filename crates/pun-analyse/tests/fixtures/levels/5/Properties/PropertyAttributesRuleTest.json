@@ -1,0 +1,85 @@
+{
+    "test": "Properties/PropertyAttributesRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Properties/data/property-attributes.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/property-attributes.php",
+                    "line": 26,
+                    "identifier": "attribute.target",
+                    "message": "Attribute class PropertyAttributes\\Foo does not have the property target.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/property-attributes.php",
+                    "line": 27,
+                    "identifier": "property.unused",
+                    "message": "Property PropertyAttributes\\Lorem::$foo is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/property-attributes.php",
+                    "line": 35,
+                    "identifier": "property.unused",
+                    "message": "Property PropertyAttributes\\Ipsum::$foo is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/property-attributes.php",
+                    "line": 43,
+                    "identifier": "property.unused",
+                    "message": "Property PropertyAttributes\\Dolor::$foo is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testDeprecatedAttribute",
+            "files": [
+                "Properties/data/property-attributes-deprecated.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testOverrideAttributePhpVersionNarrowedScope",
+            "files": [
+                "Properties/data/override-attr-on-property-php-versions.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testOverrideAttributeAllowed",
+            "files": [
+                "Properties/data/override-attr-on-property.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/override-attr-on-property.php",
+                    "line": 11,
+                    "identifier": "property.override",
+                    "message": "Property OverrideAttrOnProperty\\Foo::$foo has #[\\Override] attribute but does not override any property.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/override-attr-on-property.php",
+                    "line": 14,
+                    "identifier": "property.override",
+                    "message": "Property OverrideAttrOnProperty\\Foo::$bar has #[\\Override] attribute but does not override any property.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

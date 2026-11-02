@@ -296,8 +296,26 @@ fn winning<'v>(c: &Checker, acceptable: &[&'v Acceptor], types: &[(Key, Type)], 
                 let entry = types.iter().find(|(key, _)| *key == Key::Int(i as i64))
                     .or_else(|| if unpack { types.last() } else { None });
                 let Some((_, ty)) = entry else { break };
-                // ponytail: GenericParametersAcceptorResolver resolves a template from the argument; taken as yes
-                sup = sup.and(match super::types::declared_type(c, a, i) {
+                // GenericParametersAcceptorResolver resolves a template from the argument, an uninferred one to its
+                // bound (bug 7048); other late types are taken as yes
+                let resolved = super::types::declared_type(c, a, i).map(|p| {
+                    super::declared::with_classes(c, || {
+                        let templates = std::cell::RefCell::new(Vec::new());
+                        fn collect(t: &Type, out: &std::cell::RefCell<Vec<pun_phpstan::types::Template>>) {
+                            if let Type::Template(tt) = t { out.borrow_mut().push((**tt).clone()); }
+                            t.traverse(&|i| { collect(i, out); i.clone() });
+                        }
+                        collect(&p, &templates);
+                        let templates = templates.into_inner();
+                        if templates.is_empty() {
+                            return p;
+                        }
+                        let map = pun_phpstan::types::infer_template_types(&p, ty)
+                            .with_errors(&templates.iter().collect::<Vec<_>>());
+                        pun_phpstan::types::resolve_template_types(&p, &map)
+                    })
+                });
+                sup = sup.and(match resolved {
                     None | Some(Type::Mixed { .. }) => Tri::Maybe,
                     Some(p) if super::types::is_late(&p) => Tri::Yes,
                     Some(p) => super::declared::with_classes(c, || is_super_type_of(&p, ty)),

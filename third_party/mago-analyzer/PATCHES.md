@@ -3520,3 +3520,8 @@ The builder follows these PHPStan handlers:
 `TryCatchHandler`'s "previously removed throw points" is also ported. When no remaining throw point
 matches, a catch of `Throwable` takes the try block's call throw points, including those an earlier catch
 removed.
+## Keyless yield keys
+
+`src/expression/yield.rs` gives `yield $value` the inferred key type `int` instead of `int<0, max>`, as PHPStan's
+`ClosureTypeResolver` does (`$yieldNode->key === null` gives `new IntegerType()`). A generator closure's inferred
+type then prints `Generator<int, ...>` (InstantiationRuleTest::testBug3425).
