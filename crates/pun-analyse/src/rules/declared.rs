@@ -556,7 +556,9 @@ pub(super) fn tagged_params(raw: &[u8], names: &[&str]) -> Vec<String> {
     let raw = String::from_utf8_lossy(raw);
     raw.lines()
         .filter_map(|l| {
-            let mut words = l.trim_start().trim_start_matches('*').split_whitespace();
+            // a one-line `/** @tag $x */` starts with the docblock opener
+            let l = l.trim_start();
+            let mut words = l.strip_prefix("/**").unwrap_or(l).trim_start_matches('*').split_whitespace();
             names.contains(&words.next()?).then(|| words.next()?.strip_prefix('$').map(str::to_string)).flatten()
         })
         .collect()
