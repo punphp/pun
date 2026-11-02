@@ -1133,20 +1133,20 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "imports/name-already-in-use" = { preset = "basic", ported = true, status = "decided" }
 "laravel/config-collection" = { preset = "strict", ported = true, status = "decided" }
 "laravel/deferrable-provider-missing-provides" = { preset = "recommended", ported = true, status = "decided" }
-"laravel/missing-translation" = { preset = "recommended", status = "decided" }
+"laravel/missing-translation" = { preset = "recommended", ported = true, status = "decided" }
 "laravel/no-auth-facade-in-request-scope" = { preset = "strict", ported = true, status = "decided" }
 "laravel/no-auth-helper-in-request-scope" = { preset = "strict", ported = true, status = "decided" }
 "laravel/no-env-outside-config" = { preset = "recommended", ported = true, status = "decided" }
 "laravel/no-model-make" = { preset = "recommended", ported = true, status = "decided" }
 "laravel/no-public-scope-or-accessor" = { preset = "max", fixed_by = ["lint/laravel/prefer-protected-model-methods"], ported = true, status = "decided" }
 "laravel/octane-compatibility" = { preset = "strict", ported = true, status = "decided" }
-"laravel/redundant-collection-call" = { preset = "recommended", status = "decided" }
+"laravel/redundant-collection-call" = { preset = "recommended", ported = true, status = "decided" }
 "laravel/redundant-to-array-call" = { preset = "recommended", ported = true, status = "decided" }
 "laravel/undefined-console-input" = { preset = "essential", ported = true, status = "decided" }
-"laravel/undefined-model-append" = { preset = "essential", status = "decided" }
-"laravel/undefined-relation" = { preset = "essential", status = "decided" }
+"laravel/undefined-model-append" = { preset = "essential", ported = true, status = "decided" }
+"laravel/undefined-relation" = { preset = "essential", ported = true, status = "decided" }
 "laravel/unexpected-dispatch-arguments" = { preset = "essential", ported = true, status = "decided" }
-"laravel/unused-view" = { preset = "recommended", status = "decided" }
+"laravel/unused-view" = { preset = "recommended", ported = true, status = "decided" }
 "laravel/useless-value-call" = { preset = "recommended", fixed_by = ["lint/laravel/no-useless-value-call"], ported = true, status = "decided" }
 "laravel/useless-with-call" = { preset = "recommended", fixed_by = ["lint/laravel/no-useless-with-call"], ported = true, status = "decided" }
 "operators/non-boolean-and-operand" = { preset = "strict", ported = true, status = "decided" }
@@ -1203,7 +1203,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "statements/non-capturing-catch-not-supported" = { preset = "basic", ported = true, status = "decided" }
 "statements/throw-expression-not-supported" = { preset = "basic", ported = true, status = "decided" }
 "strings/invalid-date-interval" = { preset = "recommended", ported = true, status = "decided" }
-"strings/invalid-date-time" = { preset = "recommended", status = "decided" }
+"strings/invalid-date-time" = { preset = "recommended", ported = true, status = "decided" }
 "types/argument" = { preset = "basic", ported = true, status = "decided" }
 "types/argument-not-numeric" = { preset = "recommended", ported = true, status = "decided" }
 "types/argument-not-stringable" = { preset = "recommended", ported = true, status = "decided" }
@@ -1326,14 +1326,14 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/yield-outside-function" = { preset = "essential", ported = true, status = "decided" }
 "undefined/assigned-property" = { preset = "basic", ported = true, status = "decided" }
 "undefined/assigned-static-property" = { preset = "basic", ported = true, status = "decided" }
-"undefined/class-constant" = { preset = "basic", status = "decided" }
+"undefined/class-constant" = { preset = "basic", ported = true, status = "decided" }
 "undefined/compact-variable" = { preset = "basic", status = "decided" }
 "undefined/constant" = { preset = "basic", ported = true, status = "decided" }
 "undefined/function" = { preset = "basic", ported = true, status = "decided" }
 "undefined/goto-label" = { preset = "basic", ported = true, status = "decided" }
 "undefined/group-import" = { preset = "basic", ported = true, status = "decided" }
 "undefined/import" = { preset = "basic", ported = true, status = "decided" }
-"undefined/include-file" = { preset = "basic", status = "decided" }
+"undefined/include-file" = { preset = "basic", ported = true, status = "decided" }
 "undefined/instanceof-class" = { preset = "basic", ported = true, status = "decided" }
 "undefined/method" = { preset = "basic", ported = true, status = "decided" }
 "undefined/offset" = { preset = "essential", ported = true, status = "decided" }
