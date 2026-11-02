@@ -8,7 +8,7 @@ use mago_codex::metadata::property::PropertyMetadata;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use mago_syntax::walker::MutWalker;
-use pun_phpstan::types::{ConstArray, Level, Tri, Type, is_super_type_of, union};
+use pun_phpstan::types::{Accessory, ConstArray, Level, Tri, Type, is_super_type_of, union};
 
 use super::super::types::flow::unparen;
 use super::super::{Checker, declared, types::offset_accessible};
@@ -74,6 +74,10 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Chains {
         }
     }
 
+    fn walk_in_empty_construct(&mut self, e: &'ast EmptyConstruct<'arena>, _: &mut ()) {
+        self.chain(e.value, None);
+    }
+
     fn walk_in_binary(&mut self, b: &'ast Binary<'arena>, _: &mut ()) {
         if b.operator.is_null_coalesce() {
             self.chain(b.lhs, None);
@@ -98,6 +102,7 @@ pub(in super::super) fn isset(c: &mut Checker, construct: &IssetConstruct) {
             operator: "in isset()".to_string(),
             identifier: "isset",
             advanced: c.check_advanced_isset,
+            message: type_message,
         };
         match check.check(value, None) {
             Some((identifier, message)) => {
@@ -107,6 +112,28 @@ pub(in super::super) fn isset(c: &mut Checker, construct: &IssetConstruct) {
             }
             None => c.no_condition(value.span(), "isset.expr"),
         }
+    }
+}
+
+/// EmptyRule on the operand of `empty()`.
+pub(in super::super) fn empty(c: &mut Checker, construct: &EmptyConstruct) {
+    if c.level < 1 {
+        return;
+    }
+    let check = IssetCheck {
+        c,
+        operator: "in empty()".to_string(),
+        identifier: "empty",
+        advanced: c.check_advanced_isset,
+        message: empty_message,
+    };
+    match check.check(construct.value, None) {
+        Some((identifier, message)) => {
+            // Errors without an explicit line inherit the EmptyExpressionNode's line upstream.
+            let line = c.line_of(construct.span());
+            c.condition_error(construct.value.span(), line, &identifier, true, message, None);
+        }
+        None => c.no_condition(construct.value.span(), "empty.expr"),
     }
 }
 
@@ -120,6 +147,7 @@ pub(in super::super) fn coalesce(c: &mut Checker, left: &Expression, right: &Exp
         operator: format!("on left side of {operator}"),
         identifier: "nullCoalesce",
         advanced: c.check_advanced_isset,
+        message: type_message,
     };
     // in a trait, per class context (ConstantConditionInTraitHelper)
     let found = check.check(left, None).or_else(|| {
@@ -151,6 +179,8 @@ struct IssetCheck<'c, 'a, 'arena> {
     operator: String,
     identifier: &'static str,
     advanced: bool,
+    /// The rule's `$typeMessageCallback`.
+    message: fn(&Type) -> Option<&'static str>,
 }
 
 /// The declaring class and metadata of a property a fetch finds (`findPropertyReflectionFromNode()`).
@@ -175,6 +205,54 @@ fn type_message(t: &Type) -> Option<&'static str> {
         Tri::Maybe => None,
         Tri::Yes => Some("is always null"),
         Tri::No => Some("is not nullable"),
+    }
+}
+
+/// EmptyRule's message for the type of its operand.
+fn empty_message(t: &Type) -> Option<&'static str> {
+    let is_null = t.is_null();
+    let is_falsey = falsy(t);
+    if is_null.maybe() || is_falsey.maybe() {
+        return None;
+    }
+    Some(if is_falsey.yes() { "is always falsy" } else { "is not falsy" })
+}
+
+/// `toBoolean()->isFalse()`.
+fn falsy(t: &Type) -> Tri {
+    match t {
+        Type::Union(ts) | Type::Benevolent(ts) => Tri::extreme_identity(ts.iter().map(falsy)),
+        // intersectTypes(): a constant member decides
+        Type::Intersection(ts) => ts.iter().map(falsy).find(|r| !r.maybe()).unwrap_or(Tri::Maybe),
+        Type::Template(t) => falsy(&t.bound),
+        // MixedType::toBoolean(): a mixed without any falsey value
+        Type::SubtractedMixed { excluded, .. } => {
+            let falsey = union(vec![
+                Type::Null, Type::ConstBool(false), Type::ConstInt(0), Type::ConstFloat(0.0),
+                Type::ConstString(Vec::new()), Type::ConstString(b"0".to_vec()), Type::ConstArray(Box::new(ConstArray::empty())),
+            ]);
+            if is_super_type_of(excluded, &falsey).yes() { Tri::No } else { Tri::Maybe }
+        }
+        Type::Null => Tri::Yes,
+        Type::ConstBool(b) => Tri::from(!b),
+        Type::ConstInt(i) => Tri::from(*i == 0),
+        Type::ConstFloat(f) => Tri::from(*f == 0.0),
+        Type::ConstString(s) => Tri::from(s.is_empty() || s == b"0"),
+        // (a range of only 0 is the constant 0)
+        Type::IntRange(min, max) => if min.is_none_or(|m| m <= 0) && max.is_none_or(|m| m >= 0) { Tri::Maybe } else { Tri::No },
+        // ConstantArrayType::getArraySize()
+        Type::ConstArray(a) if a.keys.len() > a.optional.len() => Tri::No,
+        Type::ConstArray(a) => if a.keys.is_empty() && a.unsealed.is_none() { Tri::Yes } else { Tri::Maybe },
+        Type::Accessory(Accessory::NonFalsyString | Accessory::NonEmptyArray | Accessory::HasOffsetValue(..)) => Tri::No,
+        // ObjectType::toBoolean()
+        Type::Object(name, ..) => {
+            let undecided = ["SimpleXMLElement", "BcMath\\Number", "GMP"].iter().any(|n| n.eq_ignore_ascii_case(name));
+            if undecided { Tri::Maybe } else { Tri::No }
+        }
+        Type::SubtractedObject { object, .. } => falsy(object),
+        Type::ObjectWithoutClass | Type::Static(..) | Type::This(_) | Type::Closure(_) | Type::Callable(_) => Tri::No,
+        Type::ObjectShape(_) | Type::EnumCase(..) | Type::Resource => Tri::No,
+        _ => Tri::Maybe,
     }
 }
 
@@ -334,7 +412,7 @@ impl<'a> IssetCheck<'_, 'a, '_> {
     }
 
     fn error(&self, t: &Type, message: String, second: &str) -> Found {
-        let tail = type_message(t)?;
+        let tail = (self.message)(t)?;
         Some((format!("{}.{second}", self.identifier), format!("{message} {tail}.")))
     }
 
@@ -556,7 +634,7 @@ impl<'a> IssetCheck<'_, 'a, '_> {
                     && self.c.property_initializations.get(&e.span()) == Some(&PropertyInitializationCertainty::Yes)
                 {
                     let t = declared::from_tunion(self.c, &native.type_union, p.declaring);
-                    let tail = match type_message(&t)? {
+                    let tail = match (self.message)(&t)? {
                         tail if tail.starts_with("is not") => format!("{tail} nor uninitialized"),
                         tail => format!("{tail} and initialized"),
                     };
@@ -595,6 +673,7 @@ impl<'a> IssetCheck<'_, 'a, '_> {
                             holder.is_string().yes()
                                 || holder.is_array().yes()
                                 || matches!(holder, Type::Int | Type::ConstInt(_) | Type::IntRange(..) | Type::Float | Type::ConstFloat(_) | Type::Bool | Type::ConstBool(_))
+                                || self.undefined_property(&holder, &p.property)
                         } =>
                     {
                         Type::Error
@@ -647,6 +726,19 @@ impl<'a> IssetCheck<'_, 'a, '_> {
             }
             _ => true,
         }
+    }
+
+    /// A fetch the holder's class has no property for, declared, `@property` or `__get()`: PHPStan's ErrorType.
+    fn undefined_property(&self, holder: &Type, name: &ClassLikeMemberSelector) -> bool {
+        let ClassLikeMemberSelector::Identifier(name) = name else { return false };
+        let names = holder.object_class_names();
+        let [class] = names.as_slice() else { return false };
+        let Some(class) = self.c.codebase.get_class_like(class.as_bytes()) else { return false };
+        let mut variable = b"$".to_vec();
+        variable.extend_from_slice(name.value);
+        self.c.codebase.get_declaring_property_class(class.name.as_bytes(), &variable).is_none()
+            && !class.magic_properties.contains_key(&mago_word::word(&variable))
+            && !self.c.codebase.method_exists(class.name.as_bytes(), b"__get")
     }
 
     /// IssetCheck::checkUndefined().

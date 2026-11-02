@@ -743,6 +743,11 @@ pub const IDENTIFIERS: &[&str] = &[
     "isset.property",
     "isset.expr",
     "isset.initializedProperty",
+    "empty.variable",
+    "empty.offset",
+    "empty.property",
+    "empty.expr",
+    "empty.initializedProperty",
     "switch.duplicateCase",
     "switch.alwaysFalse",
     "switch.alwaysTrue",
@@ -2115,8 +2120,10 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_in_construct(&mut self, construct: &'ast Construct<'arena>, _: &mut ()) {
         include_file::construct(self, construct);
-        if let Construct::Isset(i) = construct {
-            dead_code::isset(self, i);
+        match construct {
+            Construct::Isset(i) => dead_code::isset(self, i),
+            Construct::Empty(e) => dead_code::empty(self, e),
+            _ => {}
         }
     }
     fn walk_in_property_access(&mut self, p: &'ast PropertyAccess<'arena>, _: &mut ()) {

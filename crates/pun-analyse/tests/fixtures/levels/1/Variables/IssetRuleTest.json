@@ -1,0 +1,835 @@
+{
+    "test": "Variables/IssetRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Variables/data/isset.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/isset.php",
+                    "line": 41,
+                    "identifier": "isset.variable",
+                    "message": "Variable $scalar in isset() always exists and is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset.php",
+                    "line": 51,
+                    "identifier": "isset.variable",
+                    "message": "Variable $doesNotExist in isset() is never defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset.php",
+                    "line": 51,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $doesNotExist",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset.php",
+                    "line": 73,
+                    "identifier": "isset.offset",
+                    "message": "Offset 'dim-null-not-set' on array{dim: 1, dim-null: 1|null, dim-null-offset: array{a: true|null}, dim-empty: array{}} in isset() does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset.php",
+                    "line": 111,
+                    "identifier": "isset.variable",
+                    "message": "Variable $a in isset() always exists and is always null.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleWithoutTreatPhpDocTypesAsCertain",
+            "files": [
+                "Variables/data/isset.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/isset.php",
+                    "line": 41,
+                    "identifier": "isset.variable",
+                    "message": "Variable $scalar in isset() always exists and is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset.php",
+                    "line": 51,
+                    "identifier": "isset.variable",
+                    "message": "Variable $doesNotExist in isset() is never defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset.php",
+                    "line": 51,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $doesNotExist",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset.php",
+                    "line": 73,
+                    "identifier": "isset.offset",
+                    "message": "Offset 'dim-null-not-set' on array{dim: 1, dim-null: 1|null, dim-null-offset: array{a: true|null}, dim-empty: array{}} in isset() does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset.php",
+                    "line": 111,
+                    "identifier": "isset.variable",
+                    "message": "Variable $a in isset() always exists and is always null.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNativePropertyTypes",
+            "files": [
+                "Variables/data/isset-native-property-types.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4290",
+            "files": [
+                "Variables/data/bug-4290.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4671",
+            "files": [
+                "Variables/data/bug-4671.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testVariableCertaintyInIsset",
+            "files": [
+                "Variables/data/variable-certainty-isset.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/variable-certainty-isset.php",
+                    "line": 7,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Variables/data/variable-certainty-isset.php",
+                    "line": 14,
+                    "identifier": "isset.variable",
+                    "message": "Variable $alwaysDefinedNotNullable in isset() always exists and is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/variable-certainty-isset.php",
+                    "line": 18,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Variables/data/variable-certainty-isset.php",
+                    "line": 22,
+                    "identifier": "isset.variable",
+                    "message": "Variable $neverDefinedVariable in isset() is never defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/variable-certainty-isset.php",
+                    "line": 30,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Variables/data/variable-certainty-isset.php",
+                    "line": 37,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Variables/data/variable-certainty-isset.php",
+                    "line": 42,
+                    "identifier": "isset.variable",
+                    "message": "Variable $anotherNeverDefinedVariable in isset() is never defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/variable-certainty-isset.php",
+                    "line": 46,
+                    "identifier": "isset.variable",
+                    "message": "Variable $yetAnotherNeverDefinedVariable in isset() is never defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/variable-certainty-isset.php",
+                    "line": 54,
+                    "identifier": "function.notFound",
+                    "message": "Function something not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Variables/data/variable-certainty-isset.php",
+                    "line": 56,
+                    "identifier": "isset.variable",
+                    "message": "Variable $yetYetAnotherNeverDefinedVariableInIsset in isset() is never defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/variable-certainty-isset.php",
+                    "line": 60,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Variables/data/variable-certainty-isset.php",
+                    "line": 64,
+                    "identifier": "function.notFound",
+                    "message": "Function something not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Variables/data/variable-certainty-isset.php",
+                    "line": 71,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Variables/data/variable-certainty-isset.php",
+                    "line": 75,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Variables/data/variable-certainty-isset.php",
+                    "line": 78,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Variables/data/variable-certainty-isset.php",
+                    "line": 81,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Variables/data/variable-certainty-isset.php",
+                    "line": 87,
+                    "identifier": "function.notFound",
+                    "message": "Function something not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Variables/data/variable-certainty-isset.php",
+                    "line": 95,
+                    "identifier": "function.notFound",
+                    "message": "Function something not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Variables/data/variable-certainty-isset.php",
+                    "line": 104,
+                    "identifier": "isset.variable",
+                    "message": "Variable $anotherVariableInDoWhile in isset() always exists and is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/variable-certainty-isset.php",
+                    "line": 110,
+                    "identifier": "isset.variable",
+                    "message": "Variable $variableInSecondCase in isset() is never defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/variable-certainty-isset.php",
+                    "line": 112,
+                    "identifier": "isset.variable",
+                    "message": "Variable $variableInFirstCase in isset() always exists and is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/variable-certainty-isset.php",
+                    "line": 115,
+                    "identifier": "function.notFound",
+                    "message": "Function whatever not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Variables/data/variable-certainty-isset.php",
+                    "line": 116,
+                    "identifier": "isset.variable",
+                    "message": "Variable $variableInFirstCase in isset() is never defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/variable-certainty-isset.php",
+                    "line": 117,
+                    "identifier": "isset.variable",
+                    "message": "Variable $variableInSecondCase in isset() is never defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/variable-certainty-isset.php",
+                    "line": 119,
+                    "identifier": "isset.variable",
+                    "message": "Variable $variableAssignedInSecondCase in isset() is never defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/variable-certainty-isset.php",
+                    "line": 139,
+                    "identifier": "isset.variable",
+                    "message": "Variable $alwaysDefinedForSwitchCondition in isset() always exists and is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/variable-certainty-isset.php",
+                    "line": 140,
+                    "identifier": "isset.variable",
+                    "message": "Variable $alwaysDefinedForCaseNodeCondition in isset() always exists and is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/variable-certainty-isset.php",
+                    "line": 148,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Variables/data/variable-certainty-isset.php",
+                    "line": 152,
+                    "identifier": "isset.variable",
+                    "message": "Variable $alwaysDefinedNotNullable in isset() always exists and is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/variable-certainty-isset.php",
+                    "line": 152,
+                    "identifier": "isset.variable",
+                    "message": "Variable $neverDefinedVariable in isset() is never defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/variable-certainty-isset.php",
+                    "line": 163,
+                    "identifier": "function.notFound",
+                    "message": "Function something not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Variables/data/variable-certainty-isset.php",
+                    "line": 176,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Variables/data/variable-certainty-isset.php",
+                    "line": 188,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $this",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/variable-certainty-isset.php",
+                    "line": 214,
+                    "identifier": "isset.variable",
+                    "message": "Variable $a in isset() always exists and is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/variable-certainty-isset.php",
+                    "line": 225,
+                    "identifier": "isset.variable",
+                    "message": "Variable $null in isset() always exists and is always null.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testIssetInGlobalScope",
+            "files": [
+                "Variables/data/isset-global-scope.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/isset-global-scope.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Variables/data/isset-global-scope.php",
+                    "line": 8,
+                    "identifier": "isset.variable",
+                    "message": "Variable $alwaysDefinedNotNullable in isset() always exists and is not nullable.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNullsafe",
+            "files": [
+                "Variables/data/isset-nullsafe.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7109",
+            "files": [
+                "Properties/data/bug-7109.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7318",
+            "files": [
+                "Properties/data/bug-7318.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6163",
+            "files": [
+                "Variables/data/bug-6163.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6997",
+            "files": [
+                "Variables/data/bug-6997.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6008",
+            "files": [
+                "Variables/data/bug-6008.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/bug-6008.php",
+                    "line": 9,
+                    "identifier": "class.notFound",
+                    "message": "Type alias Job contains unknown class Bug6008\\stdClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Variables/data/bug-6008.php",
+                    "line": 9,
+                    "identifier": "class.notFound",
+                    "message": "Type alias Job contains unknown class Bug6008\\stdClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7292",
+            "files": [
+                "Variables/data/bug-7292.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testObjectShapes",
+            "files": [
+                "Variables/data/isset-object-shapes.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10151",
+            "files": [
+                "Variables/data/bug-10151.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10064",
+            "files": [
+                "Variables/data/bug-10064.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testVirtualProperty",
+            "files": [
+                "Variables/data/isset-virtual-property.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9328",
+            "files": [
+                "Variables/data/bug-9328.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12771",
+            "files": [
+                "Variables/data/bug-12771.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/bug-12771.php",
+                    "line": 8,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $request of method Bug12771\\ErrorReportController::__invoke() has invalid type Bug12771\\ServerRequest.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11708",
+            "files": [
+                "Variables/data/bug-11708.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13488",
+            "files": [
+                "Variables/data/bug-13488.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13488Loose",
+            "files": [
+                "Variables/data/bug-13488-loose.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testIssetAfterRememberedConstructor",
+            "files": [
+                "Variables/data/isset-after-remembered-constructor.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/isset-after-remembered-constructor.php",
+                    "line": 34,
+                    "identifier": "isset.initializedProperty",
+                    "message": "Property IssetOrCoalesceOnNonNullableInitializedProperty\\User::$string in isset() is not nullable nor uninitialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset-after-remembered-constructor.php",
+                    "line": 46,
+                    "identifier": "nullCoalesce.initializedProperty",
+                    "message": "Property IssetOrCoalesceOnNonNullableInitializedProperty\\User::$string on left side of ?? is not nullable nor uninitialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset-after-remembered-constructor.php",
+                    "line": 93,
+                    "identifier": "empty.initializedProperty",
+                    "message": "Property IssetOrCoalesceOnNonNullableInitializedProperty\\MoreEmptyCases::$false in empty() is always falsy and initialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset-after-remembered-constructor.php",
+                    "line": 95,
+                    "identifier": "empty.initializedProperty",
+                    "message": "Property IssetOrCoalesceOnNonNullableInitializedProperty\\MoreEmptyCases::$true in empty() is not falsy nor uninitialized.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPropertyInitializationCustomSerialization",
+            "files": [
+                "Variables/data/property-initialization-custom-serialization.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 20,
+                    "identifier": "nullCoalesce.initializedProperty",
+                    "message": "Property PropertyInitializationCustomSerialization\\NoSerialization::$string on left side of ?? is not nullable nor uninitialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 21,
+                    "identifier": "isset.initializedProperty",
+                    "message": "Property PropertyInitializationCustomSerialization\\NoSerialization::$string in isset() is not nullable nor uninitialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 23,
+                    "identifier": "empty.initializedProperty",
+                    "message": "Property PropertyInitializationCustomSerialization\\NoSerialization::$true in empty() is not falsy nor uninitialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 41,
+                    "identifier": "nullCoalesce.initializedProperty",
+                    "message": "Property PropertyInitializationCustomSerialization\\OnlyWakeup::$string on left side of ?? is not nullable nor uninitialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 42,
+                    "identifier": "isset.initializedProperty",
+                    "message": "Property PropertyInitializationCustomSerialization\\OnlyWakeup::$string in isset() is not nullable nor uninitialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 44,
+                    "identifier": "empty.initializedProperty",
+                    "message": "Property PropertyInitializationCustomSerialization\\OnlyWakeup::$true in empty() is not falsy nor uninitialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 200,
+                    "identifier": "class.serializable",
+                    "message": "Non-abstract class PropertyInitializationCustomSerialization\\OldSchoolSerializable implements the Serializable interface, but does not implement __serialize().",
+                    "tip": "See https://wiki.php.net/rfc/phase_out_serializable"
+                },
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 200,
+                    "identifier": "class.serializable",
+                    "message": "Non-abstract class PropertyInitializationCustomSerialization\\OldSchoolSerializable implements the Serializable interface, but does not implement __unserialize().",
+                    "tip": "See https://wiki.php.net/rfc/phase_out_serializable"
+                },
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 238,
+                    "identifier": "nullCoalesce.initializedProperty",
+                    "message": "Property PropertyInitializationCustomSerialization\\PromotedNoSerialization::$string on left side of ?? is not nullable nor uninitialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 271,
+                    "identifier": "nullCoalesce.initializedProperty",
+                    "message": "Property PropertyInitializationCustomSerialization\\CoalesceAssignNoSerialization::$string on left side of ??= is not nullable nor uninitialized.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPr4374",
+            "files": [
+                "Variables/data/pr-4374.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testIssetConstantArray",
+            "files": [
+                "Variables/data/isset-constant-array.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9503",
+            "files": [
+                "Variables/data/bug-9503.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14555",
+            "files": [
+                "Variables/data/bug-14555.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14393",
+            "files": [
+                "Variables/data/bug-14393.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/bug-14393.php",
+                    "line": 164,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $undefinedVar on left side of ?? is never defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14393.php",
+                    "line": 165,
+                    "identifier": "isset.variable",
+                    "message": "Variable $undefinedVar in isset() is never defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14393.php",
+                    "line": 166,
+                    "identifier": "empty.variable",
+                    "message": "Variable $undefinedVar in empty() is never defined.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNullCoalesceAssignRightSideScope",
+            "files": [
+                "Variables/data/null-coalesce-assign-right-side-scope.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 46,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $undefined on left side of ?? is never defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 46,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $undefined on left side of ??= is never defined.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testInTrait",
+            "files": [
+                "Variables/data/isset-in-trait.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/isset-in-trait.php",
+                    "line": 119,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $s on left side of ?? always exists and is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset-in-trait.php",
+                    "line": 120,
+                    "identifier": "isset.variable",
+                    "message": "Variable $s in isset() always exists and is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset-in-trait.php",
+                    "line": 121,
+                    "identifier": "empty.variable",
+                    "message": "Variable $s in empty() always exists and is not falsy.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14416",
+            "files": [
+                "Variables/data/bug-14416.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14421",
+            "files": [
+                "Variables/data/bug-14421.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testPregMatchOffsetCaptureWithoutTreatPhpDocTypesAsCertain",
+            "files": [
+                "Variables/data/preg-match-offset-capture-isset.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

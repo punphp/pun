@@ -1,0 +1,264 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "extra.php",
+   "line": 107,
+   "identifier": "empty.variable",
+   "message": "Variable $nonFalsyString in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 110,
+   "identifier": "empty.variable",
+   "message": "Variable $positive in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 112,
+   "identifier": "empty.variable",
+   "message": "Variable $shape in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 114,
+   "identifier": "empty.variable",
+   "message": "Variable $emptyShape in empty() always exists and is always falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 115,
+   "identifier": "empty.variable",
+   "message": "Variable $nonEmptyArray in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 118,
+   "identifier": "empty.variable",
+   "message": "Variable $resource in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 119,
+   "identifier": "empty.variable",
+   "message": "Variable $callable in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 121,
+   "identifier": "empty.variable",
+   "message": "Variable $closure in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 122,
+   "identifier": "empty.variable",
+   "message": "Variable $objectShape in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 123,
+   "identifier": "empty.variable",
+   "message": "Variable $object in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 124,
+   "identifier": "empty.variable",
+   "message": "Variable $value in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 128,
+   "identifier": "empty.variable",
+   "message": "Variable $oneOrTwo in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 129,
+   "identifier": "empty.variable",
+   "message": "Variable $true in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 130,
+   "identifier": "empty.variable",
+   "message": "Variable $false in empty() always exists and is always falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 133,
+   "identifier": "empty.variable",
+   "message": "Variable $null in empty() always exists and is always falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 134,
+   "identifier": "empty.variable",
+   "message": "Variable $zero in empty() always exists and is always falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 135,
+   "identifier": "empty.variable",
+   "message": "Variable $one in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 136,
+   "identifier": "empty.variable",
+   "message": "Variable $zeroFloat in empty() always exists and is always falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 137,
+   "identifier": "empty.variable",
+   "message": "Variable $half in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 138,
+   "identifier": "empty.variable",
+   "message": "Variable $emptyString in empty() always exists and is always falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 139,
+   "identifier": "empty.variable",
+   "message": "Variable $zeroString in empty() always exists and is always falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 140,
+   "identifier": "empty.variable",
+   "message": "Variable $text in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 141,
+   "identifier": "empty.variable",
+   "message": "Variable $emptyArray in empty() always exists and is always falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 142,
+   "identifier": "empty.variable",
+   "message": "Variable $array in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 143,
+   "identifier": "empty.variable",
+   "message": "Variable $undefined in empty() is never defined.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 157,
+   "identifier": "isset.variable",
+   "message": "Variable $null in isset() always exists and is always null.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 157,
+   "identifier": "isset.variable",
+   "message": "Variable $one in isset() always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 158,
+   "identifier": "isset.variable",
+   "message": "Variable $undefined in isset() is never defined.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 177,
+   "identifier": "empty.variable",
+   "message": "Variable $objectTemplate in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 179,
+   "identifier": "isset.variable",
+   "message": "Variable $objectTemplate in isset() always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 186,
+   "identifier": "empty.variable",
+   "message": "Variable $value in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 190,
+   "identifier": "isset.variable",
+   "message": "Variable $value in isset() always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 199,
+   "identifier": "isset.variable",
+   "message": "Variable $value in isset() always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 217,
+   "identifier": "empty.variable",
+   "message": "Variable $this in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 220,
+   "identifier": "empty.variable",
+   "message": "Variable $case in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 223,
+   "identifier": "empty.variable",
+   "message": "Variable $array in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 226,
+   "identifier": "empty.variable",
+   "message": "Variable $object in empty() always exists and is not falsy.",
+   "tip": null
+  }
+ ]
+}

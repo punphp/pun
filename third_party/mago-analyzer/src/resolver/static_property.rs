@@ -52,6 +52,9 @@ where
     }
 
     let mut property_names = vec![];
+    let short_circuit = (!matches!(property_variable, Variable::Direct(_))
+        && crate::context::non_nullability::may_short_circuit(class_expression, artifacts))
+    .then(|| block_context.clone());
 
     'resolve_names: {
         let (variable_type, variable_id) = match property_variable {
@@ -112,6 +115,9 @@ where
             property_names.push(concat_word!("$", property_name));
         }
     };
+    if let Some(before) = short_circuit {
+        crate::context::non_nullability::merge_short_circuit(block_context, &before, context);
+    }
 
     let check_deprecation = !for_assignment
         || artifacts.get_expression_type(&class_expression.span().join(property_variable.span())).is_none();

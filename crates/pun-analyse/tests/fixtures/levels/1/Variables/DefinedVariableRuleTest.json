@@ -1,0 +1,530 @@
+{
+    "test": "Variables/DefinedVariableRuleTest",
+    "cases": [
+        {
+            "method": "testLoopInitialAssignments#0",
+            "files": [
+                "Variables/data/loop-initial-assignments.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/loop-initial-assignments.php",
+                    "line": 9,
+                    "identifier": "function.notFound",
+                    "message": "Function foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testLoopInitialAssignments#1",
+            "files": [
+                "Variables/data/loop-initial-assignments.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/loop-initial-assignments.php",
+                    "line": 9,
+                    "identifier": "function.notFound",
+                    "message": "Function foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug3601",
+            "files": [
+                "Variables/data/bug-3601.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug1016",
+            "files": [
+                "Variables/data/bug-1016.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug1016b",
+            "files": [
+                "Variables/data/bug-1016b.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8142",
+            "files": [
+                "Variables/data/bug-8142.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8212",
+            "files": [
+                "Variables/data/bug-8212.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9474",
+            "files": [
+                "Variables/data/bug-9474.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testEnum",
+            "files": [
+                "Variables/data/defined-variables-enum.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5326",
+            "files": [
+                "Variables/data/bug-5326.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5266",
+            "files": [
+                "Variables/data/bug-5266.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testIsStringNarrowsCertainty",
+            "files": [
+                "Variables/data/isstring-certainty.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/isstring-certainty.php",
+                    "line": 11,
+                    "identifier": "variable.undefined",
+                    "message": "Variable $a might not be defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isstring-certainty.php",
+                    "line": 19,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $a",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12364",
+            "files": [
+                "Variables/data/bug-12364.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/bug-12364.php",
+                    "line": 20,
+                    "identifier": "variable.undefined",
+                    "message": "Variable $z might not be defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-12364.php",
+                    "line": 23,
+                    "identifier": "variable.undefined",
+                    "message": "Variable $z might not be defined.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testDiscussion10252",
+            "files": [
+                "Variables/data/discussion-10252.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/discussion-10252.php",
+                    "line": 7,
+                    "identifier": "require.fileNotFound",
+                    "message": "Path in require() \"who-to-love.php\" is not a file or it does not exist.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10418",
+            "files": [
+                "Variables/data/bug-10418.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testPassByReferenceIntoNotNullable",
+            "files": [
+                "Variables/data/pass-by-reference-into-not-nullable.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/pass-by-reference-into-not-nullable.php",
+                    "line": 32,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $three",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug9426",
+            "files": [
+                "Variables/data/bug-9426.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testPropertyHooks",
+            "files": [
+                "Variables/data/property-hooks.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/property-hooks.php",
+                    "line": 16,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $val",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/property-hooks.php",
+                    "line": 28,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $value",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/property-hooks.php",
+                    "line": 43,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $val",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/property-hooks.php",
+                    "line": 51,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $value",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testDynamicAccess",
+            "files": [
+                "Variables/data/dynamic-access.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/dynamic-access.php",
+                    "line": 15,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $bar",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/dynamic-access.php",
+                    "line": 18,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $bar",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/dynamic-access.php",
+                    "line": 18,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $buz",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/dynamic-access.php",
+                    "line": 38,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $bar",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/dynamic-access.php",
+                    "line": 41,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $foo",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/dynamic-access.php",
+                    "line": 44,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $buz",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/dynamic-access.php",
+                    "line": 45,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $foo",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/dynamic-access.php",
+                    "line": 46,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $bar",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/dynamic-access.php",
+                    "line": 49,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $buz",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/dynamic-access.php",
+                    "line": 50,
+                    "identifier": "variable.undefined",
+                    "message": "Variable $foo might not be defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/dynamic-access.php",
+                    "line": 51,
+                    "identifier": "variable.undefined",
+                    "message": "Variable $bar might not be defined.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8719",
+            "files": [
+                "Variables/data/bug-8719.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13353",
+            "files": [
+                "Variables/data/bug-13353.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13694",
+            "files": [
+                "Variables/data/bug-13694.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5191",
+            "files": [
+                "Variables/data/bug-5191.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/bug-5191.php",
+                    "line": 23,
+                    "identifier": "variable.undefined",
+                    "message": "Variable $pow might not be defined.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10909",
+            "files": [
+                "Variables/data/bug-10909.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13981",
+            "files": [
+                "Variables/data/bug-13981.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/bug-13981.php",
+                    "line": 34,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $baseDir",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-13981.php",
+                    "line": 46,
+                    "identifier": "variable.undefined",
+                    "message": "Variable $baseDir might not be defined.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7705",
+            "files": [
+                "Variables/data/bug-7705.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12944",
+            "files": [
+                "Variables/data/bug-12944.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11545",
+            "files": [
+                "Variables/data/bug-11545.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13920",
+            "files": [
+                "Variables/data/bug-13920.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9392",
+            "files": [
+                "Variables/data/bug-9392.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testNullsafeShortCircuitArgs",
+            "files": [
+                "Variables/data/nullsafe-short-circuit-args.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/nullsafe-short-circuit-args.php",
+                    "line": 37,
+                    "identifier": "variable.undefined",
+                    "message": "Variable $a might not be defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/nullsafe-short-circuit-args.php",
+                    "line": 43,
+                    "identifier": "variable.undefined",
+                    "message": "Variable $b might not be defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/nullsafe-short-circuit-args.php",
+                    "line": 49,
+                    "identifier": "variable.undefined",
+                    "message": "Variable $c might not be defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/nullsafe-short-circuit-args.php",
+                    "line": 55,
+                    "identifier": "variable.undefined",
+                    "message": "Variable $d might not be defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/nullsafe-short-circuit-args.php",
+                    "line": 61,
+                    "identifier": "variable.undefined",
+                    "message": "Variable $e might not be defined.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14418",
+            "files": [
+                "Variables/data/bug-14418.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testVariableVariableName",
+            "files": [
+                "Variables/data/variable-variable-name.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

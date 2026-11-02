@@ -1,0 +1,36 @@
+{
+    "test": "Variables/CompactVariablesRuleTest",
+    "cases": [
+        {
+            "method": "testCompactVariables",
+            "files": [
+                "Variables/data/compact-variables.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/compact-variables.php",
+                    "line": 22,
+                    "identifier": "variable.undefined",
+                    "message": "Call to function compact() contains undefined variable $bar.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/compact-variables.php",
+                    "line": 23,
+                    "identifier": "variable.undefined",
+                    "message": "Call to function compact() contains possibly undefined variable $baz.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/compact-variables.php",
+                    "line": 29,
+                    "identifier": "variable.undefined",
+                    "message": "Call to function compact() contains undefined variable $foo.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

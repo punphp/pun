@@ -52,6 +52,11 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for ArrayAccess<'arena> {
             None
         };
 
+        // ArrayDimFetchHandler walks the dimension before the receiver; a nullsafe chain's skipped world is the
+        // scope before both.
+        let short_circuit_scope =
+            crate::utils::expression::expression_is_nullsafe(self.array).then(|| block_context.clone());
+
         let was_inside_isset = block_context.flags.inside_isset();
         let was_inside_general_use = block_context.flags.inside_general_use();
         let was_inside_unset = block_context.flags.inside_unset();
@@ -73,6 +78,11 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for ArrayAccess<'arena> {
         block_context.flags.set_inside_general_use(true);
         self.array.analyze(context, block_context, artifacts)?;
         block_context.flags.set_inside_general_use(was_inside_general_use);
+        if let Some(before) = short_circuit_scope
+            && crate::context::non_nullability::may_short_circuit(self.array, artifacts)
+        {
+            crate::context::non_nullability::merge_short_circuit(block_context, &before, context);
+        }
 
         let cached_type = if let Some(keyed_array_var_id) = &keyed_array_var_id
             && block_context.has_variable_atom(*keyed_array_var_id)

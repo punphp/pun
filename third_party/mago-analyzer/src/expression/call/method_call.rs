@@ -391,6 +391,11 @@ where
         return Ok(());
     }
 
+    let short_circuit = (!is_null_safe
+        && receiver.is_none()
+        && crate::context::non_nullability::may_short_circuit(object, artifacts))
+    .then(|| block_context.clone());
+
     let undocumented_template_result =
         (!method_resolution.undocumented_methods.is_empty()).then(|| method_resolution.template_result.clone());
 
@@ -518,6 +523,10 @@ where
         && let Some(summary) = crate::property_initialization::called_method(context, id)?
     {
         crate::property_initialization::merge_initialized(&mut block_context.variable_state.property_initializations, &summary);
+    }
+
+    if let Some(before) = short_circuit {
+        crate::context::non_nullability::merge_short_circuit(block_context, &before, context);
     }
 
     Ok(())

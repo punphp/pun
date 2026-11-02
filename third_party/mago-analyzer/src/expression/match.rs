@@ -751,6 +751,25 @@ where
             }
         }
 
+        // PHPStan's scope merge: a variable every reachable arm defines is defined after the match.
+        let new_vars: Vec<_> = reachable_contexts[0]
+            .locals
+            .keys()
+            .filter(|var_id| !self.block_context.locals.contains_key(*var_id))
+            .filter(|var_id| reachable_contexts.iter().all(|ctx| ctx.locals.contains_key(*var_id)))
+            .copied()
+            .collect();
+        for var_id in new_vars {
+            let mut final_type: Option<TUnion> = None;
+            for arm_context in &reachable_contexts {
+                let arm_type = arm_context.locals.get(&var_id).map(AsRef::as_ref);
+                final_type = Some(combine_optional_union_types(final_type.as_ref(), arm_type, self.context.codebase));
+            }
+            if let Some(final_type) = final_type {
+                self.block_context.locals.insert(var_id, Rc::new(final_type));
+            }
+        }
+
         for ctx in &reachable_contexts {
             self.block_context.variables_possibly_in_scope.extend(ctx.variables_possibly_in_scope.iter().copied());
         }

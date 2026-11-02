@@ -118,7 +118,14 @@ where
         let result = object.analyze(context, block_context, artifacts);
         block_context.flags.set_inside_general_use(was_inside_general_use);
         result?;
+        let short_circuit = (!is_null_safe
+            && !matches!(property_selector, ClassLikeMemberSelector::Identifier(_))
+            && crate::context::non_nullability::may_short_circuit(object, artifacts))
+        .then(|| block_context.clone());
         crate::resolver::selector::resolve_member_selector(context, block_context, artifacts, property_selector, true)?;
+        if let Some(before) = short_circuit {
+            crate::context::non_nullability::merge_short_circuit(block_context, &before, context);
+        }
         add_memoized_property_reference(context, block_context, artifacts, object, property_selector, is_null_safe)?;
 
         artifacts.set_rc_expression_type(&span, existing_type);

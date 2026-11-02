@@ -80,6 +80,8 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for StaticMethodCall<'arena> {
         let reflection_scope = block_context.clone();
         let mut method_resolution =
             resolve_static_method_targets(context, block_context, artifacts, self.class, &self.method, self.span())?;
+        let short_circuit = crate::context::non_nullability::may_short_circuit(self.class, artifacts)
+            .then(|| block_context.clone());
         let undocumented_template_result =
             (!method_resolution.undocumented_methods.is_empty()).then(|| method_resolution.template_result.clone());
 
@@ -199,6 +201,10 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for StaticMethodCall<'arena> {
                 get_error()
             };
             artifacts.set_resolved_expression_type(&self.span(), return_type);
+        }
+
+        if let Some(before) = short_circuit {
+            crate::context::non_nullability::merge_short_circuit(block_context, &before, context);
         }
 
         if context.plugin_registry.has_static_method_call_hooks() {

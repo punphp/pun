@@ -1,0 +1,61 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "extra.php",
+   "line": 16,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $argc",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 17,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $argv",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 26,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $undefined",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 27,
+   "identifier": "variable.undefined",
+   "message": "Call to function compact() contains undefined variable $defined.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 27,
+   "identifier": "variable.undefined",
+   "message": "Call to function compact() contains undefined variable $undefined.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 29,
+   "identifier": "variable.undefined",
+   "message": "Call to function compact() contains undefined variable $undefined.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 37,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $unknown",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 119,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $z",
+   "tip": null
+  }
+ ]
+}

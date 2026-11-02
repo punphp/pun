@@ -114,7 +114,14 @@ where
     object_expression.analyze(context, block_context, artifacts)?;
     block_context.flags.set_inside_general_use(was_inside_general_use);
 
+    let short_circuit = (!is_null_safe
+        && !matches!(property_selector, ClassLikeMemberSelector::Identifier(_))
+        && crate::context::non_nullability::may_short_circuit(object_expression, artifacts))
+    .then(|| block_context.clone());
     let selectors = resolve_member_selector(context, block_context, artifacts, property_selector, true)?;
+    if let Some(before) = short_circuit {
+        crate::context::non_nullability::merge_short_circuit(block_context, &before, context);
+    }
 
     let Some(object_type) = artifacts.get_rc_expression_type(object_expression).cloned() else {
         return Ok(result);

@@ -83,7 +83,7 @@ pub(super) fn flow_types(program: &Program, level: u8) -> Vec<Span> {
 }
 
 pub(super) use unused_private::class as unused_private;
-pub(super) use null_coalesce::{coalesce as null_coalesce, coalesce_types, isset};
+pub(super) use null_coalesce::{coalesce as null_coalesce, coalesce_types, empty, isset};
 
 pub(super) fn statement(c: &mut Checker, s: &ExpressionStatement) {
     no_discard::statement(c, s);

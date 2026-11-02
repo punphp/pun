@@ -144,7 +144,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for FunctionCall<'arena> {
         }
 
         if extracts_variables {
-            block_context.variable_state.after_extract_call = true;
+            extract(context, block_context, artifacts, self);
         }
         if context.plugin_registry.has_function_call_hooks() {
             let mut hook_context = HookContext::new(context.codebase, context.source_file, block_context, artifacts);
@@ -324,6 +324,71 @@ where
     }
 
     Ok((targets, encountered_invalid_targets))
+}
+
+/// FuncCallScopeEffectsHelper's `extract()`: constant arrays assign their string keys, anything else lets any
+/// variable exist.
+fn extract<A: Arena>(
+    context: &Context<'_, '_, A>,
+    block_context: &mut BlockContext<'_>,
+    artifacts: &AnalysisArtifacts,
+    call: &FunctionCall<'_>,
+) {
+    use mago_codex::ttype::atomic::array::TArray;
+    use mago_codex::ttype::atomic::array::key::ArrayKey;
+    use mago_codex::ttype::combine_union_types;
+    use mago_codex::ttype::union::TUnion;
+
+    let arrays: Option<Vec<_>> = call
+        .argument_list
+        .arguments
+        .first()
+        .and_then(|argument| artifacts.get_expression_type(argument.value()))
+        .filter(|ty| !ty.types.is_empty())
+        .and_then(|ty| {
+            ty.types
+                .iter()
+                .map(|atomic| match atomic {
+                    TAtomic::Array(TArray::Keyed(keyed)) if keyed.parameters.is_none() => Some(keyed),
+                    _ => None,
+                })
+                .collect()
+        });
+    let Some(arrays) = arrays else {
+        block_context.variable_state.after_extract_call = true;
+        return;
+    };
+    // name -> (value type, optional in some array, number of arrays that have it)
+    let mut properties: Vec<(mago_word::Word, TUnion, bool, usize)> = Vec::new();
+    for array in &arrays {
+        for (key, (optional, value)) in array.known_items.iter().flat_map(|items| items.iter()) {
+            let ArrayKey::String(name) = key else { continue };
+            match properties.iter_mut().find(|(existing, ..)| existing == name) {
+                Some((_, ty, is_optional, count)) => {
+                    *ty = combine_union_types(ty, value, context.codebase, Default::default());
+                    *is_optional |= *optional;
+                    *count += 1;
+                }
+                None => properties.push((*name, value.clone(), *optional, 1)),
+            }
+        }
+    }
+    for (name, mut ty, optional, count) in properties {
+        let variable = mago_word::concat_word!("$", name);
+        let optional = optional || count < arrays.len();
+        let certainty = block_context.variable_certainty(variable);
+        if optional && !certainty.is_absent()
+            && let Some(existing) = block_context.locals.get(&variable)
+        {
+            ty = combine_union_types(existing, &ty, context.codebase, Default::default());
+        }
+        ty.set_possibly_undefined(optional && !certainty.is_defined(), None);
+        ty.set_possibly_undefined_from_try(false);
+        block_context.invalidate_variable_certainty(variable);
+        block_context.variable_state.absent.remove(&variable);
+        block_context.variables_possibly_in_scope.insert(variable);
+        block_context.locals.insert(variable, std::rc::Rc::new(ty));
+    }
 }
 
 #[cfg(test)]

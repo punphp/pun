@@ -1,0 +1,194 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "extra.php",
+   "line": 5,
+   "identifier": "variable.undefined",
+   "message": "Variable $argc might not be defined.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 6,
+   "identifier": "variable.undefined",
+   "message": "Variable $argv might not be defined.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 7,
+   "identifier": "variable.undefined",
+   "message": "Variable $undefinedAtTop might not be defined.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 12,
+   "identifier": "variable.undefined",
+   "message": "Variable $maybeAtTop might not be defined.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 16,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $argc",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 17,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $argv",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 25,
+   "identifier": "variable.undefined",
+   "message": "Variable $maybe might not be defined.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 26,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $undefined",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 27,
+   "identifier": "variable.undefined",
+   "message": "Call to function compact() contains possibly undefined variable $maybe.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 27,
+   "identifier": "variable.undefined",
+   "message": "Call to function compact() contains undefined variable $defined.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 27,
+   "identifier": "variable.undefined",
+   "message": "Call to function compact() contains undefined variable $undefined.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 29,
+   "identifier": "variable.undefined",
+   "message": "Call to function compact() contains possibly undefined variable $maybe.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 29,
+   "identifier": "variable.undefined",
+   "message": "Call to function compact() contains undefined variable $undefined.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 37,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $unknown",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 50,
+   "identifier": "variable.undefined",
+   "message": "Variable $partial might not be defined.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 73,
+   "identifier": "variable.undefined",
+   "message": "Variable $a might not be defined.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 75,
+   "identifier": "variable.undefined",
+   "message": "Variable $b might not be defined.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 77,
+   "identifier": "variable.undefined",
+   "message": "Variable $c might not be defined.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 79,
+   "identifier": "variable.undefined",
+   "message": "Variable $d might not be defined.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 81,
+   "identifier": "variable.undefined",
+   "message": "Variable $e might not be defined.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 97,
+   "identifier": "variable.undefined",
+   "message": "Variable $key might not be defined.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 100,
+   "identifier": "variable.undefined",
+   "message": "Variable $key might not be defined.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 101,
+   "identifier": "variable.undefined",
+   "message": "Variable $key might not be defined.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 118,
+   "identifier": "variable.undefined",
+   "message": "Variable $y might not be defined.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 119,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $z",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 125,
+   "identifier": "variable.undefined",
+   "message": "Variable $anything might not be defined.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 161,
+   "identifier": "variable.undefined",
+   "message": "Variable $value might not be defined.",
+   "tip": null
+  }
+ ]
+}

@@ -1434,6 +1434,14 @@ where
                 TAtomic::Scalar(TScalar::Bool(bool)) if bool.is_general() => {
                     acceptable_types.push(TAtomic::Scalar(TScalar::r#true()));
                 }
+                // TypeCombinator::remove(int, falsey()): an integer range loses 0 (`int<min, -1>|int<1, max>`).
+                TAtomic::Scalar(TScalar::Integer(integer))
+                    if !integer.is_unspecified_literal() && integer.can_be_zero() =>
+                {
+                    acceptable_types.extend(
+                        integer.difference(TInteger::literal(0), false).into_iter().map(|part| TAtomic::Scalar(TScalar::Integer(part))),
+                    );
+                }
                 TAtomic::Array(TArray::List(mut list)) => {
                     list.non_empty = true;
                     acceptable_types.push(TAtomic::Array(TArray::List(list)));

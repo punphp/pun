@@ -208,6 +208,8 @@ where
         let all_options_returned = self.case_exit_types.values().all(|t| *t == ControlAction::Return);
         let is_exhaustive = self.has_default_case || {
             let mut final_else_context = original_context.clone();
+            // A subject expression without a holder (a call) is still narrowed by every failed case.
+            final_else_context.locals.entry(subject_id).or_insert_with(|| Rc::clone(&subject_type));
             let final_else_clauses: Vec<_> =
                 final_else_context.clauses.iter().map(|c| (**c).clone()).chain(self.negated_clauses).collect();
 

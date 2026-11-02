@@ -352,19 +352,58 @@ pub(super) fn allow_target(expr: &Expression, out: &mut HashSet<Span>) {
     }
 }
 
+/// MutatingScope::isUndefinedExpressionAllowed() compares node keys: while the target chain of `expr` (and of the
+/// earlier operands in `names`) is allowed, an equal variable elsewhere in `expr`, such as an offset, is too.
+fn allow_named<'arena>(expr: &Expression<'arena>, names: &mut Vec<&'arena [u8]>, out: &mut HashSet<Span>) {
+    struct Named<'n, 'arena>(&'n [&'arena [u8]], &'n mut HashSet<Span>);
+    impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Named<'_, 'arena> {
+        fn walk_in_direct_variable(&mut self, v: &'ast DirectVariable<'arena>, _: &mut ()) {
+            if self.0.contains(&v.name) {
+                self.1.insert(v.span());
+            }
+        }
+    }
+    let mut link = expr;
+    loop {
+        link = match link {
+            Expression::Parenthesized(p) => p.expression,
+            Expression::ArrayAccess(a) => a.array,
+            Expression::Access(Access::Property(p)) => p.object,
+            Expression::Access(Access::NullSafeProperty(p)) => p.object,
+            Expression::Access(Access::StaticProperty(p)) => p.class,
+            Expression::Call(Call::NullSafeMethod(m)) => m.object,
+            Expression::Variable(Variable::Direct(v)) => {
+                names.push(v.name);
+                break;
+            }
+            _ => break,
+        };
+    }
+    if !names.is_empty() {
+        Named(names, out).walk_expression(expr, &mut ());
+    }
+}
+
 pub(super) fn allowed_expressions(program: &Program) -> HashSet<Span> {
     struct Allowed(HashSet<Span>);
     impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Allowed {
         fn walk_in_expression(&mut self, e: &'ast Expression<'arena>, _: &mut ()) {
             match e {
                 Expression::Construct(Construct::Isset(i)) => {
+                    // IssetHandler unsets the allowed expressions only after its last operand.
+                    let mut names = Vec::new();
                     for value in &i.values {
                         allow_target(value, &mut self.0);
+                        allow_named(value, &mut names, &mut self.0);
                     }
                 }
-                Expression::Construct(Construct::Empty(e)) => allow_target(e.value, &mut self.0),
+                Expression::Construct(Construct::Empty(e)) => {
+                    allow_target(e.value, &mut self.0);
+                    allow_named(e.value, &mut Vec::new(), &mut self.0);
+                }
                 Expression::Binary(b) if matches!(b.operator, BinaryOperator::NullCoalesce(_)) => {
-                    allow_target(b.lhs, &mut self.0)
+                    allow_target(b.lhs, &mut self.0);
+                    allow_named(b.lhs, &mut Vec::new(), &mut self.0);
                 }
                 Expression::Assignment(a)
                     if matches!(a.operator, AssignmentOperator::Coalesce(_)) =>

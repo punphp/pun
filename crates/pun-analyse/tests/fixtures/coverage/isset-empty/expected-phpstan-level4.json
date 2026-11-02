@@ -1,0 +1,810 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "extra.php",
+   "line": 26,
+   "identifier": "empty.property",
+   "message": "Property IssetEmptyExtra\\Holder::$nonEmpty (array<int>) in empty() is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 102,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($int)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 103,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($float)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 104,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($string)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 105,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($bool)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 106,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($nonEmptyString)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 107,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($nonFalsyString)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 107,
+   "identifier": "empty.variable",
+   "message": "Variable $nonFalsyString in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 108,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($numericString)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 109,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($fromZero)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 110,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($positive)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 110,
+   "identifier": "empty.variable",
+   "message": "Variable $positive in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 111,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($aroundZero)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 112,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($shape)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 112,
+   "identifier": "empty.variable",
+   "message": "Variable $shape in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 113,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($optionalShape)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 114,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($emptyShape)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 114,
+   "identifier": "empty.variable",
+   "message": "Variable $emptyShape in empty() always exists and is always falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 115,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($nonEmptyArray)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 115,
+   "identifier": "empty.variable",
+   "message": "Variable $nonEmptyArray in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 116,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($list)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 117,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($classString)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 118,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($resource)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 118,
+   "identifier": "empty.variable",
+   "message": "Variable $resource in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 119,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($callable)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 119,
+   "identifier": "empty.variable",
+   "message": "Variable $callable in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 120,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($iterable)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 121,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($closure)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 121,
+   "identifier": "empty.variable",
+   "message": "Variable $closure in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 122,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($objectShape)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 122,
+   "identifier": "empty.variable",
+   "message": "Variable $objectShape in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 123,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($object)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 123,
+   "identifier": "empty.variable",
+   "message": "Variable $object in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 124,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($value)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 124,
+   "identifier": "empty.variable",
+   "message": "Variable $value in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 125,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($gmp)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 126,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($xml)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 127,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($zeroOrOne)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 128,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($oneOrTwo)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 128,
+   "identifier": "empty.variable",
+   "message": "Variable $oneOrTwo in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 129,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($true)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 129,
+   "identifier": "empty.variable",
+   "message": "Variable $true in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 130,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($false)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 130,
+   "identifier": "empty.variable",
+   "message": "Variable $false in empty() always exists and is always falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 131,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($mixed)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 132,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($maybeValue)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 133,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($null)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 133,
+   "identifier": "empty.variable",
+   "message": "Variable $null in empty() always exists and is always falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 134,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($zero)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 134,
+   "identifier": "empty.variable",
+   "message": "Variable $zero in empty() always exists and is always falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 135,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($one)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 135,
+   "identifier": "empty.variable",
+   "message": "Variable $one in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 136,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($zeroFloat)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 136,
+   "identifier": "empty.variable",
+   "message": "Variable $zeroFloat in empty() always exists and is always falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 137,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($half)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 137,
+   "identifier": "empty.variable",
+   "message": "Variable $half in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 138,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($emptyString)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 138,
+   "identifier": "empty.variable",
+   "message": "Variable $emptyString in empty() always exists and is always falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 139,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($zeroString)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 139,
+   "identifier": "empty.variable",
+   "message": "Variable $zeroString in empty() always exists and is always falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 140,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($text)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 140,
+   "identifier": "empty.variable",
+   "message": "Variable $text in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 141,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($emptyArray)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 141,
+   "identifier": "empty.variable",
+   "message": "Variable $emptyArray in empty() always exists and is always falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 142,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($array)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 142,
+   "identifier": "empty.variable",
+   "message": "Variable $array in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 143,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($undefined)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 143,
+   "identifier": "empty.variable",
+   "message": "Variable $undefined in empty() is never defined.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 144,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($array[0])\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 144,
+   "identifier": "empty.offset",
+   "message": "Offset 0 on array{1} in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 145,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($array[5])\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 145,
+   "identifier": "empty.offset",
+   "message": "Offset 5 on array{1} in empty() does not exist.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 146,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($shape['a'])\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 147,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($shape['c'])\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 147,
+   "identifier": "empty.offset",
+   "message": "Offset 'c' on array{a: int, b?: int} in empty() does not exist.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 148,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property IssetEmptyExtra\\Value::$missing.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "extra.php",
+   "line": 148,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($value->missing)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 150,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property IssetEmptyExtra\\Value::$property.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "extra.php",
+   "line": 150,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($value?->property)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 150,
+   "identifier": "nullsafe.neverNull",
+   "message": "Using nullsafe property access \"?->property\" in empty() is unnecessary. Use -> instead.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 155,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($maybe)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 156,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"isset($maybe)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 157,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"isset($one, $null)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 157,
+   "identifier": "isset.variable",
+   "message": "Variable $null in isset() always exists and is always null.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 157,
+   "identifier": "isset.variable",
+   "message": "Variable $one in isset() always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 158,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"isset($undefined)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 158,
+   "identifier": "isset.variable",
+   "message": "Variable $undefined in isset() is never defined.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 159,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"isset($array[0], $array[1])\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 159,
+   "identifier": "isset.offset",
+   "message": "Offset 0 on array{1} in isset() always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 159,
+   "identifier": "isset.offset",
+   "message": "Offset 1 on array{1} in isset() does not exist.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 176,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($template)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 177,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($objectTemplate)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 177,
+   "identifier": "empty.variable",
+   "message": "Variable $objectTemplate in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 178,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"isset($template)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 179,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"isset($objectTemplate)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 179,
+   "identifier": "isset.variable",
+   "message": "Variable $objectTemplate in isset() always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 186,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($value)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 186,
+   "identifier": "empty.variable",
+   "message": "Variable $value in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 189,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($value)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 190,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"isset($value)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 190,
+   "identifier": "isset.variable",
+   "message": "Variable $value in isset() always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 199,
+   "identifier": "isset.variable",
+   "message": "Variable $value in isset() always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 217,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($this)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 217,
+   "identifier": "empty.variable",
+   "message": "Variable $this in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 218,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty(\\IssetEmptyExtra\\Suit::Hearts)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 218,
+   "identifier": "empty.expr",
+   "message": "Expression in empty() is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 220,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($case)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 220,
+   "identifier": "empty.variable",
+   "message": "Variable $case in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 221,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($number)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 223,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($array)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 223,
+   "identifier": "empty.variable",
+   "message": "Variable $array in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 226,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($object)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 226,
+   "identifier": "empty.variable",
+   "message": "Variable $object in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "extra.php (in context of class IssetEmptyExtra\\UsesTrait)",
+   "line": 198,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($value)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "extra.php (in context of class IssetEmptyExtra\\UsesTrait)",
+   "line": 199,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"isset($value)\" on a separate line does not do anything.",
+   "tip": null
+  }
+ ]
+}

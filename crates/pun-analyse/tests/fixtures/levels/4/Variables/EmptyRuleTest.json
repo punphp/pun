@@ -1,0 +1,994 @@
+{
+    "test": "Variables/EmptyRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Variables/data/empty-rule.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/empty-rule.php",
+                    "line": 20,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"empty($a[0])\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/empty-rule.php",
+                    "line": 21,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"empty($a[1])\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/empty-rule.php",
+                    "line": 22,
+                    "identifier": "empty.offset",
+                    "message": "Offset 'nonexistent' on array{2: bool, 3: false, 4: true}|array{bool, false, bool, false, true} in empty() does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/empty-rule.php",
+                    "line": 22,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"empty($a['nonexistent'])\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/empty-rule.php",
+                    "line": 23,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"empty($a[2])\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/empty-rule.php",
+                    "line": 24,
+                    "identifier": "empty.offset",
+                    "message": "Offset 3 on array{2: bool, 3: false, 4: true}|array{bool, false, bool, false, true} in empty() always exists and is always falsy.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/empty-rule.php",
+                    "line": 24,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"empty($a[3])\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/empty-rule.php",
+                    "line": 25,
+                    "identifier": "empty.offset",
+                    "message": "Offset 4 on array{2: bool, 3: false, 4: true}|array{bool, false, bool, false, true} in empty() always exists and is not falsy.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/empty-rule.php",
+                    "line": 25,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"empty($a[4])\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/empty-rule.php",
+                    "line": 36,
+                    "identifier": "empty.offset",
+                    "message": "Offset 0 on array{'', '0', 'foo', ''|'foo'} in empty() always exists and is always falsy.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/empty-rule.php",
+                    "line": 36,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"empty($a[0])\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/empty-rule.php",
+                    "line": 37,
+                    "identifier": "empty.offset",
+                    "message": "Offset 1 on array{'', '0', 'foo', ''|'foo'} in empty() always exists and is always falsy.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/empty-rule.php",
+                    "line": 37,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"empty($a[1])\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/empty-rule.php",
+                    "line": 38,
+                    "identifier": "empty.offset",
+                    "message": "Offset 2 on array{'', '0', 'foo', ''|'foo'} in empty() always exists and is not falsy.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/empty-rule.php",
+                    "line": 38,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"empty($a[2])\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/empty-rule.php",
+                    "line": 39,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"empty($a[3])\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/empty-rule.php",
+                    "line": 44,
+                    "identifier": "empty.variable",
+                    "message": "Variable $a in empty() is never defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/empty-rule.php",
+                    "line": 44,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"empty($a)\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/empty-rule.php",
+                    "line": 47,
+                    "identifier": "empty.variable",
+                    "message": "Variable $b in empty() always exists and is not falsy.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/empty-rule.php",
+                    "line": 47,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"empty($b)\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/empty-rule.php",
+                    "line": 53,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"empty($c)\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/empty-rule.php",
+                    "line": 56,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"empty($d)\" on a separate line does not do anything.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug970",
+            "files": [
+                "Variables/data/bug-970.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/bug-970.php",
+                    "line": 9,
+                    "identifier": "empty.variable",
+                    "message": "Variable $ar in empty() is never defined.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6974",
+            "files": [
+                "Variables/data/bug-6974.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/bug-6974.php",
+                    "line": 12,
+                    "identifier": "empty.variable",
+                    "message": "Variable $a in empty() always exists and is always falsy.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-6974.php",
+                    "line": 30,
+                    "identifier": "empty.variable",
+                    "message": "Variable $a in empty() always exists and is not falsy.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6974TreatPhpDocTypesAsCertain",
+            "files": [
+                "Variables/data/bug-6974.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/bug-6974.php",
+                    "line": 12,
+                    "identifier": "empty.variable",
+                    "message": "Variable $a in empty() always exists and is always falsy.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-6974.php",
+                    "line": 30,
+                    "identifier": "empty.variable",
+                    "message": "Variable $a in empty() always exists and is not falsy.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7109",
+            "files": [
+                "Properties/data/bug-7109.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 17,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access \"?->aaa\" on left side of ?? is unnecessary. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 18,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access \"?->aaa\" in isset() is unnecessary. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 19,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access \"?->aaa\" in empty() is unnecessary. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 28,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access \"?->aaa\" on left side of ?? is unnecessary. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 29,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access \"?->aaa\" in isset() is unnecessary. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 30,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access \"?->aaa\" in empty() is unnecessary. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 40,
+                    "identifier": "nullCoalesce.expr",
+                    "message": "Expression on left side of ?? is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 41,
+                    "identifier": "isset.expr",
+                    "message": "Expression in isset() is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 42,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access \"?->aaa\" in empty() is unnecessary. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 54,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access \"?->notFalsy\" in empty() is unnecessary. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 59,
+                    "identifier": "empty.expr",
+                    "message": "Expression in empty() is not falsy.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 66,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access \"?->aaa\" on left side of ?? is unnecessary. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 67,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access \"?->aaa\" in isset() is unnecessary. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 68,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access \"?->aaa\" in empty() is unnecessary. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 73,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this?->aaa ?? 'edge'\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 73,
+                    "identifier": "nullCoalesce.expr",
+                    "message": "Expression on left side of ?? is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 74,
+                    "identifier": "isset.expr",
+                    "message": "Expression in isset() is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 74,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 75,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access \"?->(Expression)\" in empty() is unnecessary. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 75,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7318",
+            "files": [
+                "Properties/data/bug-7318.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-7318.php",
+                    "line": 24,
+                    "identifier": "nullCoalesce.offset",
+                    "message": "Offset 'unique' on array{unique: bool} on left side of ?? always exists and is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7318.php",
+                    "line": 27,
+                    "identifier": "isset.offset",
+                    "message": "Offset 'unique' on array{unique: bool} in isset() always exists and is not nullable.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7424",
+            "files": [
+                "Variables/data/bug-7424.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7724",
+            "files": [
+                "Variables/data/bug-7724.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7199",
+            "files": [
+                "Variables/data/bug-7199.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9126",
+            "files": [
+                "Variables/data/bug-9126.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/bug-9126.php",
+                    "line": 13,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property Bug9126\\Resume::$owner.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Variables/data/bug-9126.php",
+                    "line": 20,
+                    "identifier": "empty.variable",
+                    "message": "Variable $owner in empty() always exists and is not falsy.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug9403#0",
+            "files": [
+                "Variables/data/bug-9403.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9403#1",
+            "files": [
+                "Variables/data/bug-9403.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12658",
+            "files": [
+                "Variables/data/bug-12658.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10367",
+            "files": [
+                "Variables/data/bug-10367.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11284",
+            "files": [
+                "Variables/data/bug-11284.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7806",
+            "files": [
+                "Variables/data/bug-7806.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/bug-7806.php",
+                    "line": 10,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #1 $reasons (array) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-7806.php",
+                    "line": 35,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #1 $reasons (array) is implicitly nullable via default value null.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14393",
+            "files": [
+                "Variables/data/bug-14393.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/bug-14393.php",
+                    "line": 11,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Property Bug14393\\MyClass::$i (int) on left side of ?? is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14393.php",
+                    "line": 12,
+                    "identifier": "isset.property",
+                    "message": "Property Bug14393\\MyClass::$i (int) in isset() is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14393.php",
+                    "line": 36,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Property Bug14393\\MyClassPhpDoc::$i (int) on left side of ?? is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14393.php",
+                    "line": 37,
+                    "identifier": "isset.property",
+                    "message": "Property Bug14393\\MyClassPhpDoc::$i (int) in isset() is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14393.php",
+                    "line": 80,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Property Bug14393\\MyClass::$i (int) on left side of ?? is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14393.php",
+                    "line": 81,
+                    "identifier": "isset.property",
+                    "message": "Property Bug14393\\MyClass::$i (int) in isset() is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14393.php",
+                    "line": 92,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Property Bug14393\\MyClassPhpDoc::$i (int) on left side of ?? is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14393.php",
+                    "line": 93,
+                    "identifier": "isset.property",
+                    "message": "Property Bug14393\\MyClassPhpDoc::$i (int) in isset() is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14393.php",
+                    "line": 120,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Static property Bug14393\\MyClassStatic::$i (int) on left side of ?? is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14393.php",
+                    "line": 121,
+                    "identifier": "isset.property",
+                    "message": "Static property Bug14393\\MyClassStatic::$i (int) in isset() is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14393.php",
+                    "line": 150,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Static property Bug14393\\MyClassStatic::$i (int) on left side of ?? is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14393.php",
+                    "line": 151,
+                    "identifier": "isset.property",
+                    "message": "Static property Bug14393\\MyClassStatic::$i (int) in isset() is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14393.php",
+                    "line": 164,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $undefinedVar on left side of ?? is never defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14393.php",
+                    "line": 165,
+                    "identifier": "isset.variable",
+                    "message": "Variable $undefinedVar in isset() is never defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14393.php",
+                    "line": 166,
+                    "identifier": "empty.variable",
+                    "message": "Variable $undefinedVar in empty() is never defined.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testIssetAfterRememberedConstructor",
+            "files": [
+                "Variables/data/isset-after-remembered-constructor.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/isset-after-remembered-constructor.php",
+                    "line": 34,
+                    "identifier": "isset.initializedProperty",
+                    "message": "Property IssetOrCoalesceOnNonNullableInitializedProperty\\User::$string in isset() is not nullable nor uninitialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset-after-remembered-constructor.php",
+                    "line": 46,
+                    "identifier": "nullCoalesce.initializedProperty",
+                    "message": "Property IssetOrCoalesceOnNonNullableInitializedProperty\\User::$string on left side of ?? is not nullable nor uninitialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset-after-remembered-constructor.php",
+                    "line": 93,
+                    "identifier": "empty.initializedProperty",
+                    "message": "Property IssetOrCoalesceOnNonNullableInitializedProperty\\MoreEmptyCases::$false in empty() is always falsy and initialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset-after-remembered-constructor.php",
+                    "line": 95,
+                    "identifier": "empty.initializedProperty",
+                    "message": "Property IssetOrCoalesceOnNonNullableInitializedProperty\\MoreEmptyCases::$true in empty() is not falsy nor uninitialized.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNullCoalesceAssignRightSideScope",
+            "files": [
+                "Variables/data/null-coalesce-assign-right-side-scope.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 19,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Property NullCoalesceAssignRightSideScope\\Foo::$nonNullable (string) on left side of ?? is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 19,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Property NullCoalesceAssignRightSideScope\\Foo::$nonNullable (string) on left side of ??= is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 24,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Static property NullCoalesceAssignRightSideScope\\Foo::$staticNonNullable (string) on left side of ?? is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 24,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Static property NullCoalesceAssignRightSideScope\\Foo::$staticNonNullable (string) on left side of ??= is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 33,
+                    "identifier": "void.pure",
+                    "message": "Function NullCoalesceAssignRightSideScope\\nestedOffset() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 39,
+                    "identifier": "void.pure",
+                    "message": "Function NullCoalesceAssignRightSideScope\\nonConstantArray() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 44,
+                    "identifier": "void.pure",
+                    "message": "Function NullCoalesceAssignRightSideScope\\undefinedVariable() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 46,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $undefined on left side of ?? is never defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 46,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $undefined on left side of ??= is never defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 52,
+                    "identifier": "offsetAssign.valueType",
+                    "message": "ArrayAccess<string, string> does not accept string|null.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 58,
+                    "identifier": "offsetAssign.valueType",
+                    "message": "ArrayAccess<string, string> does not accept string|null.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 70,
+                    "identifier": "offsetAssign.valueType",
+                    "message": "ArrayObject<string, string> does not accept string|null.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 74,
+                    "identifier": "void.pure",
+                    "message": "Function NullCoalesceAssignRightSideScope\\issetOnRightSide() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 80,
+                    "identifier": "void.pure",
+                    "message": "Function NullCoalesceAssignRightSideScope\\emptyOnRightSide() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 86,
+                    "identifier": "void.pure",
+                    "message": "Function NullCoalesceAssignRightSideScope\\unsetTargetBeforeAssignOp() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 89,
+                    "identifier": "nullCoalesce.offset",
+                    "message": "Offset 'foo' on array{bar?: string} on left side of ??= does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 93,
+                    "identifier": "void.pure",
+                    "message": "Function NullCoalesceAssignRightSideScope\\emptyTargetBeforeAssignOp() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 109,
+                    "identifier": "void.pure",
+                    "message": "Function NullCoalesceAssignRightSideScope\\assignOpInsideUnsetOffset() returns void but does not have any side effects.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPropertyInitializationCustomSerialization",
+            "files": [
+                "Variables/data/property-initialization-custom-serialization.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 20,
+                    "identifier": "nullCoalesce.initializedProperty",
+                    "message": "Property PropertyInitializationCustomSerialization\\NoSerialization::$string on left side of ?? is not nullable nor uninitialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 21,
+                    "identifier": "isset.initializedProperty",
+                    "message": "Property PropertyInitializationCustomSerialization\\NoSerialization::$string in isset() is not nullable nor uninitialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 23,
+                    "identifier": "empty.initializedProperty",
+                    "message": "Property PropertyInitializationCustomSerialization\\NoSerialization::$true in empty() is not falsy nor uninitialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 41,
+                    "identifier": "nullCoalesce.initializedProperty",
+                    "message": "Property PropertyInitializationCustomSerialization\\OnlyWakeup::$string on left side of ?? is not nullable nor uninitialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 42,
+                    "identifier": "isset.initializedProperty",
+                    "message": "Property PropertyInitializationCustomSerialization\\OnlyWakeup::$string in isset() is not nullable nor uninitialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 44,
+                    "identifier": "empty.initializedProperty",
+                    "message": "Property PropertyInitializationCustomSerialization\\OnlyWakeup::$true in empty() is not falsy nor uninitialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 200,
+                    "identifier": "class.serializable",
+                    "message": "Non-abstract class PropertyInitializationCustomSerialization\\OldSchoolSerializable implements the Serializable interface, but does not implement __serialize().",
+                    "tip": "See https://wiki.php.net/rfc/phase_out_serializable"
+                },
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 200,
+                    "identifier": "class.serializable",
+                    "message": "Non-abstract class PropertyInitializationCustomSerialization\\OldSchoolSerializable implements the Serializable interface, but does not implement __unserialize().",
+                    "tip": "See https://wiki.php.net/rfc/phase_out_serializable"
+                },
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 238,
+                    "identifier": "nullCoalesce.initializedProperty",
+                    "message": "Property PropertyInitializationCustomSerialization\\PromotedNoSerialization::$string on left side of ?? is not nullable nor uninitialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 271,
+                    "identifier": "nullCoalesce.initializedProperty",
+                    "message": "Property PropertyInitializationCustomSerialization\\CoalesceAssignNoSerialization::$string on left side of ??= is not nullable nor uninitialized.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testInTrait",
+            "files": [
+                "Variables/data/isset-in-trait.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/isset-in-trait.php",
+                    "line": 119,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $s on left side of ?? always exists and is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset-in-trait.php",
+                    "line": 120,
+                    "identifier": "isset.variable",
+                    "message": "Variable $s in isset() always exists and is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset-in-trait.php",
+                    "line": 121,
+                    "identifier": "empty.variable",
+                    "message": "Variable $s in empty() always exists and is not falsy.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset-in-trait.php (in context of class IssetInTrait\\FirstNonNullableProperty)",
+                    "line": 82,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Property IssetInTrait\\FirstNonNullableProperty::$k (int<1, max>) on left side of ?? is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset-in-trait.php (in context of class IssetInTrait\\FirstNonNullableProperty)",
+                    "line": 83,
+                    "identifier": "isset.property",
+                    "message": "Property IssetInTrait\\FirstNonNullableProperty::$k (int<1, max>) in isset() is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset-in-trait.php (in context of class IssetInTrait\\FirstNonNullableProperty)",
+                    "line": 84,
+                    "identifier": "empty.property",
+                    "message": "Property IssetInTrait\\FirstNonNullableProperty::$k (int<1, max>) in empty() is not falsy.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset-in-trait.php (in context of class IssetInTrait\\SecondNonNullableProperty)",
+                    "line": 82,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Property IssetInTrait\\SecondNonNullableProperty::$k (int<1, max>) on left side of ?? is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset-in-trait.php (in context of class IssetInTrait\\SecondNonNullableProperty)",
+                    "line": 83,
+                    "identifier": "isset.property",
+                    "message": "Property IssetInTrait\\SecondNonNullableProperty::$k (int<1, max>) in isset() is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset-in-trait.php (in context of class IssetInTrait\\SecondNonNullableProperty)",
+                    "line": 84,
+                    "identifier": "empty.property",
+                    "message": "Property IssetInTrait\\SecondNonNullableProperty::$k (int<1, max>) in empty() is not falsy.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10783",
+            "files": [
+                "Variables/data/bug-10783.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/bug-10783.php",
+                    "line": 12,
+                    "identifier": "offsetAssign.valueType",
+                    "message": "ArrayObject<*NEVER*, *NEVER*> does not accept string.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-10783.php",
+                    "line": 13,
+                    "identifier": "empty.expr",
+                    "message": "Expression in empty() is always falsy.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

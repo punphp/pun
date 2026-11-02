@@ -43,6 +43,14 @@ pub(crate) fn may_be_null(ty: &TUnion) -> bool {
     })
 }
 
+/// A plain link of a nullsafe chain whose receiver may be null may never run: its dynamic name, arguments and
+/// effects happened only in the world where the chain did not short-circuit (MethodCallHandler's mayShortCircuit,
+/// `containsNullsafe() && TypeCombinator::containsNull()`).
+pub(crate) fn may_short_circuit(object: &Expression<'_>, artifacts: &AnalysisArtifacts) -> bool {
+    crate::utils::expression::expression_is_nullsafe(object)
+        && artifacts.get_expression_type(object).is_some_and(TUnion::has_null)
+}
+
 pub(crate) fn merge_short_circuit<'ctx, A: Arena>(
     scope: &mut BlockContext<'ctx>,
     before: &BlockContext<'ctx>,
