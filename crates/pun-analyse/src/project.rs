@@ -100,6 +100,12 @@ pub struct Project {
     pub check_dynamic_constant_name_values: bool,
     /// `featureToggles.checkDateIntervalConstructor` (on with bleedingEdge): DateIntervalInstantiationRule.
     pub check_date_interval_constructor: bool,
+    /// `featureToggles.checkParameterCastableToNumberFunctions` (on with bleedingEdge): ParameterCastableToNumberRule.
+    pub check_parameter_castable_to_number_functions: bool,
+    /// `featureToggles.checkPrintfParameterTypes` (on with bleedingEdge): PrintfParameterTypeRule.
+    pub check_printf_parameter_types: bool,
+    /// `checkStrictPrintfPlaceholderTypes`: PrintfParameterTypeRule's strict placeholder types (off by default).
+    pub check_strict_printf_placeholder_types: bool,
     /// `dynamicConstantNames`' entries with a configured type (name, type string).
     pub dynamic_constant_types: Vec<(String, String)>,
     /// `checkUninitializedProperties`: UninitializedPropertyRule (config.neon's conditional rule).
@@ -432,6 +438,9 @@ impl Project {
             assign_to_by_ref_foreach_expr: toggle("assignToByRefForeachExpr"),
             check_dynamic_constant_name_values: toggle("checkDynamicConstantNameValues"),
             check_date_interval_constructor: toggle("checkDateIntervalConstructor"),
+            check_parameter_castable_to_number_functions: toggle("checkParameterCastableToNumberFunctions"),
+            check_printf_parameter_types: toggle("checkPrintfParameterTypes"),
+            check_strict_printf_placeholder_types: flag("checkStrictPrintfPlaceholderTypes"),
             // ConstantResolver::getConfiguredGlobalConstantType(): only the string keys have a type
             dynamic_constant_types: params
                 .get_str("dynamicConstantNames")
@@ -518,6 +527,9 @@ impl Project {
             assign_to_by_ref_foreach_expr: false,
             check_dynamic_constant_name_values: false,
             check_date_interval_constructor: false,
+            check_parameter_castable_to_number_functions: false,
+            check_printf_parameter_types: false,
+            check_strict_printf_placeholder_types: false,
             dynamic_constant_types: Vec::new(),
             check_uninitialized_properties: false,
             check_missing_callable_signature: false,

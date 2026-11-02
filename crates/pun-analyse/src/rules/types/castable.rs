@@ -4,7 +4,9 @@
 
 use mago_span::HasSpan;
 use mago_syntax::cst::*;
-use pun_phpstan::types::{Cast, Level, StrictMixed, Type, cast_is_error, is_super_type_of, union};
+use pun_phpstan::types::{
+    Accessory, Cast, Level, StrictMixed, Type, accepts, cast_is_error, intersect, is_super_type_of, union,
+};
 
 pub const IDENTIFIERS: &[&str] = &[
     "arrayFilter.empty",
@@ -175,6 +177,26 @@ pub(in super::super) fn function_call(c: &mut Checker, call: &FunctionCall) {
                 ));
             }
         }
+        // ParameterCastableToNumberRule: only a call with exactly one argument
+        "array_sum" | "array_product" if c.toggled.castable_to_number && args.len() == 1 => {
+            let (n, v, unpack) = args[0];
+            // PhpVersion::supportsObjectsInArraySumProduct(): before PHP 8.3 any possible object fails
+            let objects = c.php_version >= 80300;
+            let to_number = |t: &Type| {
+                (!objects && t.mixed_explicitness().is_none() && !t.is_object().no()) || cast_is_error(t, Cast::Number, sm)
+            };
+            if let Some(given) = check_parameter(c, v, unpack, &to_number) {
+                let p = parameter_name(&acceptor, 0, n.is_some());
+                errors.push(format!(
+                    "Parameter {p} of function {name} expects an array of values castable to number, {given} given."
+                ));
+            }
+        }
+        "printf" | "sprintf" | "fprintf" => {
+            if let Some(strict) = c.toggled.printf_types {
+                errors.extend(declared::with_classes(c, || printf_types(c, &args, &name, strict)));
+            }
+        }
         "random_int" => {
             if let [(_, min, _), (_, max, _), ..] = args.as_slice()
                 && let Some(message) = random_int(c, min, max)
@@ -244,6 +266,86 @@ fn array_function(c: &Checker, value: &Expression, filter: bool) -> Option<(&'st
             ("arrayFilter.alwaysEmpty", message)
         })
     })
+}
+
+/// PrintfParameterTypeRule: each value a placeholder of a single constant format consumes must suit the
+/// placeholder's specifier (`strict`: `checkStrictPrintfPlaceholderTypes`).
+fn printf_types(c: &Checker, args: &[(Option<&[u8]>, &Expression, bool)], name: &str, strict: bool) -> Vec<String> {
+    let position = usize::from(name == "fprintf");
+    if args.iter().any(|(_, _, unpack)| *unpack) || args.len() < position + 1 {
+        return Vec::new();
+    }
+    let formats = c.phpstan_type(args[position].1).map(|t| t.constant_strings()).unwrap_or_default();
+    let [format] = formats.as_slice() else {
+        return Vec::new();
+    };
+    // (an invalid format is PrintfParametersRule's error)
+    let Some(uses) = super::super::printf_helper::printf_uses(format, c.surely_at_least(80000)) else {
+        return Vec::new();
+    };
+    // getPlaceholders(): argument index => (label, placeholder number, accepting type)
+    let starred: Vec<usize> = uses.iter().filter(|u| u.kind != "value").map(|u| u.number).collect();
+    let mut placeholders: std::collections::BTreeMap<usize, Vec<(String, usize, &str)>> = Default::default();
+    for u in &uses {
+        let mut label = format!("\"{}\"", String::from_utf8_lossy(&u.placeholder));
+        let accepting = if u.kind != "value" {
+            label.push_str(&format!(" ({})", u.kind));
+            "strict-int"
+        } else {
+            if starred.contains(&u.number) {
+                label.push_str(" (value)");
+            }
+            match u.specifier {
+                b's' => "string",
+                b'd' | b'u' | b'c' | b'o' | b'x' | b'X' | b'b' => "int",
+                b'e' | b'E' | b'f' | b'F' | b'g' | b'G' | b'h' | b'H' => "float",
+                _ => "mixed",
+            }
+        };
+        placeholders.entry(u.index).or_default().push((label, u.number, accepting));
+    }
+    let sm = StrictMixed::default();
+    let string_and = |a: Accessory| intersect(vec![Type::String, Type::Accessory(a)]);
+    // PrintfPlaceholder::doesArgumentTypeMatchPlaceholder()
+    let matches = |accepting: &str, t: &Type| match accepting {
+        "strict-int" => accepts(&Type::Int, t, true).yes(),
+        "int" if strict => {
+            accepts(&union(vec![Type::Int, string_and(Accessory::DecimalIntString { inverse: false })]), t, true).yes()
+        }
+        "int" => !cast_is_error(t, Cast::Integer, sm),
+        "float" if strict => accepts(&union(vec![Type::Float, string_and(Accessory::NumericString)]), t, true).yes(),
+        "float" => !cast_is_error(t, Cast::Float, sm),
+        _ => !strict || accepts(&union(vec![Type::StringAcceptingStringable, Type::Float, Type::Null]), t, true).yes(),
+    };
+    // what CallToFunctionParametersRule already enforces
+    let allowed = union(vec![Type::StringAcceptingStringable, Type::Int, Type::Float, Type::Bool, Type::Null]);
+    let strict_types = super::returns::strict_types(c);
+    let mut errors = Vec::new();
+    for (i, (_, value, _)) in args.iter().enumerate().skip(position + 1) {
+        let j = i - position - 1;
+        for (label, number, accepting) in placeholders.get(&j).into_iter().flatten() {
+            let Some(t) = c.find_type_to_check(value, &|t| matches(accepting, t)).ty else {
+                continue;
+            };
+            if matches(accepting, &t) || !c.levels().accepts(&allowed, &t, strict_types) {
+                continue;
+            }
+            let expected = match (*accepting, strict) {
+                ("strict-int", _) | ("int", true) => "int",
+                ("float", true) => "float",
+                ("string" | "mixed", true) => "string",
+                ("int", false) => "castable to int",
+                ("float", false) => "castable to float",
+                _ => "castable to string",
+            };
+            errors.push(format!(
+                "Parameter #{} of function {name} is expected to be {expected} by placeholder #{number} ({label}), {} given.",
+                i + 1,
+                t.describe(Level::TypeOnly),
+            ));
+        }
+    }
+    errors
 }
 
 /// The `$flags` default of the sort functions (`getDefaultValue()`): SORT_STRING for `array_unique()`.

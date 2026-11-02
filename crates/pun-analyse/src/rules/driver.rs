@@ -115,6 +115,11 @@ pub(super) struct Toggled {
     pub(super) constant_types: Option<Vec<(String, String)>>,
     /// DateIntervalInstantiationRule: level 5 with `featureToggles.checkDateIntervalConstructor`.
     pub(super) date_interval: bool,
+    /// ParameterCastableToNumberRule: level 5 with `featureToggles.checkParameterCastableToNumberFunctions`.
+    pub(super) castable_to_number: bool,
+    /// PrintfParameterTypeRule: level 5 with `featureToggles.checkPrintfParameterTypes`, then whether
+    /// `checkStrictPrintfPlaceholderTypes` is on.
+    pub(super) printf_types: Option<bool>,
 }
 
 impl Checks {
@@ -190,6 +195,9 @@ impl Checks {
                 constant_types: (project.level >= 2 && project.check_dynamic_constant_name_values)
                     .then(|| project.dynamic_constant_types.clone()),
                 date_interval: project.level >= 5 && project.check_date_interval_constructor,
+                castable_to_number: project.level >= 5 && project.check_parameter_castable_to_number_functions,
+                printf_types: (project.level >= 5 && project.check_printf_parameter_types)
+                    .then_some(project.check_strict_printf_placeholder_types),
             },
         }
     }

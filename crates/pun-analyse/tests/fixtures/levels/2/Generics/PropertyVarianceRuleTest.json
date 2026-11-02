@@ -1,0 +1,427 @@
+{
+    "test": "Generics/PropertyVarianceRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Generics/data/property-variance.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Generics/data/property-variance.php",
+                    "line": 51,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in invariant position in property PropertyVariance\\B::$a.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/property-variance.php",
+                    "line": 54,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in invariant position in property PropertyVariance\\B::$b.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/property-variance.php",
+                    "line": 57,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in invariant position in property PropertyVariance\\B::$c.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/property-variance.php",
+                    "line": 60,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in invariant position in property PropertyVariance\\B::$d.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/property-variance.php",
+                    "line": 80,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as contravariant, but occurs in invariant position in property PropertyVariance\\C::$a.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/property-variance.php",
+                    "line": 83,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as contravariant, but occurs in invariant position in property PropertyVariance\\C::$b.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/property-variance.php",
+                    "line": 86,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as contravariant, but occurs in invariant position in property PropertyVariance\\C::$c.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/property-variance.php",
+                    "line": 89,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as contravariant, but occurs in invariant position in property PropertyVariance\\C::$d.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPromoted",
+            "files": [
+                "Generics/data/property-variance-promoted.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Generics/data/property-variance-promoted.php",
+                    "line": 58,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in invariant position in property PropertyVariance\\Promoted\\B::$a.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/property-variance-promoted.php",
+                    "line": 59,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in invariant position in property PropertyVariance\\Promoted\\B::$b.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/property-variance-promoted.php",
+                    "line": 60,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in invariant position in property PropertyVariance\\Promoted\\B::$c.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/property-variance-promoted.php",
+                    "line": 61,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in invariant position in property PropertyVariance\\Promoted\\B::$d.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/property-variance-promoted.php",
+                    "line": 84,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as contravariant, but occurs in invariant position in property PropertyVariance\\Promoted\\C::$a.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/property-variance-promoted.php",
+                    "line": 85,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as contravariant, but occurs in invariant position in property PropertyVariance\\Promoted\\C::$b.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/property-variance-promoted.php",
+                    "line": 86,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as contravariant, but occurs in invariant position in property PropertyVariance\\Promoted\\C::$c.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/property-variance-promoted.php",
+                    "line": 87,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as contravariant, but occurs in invariant position in property PropertyVariance\\Promoted\\C::$d.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testReadOnly",
+            "files": [
+                "Generics/data/property-variance-readonly.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Generics/data/property-variance-readonly.php",
+                    "line": 22,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class PropertyVariance\\ReadOnly\\A has an uninitialized readonly property $a. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/property-variance-readonly.php",
+                    "line": 25,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class PropertyVariance\\ReadOnly\\A has an uninitialized readonly property $b. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/property-variance-readonly.php",
+                    "line": 28,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class PropertyVariance\\ReadOnly\\A has an uninitialized readonly property $c. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/property-variance-readonly.php",
+                    "line": 31,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class PropertyVariance\\ReadOnly\\A has an uninitialized readonly property $d. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/property-variance-readonly.php",
+                    "line": 34,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class PropertyVariance\\ReadOnly\\A has an uninitialized readonly property $e. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/property-variance-readonly.php",
+                    "line": 42,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class PropertyVariance\\ReadOnly\\B has an uninitialized readonly property $a. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/property-variance-readonly.php",
+                    "line": 45,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in contravariant position in property PropertyVariance\\ReadOnly\\B::$b.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/property-variance-readonly.php",
+                    "line": 45,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class PropertyVariance\\ReadOnly\\B has an uninitialized readonly property $b. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/property-variance-readonly.php",
+                    "line": 48,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class PropertyVariance\\ReadOnly\\B has an uninitialized readonly property $c. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/property-variance-readonly.php",
+                    "line": 51,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in invariant position in property PropertyVariance\\ReadOnly\\B::$d.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/property-variance-readonly.php",
+                    "line": 51,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class PropertyVariance\\ReadOnly\\B has an uninitialized readonly property $d. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/property-variance-readonly.php",
+                    "line": 54,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class PropertyVariance\\ReadOnly\\B has an uninitialized readonly property $e. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/property-variance-readonly.php",
+                    "line": 62,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as contravariant, but occurs in covariant position in property PropertyVariance\\ReadOnly\\C::$a.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/property-variance-readonly.php",
+                    "line": 62,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class PropertyVariance\\ReadOnly\\C has an uninitialized readonly property $a. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/property-variance-readonly.php",
+                    "line": 65,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class PropertyVariance\\ReadOnly\\C has an uninitialized readonly property $b. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/property-variance-readonly.php",
+                    "line": 68,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as contravariant, but occurs in covariant position in property PropertyVariance\\ReadOnly\\C::$c.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/property-variance-readonly.php",
+                    "line": 68,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class PropertyVariance\\ReadOnly\\C has an uninitialized readonly property $c. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/property-variance-readonly.php",
+                    "line": 71,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as contravariant, but occurs in invariant position in property PropertyVariance\\ReadOnly\\C::$d.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/property-variance-readonly.php",
+                    "line": 71,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class PropertyVariance\\ReadOnly\\C has an uninitialized readonly property $d. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/property-variance-readonly.php",
+                    "line": 74,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class PropertyVariance\\ReadOnly\\C has an uninitialized readonly property $e. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/property-variance-readonly.php",
+                    "line": 86,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as contravariant, but occurs in covariant position in property PropertyVariance\\ReadOnly\\D::$a.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug9153",
+            "files": [
+                "Generics/data/bug-9153.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13049",
+            "files": [
+                "Generics/data/bug-13049.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12964",
+            "files": [
+                "Generics/data/bug-12964.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Generics/data/bug-12964.php",
+                    "line": 51,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in contravariant position in property Bug12964\\C::$b.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/bug-12964.php",
+                    "line": 57,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in invariant position in property Bug12964\\C::$d.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/bug-12964.php",
+                    "line": 65,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as contravariant, but occurs in covariant position in property Bug12964\\D::$a.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/bug-12964.php",
+                    "line": 71,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as contravariant, but occurs in covariant position in property Bug12964\\D::$c.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/bug-12964.php",
+                    "line": 74,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as contravariant, but occurs in invariant position in property Bug12964\\D::$d.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/bug-12964.php",
+                    "line": 82,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in invariant position in property Bug12964\\E::$a.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/bug-12964.php",
+                    "line": 85,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in invariant position in property Bug12964\\E::$b.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/bug-12964.php",
+                    "line": 88,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in invariant position in property Bug12964\\E::$c.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/bug-12964.php",
+                    "line": 91,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in invariant position in property Bug12964\\E::$d.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/bug-12964.php",
+                    "line": 103,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in contravariant position in property Bug12964\\F::$b.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/bug-12964.php",
+                    "line": 109,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in invariant position in property Bug12964\\F::$d.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/bug-12964.php",
+                    "line": 118,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as contravariant, but occurs in covariant position in property Bug12964\\G::$a.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/bug-12964.php",
+                    "line": 124,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as contravariant, but occurs in covariant position in property Bug12964\\G::$c.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/bug-12964.php",
+                    "line": 127,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as contravariant, but occurs in invariant position in property Bug12964\\G::$d.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/bug-12964.php",
+                    "line": 136,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in invariant position in property Bug12964\\H::$a.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

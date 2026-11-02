@@ -1,0 +1,208 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "extra.php",
+   "line": 21,
+   "identifier": "generics.variance",
+   "message": "Template type X is declared as covariant, but occurs in invariant position in property MemberVarianceExtra\\Props::$plain.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 25,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class MemberVarianceExtra\\Props has an uninitialized readonly property $readonly. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 33,
+   "identifier": "generics.variance",
+   "message": "Template type X is declared as covariant, but occurs in invariant position in property MemberVarianceExtra\\Props::$withSet.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 35,
+   "identifier": "generics.variance",
+   "message": "Template type X is declared as covariant, but occurs in invariant position in property MemberVarianceExtra\\Props::$static.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 37,
+   "identifier": "generics.variance",
+   "message": "Template type Y is declared as contravariant, but occurs in invariant position in property MemberVarianceExtra\\Props::$contra.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 39,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class MemberVarianceExtra\\Props has an uninitialized readonly property $contraReadonly. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 39,
+   "identifier": "generics.variance",
+   "message": "Template type Y is declared as contravariant, but occurs in covariant position in property MemberVarianceExtra\\Props::$contraReadonly.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 41,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class MemberVarianceExtra\\Props has an uninitialized readonly property $nestedIn. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 41,
+   "identifier": "generics.variance",
+   "message": "Template type X is declared as covariant, but occurs in contravariant position in property MemberVarianceExtra\\Props::$nestedIn.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 43,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class MemberVarianceExtra\\Props has an uninitialized readonly property $nestedOut. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 43,
+   "identifier": "generics.variance",
+   "message": "Template type Y is declared as contravariant, but occurs in covariant position in property MemberVarianceExtra\\Props::$nestedOut.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 45,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class MemberVarianceExtra\\Props has an uninitialized readonly property $nestedInv. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 45,
+   "identifier": "generics.variance",
+   "message": "Template type X is declared as covariant, but occurs in invariant position in property MemberVarianceExtra\\Props::$nestedInv.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 47,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class MemberVarianceExtra\\Props has an uninitialized readonly property $arrayX. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 49,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class MemberVarianceExtra\\Props has an uninitialized readonly property $callable. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 49,
+   "identifier": "generics.variance",
+   "message": "Template type X is declared as covariant, but occurs in contravariant position in property MemberVarianceExtra\\Props::$callable.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 49,
+   "identifier": "generics.variance",
+   "message": "Template type Y is declared as contravariant, but occurs in covariant position in property MemberVarianceExtra\\Props::$callable.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 57,
+   "identifier": "generics.variance",
+   "message": "Template type X is declared as covariant, but occurs in invariant position in property MemberVarianceExtra\\Props::$a.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 60,
+   "identifier": "generics.variance",
+   "message": "Template type Y is declared as contravariant, but occurs in invariant position in property MemberVarianceExtra\\Props::$c.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 62,
+   "identifier": "generics.variance",
+   "message": "Template type X is declared as covariant, but occurs in invariant position in property MemberVarianceExtra\\Props::$d.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 88,
+   "identifier": "generics.variance",
+   "message": "Template type X is declared as covariant, but occurs in contravariant position in parameter x of method MemberVarianceExtra\\Methods::param().",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 92,
+   "identifier": "generics.variance",
+   "message": "Template type X is declared as covariant, but occurs in contravariant position in parameter x of method MemberVarianceExtra\\Methods::staticParam().",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 94,
+   "identifier": "return.missing",
+   "message": "Method MemberVarianceExtra\\Methods::returnIn() should return MemberVarianceExtra\\In<X> but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 94,
+   "identifier": "generics.variance",
+   "message": "Template type X is declared as covariant, but occurs in contravariant position in return type of method MemberVarianceExtra\\Methods::returnIn().",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 96,
+   "identifier": "generics.variance",
+   "message": "Template type X is declared as covariant, but occurs in contravariant position in parameter x of method MemberVarianceExtra\\Methods::paramOut().",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 100,
+   "identifier": "generics.variance",
+   "message": "Template type X is declared as covariant, but occurs in contravariant position in parameter x of method MemberVarianceExtra\\Methods::finalParam().",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 115,
+   "identifier": "function.variance",
+   "message": "Variance annotation is only allowed for type parameters of classes and interfaces, but occurs in template type T in in function MemberVarianceExtra\\functionCovariant().",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 122,
+   "identifier": "function.variance",
+   "message": "Variance annotation is only allowed for type parameters of classes and interfaces, but occurs in template type T in in function MemberVarianceExtra\\functionContravariant().",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 158,
+   "identifier": "generics.variance",
+   "message": "Template type X is declared as covariant, but occurs in invariant position in property MemberVarianceExtra\\InheritsConstructorDoc::$x.",
+   "tip": null
+  }
+ ]
+}

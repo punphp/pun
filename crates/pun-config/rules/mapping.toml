@@ -1205,7 +1205,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "strings/invalid-date-interval" = { preset = "recommended", ported = true, status = "decided" }
 "strings/invalid-date-time" = { preset = "recommended", status = "decided" }
 "types/argument" = { preset = "basic", ported = true, status = "decided" }
-"types/argument-not-numeric" = { preset = "recommended", status = "decided" }
+"types/argument-not-numeric" = { preset = "recommended", ported = true, status = "decided" }
 "types/argument-not-stringable" = { preset = "recommended", ported = true, status = "decided" }
 "types/arrow-function-nullsafe-by-ref" = { preset = "basic", ported = true, status = "decided" }
 "types/arrow-function-param-default" = { preset = "essential", ported = true, status = "decided" }
@@ -1226,7 +1226,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/foreach-non-iterable" = { preset = "essential", ported = true, status = "decided" }
 "types/foreach-on-empty-array" = { preset = "recommended", ported = true, status = "decided" }
 "types/function-return" = { preset = "essential", ported = true, status = "decided" }
-"types/function-variance" = { preset = "essential", status = "decided" }
+"types/function-variance" = { preset = "essential", ported = true, status = "decided" }
 "types/generator" = { preset = "essential", ported = true, status = "decided" }
 "types/implode-non-string" = { preset = "recommended", ported = true, status = "decided" }
 "types/interpolated-non-string" = { preset = "essential", ported = true, status = "decided" }
@@ -1260,10 +1260,10 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/invalid-trait-use-generics" = { preset = "essential", ported = true, status = "decided" }
 "types/invalid-unary-operand" = { preset = "essential", ported = true, status = "decided" }
 "types/invalid-union-type" = { preset = "basic", ported = true, status = "decided" }
-"types/invalid-unset" = { preset = "basic", status = "decided" }
+"types/invalid-unset" = { preset = "basic", ported = true, status = "decided" }
 "types/invalid-void-cast" = { preset = "basic", ported = true, status = "decided" }
 "types/method-param-default" = { preset = "essential", ported = true, status = "decided" }
-"types/method-variance" = { preset = "essential", status = "decided" }
+"types/method-variance" = { preset = "essential", ported = true, status = "decided" }
 "types/missing-constant-type" = { preset = "strict", ported = true, status = "decided" }
 "types/missing-hook-throws" = { preset = "max", ported = true, status = "decided" }
 "types/missing-method-param-type" = { preset = "strict", ported = true, status = "decided" }
@@ -1286,17 +1286,17 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/phpdoc-readonly-by-ref" = { preset = "essential", ported = true, status = "decided" }
 "types/phpdoc-readonly-property-write" = { preset = "essential", ported = true, status = "decided" }
 "types/print-non-string" = { preset = "essential", ported = true, status = "decided" }
-"types/printf-argument" = { preset = "recommended", status = "decided" }
+"types/printf-argument" = { preset = "recommended", ported = true, status = "decided" }
 "types/property-assign" = { preset = "essential", ported = true, status = "decided" }
 "types/property-default" = { preset = "essential", ported = true, status = "decided" }
-"types/property-variance" = { preset = "essential", status = "decided" }
+"types/property-variance" = { preset = "essential", ported = true, status = "decided" }
 "types/random-int-range" = { preset = "recommended", ported = true, status = "decided" }
 "types/readonly-property-by-ref" = { preset = "essential", ported = true, status = "decided" }
 "types/readonly-property-write" = { preset = "essential", ported = true, status = "decided" }
 "types/redundant-array-values" = { preset = "recommended", ported = true, status = "decided" }
 "types/redundant-nullsafe" = { preset = "recommended", ported = true, fixed_by = ["lint/complexity/no-redundant-nullsafe"], status = "decided" }
 "types/redundant-nullsafe-method-call" = { preset = "recommended", ported = true, status = "decided" }
-"types/renamed-parameter-in-subtype" = { preset = "basic", status = "decided" }
+"types/renamed-parameter-in-subtype" = { preset = "basic", ported = true, status = "decided" }
 "types/return" = { preset = "essential", ported = true, status = "decided" }
 "types/return-by-ref-finally" = { preset = "essential", status = "decided" }
 "types/sort-non-stringable" = { preset = "recommended", ported = true, status = "decided" }

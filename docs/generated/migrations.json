@@ -15675,7 +15675,7 @@
         "rules": [
           "analyse/types/renamed-parameter-in-subtype"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -24231,7 +24231,7 @@
         "rules": [
           "analyse/types/invalid-unset"
         ],
-        "note": "Merged with unset.offset, unset.possiblyHookedProperty, unset.readOnlyProperty and 2 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with unset.offset, unset.possiblyHookedProperty, unset.readOnlyProperty and 2 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -24241,7 +24241,7 @@
         "rules": [
           "analyse/types/invalid-unset"
         ],
-        "note": "Merged with unset.hookedProperty, unset.possiblyHookedProperty, unset.readOnlyProperty and 2 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with unset.hookedProperty, unset.possiblyHookedProperty, unset.readOnlyProperty and 2 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -24251,7 +24251,7 @@
         "rules": [
           "analyse/types/invalid-unset"
         ],
-        "note": "Merged with unset.hookedProperty, unset.offset, unset.readOnlyProperty and 2 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with unset.hookedProperty, unset.offset, unset.readOnlyProperty and 2 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -24261,7 +24261,7 @@
         "rules": [
           "analyse/types/invalid-unset"
         ],
-        "note": "Merged with unset.hookedProperty, unset.offset, unset.possiblyHookedProperty and 2 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with unset.hookedProperty, unset.offset, unset.possiblyHookedProperty and 2 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -24271,7 +24271,7 @@
         "rules": [
           "analyse/types/invalid-unset"
         ],
-        "note": "Merged with unset.hookedProperty, unset.offset, unset.possiblyHookedProperty and 2 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with unset.hookedProperty, unset.offset, unset.possiblyHookedProperty and 2 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -24281,7 +24281,7 @@
         "rules": [
           "analyse/types/invalid-unset"
         ],
-        "note": "Merged with unset.hookedProperty, unset.offset, unset.possiblyHookedProperty and 2 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with unset.hookedProperty, unset.offset, unset.possiblyHookedProperty and 2 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -27397,7 +27397,7 @@
         "rules": [
           "analyse/types/renamed-parameter-in-subtype"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -28089,7 +28089,7 @@
         "rules": [
           "analyse/types/invalid-unset"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

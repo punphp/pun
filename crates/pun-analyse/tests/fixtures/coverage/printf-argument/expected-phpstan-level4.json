@@ -1,0 +1,82 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "extra.php",
+   "line": 16,
+   "identifier": "class.notFound",
+   "message": "Parameter $unknown of function PrintfArgumentExtra\\check() has invalid type UnknownClass.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 42,
+   "identifier": "argument.printf",
+   "message": "Call to printf contains an invalid placeholder.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 44,
+   "identifier": "argument.sprintf",
+   "message": "Call to sprintf contains 1 placeholder, 0 values given.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 46,
+   "identifier": "arguments.count",
+   "message": "Function fprintf invoked with 1 parameter, at least 2 required.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 47,
+   "identifier": "function.resultUnused",
+   "message": "Call to function sprintf() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 49,
+   "identifier": "variable.unused",
+   "message": "Variable $r is never read.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 52,
+   "identifier": "argument.printf",
+   "message": "Call to printf contains 1 placeholder, 2 values given.",
+   "tip": null
+  },
+  {
+   "file": "printf-param-types.php",
+   "line": 55,
+   "identifier": "argument.printf",
+   "message": "Call to printf contains 1 placeholder, 0 values given.",
+   "tip": null
+  },
+  {
+   "file": "printf-param-types.php",
+   "line": 56,
+   "identifier": "argument.printf",
+   "message": "Call to printf contains 1 placeholder, 2 values given.",
+   "tip": null
+  },
+  {
+   "file": "printf-param-types.php",
+   "line": 70,
+   "identifier": "argument.printf",
+   "message": "Call to printf contains 2 placeholders, 3 values given.",
+   "tip": null
+  },
+  {
+   "file": "printf-param-types.php",
+   "line": 95,
+   "identifier": "function.resultUnused",
+   "message": "Call to function sprintf() on a separate line has no effect.",
+   "tip": null
+  }
+ ]
+}

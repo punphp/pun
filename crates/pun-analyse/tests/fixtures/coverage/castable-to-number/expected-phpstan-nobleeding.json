@@ -1,0 +1,313 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "bug-12146.php",
+   "line": 29,
+   "identifier": "argument.type",
+   "message": "Parameter #2 $array of function implode expects array<string>, array<stdClass> given.",
+   "tip": null
+  },
+  {
+   "file": "bug-12146.php",
+   "line": 30,
+   "identifier": "argument.type",
+   "message": "Parameter #2 $array of function implode expects array<string>, array<stdClass> given.",
+   "tip": null
+  },
+  {
+   "file": "bug-12146.php",
+   "line": 35,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $array of function array_intersect expects an array of values castable to string, array<stdClass> given.",
+   "tip": null
+  },
+  {
+   "file": "bug-12146.php",
+   "line": 36,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $array of function array_intersect expects an array of values castable to string, array<stdClass> given.",
+   "tip": null
+  },
+  {
+   "file": "bug-12146.php",
+   "line": 41,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $keys of function array_fill_keys expects an array of values castable to string, array<stdClass> given.",
+   "tip": null
+  },
+  {
+   "file": "bug-12146.php",
+   "line": 42,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $keys of function array_fill_keys expects an array of values castable to string, array<stdClass> given.",
+   "tip": null
+  },
+  {
+   "file": "bug-12146.php",
+   "line": 47,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $array of function array_unique expects an array of values castable to string, array<stdClass> given.",
+   "tip": null
+  },
+  {
+   "file": "bug-12146.php",
+   "line": 48,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $array of function array_unique expects an array of values castable to string, array<stdClass> given.",
+   "tip": null
+  },
+  {
+   "file": "bug-13775-ter.php",
+   "line": 4,
+   "identifier": "function.notFound",
+   "message": "Function doFoo not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "bug-13775-ter.php",
+   "line": 13,
+   "identifier": "function.notFound",
+   "message": "Function doFoo not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "extra.php",
+   "line": 42,
+   "identifier": "class.notFound",
+   "message": "Parameter $unknown of function CastableToNumberExtra\\check() has invalid type UnknownClass.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 45,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_sum() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 46,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_product() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 47,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_sum() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 48,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_product() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 49,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_sum() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 50,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_sum() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 51,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_sum() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 52,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_sum() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 53,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_product() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 54,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_sum() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 55,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_sum() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 56,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_sum() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 57,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_sum() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 58,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_sum() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 59,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_sum() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 60,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_sum() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 61,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_sum() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 62,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_sum() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 63,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_sum() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 63,
+   "identifier": "arguments.count",
+   "message": "Function array_sum invoked with 2 parameters, 1 required.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 64,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_sum() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 65,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_product() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 66,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_sum() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 67,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_sum() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 68,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_sum() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 81,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_sum() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 82,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_sum() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "param-castable-to-number-functions-enum.php",
+   "line": 12,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_sum() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "param-castable-to-number-functions-enum.php",
+   "line": 13,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_product() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "param-castable-to-number-functions.php",
+   "line": 37,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_sum() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "param-castable-to-number-functions.php",
+   "line": 37,
+   "identifier": "arguments.count",
+   "message": "Function array_sum invoked with 0 parameters, 1 required.",
+   "tip": null
+  },
+  {
+   "file": "param-castable-to-number-functions.php",
+   "line": 38,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_product() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "param-castable-to-number-functions.php",
+   "line": 38,
+   "identifier": "arguments.count",
+   "message": "Function array_product invoked with 0 parameters, 1 required.",
+   "tip": null
+  }
+ ]
+}

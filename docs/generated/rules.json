@@ -23425,7 +23425,7 @@
         "PHPStan\\Rules\\Functions\\ParameterCastableToNumberRule",
         "ParameterCastableToNumberRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/argument-not-stringable",
@@ -23925,7 +23925,7 @@
         "FunctionSignatureVarianceRule",
         "PHPStan\\Rules\\Generics\\FunctionSignatureVarianceRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/generator",
@@ -24814,7 +24814,7 @@
         "unset.readOnlyPropertyByPhpDoc",
         "unset.variable"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/invalid-void-cast",
@@ -24884,7 +24884,7 @@
         "MethodSignatureVarianceRule",
         "PHPStan\\Rules\\Generics\\MethodSignatureVarianceRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/missing-constant-type",
@@ -25403,7 +25403,7 @@
         "PHPStan\\Rules\\Functions\\PrintfParameterTypeRule",
         "PrintfParameterTypeRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/property-assign",
@@ -25480,7 +25480,7 @@
         "PHPStan\\Rules\\Generics\\PropertyVarianceRule",
         "PropertyVarianceRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/random-int-range",
@@ -25646,7 +25646,7 @@
         "PHPStan\\Rules\\Methods\\MethodCallWithPossiblyRenamedNamedArgumentRule",
         "argument.parameterRenamedInSubtype"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/return",

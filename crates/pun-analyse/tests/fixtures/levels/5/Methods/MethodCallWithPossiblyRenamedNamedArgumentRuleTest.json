@@ -1,0 +1,39 @@
+{
+    "test": "Methods/MethodCallWithPossiblyRenamedNamedArgumentRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Methods/data/named-argument-renamed-parameter.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/named-argument-renamed-parameter.php",
+                    "line": 25,
+                    "identifier": "argument.parameterRenamedInSubtype",
+                    "message": "Call to NamedArgumentRenamedParameter\\Foo::doFoo() uses named argument for parameter $a, but NamedArgumentRenamedParameter\\Bar renames it to $b.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7434",
+            "files": [
+                "Methods/data/bug-7434.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-7434.php",
+                    "line": 28,
+                    "identifier": "argument.parameterRenamedInSubtype",
+                    "message": "Call to Bug7434\\Contract::method() uses named argument for parameter $val, but Bug7434\\ImplementationWithDifferentName renames it to $wrong.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

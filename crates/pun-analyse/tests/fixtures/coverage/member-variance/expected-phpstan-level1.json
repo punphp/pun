@@ -1,0 +1,61 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "extra.php",
+   "line": 25,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class MemberVarianceExtra\\Props has an uninitialized readonly property $readonly. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 39,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class MemberVarianceExtra\\Props has an uninitialized readonly property $contraReadonly. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 41,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class MemberVarianceExtra\\Props has an uninitialized readonly property $nestedIn. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 43,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class MemberVarianceExtra\\Props has an uninitialized readonly property $nestedOut. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 45,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class MemberVarianceExtra\\Props has an uninitialized readonly property $nestedInv. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 47,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class MemberVarianceExtra\\Props has an uninitialized readonly property $arrayX. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 49,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class MemberVarianceExtra\\Props has an uninitialized readonly property $callable. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 94,
+   "identifier": "return.missing",
+   "message": "Method MemberVarianceExtra\\Methods::returnIn() should return MemberVarianceExtra\\In<X> but return statement is missing.",
+   "tip": null
+  }
+ ]
+}

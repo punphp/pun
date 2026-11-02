@@ -261,8 +261,13 @@ pub fn promoted(c: &mut Checker, m: &Method) {
     if c.level < 2 {
         return;
     }
+    // PhpDocsResolver::getPhpDocs()'s `$isReadOnly`: the class is immutable, or the constructor's own PHPDoc has a
+    // `@readonly` tag
     let by_phpdoc = c.decls.last().is_some_and(|d| d.immutable_doc)
-        || c.decls.last().and_then(|d| d.parent.clone()).is_some_and(|p| c.class_immutable(&p, 0));
+        || c.decls.last().and_then(|d| d.parent.clone()).is_some_and(|p| c.class_immutable(&p, 0))
+        || declared::doc_at(c, m.span()).is_some_and(|(doc, _)| {
+            super::declarations::has_tag(&super::declarations::doc_tags(&doc), super::declarations::READONLY_TAGS)
+        });
     let (k, _) = c.member_scope();
     let declaring = super::missing_types::declaring(c, m.span()).expect("a method is declared by its class or a used trait");
     for (i, p) in m.parameter_list.parameters.iter().enumerate() {

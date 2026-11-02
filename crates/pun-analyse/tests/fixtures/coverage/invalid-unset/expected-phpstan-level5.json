@@ -1,0 +1,194 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "extra.php",
+   "line": 13,
+   "identifier": "property.readOnlyByPhpDocDefaultValue",
+   "message": "@readonly property cannot have a default value.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 26,
+   "identifier": "unset.possiblyHookedProperty",
+   "message": "Cannot unset property InvalidUnsetExtra\\Open::$public because it might have hooks in a subclass.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 27,
+   "identifier": "unset.possiblyHookedProperty",
+   "message": "Cannot unset property InvalidUnsetExtra\\Open::$protected because it might have hooks in a subclass.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 30,
+   "identifier": "unset.readOnlyProperty",
+   "message": "Cannot unset readonly InvalidUnsetExtra\\Open::$readonly property.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 31,
+   "identifier": "unset.readOnlyPropertyByPhpDoc",
+   "message": "Cannot unset @readonly InvalidUnsetExtra\\Open::$docReadonly property.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 32,
+   "identifier": "unset.hookedProperty",
+   "message": "Cannot unset hooked InvalidUnsetExtra\\Open::$hooked property.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 33,
+   "identifier": "unset.possiblyHookedProperty",
+   "message": "Cannot unset property InvalidUnsetExtra\\Open::$untyped because it might have hooks in a subclass.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 34,
+   "identifier": "unset.possiblyHookedProperty",
+   "message": "Cannot unset property InvalidUnsetExtra\\Open::$public because it might have hooks in a subclass.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 57,
+   "identifier": "property.readOnlyByPhpDocDefaultValue",
+   "message": "@readonly property cannot have a default value.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 61,
+   "identifier": "unset.readOnlyPropertyByPhpDoc",
+   "message": "Cannot unset @readonly InvalidUnsetExtra\\DocReadonlyClass::$a property.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 76,
+   "identifier": "unset.readOnlyProperty",
+   "message": "Cannot unset readonly InvalidUnsetExtra\\ReadonlyClass::$a property.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 87,
+   "identifier": "unset.variable",
+   "message": "Call to function unset() contains undefined variable $undefined.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 89,
+   "identifier": "variable.unused",
+   "message": "Variable $maybe is never read.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 92,
+   "identifier": "assign.unused",
+   "message": "Value assigned to variable $defined is never read.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 94,
+   "identifier": "unset.variable",
+   "message": "Call to function unset() contains undefined variable $defined.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 95,
+   "identifier": "unset.offset",
+   "message": "Cannot unset offset 0 on int.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 99,
+   "identifier": "unset.offset",
+   "message": "Cannot unset offset 'b' on array{a: 1}.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 100,
+   "identifier": "unset.offset",
+   "message": "Cannot unset offset 'b' on 1.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 101,
+   "identifier": "unset.offset",
+   "message": "Cannot unset offset 'b' on array{a: mixed}.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 103,
+   "identifier": "unset.offset",
+   "message": "Cannot unset offset 'c' on array{b: 1}.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 104,
+   "identifier": "unset.offset",
+   "message": "Cannot unset offset 'x' on array{a: array{b: 1}}.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 107,
+   "identifier": "array.unusedOffset",
+   "message": "Offset 0 of array assigned to variable $list is never read.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 107,
+   "identifier": "array.unusedOffset",
+   "message": "Offset 1 of array assigned to variable $list is never read.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 108,
+   "identifier": "unset.offset",
+   "message": "Cannot unset offset 5 on array{1, 2}.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 113,
+   "identifier": "unset.offset",
+   "message": "Cannot unset offset 'x' on null.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 114,
+   "identifier": "unset.variable",
+   "message": "Call to function unset() contains undefined variable $undefinedArray.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 119,
+   "identifier": "unset.hookedProperty",
+   "message": "Cannot unset hooked InvalidUnsetExtra\\HasHook::$hook property.",
+   "tip": null
+  }
+ ]
+}

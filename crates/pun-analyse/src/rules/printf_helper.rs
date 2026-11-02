@@ -8,15 +8,39 @@ const INT_MAX: u64 = 2147483647;
 /// `PrintfFormatParser::parse()` then `getRequiredArgumentsCount()`: how many arguments the format consumes, `None`
 /// when it throws ValueError. `h`/`H` are specifiers from PHP 8.0 (`supportsHhPrintfSpecifier()`).
 pub(super) fn printf_count(format: &[u8], hh: bool) -> Option<usize> {
+    Some(printf_uses(format, hh)?.iter().map(|u| u.index + 1).max().unwrap_or(0))
+}
+
+/// One argument use of `PrintfFormatParser::parse()`.
+pub(super) struct Use {
+    /// The zero-based argument after the format.
+    pub(super) index: usize,
+    /// `value`, `width` (`*`) or `precision` (`.*`).
+    pub(super) kind: &'static str,
+    pub(super) specifier: u8,
+    /// The placeholder's text, from `%` to its specifier.
+    pub(super) placeholder: Vec<u8>,
+    /// The placeholder's 1-based position in the format.
+    pub(super) number: usize,
+}
+
+/// `PrintfFormatParser::parse()`: the argument uses in the order the format consumes them, `None` when it throws
+/// ValueError.
+pub(super) fn printf_uses(format: &[u8], hh: bool) -> Option<Vec<Use>> {
     let length = format.len();
-    let (mut i, mut next, mut count) = (0, 0, 0);
-    let mut use_index = |index: usize| count = count.max(index + 1);
+    let (mut i, mut next, mut number) = (0, 0, 0);
+    let mut uses = Vec::new();
+    let mut next_argument = || {
+        next += 1;
+        next - 1
+    };
     while let Some(percent) = format[i..].iter().position(|b| *b == b'%').map(|p| p + i) {
         i = percent + 1;
         if format.get(i) == Some(&b'%') {
             i += 1;
             continue;
         }
+        let mut pending = Vec::new();
         let mut argument = None;
         if !format.get(i).is_some_and(u8::is_ascii_alphabetic) {
             argument = argument_number(format, &mut i)?;
@@ -34,24 +58,18 @@ pub(super) fn printf_count(format: &[u8], hh: bool) -> Option<usize> {
             }
             if format.get(i) == Some(&b'*') {
                 i += 1;
-                let width = argument_number(format, &mut i)?.unwrap_or_else(|| {
-                    next += 1;
-                    next - 1
-                });
-                use_index(width);
-            } else if format.get(i).is_some_and(u8::is_ascii_digit) && number(format, &mut i) >= INT_MAX {
+                let width = argument_number(format, &mut i)?.unwrap_or_else(&mut next_argument);
+                pending.push((width, "width"));
+            } else if format.get(i).is_some_and(u8::is_ascii_digit) && self::number(format, &mut i) >= INT_MAX {
                 return None;
             }
             if format.get(i) == Some(&b'.') {
                 i += 1;
                 if format.get(i) == Some(&b'*') {
                     i += 1;
-                    let precision = argument_number(format, &mut i)?.unwrap_or_else(|| {
-                        next += 1;
-                        next - 1
-                    });
-                    use_index(precision);
-                } else if format.get(i).is_some_and(u8::is_ascii_digit) && number(format, &mut i) >= INT_MAX {
+                    let precision = argument_number(format, &mut i)?.unwrap_or_else(&mut next_argument);
+                    pending.push((precision, "precision"));
+                } else if format.get(i).is_some_and(u8::is_ascii_digit) && self::number(format, &mut i) >= INT_MAX {
                     return None;
                 }
             }
@@ -59,18 +77,19 @@ pub(super) fn printf_count(format: &[u8], hh: bool) -> Option<usize> {
         if format.get(i) == Some(&b'l') {
             i += 1;
         }
-        let argument = argument.unwrap_or_else(|| {
-            next += 1;
-            next - 1
-        });
+        let argument = argument.unwrap_or_else(&mut next_argument);
         let specifier = *format.get(i)?;
         if !b"sdueEfFgGcoxXb%".contains(&specifier) && !(hh && b"hH".contains(&specifier)) {
             return None;
         }
-        use_index(argument);
+        let placeholder = format[percent..=i].to_vec();
+        number += 1;
+        for (index, kind) in pending.into_iter().chain([(argument, "value")]) {
+            uses.push(Use { index, kind, specifier, placeholder: placeholder.clone(), number });
+        }
         i += 1;
     }
-    Some(count)
+    Some(uses)
 }
 
 /// `parseArgumentNumber()`: `Some(None)` without an `n$`, the zero-based index after one, `None` out of range.
