@@ -10,6 +10,7 @@ mod collectors;
 mod config;
 mod console;
 mod dispatch;
+mod forwards;
 mod octane;
 mod relations;
 
@@ -32,6 +33,7 @@ pub(crate) use appends::property;
 pub(crate) use calls::{function_call, method_call, static_method_call};
 pub(crate) use classes::{class, method};
 pub(crate) use collectors::finish;
+pub(super) use forwards::ModelForwards;
 
 pub const IDENTIFIERS: &[&str] = &[
     "larastan.uselessConstructs.with",

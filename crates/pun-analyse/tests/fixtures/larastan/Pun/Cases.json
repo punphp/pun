@@ -376,6 +376,42 @@
             ]
         },
         {
+            "method": "Forwards",
+            "files": [
+                "Pun/Forwards.php"
+            ],
+            "errors": [
+                {
+                    "file": "Pun/Forwards.php",
+                    "line": 10,
+                    "identifier": "larastan.noUnnecessaryCollectionCall",
+                    "message": "Called 'count' on Laravel collection, but could have been retrieved as a query.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Forwards.php",
+                    "line": 14,
+                    "identifier": "larastan.noUnnecessaryCollectionCall",
+                    "message": "Called 'count' on Laravel collection, but could have been retrieved as a query.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Forwards.php",
+                    "line": 15,
+                    "identifier": "larastan.noUnnecessaryCollectionCall",
+                    "message": "Called 'count' on Laravel collection, but could have been retrieved as a query.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Forwards.php",
+                    "line": 16,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'foo' is not found in App\\Group model.",
+                    "tip": null
+                }
+            ]
+        },
+        {
             "method": "Models",
             "files": [
                 "Pun/Models.php"

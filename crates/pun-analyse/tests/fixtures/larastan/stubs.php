@@ -84,6 +84,13 @@ namespace Illuminate\Support\Facades {
     {
     }
 
+    /**
+     * @method static \Illuminate\Database\Query\Builder table(\Closure|\Illuminate\Database\Query\Builder|string $table, string|null $as = null)
+     */
+    class DB extends Facade
+    {
+    }
+
     class Lang extends Facade
     {
     }
@@ -338,12 +345,24 @@ namespace Illuminate\Database\Eloquent {
 
     /**
      * @template TModel of \Illuminate\Database\Eloquent\Model
+     * @mixin \Illuminate\Database\Query\Builder
      */
     class Builder
     {
+        /** @return $this */
         public function where($column, $operator = null, $value = null, $boolean = 'and')
         {
             return $this;
+        }
+
+        /** @return TModel|null */
+        public function first($columns = ['*'])
+        {
+        }
+
+        /** @return TModel */
+        public function firstOrFail($columns = ['*'])
+        {
         }
 
         /** @return \Illuminate\Database\Eloquent\Collection<int, TModel> */
@@ -418,6 +437,21 @@ namespace Illuminate\Database\Query {
     {
         /** @return \Illuminate\Support\Collection<int, \stdClass> */
         public function get($columns = ['*'])
+        {
+        }
+
+        /** @return \Illuminate\Support\Collection<array-key, mixed> */
+        public function pluck($column, $key = null)
+        {
+        }
+
+        /** @return $this */
+        public function limit($value)
+        {
+        }
+
+        /** @return $this */
+        public function dump(...$args)
         {
         }
     }

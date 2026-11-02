@@ -38,8 +38,12 @@ use mago_syntax::cst::{
 use pun_phpstan::types::Tri;
 
 /// The registry the rules' inference runs with; `contents` is the analysed file's (`bindTo()` finds its receiver in it).
-pub(super) fn registry(contents: &[u8]) -> PluginRegistry {
+/// With Larastan, a model forwards the methods it lacks to its builder.
+pub(super) fn registry(contents: &[u8], larastan: bool) -> PluginRegistry {
     let mut registry = PluginRegistry::new();
+    if larastan {
+        registry.register_method_provider(super::larastan::ModelForwards);
+    }
     registry.register_function_provider(Benevolent);
     registry.register_function_provider(
         mago_analyzer::plugin::libraries::stdlib::array::ArrayIsListProvider,

@@ -275,9 +275,28 @@ fn scan_tables(
     codebase: &CodebaseMetadata,
 ) -> (Scan, HashMap<String, schema::Table>) {
     let mut scan = Scan::default();
+    // ModelPropertyHelper reflects any model: the files of the scanned and autoloaded models too
+    let id = |p: &std::path::PathBuf| mago_database::file::FileId::new(p.to_string_lossy().as_bytes());
+    let elsewhere: HashMap<_, _> = project
+        .scanned
+        .iter()
+        .chain(project.autoloaded.iter().map(|a| &a.path))
+        .map(|p| (id(p), p))
+        .collect();
+    let analysed: std::collections::HashSet<_> = project.analysed.iter().map(id).collect();
+    let mut models: Vec<_> = codebase
+        .class_likes
+        .values()
+        .filter(|k| !analysed.contains(&k.span.file_id))
+        .filter(|k| codebase.is_instance_of(k.name.as_bytes(), MODEL.as_bytes()))
+        .filter_map(|k| elsewhere.get(&k.span.file_id).copied())
+        .collect();
+    models.sort();
+    models.dedup();
     for file in project
         .analysed
         .iter()
+        .chain(models)
         .filter_map(|p| read(p, FileType::Host).ok().flatten())
     {
         let arena = LocalArena::new();
