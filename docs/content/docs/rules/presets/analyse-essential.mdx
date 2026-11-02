@@ -22,7 +22,6 @@ This preset covers PHPStan levels 2–3 and includes every lower preset (levels 
 
 #### Level 0
 
-- [`analyse/arrays/duplicate-array-key`](/docs/rules/analyse/arrays/duplicate-array-key)
 - [`analyse/arrays/read-without-offset`](/docs/rules/analyse/arrays/read-without-offset)
 - [`analyse/attributes/invalid`](/docs/rules/analyse/attributes/invalid)
 - [`analyse/attributes/invalid-arrow-function-attribute`](/docs/rules/analyse/attributes/invalid-arrow-function-attribute)
@@ -103,8 +102,6 @@ This preset covers PHPStan levels 2–3 and includes every lower preset (levels 
 - [`analyse/debug/dump-phpdoc-type`](/docs/rules/analyse/debug/dump-phpdoc-type)
 - [`analyse/debug/dump-scope`](/docs/rules/analyse/debug/dump-scope)
 - [`analyse/debug/dump-type`](/docs/rules/analyse/debug/dump-type)
-- [`analyse/deprecated/backtick`](/docs/rules/analyse/deprecated/backtick)
-- [`analyse/deprecated/cast`](/docs/rules/analyse/deprecated/cast)
 - [`analyse/deprecated/to-string`](/docs/rules/analyse/deprecated/to-string)
 - [`analyse/functions/conflicting-filter-var-flags`](/docs/rules/analyse/functions/conflicting-filter-var-flags)
 - [`analyse/functions/duplicate-parameter`](/docs/rules/analyse/functions/duplicate-parameter)
@@ -170,8 +167,6 @@ This preset covers PHPStan levels 2–3 and includes every lower preset (levels 
 #### Level 1
 
 - [`analyse/dead-code/redundant-null-coalesce`](/docs/rules/analyse/dead-code/redundant-null-coalesce)
-- [`analyse/dead-code/unused-closure-use`](/docs/rules/analyse/dead-code/unused-closure-use)
-- [`analyse/dead-code/unused-constructor-parameter`](/docs/rules/analyse/dead-code/unused-constructor-parameter)
 - [`analyse/statements/invalid-empty`](/docs/rules/analyse/statements/invalid-empty)
 - [`analyse/statements/invalid-isset`](/docs/rules/analyse/statements/invalid-isset)
 - [`analyse/types/by-ref-foreach-on-expression`](/docs/rules/analyse/types/by-ref-foreach-on-expression)
@@ -285,11 +280,10 @@ This preset covers PHPStan levels 2–3 and includes every lower preset (levels 
 - [`analyse/types/yield-outside-function`](/docs/rules/analyse/types/yield-outside-function)
 - [`analyse/undefined/offset`](/docs/rules/analyse/undefined/offset)
 
-## Enabled rules (261)
+## Enabled rules (256)
 
 | Rule | Configuration applied | Status |
 | --- | --- | --- |
-| [`analyse/arrays/duplicate-array-key`](/docs/rules/analyse/arrays/duplicate-array-key) | `true` | Ported |
 | [`analyse/arrays/invalid-array-key`](/docs/rules/analyse/arrays/invalid-array-key) | `true` | Ported |
 | [`analyse/arrays/invalid-destructuring`](/docs/rules/analyse/arrays/invalid-destructuring) | `true` | Ported |
 | [`analyse/arrays/read-without-offset`](/docs/rules/analyse/arrays/read-without-offset) | `true` | Ported |
@@ -377,15 +371,11 @@ This preset covers PHPStan levels 2–3 and includes every lower preset (levels 
 | [`analyse/dead-code/redundant-null-coalesce`](/docs/rules/analyse/dead-code/redundant-null-coalesce) | `true` | Ported |
 | [`analyse/dead-code/trait-condition-always-constant`](/docs/rules/analyse/dead-code/trait-condition-always-constant) | `true` | Ported |
 | [`analyse/dead-code/unused-argument`](/docs/rules/analyse/dead-code/unused-argument) | `true` | Ported |
-| [`analyse/dead-code/unused-closure-use`](/docs/rules/analyse/dead-code/unused-closure-use) | `true` | Ported |
-| [`analyse/dead-code/unused-constructor-parameter`](/docs/rules/analyse/dead-code/unused-constructor-parameter) | `true` | Ported |
 | [`analyse/debug/assert-type`](/docs/rules/analyse/debug/assert-type) | `true` | Planned |
 | [`analyse/debug/dump-native-type`](/docs/rules/analyse/debug/dump-native-type) | `true` | Planned |
 | [`analyse/debug/dump-phpdoc-type`](/docs/rules/analyse/debug/dump-phpdoc-type) | `true` | Ported |
 | [`analyse/debug/dump-scope`](/docs/rules/analyse/debug/dump-scope) | `true` | Planned |
 | [`analyse/debug/dump-type`](/docs/rules/analyse/debug/dump-type) | `true` | Ported |
-| [`analyse/deprecated/backtick`](/docs/rules/analyse/deprecated/backtick) | `true` | Ported |
-| [`analyse/deprecated/cast`](/docs/rules/analyse/deprecated/cast) | `true` | Ported |
 | [`analyse/deprecated/to-string`](/docs/rules/analyse/deprecated/to-string) | `true` | Ported |
 | [`analyse/functions/closure-uses-this`](/docs/rules/analyse/functions/closure-uses-this) | `true` | Ported |
 | [`analyse/functions/conflicting-filter-var-flags`](/docs/rules/analyse/functions/conflicting-filter-var-flags) | `true` | Ported |
@@ -551,9 +541,8 @@ This preset covers PHPStan levels 2–3 and includes every lower preset (levels 
 | [`analyse/undefined/trait`](/docs/rules/analyse/undefined/trait) | `true` | Ported |
 | [`analyse/undefined/variable`](/docs/rules/analyse/undefined/variable) | `true` | Planned |
 
-## Rules left off (124)
+## Rules left off (113)
 
-- [`analyse/casts/useless`](/docs/rules/analyse/casts/useless)
 - [`analyse/classes/dynamic-static-call`](/docs/rules/analyse/classes/dynamic-static-call)
 - [`analyse/classes/dynamic-static-callable`](/docs/rules/analyse/classes/dynamic-static-callable)
 - [`analyse/classes/missing-parent-constructor-call`](/docs/rules/analyse/classes/missing-parent-constructor-call)
@@ -587,17 +576,12 @@ This preset covers PHPStan levels 2–3 and includes every lower preset (levels 
 - [`analyse/dead-code/strict-comparison-always-constant`](/docs/rules/analyse/dead-code/strict-comparison-always-constant)
 - [`analyse/dead-code/switch-always-constant`](/docs/rules/analyse/dead-code/switch-always-constant)
 - [`analyse/dead-code/ternary-always-constant`](/docs/rules/analyse/dead-code/ternary-always-constant)
-- [`analyse/dead-code/unreachable-code`](/docs/rules/analyse/dead-code/unreachable-code)
 - [`analyse/dead-code/unused-function-parameter`](/docs/rules/analyse/dead-code/unused-function-parameter)
 - [`analyse/dead-code/unused-function-result`](/docs/rules/analyse/dead-code/unused-function-result)
-- [`analyse/dead-code/unused-label`](/docs/rules/analyse/dead-code/unused-label)
 - [`analyse/dead-code/unused-method-parameter`](/docs/rules/analyse/dead-code/unused-method-parameter)
 - [`analyse/dead-code/unused-method-result`](/docs/rules/analyse/dead-code/unused-method-result)
 - [`analyse/dead-code/unused-new-result`](/docs/rules/analyse/dead-code/unused-new-result)
-- [`analyse/dead-code/unused-private-constant`](/docs/rules/analyse/dead-code/unused-private-constant)
-- [`analyse/dead-code/unused-private-method`](/docs/rules/analyse/dead-code/unused-private-method)
 - [`analyse/dead-code/unused-private-property`](/docs/rules/analyse/dead-code/unused-private-property)
-- [`analyse/dead-code/unused-result`](/docs/rules/analyse/dead-code/unused-result)
 - [`analyse/dead-code/unused-static-method-result`](/docs/rules/analyse/dead-code/unused-static-method-result)
 - [`analyse/dead-code/unused-trait`](/docs/rules/analyse/dead-code/unused-trait)
 - [`analyse/dead-code/unused-variable`](/docs/rules/analyse/dead-code/unused-variable)
@@ -619,13 +603,10 @@ This preset covers PHPStan levels 2–3 and includes every lower preset (levels 
 - [`analyse/laravel/no-auth-helper-in-request-scope`](/docs/rules/analyse/laravel/no-auth-helper-in-request-scope)
 - [`analyse/laravel/no-env-outside-config`](/docs/rules/analyse/laravel/no-env-outside-config)
 - [`analyse/laravel/no-model-make`](/docs/rules/analyse/laravel/no-model-make)
-- [`analyse/laravel/no-public-scope-or-accessor`](/docs/rules/analyse/laravel/no-public-scope-or-accessor)
 - [`analyse/laravel/octane-compatibility`](/docs/rules/analyse/laravel/octane-compatibility)
 - [`analyse/laravel/redundant-collection-call`](/docs/rules/analyse/laravel/redundant-collection-call)
 - [`analyse/laravel/redundant-to-array-call`](/docs/rules/analyse/laravel/redundant-to-array-call)
 - [`analyse/laravel/unused-view`](/docs/rules/analyse/laravel/unused-view)
-- [`analyse/laravel/useless-value-call`](/docs/rules/analyse/laravel/useless-value-call)
-- [`analyse/laravel/useless-with-call`](/docs/rules/analyse/laravel/useless-with-call)
 - [`analyse/operators/non-boolean-and-operand`](/docs/rules/analyse/operators/non-boolean-and-operand)
 - [`analyse/operators/non-boolean-not-operand`](/docs/rules/analyse/operators/non-boolean-not-operand)
 - [`analyse/operators/non-boolean-or-operand`](/docs/rules/analyse/operators/non-boolean-or-operand)
@@ -663,8 +644,6 @@ This preset covers PHPStan levels 2–3 and includes every lower preset (levels 
 - [`analyse/types/printf-argument`](/docs/rules/analyse/types/printf-argument)
 - [`analyse/types/random-int-range`](/docs/rules/analyse/types/random-int-range)
 - [`analyse/types/redundant-array-values`](/docs/rules/analyse/types/redundant-array-values)
-- [`analyse/types/redundant-nullsafe`](/docs/rules/analyse/types/redundant-nullsafe)
-- [`analyse/types/redundant-nullsafe-method-call`](/docs/rules/analyse/types/redundant-nullsafe-method-call)
 - [`analyse/types/sort-non-stringable`](/docs/rules/analyse/types/sort-non-stringable)
 - [`analyse/types/too-wide-arrow-function-return`](/docs/rules/analyse/types/too-wide-arrow-function-return)
 - [`analyse/types/too-wide-closure-return`](/docs/rules/analyse/types/too-wide-closure-return)

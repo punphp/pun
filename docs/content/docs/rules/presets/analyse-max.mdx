@@ -31,7 +31,6 @@ implicit-mixed = true
 
 #### Level 0
 
-- [`analyse/arrays/duplicate-array-key`](/docs/rules/analyse/arrays/duplicate-array-key)
 - [`analyse/arrays/read-without-offset`](/docs/rules/analyse/arrays/read-without-offset)
 - [`analyse/attributes/invalid`](/docs/rules/analyse/attributes/invalid)
 - [`analyse/attributes/invalid-arrow-function-attribute`](/docs/rules/analyse/attributes/invalid-arrow-function-attribute)
@@ -112,8 +111,6 @@ implicit-mixed = true
 - [`analyse/debug/dump-phpdoc-type`](/docs/rules/analyse/debug/dump-phpdoc-type)
 - [`analyse/debug/dump-scope`](/docs/rules/analyse/debug/dump-scope)
 - [`analyse/debug/dump-type`](/docs/rules/analyse/debug/dump-type)
-- [`analyse/deprecated/backtick`](/docs/rules/analyse/deprecated/backtick)
-- [`analyse/deprecated/cast`](/docs/rules/analyse/deprecated/cast)
 - [`analyse/deprecated/to-string`](/docs/rules/analyse/deprecated/to-string)
 - [`analyse/functions/conflicting-filter-var-flags`](/docs/rules/analyse/functions/conflicting-filter-var-flags)
 - [`analyse/functions/duplicate-parameter`](/docs/rules/analyse/functions/duplicate-parameter)
@@ -179,8 +176,6 @@ implicit-mixed = true
 #### Level 1
 
 - [`analyse/dead-code/redundant-null-coalesce`](/docs/rules/analyse/dead-code/redundant-null-coalesce)
-- [`analyse/dead-code/unused-closure-use`](/docs/rules/analyse/dead-code/unused-closure-use)
-- [`analyse/dead-code/unused-constructor-parameter`](/docs/rules/analyse/dead-code/unused-constructor-parameter)
 - [`analyse/statements/invalid-empty`](/docs/rules/analyse/statements/invalid-empty)
 - [`analyse/statements/invalid-isset`](/docs/rules/analyse/statements/invalid-isset)
 - [`analyse/types/by-ref-foreach-on-expression`](/docs/rules/analyse/types/by-ref-foreach-on-expression)
@@ -319,17 +314,12 @@ implicit-mixed = true
 - [`analyse/dead-code/strict-comparison-always-constant`](/docs/rules/analyse/dead-code/strict-comparison-always-constant)
 - [`analyse/dead-code/switch-always-constant`](/docs/rules/analyse/dead-code/switch-always-constant)
 - [`analyse/dead-code/ternary-always-constant`](/docs/rules/analyse/dead-code/ternary-always-constant)
-- [`analyse/dead-code/unreachable-code`](/docs/rules/analyse/dead-code/unreachable-code)
 - [`analyse/dead-code/unused-function-parameter`](/docs/rules/analyse/dead-code/unused-function-parameter)
 - [`analyse/dead-code/unused-function-result`](/docs/rules/analyse/dead-code/unused-function-result)
-- [`analyse/dead-code/unused-label`](/docs/rules/analyse/dead-code/unused-label)
 - [`analyse/dead-code/unused-method-parameter`](/docs/rules/analyse/dead-code/unused-method-parameter)
 - [`analyse/dead-code/unused-method-result`](/docs/rules/analyse/dead-code/unused-method-result)
 - [`analyse/dead-code/unused-new-result`](/docs/rules/analyse/dead-code/unused-new-result)
-- [`analyse/dead-code/unused-private-constant`](/docs/rules/analyse/dead-code/unused-private-constant)
-- [`analyse/dead-code/unused-private-method`](/docs/rules/analyse/dead-code/unused-private-method)
 - [`analyse/dead-code/unused-private-property`](/docs/rules/analyse/dead-code/unused-private-property)
-- [`analyse/dead-code/unused-result`](/docs/rules/analyse/dead-code/unused-result)
 - [`analyse/dead-code/unused-static-method-result`](/docs/rules/analyse/dead-code/unused-static-method-result)
 - [`analyse/dead-code/unused-trait`](/docs/rules/analyse/dead-code/unused-trait)
 - [`analyse/dead-code/unused-variable`](/docs/rules/analyse/dead-code/unused-variable)
@@ -339,8 +329,6 @@ implicit-mixed = true
 - [`analyse/dead-code/xor-always-constant`](/docs/rules/analyse/dead-code/xor-always-constant)
 - [`analyse/types/dead-catch`](/docs/rules/analyse/types/dead-catch)
 - [`analyse/types/foreach-on-empty-array`](/docs/rules/analyse/types/foreach-on-empty-array)
-- [`analyse/types/redundant-nullsafe`](/docs/rules/analyse/types/redundant-nullsafe)
-- [`analyse/types/redundant-nullsafe-method-call`](/docs/rules/analyse/types/redundant-nullsafe-method-call)
 - [`analyse/types/too-wide-arrow-function-return`](/docs/rules/analyse/types/too-wide-arrow-function-return)
 - [`analyse/types/too-wide-closure-return`](/docs/rules/analyse/types/too-wide-closure-return)
 - [`analyse/types/too-wide-function-param-out`](/docs/rules/analyse/types/too-wide-function-param-out)
@@ -394,11 +382,10 @@ Checks explicit mixed (`explicit-mixed = true`).
 
 Checks implicit mixed (`implicit-mixed = true`).
 
-## Enabled rules (385)
+## Enabled rules (369)
 
 | Rule | Configuration applied | Status |
 | --- | --- | --- |
-| [`analyse/arrays/duplicate-array-key`](/docs/rules/analyse/arrays/duplicate-array-key) | `true` | Ported |
 | [`analyse/arrays/invalid-array-key`](/docs/rules/analyse/arrays/invalid-array-key) | `true` | Ported |
 | [`analyse/arrays/invalid-destructuring`](/docs/rules/analyse/arrays/invalid-destructuring) | `true` | Ported |
 | [`analyse/arrays/read-without-offset`](/docs/rules/analyse/arrays/read-without-offset) | `true` | Ported |
@@ -418,7 +405,6 @@ Checks implicit mixed (`implicit-mixed = true`).
 | [`analyse/attributes/trait-as-attribute`](/docs/rules/analyse/attributes/trait-as-attribute) | `true` | Ported |
 | [`analyse/casing/inherited-method-case`](/docs/rules/analyse/casing/inherited-method-case) | `true` | Ported |
 | [`analyse/casts/unset-not-supported`](/docs/rules/analyse/casts/unset-not-supported) | `true` | Ported |
-| [`analyse/casts/useless`](/docs/rules/analyse/casts/useless) | `true` | Ported |
 | [`analyse/classes/abstract-method-in-concrete-class`](/docs/rules/analyse/classes/abstract-method-in-concrete-class) | `true` | Ported |
 | [`analyse/classes/abstract-private-method`](/docs/rules/analyse/classes/abstract-private-method) | `true` | Ported |
 | [`analyse/classes/callable-property-type`](/docs/rules/analyse/classes/callable-property-type) | `true` | Ported |
@@ -519,20 +505,13 @@ Checks implicit mixed (`implicit-mixed = true`).
 | [`analyse/dead-code/switch-always-constant`](/docs/rules/analyse/dead-code/switch-always-constant) | `true` | Ported |
 | [`analyse/dead-code/ternary-always-constant`](/docs/rules/analyse/dead-code/ternary-always-constant) | `true` | Ported |
 | [`analyse/dead-code/trait-condition-always-constant`](/docs/rules/analyse/dead-code/trait-condition-always-constant) | `true` | Ported |
-| [`analyse/dead-code/unreachable-code`](/docs/rules/analyse/dead-code/unreachable-code) | `true` | Ported |
 | [`analyse/dead-code/unused-argument`](/docs/rules/analyse/dead-code/unused-argument) | `true` | Ported |
-| [`analyse/dead-code/unused-closure-use`](/docs/rules/analyse/dead-code/unused-closure-use) | `true` | Ported |
-| [`analyse/dead-code/unused-constructor-parameter`](/docs/rules/analyse/dead-code/unused-constructor-parameter) | `true` | Ported |
 | [`analyse/dead-code/unused-function-parameter`](/docs/rules/analyse/dead-code/unused-function-parameter) | `true` | Ported |
 | [`analyse/dead-code/unused-function-result`](/docs/rules/analyse/dead-code/unused-function-result) | `true` | Ported |
-| [`analyse/dead-code/unused-label`](/docs/rules/analyse/dead-code/unused-label) | `true` | Ported |
 | [`analyse/dead-code/unused-method-parameter`](/docs/rules/analyse/dead-code/unused-method-parameter) | `true` | Ported |
 | [`analyse/dead-code/unused-method-result`](/docs/rules/analyse/dead-code/unused-method-result) | `true` | Ported |
 | [`analyse/dead-code/unused-new-result`](/docs/rules/analyse/dead-code/unused-new-result) | `true` | Ported |
-| [`analyse/dead-code/unused-private-constant`](/docs/rules/analyse/dead-code/unused-private-constant) | `true` | Ported |
-| [`analyse/dead-code/unused-private-method`](/docs/rules/analyse/dead-code/unused-private-method) | `true` | Ported |
 | [`analyse/dead-code/unused-private-property`](/docs/rules/analyse/dead-code/unused-private-property) | `true` | Ported |
-| [`analyse/dead-code/unused-result`](/docs/rules/analyse/dead-code/unused-result) | `true` | Ported |
 | [`analyse/dead-code/unused-static-method-result`](/docs/rules/analyse/dead-code/unused-static-method-result) | `true` | Ported |
 | [`analyse/dead-code/unused-trait`](/docs/rules/analyse/dead-code/unused-trait) | `true` | Ported |
 | [`analyse/dead-code/unused-variable`](/docs/rules/analyse/dead-code/unused-variable) | `true` | Ported |
@@ -545,8 +524,6 @@ Checks implicit mixed (`implicit-mixed = true`).
 | [`analyse/debug/dump-phpdoc-type`](/docs/rules/analyse/debug/dump-phpdoc-type) | `true` | Ported |
 | [`analyse/debug/dump-scope`](/docs/rules/analyse/debug/dump-scope) | `true` | Planned |
 | [`analyse/debug/dump-type`](/docs/rules/analyse/debug/dump-type) | `true` | Ported |
-| [`analyse/deprecated/backtick`](/docs/rules/analyse/deprecated/backtick) | `true` | Ported |
-| [`analyse/deprecated/cast`](/docs/rules/analyse/deprecated/cast) | `true` | Ported |
 | [`analyse/deprecated/class`](/docs/rules/analyse/deprecated/class) | `true` | Ported |
 | [`analyse/deprecated/class-constant`](/docs/rules/analyse/deprecated/class-constant) | `true` | Ported |
 | [`analyse/deprecated/constant`](/docs/rules/analyse/deprecated/constant) | `true` | Ported |
@@ -579,7 +556,6 @@ Checks implicit mixed (`implicit-mixed = true`).
 | [`analyse/laravel/no-auth-helper-in-request-scope`](/docs/rules/analyse/laravel/no-auth-helper-in-request-scope) | `true` | Ported |
 | [`analyse/laravel/no-env-outside-config`](/docs/rules/analyse/laravel/no-env-outside-config) | `true` | Ported |
 | [`analyse/laravel/no-model-make`](/docs/rules/analyse/laravel/no-model-make) | `true` | Ported |
-| [`analyse/laravel/no-public-scope-or-accessor`](/docs/rules/analyse/laravel/no-public-scope-or-accessor) | `true` | Ported |
 | [`analyse/laravel/octane-compatibility`](/docs/rules/analyse/laravel/octane-compatibility) | `true` | Ported |
 | [`analyse/laravel/redundant-collection-call`](/docs/rules/analyse/laravel/redundant-collection-call) | `true` | Ported |
 | [`analyse/laravel/redundant-to-array-call`](/docs/rules/analyse/laravel/redundant-to-array-call) | `true` | Ported |
@@ -588,8 +564,6 @@ Checks implicit mixed (`implicit-mixed = true`).
 | [`analyse/laravel/undefined-relation`](/docs/rules/analyse/laravel/undefined-relation) | `true` | Ported |
 | [`analyse/laravel/unexpected-dispatch-arguments`](/docs/rules/analyse/laravel/unexpected-dispatch-arguments) | `true` | Ported |
 | [`analyse/laravel/unused-view`](/docs/rules/analyse/laravel/unused-view) | `true` | Ported |
-| [`analyse/laravel/useless-value-call`](/docs/rules/analyse/laravel/useless-value-call) | `true` | Ported |
-| [`analyse/laravel/useless-with-call`](/docs/rules/analyse/laravel/useless-with-call) | `true` | Ported |
 | [`analyse/operators/non-boolean-and-operand`](/docs/rules/analyse/operators/non-boolean-and-operand) | `true` | Ported |
 | [`analyse/operators/non-boolean-not-operand`](/docs/rules/analyse/operators/non-boolean-not-operand) | `true` | Ported |
 | [`analyse/operators/non-boolean-or-operand`](/docs/rules/analyse/operators/non-boolean-or-operand) | `true` | Ported |
@@ -735,8 +709,6 @@ Checks implicit mixed (`implicit-mixed = true`).
 | [`analyse/types/readonly-property-by-ref`](/docs/rules/analyse/types/readonly-property-by-ref) | `true` | Ported |
 | [`analyse/types/readonly-property-write`](/docs/rules/analyse/types/readonly-property-write) | `true` | Ported |
 | [`analyse/types/redundant-array-values`](/docs/rules/analyse/types/redundant-array-values) | `true` | Ported |
-| [`analyse/types/redundant-nullsafe`](/docs/rules/analyse/types/redundant-nullsafe) | `true` | Ported |
-| [`analyse/types/redundant-nullsafe-method-call`](/docs/rules/analyse/types/redundant-nullsafe-method-call) | `true` | Ported |
 | [`analyse/types/renamed-parameter-in-subtype`](/docs/rules/analyse/types/renamed-parameter-in-subtype) | `true` | Ported |
 | [`analyse/types/return`](/docs/rules/analyse/types/return) | `true` | Ported |
 | [`analyse/types/return-by-ref-finally`](/docs/rules/analyse/types/return-by-ref-finally) | `true` | Planned |

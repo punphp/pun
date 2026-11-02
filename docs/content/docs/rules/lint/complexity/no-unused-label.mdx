@@ -7,11 +7,13 @@ pagination: false
 
 <RuleId id="lint/complexity/no-unused-label" />
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: none (report only).
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: none (report only). Additional upstream gates: `bleedingEdge (featureToggles.unusedLabel)`.
 
 ## Replaces
 
+- [`UnusedLabelRule`](https://phpstan.org/error-identifiers/label.unused) (phpstan-classes).
 - [`no-redundant-label`](https://mago.carthage.software/1.57.0/en/tools/linter/rules/#no-redundant-label) (mago-linter).
+- [`label.unused`](https://phpstan.org/error-identifiers/label.unused) (phpstan).
 
 ## Configuration
 
@@ -31,10 +33,5 @@ Detects redundant `goto` labels that are declared but not used.
 ## Options
 
 No configurable options.
-
-## Linked rules
-
-
-- Fixes reports from [`analyse/dead-code/unused-label`](/docs/rules/analyse/dead-code/unused-label).
 
 [Group reference](/docs/rules/lint/complexity) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

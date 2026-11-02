@@ -267,8 +267,11 @@ fn reads_level_paths_ignores_and_includes() {
         serde_json::json!({"check-function-name-case": true})
     );
     assert!(
-        parts.render().starts_with(
-            "[analyse]\npreset = \"recommended\"\npaths = [\"app\", \"tests\"]\nexclude = [\"app/Legacy\", \"/tmp\"]\nstubs = [\"stubs/Foo.stub\"]\n"
+        // PHPStan's checks a lint rule fixes come first, as [lint.rules].
+        parts.render().contains(
+            "\"dead-code/no-unused-private-method\" = \"error\"\n"
+        ) && parts.render().contains(
+            "\n\n[analyse]\npreset = \"recommended\"\npaths = [\"app\", \"tests\"]\nexclude = [\"app/Legacy\", \"/tmp\"]\nstubs = [\"stubs/Foo.stub\"]\n"
         ),
         "{}",
         parts.render()
@@ -472,9 +475,9 @@ fn composes_the_level_extensions_and_parameters() {
         cfg.analyse.ignore[0].rule.as_deref(),
         Some("analyse/undefined/method")
     );
-    // deprecation-rules' class check is off; PHPStan's own deprecated-cast check (level 0) stays.
+    // deprecation-rules' class check is off; PHPStan's own `__toString()` deprecation check (level 0) stays.
     let has = |id: &str| cfg.analyse.rules.iter().any(|r| r.id == id);
-    assert!(!has("analyse/deprecated/class") && has("analyse/deprecated/cast"));
+    assert!(!has("analyse/deprecated/class") && has("analyse/deprecated/to-string"));
 
     let (done, parts, _) = at(4, &[], &[]);
     assert_eq!(done.preset, AnalysePreset::Recommended);
@@ -493,25 +496,17 @@ fn composes_the_level_extensions_and_parameters() {
         on.contains(&"operators/non-boolean-and-operand".to_string()),
         "{on:?}"
     );
-    assert!(!on.contains(&"casts/useless".to_string()));
+    // strict-rules' useless-cast check, switched off, turns on no lint rule.
+    assert!(!(parts.lint_rules.iter()).any(|(k, _)| k == "dead-code/no-useless-cast"));
     assert!(
         !on.contains(&"control-flow/non-boolean-while".to_string()),
         "needs bleedingEdge too"
     );
-    // `empty()` is the lint rule style/no-empty: on in [lint.rules] once ported, named until then.
-    match done.lint {
-        1 => assert!(
-            parts
-                .lint_rules
-                .contains(&("style/no-empty".into(), "\"error\"".into()))
-        ),
-        _ => assert_eq!(
-            done.unsupported,
-            [(
-                "lint/style/no-empty".to_string(),
-                "a PHPStan check that is this lint rule in Pun, not supported yet".to_string()
-            )]
-        ),
+    // `empty()` is the lint rule style/no-empty, and PHPStan's level-0 duplicate-key check the lint rule that removes
+    // the duplicate: both on in [lint.rules].
+    assert_eq!(done.lint, 2);
+    for rule in ["style/no-empty", "dead-code/no-duplicate-array-key"] {
+        assert!(parts.lint_rules.contains(&(rule.into(), "\"error\"".into())));
     }
     // Laravel locked without Larastan: the whole `laravel` group off, no line per Larastan rule.
     let (done, parts, _) = at_in(5, &[], &[], &[("composer.lock", super::LARAVEL_LOCK)], "");
@@ -532,12 +527,17 @@ fn composes_the_level_extensions_and_parameters() {
         "a PHPStan check that is this format rule in Pun; turn it on in [format.rules]".to_string(),
     );
     let (done, ..) = at_in(0, &[strict], &backtick, &[], "preset = \"empty\"\n");
-    // PHPStan's BOM check (level 0) is the format rule whitespace/encoding, which the empty config doesn't run either.
-    let encoding = (
-        "format/whitespace/encoding".to_string(),
-        format_rule.1.clone(),
+    // PHPStan's BOM check (level 0) is the format rule whitespace/encoding, and its deprecated-cast check
+    // casts/short-scalar, which the empty config doesn't run either.
+    let format = |id: &str| (id.to_string(), format_rule.1.clone());
+    assert_eq!(
+        done.unsupported,
+        [
+            format("format/casts/short-scalar"),
+            format_rule.clone(),
+            format("format/whitespace/encoding")
+        ]
     );
-    assert_eq!(done.unsupported, [format_rule, encoding]);
 }
 
 /// Values read off rules/mapping.toml by hand: an exact identifier, a `%s` pattern, a Larastan identifier.

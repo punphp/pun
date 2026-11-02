@@ -20,7 +20,7 @@ invent are under Decisions at the end of this file.
 | --- | --- | --- | --- |
 | `pun format` | Layout, casing, spelling of the same construct (`array()` to `[]`, quotes, `else if` to `elseif`, `\Foo` to an import), sorting lists whose order means nothing (imports, union types, `implements`, PHPDoc tags) | Changes behaviour; removes code; adds or removes PHPDoc; rewrites one construct into another; changes declarations or member order | Always applied; safe on save |
 | `pun lint` | Every other edit, plus every report one file can decide (types may make a fix safer) | Pure layout | Labelled safe, unsafe or none; `--fix` applies all |
-| `pun analyse` | Reports that need type inference or other files (types, undefined symbols, inherited PHPDoc, deprecations) | Edits files | None; a report a lint rule can fix names it in `fixed_by` |
+| `pun analyse` | Reports that need type inference or other files (types, undefined symbols, inherited PHPDoc, deprecations) | Edits files | None; a report a lint or format rule can fix belongs to that rule, not to analyse |
 
 The tests, in order; the first match wins:
 
@@ -45,7 +45,7 @@ writes Pint's bytes. `pun format` alone never renames classes, reorders traits o
 
 ## 2. Overlaps
 
-The mapping has 105 overlap clusters and 18 linked analyse reports. Every cluster ends as one Pun rule in one command.
+The mapping has 105 overlap clusters. Every cluster ends as one Pun rule in one command.
 
 | # | Overlap | Home | The others at migrate time |
 | --- | --- | --- | --- |
@@ -53,7 +53,7 @@ The mapping has 105 overlap clusters and 18 linked analyse reports. Every cluste
 | O2 | Risky CS-Fixer fixer and anything (`modernize_strpos`, Rector's `StrContains`, Mago's `str-contains`) | One lint rule, unsafe | All map to it |
 | O3 | Rector, Mago and Pun with no CS-Fixer rule (`prefer-first-class-callable`) | One lint rule | All map to it; where strategies differ, the rule covers both |
 | O4 | A syntax-only strict-rules ban and a fixer (`empty.notAllowed`, Mago's `no-empty`) | Lint | `ignoreErrors` entries and `@phpstan-ignore` comments for the identifier move to the lint rule |
-| O5 | A type-aware report and a fixer (PHPStan `method.unused`, Rector's `RemoveUnusedPrivateMethod`) | Two rules, linked: analyse reports, lint fixes, the analyse rule lists it in `fixed_by` | `pun analyse` alone still reports it; `pun check` prints only the lint problem |
+| O5 | A type-aware report and a fixer (PHPStan `method.unused`, Rector's `RemoveUnusedPrivateMethod`) | The lint (or format) rule; analyse keeps only the identifiers no rule fixes (Pushpak, 2026-11-02) | The PHPStan class and identifiers map to the fixer, so `ignoreErrors`, `@phpstan-ignore` and `pun migrate` move to it; `pun analyse` no longer reports them |
 | O6 | A fixer whose safety depends on types (`strict_comparison`, Rector's `UseIdenticalOverEqualWithSameType`) | One lint rule | Labelled safe where analysis proves it, unsafe otherwise; `--fix` applies both |
 | O7 | Rules that contradict each other (§2 conflicts below) | Both stay | `[meta] conflicts`; config loading refuses a config that enables both |
 | O8 | Upstream deprecated or no-op rules | The successor | Mapped to it, or dropped with a note in migrate's output |

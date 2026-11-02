@@ -13,9 +13,11 @@ Not in any preset or set. Enable it by name or group. Fix: safe (keeps behaviour
 
 - [`backtick_to_shell_exec`](https://cs.symfony.com/doc/rules/alias/backtick_to_shell_exec.html) (php-cs-fixer).
 - [`ShellExecFunctionCallOverBackticks`](https://getrector.com/rule-detail/shell-exec-function-call-over-backticks-rector) (rector).
+- [`BacktickRule`](https://phpstan.org/error-identifiers/backtick.deprecated) (phpstan-classes).
 - [`DisallowedBacktickRule`](https://github.com/phpstan/phpstan-strict-rules#readme) (phpstan-classes).
 - [`deprecated-shell-execute-string`](https://mago.carthage.software/1.57.0/en/tools/linter/rules/#deprecated-shell-execute-string) (mago-linter).
 - [`no-shell-execute-string`](https://mago.carthage.software/1.57.0/en/tools/linter/rules/#no-shell-execute-string) (mago-linter).
+- [`backtick.deprecated`](https://phpstan.org/error-identifiers/backtick.deprecated) (phpstan).
 - [`backtick.notAllowed`](https://phpstan.org/error-identifiers/backtick.notAllowed) (phpstan-strict-rules).
 
 ## Configuration
@@ -36,10 +38,5 @@ Converts backtick operators to `shell_exec` calls.
 ## Options
 
 No configurable options.
-
-## Linked rules
-
-
-- Fixes reports from [`analyse/deprecated/backtick`](/docs/rules/analyse/deprecated/backtick).
 
 [Group reference](/docs/rules/format/functions) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

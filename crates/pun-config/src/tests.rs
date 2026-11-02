@@ -466,8 +466,8 @@ fn lint_overrides() {
     assert!(c.lint.rules.is_empty());
 }
 
-/// Rule counts counted in [rules.analyse] of rules/mapping.toml: basic 155, essential 106, recommended 85, strict
-/// 35, max 4; 18 of them Laravel's (0, 4, 9, 4, 1).
+/// Rule counts counted in [rules.analyse] of rules/mapping.toml: basic 150, essential 106, recommended 75, strict
+/// 35, max 3; 15 of them Laravel's (0, 4, 7, 4, 0).
 #[test]
 fn analyse() {
     let an = |files: &[(&str, &str)]| load(&dir(files), &Options::default()).unwrap().analyse;
@@ -492,7 +492,7 @@ fn analyse() {
             rules: a.rules.clone(),
         }
     );
-    assert_eq!(a.rules.len(), 155 + 106 + 85 - 13);
+    assert_eq!(a.rules.len(), 150 + 106 + 75 - 11);
     assert!(has(&a, "analyse/undefined/method") && !has(&a, "analyse/types/missing-return-type"));
     let preset = |p: &str, lock: bool| {
         let toml = format!("[analyse]\npreset = \"{p}\"\n");
@@ -503,17 +503,17 @@ fn analyse() {
         let a = an(&files);
         (a.rules.len(), a.switches)
     };
-    assert_eq!(preset("basic", false), (155, vec![]));
-    assert_eq!(preset("essential", true), (155 + 106, vec![]));
-    assert_eq!(preset("recommended", true), (155 + 106 + 85, vec![]));
+    assert_eq!(preset("basic", false), (150, vec![]));
+    assert_eq!(preset("essential", true), (150 + 106, vec![]));
+    assert_eq!(preset("recommended", true), (150 + 106 + 75, vec![]));
     assert_eq!(
         preset("strict", true),
-        (155 + 106 + 85 + 35, vec!["union-types", "nullables"])
+        (150 + 106 + 75 + 35, vec!["union-types", "nullables"])
     );
     assert_eq!(
         preset("max", false),
         (
-            385 - 18,
+            369 - 15,
             vec![
                 "union-types",
                 "nullables",
@@ -538,7 +538,7 @@ baseline = "pun-baseline.toml"
 "undefined/function" = "off"
 "types/argument-not-numeric" = "on"
 laravel = "on"
-"laravel/useless-with-call" = "off"
+"laravel/no-model-make" = "off"
 "#,
     )]);
     assert_eq!(
@@ -549,8 +549,8 @@ laravel = "on"
             Some("pun-baseline.toml".into())
         )
     );
-    // basic, plus 2 named, plus the 18 Laravel rules but one, minus undefined/function.
-    assert_eq!(a.rules.len(), 155 + 2 + 17 - 1);
+    // basic, plus 2 named, plus the 15 Laravel rules but one, minus undefined/function.
+    assert_eq!(a.rules.len(), 150 + 2 + 14 - 1);
     let rule = |id: &str| {
         a.rules
             .iter()
@@ -563,7 +563,7 @@ laravel = "on"
     );
     assert_eq!(rule("analyse/types/missing-return-type"), Some(Value::Null));
     assert_eq!(rule("analyse/undefined/function"), None);
-    assert_eq!(rule("analyse/laravel/useless-with-call"), None);
+    assert_eq!(rule("analyse/laravel/no-model-make"), None);
     // laravel/framework locked, the group switched off.
     let a = an(&[
         ("pun.toml", "[analyse.rules]\nlaravel = \"off\"\n"),
@@ -571,7 +571,7 @@ laravel = "on"
     ]);
     assert_eq!(
         (a.rules.len(), a.ecosystems.len()),
-        (155 + 106 + 85 - 13, 0)
+        (150 + 106 + 75 - 11, 0)
     );
 }
 #[test]
@@ -835,10 +835,10 @@ upstream  none (Pun's own rule)
 "
     );
     // A lint rule's fix, and a rule in no preset.
-    let out = explained("analyse/casts/useless", "casts/useless");
+    let out = explained("analyse/types/missing-return-type", "types/missing-return-type");
     assert!(
         out.contains(
-            "preset    recommended\nfix       none\nfixed by  lint/dead-code/no-useless-cast\n"
+            "preset    strict\nfix       none\nfixed by  lint/types/add-void-return-type\n"
         ),
         "{out}"
     );

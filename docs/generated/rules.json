@@ -552,9 +552,13 @@
       "tools": [
         "mago",
         "php-cs-fixer",
+        "phpstan",
         "pint"
       ],
       "upstream": [
+        "DeprecatedCastRule",
+        "PHPStan\\Rules\\Cast\\DeprecatedCastRule",
+        "cast.deprecated",
         "deprecated-cast",
         "short_scalar_cast"
       ],
@@ -1253,11 +1257,14 @@
         "rector"
       ],
       "upstream": [
+        "BacktickRule",
         "DisallowedBacktickRule",
         "PHPStan\\Rules\\DisallowedConstructs\\DisallowedBacktickRule",
+        "PHPStan\\Rules\\Operators\\BacktickRule",
         "Rector\\Php85\\Rector\\ShellExec\\ShellExecFunctionCallOverBackticksRector",
         "ShellExecFunctionCallOverBackticks",
         "ShellExecFunctionCallOverBackticksRector",
+        "backtick.deprecated",
         "backtick.notAllowed",
         "backtick_to_shell_exec",
         "deprecated-shell-execute-string",
@@ -3021,6 +3028,7 @@
       "tools": [
         "mago",
         "php-cs-fixer",
+        "phpstan",
         "pint",
         "rector"
       ],
@@ -3029,7 +3037,8 @@
         "ExplicitNullableParamTypeRector",
         "Rector\\Php84\\Rector\\Param\\ExplicitNullableParamTypeRector",
         "explicit-nullable-param",
-        "nullable_type_declaration_for_default_null_value"
+        "nullable_type_declaration_for_default_null_value",
+        "parameter.implicitlyNullable"
       ],
       "ported": true
     },
@@ -4307,11 +4316,18 @@
       "fix": "safe",
       "ecosystem": "core",
       "tools": [
-        "mago"
+        "mago",
+        "phpstan"
       ],
       "upstream": [
+        "NullsafeMethodCallRule",
+        "NullsafePropertyFetchRule",
+        "PHPStan\\Rules\\Methods\\NullsafeMethodCallRule",
+        "PHPStan\\Rules\\Properties\\NullsafePropertyFetchRule",
         "Pun/no_redundant_nullsafe",
-        "no-redundant-nullsafe"
+        "RedundantNullsafeOperator",
+        "no-redundant-nullsafe",
+        "nullsafe.neverNull"
       ],
       "ported": true
     },
@@ -4404,9 +4420,13 @@
       "fix": "none",
       "ecosystem": "core",
       "tools": [
-        "mago"
+        "mago",
+        "phpstan"
       ],
       "upstream": [
+        "PHPStan\\Rules\\Keywords\\UnusedLabelRule",
+        "UnusedLabelRule",
+        "label.unused",
         "no-redundant-label"
       ],
       "ported": true
@@ -5271,12 +5291,14 @@
       "fix": "safe",
       "ecosystem": "core",
       "tools": [
+        "phpstan",
         "rector"
       ],
       "upstream": [
         "Rector\\DeadCode\\Rector\\If_\\ReduceAlwaysFalseIfOrRector",
         "ReduceAlwaysFalseIfOr",
-        "ReduceAlwaysFalseIfOrRector"
+        "ReduceAlwaysFalseIfOrRector",
+        "booleanOr.leftAlwaysFalse"
       ],
       "ported": true
     },
@@ -5291,12 +5313,15 @@
       "fix": "safe",
       "ecosystem": "core",
       "tools": [
+        "phpstan",
         "rector"
       ],
       "upstream": [
         "Rector\\DeadCode\\Rector\\If_\\RemoveAlwaysTrueIfConditionRector",
         "RemoveAlwaysTrueIfCondition",
-        "RemoveAlwaysTrueIfConditionRector"
+        "RemoveAlwaysTrueIfConditionRector",
+        "booleanAnd.leftAlwaysTrue",
+        "if.alwaysTrue"
       ],
       "ported": true
     },
@@ -5311,12 +5336,14 @@
       "fix": "safe",
       "ecosystem": "core",
       "tools": [
+        "phpstan",
         "rector"
       ],
       "upstream": [
         "Rector\\DeadCode\\Rector\\If_\\RemoveDeadInstanceOfRector",
         "RemoveDeadInstanceOf",
-        "RemoveDeadInstanceOfRector"
+        "RemoveDeadInstanceOfRector",
+        "instanceof.alwaysTrue"
       ],
       "ported": true
     },
@@ -5491,12 +5518,18 @@
       "fix": "safe",
       "ecosystem": "core",
       "tools": [
+        "mago",
+        "phpstan",
         "rector"
       ],
       "upstream": [
+        "DuplicateArrayKey",
+        "DuplicateKeysInLiteralArraysRule",
+        "PHPStan\\Rules\\Arrays\\DuplicateKeysInLiteralArraysRule",
         "Rector\\DeadCode\\Rector\\Array_\\RemoveDuplicatedArrayKeyRector",
         "RemoveDuplicatedArrayKey",
-        "RemoveDuplicatedArrayKeyRector"
+        "RemoveDuplicatedArrayKeyRector",
+        "array.duplicateKey"
       ],
       "ported": true
     },
@@ -5693,12 +5726,14 @@
       "fix": "safe",
       "ecosystem": "core",
       "tools": [
+        "phpstan",
         "rector"
       ],
       "upstream": [
         "Rector\\DeadCode\\Rector\\Node\\RemoveNonExistingVarAnnotationRector",
         "RemoveNonExistingVarAnnotation",
-        "RemoveNonExistingVarAnnotationRector"
+        "RemoveNonExistingVarAnnotationRector",
+        "varTag.variableNotFound"
       ],
       "ported": true
     },
@@ -6012,12 +6047,18 @@
       "fix": "safe",
       "ecosystem": "core",
       "tools": [
+        "mago",
+        "phpstan",
         "rector"
       ],
       "upstream": [
+        "PHPStan\\Rules\\DeadCode\\UnreachableStatementRule",
         "Rector\\DeadCode\\Rector\\Stmt\\RemoveUnreachableStatementRector",
         "RemoveUnreachableStatement",
-        "RemoveUnreachableStatementRector"
+        "RemoveUnreachableStatementRector",
+        "UnevaluatedCode",
+        "UnreachableStatementRule",
+        "deadCode.unreachable"
       ],
       "ported": true
     },
@@ -6055,12 +6096,17 @@
       "fix": "safe",
       "ecosystem": "core",
       "tools": [
+        "phpstan",
         "rector"
       ],
       "upstream": [
+        "PHPStan\\Rules\\Classes\\UnusedConstructorParametersRule",
         "Rector\\DeadCode\\Rector\\ClassMethod\\RemoveUnusedConstructorParamRector",
         "RemoveUnusedConstructorParam",
-        "RemoveUnusedConstructorParamRector"
+        "RemoveUnusedConstructorParamRector",
+        "UnusedConstructorParametersRule",
+        "constructor.unusedParameter",
+        "constructor.unusedParameterFlow"
       ],
       "ported": true
     },
@@ -6075,12 +6121,27 @@
       "fix": "safe",
       "ecosystem": "core",
       "tools": [
+        "mago",
+        "phpstan",
         "rector"
       ],
       "upstream": [
+        "%s.resultUnused",
+        "NoopRule",
+        "PHPStan\\Rules\\DeadCode\\NoopRule",
         "Rector\\DeadCode\\Rector\\Expression\\RemoveDeadStmtRector",
         "RemoveDeadStmt",
-        "RemoveDeadStmtRector"
+        "RemoveDeadStmtRector",
+        "UnusedFunctionCall",
+        "UnusedMethodCall",
+        "UnusedStatement",
+        "booleanAnd.resultUnused",
+        "booleanOr.resultUnused",
+        "expr.resultUnused",
+        "logicalAnd.resultUnused",
+        "logicalOr.resultUnused",
+        "logicalXor.resultUnused",
+        "ternary.resultUnused"
       ],
       "ported": true
     },
@@ -6133,12 +6194,16 @@
       "fix": "safe",
       "ecosystem": "core",
       "tools": [
+        "phpstan",
         "rector"
       ],
       "upstream": [
+        "PHPStan\\Rules\\DeadCode\\UnusedPrivateConstantRule",
         "Rector\\DeadCode\\Rector\\ClassConst\\RemoveUnusedPrivateClassConstantRector",
         "RemoveUnusedPrivateClassConstant",
-        "RemoveUnusedPrivateClassConstantRector"
+        "RemoveUnusedPrivateClassConstantRector",
+        "UnusedPrivateConstantRule",
+        "classConstant.unused"
       ],
       "ported": true
     },
@@ -6153,12 +6218,18 @@
       "fix": "safe",
       "ecosystem": "core",
       "tools": [
+        "mago",
+        "phpstan",
         "rector"
       ],
       "upstream": [
+        "PHPStan\\Rules\\DeadCode\\UnusedPrivateMethodRule",
         "Rector\\DeadCode\\Rector\\ClassMethod\\RemoveUnusedPrivateMethodRector",
         "RemoveUnusedPrivateMethod",
-        "RemoveUnusedPrivateMethodRector"
+        "RemoveUnusedPrivateMethodRector",
+        "UnusedMethod",
+        "UnusedPrivateMethodRule",
+        "method.unused"
       ],
       "ported": true
     },
@@ -6193,12 +6264,15 @@
       "fix": "safe",
       "ecosystem": "core",
       "tools": [
+        "phpstan",
         "rector"
       ],
       "upstream": [
         "Rector\\DeadCode\\Rector\\Property\\RemoveUnusedPrivatePropertyRector",
         "RemoveUnusedPrivateProperty",
-        "RemoveUnusedPrivatePropertyRector"
+        "RemoveUnusedPrivatePropertyRector",
+        "property.onlyWritten",
+        "property.unused"
       ],
       "ported": true
     },
@@ -6253,12 +6327,14 @@
       "fix": "safe",
       "ecosystem": "core",
       "tools": [
+        "phpstan",
         "rector"
       ],
       "upstream": [
         "NarrowWideUnionReturnType",
         "NarrowWideUnionReturnTypeRector",
-        "Rector\\DeadCode\\Rector\\FunctionLike\\NarrowWideUnionReturnTypeRector"
+        "Rector\\DeadCode\\Rector\\FunctionLike\\NarrowWideUnionReturnTypeRector",
+        "return.unusedType"
       ],
       "ported": true
     },
@@ -6311,12 +6387,19 @@
       "fix": "safe",
       "ecosystem": "core",
       "tools": [
+        "mago",
+        "phpstan",
+        "phpstan-strict-rules",
         "rector"
       ],
       "upstream": [
+        "PHPStan\\Rules\\Cast\\UselessCastRule",
         "RecastingRemoval",
         "RecastingRemovalRector",
-        "Rector\\DeadCode\\Rector\\Cast\\RecastingRemovalRector"
+        "Rector\\DeadCode\\Rector\\Cast\\RecastingRemovalRector",
+        "RedundantCast",
+        "UselessCastRule",
+        "cast.useless"
       ],
       "ported": true
     },
@@ -6614,13 +6697,15 @@
       "ecosystem": "core",
       "tools": [
         "mago",
+        "phpstan",
         "rector"
       ],
       "upstream": [
         "OptionalParametersAfterRequired",
         "OptionalParametersAfterRequiredRector",
         "Rector\\CodeQuality\\Rector\\ClassMethod\\OptionalParametersAfterRequiredRector",
-        "optional-param-order"
+        "optional-param-order",
+        "parameter.requiredAfterOptional"
       ],
       "ported": true
     },
@@ -6674,9 +6759,14 @@
       "tools": [
         "mago",
         "php-cs-fixer",
+        "phpstan",
         "pint"
       ],
       "upstream": [
+        "PHPStan\\Rules\\Functions\\UnusedClosureUsesRule",
+        "UnusedClosureUsesRule",
+        "closure.unusedUse",
+        "closure.unusedUseFlow",
         "lambda_not_used_import",
         "no-unused-closure-capture"
       ],
@@ -7170,13 +7260,17 @@
       "fix": "unsafe",
       "ecosystem": "laravel",
       "tools": [
+        "larastan",
         "rector",
         "rector-laravel"
       ],
       "upstream": [
+        "Larastan\\Larastan\\Rules\\UselessConstructs\\NoUselessValueFunctionCallsRule",
+        "NoUselessValueFunctionCallsRule",
         "RectorLaravel\\Rector\\FuncCall\\RemoveRedundantValueCallsRector",
         "RemoveRedundantValueCalls",
-        "RemoveRedundantValueCallsRector"
+        "RemoveRedundantValueCallsRector",
+        "larastan.uselessConstructs.value"
       ],
       "ported": true
     },
@@ -7191,13 +7285,17 @@
       "fix": "unsafe",
       "ecosystem": "laravel",
       "tools": [
+        "larastan",
         "rector",
         "rector-laravel"
       ],
       "upstream": [
+        "Larastan\\Larastan\\Rules\\UselessConstructs\\NoUselessWithFunctionCallsRule",
+        "NoUselessWithFunctionCallsRule",
         "RectorLaravel\\Rector\\FuncCall\\RemoveRedundantWithCallsRector",
         "RemoveRedundantWithCalls",
-        "RemoveRedundantWithCallsRector"
+        "RemoveRedundantWithCallsRector",
+        "larastan.uselessConstructs.with"
       ],
       "ported": true
     },
@@ -8016,13 +8114,18 @@
       "fix": "unsafe",
       "ecosystem": "laravel",
       "tools": [
+        "larastan",
         "rector",
         "rector-laravel"
       ],
       "upstream": [
+        "Larastan\\Larastan\\Rules\\NoPublicModelScopeAndAccessorRule",
         "MakeModelAttributesAndScopesProtected",
         "MakeModelAttributesAndScopesProtectedRector",
-        "RectorLaravel\\Rector\\ClassMethod\\MakeModelAttributesAndScopesProtectedRector"
+        "NoPublicModelScopeAndAccessorRule",
+        "RectorLaravel\\Rector\\ClassMethod\\MakeModelAttributesAndScopesProtectedRector",
+        "larastan.noPublicModelAccessorMethod",
+        "larastan.noPublicModelScopeMethod"
       ],
       "ported": true
     },
@@ -12941,12 +13044,14 @@
       "fix": "unsafe",
       "ecosystem": "core",
       "tools": [
+        "phpstan",
         "rector"
       ],
       "upstream": [
         "AddOverrideAttributeToOverriddenProperties",
         "AddOverrideAttributeToOverriddenPropertiesRector",
-        "Rector\\Php85\\Rector\\Property\\AddOverrideAttributeToOverriddenPropertiesRector"
+        "Rector\\Php85\\Rector\\Property\\AddOverrideAttributeToOverriddenPropertiesRector",
+        "property.missingOverride"
       ],
       "ported": true
     },
@@ -17069,32 +17174,6 @@
       "ported": true
     },
     {
-      "id": "analyse/arrays/duplicate-array-key",
-      "command": "analyse",
-      "group": "arrays",
-      "summary": "",
-      "enabled": [
-        "analyse-basic",
-        "analyse-essential",
-        "analyse-recommended",
-        "analyse-strict",
-        "analyse-max"
-      ],
-      "fix": "none",
-      "ecosystem": "core",
-      "tools": [
-        "mago",
-        "phpstan"
-      ],
-      "upstream": [
-        "DuplicateArrayKey",
-        "DuplicateKeysInLiteralArraysRule",
-        "PHPStan\\Rules\\Arrays\\DuplicateKeysInLiteralArraysRule",
-        "array.duplicateKey"
-      ],
-      "ported": true
-    },
-    {
       "id": "analyse/arrays/invalid-array-key",
       "command": "analyse",
       "group": "arrays",
@@ -17575,31 +17654,6 @@
         "PHPStan\\Rules\\Cast\\UnsetCastRule",
         "UnsetCastRule",
         "cast.unset"
-      ],
-      "ported": true
-    },
-    {
-      "id": "analyse/casts/useless",
-      "command": "analyse",
-      "group": "casts",
-      "summary": "",
-      "enabled": [
-        "analyse-recommended",
-        "analyse-strict",
-        "analyse-max"
-      ],
-      "fix": "none",
-      "ecosystem": "core",
-      "tools": [
-        "mago",
-        "phpstan",
-        "phpstan-strict-rules"
-      ],
-      "upstream": [
-        "PHPStan\\Rules\\Cast\\UselessCastRule",
-        "RedundantCast",
-        "UselessCastRule",
-        "cast.useless"
       ],
       "ported": true
     },
@@ -18256,7 +18310,6 @@
         "property.internalInterface",
         "property.internalTrait",
         "property.missingNativeType",
-        "property.missingOverride",
         "property.nativeType",
         "property.nonStatic",
         "property.notReadable",
@@ -19827,7 +19880,6 @@
         "ImpossibleInstanceOfRule",
         "PHPStan\\Rules\\Classes\\ImpossibleInstanceOfRule",
         "instanceof.alwaysFalse",
-        "instanceof.alwaysTrue",
         "instanceof.invalidExprType"
       ],
       "ported": true
@@ -19982,7 +20034,6 @@
         "identical.alwaysTrue",
         "if.always%s",
         "if.alwaysFalse",
-        "if.alwaysTrue",
         "logicalAnd.alwaysFalse",
         "logicalAnd.alwaysTrue",
         "logicalOr.alwaysFalse",
@@ -20226,30 +20277,6 @@
       "ported": true
     },
     {
-      "id": "analyse/dead-code/unreachable-code",
-      "command": "analyse",
-      "group": "dead-code",
-      "summary": "",
-      "enabled": [
-        "analyse-recommended",
-        "analyse-strict",
-        "analyse-max"
-      ],
-      "fix": "none",
-      "ecosystem": "core",
-      "tools": [
-        "mago",
-        "phpstan"
-      ],
-      "upstream": [
-        "PHPStan\\Rules\\DeadCode\\UnreachableStatementRule",
-        "UnevaluatedCode",
-        "UnreachableStatementRule",
-        "deadCode.unreachable"
-      ],
-      "ported": true
-    },
-    {
       "id": "analyse/dead-code/unused-argument",
       "command": "analyse",
       "group": "dead-code",
@@ -20270,56 +20297,6 @@
         "DefineParametersRule",
         "PHPStan\\Rules\\Functions\\DefineParametersRule",
         "argument.unused"
-      ],
-      "ported": true
-    },
-    {
-      "id": "analyse/dead-code/unused-closure-use",
-      "command": "analyse",
-      "group": "dead-code",
-      "summary": "",
-      "enabled": [
-        "analyse-basic",
-        "analyse-essential",
-        "analyse-recommended",
-        "analyse-strict",
-        "analyse-max"
-      ],
-      "fix": "none",
-      "ecosystem": "core",
-      "tools": [
-        "phpstan"
-      ],
-      "upstream": [
-        "PHPStan\\Rules\\Functions\\UnusedClosureUsesRule",
-        "UnusedClosureUsesRule",
-        "closure.unusedUse",
-        "closure.unusedUseFlow"
-      ],
-      "ported": true
-    },
-    {
-      "id": "analyse/dead-code/unused-constructor-parameter",
-      "command": "analyse",
-      "group": "dead-code",
-      "summary": "",
-      "enabled": [
-        "analyse-basic",
-        "analyse-essential",
-        "analyse-recommended",
-        "analyse-strict",
-        "analyse-max"
-      ],
-      "fix": "none",
-      "ecosystem": "core",
-      "tools": [
-        "phpstan"
-      ],
-      "upstream": [
-        "PHPStan\\Rules\\Classes\\UnusedConstructorParametersRule",
-        "UnusedConstructorParametersRule",
-        "constructor.unusedParameter",
-        "constructor.unusedParameterFlow"
       ],
       "ported": true
     },
@@ -20365,28 +20342,6 @@
         "CallToFunctionStatementWithoutImpurePointsRule",
         "PHPStan\\Rules\\DeadCode\\CallToFunctionStatementWithoutImpurePointsRule",
         "function.resultUnused"
-      ],
-      "ported": true
-    },
-    {
-      "id": "analyse/dead-code/unused-label",
-      "command": "analyse",
-      "group": "dead-code",
-      "summary": "",
-      "enabled": [
-        "analyse-recommended",
-        "analyse-strict",
-        "analyse-max"
-      ],
-      "fix": "none",
-      "ecosystem": "core",
-      "tools": [
-        "phpstan"
-      ],
-      "upstream": [
-        "PHPStan\\Rules\\Keywords\\UnusedLabelRule",
-        "UnusedLabelRule",
-        "label.unused"
       ],
       "ported": true
     },
@@ -20458,52 +20413,6 @@
       "ported": true
     },
     {
-      "id": "analyse/dead-code/unused-private-constant",
-      "command": "analyse",
-      "group": "dead-code",
-      "summary": "",
-      "enabled": [
-        "analyse-recommended",
-        "analyse-strict",
-        "analyse-max"
-      ],
-      "fix": "none",
-      "ecosystem": "core",
-      "tools": [
-        "phpstan"
-      ],
-      "upstream": [
-        "PHPStan\\Rules\\DeadCode\\UnusedPrivateConstantRule",
-        "UnusedPrivateConstantRule",
-        "classConstant.unused"
-      ],
-      "ported": true
-    },
-    {
-      "id": "analyse/dead-code/unused-private-method",
-      "command": "analyse",
-      "group": "dead-code",
-      "summary": "",
-      "enabled": [
-        "analyse-recommended",
-        "analyse-strict",
-        "analyse-max"
-      ],
-      "fix": "none",
-      "ecosystem": "core",
-      "tools": [
-        "mago",
-        "phpstan"
-      ],
-      "upstream": [
-        "PHPStan\\Rules\\DeadCode\\UnusedPrivateMethodRule",
-        "UnusedMethod",
-        "UnusedPrivateMethodRule",
-        "method.unused"
-      ],
-      "ported": true
-    },
-    {
       "id": "analyse/dead-code/unused-private-property",
       "command": "analyse",
       "group": "dead-code",
@@ -20526,42 +20435,7 @@
         "WriteOnlyProperty",
         "property.neverRead",
         "property.neverWritten",
-        "property.onlyRead",
-        "property.onlyWritten",
-        "property.unused"
-      ],
-      "ported": true
-    },
-    {
-      "id": "analyse/dead-code/unused-result",
-      "command": "analyse",
-      "group": "dead-code",
-      "summary": "",
-      "enabled": [
-        "analyse-recommended",
-        "analyse-strict",
-        "analyse-max"
-      ],
-      "fix": "none",
-      "ecosystem": "core",
-      "tools": [
-        "mago",
-        "phpstan"
-      ],
-      "upstream": [
-        "%s.resultUnused",
-        "NoopRule",
-        "PHPStan\\Rules\\DeadCode\\NoopRule",
-        "UnusedFunctionCall",
-        "UnusedMethodCall",
-        "UnusedStatement",
-        "booleanAnd.resultUnused",
-        "booleanOr.resultUnused",
-        "expr.resultUnused",
-        "logicalAnd.resultUnused",
-        "logicalOr.resultUnused",
-        "logicalXor.resultUnused",
-        "ternary.resultUnused"
+        "property.onlyRead"
       ],
       "ported": true
     },
@@ -20719,10 +20593,8 @@
         "LogicalXorConstantConditionRule",
         "PHPStan\\Rules\\Comparison\\LogicalXorConstantConditionRule",
         "booleanAnd.leftAlwaysFalse",
-        "booleanAnd.leftAlwaysTrue",
         "booleanAnd.rightAlwaysFalse",
         "booleanAnd.rightAlwaysTrue",
-        "booleanOr.leftAlwaysFalse",
         "booleanOr.leftAlwaysTrue",
         "booleanOr.rightAlwaysFalse",
         "booleanOr.rightAlwaysTrue",
@@ -20867,54 +20739,6 @@
         "PsalmTrace",
         "TypeInspection",
         "phpstan.dumpType"
-      ],
-      "ported": true
-    },
-    {
-      "id": "analyse/deprecated/backtick",
-      "command": "analyse",
-      "group": "deprecated",
-      "summary": "",
-      "enabled": [
-        "analyse-basic",
-        "analyse-essential",
-        "analyse-recommended",
-        "analyse-strict",
-        "analyse-max"
-      ],
-      "fix": "none",
-      "ecosystem": "core",
-      "tools": [
-        "phpstan"
-      ],
-      "upstream": [
-        "BacktickRule",
-        "PHPStan\\Rules\\Operators\\BacktickRule",
-        "backtick.deprecated"
-      ],
-      "ported": true
-    },
-    {
-      "id": "analyse/deprecated/cast",
-      "command": "analyse",
-      "group": "deprecated",
-      "summary": "",
-      "enabled": [
-        "analyse-basic",
-        "analyse-essential",
-        "analyse-recommended",
-        "analyse-strict",
-        "analyse-max"
-      ],
-      "fix": "none",
-      "ecosystem": "core",
-      "tools": [
-        "phpstan"
-      ],
-      "upstream": [
-        "DeprecatedCastRule",
-        "PHPStan\\Rules\\Cast\\DeprecatedCastRule",
-        "cast.deprecated"
       ],
       "ported": true
     },
@@ -21738,27 +21562,6 @@
       "ported": true
     },
     {
-      "id": "analyse/laravel/no-public-scope-or-accessor",
-      "command": "analyse",
-      "group": "laravel",
-      "summary": "",
-      "enabled": [
-        "analyse-max"
-      ],
-      "fix": "none",
-      "ecosystem": "laravel",
-      "tools": [
-        "larastan"
-      ],
-      "upstream": [
-        "Larastan\\Larastan\\Rules\\NoPublicModelScopeAndAccessorRule",
-        "NoPublicModelScopeAndAccessorRule",
-        "larastan.noPublicModelAccessorMethod",
-        "larastan.noPublicModelScopeMethod"
-      ],
-      "ported": true
-    },
-    {
       "id": "analyse/laravel/octane-compatibility",
       "command": "analyse",
       "group": "laravel",
@@ -21937,50 +21740,6 @@
         "Larastan\\Larastan\\Rules\\UnusedViewsRule",
         "UnusedViewsRule",
         "larastan.unusedViews"
-      ],
-      "ported": true
-    },
-    {
-      "id": "analyse/laravel/useless-value-call",
-      "command": "analyse",
-      "group": "laravel",
-      "summary": "",
-      "enabled": [
-        "analyse-recommended",
-        "analyse-strict",
-        "analyse-max"
-      ],
-      "fix": "none",
-      "ecosystem": "laravel",
-      "tools": [
-        "larastan"
-      ],
-      "upstream": [
-        "Larastan\\Larastan\\Rules\\UselessConstructs\\NoUselessValueFunctionCallsRule",
-        "NoUselessValueFunctionCallsRule",
-        "larastan.uselessConstructs.value"
-      ],
-      "ported": true
-    },
-    {
-      "id": "analyse/laravel/useless-with-call",
-      "command": "analyse",
-      "group": "laravel",
-      "summary": "",
-      "enabled": [
-        "analyse-recommended",
-        "analyse-strict",
-        "analyse-max"
-      ],
-      "fix": "none",
-      "ecosystem": "laravel",
-      "tools": [
-        "larastan"
-      ],
-      "upstream": [
-        "Larastan\\Larastan\\Rules\\UselessConstructs\\NoUselessWithFunctionCallsRule",
-        "NoUselessWithFunctionCallsRule",
-        "larastan.uselessConstructs.with"
       ],
       "ported": true
     },
@@ -22962,8 +22721,7 @@
         "varTag.differentVariable",
         "varTag.misplaced",
         "varTag.multipleTags",
-        "varTag.noVariable",
-        "varTag.variableNotFound"
+        "varTag.noVariable"
       ],
       "ported": true
     },
@@ -24198,9 +23956,7 @@
         "TraitInstantiation",
         "attribute.target",
         "method.templateTypeNotInParameter",
-        "parameter.implicitlyNullable",
         "parameter.noParent",
-        "parameter.requiredAfterOptional",
         "parameter.trait",
         "parameter.unresolvableNativeType",
         "return.noParent",
@@ -25578,51 +25334,6 @@
       "ported": true
     },
     {
-      "id": "analyse/types/redundant-nullsafe",
-      "command": "analyse",
-      "group": "types",
-      "summary": "",
-      "enabled": [
-        "analyse-recommended",
-        "analyse-strict",
-        "analyse-max"
-      ],
-      "fix": "none",
-      "ecosystem": "core",
-      "tools": [
-        "mago",
-        "phpstan"
-      ],
-      "upstream": [
-        "NullsafePropertyFetchRule",
-        "PHPStan\\Rules\\Properties\\NullsafePropertyFetchRule",
-        "RedundantNullsafeOperator",
-        "nullsafe.neverNull"
-      ],
-      "ported": true
-    },
-    {
-      "id": "analyse/types/redundant-nullsafe-method-call",
-      "command": "analyse",
-      "group": "types",
-      "summary": "",
-      "enabled": [
-        "analyse-recommended",
-        "analyse-strict",
-        "analyse-max"
-      ],
-      "fix": "none",
-      "ecosystem": "core",
-      "tools": [
-        "phpstan"
-      ],
-      "upstream": [
-        "NullsafeMethodCallRule",
-        "PHPStan\\Rules\\Methods\\NullsafeMethodCallRule"
-      ],
-      "ported": true
-    },
-    {
       "id": "analyse/types/renamed-parameter-in-subtype",
       "command": "analyse",
       "group": "types",
@@ -25921,8 +25632,7 @@
         "property.tooWideBool",
         "property.unusedType",
         "return.nestedUnusedType",
-        "return.tooWideBool",
-        "return.unusedType"
+        "return.tooWideBool"
       ],
       "ported": true
     },

@@ -12,6 +12,9 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 ## Replaces
 
 - [`RemoveUnusedConstructorParam`](https://getrector.com/rule-detail/remove-unused-constructor-param-rector) (rector).
+- [`UnusedConstructorParametersRule`](https://phpstan.org/error-identifiers/closure.unusedUse) (phpstan-classes).
+- [`constructor.unusedParameter`](https://phpstan.org/error-identifiers/constructor.unusedParameter) (phpstan).
+- [`constructor.unusedParameterFlow`](https://phpstan.org/error-identifiers/constructor.unusedParameterFlow) (phpstan).
 
 ## Configuration
 
@@ -31,10 +34,5 @@ Remove unused parameter in constructor
 ## Options
 
 No configurable options.
-
-## Linked rules
-
-
-- Fixes reports from [`analyse/dead-code/unused-constructor-parameter`](/docs/rules/analyse/dead-code/unused-constructor-parameter).
 
 [Group reference](/docs/rules/lint/dead-code) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

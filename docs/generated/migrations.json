@@ -15833,7 +15833,7 @@
         "tool": "phpstan",
         "url": "https://phpstan.org/error-identifiers/array.duplicateKey",
         "rules": [
-          "analyse/arrays/duplicate-array-key"
+          "lint/dead-code/no-duplicate-array-key"
         ],
         "note": "Same.",
         "unsupported": false
@@ -16215,7 +16215,7 @@
         "rules": [
           "analyse/types/invalid-closure-signature"
         ],
-        "note": "Merged with method.templateTypeNotInParameter, parameter.implicitlyNullable, parameter.noParent and 7 others (see the rule's Replaces section).",
+        "note": "Merged with method.templateTypeNotInParameter, parameter.noParent, parameter.trait and 5 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -16253,9 +16253,9 @@
         "tool": "phpstan",
         "url": "https://phpstan.org/error-identifiers/backtick.deprecated",
         "rules": [
-          "analyse/deprecated/backtick"
+          "format/functions/backtick-to-shell-exec"
         ],
-        "note": "Same.",
+        "note": "Merged with backtick.notAllowed.",
         "unsupported": false
       },
       {
@@ -16265,7 +16265,7 @@
         "rules": [
           "format/functions/backtick-to-shell-exec"
         ],
-        "note": "Same.",
+        "note": "Merged with backtick.deprecated.",
         "unsupported": false
       },
       {
@@ -16285,7 +16285,7 @@
         "rules": [
           "analyse/dead-code/number-comparison-always-constant"
         ],
-        "note": "Merged with booleanAnd.alwaysTrue, booleanNot.alwaysFalse, booleanNot.alwaysTrue and 32 others (see the rule's Replaces section). Expanded from %s.always%s.",
+        "note": "Merged with booleanAnd.alwaysTrue, booleanNot.alwaysFalse, booleanNot.alwaysTrue and 31 others (see the rule's Replaces section). Expanded from %s.always%s.",
         "unsupported": false
       },
       {
@@ -16295,7 +16295,7 @@
         "rules": [
           "analyse/dead-code/number-comparison-always-constant"
         ],
-        "note": "Merged with booleanAnd.alwaysFalse, booleanNot.alwaysFalse, booleanNot.alwaysTrue and 32 others (see the rule's Replaces section). Expanded from %s.always%s.",
+        "note": "Merged with booleanAnd.alwaysFalse, booleanNot.alwaysFalse, booleanNot.alwaysTrue and 31 others (see the rule's Replaces section). Expanded from %s.always%s.",
         "unsupported": false
       },
       {
@@ -16305,7 +16305,7 @@
         "rules": [
           "analyse/dead-code/xor-always-constant"
         ],
-        "note": "Merged with booleanAnd.leftAlwaysTrue, booleanAnd.rightAlwaysFalse, booleanAnd.rightAlwaysTrue and 16 others (see the rule's Replaces section). Expanded from %s.leftAlways%s.",
+        "note": "Merged with booleanAnd.rightAlwaysFalse, booleanAnd.rightAlwaysTrue, booleanOr.leftAlwaysTrue and 14 others (see the rule's Replaces section). Expanded from %s.leftAlways%s.",
         "unsupported": false
       },
       {
@@ -16313,9 +16313,9 @@
         "tool": "phpstan",
         "url": "https://phpstan.org/error-identifiers/booleanAnd.leftAlwaysTrue",
         "rules": [
-          "analyse/dead-code/xor-always-constant"
+          "lint/dead-code/no-always-true-if"
         ],
-        "note": "Merged with booleanAnd.leftAlwaysFalse, booleanAnd.rightAlwaysFalse, booleanAnd.rightAlwaysTrue and 16 others (see the rule's Replaces section). Expanded from %s.leftAlways%s.",
+        "note": "Merged with if.alwaysTrue.",
         "unsupported": false
       },
       {
@@ -16333,7 +16333,7 @@
         "tool": "phpstan",
         "url": "https://phpstan.org/error-identifiers/booleanAnd.resultUnused",
         "rules": [
-          "analyse/dead-code/unused-result"
+          "lint/dead-code/no-unused-expression"
         ],
         "note": "Merged with booleanOr.resultUnused, expr.resultUnused, logicalAnd.resultUnused and 3 others (see the rule's Replaces section). Expanded from %s.resultUnused.",
         "unsupported": false
@@ -16345,7 +16345,7 @@
         "rules": [
           "analyse/dead-code/xor-always-constant"
         ],
-        "note": "Merged with booleanAnd.leftAlwaysFalse, booleanAnd.leftAlwaysTrue, booleanAnd.rightAlwaysTrue and 16 others (see the rule's Replaces section). Expanded from %s.rightAlways%s.",
+        "note": "Merged with booleanAnd.leftAlwaysFalse, booleanAnd.rightAlwaysTrue, booleanOr.leftAlwaysTrue and 14 others (see the rule's Replaces section). Expanded from %s.rightAlways%s.",
         "unsupported": false
       },
       {
@@ -16355,7 +16355,7 @@
         "rules": [
           "analyse/dead-code/xor-always-constant"
         ],
-        "note": "Merged with booleanAnd.leftAlwaysFalse, booleanAnd.leftAlwaysTrue, booleanAnd.rightAlwaysFalse and 16 others (see the rule's Replaces section). Expanded from %s.rightAlways%s.",
+        "note": "Merged with booleanAnd.leftAlwaysFalse, booleanAnd.rightAlwaysFalse, booleanOr.leftAlwaysTrue and 14 others (see the rule's Replaces section). Expanded from %s.rightAlways%s.",
         "unsupported": false
       },
       {
@@ -16375,7 +16375,7 @@
         "rules": [
           "analyse/dead-code/number-comparison-always-constant"
         ],
-        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysTrue and 32 others (see the rule's Replaces section). Expanded from %s.always%s.",
+        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysTrue and 31 others (see the rule's Replaces section). Expanded from %s.always%s.",
         "unsupported": false
       },
       {
@@ -16385,7 +16385,7 @@
         "rules": [
           "analyse/dead-code/number-comparison-always-constant"
         ],
-        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 32 others (see the rule's Replaces section). Expanded from %s.always%s.",
+        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 31 others (see the rule's Replaces section). Expanded from %s.always%s.",
         "unsupported": false
       },
       {
@@ -16405,7 +16405,7 @@
         "rules": [
           "analyse/dead-code/number-comparison-always-constant"
         ],
-        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 32 others (see the rule's Replaces section). Expanded from %s.always%s.",
+        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 31 others (see the rule's Replaces section). Expanded from %s.always%s.",
         "unsupported": false
       },
       {
@@ -16415,7 +16415,7 @@
         "rules": [
           "analyse/dead-code/number-comparison-always-constant"
         ],
-        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 32 others (see the rule's Replaces section). Expanded from %s.always%s.",
+        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 31 others (see the rule's Replaces section). Expanded from %s.always%s.",
         "unsupported": false
       },
       {
@@ -16423,9 +16423,9 @@
         "tool": "phpstan",
         "url": "https://phpstan.org/error-identifiers/booleanOr.leftAlwaysFalse",
         "rules": [
-          "analyse/dead-code/xor-always-constant"
+          "lint/dead-code/no-always-false-condition"
         ],
-        "note": "Merged with booleanAnd.leftAlwaysFalse, booleanAnd.leftAlwaysTrue, booleanAnd.rightAlwaysFalse and 16 others (see the rule's Replaces section). Expanded from %s.leftAlways%s.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -16435,7 +16435,7 @@
         "rules": [
           "analyse/dead-code/xor-always-constant"
         ],
-        "note": "Merged with booleanAnd.leftAlwaysFalse, booleanAnd.leftAlwaysTrue, booleanAnd.rightAlwaysFalse and 16 others (see the rule's Replaces section). Expanded from %s.leftAlways%s.",
+        "note": "Merged with booleanAnd.leftAlwaysFalse, booleanAnd.rightAlwaysFalse, booleanAnd.rightAlwaysTrue and 14 others (see the rule's Replaces section). Expanded from %s.leftAlways%s.",
         "unsupported": false
       },
       {
@@ -16453,7 +16453,7 @@
         "tool": "phpstan",
         "url": "https://phpstan.org/error-identifiers/booleanOr.resultUnused",
         "rules": [
-          "analyse/dead-code/unused-result"
+          "lint/dead-code/no-unused-expression"
         ],
         "note": "Merged with booleanAnd.resultUnused, expr.resultUnused, logicalAnd.resultUnused and 3 others (see the rule's Replaces section). Expanded from %s.resultUnused.",
         "unsupported": false
@@ -16465,7 +16465,7 @@
         "rules": [
           "analyse/dead-code/xor-always-constant"
         ],
-        "note": "Merged with booleanAnd.leftAlwaysFalse, booleanAnd.leftAlwaysTrue, booleanAnd.rightAlwaysFalse and 16 others (see the rule's Replaces section). Expanded from %s.rightAlways%s.",
+        "note": "Merged with booleanAnd.leftAlwaysFalse, booleanAnd.rightAlwaysFalse, booleanAnd.rightAlwaysTrue and 14 others (see the rule's Replaces section). Expanded from %s.rightAlways%s.",
         "unsupported": false
       },
       {
@@ -16475,7 +16475,7 @@
         "rules": [
           "analyse/dead-code/xor-always-constant"
         ],
-        "note": "Merged with booleanAnd.leftAlwaysFalse, booleanAnd.leftAlwaysTrue, booleanAnd.rightAlwaysFalse and 16 others (see the rule's Replaces section). Expanded from %s.rightAlways%s.",
+        "note": "Merged with booleanAnd.leftAlwaysFalse, booleanAnd.rightAlwaysFalse, booleanAnd.rightAlwaysTrue and 14 others (see the rule's Replaces section). Expanded from %s.rightAlways%s.",
         "unsupported": false
       },
       {
@@ -16593,7 +16593,7 @@
         "tool": "phpstan",
         "url": "https://phpstan.org/error-identifiers/cast.deprecated",
         "rules": [
-          "analyse/deprecated/cast"
+          "format/casts/short-scalar"
         ],
         "note": "Same.",
         "unsupported": false
@@ -16643,7 +16643,7 @@
         "tool": "phpstan-strict-rules",
         "url": "https://phpstan.org/error-identifiers/cast.useless",
         "rules": [
-          "analyse/casts/useless"
+          "lint/dead-code/no-useless-cast"
         ],
         "note": "Same.",
         "unsupported": false
@@ -17283,7 +17283,7 @@
         "tool": "phpstan",
         "url": "https://phpstan.org/error-identifiers/classConstant.unused",
         "rules": [
-          "analyse/dead-code/unused-private-constant"
+          "lint/dead-code/no-unused-private-constant"
         ],
         "note": "Same.",
         "unsupported": false
@@ -17353,7 +17353,7 @@
         "tool": "phpstan",
         "url": "https://phpstan.org/error-identifiers/closure.unusedUse",
         "rules": [
-          "analyse/dead-code/unused-closure-use"
+          "lint/functions/no-unused-closure-use"
         ],
         "note": "Merged with closure.unusedUseFlow.",
         "unsupported": false
@@ -17363,7 +17363,7 @@
         "tool": "phpstan",
         "url": "https://phpstan.org/error-identifiers/closure.unusedUseFlow",
         "rules": [
-          "analyse/dead-code/unused-closure-use"
+          "lint/functions/no-unused-closure-use"
         ],
         "note": "Merged with closure.unusedUse.",
         "unsupported": false
@@ -17405,7 +17405,7 @@
         "rules": [
           "analyse/dead-code/number-comparison-always-constant"
         ],
-        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 32 others (see the rule's Replaces section). Expanded from %s.always%s.",
+        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 31 others (see the rule's Replaces section). Expanded from %s.always%s.",
         "unsupported": false
       },
       {
@@ -17415,7 +17415,7 @@
         "rules": [
           "analyse/dead-code/number-comparison-always-constant"
         ],
-        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 32 others (see the rule's Replaces section). Expanded from %s.always%s.",
+        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 31 others (see the rule's Replaces section). Expanded from %s.always%s.",
         "unsupported": false
       },
       {
@@ -17533,7 +17533,7 @@
         "tool": "phpstan",
         "url": "https://phpstan.org/error-identifiers/constructor.unusedParameter",
         "rules": [
-          "analyse/dead-code/unused-constructor-parameter"
+          "lint/dead-code/no-unused-constructor-param"
         ],
         "note": "Merged with constructor.unusedParameterFlow.",
         "unsupported": false
@@ -17543,7 +17543,7 @@
         "tool": "phpstan",
         "url": "https://phpstan.org/error-identifiers/constructor.unusedParameterFlow",
         "rules": [
-          "analyse/dead-code/unused-constructor-parameter"
+          "lint/dead-code/no-unused-constructor-param"
         ],
         "note": "Merged with constructor.unusedParameter.",
         "unsupported": false
@@ -17563,7 +17563,7 @@
         "tool": "phpstan",
         "url": "https://phpstan.org/error-identifiers/deadCode.unreachable",
         "rules": [
-          "analyse/dead-code/unreachable-code"
+          "lint/dead-code/no-unreachable-code"
         ],
         "note": "Same.",
         "unsupported": false
@@ -17615,7 +17615,7 @@
         "rules": [
           "analyse/dead-code/number-comparison-always-constant"
         ],
-        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 32 others (see the rule's Replaces section). Expanded from %s.always%s.",
+        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 31 others (see the rule's Replaces section). Expanded from %s.always%s.",
         "unsupported": false
       },
       {
@@ -17625,7 +17625,7 @@
         "rules": [
           "analyse/dead-code/number-comparison-always-constant"
         ],
-        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 32 others (see the rule's Replaces section). Expanded from %s.always%s.",
+        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 31 others (see the rule's Replaces section). Expanded from %s.always%s.",
         "unsupported": false
       },
       {
@@ -17655,7 +17655,7 @@
         "rules": [
           "analyse/dead-code/number-comparison-always-constant"
         ],
-        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 32 others (see the rule's Replaces section). Expanded from %s.always%s.",
+        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 31 others (see the rule's Replaces section). Expanded from %s.always%s.",
         "unsupported": false
       },
       {
@@ -17665,7 +17665,7 @@
         "rules": [
           "analyse/dead-code/number-comparison-always-constant"
         ],
-        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 32 others (see the rule's Replaces section). Expanded from %s.always%s.",
+        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 31 others (see the rule's Replaces section). Expanded from %s.always%s.",
         "unsupported": false
       },
       {
@@ -18015,7 +18015,7 @@
         "rules": [
           "analyse/dead-code/number-comparison-always-constant"
         ],
-        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 32 others (see the rule's Replaces section). Expanded from %s.always%s.",
+        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 31 others (see the rule's Replaces section). Expanded from %s.always%s.",
         "unsupported": false
       },
       {
@@ -18025,7 +18025,7 @@
         "rules": [
           "analyse/dead-code/number-comparison-always-constant"
         ],
-        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 32 others (see the rule's Replaces section). Expanded from %s.always%s.",
+        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 31 others (see the rule's Replaces section). Expanded from %s.always%s.",
         "unsupported": false
       },
       {
@@ -18053,7 +18053,7 @@
         "tool": "phpstan",
         "url": "https://phpstan.org/error-identifiers/expr.resultUnused",
         "rules": [
-          "analyse/dead-code/unused-result"
+          "lint/dead-code/no-unused-expression"
         ],
         "note": "Merged with booleanAnd.resultUnused, booleanOr.resultUnused, logicalAnd.resultUnused and 3 others (see the rule's Replaces section).",
         "unsupported": false
@@ -18615,7 +18615,7 @@
         "rules": [
           "analyse/dead-code/number-comparison-always-constant"
         ],
-        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 32 others (see the rule's Replaces section). Expanded from %s.always%s.",
+        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 31 others (see the rule's Replaces section). Expanded from %s.always%s.",
         "unsupported": false
       },
       {
@@ -18625,7 +18625,7 @@
         "rules": [
           "analyse/dead-code/number-comparison-always-constant"
         ],
-        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 32 others (see the rule's Replaces section). Expanded from %s.always%s.",
+        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 31 others (see the rule's Replaces section). Expanded from %s.always%s.",
         "unsupported": false
       },
       {
@@ -18645,7 +18645,7 @@
         "rules": [
           "analyse/dead-code/number-comparison-always-constant"
         ],
-        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 32 others (see the rule's Replaces section). Expanded from %s.always%s.",
+        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 31 others (see the rule's Replaces section). Expanded from %s.always%s.",
         "unsupported": false
       },
       {
@@ -18655,7 +18655,7 @@
         "rules": [
           "analyse/dead-code/number-comparison-always-constant"
         ],
-        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 32 others (see the rule's Replaces section). Expanded from %s.always%s.",
+        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 31 others (see the rule's Replaces section). Expanded from %s.always%s.",
         "unsupported": false
       },
       {
@@ -18675,7 +18675,7 @@
         "rules": [
           "analyse/dead-code/number-comparison-always-constant"
         ],
-        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 32 others (see the rule's Replaces section). Expanded from %s.always%s.",
+        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 31 others (see the rule's Replaces section). Expanded from %s.always%s.",
         "unsupported": false
       },
       {
@@ -18685,7 +18685,7 @@
         "rules": [
           "analyse/dead-code/number-comparison-always-constant"
         ],
-        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 32 others (see the rule's Replaces section). Expanded from %s.always%s.",
+        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 31 others (see the rule's Replaces section). Expanded from %s.always%s.",
         "unsupported": false
       },
       {
@@ -18695,7 +18695,7 @@
         "rules": [
           "analyse/dead-code/number-comparison-always-constant"
         ],
-        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 32 others (see the rule's Replaces section). Expanded from %s.always%s.",
+        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 31 others (see the rule's Replaces section). Expanded from %s.always%s.",
         "unsupported": false
       },
       {
@@ -18703,9 +18703,9 @@
         "tool": "phpstan",
         "url": "https://phpstan.org/error-identifiers/if.alwaysTrue",
         "rules": [
-          "analyse/dead-code/number-comparison-always-constant"
+          "lint/dead-code/no-always-true-if"
         ],
-        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 32 others (see the rule's Replaces section). Expanded from %s.always%s.",
+        "note": "Merged with booleanAnd.leftAlwaysTrue.",
         "unsupported": false
       },
       {
@@ -18985,7 +18985,7 @@
         "rules": [
           "analyse/dead-code/impossible-instanceof"
         ],
-        "note": "Merged with instanceof.alwaysTrue, instanceof.invalidExprType.",
+        "note": "Merged with instanceof.invalidExprType.",
         "unsupported": false
       },
       {
@@ -18993,9 +18993,9 @@
         "tool": "phpstan",
         "url": "https://phpstan.org/error-identifiers/instanceof.alwaysTrue",
         "rules": [
-          "analyse/dead-code/impossible-instanceof"
+          "lint/dead-code/no-always-true-instanceof"
         ],
-        "note": "Merged with instanceof.alwaysFalse, instanceof.invalidExprType.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -19005,7 +19005,7 @@
         "rules": [
           "analyse/dead-code/impossible-instanceof"
         ],
-        "note": "Merged with instanceof.alwaysFalse, instanceof.alwaysTrue.",
+        "note": "Merged with instanceof.alwaysFalse.",
         "unsupported": false
       },
       {
@@ -19223,7 +19223,7 @@
         "tool": "phpstan",
         "url": "https://phpstan.org/error-identifiers/label.unused",
         "rules": [
-          "analyse/dead-code/unused-label"
+          "lint/complexity/no-unused-label"
         ],
         "note": "Same.",
         "unsupported": false
@@ -19235,7 +19235,7 @@
         "rules": [
           "analyse/dead-code/number-comparison-always-constant"
         ],
-        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 32 others (see the rule's Replaces section). Expanded from %s.always%s.",
+        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 31 others (see the rule's Replaces section). Expanded from %s.always%s.",
         "unsupported": false
       },
       {
@@ -19245,7 +19245,7 @@
         "rules": [
           "analyse/dead-code/number-comparison-always-constant"
         ],
-        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 32 others (see the rule's Replaces section). Expanded from %s.always%s.",
+        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 31 others (see the rule's Replaces section). Expanded from %s.always%s.",
         "unsupported": false
       },
       {
@@ -19255,7 +19255,7 @@
         "rules": [
           "analyse/dead-code/xor-always-constant"
         ],
-        "note": "Merged with booleanAnd.leftAlwaysFalse, booleanAnd.leftAlwaysTrue, booleanAnd.rightAlwaysFalse and 16 others (see the rule's Replaces section). Expanded from %s.leftAlways%s.",
+        "note": "Merged with booleanAnd.leftAlwaysFalse, booleanAnd.rightAlwaysFalse, booleanAnd.rightAlwaysTrue and 14 others (see the rule's Replaces section). Expanded from %s.leftAlways%s.",
         "unsupported": false
       },
       {
@@ -19265,7 +19265,7 @@
         "rules": [
           "analyse/dead-code/xor-always-constant"
         ],
-        "note": "Merged with booleanAnd.leftAlwaysFalse, booleanAnd.leftAlwaysTrue, booleanAnd.rightAlwaysFalse and 16 others (see the rule's Replaces section). Expanded from %s.leftAlways%s.",
+        "note": "Merged with booleanAnd.leftAlwaysFalse, booleanAnd.rightAlwaysFalse, booleanAnd.rightAlwaysTrue and 14 others (see the rule's Replaces section). Expanded from %s.leftAlways%s.",
         "unsupported": false
       },
       {
@@ -19283,7 +19283,7 @@
         "tool": "phpstan",
         "url": "https://phpstan.org/error-identifiers/logicalAnd.resultUnused",
         "rules": [
-          "analyse/dead-code/unused-result"
+          "lint/dead-code/no-unused-expression"
         ],
         "note": "Merged with booleanAnd.resultUnused, booleanOr.resultUnused, expr.resultUnused and 3 others (see the rule's Replaces section). Expanded from %s.resultUnused.",
         "unsupported": false
@@ -19295,7 +19295,7 @@
         "rules": [
           "analyse/dead-code/xor-always-constant"
         ],
-        "note": "Merged with booleanAnd.leftAlwaysFalse, booleanAnd.leftAlwaysTrue, booleanAnd.rightAlwaysFalse and 16 others (see the rule's Replaces section). Expanded from %s.rightAlways%s.",
+        "note": "Merged with booleanAnd.leftAlwaysFalse, booleanAnd.rightAlwaysFalse, booleanAnd.rightAlwaysTrue and 14 others (see the rule's Replaces section). Expanded from %s.rightAlways%s.",
         "unsupported": false
       },
       {
@@ -19305,7 +19305,7 @@
         "rules": [
           "analyse/dead-code/xor-always-constant"
         ],
-        "note": "Merged with booleanAnd.leftAlwaysFalse, booleanAnd.leftAlwaysTrue, booleanAnd.rightAlwaysFalse and 16 others (see the rule's Replaces section). Expanded from %s.rightAlways%s.",
+        "note": "Merged with booleanAnd.leftAlwaysFalse, booleanAnd.rightAlwaysFalse, booleanAnd.rightAlwaysTrue and 14 others (see the rule's Replaces section). Expanded from %s.rightAlways%s.",
         "unsupported": false
       },
       {
@@ -19325,7 +19325,7 @@
         "rules": [
           "analyse/dead-code/number-comparison-always-constant"
         ],
-        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 32 others (see the rule's Replaces section). Expanded from %s.always%s.",
+        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 31 others (see the rule's Replaces section). Expanded from %s.always%s.",
         "unsupported": false
       },
       {
@@ -19335,7 +19335,7 @@
         "rules": [
           "analyse/dead-code/number-comparison-always-constant"
         ],
-        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 32 others (see the rule's Replaces section). Expanded from %s.always%s.",
+        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 31 others (see the rule's Replaces section). Expanded from %s.always%s.",
         "unsupported": false
       },
       {
@@ -19345,7 +19345,7 @@
         "rules": [
           "analyse/dead-code/xor-always-constant"
         ],
-        "note": "Merged with booleanAnd.leftAlwaysFalse, booleanAnd.leftAlwaysTrue, booleanAnd.rightAlwaysFalse and 16 others (see the rule's Replaces section). Expanded from %s.leftAlways%s.",
+        "note": "Merged with booleanAnd.leftAlwaysFalse, booleanAnd.rightAlwaysFalse, booleanAnd.rightAlwaysTrue and 14 others (see the rule's Replaces section). Expanded from %s.leftAlways%s.",
         "unsupported": false
       },
       {
@@ -19355,7 +19355,7 @@
         "rules": [
           "analyse/dead-code/xor-always-constant"
         ],
-        "note": "Merged with booleanAnd.leftAlwaysFalse, booleanAnd.leftAlwaysTrue, booleanAnd.rightAlwaysFalse and 16 others (see the rule's Replaces section). Expanded from %s.leftAlways%s.",
+        "note": "Merged with booleanAnd.leftAlwaysFalse, booleanAnd.rightAlwaysFalse, booleanAnd.rightAlwaysTrue and 14 others (see the rule's Replaces section). Expanded from %s.leftAlways%s.",
         "unsupported": false
       },
       {
@@ -19373,7 +19373,7 @@
         "tool": "phpstan",
         "url": "https://phpstan.org/error-identifiers/logicalOr.resultUnused",
         "rules": [
-          "analyse/dead-code/unused-result"
+          "lint/dead-code/no-unused-expression"
         ],
         "note": "Merged with booleanAnd.resultUnused, booleanOr.resultUnused, expr.resultUnused and 3 others (see the rule's Replaces section). Expanded from %s.resultUnused.",
         "unsupported": false
@@ -19385,7 +19385,7 @@
         "rules": [
           "analyse/dead-code/xor-always-constant"
         ],
-        "note": "Merged with booleanAnd.leftAlwaysFalse, booleanAnd.leftAlwaysTrue, booleanAnd.rightAlwaysFalse and 16 others (see the rule's Replaces section). Expanded from %s.rightAlways%s.",
+        "note": "Merged with booleanAnd.leftAlwaysFalse, booleanAnd.rightAlwaysFalse, booleanAnd.rightAlwaysTrue and 14 others (see the rule's Replaces section). Expanded from %s.rightAlways%s.",
         "unsupported": false
       },
       {
@@ -19395,7 +19395,7 @@
         "rules": [
           "analyse/dead-code/xor-always-constant"
         ],
-        "note": "Merged with booleanAnd.leftAlwaysFalse, booleanAnd.leftAlwaysTrue, booleanAnd.rightAlwaysFalse and 16 others (see the rule's Replaces section). Expanded from %s.rightAlways%s.",
+        "note": "Merged with booleanAnd.leftAlwaysFalse, booleanAnd.rightAlwaysFalse, booleanAnd.rightAlwaysTrue and 14 others (see the rule's Replaces section). Expanded from %s.rightAlways%s.",
         "unsupported": false
       },
       {
@@ -19415,7 +19415,7 @@
         "rules": [
           "analyse/dead-code/xor-always-constant"
         ],
-        "note": "Merged with booleanAnd.leftAlwaysFalse, booleanAnd.leftAlwaysTrue, booleanAnd.rightAlwaysFalse and 16 others (see the rule's Replaces section). Expanded from %s.leftAlways%s.",
+        "note": "Merged with booleanAnd.leftAlwaysFalse, booleanAnd.rightAlwaysFalse, booleanAnd.rightAlwaysTrue and 14 others (see the rule's Replaces section). Expanded from %s.leftAlways%s.",
         "unsupported": false
       },
       {
@@ -19425,7 +19425,7 @@
         "rules": [
           "analyse/dead-code/xor-always-constant"
         ],
-        "note": "Merged with booleanAnd.leftAlwaysFalse, booleanAnd.leftAlwaysTrue, booleanAnd.rightAlwaysFalse and 16 others (see the rule's Replaces section). Expanded from %s.leftAlways%s.",
+        "note": "Merged with booleanAnd.leftAlwaysFalse, booleanAnd.rightAlwaysFalse, booleanAnd.rightAlwaysTrue and 14 others (see the rule's Replaces section). Expanded from %s.leftAlways%s.",
         "unsupported": false
       },
       {
@@ -19433,7 +19433,7 @@
         "tool": "phpstan",
         "url": "https://phpstan.org/error-identifiers/logicalXor.resultUnused",
         "rules": [
-          "analyse/dead-code/unused-result"
+          "lint/dead-code/no-unused-expression"
         ],
         "note": "Merged with booleanAnd.resultUnused, booleanOr.resultUnused, expr.resultUnused and 3 others (see the rule's Replaces section).",
         "unsupported": false
@@ -19445,7 +19445,7 @@
         "rules": [
           "analyse/dead-code/xor-always-constant"
         ],
-        "note": "Merged with booleanAnd.leftAlwaysFalse, booleanAnd.leftAlwaysTrue, booleanAnd.rightAlwaysFalse and 16 others (see the rule's Replaces section). Expanded from %s.rightAlways%s.",
+        "note": "Merged with booleanAnd.leftAlwaysFalse, booleanAnd.rightAlwaysFalse, booleanAnd.rightAlwaysTrue and 14 others (see the rule's Replaces section). Expanded from %s.rightAlways%s.",
         "unsupported": false
       },
       {
@@ -19455,7 +19455,7 @@
         "rules": [
           "analyse/dead-code/xor-always-constant"
         ],
-        "note": "Merged with booleanAnd.leftAlwaysFalse, booleanAnd.leftAlwaysTrue, booleanAnd.rightAlwaysFalse and 16 others (see the rule's Replaces section). Expanded from %s.rightAlways%s.",
+        "note": "Merged with booleanAnd.leftAlwaysFalse, booleanAnd.rightAlwaysFalse, booleanAnd.rightAlwaysTrue and 14 others (see the rule's Replaces section). Expanded from %s.rightAlways%s.",
         "unsupported": false
       },
       {
@@ -19955,7 +19955,7 @@
         "rules": [
           "analyse/types/invalid-closure-signature"
         ],
-        "note": "Merged with attribute.target, parameter.implicitlyNullable, parameter.noParent and 7 others (see the rule's Replaces section).",
+        "note": "Merged with attribute.target, parameter.noParent, parameter.trait and 5 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -19983,7 +19983,7 @@
         "tool": "phpstan",
         "url": "https://phpstan.org/error-identifiers/method.unused",
         "rules": [
-          "analyse/dead-code/unused-private-method"
+          "lint/dead-code/no-unused-private-method"
         ],
         "note": "Same.",
         "unsupported": false
@@ -20395,7 +20395,7 @@
         "rules": [
           "analyse/dead-code/number-comparison-always-constant"
         ],
-        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 32 others (see the rule's Replaces section). Expanded from %s.always%s.",
+        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 31 others (see the rule's Replaces section). Expanded from %s.always%s.",
         "unsupported": false
       },
       {
@@ -20405,7 +20405,7 @@
         "rules": [
           "analyse/dead-code/number-comparison-always-constant"
         ],
-        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 32 others (see the rule's Replaces section). Expanded from %s.always%s.",
+        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 31 others (see the rule's Replaces section). Expanded from %s.always%s.",
         "unsupported": false
       },
       {
@@ -20435,7 +20435,7 @@
         "rules": [
           "analyse/dead-code/number-comparison-always-constant"
         ],
-        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 32 others (see the rule's Replaces section). Expanded from %s.always%s.",
+        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 31 others (see the rule's Replaces section). Expanded from %s.always%s.",
         "unsupported": false
       },
       {
@@ -20445,7 +20445,7 @@
         "rules": [
           "analyse/dead-code/number-comparison-always-constant"
         ],
-        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 32 others (see the rule's Replaces section). Expanded from %s.always%s.",
+        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 31 others (see the rule's Replaces section). Expanded from %s.always%s.",
         "unsupported": false
       },
       {
@@ -20563,7 +20563,7 @@
         "tool": "phpstan",
         "url": "https://phpstan.org/error-identifiers/nullsafe.neverNull",
         "rules": [
-          "analyse/types/redundant-nullsafe"
+          "lint/complexity/no-redundant-nullsafe"
         ],
         "note": "Same.",
         "unsupported": false
@@ -20705,7 +20705,7 @@
         "rules": [
           "analyse/types/too-wide-arrow-function-return"
         ],
-        "note": "Merged with paramOut.tooWideBool, paramOut.unusedType, parameterByRef.nestedUnusedType and 8 others (see the rule's Replaces section). Expanded from %s.nestedUnusedType.",
+        "note": "Merged with paramOut.tooWideBool, paramOut.unusedType, parameterByRef.nestedUnusedType and 7 others (see the rule's Replaces section). Expanded from %s.nestedUnusedType.",
         "unsupported": false
       },
       {
@@ -20715,7 +20715,7 @@
         "rules": [
           "analyse/types/too-wide-arrow-function-return"
         ],
-        "note": "Merged with paramOut.nestedUnusedType, paramOut.unusedType, parameterByRef.nestedUnusedType and 8 others (see the rule's Replaces section). Expanded from %s.tooWideBool.",
+        "note": "Merged with paramOut.nestedUnusedType, paramOut.unusedType, parameterByRef.nestedUnusedType and 7 others (see the rule's Replaces section). Expanded from %s.tooWideBool.",
         "unsupported": false
       },
       {
@@ -20735,7 +20735,7 @@
         "rules": [
           "analyse/types/too-wide-arrow-function-return"
         ],
-        "note": "Merged with paramOut.nestedUnusedType, paramOut.tooWideBool, parameterByRef.nestedUnusedType and 8 others (see the rule's Replaces section). Expanded from %s.unusedType.",
+        "note": "Merged with paramOut.nestedUnusedType, paramOut.tooWideBool, parameterByRef.nestedUnusedType and 7 others (see the rule's Replaces section). Expanded from %s.unusedType.",
         "unsupported": false
       },
       {
@@ -20773,9 +20773,9 @@
         "tool": "phpstan",
         "url": "https://phpstan.org/error-identifiers/parameter.implicitlyNullable",
         "rules": [
-          "analyse/types/invalid-closure-signature"
+          "format/types/nullable-for-null-default"
         ],
-        "note": "Merged with attribute.target, method.templateTypeNotInParameter, parameter.noParent and 7 others (see the rule's Replaces section).",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -20795,7 +20795,7 @@
         "rules": [
           "analyse/types/invalid-closure-signature"
         ],
-        "note": "Merged with attribute.target, method.templateTypeNotInParameter, parameter.implicitlyNullable and 7 others (see the rule's Replaces section).",
+        "note": "Merged with attribute.target, method.templateTypeNotInParameter, parameter.trait and 5 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -20853,9 +20853,9 @@
         "tool": "phpstan",
         "url": "https://phpstan.org/error-identifiers/parameter.requiredAfterOptional",
         "rules": [
-          "analyse/types/invalid-closure-signature"
+          "lint/functions/no-required-after-optional"
         ],
-        "note": "Merged with attribute.target, method.templateTypeNotInParameter, parameter.implicitlyNullable and 7 others (see the rule's Replaces section).",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -20885,7 +20885,7 @@
         "rules": [
           "analyse/types/invalid-closure-signature"
         ],
-        "note": "Merged with attribute.target, method.templateTypeNotInParameter, parameter.implicitlyNullable and 7 others (see the rule's Replaces section).",
+        "note": "Merged with attribute.target, method.templateTypeNotInParameter, parameter.noParent and 5 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -20905,7 +20905,7 @@
         "rules": [
           "analyse/types/invalid-closure-signature"
         ],
-        "note": "Merged with attribute.target, method.templateTypeNotInParameter, parameter.implicitlyNullable and 7 others (see the rule's Replaces section).",
+        "note": "Merged with attribute.target, method.templateTypeNotInParameter, parameter.noParent and 5 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -20945,7 +20945,7 @@
         "rules": [
           "analyse/types/too-wide-arrow-function-return"
         ],
-        "note": "Merged with paramOut.nestedUnusedType, paramOut.tooWideBool, paramOut.unusedType and 8 others (see the rule's Replaces section). Expanded from %s.nestedUnusedType.",
+        "note": "Merged with paramOut.nestedUnusedType, paramOut.tooWideBool, paramOut.unusedType and 7 others (see the rule's Replaces section). Expanded from %s.nestedUnusedType.",
         "unsupported": false
       },
       {
@@ -20955,7 +20955,7 @@
         "rules": [
           "analyse/types/too-wide-arrow-function-return"
         ],
-        "note": "Merged with paramOut.nestedUnusedType, paramOut.tooWideBool, paramOut.unusedType and 8 others (see the rule's Replaces section). Expanded from %s.tooWideBool.",
+        "note": "Merged with paramOut.nestedUnusedType, paramOut.tooWideBool, paramOut.unusedType and 7 others (see the rule's Replaces section). Expanded from %s.tooWideBool.",
         "unsupported": false
       },
       {
@@ -20975,7 +20975,7 @@
         "rules": [
           "analyse/types/too-wide-arrow-function-return"
         ],
-        "note": "Merged with paramOut.nestedUnusedType, paramOut.tooWideBool, paramOut.unusedType and 8 others (see the rule's Replaces section). Expanded from %s.unusedType.",
+        "note": "Merged with paramOut.nestedUnusedType, paramOut.tooWideBool, paramOut.unusedType and 7 others (see the rule's Replaces section). Expanded from %s.unusedType.",
         "unsupported": false
       },
       {
@@ -21701,7 +21701,7 @@
         "rules": [
           "analyse/classes/incompatible-property-override"
         ],
-        "note": "Merged with property.deprecatedClass, property.deprecatedEnum, property.deprecatedInterface and 22 others (see the rule's Replaces section).",
+        "note": "Merged with property.deprecatedClass, property.deprecatedEnum, property.deprecatedInterface and 21 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -21771,7 +21771,7 @@
         "rules": [
           "analyse/classes/incompatible-property-override"
         ],
-        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedEnum, property.deprecatedInterface and 22 others (see the rule's Replaces section). Expanded from property.%s.",
+        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedEnum, property.deprecatedInterface and 21 others (see the rule's Replaces section). Expanded from property.%s.",
         "unsupported": false
       },
       {
@@ -21781,7 +21781,7 @@
         "rules": [
           "analyse/classes/incompatible-property-override"
         ],
-        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedInterface and 22 others (see the rule's Replaces section). Expanded from property.%s.",
+        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedInterface and 21 others (see the rule's Replaces section). Expanded from property.%s.",
         "unsupported": false
       },
       {
@@ -21791,7 +21791,7 @@
         "rules": [
           "analyse/classes/incompatible-property-override"
         ],
-        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 22 others (see the rule's Replaces section). Expanded from property.%s.",
+        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 21 others (see the rule's Replaces section). Expanded from property.%s.",
         "unsupported": false
       },
       {
@@ -21801,7 +21801,7 @@
         "rules": [
           "analyse/classes/incompatible-property-override"
         ],
-        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 22 others (see the rule's Replaces section). Expanded from property.%s.",
+        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 21 others (see the rule's Replaces section). Expanded from property.%s.",
         "unsupported": false
       },
       {
@@ -21821,7 +21821,7 @@
         "rules": [
           "analyse/classes/incompatible-property-override"
         ],
-        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 22 others (see the rule's Replaces section).",
+        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 21 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -21931,7 +21931,7 @@
         "rules": [
           "analyse/classes/incompatible-property-override"
         ],
-        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 22 others (see the rule's Replaces section). Expanded from property.%s.",
+        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 21 others (see the rule's Replaces section). Expanded from property.%s.",
         "unsupported": false
       },
       {
@@ -21941,7 +21941,7 @@
         "rules": [
           "analyse/classes/incompatible-property-override"
         ],
-        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 22 others (see the rule's Replaces section). Expanded from property.%s.",
+        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 21 others (see the rule's Replaces section). Expanded from property.%s.",
         "unsupported": false
       },
       {
@@ -21951,7 +21951,7 @@
         "rules": [
           "analyse/classes/incompatible-property-override"
         ],
-        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 22 others (see the rule's Replaces section). Expanded from property.%s.",
+        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 21 others (see the rule's Replaces section). Expanded from property.%s.",
         "unsupported": false
       },
       {
@@ -21961,7 +21961,7 @@
         "rules": [
           "analyse/classes/incompatible-property-override"
         ],
-        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 22 others (see the rule's Replaces section). Expanded from property.%s.",
+        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 21 others (see the rule's Replaces section). Expanded from property.%s.",
         "unsupported": false
       },
       {
@@ -21971,7 +21971,7 @@
         "rules": [
           "analyse/classes/incompatible-property-override"
         ],
-        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 22 others (see the rule's Replaces section). Expanded from property.%s.",
+        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 21 others (see the rule's Replaces section). Expanded from property.%s.",
         "unsupported": false
       },
       {
@@ -21991,7 +21991,7 @@
         "rules": [
           "analyse/classes/incompatible-property-override"
         ],
-        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 22 others (see the rule's Replaces section).",
+        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 21 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -21999,9 +21999,9 @@
         "tool": "phpstan",
         "url": "https://phpstan.org/error-identifiers/property.missingOverride",
         "rules": [
-          "analyse/classes/incompatible-property-override"
+          "lint/refactor/add-override-attribute"
         ],
-        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 22 others (see the rule's Replaces section).",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -22021,7 +22021,7 @@
         "rules": [
           "analyse/classes/incompatible-property-override"
         ],
-        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 22 others (see the rule's Replaces section).",
+        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 21 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -22031,7 +22031,7 @@
         "rules": [
           "analyse/types/too-wide-arrow-function-return"
         ],
-        "note": "Merged with paramOut.nestedUnusedType, paramOut.tooWideBool, paramOut.unusedType and 8 others (see the rule's Replaces section).",
+        "note": "Merged with paramOut.nestedUnusedType, paramOut.tooWideBool, paramOut.unusedType and 7 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -22041,7 +22041,7 @@
         "rules": [
           "analyse/dead-code/unused-private-property"
         ],
-        "note": "Merged with property.neverWritten, property.onlyRead, property.onlyWritten and 1 others (see the rule's Replaces section).",
+        "note": "Merged with property.neverWritten, property.onlyRead.",
         "unsupported": false
       },
       {
@@ -22051,7 +22051,7 @@
         "rules": [
           "analyse/dead-code/unused-private-property"
         ],
-        "note": "Merged with property.neverRead, property.onlyRead, property.onlyWritten and 1 others (see the rule's Replaces section).",
+        "note": "Merged with property.neverRead, property.onlyRead.",
         "unsupported": false
       },
       {
@@ -22091,7 +22091,7 @@
         "rules": [
           "analyse/classes/incompatible-property-override"
         ],
-        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 22 others (see the rule's Replaces section).",
+        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 21 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -22111,7 +22111,7 @@
         "rules": [
           "analyse/classes/incompatible-property-override"
         ],
-        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 22 others (see the rule's Replaces section).",
+        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 21 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -22121,7 +22121,7 @@
         "rules": [
           "analyse/classes/incompatible-property-override"
         ],
-        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 22 others (see the rule's Replaces section).",
+        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 21 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -22131,7 +22131,7 @@
         "rules": [
           "analyse/dead-code/unused-private-property"
         ],
-        "note": "Merged with property.neverRead, property.neverWritten, property.onlyWritten and 1 others (see the rule's Replaces section).",
+        "note": "Merged with property.neverRead, property.neverWritten.",
         "unsupported": false
       },
       {
@@ -22139,9 +22139,9 @@
         "tool": "phpstan",
         "url": "https://phpstan.org/error-identifiers/property.onlyWritten",
         "rules": [
-          "analyse/dead-code/unused-private-property"
+          "lint/dead-code/no-unused-private-property"
         ],
-        "note": "Merged with property.neverRead, property.neverWritten, property.onlyRead and 1 others (see the rule's Replaces section).",
+        "note": "Merged with property.unused.",
         "unsupported": false
       },
       {
@@ -22151,7 +22151,7 @@
         "rules": [
           "analyse/classes/incompatible-property-override"
         ],
-        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 22 others (see the rule's Replaces section).",
+        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 21 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -22171,7 +22171,7 @@
         "rules": [
           "analyse/classes/incompatible-property-override"
         ],
-        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 22 others (see the rule's Replaces section).",
+        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 21 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -22181,7 +22181,7 @@
         "rules": [
           "analyse/classes/incompatible-property-override"
         ],
-        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 22 others (see the rule's Replaces section).",
+        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 21 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -22191,7 +22191,7 @@
         "rules": [
           "analyse/classes/incompatible-property-override"
         ],
-        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 22 others (see the rule's Replaces section).",
+        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 21 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -22221,7 +22221,7 @@
         "rules": [
           "analyse/classes/incompatible-property-override"
         ],
-        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 22 others (see the rule's Replaces section). Expanded from property.%s.",
+        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 21 others (see the rule's Replaces section). Expanded from property.%s.",
         "unsupported": false
       },
       {
@@ -22231,7 +22231,7 @@
         "rules": [
           "analyse/classes/incompatible-property-override"
         ],
-        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 22 others (see the rule's Replaces section).",
+        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 21 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -22381,7 +22381,7 @@
         "rules": [
           "analyse/classes/incompatible-property-override"
         ],
-        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 22 others (see the rule's Replaces section).",
+        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 21 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -22391,7 +22391,7 @@
         "rules": [
           "analyse/classes/incompatible-property-override"
         ],
-        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 22 others (see the rule's Replaces section).",
+        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 21 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -22421,7 +22421,7 @@
         "rules": [
           "analyse/types/too-wide-arrow-function-return"
         ],
-        "note": "Merged with paramOut.nestedUnusedType, paramOut.tooWideBool, paramOut.unusedType and 8 others (see the rule's Replaces section). Expanded from %s.tooWideBool.",
+        "note": "Merged with paramOut.nestedUnusedType, paramOut.tooWideBool, paramOut.unusedType and 7 others (see the rule's Replaces section). Expanded from %s.tooWideBool.",
         "unsupported": false
       },
       {
@@ -22489,9 +22489,9 @@
         "tool": "phpstan",
         "url": "https://phpstan.org/error-identifiers/property.unused",
         "rules": [
-          "analyse/dead-code/unused-private-property"
+          "lint/dead-code/no-unused-private-property"
         ],
-        "note": "Merged with property.neverRead, property.neverWritten, property.onlyRead and 1 others (see the rule's Replaces section).",
+        "note": "Merged with property.onlyWritten.",
         "unsupported": false
       },
       {
@@ -22501,7 +22501,7 @@
         "rules": [
           "analyse/types/too-wide-arrow-function-return"
         ],
-        "note": "Merged with paramOut.nestedUnusedType, paramOut.tooWideBool, paramOut.unusedType and 8 others (see the rule's Replaces section). Expanded from %s.unusedType.",
+        "note": "Merged with paramOut.nestedUnusedType, paramOut.tooWideBool, paramOut.unusedType and 7 others (see the rule's Replaces section). Expanded from %s.unusedType.",
         "unsupported": false
       },
       {
@@ -22521,7 +22521,7 @@
         "rules": [
           "analyse/classes/incompatible-property-override"
         ],
-        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 22 others (see the rule's Replaces section).",
+        "note": "Merged with property.abstractOverridingNonAbstractHook, property.deprecatedClass, property.deprecatedEnum and 21 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -23011,7 +23011,7 @@
         "rules": [
           "analyse/types/too-wide-arrow-function-return"
         ],
-        "note": "Merged with paramOut.nestedUnusedType, paramOut.tooWideBool, paramOut.unusedType and 8 others (see the rule's Replaces section).",
+        "note": "Merged with paramOut.nestedUnusedType, paramOut.tooWideBool, paramOut.unusedType and 7 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -23041,7 +23041,7 @@
         "rules": [
           "analyse/types/invalid-closure-signature"
         ],
-        "note": "Merged with attribute.target, method.templateTypeNotInParameter, parameter.implicitlyNullable and 7 others (see the rule's Replaces section).",
+        "note": "Merged with attribute.target, method.templateTypeNotInParameter, parameter.noParent and 5 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -23061,7 +23061,7 @@
         "rules": [
           "analyse/types/too-wide-arrow-function-return"
         ],
-        "note": "Merged with paramOut.nestedUnusedType, paramOut.tooWideBool, paramOut.unusedType and 8 others (see the rule's Replaces section). Expanded from %s.tooWideBool.",
+        "note": "Merged with paramOut.nestedUnusedType, paramOut.tooWideBool, paramOut.unusedType and 7 others (see the rule's Replaces section). Expanded from %s.tooWideBool.",
         "unsupported": false
       },
       {
@@ -23071,7 +23071,7 @@
         "rules": [
           "analyse/types/invalid-closure-signature"
         ],
-        "note": "Merged with attribute.target, method.templateTypeNotInParameter, parameter.implicitlyNullable and 7 others (see the rule's Replaces section).",
+        "note": "Merged with attribute.target, method.templateTypeNotInParameter, parameter.noParent and 5 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -23101,7 +23101,7 @@
         "rules": [
           "analyse/types/invalid-closure-signature"
         ],
-        "note": "Merged with attribute.target, method.templateTypeNotInParameter, parameter.implicitlyNullable and 7 others (see the rule's Replaces section).",
+        "note": "Merged with attribute.target, method.templateTypeNotInParameter, parameter.noParent and 5 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -23119,9 +23119,9 @@
         "tool": "phpstan",
         "url": "https://phpstan.org/error-identifiers/return.unusedType",
         "rules": [
-          "analyse/types/too-wide-arrow-function-return"
+          "lint/dead-code/no-unused-return-type"
         ],
-        "note": "Merged with paramOut.nestedUnusedType, paramOut.tooWideBool, paramOut.unusedType and 8 others (see the rule's Replaces section).",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -23181,7 +23181,7 @@
         "rules": [
           "analyse/types/invalid-closure-signature"
         ],
-        "note": "Merged with attribute.target, method.templateTypeNotInParameter, parameter.implicitlyNullable and 7 others (see the rule's Replaces section).",
+        "note": "Merged with attribute.target, method.templateTypeNotInParameter, parameter.noParent and 5 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -23211,7 +23211,7 @@
         "rules": [
           "analyse/dead-code/number-comparison-always-constant"
         ],
-        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 32 others (see the rule's Replaces section). Expanded from %s.always%s.",
+        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 31 others (see the rule's Replaces section). Expanded from %s.always%s.",
         "unsupported": false
       },
       {
@@ -23221,7 +23221,7 @@
         "rules": [
           "analyse/dead-code/number-comparison-always-constant"
         ],
-        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 32 others (see the rule's Replaces section). Expanded from %s.always%s.",
+        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 31 others (see the rule's Replaces section). Expanded from %s.always%s.",
         "unsupported": false
       },
       {
@@ -23241,7 +23241,7 @@
         "rules": [
           "analyse/dead-code/number-comparison-always-constant"
         ],
-        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 32 others (see the rule's Replaces section). Expanded from %s.always%s.",
+        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 31 others (see the rule's Replaces section). Expanded from %s.always%s.",
         "unsupported": false
       },
       {
@@ -23251,7 +23251,7 @@
         "rules": [
           "analyse/dead-code/number-comparison-always-constant"
         ],
-        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 32 others (see the rule's Replaces section). Expanded from %s.always%s.",
+        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 31 others (see the rule's Replaces section). Expanded from %s.always%s.",
         "unsupported": false
       },
       {
@@ -23821,7 +23821,7 @@
         "rules": [
           "analyse/dead-code/number-comparison-always-constant"
         ],
-        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 32 others (see the rule's Replaces section). Expanded from %s.always%s.",
+        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 31 others (see the rule's Replaces section). Expanded from %s.always%s.",
         "unsupported": false
       },
       {
@@ -23831,7 +23831,7 @@
         "rules": [
           "analyse/dead-code/number-comparison-always-constant"
         ],
-        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 32 others (see the rule's Replaces section). Expanded from %s.always%s.",
+        "note": "Merged with booleanAnd.alwaysFalse, booleanAnd.alwaysTrue, booleanNot.alwaysFalse and 31 others (see the rule's Replaces section). Expanded from %s.always%s.",
         "unsupported": false
       },
       {
@@ -23849,7 +23849,7 @@
         "tool": "phpstan",
         "url": "https://phpstan.org/error-identifiers/ternary.resultUnused",
         "rules": [
-          "analyse/dead-code/unused-result"
+          "lint/dead-code/no-unused-expression"
         ],
         "note": "Merged with booleanAnd.resultUnused, booleanOr.resultUnused, expr.resultUnused and 3 others (see the rule's Replaces section).",
         "unsupported": false
@@ -24301,7 +24301,7 @@
         "rules": [
           "analyse/phpdoc/invalid-var-tag"
         ],
-        "note": "Merged with varTag.misplaced, varTag.multipleTags, varTag.noVariable and 1 others (see the rule's Replaces section).",
+        "note": "Merged with varTag.misplaced, varTag.multipleTags, varTag.noVariable.",
         "unsupported": false
       },
       {
@@ -24311,7 +24311,7 @@
         "rules": [
           "analyse/phpdoc/invalid-var-tag"
         ],
-        "note": "Merged with varTag.differentVariable, varTag.multipleTags, varTag.noVariable and 1 others (see the rule's Replaces section).",
+        "note": "Merged with varTag.differentVariable, varTag.multipleTags, varTag.noVariable.",
         "unsupported": false
       },
       {
@@ -24321,7 +24321,7 @@
         "rules": [
           "analyse/phpdoc/invalid-var-tag"
         ],
-        "note": "Merged with varTag.differentVariable, varTag.misplaced, varTag.noVariable and 1 others (see the rule's Replaces section).",
+        "note": "Merged with varTag.differentVariable, varTag.misplaced, varTag.noVariable.",
         "unsupported": false
       },
       {
@@ -24341,7 +24341,7 @@
         "rules": [
           "analyse/phpdoc/invalid-var-tag"
         ],
-        "note": "Merged with varTag.differentVariable, varTag.misplaced, varTag.multipleTags and 1 others (see the rule's Replaces section).",
+        "note": "Merged with varTag.differentVariable, varTag.misplaced, varTag.multipleTags.",
         "unsupported": false
       },
       {
@@ -24379,9 +24379,9 @@
         "tool": "phpstan",
         "url": "https://phpstan.org/error-identifiers/varTag.variableNotFound",
         "rules": [
-          "analyse/phpdoc/invalid-var-tag"
+          "lint/dead-code/no-invalid-var-tag"
         ],
-        "note": "Merged with varTag.differentVariable, varTag.misplaced, varTag.multipleTags and 1 others (see the rule's Replaces section).",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -24601,7 +24601,7 @@
         "tool": "larastan",
         "url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md",
         "rules": [
-          "analyse/laravel/no-public-scope-or-accessor"
+          "lint/laravel/prefer-protected-model-methods"
         ],
         "note": "Merged with larastan.noPublicModelScopeMethod. Options: Larastan parameters carry as rule options.",
         "unsupported": false
@@ -24611,7 +24611,7 @@
         "tool": "larastan",
         "url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md",
         "rules": [
-          "analyse/laravel/no-public-scope-or-accessor"
+          "lint/laravel/prefer-protected-model-methods"
         ],
         "note": "Merged with larastan.noPublicModelAccessorMethod. Options: Larastan parameters carry as rule options.",
         "unsupported": false
@@ -24671,7 +24671,7 @@
         "tool": "larastan",
         "url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md",
         "rules": [
-          "analyse/laravel/useless-value-call"
+          "lint/laravel/no-useless-value-call"
         ],
         "note": "Same. Options: Larastan parameters carry as rule options.",
         "unsupported": false
@@ -24681,7 +24681,7 @@
         "tool": "larastan",
         "url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md",
         "rules": [
-          "analyse/laravel/useless-with-call"
+          "lint/laravel/no-useless-with-call"
         ],
         "note": "Same. Options: Larastan parameters carry as rule options.",
         "unsupported": false
@@ -24755,7 +24755,7 @@
         "rules": [
           "lint/complexity/no-redundant-nullsafe"
         ],
-        "note": "Merged with no-redundant-nullsafe. Options: same.",
+        "note": "Merged with no-redundant-nullsafe, RedundantNullsafeOperator. Options: same.",
         "unsupported": false
       },
       {
@@ -25847,7 +25847,7 @@
         "rules": [
           "lint/complexity/no-redundant-nullsafe"
         ],
-        "note": "Merged with Pun/no_redundant_nullsafe. Options: same.",
+        "note": "Merged with Pun/no_redundant_nullsafe, RedundantNullsafeOperator. Options: same.",
         "unsupported": false
       },
       {
@@ -27031,7 +27031,7 @@
         "tool": "mago-analyzer",
         "url": "https://mago.carthage.software/1.57.0/en/tools/analyzer/overview/",
         "rules": [
-          "analyse/arrays/duplicate-array-key"
+          "lint/dead-code/no-duplicate-array-key"
         ],
         "note": "Same.",
         "unsupported": false
@@ -29096,7 +29096,7 @@
         "tool": "mago-analyzer",
         "url": "https://mago.carthage.software/1.57.0/en/tools/analyzer/overview/",
         "rules": [
-          "analyse/casts/useless"
+          "lint/dead-code/no-useless-cast"
         ],
         "note": "Same.",
         "unsupported": false
@@ -29186,9 +29186,9 @@
         "tool": "mago-analyzer",
         "url": "https://mago.carthage.software/1.57.0/en/tools/analyzer/overview/",
         "rules": [
-          "analyse/types/redundant-nullsafe"
+          "lint/complexity/no-redundant-nullsafe"
         ],
-        "note": "Same.",
+        "note": "Merged with Pun/no_redundant_nullsafe, no-redundant-nullsafe.",
         "unsupported": false
       },
       {
@@ -29460,7 +29460,7 @@
         "tool": "mago-analyzer",
         "url": "https://mago.carthage.software/1.57.0/en/tools/analyzer/overview/",
         "rules": [
-          "analyse/dead-code/unreachable-code"
+          "lint/dead-code/no-unreachable-code"
         ],
         "note": "Same.",
         "unsupported": false
@@ -29624,7 +29624,7 @@
         "tool": "mago-analyzer",
         "url": "https://mago.carthage.software/1.57.0/en/tools/analyzer/overview/",
         "rules": [
-          "analyse/dead-code/unused-result"
+          "lint/dead-code/no-unused-expression"
         ],
         "note": "Merged with UnusedMethodCall, UnusedStatement.",
         "unsupported": false
@@ -29634,7 +29634,7 @@
         "tool": "mago-analyzer",
         "url": "https://mago.carthage.software/1.57.0/en/tools/analyzer/overview/",
         "rules": [
-          "analyse/dead-code/unused-private-method"
+          "lint/dead-code/no-unused-private-method"
         ],
         "note": "Same.",
         "unsupported": false
@@ -29644,7 +29644,7 @@
         "tool": "mago-analyzer",
         "url": "https://mago.carthage.software/1.57.0/en/tools/analyzer/overview/",
         "rules": [
-          "analyse/dead-code/unused-result"
+          "lint/dead-code/no-unused-expression"
         ],
         "note": "Merged with UnusedFunctionCall, UnusedStatement.",
         "unsupported": false
@@ -29672,7 +29672,7 @@
         "tool": "mago-analyzer",
         "url": "https://mago.carthage.software/1.57.0/en/tools/analyzer/overview/",
         "rules": [
-          "analyse/dead-code/unused-result"
+          "lint/dead-code/no-unused-expression"
         ],
         "note": "Merged with UnusedFunctionCall, UnusedMethodCall.",
         "unsupported": false

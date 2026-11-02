@@ -246,8 +246,10 @@ fn lists_every_detected_config() {
         (
             " ok pint.json               -> [format] preset empty, 1 rule changed, 1 rule -> [lint]
  - .php-cs-fixer.dist.php  not migrated: pint.json gives [format], as in Pint
- ok phpstan.dist.neon       -> [analyse] preset recommended (level 5), N on, N off
+ ok phpstan.dist.neon       -> [analyse] preset recommended (level 5), N on, N off, 8 rules -> [lint]
  ! rector.php              not read: run `composer install` so Pun can read it with Rector; left untouched
+ ! format/casts/short-scalar   a PHPStan check that is this format rule in Pun; turn it on in [format.rules]; skipped
+ ! format/functions/backtick-to-shell-exec  a PHPStan check that is this format rule in Pun; turn it on in [format.rules]; skipped
  ! format/whitespace/encoding  a PHPStan check that is this format rule in Pun; turn it on in [format.rules]; skipped
  ! mago.toml                   Mago config: not supported by Pun yet; left untouched
    Want them? Send a PR to https://github.com/punphp/pun
@@ -260,7 +262,18 @@ fn lists_every_detected_config() {
     let toml = read(&d, "pun.toml");
     assert!(
         toml.starts_with(TOML)
-            && toml[TOML.len()..].starts_with("\n[analyse]\npreset = \"recommended\"\n"),
+            // PHPStan's level-5 checks that a lint rule fixes are those lint rules, not analyse rules.
+            && toml[TOML.len()..].starts_with(concat!(
+                "\"complexity/no-redundant-nullsafe\" = \"error\"\n",
+                "\"dead-code/no-duplicate-array-key\" = \"error\"\n",
+                "\"dead-code/no-unreachable-code\" = \"error\"\n",
+                "\"dead-code/no-unused-constructor-param\" = \"error\"\n",
+                "\"dead-code/no-unused-expression\" = \"error\"\n",
+                "\"dead-code/no-unused-private-constant\" = \"error\"\n",
+                "\"dead-code/no-unused-private-method\" = \"error\"\n",
+                "\"functions/no-unused-closure-use\" = \"error\"\n",
+                "\n[analyse]\npreset = \"recommended\"\n"
+            )),
         "{toml}"
     );
     for (f, c) in files {
@@ -364,7 +377,7 @@ fn starter_beside_phpstan() {
     assert_eq!(
         (counts(&out).as_str(), code),
         (
-            " ok phpstan.neon.dist  -> [analyse] preset recommended (level 5), N on, N off\n ok Wrote starter pun.toml (preset laravel)\n",
+            " ok phpstan.neon.dist  -> [analyse] preset recommended (level 5), N on, N off, 8 rules -> [lint]\n ! format/functions/backtick-to-shell-exec  a PHPStan check that is this format rule in Pun; turn it on in [format.rules]; skipped\n   Want them? Send a PR to https://github.com/punphp/pun\n ok Wrote starter pun.toml (preset laravel)\n",
             Some(0)
         )
     );
@@ -389,10 +402,10 @@ fn agent_mode() {
     let out = agent(&["migrate", "--dry-run"]);
     let (head, rest) = out.split_once('\n').unwrap();
     assert!(
-        head.starts_with("pun migrate: dry-run, pun.toml to write (preset empty, 1 format rule, 1 lint rule), ignore comments to rewrite in 0 files (from pint.json, "),
+        head.starts_with("pun migrate: dry-run, pun.toml to write (preset empty, 1 format rule, 9 lint rules), ignore comments to rewrite in 0 files (from pint.json, "),
         "{head}"
     );
-    assert!(rest.starts_with("pint.json migrate\nphpstan.neon migrate\nrector.php not-read not read: run `composer install` so Pun can read it with Rector; left untouched\nphpstan.neon unsupported format/whitespace/encoding: a PHPStan check that is this format rule in Pun; turn it on in [format.rules]\napp/Unknown.php ignore-not-migrated `@php-cs-fixer-ignore Acme/rule` left as is (no Pun rule for it)\nsend a PR for what is skipped: https://github.com/punphp/pun\n--- pun.toml\n"), "{rest}");
+    assert!(rest.starts_with("pint.json migrate\nphpstan.neon migrate\nrector.php not-read not read: run `composer install` so Pun can read it with Rector; left untouched\nphpstan.neon unsupported format/casts/short-scalar: a PHPStan check that is this format rule in Pun; turn it on in [format.rules]\nphpstan.neon unsupported format/functions/backtick-to-shell-exec: a PHPStan check that is this format rule in Pun; turn it on in [format.rules]\nphpstan.neon unsupported format/whitespace/encoding: a PHPStan check that is this format rule in Pun; turn it on in [format.rules]\napp/Unknown.php ignore-not-migrated `@php-cs-fixer-ignore Acme/rule` left as is (no Pun rule for it)\nsend a PR for what is skipped: https://github.com/punphp/pun\n--- pun.toml\n"), "{rest}");
     let out = agent(&["migrate", "--from=rector"]);
     assert!(
         out.starts_with(
@@ -494,7 +507,7 @@ fn rewrites_phpstan_ignores() {
         "{out}"
     );
     assert!(
-        counts(&out).contains(" ok ignore comments  -> @pun-ignore in 1 file\n ! app/A.php  `@phpstan-ignore acme.rule` left as is (`acme.rule` is not a PHPStan identifier Pun knows); skipped\n ! app/A.php  `@phpstan-ignore-next-line` left as is (it names no identifier, and a Pun ignore names its rules); skipped\n"),
+        counts(&out).contains(" ok ignore comments  -> @pun-ignore in 1 file\n ! format/functions/backtick-to-shell-exec  a PHPStan check that is this format rule in Pun; turn it on in [format.rules]; skipped\n ! app/A.php  `@phpstan-ignore acme.rule` left as is (`acme.rule` is not a PHPStan identifier Pun knows); skipped\n ! app/A.php  `@phpstan-ignore-next-line` left as is (it names no identifier, and a Pun ignore names its rules); skipped\n"),
         "{out}"
     );
     // A dry run writes nothing.

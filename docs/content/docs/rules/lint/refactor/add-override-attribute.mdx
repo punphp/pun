@@ -12,6 +12,7 @@ Not in any preset or set. Enable it by name or group. Fix: unsafe (can change be
 ## Replaces
 
 - [`AddOverrideAttributeToOverriddenProperties`](https://getrector.com/rule-detail/add-override-attribute-to-overridden-properties-rector) (rector).
+- [`property.missingOverride`](https://phpstan.org/error-identifiers/property.missingOverride) (phpstan).
 
 ## Configuration
 
@@ -31,12 +32,5 @@ Add #[Override] to properties that override a parent class's property (PHP 8.5).
 ## Options
 
 No configurable options.
-
-## Linked rules
-
-
-- Fixes reports from [`analyse/classes/incompatible-override`](/docs/rules/analyse/classes/incompatible-override).
-
-- Fixes reports from [`analyse/classes/incompatible-property-override`](/docs/rules/analyse/classes/incompatible-property-override).
 
 [Group reference](/docs/rules/lint/refactor) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

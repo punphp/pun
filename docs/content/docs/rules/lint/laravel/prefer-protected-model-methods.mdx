@@ -7,11 +7,14 @@ pagination: false
 
 <RuleId id="lint/laravel/prefer-protected-model-methods" />
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Runs when laravel is installed.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Runs when laravel is installed. Additional upstream gates: `checkModelMethodVisibility (default false)`.
 
 ## Replaces
 
 - [`MakeModelAttributesAndScopesProtected`](https://getrector.com/rule-detail/make-model-attributes-and-scopes-protected-rector) (rector-laravel).
+- [`NoPublicModelScopeAndAccessorRule`](https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md#nopublicmodelscopeandaccessorrule) (phpstan-classes).
+- [`larastan.noPublicModelAccessorMethod`](https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md) (larastan).
+- [`larastan.noPublicModelScopeMethod`](https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md) (larastan).
 
 ## Configuration
 
@@ -31,10 +34,5 @@ Makes Model attributes and scopes protected
 ## Options
 
 No configurable options.
-
-## Linked rules
-
-
-- Fixes reports from [`analyse/laravel/no-public-scope-or-accessor`](/docs/rules/analyse/laravel/no-public-scope-or-accessor).
 
 [Group reference](/docs/rules/lint/laravel) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

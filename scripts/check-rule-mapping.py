@@ -303,14 +303,22 @@ def check_upstream(data, inv):
             err(f"{cls}: needs exactly one [upstream.phpstan-classes] entry, has {len(by_class[cls])}")
 
     # One primary source per lint and analyse rule.
-    primary, mago = defaultdict(list), defaultdict(list)
+    # A PHPStan class mapped to a lint rule is a report its fix replaces (analyse keeps only what lint and format
+    # cannot fix); it is the lint rule's primary source only when the rule has no other.
+    primary, mago, reported = defaultdict(list), defaultdict(list), defaultdict(list)
     for tool, entries in up.items():
         for key, u in entries.items():
             p = u.get("pun")
-            if p and tool in PRIMARY:
+            if p and tool == "phpstan-classes" and p.startswith("lint/"):
+                reported[p].append(f"{tool}:{key}")
+            elif p and tool in PRIMARY:
                 primary[p].append(f"{tool}:{key}")
             elif p and tool in MAGO:
                 mago[p].append(f"{tool}:{key}")
+    lint = data["rules"].get("lint", {})
+    for p, sources in reported.items():
+        if not primary[p] and lint.get(p.removeprefix("lint/"), {}).get("origin") != "mago":
+            primary[p] = sources
     for c in ("lint", "analyse"):
         for key, r in data["rules"].get(c, {}).items():
             rid = f"{c}/{key}"
@@ -343,7 +351,7 @@ def check_upstream(data, inv):
             err(f"identifier {i}: emitted by {sorted(rules)[0]} but has no [upstream.phpstan*] entry")
         elif "pun" in family.get(i, {}):
             p = family[i]["pun"]
-            if p not in rules and not p.startswith("format/"):
+            if p not in rules and not p.startswith(("format/", "lint/")):
                 err(f"identifier {i}: maps to {p}, which no class that emits it maps to")
     return errors
 

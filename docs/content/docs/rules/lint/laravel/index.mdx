@@ -7,7 +7,7 @@ pagination: false
 
 Laravel (ecosystem: on when composer.lock has laravel/framework).
 
-Across commands: format: 1, lint: 89, analyse: 18.
+Across commands: format: 1, lint: 89, analyse: 15.
 
 <CardGroup cols={2}>
 <Card title="lint/laravel/add-factory-extends-phpdoc">
@@ -538,7 +538,7 @@ Not in any preset or set. Enable it by name or group. Fix: unsafe (can change be
 
 Makes Model attributes and scopes protected
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Runs when laravel is installed.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Runs when laravel is installed. Additional upstream gates: `checkModelMethodVisibility (default false)`.
 
 </Card>
 <Card title="lint/laravel/prefer-query-builder-call">

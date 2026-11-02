@@ -957,7 +957,6 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/require-strict-param" = { fix = "mixed", intent = "suspicious", sets = ["coding-style"], ported = true, status = "decided", summary = "Functions should be used with `$strict` param set to `true`.", note = "fix is safe where the haystack type is known (Rector StrictInArray/StrictArraySearch), unsafe otherwise (CS-Fixer strict_param)" }
 
 [rules.analyse]
-"arrays/duplicate-array-key" = { preset = "basic", fixed_by = ["lint/dead-code/no-duplicate-array-key"], ported = true, status = "decided" }
 "arrays/invalid-array-key" = { preset = "essential", ported = true, status = "decided" }
 "arrays/invalid-destructuring" = { preset = "essential", ported = true, status = "decided" }
 "arrays/read-without-offset" = { preset = "basic", ported = true, status = "decided" }
@@ -977,7 +976,6 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "attributes/trait-as-attribute" = { preset = "basic", ported = true, status = "decided" }
 "casing/inherited-method-case" = { preset = "basic", ported = true, status = "decided" }
 "casts/unset-not-supported" = { preset = "basic", ported = true, status = "decided" }
-"casts/useless" = { preset = "recommended", fixed_by = ["lint/dead-code/no-useless-cast"], ported = true, status = "decided" }
 "classes/abstract-method-in-concrete-class" = { preset = "basic", ported = true, status = "decided" }
 "classes/abstract-private-method" = { preset = "basic", ported = true, status = "decided" }
 "classes/callable-property-type" = { preset = "basic", ported = true, status = "decided" }
@@ -999,8 +997,8 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "classes/inaccessible-method" = { preset = "essential", ported = true, status = "decided" }
 "classes/inaccessible-property" = { preset = "essential", ported = true, status = "decided" }
 "classes/incompatible-constant-override" = { preset = "basic", ported = true, status = "decided", summary = "Reports overrides of final constants, reduced constant visibility, and incompatible native or PHPDoc constant types. Native and PHPDoc covariance checks run with the essential preset and stricter presets." }
-"classes/incompatible-override" = { preset = "basic", fixed_by = ["lint/refactor/add-override-attribute"], ported = true, status = "decided" }
-"classes/incompatible-property-override" = { preset = "basic", fixed_by = ["lint/refactor/add-override-attribute"], ported = true, status = "decided" }
+"classes/incompatible-override" = { preset = "basic", ported = true, status = "decided" }
+"classes/incompatible-property-override" = { preset = "basic", ported = true, status = "decided" }
 "classes/inconsistent-constructor" = { preset = "basic", ported = true, status = "decided" }
 "classes/internal-constant-access" = { preset = "basic", ported = true, status = "decided" }
 "classes/internal-method-call" = { preset = "basic", ported = true, status = "decided" }
@@ -1062,7 +1060,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/finally-overrides-exit" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/if-always-constant" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/impossible-in-array" = { preset = "recommended", ported = true, status = "decided" }
-"dead-code/impossible-instanceof" = { preset = "recommended", ported = true, fixed_by = ["lint/dead-code/no-always-true-instanceof"], status = "decided" }
+"dead-code/impossible-instanceof" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/impossible-method-type-check" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/impossible-static-type-check" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/impossible-type-check" = { preset = "recommended", ported = true, status = "decided" }
@@ -1078,20 +1076,13 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/switch-always-constant" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/ternary-always-constant" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/trait-condition-always-constant" = { preset = "basic", ported = true, status = "decided" }
-"dead-code/unreachable-code" = { preset = "recommended", fixed_by = ["lint/dead-code/no-unreachable-code"], ported = true, status = "decided" }
 "dead-code/unused-argument" = { preset = "basic", ported = true, status = "decided" }
-"dead-code/unused-closure-use" = { preset = "basic", ported = true, status = "decided" }
-"dead-code/unused-constructor-parameter" = { preset = "basic", fixed_by = ["lint/dead-code/no-unused-constructor-param"], ported = true, status = "decided" }
 "dead-code/unused-function-parameter" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/unused-function-result" = { preset = "recommended", ported = true, status = "decided" }
-"dead-code/unused-label" = { preset = "recommended", fixed_by = ["lint/complexity/no-unused-label"], ported = true, status = "decided" }
 "dead-code/unused-method-parameter" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/unused-method-result" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/unused-new-result" = { preset = "recommended", ported = true, status = "decided" }
-"dead-code/unused-private-constant" = { preset = "recommended", fixed_by = ["lint/dead-code/no-unused-private-constant"], ported = true, status = "decided" }
-"dead-code/unused-private-method" = { preset = "recommended", fixed_by = ["lint/dead-code/no-unused-private-method"], ported = true, status = "decided" }
-"dead-code/unused-private-property" = { preset = "recommended", fixed_by = ["lint/dead-code/no-unused-private-property"], ported = true, status = "decided" }
-"dead-code/unused-result" = { preset = "recommended", fixed_by = ["lint/dead-code/no-unused-expression"], ported = true, status = "decided" }
+"dead-code/unused-private-property" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/unused-static-method-result" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/unused-trait" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/unused-variable" = { preset = "recommended", ported = true, status = "decided" }
@@ -1104,8 +1095,6 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "debug/dump-phpdoc-type" = { preset = "basic", ported = true, ignorable = false, summary = "Reports each argument's inferred type as PHPDoc. Ignore comments and baselines cannot suppress these diagnostics.", status = "decided" }
 "debug/dump-scope" = { preset = "basic", status = "decided" }
 "debug/dump-type" = { preset = "basic", ported = true, ignorable = false, summary = "Reports each argument's inferred type in PHPStan's precise notation. Ignore comments and baselines cannot suppress these diagnostics.", status = "decided" }
-"deprecated/backtick" = { preset = "basic", fixed_by = ["format/functions/backtick-to-shell-exec"], ported = true, status = "decided" }
-"deprecated/cast" = { preset = "basic", fixed_by = ["format/casts/short-scalar"], ported = true, status = "decided" }
 "deprecated/class" = { preset = "recommended", ported = true, status = "decided" }
 "deprecated/class-constant" = { preset = "recommended", ported = true, status = "decided" }
 "deprecated/constant" = { preset = "recommended", ported = true, status = "decided" }
@@ -1138,7 +1127,6 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "laravel/no-auth-helper-in-request-scope" = { preset = "strict", ported = true, status = "decided" }
 "laravel/no-env-outside-config" = { preset = "recommended", ported = true, status = "decided" }
 "laravel/no-model-make" = { preset = "recommended", ported = true, status = "decided" }
-"laravel/no-public-scope-or-accessor" = { preset = "max", fixed_by = ["lint/laravel/prefer-protected-model-methods"], ported = true, status = "decided" }
 "laravel/octane-compatibility" = { preset = "strict", ported = true, status = "decided" }
 "laravel/redundant-collection-call" = { preset = "recommended", ported = true, status = "decided" }
 "laravel/redundant-to-array-call" = { preset = "recommended", ported = true, status = "decided" }
@@ -1147,8 +1135,6 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "laravel/undefined-relation" = { preset = "essential", ported = true, status = "decided" }
 "laravel/unexpected-dispatch-arguments" = { preset = "essential", ported = true, status = "decided" }
 "laravel/unused-view" = { preset = "recommended", ported = true, status = "decided" }
-"laravel/useless-value-call" = { preset = "recommended", fixed_by = ["lint/laravel/no-useless-value-call"], ported = true, status = "decided" }
-"laravel/useless-with-call" = { preset = "recommended", fixed_by = ["lint/laravel/no-useless-with-call"], ported = true, status = "decided" }
 "operators/non-boolean-and-operand" = { preset = "strict", ported = true, status = "decided" }
 "operators/non-boolean-not-operand" = { preset = "strict", ported = true, status = "decided" }
 "operators/non-boolean-or-operand" = { preset = "strict", ported = true, status = "decided" }
@@ -1189,7 +1175,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpdoc/invalid-trait-use-property-tag" = { preset = "essential", ported = true, status = "decided" }
 "phpdoc/invalid-trait-use-type-alias" = { preset = "basic", ported = true, status = "decided" }
 "phpdoc/invalid-type-alias" = { preset = "basic", ported = true, status = "decided" }
-"phpdoc/invalid-var-tag" = { preset = "essential", fixed_by = ["lint/dead-code/no-invalid-var-tag"], ported = true, status = "decided" }
+"phpdoc/invalid-var-tag" = { preset = "essential", ported = true, status = "decided" }
 "phpdoc/invalid-var-tag-type" = { preset = "essential", ported = true, status = "decided" }
 "phpdoc/misplaced-require-implements" = { preset = "essential", ported = true, status = "decided" }
 "phpdoc/property-type-mismatch" = { preset = "essential", ported = true, status = "decided" }
@@ -1219,7 +1205,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/closure-param-default" = { preset = "essential", ported = true, status = "decided" }
 "types/closure-return" = { preset = "essential", ported = true, status = "decided" }
 "types/constant-value" = { preset = "essential", ported = true, status = "decided" }
-"types/dead-catch" = { preset = "recommended", ported = true, fixed_by = ["lint/dead-code/no-dead-catch"], status = "decided" }
+"types/dead-catch" = { preset = "recommended", ported = true, status = "decided" }
 "types/define-value" = { preset = "essential", ported = true, status = "decided" }
 "types/echo-non-string" = { preset = "essential", ported = true, status = "decided" }
 "types/enum-template-not-allowed" = { preset = "essential", ported = true, status = "decided" }
@@ -1236,7 +1222,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/invalid-cast" = { preset = "essential", ported = true, status = "decided" }
 "types/invalid-class-generics" = { preset = "essential", ported = true, status = "decided" }
 "types/invalid-class-template" = { preset = "essential", ported = true, status = "decided" }
-"types/invalid-closure-signature" = { preset = "basic", fixed_by = ["lint/functions/no-required-after-optional"], ported = true, status = "decided" }
+"types/invalid-closure-signature" = { preset = "basic", ported = true, status = "decided" }
 "types/invalid-comparison" = { preset = "essential", ported = true, status = "decided" }
 "types/invalid-enum-generics" = { preset = "essential", ported = true, status = "decided" }
 "types/invalid-function-signature" = { preset = "basic", ported = true, status = "decided" }
@@ -1294,8 +1280,6 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/readonly-property-by-ref" = { preset = "essential", ported = true, status = "decided" }
 "types/readonly-property-write" = { preset = "essential", ported = true, status = "decided" }
 "types/redundant-array-values" = { preset = "recommended", ported = true, status = "decided" }
-"types/redundant-nullsafe" = { preset = "recommended", ported = true, fixed_by = ["lint/complexity/no-redundant-nullsafe"], status = "decided" }
-"types/redundant-nullsafe-method-call" = { preset = "recommended", ported = true, status = "decided" }
 "types/renamed-parameter-in-subtype" = { preset = "basic", ported = true, status = "decided" }
 "types/return" = { preset = "essential", ported = true, status = "decided" }
 "types/return-by-ref-finally" = { preset = "essential", status = "decided" }
@@ -1307,7 +1291,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/throws-void-function" = { preset = "essential", ported = true, status = "decided" }
 "types/throws-void-hook" = { preset = "essential", ported = true, status = "decided" }
 "types/throws-void-method" = { preset = "essential", ported = true, status = "decided" }
-"types/too-wide-arrow-function-return" = { preset = "recommended", ported = true, fixed_by = ["lint/dead-code/no-unused-return-type"], status = "decided" }
+"types/too-wide-arrow-function-return" = { preset = "recommended", ported = true, status = "decided" }
 "types/too-wide-closure-return" = { preset = "recommended", ported = true, status = "decided" }
 "types/too-wide-function-param-out" = { preset = "recommended", ported = true, status = "decided" }
 "types/too-wide-function-return" = { preset = "recommended", ported = true, status = "decided" }
@@ -3296,7 +3280,7 @@ ArrowFunctionAttributesRule = { class = "PHPStan\\Rules\\Functions\\ArrowFunctio
 ArrowFunctionReturnNullsafeByRefRule = { class = "PHPStan\\Rules\\Functions\\ArrowFunctionReturnNullsafeByRefRule", pun = "analyse/types/arrow-function-nullsafe-by-ref", package = "phpstan", identifiers = ["nullsafe.byRef"], level = 0, status = "decided" }
 ArrowFunctionReturnTypeRule = { class = "PHPStan\\Rules\\Functions\\ArrowFunctionReturnTypeRule", pun = "analyse/types/arrow-function-return", package = "phpstan", identifiers = ["class.notFound", "return.empty", "return.never", "return.type", "return.void"], level = 3, status = "decided" }
 AssignToByRefExprFromForeachRule = { class = "PHPStan\\Rules\\Variables\\AssignToByRefExprFromForeachRule", pun = "analyse/types/by-ref-foreach-on-expression", package = "phpstan", identifiers = ["assign.byRefForeachExpr"], level = 1, gated_by = "bleedingEdge (featureToggles.assignToByRefForeachExpr)", status = "decided" }
-BacktickRule = { class = "PHPStan\\Rules\\Operators\\BacktickRule", pun = "analyse/deprecated/backtick", package = "phpstan", identifiers = ["backtick.deprecated"], level = 0, status = "decided" }
+BacktickRule = { class = "PHPStan\\Rules\\Operators\\BacktickRule", pun = "format/functions/backtick-to-shell-exec", package = "phpstan", identifiers = ["backtick.deprecated"], level = 0, status = "decided" }
 BooleanAndConstantConditionRule = { class = "PHPStan\\Rules\\Comparison\\BooleanAndConstantConditionRule", pun = "analyse/dead-code/boolean-and-always-constant", package = "phpstan", identifiers = ["booleanAnd.alwaysFalse", "booleanAnd.alwaysTrue", "booleanAnd.leftAlwaysFalse", "booleanAnd.leftAlwaysTrue", "booleanAnd.rightAlwaysFalse", "booleanAnd.rightAlwaysTrue", "logicalAnd.alwaysFalse", "logicalAnd.alwaysTrue", "logicalAnd.leftAlwaysFalse", "logicalAnd.leftAlwaysTrue", "logicalAnd.rightAlwaysFalse", "logicalAnd.rightAlwaysTrue"], level = 4, status = "decided" }
 BooleanInBooleanAndRule = { class = "PHPStan\\Rules\\BooleansInConditions\\BooleanInBooleanAndRule", pun = "analyse/operators/non-boolean-and-operand", package = "phpstan-strict-rules", identifiers = ["booleanAnd.leftNotBoolean", "booleanAnd.rightNotBoolean", "logicalAnd.leftNotBoolean", "logicalAnd.rightNotBoolean"], gated_by = "strictRules.booleansInConditions", status = "decided" }
 BooleanInBooleanNotRule = { class = "PHPStan\\Rules\\BooleansInConditions\\BooleanInBooleanNotRule", pun = "analyse/operators/non-boolean-not-operand", package = "phpstan-strict-rules", identifiers = ["booleanNot.exprNotBoolean"], gated_by = "strictRules.booleansInConditions", status = "decided" }
@@ -3360,7 +3344,7 @@ DefaultValueTypesAssignedToPropertiesRule = { class = "PHPStan\\Rules\\Propertie
 DeferrableServiceProviderMissingProvidesRule = { class = "Larastan\\Larastan\\Rules\\DeferrableServiceProviderMissingProvidesRule", pun = "analyse/laravel/deferrable-provider-missing-provides", package = "larastan", identifiers = ["larastan.deferrableServiceProvider.missingProvides"], ported = true, status = "decided" }
 DefineParametersRule = { class = "PHPStan\\Rules\\Functions\\DefineParametersRule", pun = "analyse/dead-code/unused-argument", package = "phpstan", identifiers = ["argument.unused"], level = 0, status = "decided" }
 DefinedVariableRule = { class = "PHPStan\\Rules\\Variables\\DefinedVariableRule", pun = "analyse/undefined/variable", package = "phpstan", identifiers = ["variable.nameNotString", "variable.undefined"], level = 0, status = "decided" }
-DeprecatedCastRule = { class = "PHPStan\\Rules\\Cast\\DeprecatedCastRule", pun = "analyse/deprecated/cast", package = "phpstan", identifiers = ["cast.deprecated"], level = 0, status = "decided" }
+DeprecatedCastRule = { class = "PHPStan\\Rules\\Cast\\DeprecatedCastRule", pun = "format/casts/short-scalar", package = "phpstan", identifiers = ["cast.deprecated"], level = 0, status = "decided" }
 DisallowedBacktickRule = { class = "PHPStan\\Rules\\DisallowedConstructs\\DisallowedBacktickRule", pun = "format/functions/backtick-to-shell-exec", package = "phpstan-strict-rules", identifiers = ["backtick.notAllowed"], gated_by = "strictRules.disallowedBacktick", status = "decided" }
 DisallowedEmptyRule = { class = "PHPStan\\Rules\\DisallowedConstructs\\DisallowedEmptyRule", pun = "lint/style/no-empty", package = "phpstan-strict-rules", identifiers = ["empty.notAllowed"], gated_by = "strictRules.disallowedEmpty", status = "decided" }
 DisallowedImplicitArrayCreationRule = { class = "PHPStan\\Rules\\DisallowedConstructs\\DisallowedImplicitArrayCreationRule", pun = "lint/arrays/no-implicit-array-creation", package = "phpstan-strict-rules", identifiers = ["variable.implicitArray"], gated_by = "strictRules.disallowedImplicitArrayCreation", status = "decided" }
@@ -3373,7 +3357,7 @@ DumpTypeRule = { class = "PHPStan\\Rules\\Debug\\DumpTypeRule", pun = "analyse/d
 DuplicateClassDeclarationRule = { class = "PHPStan\\Rules\\Classes\\DuplicateClassDeclarationRule", unsupported = "stub-validator only (#[ValidatesStubFiles]); not run during analysis", package = "phpstan", identifiers = ["class.duplicate", "enum.duplicate", "interface.duplicate", "trait.duplicate"], status = "decided" }
 DuplicateDeclarationRule = { class = "PHPStan\\Rules\\Classes\\DuplicateDeclarationRule", pun = "analyse/classes/duplicate-declaration", package = "phpstan", identifiers = ["class.duplicateConstant", "class.duplicateEnumCase", "class.duplicateMethod", "class.duplicateProperty", "enum.duplicateConstant", "enum.duplicateEnumCase", "enum.duplicateMethod", "enum.duplicateProperty", "interface.duplicateConstant", "interface.duplicateEnumCase", "interface.duplicateMethod", "interface.duplicateProperty", "trait.duplicateConstant", "trait.duplicateEnumCase", "trait.duplicateMethod", "trait.duplicateProperty"], level = 0, status = "decided" }
 DuplicateFunctionDeclarationRule = { class = "PHPStan\\Rules\\Functions\\DuplicateFunctionDeclarationRule", unsupported = "stub-validator only (#[ValidatesStubFiles]); not run during analysis", package = "phpstan", identifiers = ["function.duplicate"], status = "decided" }
-DuplicateKeysInLiteralArraysRule = { class = "PHPStan\\Rules\\Arrays\\DuplicateKeysInLiteralArraysRule", pun = "analyse/arrays/duplicate-array-key", package = "phpstan", identifiers = ["array.duplicateKey"], level = 0, status = "decided" }
+DuplicateKeysInLiteralArraysRule = { class = "PHPStan\\Rules\\Arrays\\DuplicateKeysInLiteralArraysRule", pun = "lint/dead-code/no-duplicate-array-key", package = "phpstan", identifiers = ["array.duplicateKey"], level = 0, status = "decided" }
 DuplicateTraitDeclarationRule = { class = "PHPStan\\Rules\\Classes\\DuplicateTraitDeclarationRule", pun = "analyse/classes/duplicate-trait-member", package = "phpstan", identifiers = ["class.duplicateConstant", "class.duplicateEnumCase", "class.duplicateMethod", "class.duplicateProperty", "enum.duplicateConstant", "enum.duplicateEnumCase", "enum.duplicateMethod", "enum.duplicateProperty", "interface.duplicateConstant", "interface.duplicateEnumCase", "interface.duplicateMethod", "interface.duplicateProperty", "trait.duplicateConstant", "trait.duplicateEnumCase", "trait.duplicateMethod", "trait.duplicateProperty"], level = 0, status = "decided" }
 DynamicCallOnStaticMethodsCallableRule = { class = "PHPStan\\Rules\\StrictCalls\\DynamicCallOnStaticMethodsCallableRule", pun = "analyse/classes/dynamic-static-callable", package = "phpstan-strict-rules", identifiers = ["staticMethod.dynamicCall"], gated_by = "strictRules.dynamicCallOnStaticMethod", status = "decided" }
 DynamicCallOnStaticMethodsRule = { class = "PHPStan\\Rules\\StrictCalls\\DynamicCallOnStaticMethodsRule", pun = "analyse/classes/dynamic-static-call", package = "phpstan-strict-rules", identifiers = ["staticMethod.dynamicCall"], gated_by = "strictRules.dynamicCallOnStaticMethod", status = "decided" }
@@ -3519,19 +3503,19 @@ NoEnvCallsOutsideOfConfigRule = { class = "Larastan\\Larastan\\Rules\\NoEnvCalls
 NoMissingTranslationsRule = { class = "Larastan\\Larastan\\Rules\\NoMissingTranslationsRule", pun = "analyse/laravel/missing-translation", package = "larastan", identifiers = ["larastan.missingTranslations"], gated_by = "checkMissingTranslations (default false)", ported = true, status = "decided" }
 NoModelMakeRule = { class = "Larastan\\Larastan\\Rules\\NoModelMakeRule", pun = "analyse/laravel/no-model-make", package = "larastan", identifiers = ["larastan.noModelMake"], gated_by = "noModelMake (default true)", ported = true, status = "decided" }
 NoPhpCodeRule = { class = "PHPStan\\Rules\\Playground\\NoPhpCodeRule", unsupported = "playground-only (phpstan.org playground); registered by no config", package = "phpstan", identifiers = ["phpstanPlayground.noPhp"], status = "decided" }
-NoPublicModelScopeAndAccessorRule = { class = "Larastan\\Larastan\\Rules\\NoPublicModelScopeAndAccessorRule", pun = "analyse/laravel/no-public-scope-or-accessor", package = "larastan", identifiers = ["larastan.noPublicModelScopeMethod", "larastan.noPublicModelAccessorMethod"], gated_by = "checkModelMethodVisibility (default false)", ported = true, status = "decided" }
+NoPublicModelScopeAndAccessorRule = { class = "Larastan\\Larastan\\Rules\\NoPublicModelScopeAndAccessorRule", pun = "lint/laravel/prefer-protected-model-methods", package = "larastan", identifiers = ["larastan.noPublicModelScopeMethod", "larastan.noPublicModelAccessorMethod"], gated_by = "checkModelMethodVisibility (default false)", ported = true, status = "decided" }
 NoUnnecessaryCollectionCallRule = { class = "Larastan\\Larastan\\Rules\\NoUnnecessaryCollectionCallRule", pun = "analyse/laravel/redundant-collection-call", package = "larastan", identifiers = ["larastan.noUnnecessaryCollectionCall"], gated_by = "noUnnecessaryCollectionCall (default true; noUnnecessaryCollectionCallOnly/Except)", ported = true, status = "decided" }
 NoUnnecessaryEnumerableToArrayCallsRule = { class = "Larastan\\Larastan\\Rules\\NoUnnecessaryEnumerableToArrayCallsRule", pun = "analyse/laravel/redundant-to-array-call", package = "larastan", identifiers = ["larastan.unnecessaryEnumerableToArrayCall"], gated_by = "noUnnecessaryEnumerableToArrayCalls (default false)", ported = true, status = "decided" }
-NoUselessValueFunctionCallsRule = { class = "Larastan\\Larastan\\Rules\\UselessConstructs\\NoUselessValueFunctionCallsRule", pun = "analyse/laravel/useless-value-call", package = "larastan", identifiers = ["larastan.uselessConstructs.value"], ported = true, status = "decided" }
-NoUselessWithFunctionCallsRule = { class = "Larastan\\Larastan\\Rules\\UselessConstructs\\NoUselessWithFunctionCallsRule", pun = "analyse/laravel/useless-with-call", package = "larastan", identifiers = ["larastan.uselessConstructs.with"], ported = true, status = "decided" }
+NoUselessValueFunctionCallsRule = { class = "Larastan\\Larastan\\Rules\\UselessConstructs\\NoUselessValueFunctionCallsRule", pun = "lint/laravel/no-useless-value-call", package = "larastan", identifiers = ["larastan.uselessConstructs.value"], ported = true, status = "decided" }
+NoUselessWithFunctionCallsRule = { class = "Larastan\\Larastan\\Rules\\UselessConstructs\\NoUselessWithFunctionCallsRule", pun = "lint/laravel/no-useless-with-call", package = "larastan", identifiers = ["larastan.uselessConstructs.with"], ported = true, status = "decided" }
 NodeConnectingVisitorAttributesRule = { class = "PHPStan\\Rules\\Api\\NodeConnectingVisitorAttributesRule", unsupported = "PHPStan extension-API checks (phpstanApi.*): out of scope, Pun has no PHP extension API", package = "phpstan", identifiers = ["phpParser.nodeConnectingAttribute"], level = 0, status = "decided" }
 NonClassAttributeClassRule = { class = "PHPStan\\Rules\\Classes\\NonClassAttributeClassRule", pun = "analyse/attributes/invalid", package = "phpstan", identifiers = ["attribute.abstract", "attribute.class", "attribute.constructorNotPublic", "attribute.enum", "attribute.interface", "attribute.trait"], level = 0, status = "decided" }
 NoncapturingCatchRule = { class = "PHPStan\\Rules\\Exceptions\\NoncapturingCatchRule", pun = "analyse/statements/non-capturing-catch-not-supported", package = "phpstan", identifiers = ["catch.nonCapturingNotSupported"], level = 0, status = "decided" }
 NonexistentOffsetInArrayDimFetchRule = { class = "PHPStan\\Rules\\Arrays\\NonexistentOffsetInArrayDimFetchRule", pun = "analyse/undefined/offset", package = "phpstan", identifiers = ["class.notFound", "offsetAccess.nonOffsetAccessible", "offsetAccess.notFound"], level = 3, status = "decided" }
-NoopRule = { class = "PHPStan\\Rules\\DeadCode\\NoopRule", pun = "analyse/dead-code/unused-result", package = "phpstan", identifiers = ["booleanAnd.resultUnused", "booleanOr.resultUnused", "expr.resultUnused", "logicalAnd.resultUnused", "logicalOr.resultUnused", "logicalXor.resultUnused", "ternary.resultUnused"], level = 4, status = "decided" }
+NoopRule = { class = "PHPStan\\Rules\\DeadCode\\NoopRule", pun = "lint/dead-code/no-unused-expression", package = "phpstan", identifiers = ["booleanAnd.resultUnused", "booleanOr.resultUnused", "expr.resultUnused", "logicalAnd.resultUnused", "logicalOr.resultUnused", "logicalXor.resultUnused", "ternary.resultUnused"], level = 4, status = "decided" }
 NullCoalesceRule = { class = "PHPStan\\Rules\\Variables\\NullCoalesceRule", pun = "analyse/dead-code/redundant-null-coalesce", package = "phpstan", identifiers = ["empty.expr", "empty.initializedProperty", "empty.offset", "empty.property", "empty.variable", "isset.expr", "isset.initializedProperty", "isset.offset", "isset.property", "isset.variable", "nullCoalesce.expr", "nullCoalesce.initializedProperty", "nullCoalesce.offset", "nullCoalesce.property", "nullCoalesce.unnecessary", "nullCoalesce.variable", "nullsafe.neverNull"], level = 1, status = "decided" }
-NullsafeMethodCallRule = { class = "PHPStan\\Rules\\Methods\\NullsafeMethodCallRule", pun = "analyse/types/redundant-nullsafe-method-call", package = "phpstan", identifiers = ["nullsafe.neverNull"], level = 4, status = "decided" }
-NullsafePropertyFetchRule = { class = "PHPStan\\Rules\\Properties\\NullsafePropertyFetchRule", pun = "analyse/types/redundant-nullsafe", package = "phpstan", identifiers = ["nullsafe.neverNull"], level = 4, status = "decided" }
+NullsafeMethodCallRule = { class = "PHPStan\\Rules\\Methods\\NullsafeMethodCallRule", pun = "lint/complexity/no-redundant-nullsafe", package = "phpstan", identifiers = ["nullsafe.neverNull"], level = 4, status = "decided" }
+NullsafePropertyFetchRule = { class = "PHPStan\\Rules\\Properties\\NullsafePropertyFetchRule", pun = "lint/complexity/no-redundant-nullsafe", package = "phpstan", identifiers = ["nullsafe.neverNull"], level = 4, status = "decided" }
 NumberComparisonOperatorsConstantConditionRule = { class = "PHPStan\\Rules\\Comparison\\NumberComparisonOperatorsConstantConditionRule", pun = "analyse/dead-code/number-comparison-always-constant", package = "phpstan", identifiers = ["greater.alwaysFalse", "greater.alwaysTrue", "greaterOrEqual.alwaysFalse", "greaterOrEqual.alwaysTrue", "smaller.alwaysFalse", "smaller.alwaysTrue", "smallerOrEqual.alwaysFalse", "smallerOrEqual.alwaysTrue"], level = 4, status = "decided" }
 OctaneCompatibilityRule = { class = "Larastan\\Larastan\\Rules\\OctaneCompatibilityRule", pun = "analyse/laravel/octane-compatibility", package = "larastan", identifiers = ["larastan.octaneCompatibility"], gated_by = "checkOctaneCompatibility (default false)", ported = true, status = "decided" }
 OffsetAccessAssignOpRule = { class = "PHPStan\\Rules\\Arrays\\OffsetAccessAssignOpRule", pun = "analyse/types/offset-assign-op", package = "phpstan", identifiers = ["class.notFound", "offsetAssign.dimType"], level = 3, status = "decided" }
@@ -3659,23 +3643,23 @@ TypesAssignedToPropertiesRule = { class = "PHPStan\\Rules\\Properties\\TypesAssi
 UndefinedArgumentOrOptionRule = { class = "Larastan\\Larastan\\Rules\\ConsoleCommand\\UndefinedArgumentOrOptionRule", pun = "analyse/laravel/undefined-console-input", package = "larastan", identifiers = ["larastan.console.undefinedArgument", "larastan.console.undefinedOption"], ported = true, status = "decided" }
 UninitializedPropertyRule = { class = "PHPStan\\Rules\\Properties\\UninitializedPropertyRule", pun = "analyse/classes/uninitialized-property", package = "phpstan", identifiers = ["property.uninitialized"], gated_by = "checkUninitializedProperties", status = "decided" }
 UnpackIterableInArrayRule = { class = "PHPStan\\Rules\\Arrays\\UnpackIterableInArrayRule", pun = "analyse/types/unpack-non-iterable", package = "phpstan", identifiers = ["arrayUnpacking.nonIterable", "class.notFound"], level = 3, status = "decided" }
-UnreachableStatementRule = { class = "PHPStan\\Rules\\DeadCode\\UnreachableStatementRule", pun = "analyse/dead-code/unreachable-code", package = "phpstan", identifiers = ["deadCode.unreachable"], level = 4, status = "decided" }
+UnreachableStatementRule = { class = "PHPStan\\Rules\\DeadCode\\UnreachableStatementRule", pun = "lint/dead-code/no-unreachable-code", package = "phpstan", identifiers = ["deadCode.unreachable"], level = 4, status = "decided" }
 UnsetCastRule = { class = "PHPStan\\Rules\\Cast\\UnsetCastRule", pun = "analyse/casts/unset-not-supported", package = "phpstan", identifiers = ["cast.unset"], level = 0, status = "decided" }
 UnsetRule = { class = "PHPStan\\Rules\\Variables\\UnsetRule", pun = "analyse/types/invalid-unset", package = "phpstan", identifiers = ["unset.hookedProperty", "unset.offset", "unset.possiblyHookedProperty", "unset.readOnlyProperty", "unset.readOnlyPropertyByPhpDoc", "unset.variable"], level = 0, status = "decided" }
-UnusedClosureUsesRule = { class = "PHPStan\\Rules\\Functions\\UnusedClosureUsesRule", pun = "analyse/dead-code/unused-closure-use", package = "phpstan", identifiers = ["closure.unusedUse", "closure.unusedUseFlow"], level = 1, status = "decided" }
-UnusedConstructorParametersRule = { class = "PHPStan\\Rules\\Classes\\UnusedConstructorParametersRule", pun = "analyse/dead-code/unused-constructor-parameter", package = "phpstan", identifiers = ["constructor.unusedParameter", "constructor.unusedParameterFlow", "function.unusedParameter", "function.unusedParameterFlow", "method.unusedParameter", "method.unusedParameterFlow"], level = 1, status = "decided" }
+UnusedClosureUsesRule = { class = "PHPStan\\Rules\\Functions\\UnusedClosureUsesRule", pun = "lint/functions/no-unused-closure-use", package = "phpstan", identifiers = ["closure.unusedUse", "closure.unusedUseFlow"], level = 1, status = "decided" }
+UnusedConstructorParametersRule = { class = "PHPStan\\Rules\\Classes\\UnusedConstructorParametersRule", pun = "lint/dead-code/no-unused-constructor-param", package = "phpstan", identifiers = ["constructor.unusedParameter", "constructor.unusedParameterFlow", "function.unusedParameter", "function.unusedParameterFlow", "method.unusedParameter", "method.unusedParameterFlow"], level = 1, status = "decided" }
 UnusedFunctionParametersRule = { class = "PHPStan\\Rules\\Functions\\UnusedFunctionParametersRule", pun = "analyse/dead-code/unused-function-parameter", package = "phpstan", identifiers = ["constructor.unusedParameter", "constructor.unusedParameterFlow", "function.unusedParameter", "function.unusedParameterFlow", "method.unusedParameter", "method.unusedParameterFlow"], level = 4, gated_by = "bleedingEdge (featureToggles.unusedParameters)", status = "decided" }
-UnusedLabelRule = { class = "PHPStan\\Rules\\Keywords\\UnusedLabelRule", pun = "analyse/dead-code/unused-label", package = "phpstan", identifiers = ["label.unused"], level = 4, gated_by = "bleedingEdge (featureToggles.unusedLabel)", status = "decided" }
+UnusedLabelRule = { class = "PHPStan\\Rules\\Keywords\\UnusedLabelRule", pun = "lint/complexity/no-unused-label", package = "phpstan", identifiers = ["label.unused"], level = 4, gated_by = "bleedingEdge (featureToggles.unusedLabel)", status = "decided" }
 UnusedMethodParametersRule = { class = "PHPStan\\Rules\\Methods\\UnusedMethodParametersRule", pun = "analyse/dead-code/unused-method-parameter", package = "phpstan", identifiers = ["constructor.unusedParameter", "constructor.unusedParameterFlow", "function.unusedParameter", "function.unusedParameterFlow", "method.unusedParameter", "method.unusedParameterFlow"], level = 4, gated_by = "bleedingEdge (featureToggles.unusedParameters)", status = "decided" }
-UnusedPrivateConstantRule = { class = "PHPStan\\Rules\\DeadCode\\UnusedPrivateConstantRule", pun = "analyse/dead-code/unused-private-constant", package = "phpstan", identifiers = ["classConstant.unused"], level = 4, status = "decided" }
-UnusedPrivateMethodRule = { class = "PHPStan\\Rules\\DeadCode\\UnusedPrivateMethodRule", pun = "analyse/dead-code/unused-private-method", package = "phpstan", identifiers = ["method.unused"], level = 4, status = "decided" }
+UnusedPrivateConstantRule = { class = "PHPStan\\Rules\\DeadCode\\UnusedPrivateConstantRule", pun = "lint/dead-code/no-unused-private-constant", package = "phpstan", identifiers = ["classConstant.unused"], level = 4, status = "decided" }
+UnusedPrivateMethodRule = { class = "PHPStan\\Rules\\DeadCode\\UnusedPrivateMethodRule", pun = "lint/dead-code/no-unused-private-method", package = "phpstan", identifiers = ["method.unused"], level = 4, status = "decided" }
 UnusedPrivatePropertyRule = { class = "PHPStan\\Rules\\DeadCode\\UnusedPrivatePropertyRule", pun = "analyse/dead-code/unused-private-property", package = "phpstan", identifiers = ["property.neverRead", "property.neverWritten", "property.onlyRead", "property.onlyWritten", "property.unused"], level = 4, status = "decided" }
 UnusedVariableRule = { class = "PHPStan\\Rules\\DeadCode\\UnusedVariableRule", pun = "analyse/dead-code/unused-variable", package = "phpstan", identifiers = ["assign.redundant"], level = 4, gated_by = "bleedingEdge (featureToggles.unusedVariable)", status = "decided" }
 UnusedViewsRule = { class = "Larastan\\Larastan\\Rules\\UnusedViewsRule", pun = "analyse/laravel/unused-view", package = "larastan", identifiers = ["larastan.unusedViews"], gated_by = "checkUnusedViews (default false)", ported = true, status = "decided" }
 UsageOfVoidMatchExpressionRule = { class = "PHPStan\\Rules\\Comparison\\UsageOfVoidMatchExpressionRule", pun = "analyse/types/void-match-used", package = "phpstan", identifiers = ["match.void"], level = 2, status = "decided" }
 UsedNamesRule = { class = "PHPStan\\Rules\\Names\\UsedNamesRule", pun = "analyse/imports/name-already-in-use", package = "phpstan", identifiers = ["class.nameInUse", "enum.nameInUse", "interface.nameInUse", "trait.nameInUse", "use.nameInUse"], level = 0, status = "decided" }
 UsedTraitsRule = { class = "PHPStan\\Rules\\Generics\\UsedTraitsRule", pun = "analyse/types/invalid-trait-use-generics", package = "phpstan", identifiers = ["class.notFound", "function.variance", "generics.callSiteVarianceConflict", "generics.callSiteVarianceNotAllowed", "generics.callSiteVarianceRedundant", "generics.lessTypes", "generics.moreTypes", "generics.noParent", "generics.notCompatible", "generics.notGeneric", "generics.notSubtype", "generics.trait", "generics.unresolvable", "generics.variance", "generics.wrongParent", "method.variance", "missingType.generics"], level = 2, status = "decided" }
-UselessCastRule = { class = "PHPStan\\Rules\\Cast\\UselessCastRule", pun = "analyse/casts/useless", package = "phpstan-strict-rules", identifiers = ["cast.useless"], gated_by = "strictRules.uselessCast", status = "decided" }
+UselessCastRule = { class = "PHPStan\\Rules\\Cast\\UselessCastRule", pun = "lint/dead-code/no-useless-cast", package = "phpstan-strict-rules", identifiers = ["cast.useless"], gated_by = "strictRules.uselessCast", status = "decided" }
 UselessFunctionReturnValueRule = { class = "PHPStan\\Rules\\Functions\\UselessFunctionReturnValueRule", pun = "analyse/dead-code/useless-return-value", package = "phpstan", identifiers = ["function.uselessReturnValue"], level = 4, status = "decided" }
 ValueAssignedToClassConstantRule = { class = "PHPStan\\Rules\\Constants\\ValueAssignedToClassConstantRule", pun = "analyse/types/class-constant-value", package = "phpstan", identifiers = ["classConstant.phpDocType", "classConstant.value"], level = 2, status = "decided" }
 ValueAssignedToDefineRule = { class = "PHPStan\\Rules\\Constants\\ValueAssignedToDefineRule", pun = "analyse/types/define-value", package = "phpstan", identifiers = ["constant.defineValue"], level = 2, gated_by = "bleedingEdge (featureToggles.checkDynamicConstantNameValues)", status = "decided" }
@@ -3721,7 +3705,7 @@ YieldTypeRule = { class = "PHPStan\\Rules\\Generators\\YieldTypeRule", pun = "an
 "%s.nonCallable" = { pun = "analyse/phpdoc/invalid-param-callable-tag", variant = "%s.nonCallable", level = "2", pattern = true, options = "none", status = "decided" }
 "%s.offset" = { pun = "analyse/statements/invalid-empty", variant = "%s.offset", level = "1", pattern = true, options = "none", status = "decided" }
 "%s.outOfLoop" = { pun = "analyse/control-flow/break-outside-loop", variant = "%s.outOfLoop", level = "0", pattern = true, options = "none", status = "decided" }
-"%s.resultUnused" = { pun = "analyse/dead-code/unused-result", variant = "%s.resultUnused", level = "4", pattern = true, options = "none", status = "decided" }
+"%s.resultUnused" = { pun = "lint/dead-code/no-unused-expression", variant = "%s.resultUnused", level = "4", pattern = true, options = "none", status = "decided" }
 "%s.rightAlways%s" = { pun = "analyse/dead-code/xor-always-constant", variant = "%s.rightAlways%s", level = "4", pattern = true, options = "none", status = "decided" }
 "%s.tooWideBool" = { pun = "analyse/types/too-wide-arrow-function-return", variant = "%s.tooWideBool", level = "4", pattern = true, options = "none", status = "decided" }
 "%s.type" = { pun = "analyse/types/invalid-inc-dec", variant = "%s.type", level = "0", pattern = true, options = "none", status = "decided" }
@@ -3752,7 +3736,7 @@ YieldTypeRule = { class = "PHPStan\\Rules\\Generators\\YieldTypeRule", pun = "an
 "argument.unresolvableType" = { pun = "analyse/types/argument", variant = "argument.unresolvableType", level = "0", options = "none", status = "decided" }
 "argument.unused" = { pun = "analyse/dead-code/unused-argument", variant = "argument.unused", level = "0", options = "none", status = "decided" }
 "arguments.count" = { pun = "analyse/types/argument", variant = "arguments.count", level = "0", options = "none", status = "decided" }
-"array.duplicateKey" = { pun = "analyse/arrays/duplicate-array-key", variant = "array.duplicateKey", level = "0", options = "none", status = "decided" }
+"array.duplicateKey" = { pun = "lint/dead-code/no-duplicate-array-key", variant = "array.duplicateKey", level = "0", options = "none", status = "decided" }
 "array.invalidKey" = { pun = "analyse/arrays/invalid-array-key", variant = "array.invalidKey", level = "3", options = "none", status = "decided" }
 "arrayFilter.alwaysEmpty" = { pun = "analyse/types/useless-array-filter", variant = "arrayFilter.alwaysEmpty", level = "5", options = "none", status = "decided" }
 "arrayFilter.empty" = { pun = "analyse/types/useless-array-filter", variant = "arrayFilter.empty", level = "5", options = "none", status = "decided" }
@@ -3786,7 +3770,7 @@ YieldTypeRule = { class = "PHPStan\\Rules\\Generators\\YieldTypeRule", pun = "an
 "attribute.notFound" = { pun = "analyse/attributes/invalid-class-constant-attribute", variant = "attribute.notFound", level = "0", options = "none", status = "decided" }
 "attribute.target" = { pun = "analyse/types/invalid-closure-signature", variant = "attribute.target", level = "0", options = "none", status = "decided" }
 "attribute.trait" = { pun = "analyse/attributes/trait-as-attribute", variant = "attribute.trait", level = "0", options = "none", status = "decided" }
-"backtick.deprecated" = { pun = "analyse/deprecated/backtick", variant = "backtick.deprecated", level = "0", options = "none", status = "decided" }
+"backtick.deprecated" = { pun = "format/functions/backtick-to-shell-exec", variant = "backtick.deprecated", level = "0", options = "none", status = "decided" }
 "booleanNot.always%s" = { pun = "analyse/dead-code/number-comparison-always-constant", variant = "booleanNot.always%s", level = "4", pattern = true, options = "none", status = "decided" }
 "callable.inVoidCast" = { pun = "analyse/dead-code/discarded-function-result", variant = "callable.inVoidCast", level = "0", options = "none", status = "decided" }
 "callable.inaccessibleMethod" = { pun = "analyse/functions/invalid-callable-call", variant = "callable.inaccessibleMethod", level = "2", options = "none", status = "decided" }
@@ -3795,7 +3779,7 @@ YieldTypeRule = { class = "PHPStan\\Rules\\Generators\\YieldTypeRule", pun = "an
 "callable.resultDiscarded" = { pun = "analyse/dead-code/discarded-function-result", variant = "callable.resultDiscarded", level = "0", options = "none", status = "decided" }
 "callable.shadowTemplate" = { pun = "analyse/phpdoc/property-type-mismatch", variant = "callable.shadowTemplate", level = "2", options = "none", status = "decided" }
 "cast.%s" = { pun = "analyse/types/invalid-cast", variant = "cast.%s", level = "2", pattern = true, options = "none", status = "decided" }
-"cast.deprecated" = { pun = "analyse/deprecated/cast", variant = "cast.deprecated", level = "0", options = "none", status = "decided" }
+"cast.deprecated" = { pun = "format/casts/short-scalar", variant = "cast.deprecated", level = "0", options = "none", status = "decided" }
 "cast.unset" = { pun = "analyse/casts/unset-not-supported", variant = "cast.unset", level = "0", options = "none", status = "decided" }
 "cast.void" = { pun = "analyse/types/invalid-void-cast", variant = "cast.void", level = "0", options = "none", status = "decided" }
 "cast.voidNotSupported" = { pun = "analyse/types/invalid-void-cast", variant = "cast.voidNotSupported", level = "0", options = "none", status = "decided" }
@@ -3839,15 +3823,15 @@ YieldTypeRule = { class = "PHPStan\\Rules\\Generators\\YieldTypeRule", pun = "an
 "classConstant.phpDocType" = { pun = "analyse/types/class-constant-value", variant = "classConstant.phpDocType", level = "2", options = "none", status = "decided" }
 "classConstant.type" = { pun = "analyse/classes/incompatible-constant-override", variant = "classConstant.type", level = "0", options = "none", status = "decided" }
 "classConstant.unresolvableType" = { pun = "analyse/phpdoc/constant-type-mismatch", variant = "classConstant.unresolvableType", level = "2", options = "none", status = "decided" }
-"classConstant.unused" = { pun = "analyse/dead-code/unused-private-constant", variant = "classConstant.unused", level = "4", options = "none", status = "decided" }
+"classConstant.unused" = { pun = "lint/dead-code/no-unused-private-constant", variant = "classConstant.unused", level = "4", options = "none", status = "decided" }
 "classConstant.value" = { pun = "analyse/types/class-constant-value", variant = "classConstant.value", level = "0", options = "none", status = "decided" }
 "classConstant.visibility" = { pun = "analyse/classes/incompatible-constant-override", variant = "classConstant.visibility", level = "0", options = "none", status = "decided" }
 "classImplements.class" = { pun = "analyse/classes/invalid-implements", variant = "classImplements.class", level = "0", options = "none", status = "decided" }
 "classImplements.enum" = { pun = "analyse/classes/invalid-implements", variant = "classImplements.enum", level = "0", options = "none", status = "decided" }
 "classImplements.trait" = { pun = "analyse/classes/invalid-implements", variant = "classImplements.trait", level = "0", options = "none", status = "decided" }
 "clone.nonObject" = { pun = "analyse/types/clone-non-object", variant = "clone.nonObject", level = "3", options = "none", status = "decided" }
-"closure.unusedUse" = { pun = "analyse/dead-code/unused-closure-use", variant = "closure.unusedUse", level = "1", options = "none", status = "decided" }
-"closure.unusedUseFlow" = { pun = "analyse/dead-code/unused-closure-use", variant = "closure.unusedUseFlow", level = "1", options = "none", status = "decided" }
+"closure.unusedUse" = { pun = "lint/functions/no-unused-closure-use", variant = "closure.unusedUse", level = "1", options = "none", status = "decided" }
+"closure.unusedUseFlow" = { pun = "lint/functions/no-unused-closure-use", variant = "closure.unusedUseFlow", level = "1", options = "none", status = "decided" }
 "closure.useDuplicate" = { pun = "analyse/functions/invalid-closure-use", variant = "closure.useDuplicate", level = "0", options = "none", status = "decided" }
 "closure.useSuperGlobal" = { pun = "analyse/functions/invalid-closure-use", variant = "closure.useSuperGlobal", level = "0", options = "none", status = "decided" }
 "closure.useThis" = { pun = "analyse/functions/invalid-closure-use", variant = "closure.useThis", level = "0", options = "none", status = "decided" }
@@ -3860,9 +3844,9 @@ YieldTypeRule = { class = "PHPStan\\Rules\\Generators\\YieldTypeRule", pun = "an
 "constant.notFound" = { pun = "analyse/undefined/constant", variant = "constant.notFound", level = "0", options = "none", status = "decided" }
 "constant.value" = { pun = "analyse/types/constant-value", variant = "constant.value", level = "2", options = "none", status = "decided" }
 "constructor.returnType" = { pun = "analyse/classes/constructor-with-return-type", variant = "constructor.returnType", level = "0", options = "none", status = "decided" }
-"constructor.unusedParameter" = { pun = "analyse/dead-code/unused-constructor-parameter", variant = "constructor.unusedParameter", level = "1", options = "none", status = "decided" }
-"constructor.unusedParameterFlow" = { pun = "analyse/dead-code/unused-constructor-parameter", variant = "constructor.unusedParameterFlow", level = "1", options = "none", status = "decided" }
-"deadCode.unreachable" = { pun = "analyse/dead-code/unreachable-code", variant = "deadCode.unreachable", level = "4", options = "none", status = "decided" }
+"constructor.unusedParameter" = { pun = "lint/dead-code/no-unused-constructor-param", variant = "constructor.unusedParameter", level = "1", options = "none", status = "decided" }
+"constructor.unusedParameterFlow" = { pun = "lint/dead-code/no-unused-constructor-param", variant = "constructor.unusedParameterFlow", level = "1", options = "none", status = "decided" }
+"deadCode.unreachable" = { pun = "lint/dead-code/no-unreachable-code", variant = "deadCode.unreachable", level = "4", options = "none", status = "decided" }
 "declareStrictTypes.notFirst" = { pun = "analyse/statements/invalid-declare-strict-types", variant = "declareStrictTypes.notFirst", level = "0", options = "none", status = "decided" }
 "declareStrictTypes.value" = { pun = "analyse/statements/invalid-declare-strict-types", variant = "declareStrictTypes.value", level = "0", options = "none", status = "decided" }
 "doWhile.always%s" = { pun = "analyse/dead-code/number-comparison-always-constant", variant = "doWhile.always%s", level = "4", pattern = true, options = "none", status = "decided" }
@@ -3887,7 +3871,7 @@ YieldTypeRule = { class = "PHPStan\\Rules\\Generators\\YieldTypeRule", pun = "an
 "enumImplements.class" = { pun = "analyse/classes/invalid-enum-implements", variant = "enumImplements.class", level = "0", options = "none", status = "decided" }
 "enumImplements.enum" = { pun = "analyse/classes/invalid-enum-implements", variant = "enumImplements.enum", level = "0", options = "none", status = "decided" }
 "enumImplements.trait" = { pun = "analyse/classes/invalid-enum-implements", variant = "enumImplements.trait", level = "0", options = "none", status = "decided" }
-"expr.resultUnused" = { pun = "analyse/dead-code/unused-result", variant = "expr.resultUnused", level = "4", options = "none", status = "decided" }
+"expr.resultUnused" = { pun = "lint/dead-code/no-unused-expression", variant = "expr.resultUnused", level = "4", options = "none", status = "decided" }
 "filterVar.nullOnFailureAndThrowOnFailure" = { pun = "analyse/functions/conflicting-filter-var-flags", variant = "filterVar.nullOnFailureAndThrowOnFailure", level = "0", options = "none", status = "decided" }
 "finally.exitPoint" = { pun = "analyse/dead-code/finally-overrides-exit", variant = "finally.exitPoint", level = "4", options = "none", status = "decided" }
 "foreach.emptyArray" = { pun = "analyse/types/foreach-on-empty-array", variant = "foreach.emptyArray", level = "4", options = "none", status = "decided" }
@@ -3935,6 +3919,9 @@ YieldTypeRule = { class = "PHPStan\\Rules\\Generators\\YieldTypeRule", pun = "an
 "generics.wrongParent" = { pun = "analyse/types/invalid-class-generics", variant = "generics.wrongParent", level = "2", options = "none", status = "decided" }
 "global.this" = { pun = "analyse/types/this-in-global", variant = "global.this", level = "0", options = "none", status = "decided" }
 "goto.labelUndefined" = { pun = "analyse/undefined/goto-label", variant = "goto.labelUndefined", level = "0", options = "none", status = "decided" }
+"booleanAnd.leftAlwaysTrue" = { pun = "lint/dead-code/no-always-true-if", variant = "booleanAnd.leftAlwaysTrue", level = "4", options = "none", status = "decided" }
+"booleanOr.leftAlwaysFalse" = { pun = "lint/dead-code/no-always-false-condition", variant = "booleanOr.leftAlwaysFalse", level = "4", options = "none", status = "decided" }
+"if.alwaysTrue" = { pun = "lint/dead-code/no-always-true-if", variant = "if.alwaysTrue", level = "4", options = "none", status = "decided" }
 "if.always%s" = { pun = "analyse/dead-code/number-comparison-always-constant", variant = "if.always%s", level = "4", pattern = true, options = "none", status = "decided" }
 "ignore.parseError" = { pun = "analyse/comments/invalid-ignore", variant = "ignore.parseError", level = "0", options = "none", status = "decided" }
 "impure%s.pure" = { pun = "analyse/classes/incompatible-override", variant = "impure%s.pure", level = "2", pattern = true, options = "none", status = "decided" }
@@ -3961,7 +3948,7 @@ YieldTypeRule = { class = "PHPStan\\Rules\\Generators\\YieldTypeRule", pun = "an
 "include.fileNotFound" = { pun = "analyse/undefined/include-file", variant = "include.fileNotFound", level = "0", options = "none", status = "decided" }
 "includeOnce.fileNotFound" = { pun = "analyse/undefined/include-file", variant = "includeOnce.fileNotFound", level = "0", options = "none", status = "decided" }
 "instanceof.alwaysFalse" = { pun = "analyse/dead-code/impossible-instanceof", variant = "instanceof.alwaysFalse", level = "4", options = "none", status = "decided" }
-"instanceof.alwaysTrue" = { pun = "analyse/dead-code/impossible-instanceof", variant = "instanceof.alwaysTrue", level = "4", options = "none", status = "decided" }
+"instanceof.alwaysTrue" = { pun = "lint/dead-code/no-always-true-instanceof", variant = "instanceof.alwaysTrue", level = "4", options = "none", status = "decided" }
 "instanceof.invalidExprType" = { pun = "analyse/dead-code/impossible-instanceof", variant = "instanceof.invalidExprType", level = "4", options = "none", status = "decided" }
 "instanceof.trait" = { pun = "analyse/undefined/instanceof-class", variant = "instanceof.trait", level = "0", options = "none", status = "decided" }
 "interface.allowDynamicProperties" = { pun = "analyse/attributes/invalid-class-attribute", variant = "interface.allowDynamicProperties", level = "0", options = "none", status = "decided" }
@@ -3972,9 +3959,9 @@ YieldTypeRule = { class = "PHPStan\\Rules\\Generators\\YieldTypeRule", pun = "an
 "interfaceExtends.trait" = { pun = "analyse/classes/invalid-interface-extends", variant = "interfaceExtends.trait", level = "0", options = "none", status = "decided" }
 "isset.initializedProperty" = { pun = "analyse/statements/invalid-empty", variant = "isset.initializedProperty", level = "1", options = "none", status = "decided" }
 "isset.property" = { pun = "analyse/statements/invalid-empty", variant = "isset.property", level = "1", options = "none", status = "decided" }
-"label.unused" = { pun = "analyse/dead-code/unused-label", variant = "label.unused", level = "4", options = "none", status = "decided" }
+"label.unused" = { pun = "lint/complexity/no-unused-label", variant = "label.unused", level = "4", options = "none", status = "decided" }
 "logicalXor.leftAlways%s" = { pun = "analyse/dead-code/xor-always-constant", variant = "logicalXor.leftAlways%s", level = "4", pattern = true, options = "none", status = "decided" }
-"logicalXor.resultUnused" = { pun = "analyse/dead-code/unused-result", variant = "logicalXor.resultUnused", level = "4", options = "none", status = "decided" }
+"logicalXor.resultUnused" = { pun = "lint/dead-code/no-unused-expression", variant = "logicalXor.resultUnused", level = "4", options = "none", status = "decided" }
 "logicalXor.rightAlways%s" = { pun = "analyse/dead-code/xor-always-constant", variant = "logicalXor.rightAlways%s", level = "4", pattern = true, options = "none", status = "decided" }
 "magicConstant.outOfClass" = { pun = "analyse/statements/magic-constant-out-of-context", variant = "magicConstant.outOfClass", level = "0", options = "none", status = "decided" }
 "magicConstant.outOfFunction" = { pun = "analyse/statements/magic-constant-out-of-context", variant = "magicConstant.outOfFunction", level = "0", options = "none", status = "decided" }
@@ -4015,7 +4002,7 @@ YieldTypeRule = { class = "PHPStan\\Rules\\Generators\\YieldTypeRule", pun = "an
 "method.staticCall" = { pun = "analyse/classes/invalid-static-method-callable", variant = "method.staticCall", level = "0", options = "none", status = "decided" }
 "method.templateTypeNotInParameter" = { pun = "analyse/types/invalid-closure-signature", variant = "method.templateTypeNotInParameter", level = "0", options = "none", status = "decided" }
 "method.tentativeReturnType" = { pun = "analyse/classes/incompatible-override", variant = "method.tentativeReturnType", level = "0", options = "none", status = "decided" }
-"method.unused" = { pun = "analyse/dead-code/unused-private-method", variant = "method.unused", level = "4", options = "none", status = "decided" }
+"method.unused" = { pun = "lint/dead-code/no-unused-private-method", variant = "method.unused", level = "4", options = "none", status = "decided" }
 "method.unusedParameter" = { pun = "analyse/dead-code/unused-method-parameter", variant = "method.unusedParameter", level = "4", options = "none", status = "decided" }
 "method.unusedParameterFlow" = { pun = "analyse/dead-code/unused-method-parameter", variant = "method.unusedParameterFlow", level = "4", options = "none", status = "decided" }
 "method.visibility" = { pun = "analyse/classes/incompatible-override", variant = "method.visibility", level = "0", options = "none", status = "decided" }
@@ -4050,7 +4037,7 @@ YieldTypeRule = { class = "PHPStan\\Rules\\Generators\\YieldTypeRule", pun = "an
 "nullableType.%s" = { pun = "analyse/types/invalid-union-type", variant = "nullableType.%s", level = "0", pattern = true, options = "none", status = "decided" }
 "nullsafe.assign" = { pun = "analyse/types/invalid-assignment-target", variant = "nullsafe.assign", level = "0", options = "none", status = "decided" }
 "nullsafe.byRef" = { pun = "analyse/types/invalid-assignment-target", variant = "nullsafe.byRef", level = "0", options = "none", status = "decided" }
-"nullsafe.neverNull" = { pun = "analyse/types/redundant-nullsafe", variant = "nullsafe.neverNull", level = "1", options = "none", status = "decided" }
+"nullsafe.neverNull" = { pun = "lint/complexity/no-redundant-nullsafe", variant = "nullsafe.neverNull", level = "1", options = "none", status = "decided" }
 "offsetAccess.invalidOffset" = { pun = "analyse/types/invalid-offset", variant = "offsetAccess.invalidOffset", level = "3", options = "none", status = "decided" }
 "offsetAccess.noDim" = { pun = "analyse/arrays/read-without-offset", variant = "offsetAccess.noDim", level = "0", options = "none", status = "decided" }
 "offsetAccess.nonArray" = { pun = "analyse/arrays/invalid-destructuring", variant = "offsetAccess.nonArray", level = "3", options = "none", status = "decided" }
@@ -4067,7 +4054,7 @@ YieldTypeRule = { class = "PHPStan\\Rules\\Generators\\YieldTypeRule", pun = "an
 "parameter.byRef" = { pun = "analyse/classes/incompatible-override", variant = "parameter.byRef", level = "0", options = "none", status = "decided" }
 "parameter.defaultValue" = { pun = "analyse/types/param-default", variant = "parameter.defaultValue", level = "2", options = "none", status = "decided" }
 "parameter.duplicate" = { pun = "analyse/functions/duplicate-parameter", variant = "parameter.duplicate", level = "0", options = "none", status = "decided" }
-"parameter.implicitlyNullable" = { pun = "analyse/types/invalid-closure-signature", variant = "parameter.implicitlyNullable", level = "0", options = "none", status = "decided" }
+"parameter.implicitlyNullable" = { pun = "format/types/nullable-for-null-default", variant = "parameter.implicitlyNullable", level = "0", options = "none", status = "decided" }
 "parameter.missing" = { pun = "analyse/classes/incompatible-override", variant = "parameter.missing", level = "0", options = "none", status = "decided" }
 "parameter.noParent" = { pun = "analyse/types/invalid-closure-signature", variant = "parameter.noParent", level = "0", options = "none", status = "decided" }
 "parameter.notByRef" = { pun = "analyse/classes/incompatible-override", variant = "parameter.notByRef", level = "0", options = "none", status = "decided" }
@@ -4075,7 +4062,7 @@ YieldTypeRule = { class = "PHPStan\\Rules\\Generators\\YieldTypeRule", pun = "an
 "parameter.notOptional" = { pun = "analyse/classes/incompatible-override", variant = "parameter.notOptional", level = "0", options = "none", status = "decided" }
 "parameter.notVariadic" = { pun = "analyse/classes/incompatible-override", variant = "parameter.notVariadic", level = "0", options = "none", status = "decided" }
 "parameter.phpDocType" = { pun = "analyse/phpdoc/type-mismatch", variant = "parameter.phpDocType", level = "2", options = "none", status = "decided" }
-"parameter.requiredAfterOptional" = { pun = "analyse/types/invalid-closure-signature", variant = "parameter.requiredAfterOptional", level = "0", options = "none", status = "decided" }
+"parameter.requiredAfterOptional" = { pun = "lint/functions/no-required-after-optional", variant = "parameter.requiredAfterOptional", level = "0", options = "none", status = "decided" }
 "parameter.superglobal" = { pun = "analyse/functions/invalid-parameter-name", variant = "parameter.superglobal", level = "0", options = "none", status = "decided" }
 "parameter.this" = { pun = "analyse/functions/invalid-parameter-name", variant = "parameter.this", level = "0", options = "none", status = "decided" }
 "parameter.trait" = { pun = "analyse/types/invalid-closure-signature", variant = "parameter.trait", level = "0", options = "none", status = "decided" }
@@ -4164,7 +4151,7 @@ YieldTypeRule = { class = "PHPStan\\Rules\\Generators\\YieldTypeRule", pun = "an
 "property.inInterface" = { pun = "analyse/classes/invalid-interface-property", variant = "property.inInterface", level = "0", options = "none", status = "decided" }
 "property.invalidPromoted" = { pun = "analyse/classes/invalid-promoted-property", variant = "property.invalidPromoted", level = "0", options = "none", status = "decided" }
 "property.missingNativeType" = { pun = "analyse/classes/incompatible-property-override", variant = "property.missingNativeType", level = "0", options = "none", status = "decided" }
-"property.missingOverride" = { pun = "analyse/classes/incompatible-property-override", variant = "property.missingOverride", level = "0", options = "none", status = "decided" }
+"property.missingOverride" = { pun = "lint/refactor/add-override-attribute", variant = "property.missingOverride", level = "0", options = "none", status = "decided" }
 "property.nameNotString" = { pun = "analyse/undefined/assigned-property", variant = "property.nameNotString", level = "0", options = "none", status = "decided" }
 "property.nativeType" = { pun = "analyse/classes/incompatible-property-override", variant = "property.nativeType", level = "0", options = "none", status = "decided" }
 "property.nestedUnusedType" = { pun = "analyse/types/too-wide-arrow-function-return", variant = "property.nestedUnusedType", level = "4", options = "none", status = "decided" }
@@ -4178,7 +4165,7 @@ YieldTypeRule = { class = "PHPStan\\Rules\\Generators\\YieldTypeRule", pun = "an
 "property.notReadable" = { pun = "analyse/classes/incompatible-property-override", variant = "property.notReadable", level = "0", options = "none", status = "decided" }
 "property.notWritable" = { pun = "analyse/classes/incompatible-property-override", variant = "property.notWritable", level = "0", options = "none", status = "decided" }
 "property.onlyRead" = { pun = "analyse/dead-code/unused-private-property", variant = "property.onlyRead", level = "4", options = "none", status = "decided" }
-"property.onlyWritten" = { pun = "analyse/dead-code/unused-private-property", variant = "property.onlyWritten", level = "4", options = "none", status = "decided" }
+"property.onlyWritten" = { pun = "lint/dead-code/no-unused-private-property", variant = "property.onlyWritten", level = "4", options = "none", status = "decided" }
 "property.override" = { pun = "analyse/classes/incompatible-property-override", variant = "property.override", level = "0", options = "none", status = "decided" }
 "property.overrideAttribute" = { pun = "analyse/attributes/invalid-property-attribute", variant = "property.overrideAttribute", level = "0", options = "none", status = "decided" }
 "property.parentPropertyFinal" = { pun = "analyse/classes/incompatible-property-override", variant = "property.parentPropertyFinal", level = "0", options = "none", status = "decided" }
@@ -4211,7 +4198,7 @@ YieldTypeRule = { class = "PHPStan\\Rules\\Generators\\YieldTypeRule", pun = "an
 "property.uninitializedReadonlyByPhpDoc" = { pun = "analyse/classes/uninitialized-phpdoc-readonly", variant = "property.uninitializedReadonlyByPhpDoc", level = "0", options = "none", status = "decided" }
 "property.unresolvableNativeType" = { pun = "analyse/types/invalid-property-type", variant = "property.unresolvableNativeType", level = "0", options = "none", status = "decided" }
 "property.unresolvableType" = { pun = "analyse/phpdoc/property-type-mismatch", variant = "property.unresolvableType", level = "2", options = "none", status = "decided" }
-"property.unused" = { pun = "analyse/dead-code/unused-private-property", variant = "property.unused", level = "4", options = "none", status = "decided" }
+"property.unused" = { pun = "lint/dead-code/no-unused-private-property", variant = "property.unused", level = "4", options = "none", status = "decided" }
 "property.virtualDefault" = { pun = "analyse/classes/invalid-property-declaration", variant = "property.virtualDefault", level = "0", options = "none", status = "decided" }
 "property.visibility" = { pun = "analyse/classes/incompatible-property-override", variant = "property.visibility", level = "0", options = "none", status = "decided" }
 "property.writeOnly" = { pun = "analyse/classes/read-write-only-property", variant = "property.writeOnly", level = "0", options = "none", status = "decided" }
@@ -4251,7 +4238,7 @@ YieldTypeRule = { class = "PHPStan\\Rules\\Generators\\YieldTypeRule", pun = "an
 "return.unionTypeNotSupported" = { pun = "analyse/types/invalid-arrow-function-signature", variant = "return.unionTypeNotSupported", level = "0", options = "none", status = "decided" }
 "return.unresolvableNativeType" = { pun = "analyse/types/invalid-closure-signature", variant = "return.unresolvableNativeType", level = "0", options = "none", status = "decided" }
 "return.unresolvableType" = { pun = "analyse/phpdoc/type-mismatch", variant = "return.unresolvableType", level = "2", options = "none", status = "decided" }
-"return.unusedType" = { pun = "analyse/types/too-wide-arrow-function-return", variant = "return.unusedType", level = "4", options = "none", status = "decided" }
+"return.unusedType" = { pun = "lint/dead-code/no-unused-return-type", variant = "return.unusedType", level = "4", options = "none", status = "decided" }
 "return.void" = { pun = "analyse/types/arrow-function-return", variant = "return.void", level = "3", options = "none", status = "decided" }
 "sealed.nonObject" = { pun = "analyse/phpdoc/invalid-sealed-tag", variant = "sealed.nonObject", level = "2", options = "none", status = "decided" }
 "sealed.onEnum" = { pun = "analyse/phpdoc/invalid-sealed-tag", variant = "sealed.onEnum", level = "2", options = "none", status = "decided" }
@@ -4285,7 +4272,7 @@ YieldTypeRule = { class = "PHPStan\\Rules\\Generators\\YieldTypeRule", pun = "an
 "switch.alwaysTrue" = { pun = "analyse/dead-code/switch-always-constant", variant = "switch.alwaysTrue", level = "4", options = "none", status = "decided" }
 "switch.duplicateCase" = { pun = "analyse/dead-code/switch-always-constant", variant = "switch.duplicateCase", level = "4", options = "none", status = "decided" }
 "ternary.always%s" = { pun = "analyse/dead-code/number-comparison-always-constant", variant = "ternary.always%s", level = "4", pattern = true, options = "none", status = "decided" }
-"ternary.resultUnused" = { pun = "analyse/dead-code/unused-result", variant = "ternary.resultUnused", level = "4", options = "none", status = "decided" }
+"ternary.resultUnused" = { pun = "lint/dead-code/no-unused-expression", variant = "ternary.resultUnused", level = "4", options = "none", status = "decided" }
 "throw.notSupported" = { pun = "analyse/statements/throw-expression-not-supported", variant = "throw.notSupported", level = "0", options = "none", status = "decided" }
 "throw.notThrowable" = { pun = "analyse/types/throw-non-throwable", variant = "throw.notThrowable", level = "3", options = "none", status = "decided" }
 "throws.notCovariant" = { pun = "analyse/types/throws-not-covariant", variant = "throws.notCovariant", level = "opt-in", options = "none", status = "decided" }
@@ -4325,7 +4312,7 @@ YieldTypeRule = { class = "PHPStan\\Rules\\Generators\\YieldTypeRule", pun = "an
 "varTag.trait" = { pun = "analyse/phpdoc/invalid-var-tag-type", variant = "varTag.trait", level = "2", options = "none", status = "decided" }
 "varTag.type" = { pun = "analyse/phpdoc/var-tag-type-mismatch", variant = "varTag.type", level = "2", options = "none", status = "decided" }
 "varTag.unresolvableType" = { pun = "analyse/phpdoc/invalid-var-tag-type", variant = "varTag.unresolvableType", level = "2", options = "none", status = "decided" }
-"varTag.variableNotFound" = { pun = "analyse/phpdoc/invalid-var-tag", variant = "varTag.variableNotFound", level = "2", options = "none", status = "decided" }
+"varTag.variableNotFound" = { pun = "lint/dead-code/no-invalid-var-tag", variant = "varTag.variableNotFound", level = "2", options = "none", status = "decided" }
 "variable.nameNotString" = { pun = "analyse/undefined/variable", variant = "variable.nameNotString", level = "0", options = "none", status = "decided" }
 "variable.undefined" = { pun = "analyse/undefined/variable", variant = "variable.undefined", level = "0", options = "none", status = "decided" }
 "void.pure" = { pun = "analyse/functions/invalid-pure", variant = "void.pure", level = "2", options = "none", status = "decided" }
@@ -4361,7 +4348,7 @@ reportMaybes = { pun = "[analyse] union-types = true", level = 7, options = "swi
 "arrayFilter.strict" = { pun = "lint/functions/require-array-filter-callback", variant = "arrayFilter.strict", options = "none", status = "decided" }
 "backtick.notAllowed" = { pun = "format/functions/backtick-to-shell-exec", variant = "backtick.notAllowed", level = "extension", options = "none", status = "decided" }
 "booleanNot.exprNotBoolean" = { pun = "analyse/operators/non-boolean-not-operand", variant = "booleanNot.exprNotBoolean", level = "extension", options = "none", status = "decided" }
-"cast.useless" = { pun = "analyse/casts/useless", variant = "cast.useless", level = "extension", options = "none", status = "decided" }
+"cast.useless" = { pun = "lint/dead-code/no-useless-cast", variant = "cast.useless", level = "extension", options = "none", status = "decided" }
 "constructor.call" = { pun = "lint/classes/no-explicit-constructor-call", variant = "constructor.call", options = "none", status = "decided" }
 "constructor.missingParentCall" = { pun = "analyse/classes/missing-parent-constructor-call", variant = "constructor.missingParentCall", level = "extension", options = "none", status = "decided" }
 "div.leftNonNumeric" = { pun = "analyse/operators/non-numeric-division", variant = "div.leftNonNumeric", level = "extension", options = "none", status = "decided" }
@@ -4423,15 +4410,15 @@ reportMaybes = { pun = "[analyse] union-types = true", level = 7, options = "swi
 "larastan.noAuthHelperInRequestScope" = { pun = "analyse/laravel/no-auth-helper-in-request-scope", variant = "larastan.noAuthHelperInRequestScope", options = "Larastan parameters carry as rule options", status = "decided" }
 "larastan.noEnvCallsOutsideOfConfig" = { pun = "analyse/laravel/no-env-outside-config", variant = "larastan.noEnvCallsOutsideOfConfig", options = "Larastan parameters carry as rule options", status = "decided" }
 "larastan.noModelMake" = { pun = "analyse/laravel/no-model-make", variant = "larastan.noModelMake", options = "Larastan parameters carry as rule options", status = "decided" }
-"larastan.noPublicModelAccessorMethod" = { pun = "analyse/laravel/no-public-scope-or-accessor", variant = "larastan.noPublicModelAccessorMethod", options = "Larastan parameters carry as rule options", status = "decided" }
-"larastan.noPublicModelScopeMethod" = { pun = "analyse/laravel/no-public-scope-or-accessor", variant = "larastan.noPublicModelScopeMethod", options = "Larastan parameters carry as rule options", status = "decided" }
+"larastan.noPublicModelAccessorMethod" = { pun = "lint/laravel/prefer-protected-model-methods", variant = "larastan.noPublicModelAccessorMethod", options = "Larastan parameters carry as rule options", status = "decided" }
+"larastan.noPublicModelScopeMethod" = { pun = "lint/laravel/prefer-protected-model-methods", variant = "larastan.noPublicModelScopeMethod", options = "Larastan parameters carry as rule options", status = "decided" }
 "larastan.noUnnecessaryCollectionCall" = { pun = "analyse/laravel/redundant-collection-call", variant = "larastan.noUnnecessaryCollectionCall", options = "Larastan parameters carry as rule options", status = "decided" }
 "larastan.octaneCompatibility" = { pun = "analyse/laravel/octane-compatibility", variant = "larastan.octaneCompatibility", options = "Larastan parameters carry as rule options", status = "decided" }
 "larastan.relationExistence" = { pun = "analyse/laravel/undefined-relation", variant = "larastan.relationExistence", options = "Larastan parameters carry as rule options", status = "decided" }
 "larastan.unnecessaryEnumerableToArrayCall" = { pun = "analyse/laravel/redundant-to-array-call", variant = "larastan.unnecessaryEnumerableToArrayCall", options = "Larastan parameters carry as rule options", status = "decided" }
 "larastan.unusedViews" = { pun = "analyse/laravel/unused-view", variant = "larastan.unusedViews", options = "Larastan parameters carry as rule options", status = "decided" }
-"larastan.uselessConstructs.value" = { pun = "analyse/laravel/useless-value-call", variant = "larastan.uselessConstructs.value", options = "Larastan parameters carry as rule options", status = "decided" }
-"larastan.uselessConstructs.with" = { pun = "analyse/laravel/useless-with-call", variant = "larastan.uselessConstructs.with", options = "Larastan parameters carry as rule options", status = "decided" }
+"larastan.uselessConstructs.value" = { pun = "lint/laravel/no-useless-value-call", variant = "larastan.uselessConstructs.value", options = "Larastan parameters carry as rule options", status = "decided" }
+"larastan.uselessConstructs.with" = { pun = "lint/laravel/no-useless-with-call", variant = "larastan.uselessConstructs.with", options = "Larastan parameters carry as rule options", status = "decided" }
 "rules.modelAppends" = { pun = "analyse/laravel/undefined-model-append", variant = "rules.modelAppends", options = "Larastan parameters carry as rule options", status = "decided" }
 
 [upstream.mago-linter]
@@ -4661,7 +4648,7 @@ DeprecatedTrait = { unsupported = "no PHPStan-parity equivalent; Mago analyzer i
 DirectTraitConstantAccess = { unsupported = "no PHPStan-parity equivalent; Mago analyzer is not a migrate input", status = "decided" }
 DocblockParameterNarrowing = { unsupported = "no PHPStan-parity equivalent; Mago analyzer is not a migrate input", status = "decided" }
 DocblockTypeMismatch = { pun = "analyse/phpdoc/type-mismatch", options = "none", status = "decided" }
-DuplicateArrayKey = { pun = "analyse/arrays/duplicate-array-key", options = "none", status = "decided" }
+DuplicateArrayKey = { pun = "lint/dead-code/no-duplicate-array-key", options = "none", status = "decided" }
 DuplicateCaughtType = { pun = "analyse/types/dead-catch", options = "none", status = "decided" }
 DuplicateClosureUseVariable = { pun = "analyse/functions/invalid-closure-use", options = "none", status = "decided" }
 DuplicateDefinition = { pun = "analyse/classes/duplicate-declaration", options = "none", status = "decided" }
@@ -4882,7 +4869,7 @@ PossiblyUndefinedStringArrayIndex = { pun = "analyse/undefined/offset", options 
 PossiblyUndefinedVariable = { pun = "analyse/undefined/variable", options = "none", status = "decided" }
 PropertyTypeCoercion = { pun = "analyse/types/property-assign", options = "none", status = "decided" }
 PsalmTrace = { pun = "analyse/debug/dump-type", options = "none", status = "decided" }
-RedundantCast = { pun = "analyse/casts/useless", options = "none", status = "decided" }
+RedundantCast = { pun = "lint/dead-code/no-useless-cast", options = "none", status = "decided" }
 RedundantComparison = { unsupported = "no PHPStan-parity equivalent; Mago analyzer is not a migrate input", status = "decided" }
 RedundantCondition = { pun = "analyse/dead-code/impossible-type-check", options = "none", status = "decided" }
 RedundantDocblockType = { unsupported = "no PHPStan-parity equivalent; Mago analyzer is not a migrate input", status = "decided" }
@@ -4892,7 +4879,7 @@ RedundantLogicalOperation = { unsupported = "no PHPStan-parity equivalent; Mago 
 RedundantNonnullEntryCheck = { unsupported = "no PHPStan-parity equivalent; Mago analyzer is not a migrate input", status = "decided" }
 RedundantNonnullTypeComparison = { pun = "analyse/dead-code/impossible-type-check", options = "none", status = "decided" }
 RedundantNullCoalesce = { pun = "analyse/dead-code/redundant-null-coalesce", options = "none", status = "decided" }
-RedundantNullsafeOperator = { pun = "analyse/types/redundant-nullsafe", options = "none", status = "decided" }
+RedundantNullsafeOperator = { pun = "lint/complexity/no-redundant-nullsafe", options = "none", status = "decided" }
 RedundantTypeComparison = { pun = "analyse/dead-code/impossible-type-check", options = "none", status = "decided" }
 ReferenceConstraintViolation = { unsupported = "no PHPStan-parity equivalent; Mago analyzer is not a migrate input", status = "decided" }
 ReferenceReusedFromConfusingScope = { unsupported = "no PHPStan-parity equivalent; Mago analyzer is not a migrate input", status = "decided" }
@@ -4923,7 +4910,7 @@ UndefinedIntArrayIndex = { pun = "analyse/undefined/offset", options = "none", s
 UndefinedStringArrayIndex = { pun = "analyse/undefined/offset", options = "none", status = "decided" }
 UndefinedVariable = { pun = "analyse/undefined/variable", options = "none", status = "decided" }
 UndefinedVariableInClosureUse = { pun = "analyse/undefined/variable", options = "none", status = "decided" }
-UnevaluatedCode = { pun = "analyse/dead-code/unreachable-code", options = "none", status = "decided" }
+UnevaluatedCode = { pun = "lint/dead-code/no-unreachable-code", options = "none", status = "decided" }
 UnhandledThrownType = { pun = "analyse/types/missing-throws", options = "none", status = "decided" }
 UnimplementedAbstractMethod = { pun = "analyse/classes/abstract-method-in-concrete-class", options = "none", status = "decided" }
 UnimplementedAbstractPropertyHook = { unsupported = "no PHPStan-parity equivalent; Mago analyzer is not a migrate input", status = "decided" }
@@ -4941,12 +4928,12 @@ UnreachableSwitchCase = { pun = "analyse/dead-code/number-comparison-always-cons
 UnreachableSwitchDefault = { pun = "analyse/dead-code/number-comparison-always-constant", options = "none", status = "decided" }
 UnresolvableClassConstant = { unsupported = "no PHPStan-parity equivalent; Mago analyzer is not a migrate input", status = "decided" }
 UnsafeInstantiation = { pun = "analyse/classes/unsafe-new-static", options = "none", status = "decided" }
-UnusedFunctionCall = { pun = "analyse/dead-code/unused-result", options = "none", status = "decided" }
-UnusedMethod = { pun = "analyse/dead-code/unused-private-method", options = "none", status = "decided" }
-UnusedMethodCall = { pun = "analyse/dead-code/unused-result", options = "none", status = "decided" }
+UnusedFunctionCall = { pun = "lint/dead-code/no-unused-expression", options = "none", status = "decided" }
+UnusedMethod = { pun = "lint/dead-code/no-unused-private-method", options = "none", status = "decided" }
+UnusedMethodCall = { pun = "lint/dead-code/no-unused-expression", options = "none", status = "decided" }
 UnusedParameter = { unsupported = "no PHPStan-parity equivalent; Mago analyzer is not a migrate input", status = "decided" }
 UnusedProperty = { pun = "analyse/dead-code/unused-private-property", options = "none", status = "decided" }
-UnusedStatement = { pun = "analyse/dead-code/unused-result", options = "none", status = "decided" }
+UnusedStatement = { pun = "lint/dead-code/no-unused-expression", options = "none", status = "decided" }
 UnusedTemplateParameter = { unsupported = "no PHPStan-parity equivalent; Mago analyzer is not a migrate input", status = "decided" }
 UselessControlFlow = { unsupported = "no PHPStan-parity equivalent; Mago analyzer is not a migrate input", status = "decided" }
 WhereConstraintViolation = { unsupported = "no PHPStan-parity equivalent; Mago analyzer is not a migrate input", status = "decided" }
@@ -5010,6 +4997,6 @@ reportPossiblyNonexistentGeneralArrayOffset = { option = "report-possibly-nonexi
 reportUnsafeArrayStringKeyCasting = { option = "report-unsafe-array-string-key-casting", rules = ["analyse/classes/incompatible-override", "analyse/debug/assert-type", "analyse/laravel/config-collection", "analyse/laravel/redundant-collection-call", "analyse/laravel/undefined-model-append", "analyse/phpdoc/hook-type-mismatch", "analyse/phpdoc/invalid-param-callable-tag", "analyse/phpdoc/invalid-trait-type-alias", "analyse/phpdoc/invalid-trait-use-type-alias", "analyse/phpdoc/invalid-type-alias", "analyse/phpdoc/invalid-var-tag", "analyse/phpdoc/invalid-var-tag-type", "analyse/phpdoc/type-mismatch", "analyse/phpdoc/var-tag-type-mismatch", "analyse/types/invalid-function-template", "analyse/types/invalid-method-tag-template", "analyse/types/invalid-method-template", "analyse/types/invalid-throws-tag", "analyse/types/invalid-trait-method-tag-template", "analyse/types/invalid-trait-template", "analyse/types/invalid-trait-use-generics", "analyse/types/throws-not-covariant", "analyse/types/unused-method-throws-type"] }
 squashedMigrationsPath = { option = "squashed-migrations-path", rules = ["analyse/laravel/redundant-collection-call", "analyse/laravel/undefined-model-append"] }
 translationDirectories = { option = "translation-directories", rules = ["analyse/laravel/missing-translation"] }
-treatPhpDocTypesAsCertain = { option = "treat-php-doc-types-as-certain", rules = ["analyse/casts/useless", "analyse/control-flow/unhandled-match", "analyse/dead-code/boolean-and-always-constant", "analyse/dead-code/boolean-not-always-constant", "analyse/dead-code/boolean-or-always-constant", "analyse/dead-code/do-while-always-constant", "analyse/dead-code/elseif-always-constant", "analyse/dead-code/if-always-constant", "analyse/dead-code/impossible-in-array", "analyse/dead-code/impossible-instanceof", "analyse/dead-code/impossible-method-type-check", "analyse/dead-code/impossible-static-type-check", "analyse/dead-code/impossible-type-check", "analyse/dead-code/loose-comparison-always-constant", "analyse/dead-code/number-comparison-always-constant", "analyse/dead-code/redundant-null-coalesce", "analyse/dead-code/sort-without-effect", "analyse/dead-code/strict-comparison-always-constant", "analyse/dead-code/switch-always-constant", "analyse/dead-code/ternary-always-constant", "analyse/dead-code/while-always-false", "analyse/dead-code/while-always-true", "analyse/dead-code/xor-always-constant", "analyse/laravel/config-collection", "analyse/statements/invalid-empty", "analyse/statements/invalid-isset", "analyse/types/redundant-array-values", "analyse/types/redundant-nullsafe", "analyse/types/redundant-nullsafe-method-call", "analyse/types/useless-array-filter"] }
+treatPhpDocTypesAsCertain = { option = "treat-php-doc-types-as-certain", rules = ["analyse/control-flow/unhandled-match", "analyse/dead-code/boolean-and-always-constant", "analyse/dead-code/boolean-not-always-constant", "analyse/dead-code/boolean-or-always-constant", "analyse/dead-code/do-while-always-constant", "analyse/dead-code/elseif-always-constant", "analyse/dead-code/if-always-constant", "analyse/dead-code/impossible-in-array", "analyse/dead-code/impossible-instanceof", "analyse/dead-code/impossible-method-type-check", "analyse/dead-code/impossible-static-type-check", "analyse/dead-code/impossible-type-check", "analyse/dead-code/loose-comparison-always-constant", "analyse/dead-code/number-comparison-always-constant", "analyse/dead-code/redundant-null-coalesce", "analyse/dead-code/sort-without-effect", "analyse/dead-code/strict-comparison-always-constant", "analyse/dead-code/switch-always-constant", "analyse/dead-code/ternary-always-constant", "analyse/dead-code/while-always-false", "analyse/dead-code/while-always-true", "analyse/dead-code/xor-always-constant", "analyse/laravel/config-collection", "analyse/statements/invalid-empty", "analyse/statements/invalid-isset", "analyse/types/redundant-array-values", "analyse/types/useless-array-filter"] }
 usePathConstantsAsConstantString = { option = "use-path-constants-as-constant-string", rules = ["analyse/classes/conflicting-trait-constant", "analyse/classes/incompatible-override", "analyse/classes/invalid-enum", "analyse/dead-code/impossible-in-array", "analyse/dead-code/strict-comparison-always-constant", "analyse/debug/assert-type", "analyse/laravel/config-collection", "analyse/laravel/redundant-collection-call", "analyse/laravel/undefined-model-append", "analyse/phpdoc/hook-type-mismatch", "analyse/phpdoc/invalid-param-callable-tag", "analyse/phpdoc/invalid-trait-type-alias", "analyse/phpdoc/invalid-trait-use-type-alias", "analyse/phpdoc/invalid-type-alias", "analyse/phpdoc/invalid-var-tag", "analyse/phpdoc/invalid-var-tag-type", "analyse/phpdoc/type-mismatch", "analyse/phpdoc/var-tag-type-mismatch", "analyse/types/invalid-function-template", "analyse/types/invalid-method-tag-template", "analyse/types/invalid-method-template", "analyse/types/invalid-regex", "analyse/types/invalid-throws-tag", "analyse/types/invalid-trait-method-tag-template", "analyse/types/invalid-trait-template", "analyse/types/invalid-trait-use-generics", "analyse/types/missing-preg-quote-delimiter", "analyse/types/throws-not-covariant", "analyse/types/unused-method-throws-type"] }
 viewDirectories = { option = "view-directories", rules = ["analyse/laravel/missing-translation", "analyse/laravel/unused-view"] }

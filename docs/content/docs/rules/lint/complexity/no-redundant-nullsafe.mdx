@@ -12,7 +12,11 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 ## Replaces
 
 - [`Pun/no_redundant_nullsafe`](https://mago.carthage.software/1.57.0/en/tools/linter/rules/) (pun).
+- [`NullsafeMethodCallRule`](https://phpstan.org/error-identifiers/nullsafe.neverNull) (phpstan-classes).
+- [`NullsafePropertyFetchRule`](https://phpstan.org/error-identifiers/nullsafe.neverNull) (phpstan-classes).
 - [`no-redundant-nullsafe`](https://mago.carthage.software/1.57.0/en/tools/linter/rules/#no-redundant-nullsafe) (mago-linter).
+- [`RedundantNullsafeOperator`](https://mago.carthage.software/1.57.0/en/tools/analyzer/overview/) (mago-analyzer).
+- [`nullsafe.neverNull`](https://phpstan.org/error-identifiers/nullsafe.neverNull) (phpstan).
 
 ## Configuration
 
@@ -32,10 +36,5 @@ Flags the use of the nullsafe operator (`?->`) in contexts where its null-checki
 ## Options
 
 No configurable options.
-
-## Linked rules
-
-
-- Fixes reports from [`analyse/types/redundant-nullsafe`](/docs/rules/analyse/types/redundant-nullsafe).
 
 [Group reference](/docs/rules/lint/complexity) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

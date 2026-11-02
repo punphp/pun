@@ -12,6 +12,17 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 ## Replaces
 
 - [`RemoveDeadStmt`](https://getrector.com/rule-detail/remove-dead-stmt-rector) (rector).
+- [`NoopRule`](https://phpstan.org/error-identifiers/booleanAnd.resultUnused) (phpstan-classes).
+- [`UnusedFunctionCall`](https://mago.carthage.software/1.57.0/en/tools/analyzer/overview/) (mago-analyzer).
+- [`UnusedMethodCall`](https://mago.carthage.software/1.57.0/en/tools/analyzer/overview/) (mago-analyzer).
+- [`UnusedStatement`](https://mago.carthage.software/1.57.0/en/tools/analyzer/overview/) (mago-analyzer).
+- [`booleanAnd.resultUnused`](https://phpstan.org/error-identifiers/booleanAnd.resultUnused) (phpstan).
+- [`booleanOr.resultUnused`](https://phpstan.org/error-identifiers/booleanOr.resultUnused) (phpstan).
+- [`expr.resultUnused`](https://phpstan.org/error-identifiers/expr.resultUnused) (phpstan).
+- [`logicalAnd.resultUnused`](https://phpstan.org/error-identifiers/logicalAnd.resultUnused) (phpstan).
+- [`logicalOr.resultUnused`](https://phpstan.org/error-identifiers/logicalOr.resultUnused) (phpstan).
+- [`logicalXor.resultUnused`](https://phpstan.org/error-identifiers/logicalXor.resultUnused) (phpstan).
+- [`ternary.resultUnused`](https://phpstan.org/error-identifiers/ternary.resultUnused) (phpstan).
 
 ## Configuration
 
@@ -31,10 +42,5 @@ Remove dead code statements
 ## Options
 
 No configurable options.
-
-## Linked rules
-
-
-- Fixes reports from [`analyse/dead-code/unused-result`](/docs/rules/analyse/dead-code/unused-result).
 
 [Group reference](/docs/rules/lint/dead-code) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

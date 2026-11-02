@@ -7,11 +7,14 @@ pagination: false
 
 <RuleId id="lint/dead-code/no-useless-cast" />
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour).
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Additional upstream gates: `strictRules.uselessCast`.
 
 ## Replaces
 
 - [`RecastingRemoval`](https://getrector.com/rule-detail/recasting-removal-rector) (rector).
+- [`UselessCastRule`](https://github.com/phpstan/phpstan-strict-rules#readme) (phpstan-classes).
+- [`RedundantCast`](https://mago.carthage.software/1.57.0/en/tools/analyzer/overview/) (mago-analyzer).
+- [`cast.useless`](https://phpstan.org/error-identifiers/cast.useless) (phpstan-strict-rules).
 
 ## Configuration
 
@@ -31,10 +34,5 @@ Remove casts to the type the value already has, including (string) inside concat
 ## Options
 
 No configurable options.
-
-## Linked rules
-
-
-- Fixes reports from [`analyse/casts/useless`](/docs/rules/analyse/casts/useless).
 
 [Group reference](/docs/rules/lint/dead-code) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

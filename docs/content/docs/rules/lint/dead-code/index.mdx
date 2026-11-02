@@ -7,7 +7,7 @@ pagination: false
 
 Code that never runs, or whose result is never used.
 
-Across commands: format: 0, lint: 63, analyse: 49.
+Across commands: format: 0, lint: 63, analyse: 42.
 
 <CardGroup cols={2}>
 <Card title="lint/dead-code/no-always-false-condition">
@@ -484,7 +484,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove casts to the type the value already has, including (string) inside concatenation.
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour).
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Additional upstream gates: `strictRules.uselessCast`.
 
 </Card>
 <Card title="lint/dead-code/no-useless-catch">

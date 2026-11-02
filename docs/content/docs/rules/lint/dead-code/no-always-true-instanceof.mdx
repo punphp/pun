@@ -12,6 +12,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 ## Replaces
 
 - [`RemoveDeadInstanceOf`](https://getrector.com/rule-detail/remove-dead-instance-of-rector) (rector).
+- [`instanceof.alwaysTrue`](https://phpstan.org/error-identifiers/instanceof.alwaysTrue) (phpstan).
 
 ## Configuration
 
@@ -31,10 +32,5 @@ Remove instanceof checks and assert(instanceof) calls that are always true for t
 ## Options
 
 No configurable options.
-
-## Linked rules
-
-
-- Fixes reports from [`analyse/dead-code/impossible-instanceof`](/docs/rules/analyse/dead-code/impossible-instanceof).
 
 [Group reference](/docs/rules/lint/dead-code) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

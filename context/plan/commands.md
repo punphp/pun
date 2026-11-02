@@ -51,8 +51,8 @@ Each command answers one question and makes one promise.
   The rest of Rector is lint.
 - **PHPStan's syntax-only bans go to lint**, where no types are needed (strict-rules' 16 bans become 9 lint rules).
   PHPStan core's own identifiers stay in analyse until 1.0 so `pun analyse` matches `phpstan analyse` on day one (decided).
-- **When analyse finds something lint can fix**, the two rules are linked: `analyse/…/unused-private-method` reports it
-  and `lint/…/no-unused-private-method` fixes it. `pun check` shows it once (18 such pairs).
+- **When lint or format can fix what analyse finds, analyse drops it** (Pushpak, 2026-11-02): PHPStan's `method.unused`
+  is `lint/…/no-unused-private-method`, and `pun analyse` no longer reports it. Analyse keeps only reports nothing fixes.
 
 ## 3. How `pun check` works
 
@@ -168,8 +168,7 @@ What changes for users:
 1. **The 40 rules move** (config.md Build 2): format stops running them, lint does.
 2. **Grouped output** (output.md Build 5) over today's format and lint steps.
 3. **One parse per file:** Mago's tree shared by lint and analyse, tokens for format, an index pass before checking.
-4. **Analyse joins** when `pun analyse` exists (analyse.md Build 1): report-only after lint fixes and format; the 18
-   linked analyse and lint pairs print once, as the lint problem.
+4. **Analyse joins** when `pun analyse` exists (analyse.md Build 1): report-only after lint fixes and format.
 5. **`--fix` loop:** lint fixes until stable, format, write each file once, re-index changed files, analyse.
    *Done when* `pun check --fix` equals running `pun lint --fix`, `pun format` and `pun analyse` in order on every
    corpus project.
