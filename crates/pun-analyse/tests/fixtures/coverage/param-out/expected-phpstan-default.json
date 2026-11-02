@@ -1,0 +1,264 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "assigned.php",
+   "line": 8,
+   "identifier": "paramOut.type",
+   "message": "Parameter &$p @param-out type of function ParamOutCoverage\\narrowerOut() expects int, string given.",
+   "tip": null
+  },
+  {
+   "file": "assigned.php",
+   "line": 13,
+   "identifier": "parameterByRef.type",
+   "message": "Parameter &$p by-ref type of function ParamOutCoverage\\noParamOut() expects string, int given.",
+   "tip": "You can change the parameter out type with @param-out PHPDoc tag."
+  },
+  {
+   "file": "assigned.php",
+   "line": 28,
+   "identifier": "paramOut.type",
+   "message": "Parameter &$p @param-out type of function ParamOutCoverage\\inBranches() expects int, string given.",
+   "tip": null
+  },
+  {
+   "file": "assigned.php",
+   "line": 38,
+   "identifier": "paramOut.type",
+   "message": "Parameter &$p @param-out type of function ParamOutCoverage\\appended() expects list<int>, non-empty-list<'str'|int> given.",
+   "tip": null
+  },
+  {
+   "file": "assigned.php",
+   "line": 44,
+   "identifier": "paramOut.type",
+   "message": "Parameter &$p @param-out type of function ParamOutCoverage\\viaCall() expects int, string given.",
+   "tip": null
+  },
+  {
+   "file": "assigned.php",
+   "line": 50,
+   "identifier": "postInc.type",
+   "message": "Cannot use ++ on 'a'.",
+   "tip": "Operator ++ is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_increment()."
+  },
+  {
+   "file": "assigned.php",
+   "line": 54,
+   "identifier": "throws.unusedType",
+   "message": "Function ParamOutCoverage\\mayThrow() has RuntimeException in PHPDoc @throws tag but it's not thrown.",
+   "tip": null
+  },
+  {
+   "file": "assigned.php",
+   "line": 64,
+   "identifier": "paramOut.type",
+   "message": "Parameter &$p @param-out type of function ParamOutCoverage\\caught() expects int, RuntimeException given.",
+   "tip": null
+  },
+  {
+   "file": "assigned.php",
+   "line": 72,
+   "identifier": "catch.neverThrown",
+   "message": "Dead catch - LogicException is never thrown in the try block.",
+   "tip": null
+  },
+  {
+   "file": "assigned.php",
+   "line": 72,
+   "identifier": "parameterByRef.type",
+   "message": "Parameter &$p by-ref type of function ParamOutCoverage\\caughtByRef() expects int, LogicException|RuntimeException given.",
+   "tip": "You can change the parameter out type with @param-out PHPDoc tag."
+  },
+  {
+   "file": "assigned.php",
+   "line": 89,
+   "identifier": "paramOut.type",
+   "message": "Parameter &$p @param-out type of function ParamOutCoverage\\unsetOffset() expects int, array<int, int> given.",
+   "tip": null
+  },
+  {
+   "file": "assigned.php",
+   "line": 90,
+   "identifier": "paramOut.type",
+   "message": "Parameter &$p @param-out type of function ParamOutCoverage\\unsetOffset() expects int, array<int, int> given.",
+   "tip": null
+  },
+  {
+   "file": "assigned.php",
+   "line": 105,
+   "identifier": "paramOut.type",
+   "message": "Parameter &$p @param-out type of method ParamOutCoverage\\Holder::method() expects string, int given.",
+   "tip": null
+  },
+  {
+   "file": "assigned.php",
+   "line": 110,
+   "identifier": "parameterByRef.type",
+   "message": "Parameter &$p by-ref type of method ParamOutCoverage\\Holder::staticMethod() expects int, string given.",
+   "tip": "You can change the parameter out type with @param-out PHPDoc tag."
+  },
+  {
+   "file": "ends.php",
+   "line": 6,
+   "identifier": "paramOut.type",
+   "message": "Parameter &$p @param-out type of function ParamOutEnds\\neverWritten() expects string, string|null given.",
+   "tip": null
+  },
+  {
+   "file": "ends.php",
+   "line": 13,
+   "identifier": "paramOut.type",
+   "message": "Parameter &$p @param-out type of function ParamOutEnds\\maybeWritten() expects string, string|null given.",
+   "tip": null
+  },
+  {
+   "file": "ends.php",
+   "line": 43,
+   "identifier": "paramOut.type",
+   "message": "Parameter &$p @param-out type of function ParamOutEnds\\returnValue() expects string, string|null given.",
+   "tip": null
+  },
+  {
+   "file": "ends.php",
+   "line": 49,
+   "identifier": "paramOut.type",
+   "message": "Parameter &$p @param-out type of function ParamOutEnds\\emptyBranches() expects string, string|null given.",
+   "tip": null
+  },
+  {
+   "file": "ends.php",
+   "line": 52,
+   "identifier": "paramOut.type",
+   "message": "Parameter &$p @param-out type of function ParamOutEnds\\emptyBranches() expects string, string|null given.",
+   "tip": null
+  },
+  {
+   "file": "ends.php",
+   "line": 60,
+   "identifier": "paramOut.type",
+   "message": "Parameter &$p @param-out type of function ParamOutEnds\\trailingComment() expects string, string|null given.",
+   "tip": null
+  },
+  {
+   "file": "ends.php",
+   "line": 66,
+   "identifier": "paramOut.type",
+   "message": "Parameter &$p @param-out type of function ParamOutEnds\\alwaysWritten() expects int, string given.",
+   "tip": null
+  },
+  {
+   "file": "self-out.php",
+   "line": 20,
+   "identifier": "selfOut.type",
+   "message": "Self-out type int of method SelfOutCoverage\\Box::notAnObject is not subtype of SelfOutCoverage\\Box.",
+   "tip": null
+  },
+  {
+   "file": "self-out.php",
+   "line": 25,
+   "identifier": "selfOut.static",
+   "message": "PHPDoc tag @phpstan-self-out is not supported above static method SelfOutCoverage\\Box::onStatic().",
+   "tip": null
+  },
+  {
+   "file": "self-out.php",
+   "line": 30,
+   "identifier": "selfOut.unresolvableType",
+   "message": "PHPDoc tag @phpstan-self-out for method SelfOutCoverage\\Box::unresolvable() contains unresolvable type.",
+   "tip": null
+  },
+  {
+   "file": "self-out.php",
+   "line": 35,
+   "identifier": "selfOut.unresolvableType",
+   "message": "PHPDoc tag @phpstan-self-out for method SelfOutCoverage\\Box::nestedUnresolvable() contains unresolvable type.",
+   "tip": null
+  },
+  {
+   "file": "self-out.php",
+   "line": 40,
+   "identifier": "selfOut.type",
+   "message": "Self-out type stdClass of method SelfOutCoverage\\Box::otherClass is not subtype of SelfOutCoverage\\Box.",
+   "tip": null
+  },
+  {
+   "file": "self-out.php",
+   "line": 50,
+   "identifier": "generics.moreTypes",
+   "message": "Generic type SelfOutCoverage\\Box<int, string> in PHPDoc tag @phpstan-self-out specifies 2 template types, but class SelfOutCoverage\\Box supports only 1: T",
+   "tip": null
+  },
+  {
+   "file": "self-out.php",
+   "line": 58,
+   "identifier": "generics.notGeneric",
+   "message": "PHPDoc tag @phpstan-self-out contains generic type SelfOutCoverage\\Plain<int> but class SelfOutCoverage\\Plain is not generic.",
+   "tip": null
+  },
+  {
+   "file": "self-out.php",
+   "line": 66,
+   "identifier": "selfOut.type",
+   "message": "Self-out type SelfOutCoverage\\Shape|null of method SelfOutCoverage\\Shape::maybe is not subtype of SelfOutCoverage\\Shape.",
+   "tip": null
+  },
+  {
+   "file": "too-wide.php",
+   "line": 5,
+   "identifier": "parameterByRef.unusedType",
+   "message": "Function ParamOutTooWide\\unusedNull() never assigns null to &$p so it can be removed from the by-ref type.",
+   "tip": "You can narrow the parameter out type with @param-out PHPDoc tag."
+  },
+  {
+   "file": "too-wide.php",
+   "line": 11,
+   "identifier": "paramOut.unusedType",
+   "message": "Function ParamOutTooWide\\unusedMembers() never assigns int to &$p so it can be removed from the @param-out type.",
+   "tip": null
+  },
+  {
+   "file": "too-wide.php",
+   "line": 11,
+   "identifier": "paramOut.unusedType",
+   "message": "Function ParamOutTooWide\\unusedMembers() never assigns null to &$p so it can be removed from the @param-out type.",
+   "tip": null
+  },
+  {
+   "file": "too-wide.php",
+   "line": 27,
+   "identifier": "parameterByRef.unusedType",
+   "message": "Function ParamOutTooWide\\unusedThroughReturn() never assigns null to &$p so it can be removed from the by-ref type.",
+   "tip": "You can narrow the parameter out type with @param-out PHPDoc tag."
+  },
+  {
+   "file": "too-wide.php",
+   "line": 27,
+   "identifier": "parameterByRef.unusedType",
+   "message": "Function ParamOutTooWide\\unusedThroughReturn() never assigns string to &$p so it can be removed from the by-ref type.",
+   "tip": "You can narrow the parameter out type with @param-out PHPDoc tag."
+  },
+  {
+   "file": "too-wide.php",
+   "line": 54,
+   "identifier": "parameterByRef.unusedType",
+   "message": "Function ParamOutTooWide\\variadic() never assigns null to &$refs so it can be removed from the by-ref type.",
+   "tip": "You can narrow the parameter out type with @param-out PHPDoc tag."
+  },
+  {
+   "file": "too-wide.php",
+   "line": 68,
+   "identifier": "parameterByRef.unusedType",
+   "message": "Method ParamOutTooWide\\Foo::privateMethod() never assigns null to &$p so it can be removed from the by-ref type.",
+   "tip": "You can narrow the parameter out type with @param-out PHPDoc tag."
+  },
+  {
+   "file": "too-wide.php",
+   "line": 73,
+   "identifier": "parameterByRef.unusedType",
+   "message": "Method ParamOutTooWide\\Foo::finalMethod() never assigns null to &$p so it can be removed from the by-ref type.",
+   "tip": "You can narrow the parameter out type with @param-out PHPDoc tag."
+  }
+ ]
+}

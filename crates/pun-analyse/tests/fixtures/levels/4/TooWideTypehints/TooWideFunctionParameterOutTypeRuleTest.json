@@ -1,0 +1,69 @@
+{
+    "test": "TooWideTypehints/TooWideFunctionParameterOutTypeRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "TooWideTypehints/data/too-wide-function-parameter-out.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "TooWideTypehints/data/too-wide-function-parameter-out.php",
+                    "line": 10,
+                    "identifier": "parameterByRef.unusedType",
+                    "message": "Function TooWideFunctionParameterOut\\doBar() never assigns null to &$p so it can be removed from the by-ref type.",
+                    "tip": "You can narrow the parameter out type with @param-out PHPDoc tag."
+                },
+                {
+                    "file": "TooWideTypehints/data/too-wide-function-parameter-out.php",
+                    "line": 18,
+                    "identifier": "paramOut.unusedType",
+                    "message": "Function TooWideFunctionParameterOut\\doBaz() never assigns null to &$p so it can be removed from the @param-out type.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/too-wide-function-parameter-out.php",
+                    "line": 23,
+                    "identifier": "parameterByRef.unusedType",
+                    "message": "Function TooWideFunctionParameterOut\\doLorem() never assigns null to &$p so it can be removed from the by-ref type.",
+                    "tip": "You can narrow the parameter out type with @param-out PHPDoc tag."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNestedTooWideType",
+            "files": [
+                "TooWideTypehints/data/nested-too-wide-function-parameter-out-type.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug15066",
+            "files": [
+                "TooWideTypehints/data/bug-15066.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "TooWideTypehints/data/bug-15066.php",
+                    "line": 24,
+                    "identifier": "parameterByRef.unusedType",
+                    "message": "Function Bug15066\\variadicNeverNull() never assigns null to &$refs so it can be removed from the by-ref type.",
+                    "tip": "You can narrow the parameter out type with @param-out PHPDoc tag."
+                },
+                {
+                    "file": "TooWideTypehints/data/bug-15066.php",
+                    "line": 62,
+                    "identifier": "parameterByRef.unusedType",
+                    "message": "Function Bug15066\\variadicRebindOnlyString() never assigns null to &$refs so it can be removed from the by-ref type.",
+                    "tip": "You can narrow the parameter out type with @param-out PHPDoc tag."
+                }
+            ],
+            "general": []
+        }
+    ]
+}

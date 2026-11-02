@@ -393,6 +393,18 @@ const PORTED: &[&str] = &[
     "staticMethod.private",
     "staticMethod.protected",
     "method.staticCall",
+    // analyse param-out and self-out (batch-paramout)
+    "paramOut.type",
+    "parameterByRef.type",
+    "paramOut.unusedType",
+    "paramOut.nestedUnusedType",
+    "paramOut.tooWideBool",
+    "parameterByRef.unusedType",
+    "parameterByRef.nestedUnusedType",
+    "parameterByRef.tooWideBool",
+    "selfOut.type",
+    "selfOut.static",
+    "selfOut.unresolvableType",
 ];
 
 /// The `class.notFound` messages of the level-2 Generics and PHPDoc tag rules (other rules report the identifier at every level).

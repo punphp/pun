@@ -588,6 +588,7 @@ mod tests {
             missing_callable_signature: false,
             strict: Default::default(),
             exceptions: &exceptions,
+            too_wide: Default::default(),
             include_settings: &settings,
             include_state,
             closure_bind: 0,

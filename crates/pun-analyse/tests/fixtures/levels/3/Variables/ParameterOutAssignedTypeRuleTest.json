@@ -1,0 +1,180 @@
+{
+    "test": "Variables/ParameterOutAssignedTypeRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Variables/data/parameter-out-assigned-type.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/parameter-out-assigned-type.php",
+                    "line": 10,
+                    "identifier": "paramOut.type",
+                    "message": "Parameter &$p @param-out type of function ParameterOutAssignedType\\foo() expects int, string given.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/parameter-out-assigned-type.php",
+                    "line": 21,
+                    "identifier": "paramOut.type",
+                    "message": "Parameter &$p @param-out type of method ParameterOutAssignedType\\Foo::doFoo() expects int, string given.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/parameter-out-assigned-type.php",
+                    "line": 29,
+                    "identifier": "paramOut.type",
+                    "message": "Parameter &$p @param-out type of method ParameterOutAssignedType\\Foo::doBar() expects string, int given.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/parameter-out-assigned-type.php",
+                    "line": 38,
+                    "identifier": "paramOut.type",
+                    "message": "Parameter &$p @param-out type of method ParameterOutAssignedType\\Foo::doBaz() expects list<int>, array<0|int<2, max>, int> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/parameter-out-assigned-type.php",
+                    "line": 47,
+                    "identifier": "paramOut.type",
+                    "message": "Parameter &$p @param-out type of method ParameterOutAssignedType\\Foo::doBaz2() expects list<int>, non-empty-list<'str'|int> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/parameter-out-assigned-type.php",
+                    "line": 56,
+                    "identifier": "paramOut.type",
+                    "message": "Parameter &$p @param-out type of method ParameterOutAssignedType\\Foo::doBaz3() expects list<list<int>>, list<array<int<0, max>, int>> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/parameter-out-assigned-type.php",
+                    "line": 61,
+                    "identifier": "parameterByRef.type",
+                    "message": "Parameter &$p by-ref type of method ParameterOutAssignedType\\Foo::doNoParamOut() expects string, int given.",
+                    "tip": "You can change the parameter out type with @param-out PHPDoc tag."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBenevolentArrayKey",
+            "files": [
+                "Variables/data/benevolent-array-key.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13093",
+            "files": [
+                "Variables/data/bug-13093.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13093b",
+            "files": [
+                "Variables/data/bug-13093b.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12754",
+            "files": [
+                "Variables/data/bug-12754.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14124",
+            "files": [
+                "Variables/data/bug-14124.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14124b",
+            "files": [
+                "Variables/data/bug-14124b.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCatchVariable",
+            "files": [
+                "Variables/data/parameter-out-catch-variable.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/parameter-out-catch-variable.php",
+                    "line": 11,
+                    "identifier": "paramOut.type",
+                    "message": "Parameter &$p @param-out type of function ParameterOutCatchVariable\\foo() expects int, Exception given.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/parameter-out-catch-variable.php",
+                    "line": 19,
+                    "identifier": "parameterByRef.type",
+                    "message": "Parameter &$p by-ref type of function ParameterOutCatchVariable\\bar() expects int, Exception given.",
+                    "tip": "You can change the parameter out type with @param-out PHPDoc tag."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug15066",
+            "files": [
+                "Variables/data/bug-15066.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/bug-15066.php",
+                    "line": 22,
+                    "identifier": "parameterByRef.type",
+                    "message": "Parameter &$refs by-ref type of function Bug15066Variables\\variadicWrongType() expects string|null, int|string|null given.",
+                    "tip": "You can change the parameter out type with @param-out PHPDoc tag."
+                },
+                {
+                    "file": "Variables/data/bug-15066.php",
+                    "line": 35,
+                    "identifier": "paramOut.type",
+                    "message": "Parameter &$refs @param-out type of function Bug15066Variables\\variadicParamOutNeverWritten() expects string, string|null given.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-15066.php",
+                    "line": 52,
+                    "identifier": "parameterByRef.type",
+                    "message": "Parameter &$refs by-ref type of method Bug15066Variables\\Foo::variadicWrongType() expects string|null, int|string|null given.",
+                    "tip": "You can change the parameter out type with @param-out PHPDoc tag."
+                },
+                {
+                    "file": "Variables/data/bug-15066.php",
+                    "line": 69,
+                    "identifier": "parameterByRef.type",
+                    "message": "Parameter &$refs by-ref type of function Bug15066Variables\\variadicRebindWrongArray() expects string|null, int given.",
+                    "tip": "You can change the parameter out type with @param-out PHPDoc tag."
+                }
+            ],
+            "general": []
+        }
+    ]
+}

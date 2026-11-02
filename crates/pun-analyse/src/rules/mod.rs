@@ -945,6 +945,8 @@ pub struct Checker<'a, 'arena> {
     strict: crate::StrictRules,
     /// [`driver::Checks`]'s `exceptions.*` parameters.
     exceptions: &'a crate::Exceptions,
+    /// TooWideTypeCheck's switches.
+    too_wide: crate::TooWide,
     include_settings: &'a include_file::Settings,
     include_state: include_file::State,
     /// How many `Closure::bind()` calls the walk is inside (`isInClosureBind()`).
@@ -1554,6 +1556,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         types::function_defaults(self, f);
         types::function_returns(self, f);
         types::too_wide_function(self, f);
+        types::param_out_function(self, f);
         types::throws_void_function(self, f);
         types::throws_function(self, f);
         generics::function(self, f);
@@ -1685,6 +1688,8 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         types::method_defaults(self, m);
         types::method_returns(self, m);
         types::too_wide_method(self, m);
+        types::param_out_method(self, m);
+        types::self_out(self, m);
         types::throws_void_method(self, m);
         types::throws_method(self, m);
         types::throws_covariance(self, m);

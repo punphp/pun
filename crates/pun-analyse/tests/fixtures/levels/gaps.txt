@@ -742,3 +742,9 @@
 # against the arguments is not ported in ThrowsVoid*WithExplicitThrowPointRule
 4 Exceptions/MissingCheckedExceptionInFunctionThrowsRuleTest::testConditionalThrows
 4 Exceptions/MissingCheckedExceptionInMethodThrowsRuleTest::testConditionalThrows
+# paramOut.type after `unset($p[1])` on a list<int>: PHPStan's unset narrows the key type to 0|int<2, max> (and
+# int<0, max> one level down), Mago's keeps array<int, int>
+3 Variables/ParameterOutAssignedTypeRuleTest::testRule
+# a caught class extending an unknown class: PHPStan types the catch variable Bug10684\HookBreaker, Mago Throwable,
+# so Pun reports parameterByRef.type for `$brokenBy = $e` and method.notFound for `$e->getReturnValue()`
+4 TooWideTypehints/TooWideMethodParameterOutTypeRuleTest::testBug10684

@@ -1,0 +1,78 @@
+{
+    "test": "PhpDoc/IncompatibleSelfOutTypeRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "PhpDoc/data/incompatible-self-out-type.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/incompatible-self-out-type.php",
+                    "line": 23,
+                    "identifier": "selfOut.type",
+                    "message": "Self-out type int of method IncompatibleSelfOutType\\A::three is not subtype of IncompatibleSelfOutType\\A.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-self-out-type.php",
+                    "line": 28,
+                    "identifier": "selfOut.type",
+                    "message": "Self-out type IncompatibleSelfOutType\\A|null of method IncompatibleSelfOutType\\A::four is not subtype of IncompatibleSelfOutType\\A.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-self-out-type.php",
+                    "line": 38,
+                    "identifier": "selfOut.static",
+                    "message": "PHPDoc tag @phpstan-self-out is not supported above static method IncompatibleSelfOutType\\Foo::selfOutStatic().",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-self-out-type.php",
+                    "line": 46,
+                    "identifier": "selfOut.unresolvableType",
+                    "message": "PHPDoc tag @phpstan-self-out for method IncompatibleSelfOutType\\Foo::doFoo() contains unresolvable type.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-self-out-type.php",
+                    "line": 54,
+                    "identifier": "selfOut.unresolvableType",
+                    "message": "PHPDoc tag @phpstan-self-out for method IncompatibleSelfOutType\\Foo::doBar() contains unresolvable type.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-self-out-type.php",
+                    "line": 67,
+                    "identifier": "generics.notGeneric",
+                    "message": "PHPDoc tag @phpstan-self-out contains generic type IncompatibleSelfOutType\\GenericCheck<int> but class IncompatibleSelfOutType\\GenericCheck is not generic.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-self-out-type.php",
+                    "line": 84,
+                    "identifier": "generics.lessTypes",
+                    "message": "Generic type IncompatibleSelfOutType\\GenericCheck2<InvalidArgumentException> in PHPDoc tag @phpstan-self-out does not specify all template types of class IncompatibleSelfOutType\\GenericCheck2: T, U",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-self-out-type.php",
+                    "line": 92,
+                    "identifier": "generics.moreTypes",
+                    "message": "Generic type IncompatibleSelfOutType\\GenericCheck2<InvalidArgumentException, int<1, max>, string> in PHPDoc tag @phpstan-self-out specifies 3 template types, but class IncompatibleSelfOutType\\GenericCheck2 supports only 2: T, U",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-self-out-type.php",
+                    "line": 100,
+                    "identifier": "generics.notSubtype",
+                    "message": "Type string in generic type IncompatibleSelfOutType\\GenericCheck2<InvalidArgumentException, string> in PHPDoc tag @phpstan-self-out is not subtype of template type U of int of class IncompatibleSelfOutType\\GenericCheck2.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

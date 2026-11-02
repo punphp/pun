@@ -102,6 +102,8 @@ pub struct Project {
     pub strict_rules: StrictRules,
     /// The `exceptions.*` parameters of the throw point rules.
     pub exceptions: Exceptions,
+    /// TooWideTypeCheck's switches the param-out rules read.
+    pub too_wide: TooWide,
     /// How anonymous class names print their file: relative to the working directory and the analysed paths.
     pub relative_path: RelativePath,
     /// Larastan's rules and their switches, when the config includes Larastan's extension.neon.
@@ -274,6 +276,16 @@ impl Exceptions {
     }
 }
 
+/// TooWideTypeCheck's `featureToggles.reportTooWideBool` (on with bleedingEdge) and
+/// `featureToggles.reportNestedTooWideType`, and TooWideMethodParameterOutTypeRule's
+/// `checkTooWideParameterOutInProtectedAndPublicMethods`.
+#[derive(Clone, Copy, Default)]
+pub struct TooWide {
+    pub report_bool: bool,
+    pub report_nested: bool,
+    pub param_out_in_protected_and_public_methods: bool,
+}
+
 /// PHP 8.5.11, the oracle's runtime, which PHPStan uses when `phpVersion` is null.
 pub(crate) const RUNTIME_PHP_VERSION: u32 = 80511;
 
@@ -412,6 +424,11 @@ impl Project {
             deprecation_rules: flag("deprecationRulesInstalled"),
             strict_rules: StrictRules::from_params(params),
             exceptions: Exceptions::from_params(params),
+            too_wide: TooWide {
+                report_bool: toggle("reportTooWideBool"),
+                report_nested: toggle("reportNestedTooWideType"),
+                param_out_in_protected_and_public_methods: flag("checkTooWideParameterOutInProtectedAndPublicMethods"),
+            },
             precise_unused_parameter_line: toggle("reportPreciseLineForUnusedFunctionParameter"),
             relative_path: RelativePath::of(&paths),
             larastan: crate::Larastan::from_params(root, params),
@@ -479,6 +496,7 @@ impl Project {
             deprecation_rules: false,
             strict_rules: StrictRules::default(),
             exceptions: Exceptions::default(),
+            too_wide: TooWide::default(),
             precise_unused_parameter_line: false,
             larastan: None,
             type_aliases: Vec::new(),

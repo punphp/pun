@@ -97,6 +97,8 @@ pub(crate) struct Checks {
     pub(super) strict: crate::StrictRules,
     /// [`Project::exceptions`].
     pub(super) exceptions: crate::Exceptions,
+    /// [`Project::too_wide`].
+    too_wide: crate::TooWide,
     /// RequireFileExistsRule's path and feature-toggle settings.
     include_file: super::include_file::Settings,
 }
@@ -162,6 +164,7 @@ impl Checks {
             missing_callable_signature: project.check_missing_callable_signature,
             strict: project.strict_rules,
             exceptions: project.exceptions.clone(),
+            too_wide: project.too_wide,
             include_file: super::include_file::Settings {
                 cwd: project.current_working_directory.clone(),
                 include_paths: project.include_paths.clone(),
@@ -323,6 +326,7 @@ fn checker<'a, 'arena>(
         missing_callable_signature: project.missing_callable_signature,
         strict: project.strict,
         exceptions: &project.exceptions,
+        too_wide: project.too_wide,
         include_settings: &project.include_file,
         include_state,
         closure_bind: 0,

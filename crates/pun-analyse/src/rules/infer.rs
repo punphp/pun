@@ -150,7 +150,9 @@ pub(super) fn infer<'arena>(
     wanted.extend(dead_code::flow_types(program, level));
     let (typed, watched, initializations) = dead_code::coalesce_types(program, level);
     wanted.extend(typed);
-    analyse_observed(arena, file, program, names, codebase, php_version, pollute_scope_with_loop_initial_assignments, pollute_scope_with_always_iterable_foreach, pollute_scope_with_block, wanted, watched, calls, Some(variables), Some(variable_writes), initializations, Some(property_initializations))
+    let by_ref = if level >= 3 { super::types::param_out::watched(program) } else { Vec::new() };
+    wanted.extend(by_ref.iter().map(|(body, _)| *body));
+    analyse_observed(arena, file, program, names, codebase, php_version, pollute_scope_with_loop_initial_assignments, pollute_scope_with_always_iterable_foreach, pollute_scope_with_block, wanted, watched, calls, Some(variables), Some(variable_writes), initializations, Some(property_initializations), by_ref)
 }
 
 /// Mago's types of the `wanted` expressions, analysing only the declarations that hold them.
@@ -167,7 +169,7 @@ pub(super) fn analyse<'arena>(
     wanted: Vec<Span>,
     watched: Vec<Span>,
 ) -> (HashMap<Span, TUnion>, HashMap<Span, Tri>, Origins, HashMap<(u32, u32), bool>, HashMap<Span, Vec<NamedCallScope>>, HashMap<Span, TUnion>, HashMap<Span, TUnion>, HashMap<Span, TUnion>) {
-    analyse_observed(arena, file, program, names, codebase, php_version, pollute_scope_with_loop_initial_assignments, pollute_scope_with_always_iterable_foreach, pollute_scope_with_block, wanted, watched, Vec::new(), None, None, Vec::new(), None)
+    analyse_observed(arena, file, program, names, codebase, php_version, pollute_scope_with_loop_initial_assignments, pollute_scope_with_always_iterable_foreach, pollute_scope_with_block, wanted, watched, Vec::new(), None, None, Vec::new(), None, Vec::new())
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -188,6 +190,7 @@ fn analyse_observed<'arena>(
     variable_writes: Option<&mut HashMap<Span, mago_analyzer::variable_flow::VariableWritesNode>>,
     initializations: Vec<(Span, PropertyInitializationRequest)>,
     property_initializations: Option<&mut HashMap<Span, PropertyInitializationCertainty>>,
+    by_ref: Vec<(Span, Vec<Vec<u8>>)>,
 ) -> (HashMap<Span, TUnion>, HashMap<Span, Tri>, Origins, HashMap<(u32, u32), bool>, HashMap<Span, Vec<NamedCallScope>>, HashMap<Span, TUnion>, HashMap<Span, TUnion>, HashMap<Span, TUnion>) {
     let mut wanted = wanted;
     wanted.extend(calls.iter().flat_map(|call| call.expressions.iter().copied()));
@@ -237,6 +240,14 @@ fn analyse_observed<'arena>(
             unset_roots,
             found: Arc::clone(&found),
         });
+    }
+    let param_out = (!by_ref.is_empty()).then(|| super::types::param_out::Observer {
+        bodies: Arc::new(by_ref),
+        found: Arc::default(),
+    });
+    if let Some(o) = &param_out {
+        registry.register_statement_hook(o.clone());
+        registry.register_expression_hook(o.clone());
     }
     let mut settings = Settings::new(crate::codebase::php_version(php_version));
     settings.pollute_scope_with_loop_initial_assignments = pollute_scope_with_loop_initial_assignments;
@@ -290,6 +301,9 @@ fn analyse_observed<'arena>(
     }
     if let Some(variables) = variables {
         *variables = std::mem::take(&mut found.variables);
+        if let Some(o) = param_out {
+            variables.param_out = std::mem::take(&mut *o.found.lock().expect("no hook panics while holding the lock"));
+        }
     }
     if let Some(variable_writes) = variable_writes {
         variable_writes.extend(artifacts.variable_writes);

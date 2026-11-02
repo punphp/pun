@@ -25,6 +25,8 @@ pub(super) struct Observations {
     pub compact_scopes: HashMap<Span, Certainty>,
     pub unset_entries: HashMap<Span, TUnion>,
     pub property_selectors: HashSet<Span>,
+    /// The by-reference parameters' types around their bodies' statements and writes.
+    pub param_out: super::types::param_out::Observed,
 }
 
 pub(super) struct Certainty {

@@ -1,0 +1,127 @@
+{
+    "test": "Variables/ParameterOutExecutionEndTypeRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Variables/data/parameter-out-execution-end.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/parameter-out-execution-end.php",
+                    "line": 12,
+                    "identifier": "paramOut.type",
+                    "message": "Parameter &$p @param-out type of method ParameterOutExecutionEnd\\Foo::foo() expects int, string given.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/parameter-out-execution-end.php",
+                    "line": 21,
+                    "identifier": "paramOut.type",
+                    "message": "Parameter &$p @param-out type of method ParameterOutExecutionEnd\\Foo::foo2() expects string, string|null given.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/parameter-out-execution-end.php",
+                    "line": 23,
+                    "identifier": "paramOut.type",
+                    "message": "Parameter &$p @param-out type of method ParameterOutExecutionEnd\\Foo::foo2() expects string, string|null given.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/parameter-out-execution-end.php",
+                    "line": 34,
+                    "identifier": "paramOut.type",
+                    "message": "Parameter &$p @param-out type of method ParameterOutExecutionEnd\\Foo::foo3() expects string, string|null given.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/parameter-out-execution-end.php",
+                    "line": 47,
+                    "identifier": "paramOut.type",
+                    "message": "Parameter &$p @param-out type of method ParameterOutExecutionEnd\\Foo::foo4() expects string, string|null given.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/parameter-out-execution-end.php",
+                    "line": 69,
+                    "identifier": "paramOut.type",
+                    "message": "Parameter &$p @param-out type of method ParameterOutExecutionEnd\\Foo::foo6() expects int, string given.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/parameter-out-execution-end.php",
+                    "line": 80,
+                    "identifier": "paramOut.type",
+                    "message": "Parameter &$p @param-out type of function ParameterOutExecutionEnd\\foo2() expects string, string|null given.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/parameter-out-execution-end.php",
+                    "line": 82,
+                    "identifier": "paramOut.type",
+                    "message": "Parameter &$p @param-out type of function ParameterOutExecutionEnd\\foo2() expects string, string|null given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11363",
+            "files": [
+                "Variables/data/bug-11363.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12330",
+            "files": [
+                "Variables/data/bug-12330.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug15066",
+            "files": [
+                "Variables/data/bug-15066.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/bug-15066.php",
+                    "line": 22,
+                    "identifier": "parameterByRef.type",
+                    "message": "Parameter &$refs by-ref type of function Bug15066Variables\\variadicWrongType() expects string|null, int|string|null given.",
+                    "tip": "You can change the parameter out type with @param-out PHPDoc tag."
+                },
+                {
+                    "file": "Variables/data/bug-15066.php",
+                    "line": 35,
+                    "identifier": "paramOut.type",
+                    "message": "Parameter &$refs @param-out type of function Bug15066Variables\\variadicParamOutNeverWritten() expects string, string|null given.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-15066.php",
+                    "line": 52,
+                    "identifier": "parameterByRef.type",
+                    "message": "Parameter &$refs by-ref type of method Bug15066Variables\\Foo::variadicWrongType() expects string|null, int|string|null given.",
+                    "tip": "You can change the parameter out type with @param-out PHPDoc tag."
+                },
+                {
+                    "file": "Variables/data/bug-15066.php",
+                    "line": 69,
+                    "identifier": "parameterByRef.type",
+                    "message": "Parameter &$refs by-ref type of function Bug15066Variables\\variadicRebindWrongArray() expects string|null, int given.",
+                    "tip": "You can change the parameter out type with @param-out PHPDoc tag."
+                }
+            ],
+            "general": []
+        }
+    ]
+}

@@ -1,0 +1,191 @@
+{
+    "test": "TooWideTypehints/TooWideMethodParameterOutTypeRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "TooWideTypehints/data/too-wide-method-parameter-out.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "TooWideTypehints/data/too-wide-method-parameter-out.php",
+                    "line": 45,
+                    "identifier": "paramOut.unusedType",
+                    "message": "Method TooWideMethodParameterOut\\Foo::finalDoBaz() never assigns null to &$p so it can be removed from the @param-out type.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/too-wide-method-parameter-out.php",
+                    "line": 61,
+                    "identifier": "method.unused",
+                    "message": "Method TooWideMethodParameterOut\\Foo::doBazPrivate() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/too-wide-method-parameter-out.php",
+                    "line": 61,
+                    "identifier": "paramOut.unusedType",
+                    "message": "Method TooWideMethodParameterOut\\Foo::doBazPrivate() never assigns null to &$p so it can be removed from the @param-out type.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/too-wide-method-parameter-out.php",
+                    "line": 76,
+                    "identifier": "parameterByRef.unusedType",
+                    "message": "Method TooWideMethodParameterOut\\FinalFoo::doBar() never assigns null to &$p so it can be removed from the by-ref type.",
+                    "tip": "You can narrow the parameter out type with @param-out PHPDoc tag."
+                },
+                {
+                    "file": "TooWideTypehints/data/too-wide-method-parameter-out.php",
+                    "line": 84,
+                    "identifier": "paramOut.unusedType",
+                    "message": "Method TooWideMethodParameterOut\\FinalFoo::doBaz() never assigns null to &$p so it can be removed from the @param-out type.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/too-wide-method-parameter-out.php",
+                    "line": 89,
+                    "identifier": "parameterByRef.unusedType",
+                    "message": "Method TooWideMethodParameterOut\\FinalFoo::doLorem() never assigns null to &$p so it can be removed from the by-ref type.",
+                    "tip": "You can narrow the parameter out type with @param-out PHPDoc tag."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleWithoutProtectedAndPublic",
+            "files": [
+                "TooWideTypehints/data/too-wide-method-parameter-out.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "TooWideTypehints/data/too-wide-method-parameter-out.php",
+                    "line": 45,
+                    "identifier": "paramOut.unusedType",
+                    "message": "Method TooWideMethodParameterOut\\Foo::finalDoBaz() never assigns null to &$p so it can be removed from the @param-out type.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/too-wide-method-parameter-out.php",
+                    "line": 61,
+                    "identifier": "method.unused",
+                    "message": "Method TooWideMethodParameterOut\\Foo::doBazPrivate() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/too-wide-method-parameter-out.php",
+                    "line": 61,
+                    "identifier": "paramOut.unusedType",
+                    "message": "Method TooWideMethodParameterOut\\Foo::doBazPrivate() never assigns null to &$p so it can be removed from the @param-out type.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/too-wide-method-parameter-out.php",
+                    "line": 76,
+                    "identifier": "parameterByRef.unusedType",
+                    "message": "Method TooWideMethodParameterOut\\FinalFoo::doBar() never assigns null to &$p so it can be removed from the by-ref type.",
+                    "tip": "You can narrow the parameter out type with @param-out PHPDoc tag."
+                },
+                {
+                    "file": "TooWideTypehints/data/too-wide-method-parameter-out.php",
+                    "line": 84,
+                    "identifier": "paramOut.unusedType",
+                    "message": "Method TooWideMethodParameterOut\\FinalFoo::doBaz() never assigns null to &$p so it can be removed from the @param-out type.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/too-wide-method-parameter-out.php",
+                    "line": 89,
+                    "identifier": "parameterByRef.unusedType",
+                    "message": "Method TooWideMethodParameterOut\\FinalFoo::doLorem() never assigns null to &$p so it can be removed from the by-ref type.",
+                    "tip": "You can narrow the parameter out type with @param-out PHPDoc tag."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10684",
+            "files": [
+                "TooWideTypehints/data/bug-10684.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "TooWideTypehints/data/bug-10684.php",
+                    "line": 5,
+                    "identifier": "class.notFound",
+                    "message": "Class Bug10684\\HookBreaker extends unknown class Bug10684\\Exception.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "TooWideTypehints/data/bug-10684.php",
+                    "line": 24,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #1 $brokenBy (Bug10684\\HookBreaker) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/bug-10684.php",
+                    "line": 32,
+                    "identifier": "catch.notThrowable",
+                    "message": "Caught class Bug10684\\HookBreaker is not an exception.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10687",
+            "files": [
+                "TooWideTypehints/data/bug-10687.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12080",
+            "files": [
+                "TooWideTypehints/data/bug-12080.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testNestedTooWideType",
+            "files": [
+                "TooWideTypehints/data/nested-too-wide-method-parameter-out-type.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug15066",
+            "files": [
+                "TooWideTypehints/data/bug-15066.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "TooWideTypehints/data/bug-15066.php",
+                    "line": 24,
+                    "identifier": "parameterByRef.unusedType",
+                    "message": "Function Bug15066\\variadicNeverNull() never assigns null to &$refs so it can be removed from the by-ref type.",
+                    "tip": "You can narrow the parameter out type with @param-out PHPDoc tag."
+                },
+                {
+                    "file": "TooWideTypehints/data/bug-15066.php",
+                    "line": 62,
+                    "identifier": "parameterByRef.unusedType",
+                    "message": "Function Bug15066\\variadicRebindOnlyString() never assigns null to &$refs so it can be removed from the by-ref type.",
+                    "tip": "You can narrow the parameter out type with @param-out PHPDoc tag."
+                }
+            ],
+            "general": []
+        }
+    ]
+}

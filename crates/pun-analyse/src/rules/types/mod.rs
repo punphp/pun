@@ -31,6 +31,7 @@ mod nullsafe;
 mod throws_void;
 pub(super) mod throw_points;
 mod throws;
+pub(super) mod param_out;
 
 use std::collections::HashMap;
 
@@ -78,10 +79,11 @@ pub(super) use too_wide::{
     arrow_function as too_wide_arrow_function, closure as too_wide_closure, function as too_wide_function,
     method as too_wide_method, properties as too_wide_properties,
 };
+pub(super) use param_out::{function as param_out_function, method as param_out_method, self_out};
 pub(super) use properties::{assignment as property_assignment, increment as property_increment, unset as property_unset};
 
 /// The identifiers of the rules above level 0 (level-0 ones are in [`super::IDENTIFIERS`]).
-pub const IDENTIFIERS: &[&[&str]] = &[callables::IDENTIFIERS, regex::IDENTIFIERS, arguments::IDENTIFIERS, castable::IDENTIFIERS, receivers::IDENTIFIERS, access::IDENTIFIERS, casts::IDENTIFIERS, comparison::IDENTIFIERS, param_default::IDENTIFIERS, void_match::IDENTIFIERS, returns::IDENTIFIERS, values::IDENTIFIERS, yields::IDENTIFIERS, property_default::IDENTIFIERS, properties::IDENTIFIERS, constant_value::IDENTIFIERS, offsets::IDENTIFIERS, binary_op::IDENTIFIERS, too_wide::IDENTIFIERS, dynamic_names::IDENTIFIERS, nullsafe::IDENTIFIERS, throws_void::IDENTIFIERS, inc_dec::IDENTIFIERS, throws::IDENTIFIERS];
+pub const IDENTIFIERS: &[&[&str]] = &[callables::IDENTIFIERS, regex::IDENTIFIERS, arguments::IDENTIFIERS, castable::IDENTIFIERS, receivers::IDENTIFIERS, access::IDENTIFIERS, casts::IDENTIFIERS, comparison::IDENTIFIERS, param_default::IDENTIFIERS, void_match::IDENTIFIERS, returns::IDENTIFIERS, values::IDENTIFIERS, yields::IDENTIFIERS, property_default::IDENTIFIERS, properties::IDENTIFIERS, constant_value::IDENTIFIERS, offsets::IDENTIFIERS, binary_op::IDENTIFIERS, too_wide::IDENTIFIERS, dynamic_names::IDENTIFIERS, nullsafe::IDENTIFIERS, throws_void::IDENTIFIERS, inc_dec::IDENTIFIERS, throws::IDENTIFIERS, param_out::IDENTIFIERS];
 
 /// The expressions whose type the statement results read, in the function-likes whose missing return could be
 /// reported: those with a non-void return type whose body, by syntax alone, does not always terminate (types only

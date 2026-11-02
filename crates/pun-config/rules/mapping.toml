@@ -1253,7 +1253,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/invalid-property-assignment" = { preset = "basic", ported = true, status = "decided" }
 "types/invalid-property-type" = { preset = "basic", ported = true, status = "decided" }
 "types/invalid-regex" = { preset = "basic", ported = true, status = "decided" }
-"types/invalid-self-out-tag" = { preset = "essential", status = "decided" }
+"types/invalid-self-out-tag" = { preset = "essential", ported = true, status = "decided" }
 "types/invalid-throws-tag" = { preset = "essential", ported = true, status = "decided", summary = "Reports `@throws` types that are not subtypes of `Throwable`. Standalone `void` means no exception is thrown. Both branches of a conditional type must be valid. A union containing `void` is invalid." }
 "types/invalid-trait-method-tag-template" = { preset = "essential", ported = true, status = "decided" }
 "types/invalid-trait-template" = { preset = "essential", ported = true, status = "decided" }
@@ -1281,8 +1281,8 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/offset-assign-op" = { preset = "essential", ported = true, status = "decided" }
 "types/offset-assign-value" = { preset = "essential", ported = true, status = "decided" }
 "types/param-default" = { preset = "essential", ported = true, status = "decided" }
-"types/param-out" = { preset = "essential", status = "decided" }
-"types/param-out-at-end" = { preset = "essential", status = "decided" }
+"types/param-out" = { preset = "essential", ported = true, status = "decided" }
+"types/param-out-at-end" = { preset = "essential", ported = true, status = "decided" }
 "types/phpdoc-readonly-by-ref" = { preset = "essential", ported = true, status = "decided" }
 "types/phpdoc-readonly-property-write" = { preset = "essential", ported = true, status = "decided" }
 "types/print-non-string" = { preset = "essential", ported = true, status = "decided" }
@@ -1309,9 +1309,9 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/throws-void-method" = { preset = "essential", ported = true, status = "decided" }
 "types/too-wide-arrow-function-return" = { preset = "recommended", ported = true, fixed_by = ["lint/dead-code/no-unused-return-type"], status = "decided" }
 "types/too-wide-closure-return" = { preset = "recommended", ported = true, status = "decided" }
-"types/too-wide-function-param-out" = { preset = "recommended", status = "decided" }
+"types/too-wide-function-param-out" = { preset = "recommended", ported = true, status = "decided" }
 "types/too-wide-function-return" = { preset = "recommended", ported = true, status = "decided" }
-"types/too-wide-method-param-out" = { preset = "recommended", status = "decided" }
+"types/too-wide-method-param-out" = { preset = "recommended", ported = true, status = "decided" }
 "types/too-wide-method-return" = { preset = "recommended", ported = true, status = "decided" }
 "types/too-wide-property" = { preset = "recommended", ported = true, status = "decided" }
 "types/unpack-non-iterable" = { preset = "essential", ported = true, status = "decided" }
