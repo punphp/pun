@@ -260,6 +260,11 @@ const PORTED: &[&str] = &[
     "staticProperty.internalTrait",
     "staticProperty.internalEnum",
     "label.unused",
+    // the bleeding-edge feature-toggle rules (off in the exported cases, which run without bleedingEdge)
+    "assign.byRefForeachExpr",
+    "constant.value",
+    "constant.defineValue",
+    "new.dateInterval",
     "trait.unused",
     "propertyGetHook.noRead",
     "propertySetHook.noAssign",

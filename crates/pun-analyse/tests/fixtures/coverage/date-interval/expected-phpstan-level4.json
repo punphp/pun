@@ -1,0 +1,26 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "extra.php",
+   "line": 9,
+   "identifier": "constructor.unusedParameter",
+   "message": "Constructor of class DateIntervalExtra\\DateInterval has an unused parameter $s.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 17,
+   "identifier": "new.resultUnused",
+   "message": "Call to new DateIntervalExtra\\DateInterval() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 30,
+   "identifier": "arguments.count",
+   "message": "Class DateInterval constructor invoked with 0 parameters, 1 required.",
+   "tip": null
+  }
+ ]
+}

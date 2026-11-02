@@ -73,7 +73,7 @@ pub(super) fn typed_statement(
 }
 
 /// PHP-Parser replaces imported function aliases, but preserves names with namespace fallback.
-fn node_name<'arena>(names: &ResolvedNames<'arena>, id: &Identifier<'arena>) -> &'arena [u8] {
+pub(in super::super) fn node_name<'arena>(names: &ResolvedNames<'arena>, id: &Identifier<'arena>) -> &'arena [u8] {
     if names.is_imported(&id.span()) {
         names.get(&id.span())
     } else {

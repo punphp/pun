@@ -1,0 +1,124 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "extra.php",
+   "line": 5,
+   "identifier": "constant.value",
+   "message": "Configuration defined type for constant Extra\\NAMESPACED (int) does not accept value string.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 17,
+   "identifier": "constant.defineValue",
+   "message": "Configuration defined type for constant EXTRA_LIST (list<int>) does not accept value array<int, int>.",
+   "tip": "array<int, int> might not be a list."
+  },
+  {
+   "file": "extra.php",
+   "line": 19,
+   "identifier": "constant.defineValue",
+   "message": "Configuration defined type for constant EXTRA_OBJECT (Extra\\Foo) does not accept value stdClass.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 21,
+   "identifier": "constant.defineValue",
+   "message": "Configuration defined type for constant EXTRA_SHAPE (array{a: int}) does not accept value array{a: 'x'}.",
+   "tip": "Offset 'a' (int) does not accept type string."
+  },
+  {
+   "file": "extra.php",
+   "line": 23,
+   "identifier": "constant.defineValue",
+   "message": "Configuration defined type for constant A_NON_EMPTY_STRING (non-empty-string) does not accept value false.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 23,
+   "identifier": "constant.defineValue",
+   "message": "Configuration defined type for constant BAR_CONSTANT (int|string|null) does not accept value false.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 24,
+   "identifier": "constant.defineValue",
+   "message": "Configuration defined type for constant BAR_CONSTANT (int|string|null) does not accept value false.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 26,
+   "identifier": "constant.defineValue",
+   "message": "Configuration defined type for constant Extra\\NAMESPACED (int) does not accept value string.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 28,
+   "identifier": "arguments.count",
+   "message": "Function define invoked with 1 parameter, 2-3 required.",
+   "tip": null
+  },
+  {
+   "file": "value-assigned-to-define.php",
+   "line": 5,
+   "identifier": "constant.defineValue",
+   "message": "Configuration defined type for constant BAR_CONSTANT (int|string|null) does not accept value false.",
+   "tip": null
+  },
+  {
+   "file": "value-assigned-to-define.php",
+   "line": 6,
+   "identifier": "constant.defineValue",
+   "message": "Configuration defined type for constant BAR_CONSTANT (int|string|null) does not accept value int|false.",
+   "tip": null
+  },
+  {
+   "file": "value-assigned-to-define.php",
+   "line": 12,
+   "identifier": "constant.defineValue",
+   "message": "Configuration defined type for constant A_NON_EMPTY_STRING (non-empty-string) does not accept value ''.",
+   "tip": null
+  },
+  {
+   "file": "value-assigned-to-define.php",
+   "line": 14,
+   "identifier": "constant.defineValue",
+   "message": "Configuration defined type for constant A_NON_EMPTY_STRING (non-empty-string) does not accept value string.",
+   "tip": null
+  },
+  {
+   "file": "value-assigned-to-define.php",
+   "line": 17,
+   "identifier": "return.missing",
+   "message": "Function ValueAssignedToDefine\\getString() should return string but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "value-assigned-to-global-constant.php",
+   "line": 3,
+   "identifier": "constant.value",
+   "message": "Configuration defined type for constant BAR_CONSTANT (int|string|null) does not accept value false.",
+   "tip": null
+  },
+  {
+   "file": "value-assigned-to-global-constant.php",
+   "line": 5,
+   "identifier": "constant.value",
+   "message": "Configuration defined type for constant MAYBE_CONSTANT (int<1, max>) does not accept value int.",
+   "tip": null
+  },
+  {
+   "file": "value-assigned-to-global-constant.php",
+   "line": 6,
+   "identifier": "constant.value",
+   "message": "Configuration defined type for constant A_NON_EMPTY_STRING (non-empty-string) does not accept value ''.",
+   "tip": null
+  }
+ ]
+}

@@ -1,0 +1,110 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "date-interval-instantiation.php",
+   "line": 5,
+   "identifier": "new.dateInterval",
+   "message": "Instantiating DateInterval with 1M produces an error: Unknown or bad format (1M)",
+   "tip": null
+  },
+  {
+   "file": "date-interval-instantiation.php",
+   "line": 18,
+   "identifier": "new.dateInterval",
+   "message": "Instantiating DateInterval with asdfasdf produces an error: Unknown or bad format (asdfasdf)",
+   "tip": null
+  },
+  {
+   "file": "date-interval-instantiation.php",
+   "line": 21,
+   "identifier": "new.dateInterval",
+   "message": "Instantiating DateInterval with  produces an error: Unknown or bad format ()",
+   "tip": null
+  },
+  {
+   "file": "date-interval-instantiation.php",
+   "line": 30,
+   "identifier": "new.dateInterval",
+   "message": "Instantiating DateInterval with 1M produces an error: Unknown or bad format (1M)",
+   "tip": null
+  },
+  {
+   "file": "date-interval-instantiation.php",
+   "line": 37,
+   "identifier": "new.dateInterval",
+   "message": "Instantiating DateInterval with invalid produces an error: Unknown or bad format (invalid)",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 9,
+   "identifier": "constructor.unusedParameter",
+   "message": "Constructor of class DateIntervalExtra\\DateInterval has an unused parameter $s.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 17,
+   "identifier": "new.resultUnused",
+   "message": "Call to new DateIntervalExtra\\DateInterval() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 18,
+   "identifier": "new.dateInterval",
+   "message": "Instantiating DateInterval with 1M produces an error: Unknown or bad format (1M)",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 19,
+   "identifier": "new.dateInterval",
+   "message": "Instantiating DateInterval with xyz produces an error: Unknown or bad format (xyz)",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 20,
+   "identifier": "new.dateInterval",
+   "message": "Instantiating DateInterval with R5 produces an error: Failed to parse interval (R5)",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 21,
+   "identifier": "new.dateInterval",
+   "message": "Instantiating DateInterval with 2008-03-01T13:00:00Z produces an error: Failed to parse interval (2008-03-01T13:00:00Z)",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 22,
+   "identifier": "new.dateInterval",
+   "message": "Instantiating DateInterval with P1DT produces an error: Unknown or bad format (P1DT)",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 26,
+   "identifier": "new.dateInterval",
+   "message": "Instantiating DateInterval with P0001-13-03T04:05:06 produces an error: Unknown or bad format (P0001-13-03T04:05:06)",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 28,
+   "identifier": "new.dateInterval",
+   "message": "Instantiating DateInterval with     produces an error: Failed to parse interval (   )",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 30,
+   "identifier": "arguments.count",
+   "message": "Class DateInterval constructor invoked with 0 parameters, 1 required.",
+   "tip": null
+  }
+ ]
+}

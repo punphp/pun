@@ -279,6 +279,7 @@ fn assign_var(c: &mut Checker, var: &Expression, role: ListRole) {
 
 /// InvalidVariableAssignRule.
 pub fn variable_assign(c: &mut Checker, v: &DirectVariable) {
+    super::by_ref_foreach::variable_assign(c, v);
     if v.name != b"$this" {
         return;
     }
@@ -596,7 +597,10 @@ pub fn arguments(c: &mut Checker, call: Callee) {
             None => return,
         },
     };
-    if !args.arguments.iter().any(|a| by_ref_candidate(a.value())) {
+    // AssignToByRefExprFromForeachRule reads the VariableAssignNode of every variable passed by reference
+    let variables = !c.by_ref_foreach.is_empty()
+        && args.arguments.iter().any(|a| matches!(unparen(a.value()), Expression::Variable(Variable::Direct(_))));
+    if !variables && !args.arguments.iter().any(|a| by_ref_candidate(a.value())) {
         return;
     }
     let Some(params) = callee_params(c, &call, args.arguments.len()) else {

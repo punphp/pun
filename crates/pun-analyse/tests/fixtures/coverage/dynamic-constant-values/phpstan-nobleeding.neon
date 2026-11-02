@@ -1,0 +1,14 @@
+parameters:
+	level: 2
+	phpVersion: 80500
+	paths: [.]
+	dynamicConstantNames:
+		BAR_CONSTANT: 'int|string|null'
+		DYNAMIC_INT_CONSTANT: 'int'
+		MAYBE_CONSTANT: 'positive-int'
+		A_NON_EMPTY_STRING: 'non-empty-string'
+		Extra\NAMESPACED: 'int'
+		EXTRA_LIST: 'list<int>'
+		EXTRA_OBJECT: 'Extra\Foo'
+		EXTRA_SHAPE: 'array{a: int}'
+		- EXTRA_UNTYPED

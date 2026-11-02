@@ -1,0 +1,159 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "assign-to-by-ref-expr-from-foreach.php",
+   "line": 26,
+   "identifier": "assign.byRefForeachExpr",
+   "message": "Assign to $item overwrites the last element from array.",
+   "tip": "Unset it right after foreach to avoid this problem."
+  },
+  {
+   "file": "assign-to-by-ref-expr-from-foreach.php",
+   "line": 50,
+   "identifier": "assign.byRefForeachExpr",
+   "message": "Assign to $item overwrites the last element from array.",
+   "tip": "Unset it right after foreach to avoid this problem."
+  },
+  {
+   "file": "assign-to-by-ref-expr-from-foreach.php",
+   "line": 51,
+   "identifier": "assign.byRefForeachExpr",
+   "message": "Assign to $item overwrites the last element from array.",
+   "tip": "Unset it right after foreach to avoid this problem."
+  },
+  {
+   "file": "assign-to-by-ref-expr-from-foreach.php",
+   "line": 62,
+   "identifier": "assign.byRefForeachExpr",
+   "message": "Assign to $item overwrites the last element from array.",
+   "tip": "Unset it right after foreach to avoid this problem."
+  },
+  {
+   "file": "extra.php",
+   "line": 14,
+   "identifier": "assign.byRefForeachExpr",
+   "message": "Assign to $x overwrites the last element from array.",
+   "tip": "Unset it right after foreach to avoid this problem."
+  },
+  {
+   "file": "extra.php",
+   "line": 20,
+   "identifier": "assign.byRefForeachExpr",
+   "message": "Assign to $y overwrites the last element from array.",
+   "tip": "Unset it right after foreach to avoid this problem."
+  },
+  {
+   "file": "extra.php",
+   "line": 33,
+   "identifier": "assign.byRefForeachExpr",
+   "message": "Assign to $x overwrites the last element from array.",
+   "tip": "Unset it right after foreach to avoid this problem."
+  },
+  {
+   "file": "extra.php",
+   "line": 34,
+   "identifier": "assign.byRefForeachExpr",
+   "message": "Assign to $x overwrites the last element from array.",
+   "tip": "Unset it right after foreach to avoid this problem."
+  },
+  {
+   "file": "extra.php",
+   "line": 35,
+   "identifier": "assign.byRefForeachExpr",
+   "message": "Assign to $x overwrites the last element from array.",
+   "tip": "Unset it right after foreach to avoid this problem."
+  },
+  {
+   "file": "extra.php",
+   "line": 36,
+   "identifier": "assign.byRefForeachExpr",
+   "message": "Assign to $x overwrites the last element from array.",
+   "tip": "Unset it right after foreach to avoid this problem."
+  },
+  {
+   "file": "extra.php",
+   "line": 39,
+   "identifier": "assign.byRefForeachExpr",
+   "message": "Assign to $x overwrites the last element from array.",
+   "tip": "Unset it right after foreach to avoid this problem."
+  },
+  {
+   "file": "extra.php",
+   "line": 41,
+   "identifier": "assign.byRefForeachExpr",
+   "message": "Assign to $x overwrites the last element from array.",
+   "tip": "Unset it right after foreach to avoid this problem."
+  },
+  {
+   "file": "extra.php",
+   "line": 45,
+   "identifier": "assign.byRefForeachExpr",
+   "message": "Assign to $x overwrites the last element from array.",
+   "tip": "Unset it right after foreach to avoid this problem."
+  },
+  {
+   "file": "extra.php",
+   "line": 62,
+   "identifier": "assign.byRefForeachExpr",
+   "message": "Assign to $y overwrites the last element from array.",
+   "tip": "Unset it right after foreach to avoid this problem."
+  },
+  {
+   "file": "extra.php",
+   "line": 68,
+   "identifier": "assign.byRefForeachExpr",
+   "message": "Assign to $w overwrites the last element from array.",
+   "tip": "Unset it right after foreach to avoid this problem."
+  },
+  {
+   "file": "extra.php",
+   "line": 77,
+   "identifier": "assign.byRefForeachExpr",
+   "message": "Assign to $s overwrites the last element from array.",
+   "tip": "Unset it right after foreach to avoid this problem."
+  },
+  {
+   "file": "extra.php",
+   "line": 82,
+   "identifier": "assign.byRefForeachExpr",
+   "message": "Assign to $d overwrites the last element from array.",
+   "tip": "Unset it right after foreach to avoid this problem."
+  },
+  {
+   "file": "extra.php",
+   "line": 88,
+   "identifier": "assign.byRefForeachExpr",
+   "message": "Assign to $e overwrites the last element from array.",
+   "tip": "Unset it right after foreach to avoid this problem."
+  },
+  {
+   "file": "extra.php",
+   "line": 98,
+   "identifier": "assign.byRefForeachExpr",
+   "message": "Assign to $x overwrites the last element from array.",
+   "tip": "Unset it right after foreach to avoid this problem."
+  },
+  {
+   "file": "extra.php",
+   "line": 100,
+   "identifier": "assign.byRefForeachExpr",
+   "message": "Assign to $x overwrites the last element from array.",
+   "tip": "Unset it right after foreach to avoid this problem."
+  },
+  {
+   "file": "extra.php",
+   "line": 113,
+   "identifier": "assign.byRefForeachExpr",
+   "message": "Assign to $x overwrites the last element from array.",
+   "tip": "Unset it right after foreach to avoid this problem."
+  },
+  {
+   "file": "extra.php",
+   "line": 120,
+   "identifier": "assign.byRefForeachExpr",
+   "message": "Assign to $t overwrites the last element from array.",
+   "tip": "Unset it right after foreach to avoid this problem."
+  }
+ ]
+}

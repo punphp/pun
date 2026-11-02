@@ -8,7 +8,9 @@ mod attributes;
 mod calls;
 mod class_names;
 mod classes;
+mod by_ref_foreach;
 mod constants;
+mod date_interval;
 mod dead_code;
 mod declaration_effects;
 mod declaration_purity;
@@ -126,6 +128,8 @@ pub fn reports(identifier: &str) -> bool {
         || invalid_throws::IDENTIFIERS.contains(&identifier)
         || var_names::IDENTIFIERS.contains(&identifier)
         || variance::IDENTIFIERS.contains(&identifier)
+        || date_interval::IDENTIFIERS.contains(&identifier)
+        || by_ref_foreach::IDENTIFIERS.contains(&identifier)
 }
 
 pub const IDENTIFIERS: &[&str] = &[
@@ -951,6 +955,10 @@ pub struct Checker<'a, 'arena> {
     include_state: include_file::State,
     /// How many `Closure::bind()` calls the walk is inside (`isInClosureBind()`).
     closure_bind: usize,
+    /// [`driver::Checks`]'s feature-toggled rules.
+    toggled: &'a driver::Toggled,
+    /// AssignToByRefExprFromForeachRule's statement entries (empty unless it runs).
+    by_ref_foreach: by_ref_foreach::Entries,
     /// Registrations of the owners of named-argument call and rename records.
     method_rules: crate::MethodRules,
     errors: Vec<Error>,
@@ -2114,6 +2122,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         larastan::function_call(self, call);
         types::function_call(self, call);
         types::castable_call(self, call);
+        types::define_value(self, call);
         function_checks::function_call(self, call);
         restricted_functions::function_call(self, call);
         deprecations::ini_option(self, call);
@@ -2139,6 +2148,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             return;
         }
         classes::instantiation(self, new);
+        date_interval::instantiation(self, new);
         assign::arguments(self, assign::Callee::New(new));
     }
 
@@ -2394,6 +2404,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_in_constant(&mut self, k: &'ast Constant<'arena>, _: &mut ()) {
         attributes::constant(self, k);
+        types::global_constant(self, k);
     }
     fn walk_in_closure(&mut self, f: &'ast Closure<'arena>, _: &mut ()) {
         self.assign.enter_scope();
@@ -2546,6 +2557,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         syntax::used_names(self, program);
         self.unreachable = dead_code::unreachable_statements(self, program);
         self.conditions = dead_code::condition_facts(self, program);
+        if self.toggled.by_ref_foreach {
+            self.by_ref_foreach = by_ref_foreach::entries(program);
+        }
         self.push_frame(FrameKind::Top);
         types::yields_outside(self, program);
     }

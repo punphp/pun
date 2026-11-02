@@ -1202,7 +1202,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "statements/magic-constant-out-of-context" = { preset = "basic", ported = true, status = "decided" }
 "statements/non-capturing-catch-not-supported" = { preset = "basic", ported = true, status = "decided" }
 "statements/throw-expression-not-supported" = { preset = "basic", ported = true, status = "decided" }
-"strings/invalid-date-interval" = { preset = "recommended", status = "decided" }
+"strings/invalid-date-interval" = { preset = "recommended", ported = true, status = "decided" }
 "strings/invalid-date-time" = { preset = "recommended", status = "decided" }
 "types/argument" = { preset = "basic", ported = true, status = "decided" }
 "types/argument-not-numeric" = { preset = "recommended", status = "decided" }
@@ -1211,16 +1211,16 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/arrow-function-param-default" = { preset = "essential", ported = true, status = "decided" }
 "types/arrow-function-return" = { preset = "essential", ported = true, status = "decided" }
 "types/assign-to-this" = { preset = "basic", ported = true, status = "decided" }
-"types/by-ref-foreach-on-expression" = { preset = "basic", status = "decided" }
+"types/by-ref-foreach-on-expression" = { preset = "basic", ported = true, status = "decided" }
 "types/call-user-func-argument" = { preset = "recommended", ported = true, status = "decided" }
 "types/catch-non-throwable" = { preset = "basic", ported = true, status = "decided" }
 "types/class-constant-value" = { preset = "essential", ported = true, status = "decided" }
 "types/clone-non-object" = { preset = "essential", ported = true, status = "decided" }
 "types/closure-param-default" = { preset = "essential", ported = true, status = "decided" }
 "types/closure-return" = { preset = "essential", ported = true, status = "decided" }
-"types/constant-value" = { preset = "essential", status = "decided" }
+"types/constant-value" = { preset = "essential", ported = true, status = "decided" }
 "types/dead-catch" = { preset = "recommended", ported = true, fixed_by = ["lint/dead-code/no-dead-catch"], status = "decided" }
-"types/define-value" = { preset = "essential", status = "decided" }
+"types/define-value" = { preset = "essential", ported = true, status = "decided" }
 "types/echo-non-string" = { preset = "essential", ported = true, status = "decided" }
 "types/enum-template-not-allowed" = { preset = "essential", ported = true, status = "decided" }
 "types/foreach-non-iterable" = { preset = "essential", ported = true, status = "decided" }

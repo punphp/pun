@@ -101,6 +101,20 @@ pub(crate) struct Checks {
     too_wide: crate::TooWide,
     /// RequireFileExistsRule's path and feature-toggle settings.
     include_file: super::include_file::Settings,
+    /// The rules registered by a feature toggle at their level.
+    toggled: Toggled,
+}
+
+/// Rules that config.levelN.neon registers with a feature toggle (all on with bleedingEdge).
+#[derive(Default)]
+pub(super) struct Toggled {
+    /// AssignToByRefExprFromForeachRule: level 1 with `featureToggles.assignToByRefForeachExpr`.
+    pub(super) by_ref_foreach: bool,
+    /// ValueAssignedToGlobalConstantRule and ValueAssignedToDefineRule: level 2 with
+    /// `featureToggles.checkDynamicConstantNameValues`, over `dynamicConstantNames`' typed entries.
+    pub(super) constant_types: Option<Vec<(String, String)>>,
+    /// DateIntervalInstantiationRule: level 5 with `featureToggles.checkDateIntervalConstructor`.
+    pub(super) date_interval: bool,
 }
 
 impl Checks {
@@ -170,6 +184,12 @@ impl Checks {
                 include_paths: project.include_paths.clone(),
                 magic_dir: project.check_magic_dir_in_include,
                 path_constants: project.use_path_constants_as_constant_string,
+            },
+            toggled: Toggled {
+                by_ref_foreach: project.level >= 1 && project.assign_to_by_ref_foreach_expr,
+                constant_types: (project.level >= 2 && project.check_dynamic_constant_name_values)
+                    .then(|| project.dynamic_constant_types.clone()),
+                date_interval: project.level >= 5 && project.check_date_interval_constructor,
             },
         }
     }
@@ -330,6 +350,8 @@ fn checker<'a, 'arena>(
         include_settings: &project.include_file,
         include_state,
         closure_bind: 0,
+        toggled: &project.toggled,
+        by_ref_foreach: Vec::new(),
         method_rules: project.method_rules,
         errors: Vec::new(),
     }

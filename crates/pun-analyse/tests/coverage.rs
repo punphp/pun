@@ -32,6 +32,9 @@ const GAPS: &[(&str, &str, i64, &str)] = &[
     ("types", "types.php", 281, "void.pure"),
     // Local class declarations need their own producer, separate from their methods' bodies.
     ("types-level4", "checks.php", 203, "void.pure"),
+    // ConstantResolver::resolveConstantType() types a fetch of a `dynamicConstantNames` constant with its configured
+    // type (`int` here); Pun types the fetch with the defined value 42, which `positive-int` accepts
+    ("dynamic-constant-values", "value-assigned-to-global-constant.php", 5, "constant.value"),
 ];
 
 fn check(dir: &Path, neon: &str) -> Result<(), String> {

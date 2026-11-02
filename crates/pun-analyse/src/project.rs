@@ -5,6 +5,7 @@
 use std::path::{Path, PathBuf};
 
 use pun_phpstan::Array;
+use pun_phpstan::Key;
 use pun_phpstan::Value;
 use pun_phpstan::ignore::IgnoredErrors;
 use pun_phpstan::php::FileExcluder;
@@ -92,6 +93,15 @@ pub struct Project {
     pub check_non_stringable_dynamic_access: bool,
     /// `featureToggles.reportMethodPurityOverride` (on with bleedingEdge): MethodSignatureRule's purity checks.
     pub report_method_purity_override: bool,
+    /// `featureToggles.assignToByRefForeachExpr` (on with bleedingEdge): AssignToByRefExprFromForeachRule.
+    pub assign_to_by_ref_foreach_expr: bool,
+    /// `featureToggles.checkDynamicConstantNameValues` (on with bleedingEdge): ValueAssignedToGlobalConstantRule and
+    /// ValueAssignedToDefineRule.
+    pub check_dynamic_constant_name_values: bool,
+    /// `featureToggles.checkDateIntervalConstructor` (on with bleedingEdge): DateIntervalInstantiationRule.
+    pub check_date_interval_constructor: bool,
+    /// `dynamicConstantNames`' entries with a configured type (name, type string).
+    pub dynamic_constant_types: Vec<(String, String)>,
     /// `checkUninitializedProperties`: UninitializedPropertyRule (config.neon's conditional rule).
     pub check_uninitialized_properties: bool,
     /// `checkMissingCallableSignature`: MissingTypehintCheck's `missingType.callable` (off by default).
@@ -419,6 +429,20 @@ impl Project {
             sort_without_effect: toggle("sortWithoutEffect"),
             check_non_stringable_dynamic_access: toggle("checkNonStringableDynamicAccess"),
             report_method_purity_override: toggle("reportMethodPurityOverride"),
+            assign_to_by_ref_foreach_expr: toggle("assignToByRefForeachExpr"),
+            check_dynamic_constant_name_values: toggle("checkDynamicConstantNameValues"),
+            check_date_interval_constructor: toggle("checkDateIntervalConstructor"),
+            // ConstantResolver::getConfiguredGlobalConstantType(): only the string keys have a type
+            dynamic_constant_types: params
+                .get_str("dynamicConstantNames")
+                .and_then(Value::as_array)
+                .map(|a| {
+                    a.iter()
+                        .filter(|(k, _)| matches!(k, Key::Str(_)))
+                        .filter_map(|(k, v)| Some((k.as_string(), v.as_str()?.to_string())))
+                        .collect()
+                })
+                .unwrap_or_default(),
             check_uninitialized_properties: flag("checkUninitializedProperties"),
             check_missing_callable_signature: flag("checkMissingCallableSignature"),
             deprecation_rules: flag("deprecationRulesInstalled"),
@@ -491,6 +515,10 @@ impl Project {
             sort_without_effect: false,
             check_non_stringable_dynamic_access: false,
             report_method_purity_override: false,
+            assign_to_by_ref_foreach_expr: false,
+            check_dynamic_constant_name_values: false,
+            check_date_interval_constructor: false,
+            dynamic_constant_types: Vec::new(),
             check_uninitialized_properties: false,
             check_missing_callable_signature: false,
             deprecation_rules: false,

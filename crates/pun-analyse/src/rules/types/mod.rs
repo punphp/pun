@@ -64,7 +64,7 @@ pub(super) use void_match::void_match;
 pub(super) use values::{array, array_access, clone, foreach, throw};
 pub(super) use yields::program as yields_outside;
 pub(super) use property_default::property as property_default;
-pub(super) use constant_value::class_constant;
+pub(super) use constant_value::{class_constant, define_value, global_constant};
 pub(super) use offsets::assignment as offset_assignment;
 pub(super) use binary_op::{assignment as assign_operation, binary as binary_operation, pipe as pipe_operation};
 pub(super) use throws_void::{
@@ -163,6 +163,11 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_> {
     fn walk_in_class_like_constant(&mut self, k: &'ast ClassLikeConstant<'arena>, _: &mut ()) {
         if self.level >= 2 {
             constant_value::typed(k, &mut self.spans);
+        }
+    }
+    fn walk_in_constant(&mut self, k: &'ast Constant<'arena>, _: &mut ()) {
+        if self.level >= 2 {
+            constant_value::typed_global(k, &mut self.spans);
         }
     }
     fn walk_in_foreach(&mut self, f: &'ast Foreach<'arena>, _: &mut ()) {

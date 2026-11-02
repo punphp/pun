@@ -592,6 +592,8 @@ mod tests {
             include_settings: &settings,
             include_state,
             closure_bind: 0,
+            toggled: &Default::default(),
+            by_ref_foreach: Vec::new(),
             errors: Vec::new(),
         };
         let template = |bound| Type::Template(Box::new(Template {

@@ -1,0 +1,19 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "extra.php",
+   "line": 28,
+   "identifier": "arguments.count",
+   "message": "Function define invoked with 1 parameter, 2-3 required.",
+   "tip": null
+  },
+  {
+   "file": "value-assigned-to-define.php",
+   "line": 17,
+   "identifier": "return.missing",
+   "message": "Function ValueAssignedToDefine\\getString() should return string but return statement is missing.",
+   "tip": null
+  }
+ ]
+}
