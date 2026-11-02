@@ -1441,6 +1441,7 @@ dependencies = [
  "punphp-phpstan",
  "punphp-tokens",
  "rayon",
+ "regex-automata",
  "serde_json",
  "sha1",
  "sha2",

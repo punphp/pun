@@ -11,6 +11,7 @@ mod classes;
 mod by_ref_foreach;
 mod constants;
 mod date_interval;
+mod date_time;
 mod dead_code;
 mod declaration_effects;
 mod declaration_purity;
@@ -129,6 +130,7 @@ pub fn reports(identifier: &str) -> bool {
         || var_names::IDENTIFIERS.contains(&identifier)
         || variance::IDENTIFIERS.contains(&identifier)
         || date_interval::IDENTIFIERS.contains(&identifier)
+        || date_time::IDENTIFIERS.contains(&identifier)
         || by_ref_foreach::IDENTIFIERS.contains(&identifier)
 }
 
@@ -2197,6 +2199,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         }
         classes::instantiation(self, new);
         date_interval::instantiation(self, new);
+        date_time::instantiation(self, new);
         assign::arguments(self, assign::Callee::New(new));
     }
 

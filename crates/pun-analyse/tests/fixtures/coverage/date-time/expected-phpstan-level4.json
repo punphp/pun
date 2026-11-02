@@ -1,0 +1,19 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "extra.php",
+   "line": 9,
+   "identifier": "constructor.unusedParameter",
+   "message": "Constructor of class DateTimeExtra\\DateTime has an unused parameter $s.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 17,
+   "identifier": "new.resultUnused",
+   "message": "Call to new DateTimeExtra\\DateTime() on a separate line has no effect.",
+   "tip": null
+  }
+ ]
+}

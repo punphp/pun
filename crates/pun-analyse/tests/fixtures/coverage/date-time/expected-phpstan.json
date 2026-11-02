@@ -1,0 +1,61 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "extra.php",
+   "line": 9,
+   "identifier": "constructor.unusedParameter",
+   "message": "Constructor of class DateTimeExtra\\DateTime has an unused parameter $s.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 17,
+   "identifier": "new.resultUnused",
+   "message": "Call to new DateTimeExtra\\DateTime() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 18,
+   "identifier": "new.dateTimeImmutable",
+   "message": "Instantiating DateTimeImmutable with foo produces an error: The timezone could not be found in the database",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 19,
+   "identifier": "new.dateTime",
+   "message": "Instantiating DateTime with 2020-13-45 produces an error: Unexpected character",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 20,
+   "identifier": "new.dateTimeImmutable",
+   "message": "Instantiating DateTimeImmutable with 10:61 produces an error: Unexpected character",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 21,
+   "identifier": "new.dateTime",
+   "message": "Instantiating DateTime with tomorrow 25:00 produces an error: Unexpected character",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 24,
+   "identifier": "new.dateTime",
+   "message": "Instantiating DateTime with     produces an error: Empty string",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 25,
+   "identifier": "new.dateTime",
+   "message": "Instantiating DateTime with 2021-02-30 10:00:00 Europe/Nowhere produces an error: The timezone could not be found in the database",
+   "tip": null
+  }
+ ]
+}

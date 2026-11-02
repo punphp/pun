@@ -17,6 +17,7 @@ name = "pun_analyse"
 pun-phpstan.workspace = true
 pun-tokens.workspace = true
 pcre2.workspace = true
+regex-automata.workspace = true
 mago-allocator.workspace = true
 mago-analyzer.workspace = true
 mago-codex.workspace = true
