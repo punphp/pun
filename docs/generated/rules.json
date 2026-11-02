@@ -21605,7 +21605,7 @@
         "Larastan\\Larastan\\Rules\\ConfigCollectionRule",
         "larastan.configCollection"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/laravel/deferrable-provider-missing-provides",
@@ -21627,7 +21627,7 @@
         "Larastan\\Larastan\\Rules\\DeferrableServiceProviderMissingProvidesRule",
         "larastan.deferrableServiceProvider.missingProvides"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/laravel/missing-translation",
@@ -21670,7 +21670,7 @@
         "NoAuthFacadeInRequestScopeRule",
         "larastan.noAuthFacadeInRequestScope"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/laravel/no-auth-helper-in-request-scope",
@@ -21691,7 +21691,7 @@
         "NoAuthHelperInRequestScopeRule",
         "larastan.noAuthHelperInRequestScope"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/laravel/no-env-outside-config",
@@ -21713,7 +21713,7 @@
         "NoEnvCallsOutsideOfConfigRule",
         "larastan.noEnvCallsOutsideOfConfig"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/laravel/no-model-make",
@@ -21735,7 +21735,7 @@
         "NoModelMakeRule",
         "larastan.noModelMake"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/laravel/no-public-scope-or-accessor",
@@ -21756,7 +21756,7 @@
         "larastan.noPublicModelAccessorMethod",
         "larastan.noPublicModelScopeMethod"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/laravel/octane-compatibility",
@@ -21777,7 +21777,7 @@
         "OctaneCompatibilityRule",
         "larastan.octaneCompatibility"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/laravel/redundant-collection-call",
@@ -21821,7 +21821,7 @@
         "NoUnnecessaryEnumerableToArrayCallsRule",
         "larastan.unnecessaryEnumerableToArrayCall"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/laravel/undefined-console-input",
@@ -21845,7 +21845,7 @@
         "larastan.console.undefinedArgument",
         "larastan.console.undefinedOption"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/laravel/undefined-model-append",
@@ -21916,7 +21916,7 @@
         "larastan.events.noConstructor",
         "larastan.jobs.noConstructor"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/laravel/unused-view",
@@ -21960,7 +21960,7 @@
         "NoUselessValueFunctionCallsRule",
         "larastan.uselessConstructs.value"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/laravel/useless-with-call",
@@ -21982,7 +21982,7 @@
         "NoUselessWithFunctionCallsRule",
         "larastan.uselessConstructs.with"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/operators/non-boolean-and-operand",
@@ -23297,7 +23297,7 @@
         "PHPStan\\Rules\\DateIntervalInstantiationRule",
         "new.dateInterval"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/strings/invalid-date-time",
@@ -23565,7 +23565,7 @@
         "PHPStan\\Rules\\Variables\\AssignToByRefExprFromForeachRule",
         "assign.byRefForeachExpr"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/call-user-func-argument",
@@ -23731,7 +23731,7 @@
         "ValueAssignedToGlobalConstantRule",
         "constant.value"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/dead-catch",
@@ -23756,7 +23756,7 @@
         "catch.alreadyCaught",
         "catch.neverThrown"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/define-value",
@@ -23781,7 +23781,7 @@
         "ValueAssignedToDefineRule",
         "constant.defineValue"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/echo-non-string",
@@ -24641,7 +24641,7 @@
         "selfOut.type",
         "selfOut.unresolvableType"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/invalid-throws-tag",
@@ -24927,7 +24927,7 @@
         "MissingCheckedExceptionInPropertyHookThrowsRule",
         "PHPStan\\Rules\\Exceptions\\MissingCheckedExceptionInPropertyHookThrowsRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/missing-method-param-type",
@@ -24986,7 +24986,7 @@
         "MissingCheckedExceptionInMethodThrowsRule",
         "PHPStan\\Rules\\Exceptions\\MissingCheckedExceptionInMethodThrowsRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/missing-param-type",
@@ -25149,7 +25149,7 @@
         "UnhandledThrownType",
         "missingType.checkedException"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/nullsafe-by-ref-return",
@@ -25289,7 +25289,7 @@
         "ParameterOutAssignedTypeRule",
         "paramOut.type"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/param-out-at-end",
@@ -25311,7 +25311,7 @@
         "PHPStan\\Rules\\Variables\\ParameterOutExecutionEndTypeRule",
         "ParameterOutExecutionEndTypeRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/phpdoc-readonly-by-ref",
@@ -25819,7 +25819,7 @@
         "throws.notCovariantWithImplicitVoid",
         "throws.shouldBeVoid"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/throws-void-function",
@@ -25966,7 +25966,7 @@
         "PHPStan\\Rules\\TooWideTypehints\\TooWideFunctionParameterOutTypeRule",
         "TooWideFunctionParameterOutTypeRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/too-wide-function-return",
@@ -26008,7 +26008,7 @@
         "PHPStan\\Rules\\TooWideTypehints\\TooWideMethodParameterOutTypeRule",
         "TooWideMethodParameterOutTypeRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/too-wide-method-return",
@@ -26117,7 +26117,7 @@
         "PHPStan\\Rules\\Exceptions\\TooWidePropertyHookThrowTypeRule",
         "TooWidePropertyHookThrowTypeRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/unused-method-throws-type",
@@ -26138,7 +26138,7 @@
         "PHPStan\\Rules\\Exceptions\\TooWideMethodThrowTypeRule",
         "TooWideMethodThrowTypeRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/unused-throws-type",
@@ -26160,7 +26160,7 @@
         "TooWideFunctionThrowTypeRule",
         "throws.unusedType"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/useless-array-filter",

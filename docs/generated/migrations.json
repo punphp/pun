@@ -15985,7 +15985,7 @@
         "rules": [
           "analyse/types/by-ref-foreach-on-expression"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -16675,7 +16675,7 @@
         "rules": [
           "analyse/types/dead-catch"
         ],
-        "note": "Merged with catch.neverThrown. Planned: not ported yet.",
+        "note": "Merged with catch.neverThrown.",
         "unsupported": false
       },
       {
@@ -16685,7 +16685,7 @@
         "rules": [
           "analyse/types/dead-catch"
         ],
-        "note": "Merged with catch.alreadyCaught. Planned: not ported yet.",
+        "note": "Merged with catch.alreadyCaught.",
         "unsupported": false
       },
       {
@@ -17465,7 +17465,7 @@
         "rules": [
           "analyse/types/define-value"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -17495,7 +17495,7 @@
         "rules": [
           "analyse/types/constant-value"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -20105,7 +20105,7 @@
         "rules": [
           "analyse/types/missing-throws"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -20245,7 +20245,7 @@
         "rules": [
           "analyse/strings/invalid-date-interval"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -20725,7 +20725,7 @@
         "rules": [
           "analyse/types/param-out"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -23171,7 +23171,7 @@
         "rules": [
           "analyse/types/invalid-self-out-tag"
         ],
-        "note": "Merged with selfOut.type, selfOut.unresolvableType. Planned: not ported yet.",
+        "note": "Merged with selfOut.type, selfOut.unresolvableType.",
         "unsupported": false
       },
       {
@@ -23191,7 +23191,7 @@
         "rules": [
           "analyse/types/invalid-self-out-tag"
         ],
-        "note": "Merged with selfOut.static, selfOut.unresolvableType. Planned: not ported yet.",
+        "note": "Merged with selfOut.static, selfOut.unresolvableType.",
         "unsupported": false
       },
       {
@@ -23201,7 +23201,7 @@
         "rules": [
           "analyse/types/invalid-self-out-tag"
         ],
-        "note": "Merged with selfOut.static, selfOut.type. Planned: not ported yet.",
+        "note": "Merged with selfOut.static, selfOut.type.",
         "unsupported": false
       },
       {
@@ -23891,7 +23891,7 @@
         "rules": [
           "analyse/types/throws-not-covariant"
         ],
-        "note": "Merged with throws.notCovariantWithImplicitVoid, throws.shouldBeVoid. Planned: not ported yet.",
+        "note": "Merged with throws.notCovariantWithImplicitVoid, throws.shouldBeVoid.",
         "unsupported": false
       },
       {
@@ -23901,7 +23901,7 @@
         "rules": [
           "analyse/types/throws-not-covariant"
         ],
-        "note": "Merged with throws.notCovariant, throws.shouldBeVoid. Planned: not ported yet.",
+        "note": "Merged with throws.notCovariant, throws.shouldBeVoid.",
         "unsupported": false
       },
       {
@@ -23921,7 +23921,7 @@
         "rules": [
           "analyse/types/throws-not-covariant"
         ],
-        "note": "Merged with throws.notCovariant, throws.notCovariantWithImplicitVoid. Planned: not ported yet.",
+        "note": "Merged with throws.notCovariant, throws.notCovariantWithImplicitVoid.",
         "unsupported": false
       },
       {
@@ -23931,7 +23931,7 @@
         "rules": [
           "analyse/types/unused-throws-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -24493,7 +24493,7 @@
         "rules": [
           "analyse/laravel/config-collection"
         ],
-        "note": "Same. Options: Larastan parameters carry as rule options. Planned: not ported yet.",
+        "note": "Same. Options: Larastan parameters carry as rule options.",
         "unsupported": false
       },
       {
@@ -24503,7 +24503,7 @@
         "rules": [
           "analyse/laravel/undefined-console-input"
         ],
-        "note": "Merged with larastan.console.undefinedOption. Options: Larastan parameters carry as rule options. Planned: not ported yet.",
+        "note": "Merged with larastan.console.undefinedOption. Options: Larastan parameters carry as rule options.",
         "unsupported": false
       },
       {
@@ -24513,7 +24513,7 @@
         "rules": [
           "analyse/laravel/undefined-console-input"
         ],
-        "note": "Merged with larastan.console.undefinedArgument. Options: Larastan parameters carry as rule options. Planned: not ported yet.",
+        "note": "Merged with larastan.console.undefinedArgument. Options: Larastan parameters carry as rule options.",
         "unsupported": false
       },
       {
@@ -24523,7 +24523,7 @@
         "rules": [
           "analyse/laravel/deferrable-provider-missing-provides"
         ],
-        "note": "Same. Options: Larastan parameters carry as rule options. Planned: not ported yet.",
+        "note": "Same. Options: Larastan parameters carry as rule options.",
         "unsupported": false
       },
       {
@@ -24533,7 +24533,7 @@
         "rules": [
           "analyse/laravel/unexpected-dispatch-arguments"
         ],
-        "note": "Merged with larastan.jobs.noConstructor. Options: Larastan parameters carry as rule options. Expanded from larastan.%s.noConstructor. Planned: not ported yet.",
+        "note": "Merged with larastan.jobs.noConstructor. Options: Larastan parameters carry as rule options. Expanded from larastan.%s.noConstructor.",
         "unsupported": false
       },
       {
@@ -24543,7 +24543,7 @@
         "rules": [
           "analyse/laravel/unexpected-dispatch-arguments"
         ],
-        "note": "Merged with larastan.events.noConstructor. Options: Larastan parameters carry as rule options. Expanded from larastan.%s.noConstructor. Planned: not ported yet.",
+        "note": "Merged with larastan.events.noConstructor. Options: Larastan parameters carry as rule options. Expanded from larastan.%s.noConstructor.",
         "unsupported": false
       },
       {
@@ -24563,7 +24563,7 @@
         "rules": [
           "analyse/laravel/no-auth-facade-in-request-scope"
         ],
-        "note": "Same. Options: Larastan parameters carry as rule options. Planned: not ported yet.",
+        "note": "Same. Options: Larastan parameters carry as rule options.",
         "unsupported": false
       },
       {
@@ -24573,7 +24573,7 @@
         "rules": [
           "analyse/laravel/no-auth-helper-in-request-scope"
         ],
-        "note": "Same. Options: Larastan parameters carry as rule options. Planned: not ported yet.",
+        "note": "Same. Options: Larastan parameters carry as rule options.",
         "unsupported": false
       },
       {
@@ -24583,7 +24583,7 @@
         "rules": [
           "analyse/laravel/no-env-outside-config"
         ],
-        "note": "Same. Options: Larastan parameters carry as rule options. Planned: not ported yet.",
+        "note": "Same. Options: Larastan parameters carry as rule options.",
         "unsupported": false
       },
       {
@@ -24593,7 +24593,7 @@
         "rules": [
           "analyse/laravel/no-model-make"
         ],
-        "note": "Same. Options: Larastan parameters carry as rule options. Planned: not ported yet.",
+        "note": "Same. Options: Larastan parameters carry as rule options.",
         "unsupported": false
       },
       {
@@ -24603,7 +24603,7 @@
         "rules": [
           "analyse/laravel/no-public-scope-or-accessor"
         ],
-        "note": "Merged with larastan.noPublicModelScopeMethod. Options: Larastan parameters carry as rule options. Planned: not ported yet.",
+        "note": "Merged with larastan.noPublicModelScopeMethod. Options: Larastan parameters carry as rule options.",
         "unsupported": false
       },
       {
@@ -24613,7 +24613,7 @@
         "rules": [
           "analyse/laravel/no-public-scope-or-accessor"
         ],
-        "note": "Merged with larastan.noPublicModelAccessorMethod. Options: Larastan parameters carry as rule options. Planned: not ported yet.",
+        "note": "Merged with larastan.noPublicModelAccessorMethod. Options: Larastan parameters carry as rule options.",
         "unsupported": false
       },
       {
@@ -24633,7 +24633,7 @@
         "rules": [
           "analyse/laravel/octane-compatibility"
         ],
-        "note": "Same. Options: Larastan parameters carry as rule options. Planned: not ported yet.",
+        "note": "Same. Options: Larastan parameters carry as rule options.",
         "unsupported": false
       },
       {
@@ -24653,7 +24653,7 @@
         "rules": [
           "analyse/laravel/redundant-to-array-call"
         ],
-        "note": "Same. Options: Larastan parameters carry as rule options. Planned: not ported yet.",
+        "note": "Same. Options: Larastan parameters carry as rule options.",
         "unsupported": false
       },
       {
@@ -24673,7 +24673,7 @@
         "rules": [
           "analyse/laravel/useless-value-call"
         ],
-        "note": "Same. Options: Larastan parameters carry as rule options. Planned: not ported yet.",
+        "note": "Same. Options: Larastan parameters carry as rule options.",
         "unsupported": false
       },
       {
@@ -24683,7 +24683,7 @@
         "rules": [
           "analyse/laravel/useless-with-call"
         ],
-        "note": "Same. Options: Larastan parameters carry as rule options. Planned: not ported yet.",
+        "note": "Same. Options: Larastan parameters carry as rule options.",
         "unsupported": false
       },
       {
@@ -27043,7 +27043,7 @@
         "rules": [
           "analyse/types/dead-catch"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -27751,7 +27751,7 @@
         "rules": [
           "analyse/types/define-value"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -29472,7 +29472,7 @@
         "rules": [
           "analyse/types/missing-throws"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

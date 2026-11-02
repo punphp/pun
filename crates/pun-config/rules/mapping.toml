@@ -1131,24 +1131,24 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "functions/unanalysed-inner-function" = { preset = "basic", ported = true, status = "decided" }
 "functions/variadic-not-last" = { preset = "basic", ported = true, status = "decided" }
 "imports/name-already-in-use" = { preset = "basic", ported = true, status = "decided" }
-"laravel/config-collection" = { preset = "strict", status = "decided" }
-"laravel/deferrable-provider-missing-provides" = { preset = "recommended", status = "decided" }
+"laravel/config-collection" = { preset = "strict", ported = true, status = "decided" }
+"laravel/deferrable-provider-missing-provides" = { preset = "recommended", ported = true, status = "decided" }
 "laravel/missing-translation" = { preset = "recommended", status = "decided" }
-"laravel/no-auth-facade-in-request-scope" = { preset = "strict", status = "decided" }
-"laravel/no-auth-helper-in-request-scope" = { preset = "strict", status = "decided" }
-"laravel/no-env-outside-config" = { preset = "recommended", status = "decided" }
-"laravel/no-model-make" = { preset = "recommended", status = "decided" }
-"laravel/no-public-scope-or-accessor" = { preset = "max", fixed_by = ["lint/laravel/prefer-protected-model-methods"], status = "decided" }
-"laravel/octane-compatibility" = { preset = "strict", status = "decided" }
+"laravel/no-auth-facade-in-request-scope" = { preset = "strict", ported = true, status = "decided" }
+"laravel/no-auth-helper-in-request-scope" = { preset = "strict", ported = true, status = "decided" }
+"laravel/no-env-outside-config" = { preset = "recommended", ported = true, status = "decided" }
+"laravel/no-model-make" = { preset = "recommended", ported = true, status = "decided" }
+"laravel/no-public-scope-or-accessor" = { preset = "max", fixed_by = ["lint/laravel/prefer-protected-model-methods"], ported = true, status = "decided" }
+"laravel/octane-compatibility" = { preset = "strict", ported = true, status = "decided" }
 "laravel/redundant-collection-call" = { preset = "recommended", status = "decided" }
-"laravel/redundant-to-array-call" = { preset = "recommended", status = "decided" }
-"laravel/undefined-console-input" = { preset = "essential", status = "decided" }
+"laravel/redundant-to-array-call" = { preset = "recommended", ported = true, status = "decided" }
+"laravel/undefined-console-input" = { preset = "essential", ported = true, status = "decided" }
 "laravel/undefined-model-append" = { preset = "essential", status = "decided" }
 "laravel/undefined-relation" = { preset = "essential", status = "decided" }
-"laravel/unexpected-dispatch-arguments" = { preset = "essential", status = "decided" }
+"laravel/unexpected-dispatch-arguments" = { preset = "essential", ported = true, status = "decided" }
 "laravel/unused-view" = { preset = "recommended", status = "decided" }
-"laravel/useless-value-call" = { preset = "recommended", fixed_by = ["lint/laravel/no-useless-value-call"], status = "decided" }
-"laravel/useless-with-call" = { preset = "recommended", fixed_by = ["lint/laravel/no-useless-with-call"], status = "decided" }
+"laravel/useless-value-call" = { preset = "recommended", fixed_by = ["lint/laravel/no-useless-value-call"], ported = true, status = "decided" }
+"laravel/useless-with-call" = { preset = "recommended", fixed_by = ["lint/laravel/no-useless-with-call"], ported = true, status = "decided" }
 "operators/non-boolean-and-operand" = { preset = "strict", ported = true, status = "decided" }
 "operators/non-boolean-not-operand" = { preset = "strict", ported = true, status = "decided" }
 "operators/non-boolean-or-operand" = { preset = "strict", ported = true, status = "decided" }
