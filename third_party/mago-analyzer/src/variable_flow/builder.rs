@@ -213,8 +213,23 @@ impl State {
                 .expressions
                 .get(&variable.span())
                 .cloned()
-                .unwrap_or_else(|| self.children(node)),
+                .unwrap_or_else(|| match variable {
+                    Variable::Nested(nested) => self.nested_name(nested),
+                    _ => self.children(node),
+                }),
             _ => sequence(node.children().into_iter().map(|child| self.child(child))),
+        }
+    }
+
+    /// The name of `$$name` (`self::$$name`), a variable the analyzer reads without analyzing it as an expression.
+    fn nested_name(&self, nested: &NestedVariable<'_>) -> Flow {
+        match nested.variable {
+            Variable::Direct(variable) => self
+                .expressions
+                .get(&variable.span())
+                .cloned()
+                .unwrap_or_else(|| F::read(word(variable.name), None)),
+            variable => self.child(Node::Variable(variable)),
         }
     }
 
@@ -735,7 +750,11 @@ impl State {
                     empty()
                 }
             }
-            Expression::Variable(_) => self.children(Node::Expression(target)),
+            // child($target->name): only the name is read, not the variable it selects
+            Expression::Variable(Variable::Nested(nested)) => self.nested_name(nested),
+            Expression::Variable(Variable::Indirect(variable)) => {
+                self.child(Node::Expression(variable.expression))
+            }
             Expression::List(_) | Expression::Array(_) => empty(),
             Expression::ArrayAccess(access) => {
                 let root = if let Expression::Variable(Variable::Direct(variable)) = access.array {
