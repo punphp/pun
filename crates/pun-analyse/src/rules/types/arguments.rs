@@ -267,23 +267,33 @@ fn unresolvable_templates(c: &Checker, acceptor: &Acceptor, inference: &Inferenc
         map.types().into_iter().find(|(n, s, _)| *n == t.name && *s == t.scope).map(|(_, _, t)| t.clone())
     };
     // `getReturnTypeWithUnresolvableTemplateTypes()`: the resolved templates replaced, the parameters' conditional
-    // types made conditional on the arguments
+    // types made conditional on the arguments. As TypeTraverser::map's callbacks there, a replacement is not
+    // traversed again: a template resolved to a type that names it would recurse forever.
     fn resolve(t: &Type, f: &dyn Fn(&Type) -> Option<Type>) -> Type {
-        f(t).unwrap_or_else(|| t.clone()).traverse(&|i| resolve(i, f))
+        f(t).unwrap_or_else(|| t.traverse(&|i| resolve(i, f)))
     }
     let names = &acceptor.names;
+    // ConditionalTypeForParameter::resolveInType(): `resolveWithSubject()` resolves the branches, not the subject.
+    fn conditionals(t: &Type, passed: &[Option<Type>], names: &[String]) -> Type {
+        resolve(t, &|t| match t {
+            Type::Conditional(cond) if let Subject::Parameter(p) = &cond.subject => {
+                let subject = passed[names.iter().position(|n| p[1..] == **n)?].clone()?;
+                Some(Type::Conditional(Box::new(Conditional {
+                    subject: Subject::Type(subject),
+                    then: conditionals(&cond.then, passed, names),
+                    otherwise: conditionals(&cond.otherwise, passed, names),
+                    ..(**cond).clone()
+                })))
+            }
+            _ => None,
+        })
+    }
     let ret = declared::with_classes(c, || {
         let ret = resolve(&ret, &|t| match t {
             Type::Template(tt) if is_callees(tt) => resolved_to(tt).filter(|r| *r != Type::Error),
             _ => None,
         });
-        resolve(&ret, &|t| match t {
-            Type::Conditional(cond) if let Subject::Parameter(p) = &cond.subject => {
-                let subject = passed[names.iter().position(|n| p[1..] == **n)?].clone()?;
-                Some(Type::Conditional(Box::new(Conditional { subject: Subject::Type(subject), ..(**cond).clone() })))
-            }
-            _ => None,
-        })
+        conditionals(&ret, passed, names)
     });
     let in_return = std::cell::RefCell::new(Vec::new());
     fn collect(t: &Type, out: &std::cell::RefCell<Vec<String>>) {

@@ -14,6 +14,13 @@
    "identifier": "missingType.parameter",
    "message": "Function CoverageMax\\untyped() has parameter $a with no type specified.",
    "tip": null
+  },
+  {
+   "file": "template-self-reference.php",
+   "line": 32,
+   "identifier": "return.type",
+   "message": "Method TemplateSelfReference\\Bag::reduce() should return TReduceReturnType but returns TReduceInitial|TReduceReturnType.",
+   "tip": null
   }
  ]
 }
