@@ -27,6 +27,9 @@ pub(super) struct Observations {
     pub property_selectors: HashSet<Span>,
     /// The by-reference parameters' types around their bodies' statements and writes.
     pub param_out: super::types::param_out::Observed,
+    /// A plain assignment's target (by span): its root variable's full and native types once the assigned value is
+    /// evaluated, when the variable is certainly defined (UnusedVariableRule's redundant assignments).
+    pub assigned_roots: HashMap<Span, (TUnion, Option<TUnion>)>,
 }
 
 pub(super) struct Certainty {

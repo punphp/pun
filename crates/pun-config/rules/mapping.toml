@@ -1054,14 +1054,14 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/boolean-not-always-constant" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/boolean-or-always-constant" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/call-condition-always-constant" = { preset = "recommended", ported = true, status = "decided" }
-"dead-code/discarded-function-result" = { preset = "basic", status = "decided" }
+"dead-code/discarded-function-result" = { preset = "basic", ported = true, status = "decided" }
 "dead-code/discarded-method-result" = { preset = "basic", ported = true, status = "decided" }
 "dead-code/discarded-static-method-result" = { preset = "basic", ported = true, status = "decided" }
 "dead-code/do-while-always-constant" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/elseif-always-constant" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/finally-overrides-exit" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/if-always-constant" = { preset = "recommended", ported = true, status = "decided" }
-"dead-code/impossible-in-array" = { preset = "recommended", status = "decided" }
+"dead-code/impossible-in-array" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/impossible-instanceof" = { preset = "recommended", ported = true, fixed_by = ["lint/dead-code/no-always-true-instanceof"], status = "decided" }
 "dead-code/impossible-method-type-check" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/impossible-static-type-check" = { preset = "recommended", ported = true, status = "decided" }
@@ -1082,10 +1082,10 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/unused-argument" = { preset = "basic", ported = true, status = "decided" }
 "dead-code/unused-closure-use" = { preset = "basic", ported = true, status = "decided" }
 "dead-code/unused-constructor-parameter" = { preset = "basic", fixed_by = ["lint/dead-code/no-unused-constructor-param"], ported = true, status = "decided" }
-"dead-code/unused-function-parameter" = { preset = "recommended", status = "decided" }
+"dead-code/unused-function-parameter" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/unused-function-result" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/unused-label" = { preset = "recommended", fixed_by = ["lint/complexity/no-unused-label"], ported = true, status = "decided" }
-"dead-code/unused-method-parameter" = { preset = "recommended", status = "decided" }
+"dead-code/unused-method-parameter" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/unused-method-result" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/unused-new-result" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/unused-private-constant" = { preset = "recommended", fixed_by = ["lint/dead-code/no-unused-private-constant"], ported = true, status = "decided" }
@@ -1094,7 +1094,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/unused-result" = { preset = "recommended", fixed_by = ["lint/dead-code/no-unused-expression"], ported = true, status = "decided" }
 "dead-code/unused-static-method-result" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/unused-trait" = { preset = "recommended", ported = true, status = "decided" }
-"dead-code/unused-variable" = { preset = "recommended", status = "decided" }
+"dead-code/unused-variable" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/useless-return-value" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/while-always-false" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/while-always-true" = { preset = "recommended", ported = true, status = "decided" }

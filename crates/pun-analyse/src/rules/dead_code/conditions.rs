@@ -1108,7 +1108,7 @@ impl Checker<'_, '_> {
 }
 
 /// `getFiniteTypes()`: the values a type has, none when it has infinitely many.
-fn finite(c: &Checker, t: &Type) -> Vec<Type> {
+pub(super) fn finite(c: &Checker, t: &Type) -> Vec<Type> {
     match c.expand_enums(t.clone()) {
         Type::Union(ts) => {
             let all: Vec<Vec<Type>> = ts.iter().map(|t| finite(c, t)).collect();
@@ -1525,7 +1525,7 @@ pub(in super::super) fn switch_statement(c: &mut Checker, s: &Switch) {
 
 impl Checker<'_, '_> {
     /// `isEnum()->yes()`.
-    fn is_enum(&self, t: &Type) -> bool {
+    pub(super) fn is_enum(&self, t: &Type) -> bool {
         match t {
             Type::Union(ts) => ts.iter().all(|t| self.is_enum(t)),
             Type::EnumCase(..) => true,
@@ -1586,7 +1586,7 @@ fn truthy(t: &Type) -> Option<bool> {
 }
 
 /// A constant scalar type (ConstantScalarType).
-fn scalar(t: &Type) -> bool {
+pub(super) fn scalar(t: &Type) -> bool {
     matches!(t, Type::ConstInt(_) | Type::ConstString(_) | Type::ConstFloat(_) | Type::ConstBool(_) | Type::Null)
 }
 
@@ -1653,7 +1653,7 @@ fn loose_scalars(a: &Type, b: &Type) -> bool {
 }
 
 /// `Type::looseCompare()` (PHP 8) as a Tri.
-fn loose(a: &Type, b: &Type) -> Tri {
+pub(super) fn loose(a: &Type, b: &Type) -> Tri {
     let compound = |t: &Type| {
         matches!(t, Type::Union(_) | Type::Benevolent(_) | Type::Intersection(_) | Type::IntRange(..) | Type::Mixed { .. } | Type::Never(_))
     };

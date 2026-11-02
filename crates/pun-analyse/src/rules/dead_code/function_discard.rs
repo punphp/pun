@@ -244,13 +244,17 @@ pub(super) fn statement(c: &mut Checker, s: &ExpressionStatement) {
     } else {
         let Some(t) = c.type_of(name) else { return };
         let mut required = Tri::No;
-        for atom in t.types.iter() {
+        // TypeCombinator::union() keeps the last of equal types, such as two closures of one signature
+        let values: Vec<_> = t.types.iter().map(|a| value_type(c, &TUnion::from_atomic(a.clone()))).collect();
+        for (i, atom) in t.types.iter().enumerate() {
             let Some(value) = callable_must_use(c, atom) else {
                 return;
             };
-            required = required.or(value);
+            if !values[i + 1..].contains(&values[i]) {
+                required = required.or(value);
+            }
         }
-        let description = value_type(c, t).describe(Level::Value);
+        let description = super::super::declared::with_classes(c, || value_type(c, t).describe(Level::Value));
         ("callable", description, required)
     };
     if void && required.no() {

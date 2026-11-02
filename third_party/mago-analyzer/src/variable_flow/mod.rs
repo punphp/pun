@@ -42,6 +42,10 @@ pub struct VariableWritesNode {
     pub read: HashSet<Span>,
     pub used: HashSet<Span>,
     pub covered: HashSet<Span>,
+    /// Writes from which some path reaches another write replacing the variable or the written offset.
+    pub overwritten: HashSet<Span>,
+    /// The names read anywhere in the body (`isVariableEverRead()`).
+    pub read_names: HashSet<Word>,
     pub referenced: HashSet<Word>,
     pub escaped: HashSet<Word>,
     pub all_names: bool,

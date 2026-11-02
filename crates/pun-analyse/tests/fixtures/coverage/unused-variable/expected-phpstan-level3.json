@@ -1,0 +1,110 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "extra.php",
+   "line": 109,
+   "identifier": "return.type",
+   "message": "Anonymous function should return int but returns string.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-by-ref-return.php",
+   "line": 58,
+   "identifier": "return.byRefFinally",
+   "message": "Anonymous function should return 0 but returns 2 because the finally block modifies the value returned by reference.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-catch.php",
+   "line": 14,
+   "identifier": "impureFunction.pure",
+   "message": "Function UnusedVariableCatch\\doThrow() is marked as impure but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 504,
+   "identifier": "unset.offset",
+   "message": "Cannot unset offset 1 on array{x: 1}.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-overwritten.php",
+   "line": 40,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $a on left side of ?? is never defined.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-overwritten.php",
+   "line": 46,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $a on left side of ?? is never defined.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-overwritten.php",
+   "line": 54,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $a on left side of ?? is never defined.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-scope-pollution.php",
+   "line": 58,
+   "identifier": "echo.nonString",
+   "message": "Parameter #1 (non-empty-array<int>) of echo cannot be converted to string.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-scope-pollution.php",
+   "line": 88,
+   "identifier": "echo.nonString",
+   "message": "Parameter #1 (non-empty-array<int>) of echo cannot be converted to string.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-scope-pollution.php",
+   "line": 116,
+   "identifier": "echo.nonString",
+   "message": "Parameter #1 (non-empty-array<int>) of echo cannot be converted to string.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 415,
+   "identifier": "include.fileNotFound",
+   "message": "Path in include() \"template.php\" is not a file or it does not exist.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 421,
+   "identifier": "include.fileNotFound",
+   "message": "Path in include() \"template.php\" is not a file or it does not exist.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 602,
+   "identifier": "method.nonObject",
+   "message": "Cannot call method m() on stdClass.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 609,
+   "identifier": "method.nonObject",
+   "message": "Cannot call method m() on stdClass.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 869,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $x on left side of ?? is never defined.",
+   "tip": null
+  }
+ ]
+}

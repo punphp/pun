@@ -1,0 +1,145 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "extra.php",
+   "line": 42,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 43,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 44,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 49,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_search() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 54,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_keys() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 55,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_keys() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 56,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 56,
+   "identifier": "arguments.count",
+   "message": "Function in_array invoked with 1 parameter, 2-3 required.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 62,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 63,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 68,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 107,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 108,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 109,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 114,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 115,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_keys() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "impossible-in-array-finite-types.php",
+   "line": 33,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_search() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "impossible-in-array-finite-types.php",
+   "line": 38,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_keys() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "impossible-in-array-finite-types.php",
+   "line": 161,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_keys() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "impossible-in-array-finite-types.php",
+   "line": 246,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_search() on a separate line has no effect.",
+   "tip": null
+  }
+ ]
+}

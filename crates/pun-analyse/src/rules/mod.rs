@@ -168,6 +168,12 @@ pub const IDENTIFIERS: &[&str] = &[
     "callable.resultDiscarded",
     "closure.unusedUse",
     "constructor.unusedParameter",
+    "constructor.unusedParameterFlow",
+    "closure.unusedUseFlow",
+    "function.unusedParameter",
+    "function.unusedParameterFlow",
+    "method.unusedParameter",
+    "method.unusedParameterFlow",
     "finally.exitPoint",
     "function.inVoidCast",
     "function.resultDiscarded",
@@ -739,6 +745,34 @@ pub const IDENTIFIERS: &[&str] = &[
     "switch.duplicateCase",
     "switch.alwaysFalse",
     "switch.alwaysTrue",
+    "function.impossibleHaystackValue",
+    "variable.unused",
+    "assign.redundant",
+    "assign.unused",
+    "assign.overwritten",
+    "assign.unusedFlow",
+    "preInc.unused",
+    "preInc.overwritten",
+    "preInc.unusedFlow",
+    "postInc.unused",
+    "postInc.overwritten",
+    "postInc.unusedFlow",
+    "preDec.unused",
+    "preDec.overwritten",
+    "preDec.unusedFlow",
+    "postDec.unused",
+    "postDec.overwritten",
+    "postDec.unusedFlow",
+    "foreach.unusedValue",
+    "foreach.valueOverwritten",
+    "foreach.unusedValueFlow",
+    "foreach.unusedKey",
+    "foreach.keyOverwritten",
+    "foreach.unusedKeyFlow",
+    "catch.unusedVariableFlow",
+    "array.unusedOffset",
+    "array.offsetOverwritten",
+    "array.unusedOffsetFlow",
     "sortArray.empty",
     "sortArray.list",
     "sortArray.noop",
@@ -1550,6 +1584,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
 
     fn walk_in_function(&mut self, f: &'ast Function<'arena>, _: &mut ()) {
         dead_code::impure_function(self, f);
+        dead_code::function_parameters(self, f);
         declaration_purity::function(self, f);
         callable_tags::function_like(self, f.span(), &f.parameter_list);
         conditional_return::function(self, f);
@@ -1690,7 +1725,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         overriding::inherited_case(self, m, &method);
         strict::constructor(self, m);
         hierarchy::interface_method_visibility(self, m);
-        dead_code::constructor(self, m, &method);
+        dead_code::method_parameters(self, m, &method);
         missing_types::method(self, m);
         types::method(self, m);
         types::method_defaults(self, m);
@@ -2131,6 +2166,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         types::call_user_func(self, call);
         dead_code::function_call(self, call);
         dead_code::sort_call(self, call);
+        dead_code::haystack_call(self, call);
         assign::arguments(self, assign::Callee::Function(call));
         assign::function_virtual_assign(self, call);
         self.in_exists_call += usize::from(calls::is_class_exists_family(self, call));

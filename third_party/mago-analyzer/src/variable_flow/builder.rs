@@ -123,6 +123,20 @@ pub(crate) fn statement<A: Arena>(
     }
     let flow = context.variable_flow.statement(stmt, artifacts);
     context.variable_flow.statements.insert(stmt.span(), flow);
+    let state = &mut context.variable_flow;
+    match stmt {
+        Statement::Function(function) => state.complete(
+            function.span(),
+            &function.parameter_list,
+            None,
+            function.body.statements.as_slice(),
+            function.ampersand.is_some(),
+        ),
+        Statement::Class(class) => state.complete_methods(class.members.as_slice()),
+        Statement::Trait(class) => state.complete_methods(class.members.as_slice()),
+        Statement::Enum(class) => state.complete_methods(class.members.as_slice()),
+        _ => {}
+    }
 }
 
 pub(crate) fn reference_argument<A: Arena>(
@@ -154,13 +168,24 @@ impl State {
                     .get(&expr.span())
                     .cloned()
                     .unwrap_or_else(empty);
+                // PreIncHandler/PreDecHandler read the variable after writing it when the value is consumed
+                if let Expression::UnaryPrefix(unary) = expr
+                    && unary.operator.is_increment_or_decrement()
+                {
+                    let mut root = unary.operand;
+                    while let Expression::ArrayAccess(ArrayAccess { array, .. })
+                    | Expression::ArrayAppend(ArrayAppend { array, .. }) = root
+                    {
+                        root = array;
+                    }
+                    let read = match root {
+                        Expression::Variable(Variable::Direct(variable)) => F::read(word(variable.name), None),
+                        _ => empty(),
+                    };
+                    return sequence([raw, read]);
+                }
                 let write = match expr {
                     Expression::Assignment(assignment) => Some(assignment.lhs.span()),
-                    Expression::UnaryPrefix(unary)
-                        if unary.operator.is_increment_or_decrement() =>
-                    {
-                        Some(unary.operand.span())
-                    }
                     Expression::UnaryPostfix(unary) => Some(unary.operand.span()),
                     _ => None,
                 };
@@ -205,6 +230,14 @@ impl State {
         )
     }
 
+    /// A control structure's body: PHP-Parser gives a braced body as its statements, not as a block.
+    fn branch(&self, statements: &[Statement<'_>]) -> Flow {
+        match statements {
+            [Statement::Block(block)] => self.body(block.statements.as_slice()),
+            statements => self.body(statements),
+        }
+    }
+
     fn value(
         &self,
         expr: &Expression<'_>,
@@ -244,10 +277,11 @@ impl State {
             Expression::Conditional(conditional) => sequence([
                 self.child(Node::Expression(conditional.condition)),
                 Rc::new(F::Choice(vec![
+                    // TernaryHandler keeps the context: a literal branch still defines the target's offsets
                     conditional
                         .then
-                        .map_or_else(empty, |expr| self.value(expr, target, false, artifacts)),
-                    self.value(conditional.r#else, target, false, artifacts),
+                        .map_or_else(empty, |expr| self.value(expr, target, direct, artifacts)),
+                    self.value(conditional.r#else, target, direct, artifacts),
                 ])),
             ]),
             Expression::Match(expression) => self.match_flow(expression, target, artifacts),
@@ -258,14 +292,9 @@ impl State {
                     target,
                 }),
             ]),
+            // PreIncHandler/PreDecHandler read the variable after writing it when the value is consumed
             Expression::UnaryPrefix(unary) if unary.operator.is_increment_or_decrement() => {
-                sequence([
-                    raw(),
-                    Rc::new(F::Inputs {
-                        write: unary.operand.span(),
-                        target,
-                    }),
-                ])
+                sequence([raw(), self.target_read(unary.operand, true, target, artifacts)])
             }
             Expression::UnaryPostfix(unary) => sequence([
                 raw(),
@@ -483,6 +512,7 @@ impl State {
                     rhs,
                     self.target_write(assignment.lhs, false, artifacts),
                     if matches!(assignment.rhs, Expression::UnaryPrefix(unary) if unary.operator.is_reference())
+                        || (simple && has_array_reference(assignment.rhs))
                     {
                         Self::escape_root(assignment.lhs)
                     } else {
@@ -534,34 +564,19 @@ impl State {
             ]),
             Expression::Match(expression) => self.match_flow(expression, None, artifacts),
             Expression::ArrayAccess(access) => self.array_read(access, None, artifacts),
+            // NullsafeMethodCallHandler/NullsafePropertyFetchHandler: the call or fetch, or only the receiver
+            Expression::Call(Call::NullSafeMethod(NullSafeMethodCall { object, .. }))
+            | Expression::Access(Access::NullSafeProperty(NullSafePropertyAccess { object, .. })) => Rc::new(F::Choice(vec![
+                self.children(Node::Expression(expr)),
+                self.child(Node::Expression(object)),
+            ])),
             Expression::Closure(closure) => {
-                let mut imports = Vec::new();
-                let mut escaped = HashSet::default();
-                for parameter in &closure.parameter_list.parameters {
-                    let name = word(parameter.variable.name);
-                    if parameter.ampersand.is_some() {
-                        escaped.insert(name);
-                    } else {
-                        imports.push(Self::write(&parameter.variable));
-                    }
-                }
-                if let Some(uses) = &closure.use_clause {
-                    for capture in &uses.variables {
-                        if capture.ampersand.is_some() {
-                            escaped.insert(word(capture.variable.name));
-                        } else {
-                            imports.push(Self::write(&capture.variable));
-                        }
-                    }
-                }
-                let flow = sequence(
-                    imports
-                        .into_iter()
-                        .chain([self.body(closure.body.statements.as_slice())]),
-                );
-                self.completed.insert(
+                self.complete(
                     closure.span(),
-                    resolver::resolve(&flow, escaped, closure.ampersand.is_some()),
+                    &closure.parameter_list,
+                    closure.use_clause.as_ref(),
+                    closure.body.statements.as_slice(),
+                    closure.ampersand.is_some(),
                 );
                 sequence(
                     closure
@@ -633,13 +648,64 @@ impl State {
             Expression::Construct(Construct::Exit(_) | Construct::Die(_)) => {
                 sequence([self.children(Node::Expression(expr)), Rc::new(F::Stop)])
             }
-            Expression::AnonymousClass(class) => class
-                .argument_list
-                .as_ref()
-                .map_or_else(empty, |arguments| {
-                    self.child(Node::PartialArgumentList(arguments))
-                }),
+            Expression::AnonymousClass(class) => {
+                self.complete_methods(class.members.as_slice());
+                class
+                    .argument_list
+                    .as_ref()
+                    .map_or_else(empty, |arguments| {
+                        self.child(Node::PartialArgumentList(arguments))
+                    })
+            }
             _ => self.children(Node::Expression(expr)),
+        }
+    }
+
+    /// VariableLivenessResolver::resolve(): a function-like's parameters and closure uses are imported writes;
+    /// by-reference and promoted parameters, and by-reference uses, escape the body.
+    fn complete(
+        &mut self,
+        span: Span,
+        parameters: &FunctionLikeParameterList<'_>,
+        uses: Option<&ClosureUseClause<'_>>,
+        body: &[Statement<'_>],
+        by_ref: bool,
+    ) {
+        let mut imports = Vec::new();
+        let mut escaped = HashSet::default();
+        for parameter in &parameters.parameters {
+            let name = word(parameter.variable.name);
+            if parameter.ampersand.is_some() || !parameter.modifiers.is_empty() {
+                escaped.insert(name);
+            } else {
+                imports.push(Self::write(&parameter.variable));
+            }
+        }
+        for capture in uses.into_iter().flat_map(|uses| uses.variables.iter()) {
+            if capture.ampersand.is_some() {
+                escaped.insert(word(capture.variable.name));
+            } else {
+                imports.push(Self::write(&capture.variable));
+            }
+        }
+        let flow = sequence(imports.into_iter().chain([self.body(body)]));
+        self.completed.insert(span, resolver::resolve(&flow, escaped, by_ref));
+    }
+
+    /// The bodies of a class-like's concrete methods (ClassMethodHandler's VariableWritesNode).
+    fn complete_methods(&mut self, members: &[ClassLikeMember<'_>]) {
+        for member in members {
+            if let ClassLikeMember::Method(method) = member
+                && let MethodBody::Concrete(body) = &method.body
+            {
+                self.complete(
+                    method.span(),
+                    &method.parameter_list,
+                    None,
+                    body.statements.as_slice(),
+                    method.ampersand.is_some(),
+                );
+            }
         }
     }
 
@@ -794,7 +860,8 @@ impl State {
                 };
                 if artifacts
                     .get_expression_type(root)
-                    .is_some_and(|ty| !ty.is_array() && !ty.is_string())
+                    // an undefined root (typed as an error) is not checked
+                    .is_some_and(|ty| !ty.is_error() && !ty.is_array() && !ty.is_string())
                 {
                     return None;
                 }
@@ -837,17 +904,17 @@ impl State {
                 let mut otherwise = statement
                     .body
                     .else_statements()
-                    .map_or_else(empty, |body| self.body(body));
+                    .map_or_else(empty, |body| self.branch(body));
                 for (condition, body) in statement.body.else_if_clauses().into_iter().rev() {
                     otherwise = sequence([
                         self.child(Node::Expression(condition)),
-                        Rc::new(F::Choice(vec![self.body(body), otherwise])),
+                        Rc::new(F::Choice(vec![self.branch(body), otherwise])),
                     ]);
                 }
                 sequence([
                     self.child(Node::Expression(statement.condition)),
                     Rc::new(F::Choice(vec![
-                        self.body(statement.body.statements()),
+                        self.branch(statement.body.statements()),
                         otherwise,
                     ])),
                 ])
@@ -867,15 +934,17 @@ impl State {
             Statement::Break(statement) => Rc::new(F::Break(level(statement.level))),
             Statement::Continue(statement) => Rc::new(F::Continue(level(statement.level))),
             Statement::Goto(_) | Statement::Label(_) => Rc::new(F::Opaque),
+            // BlockHandler: like a loop body, the block stays optional
+            Statement::Block(block) => Rc::new(F::Choice(vec![self.body(block.statements.as_slice()), empty()])),
             Statement::While(statement) => Rc::new(F::Loop {
                 condition: self.child(Node::Expression(statement.condition)),
-                body: self.body(statement.body.statements()),
+                body: self.branch(statement.body.statements()),
                 update: empty(),
                 at_least_once: false,
             }),
             Statement::DoWhile(statement) => Rc::new(F::Loop {
                 condition: empty(),
-                body: self.child(Node::Statement(statement.statement)),
+                body: self.branch(std::slice::from_ref(statement.statement)),
                 update: self.child(Node::Expression(statement.condition)),
                 at_least_once: true,
             }),
@@ -893,7 +962,7 @@ impl State {
                             .iter()
                             .map(|expr| self.child(Node::Expression(expr))),
                     ),
-                    body: self.body(statement.body.statements()),
+                    body: self.branch(statement.body.statements()),
                     update: sequence(
                         statement
                             .increments
@@ -917,7 +986,7 @@ impl State {
                             .map_or_else(empty, |key| self.target_write(key, false, artifacts)),
                         self.target_read(statement.target.value(), false, None, artifacts),
                         self.target_write(statement.target.value(), false, artifacts),
-                        self.body(statement.body.statements()),
+                        self.branch(statement.body.statements()),
                     ]),
                     update: empty(),
                     at_least_once: false,
@@ -967,9 +1036,11 @@ impl State {
                     })
                     .collect(),
             }),
+            // UnsetHandler: releasing a value that may have a destructor (or a resource) observes it
             Statement::Unset(statement) => sequence(statement.values.iter().map(|value| {
+                let destructs = artifacts.get_expression_type(value).is_none_or(destruction_side_effects);
                 sequence([
-                    self.target_read(value, false, None, artifacts),
+                    self.target_read(value, destructs, None, artifacts),
                     self.target_write(value, true, artifacts),
                 ])
             })),
@@ -1028,6 +1099,26 @@ fn offset(expr: &Expression<'_>, artifacts: &AnalysisArtifacts) -> Option<Offset
         keys.insert(key);
     }
     (keys.len() == 1).then(|| keys.into_iter().next().unwrap())
+}
+
+/// UnsetHandler::hasDestructionSideEffects(): an object or resource may be the value, or an array may hold one.
+fn destruction_side_effects(ty: &TUnion) -> bool {
+    ty.types.iter().any(|atomic| match atomic {
+        TAtomic::Array(TArray::List(list)) => {
+            destruction_side_effects(list.get_element_type())
+                || list.get_known_elements().into_iter().flatten().any(|(_, (_, t))| destruction_side_effects(t))
+        }
+        TAtomic::Array(TArray::Keyed(keyed)) => {
+            keyed.get_generic_parameters().is_some_and(|(_, t)| destruction_side_effects(t))
+                || keyed.known_items.iter().flat_map(|items| items.values()).any(|(_, t)| destruction_side_effects(t))
+        }
+        atomic => {
+            atomic.is_mixed()
+                || atomic.is_object_type()
+                || atomic.is_resource()
+                || matches!(atomic, TAtomic::GenericParameter(_) | TAtomic::Object(_) | TAtomic::Iterable(_) | TAtomic::Callable(_))
+        }
+    })
 }
 
 fn level(expr: Option<&Expression<'_>>) -> usize {
@@ -1136,4 +1227,17 @@ fn mentioned(node: Node<'_, '_>) -> Flow {
         _ => {}
     }
     sequence(node.children().into_iter().map(mentioned))
+}
+
+/// AssignHandler::hasArrayReference(): an array literal with a by-reference item, at any depth.
+fn has_array_reference(expr: &Expression<'_>) -> bool {
+    let elements = match expr {
+        Expression::Array(array) => array.elements.as_slice(),
+        Expression::LegacyArray(array) => array.elements.as_slice(),
+        _ => return false,
+    };
+    elements.iter().filter_map(|item| item.get_value()).any(|value| match value {
+        Expression::UnaryPrefix(unary) => unary.operator.is_reference(),
+        value => has_array_reference(value),
+    })
 }

@@ -11,6 +11,8 @@ enum Slot {
     Container,
     Unknown,
     Offset(Offset),
+    /// An overwrite marker: the write that left it, and the slot it replaces (None for the whole variable).
+    Marker(Span, Option<Offset>),
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
@@ -41,6 +43,19 @@ struct Resolver {
     observed: HashSet<Span>,
     literal_items: HashMap<Span, Vec<super::VariableWrite>>,
     returns_by_reference: bool,
+    /// Every write access (kind Write, Define or Discard) by variable, in collection order.
+    accesses: Vec<(super::VariableWrite, Access)>,
+    /// compileOverwrites(): the markers each write observes, and the markers it kills.
+    overwrite_keys: HashMap<Span, Vec<Key>>,
+    killed_markers: HashMap<Span, Vec<Key>>,
+    markers: HashMap<Span, Key>,
+}
+
+#[derive(Clone, Copy, PartialEq)]
+enum Access {
+    Write,
+    Define,
+    Discard,
 }
 
 pub(super) fn resolve(
@@ -53,6 +68,7 @@ pub(super) fn resolve(
     resolver.returns_by_reference = returns_by_reference;
     resolver.collect(flow);
     if !resolver.node.writes.is_empty() && !resolver.node.opaque {
+        resolver.compile_overwrites();
         resolver.live_before(flow, Live::default(), &Destinations::default());
         resolver.resolve_dependencies();
         resolver.resolve_coverage();
@@ -70,11 +86,18 @@ impl Resolver {
         match &**flow {
             VariableFlow::Read { name, offset, .. } => {
                 self.access(*name, offset.as_ref());
+                self.node.read_names.insert(*name);
             }
             VariableFlow::Write(write)
             | VariableFlow::Define(write)
             | VariableFlow::Discard(write) => {
                 self.access(write.name, write.offset.as_ref());
+                let access = match &**flow {
+                    VariableFlow::Write(_) => Access::Write,
+                    VariableFlow::Define(_) => Access::Define,
+                    _ => Access::Discard,
+                };
+                self.accesses.push((write.clone(), access));
                 if !matches!(**flow, VariableFlow::Discard(_)) {
                     self.node.writes.insert(write.node, write.clone());
                     if let Some(parent) = write.parent {
@@ -194,7 +217,12 @@ impl Resolver {
                                 None => key.slot != Slot::Container,
                             })
                 };
+                let selected = |key: &Key| !matches!(key.slot, Slot::Marker(..)) && selected(key);
                 if matches!(**flow, VariableFlow::Write(_)) {
+                    self.observe_overwrite(write.node, &next);
+                    for item in self.literal_items.get(&write.node).cloned().into_iter().flatten() {
+                        self.observe_overwrite(item.node, &next);
+                    }
                     for key in next.iter().filter(|key| selected(key)) {
                         self.observed.insert(write.node);
                         if let Some(target) = key.target {
@@ -208,7 +236,8 @@ impl Resolver {
                     }
                     for item in self.literal_items.get(&write.node).into_iter().flatten() {
                         for key in next.iter().filter(|key| {
-                            key.name == item.name
+                            !matches!(key.slot, Slot::Marker(..))
+                                && key.name == item.name
                                 && match &item.offset {
                                     Some(offset) => key.slot == Slot::Offset(offset.clone()),
                                     None => key.slot != Slot::Container,
@@ -228,6 +257,14 @@ impl Resolver {
                 }
                 if !write.offset_write || write.offset.is_some() && write.replaces_offset {
                     next.retain(|key| !selected(key));
+                }
+                for key in self.killed_markers.get(&write.node).into_iter().flatten() {
+                    next.remove(key);
+                }
+                if matches!(**flow, VariableFlow::Write(_))
+                    && let Some(marker) = self.markers.get(&write.node)
+                {
+                    next.insert(marker.clone());
                 }
             }
             VariableFlow::Inputs { write, target } => {
@@ -260,7 +297,8 @@ impl Resolver {
                     ..Default::default()
                 };
                 let mut names = self.live_before(body, outputs, &arrow_context);
-                names.retain(|key| !parameters.contains(&key.name));
+                // the arrow function's own writes replace nothing outside of it
+                names.retain(|key| !parameters.contains(&key.name) && !matches!(key.slot, Slot::Marker(..)));
                 next.extend(names);
             }
             VariableFlow::Loop {
@@ -416,6 +454,7 @@ impl Resolver {
                 next = self.live_before(condition, unmatched, context);
             }
             VariableFlow::ReadAll => {
+                self.node.read_names.extend(self.node.referenced.iter().copied());
                 for (&name, slots) in &self.slots {
                     next.extend(slots.iter().cloned().map(|slot| Key {
                         name,
@@ -427,6 +466,57 @@ impl Resolver {
             _ => {}
         }
         next
+    }
+
+    /// VariableLivenessResolver::compileOverwrites(): a write replacing the variable or one of its offsets leaves
+    /// a marker that the previous replacing write of the same slot finds after it.
+    fn compile_overwrites(&mut self) {
+        let replaced = |write: &super::VariableWrite| -> Option<Option<Offset>> {
+            if !write.offset_write {
+                return Some(None);
+            }
+            write.offset.clone().filter(|_| write.replaces_offset).map(Some)
+        };
+        let mut markers: Vec<(Option<Offset>, Key, Span)> = Vec::new();
+        for (write, access) in &self.accesses {
+            if *access != Access::Write {
+                continue;
+            }
+            let Some(slot) = replaced(write) else { continue };
+            let key = Key {
+                name: write.name,
+                slot: Slot::Marker(write.node, slot.clone()),
+                target: None,
+            };
+            self.markers.insert(write.node, key.clone());
+            markers.push((slot, key, write.node));
+        }
+        for (write, _) in &self.accesses {
+            let observed = markers.iter().filter(|(slot, key, writer)| {
+                key.name == write.name
+                    && (slot.is_none() || write.offset_write && slot.is_some() && *slot == write.offset)
+                    && *writer != write.node
+                    && Some(*writer) != write.parent
+            });
+            self.overwrite_keys
+                .entry(write.node)
+                .or_default()
+                .extend(observed.map(|(_, key, _)| key.clone()));
+            let Some(slot) = replaced(write) else { continue };
+            let killed = markers.iter().filter(|(marker_slot, key, _)| {
+                key.name == write.name && (slot.is_none() || *marker_slot == slot)
+            });
+            self.killed_markers
+                .entry(write.node)
+                .or_default()
+                .extend(killed.map(|(_, key, _)| key.clone()));
+        }
+    }
+
+    fn observe_overwrite(&mut self, id: Span, next: &Live) {
+        if self.overwrite_keys.get(&id).into_iter().flatten().any(|key| next.contains(key)) {
+            self.node.overwritten.insert(id);
+        }
     }
 
     fn resolve_dependencies(&mut self) {

@@ -1,0 +1,243 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "extra.php",
+   "line": 40,
+   "identifier": "assert.unknownExpr",
+   "message": "Assert references unknown $a->foo.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 94,
+   "identifier": "constructor.unusedParameter",
+   "message": "Constructor of class UnusedParametersExtra\\Base has an unused parameter $plain.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 115,
+   "identifier": "constructor.unusedParameter",
+   "message": "Constructor of an anonymous class has an unused parameter $unused.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 137,
+   "identifier": "constructor.unusedParameter",
+   "message": "Constructor of class UnusedParametersExtra\\EmptyConstructor has an unused parameter $s.",
+   "tip": null
+  },
+  {
+   "file": "unused-closure-uses-resolved-dynamic.php",
+   "line": 6,
+   "identifier": "closure.unusedUse",
+   "message": "Anonymous function has an unused use $other.",
+   "tip": null
+  },
+  {
+   "file": "unused-closure-uses-resolved-dynamic.php",
+   "line": 11,
+   "identifier": "echo.nonString",
+   "message": "Parameter #1 (stdClass) of echo cannot be converted to string.",
+   "tip": null
+  },
+  {
+   "file": "unused-closure-uses-resolved-dynamic.php",
+   "line": 22,
+   "identifier": "closure.unusedUse",
+   "message": "Anonymous function has an unused use $overwritten.",
+   "tip": null
+  },
+  {
+   "file": "unused-closure-uses-skipped-catch.php",
+   "line": 15,
+   "identifier": "closure.unusedUse",
+   "message": "Anonymous function has an unused use $unused.",
+   "tip": null
+  },
+  {
+   "file": "unused-closure-uses-skipped-catch.php",
+   "line": 25,
+   "identifier": "throw.notThrowable",
+   "message": "Invalid type null to throw.",
+   "tip": null
+  },
+  {
+   "file": "unused-closure-uses.php",
+   "line": 4,
+   "identifier": "variable.undefined",
+   "message": "Variable $used might not be defined.",
+   "tip": null
+  },
+  {
+   "file": "unused-closure-uses.php",
+   "line": 5,
+   "identifier": "variable.undefined",
+   "message": "Variable $usedInClosureUse might not be defined.",
+   "tip": null
+  },
+  {
+   "file": "unused-closure-uses.php",
+   "line": 6,
+   "identifier": "closure.unusedUse",
+   "message": "Anonymous function has an unused use $unused.",
+   "tip": null
+  },
+  {
+   "file": "unused-closure-uses.php",
+   "line": 6,
+   "identifier": "variable.undefined",
+   "message": "Variable $unused might not be defined.",
+   "tip": null
+  },
+  {
+   "file": "unused-closure-uses.php",
+   "line": 7,
+   "identifier": "closure.unusedUse",
+   "message": "Anonymous function has an unused use $anotherUnused.",
+   "tip": null
+  },
+  {
+   "file": "unused-closure-uses.php",
+   "line": 7,
+   "identifier": "variable.undefined",
+   "message": "Variable $anotherUnused might not be defined.",
+   "tip": null
+  },
+  {
+   "file": "unused-closure-uses.php",
+   "line": 10,
+   "identifier": "closure.unusedUse",
+   "message": "Anonymous function has an unused use $usedInClosureUse.",
+   "tip": null
+  },
+  {
+   "file": "unused-closure-uses.php",
+   "line": 18,
+   "identifier": "requireOnce.fileNotFound",
+   "message": "Path in require_once() __DIR__ . '/foo.php' is not a file or it does not exist.",
+   "tip": null
+  },
+  {
+   "file": "unused-closure-uses.php",
+   "line": 22,
+   "identifier": "include.fileNotFound",
+   "message": "Path in include() \"foo.php\" is not a file or it does not exist.",
+   "tip": null
+  },
+  {
+   "file": "unused-closure-uses.php",
+   "line": 32,
+   "identifier": "require.fileNotFound",
+   "message": "Path in require() __DIR__ . '/echo_the_value_of_aap.php' is not a file or it does not exist.",
+   "tip": null
+  },
+  {
+   "file": "unused-closure-uses.php",
+   "line": 38,
+   "identifier": "echo.nonString",
+   "message": "Parameter #1 (stdClass) of echo cannot be converted to string.",
+   "tip": null
+  },
+  {
+   "file": "unused-closure-uses.php",
+   "line": 43,
+   "identifier": "closure.unusedUse",
+   "message": "Anonymous function has an unused use $container.",
+   "tip": null
+  },
+  {
+   "file": "unused-closure-uses.php",
+   "line": 44,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $notContainer",
+   "tip": null
+  },
+  {
+   "file": "unused-constructor-parameters-resolved-dynamic.php",
+   "line": 8,
+   "identifier": "constructor.unusedParameter",
+   "message": "Constructor of class UnusedConstructorParametersResolvedDynamic\\VariableVariable has an unused parameter $other.",
+   "tip": null
+  },
+  {
+   "file": "unused-constructor-parameters-resolved-dynamic.php",
+   "line": 43,
+   "identifier": "constructor.unusedParameter",
+   "message": "Constructor of class UnusedConstructorParametersResolvedDynamic\\OverwrittenParameter has an unused parameter $x.",
+   "tip": null
+  },
+  {
+   "file": "unused-constructor-parameters-value-flow.php",
+   "line": 10,
+   "identifier": "constructor.unusedParameterFlow",
+   "message": "Constructor of class UnusedConstructorParametersValueFlow\\Foo has a parameter $input that only flows into values that are never used.",
+   "tip": null
+  },
+  {
+   "file": "unused-constructor-parameters-value-flow.php",
+   "line": 10,
+   "identifier": "constructor.unusedParameter",
+   "message": "Constructor of class UnusedConstructorParametersValueFlow\\Foo has an unused parameter $overwritten.",
+   "tip": null
+  },
+  {
+   "file": "unused-constructor-parameters.php",
+   "line": 19,
+   "identifier": "constructor.unusedParameter",
+   "message": "Constructor of class UnusedConstructorParameters\\Foo has an unused parameter $unusedParameter.",
+   "tip": null
+  },
+  {
+   "file": "unused-constructor-parameters.php",
+   "line": 20,
+   "identifier": "constructor.unusedParameter",
+   "message": "Constructor of class UnusedConstructorParameters\\Foo has an unused parameter $anotherUnusedParameter.",
+   "tip": null
+  },
+  {
+   "file": "unused-constructor-parameters.php",
+   "line": 27,
+   "identifier": "function.notFound",
+   "message": "Function doFoo not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "unused-constructor-parameters.php",
+   "line": 30,
+   "identifier": "closure.unusedUse",
+   "message": "Anonymous function has an unused use $usedParameterInClosureUse.",
+   "tip": null
+  },
+  {
+   "file": "unused-input-value-flow.php",
+   "line": 12,
+   "identifier": "void.pure",
+   "message": "Function UnusedInputValueFlow\\coveredParameter() returns void but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "unused-input-value-flow.php",
+   "line": 25,
+   "identifier": "closure.unusedUseFlow",
+   "message": "Anonymous function has a use $input that only flows into values that are never used.",
+   "tip": null
+  },
+  {
+   "file": "unused-input-value-flow.php",
+   "line": 49,
+   "identifier": "closure.unusedUse",
+   "message": "Anonymous function has an unused use $input.",
+   "tip": null
+  },
+  {
+   "file": "unused-method-parameters-value-flow.php",
+   "line": 15,
+   "identifier": "void.pure",
+   "message": "Method UnusedMethodParametersValueFlow\\Foo::coveredParameter() returns void but does not have any side effects.",
+   "tip": null
+  }
+ ]
+}

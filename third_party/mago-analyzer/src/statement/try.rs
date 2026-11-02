@@ -114,6 +114,11 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Try<'arena> {
         }
         block_context.flags.set_inside_try(was_inside_try);
         let mut throw_scopes = std::mem::take(&mut artifacts.variable_throw_scopes);
+        // TryCatchHandler's "previously removed throw points": a call may still throw any throwable
+        let removed_throw_scopes: Vec<_> = throw_scopes.iter()
+            .filter(|((_, kind), _)| *kind != VariableThrowKind::Expression)
+            .map(|(key, thrown)| (*key, thrown.clone()))
+            .collect();
         let mut continuing_scopes = Vec::new();
         if !block_context.flags.has_returned() {
             continuing_scopes.push(block_context.variable_scope());
@@ -297,6 +302,19 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Try<'arena> {
                         true
                     }
                 });
+            }
+            // TryCatchHandler: with no matching throw point left, a catch of Throwable takes the try block's throw points
+            // that can contain any throwable, including those an earlier catch removed
+            if catch_entries.is_empty() && caught_classes.iter().any(|caught| caught.as_bytes().eq_ignore_ascii_case(b"Throwable")) {
+                for ((span, kind), thrown) in &removed_throw_scopes {
+                    for (exception, scope) in thrown {
+                        if context.settings.track_variable_flow && context.raw_callback_gather_depth == 0 {
+                            context.variable_flow.catches.entry(catch_clause.span()).or_default()
+                                .insert(crate::variable_flow::ThrowPoint(*span, *kind, *exception));
+                        }
+                        catch_entries.push(scope.clone());
+                    }
+                }
             }
             // TryCatchHandler never adds a catch edge without a matching throw point. In
             // particular, an explicit `@throws void` is not an unknown implicit throw.

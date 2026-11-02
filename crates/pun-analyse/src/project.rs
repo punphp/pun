@@ -106,6 +106,13 @@ pub struct Project {
     pub check_printf_parameter_types: bool,
     /// `checkStrictPrintfPlaceholderTypes`: PrintfParameterTypeRule's strict placeholder types (off by default).
     pub check_strict_printf_placeholder_types: bool,
+    /// `featureToggles.finiteTypesInHaystack` (on with bleedingEdge): ImpossibleInArrayHaystackFiniteTypesRule.
+    pub finite_types_in_haystack: bool,
+    /// `featureToggles.unusedVariable` (on with bleedingEdge): UnusedVariableRule.
+    pub unused_variable: bool,
+    /// `featureToggles.unusedParameters` (on with bleedingEdge): Unused{Function,Method}ParametersRule and the
+    /// `*.unusedParameterFlow`/`closure.unusedUseFlow` findings.
+    pub unused_parameters: bool,
     /// `dynamicConstantNames`' entries with a configured type (name, type string).
     pub dynamic_constant_types: Vec<(String, String)>,
     /// `checkUninitializedProperties`: UninitializedPropertyRule (config.neon's conditional rule).
@@ -441,6 +448,9 @@ impl Project {
             check_parameter_castable_to_number_functions: toggle("checkParameterCastableToNumberFunctions"),
             check_printf_parameter_types: toggle("checkPrintfParameterTypes"),
             check_strict_printf_placeholder_types: flag("checkStrictPrintfPlaceholderTypes"),
+            finite_types_in_haystack: toggle("finiteTypesInHaystack"),
+            unused_variable: toggle("unusedVariable"),
+            unused_parameters: toggle("unusedParameters"),
             // ConstantResolver::getConfiguredGlobalConstantType(): only the string keys have a type
             dynamic_constant_types: params
                 .get_str("dynamicConstantNames")
@@ -530,6 +540,9 @@ impl Project {
             check_parameter_castable_to_number_functions: false,
             check_printf_parameter_types: false,
             check_strict_printf_placeholder_types: false,
+            finite_types_in_haystack: false,
+            unused_variable: false,
+            unused_parameters: false,
             dynamic_constant_types: Vec::new(),
             check_uninitialized_properties: false,
             check_missing_callable_signature: false,

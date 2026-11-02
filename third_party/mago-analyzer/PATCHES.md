@@ -3499,3 +3499,24 @@ and `PHPSTAN_PHAR` selects PHPStan 2.3.1. From the repository root, these comman
 	php crates/pun-analyse/tests/fixtures/repeated-assertion-expressions/phpstan-capture.php \
 		"$PHPSTAN_PHAR" > "$OUTPUT/phpstan-types.jsonl"
 ```
+
+## Function, method and variable liveness
+
+`variable_flow` completes a `VariableWritesNode` for every function, class-like method and
+anonymous-class method, as well as for closures. By-reference and promoted parameters escape the body.
+The resolver ports `compileOverwrites` markers, so a write reports whether another write replaces it
+first. It also records the names read anywhere in the body.
+
+The builder follows these PHPStan handlers:
+
+- `BlockHandler`: a free `{ }` block stays optional. A control structure's braced body is its statement list.
+- `NullsafeMethodCallHandler` and `NullsafePropertyFetchHandler`: the flow is the call or the receiver alone.
+- `TernaryHandler`: the value-flow context is kept.
+- `PreIncHandler` and `PreDecHandler`: a consumed value reads the variable after the write.
+- `UnsetHandler::hasDestructionSideEffects()`: unsetting a value that may have a destructor reads it.
+- `AssignHandler::hasArrayReference()`: assigning a literal with a by-reference item escapes the target.
+- `writeSite()`: an undefined root (typed as an error) is not checked for an array or string type.
+
+`TryCatchHandler`'s "previously removed throw points" is also ported. When no remaining throw point
+matches, a catch of `Throwable` takes the try block's call throw points, including those an earlier catch
+removed.

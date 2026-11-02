@@ -521,6 +521,8 @@ pub struct Signature {
     pub self_out: Option<Type>,
     /// the parameters of `getAsserts()`, its own or inherited ones (without `$`)
     pub asserts: Vec<String>,
+    /// the PHPDoc parameter and return types before TypehintHelper::decideType()
+    pub phpdoc: Vec<Type>,
 }
 
 /// The PHPDoc of a method as PHPStan resolves it, with what it inherits: parameter types by name, the return type.
@@ -1090,8 +1092,8 @@ pub fn function(c: &Checker, f: &Function) -> Signature {
 
 fn function_resolved(c: &Checker, f: &Function) -> Resolved {
     doc_before(&c.file.contents, f.span().start.offset as usize)
-        .map(|doc| {
-            let doc = Doc::parse(doc);
+        .map(|raw| {
+            let doc = Doc::parse(raw);
             let scope = function_scope(c, f, &doc);
             Resolved {
                 params: doc
@@ -1103,6 +1105,7 @@ fn function_resolved(c: &Checker, f: &Function) -> Resolved {
                 outs: Doc::named_types(&doc.outs, &scope),
                 closure_this: Doc::named_types(&doc.closure_this, &scope),
                 self_out: doc.self_out.as_ref().map(|n| resolve_in(n, &scope)),
+                asserts: super::assert_tags::parameters(raw),
                 ..Resolved::default()
             }
         })
@@ -1150,12 +1153,14 @@ fn signature(
     let native_ret = ret
         .map(|r| native(c, &r.hint, class))
         .or_else(|| method.and_then(magic_return));
+    let phpdoc = doc.params.values().cloned().chain(doc.ret.clone()).collect();
     let ret = decide_type(native_ret.unwrap_or_else(mixed), doc.ret);
     Signature {
         params,
         ret,
         self_out: doc.self_out,
         asserts: doc.asserts,
+        phpdoc,
     }
 }
 

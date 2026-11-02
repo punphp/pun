@@ -1,0 +1,26 @@
+parameters:
+	level: 4
+	phpVersion: 80500
+	paths: [.]
+	reportUnmatchedIgnoredErrors: false
+	ignoreErrors:
+		-
+			identifier: void.pure
+		-
+			identifier: expr.resultUnused
+		-
+			identifier: function.alreadyNarrowedType
+		-
+			identifier: function.impossibleType
+		-
+			identifier: doWhile.alwaysFalse
+		-
+			identifier: smaller.alwaysFalse
+		-
+			identifier: booleanOr.leftAlwaysFalse
+		-
+			identifier: nullCoalesce.offset
+		-
+			identifier: offsetAssign.dimType
+		-
+			identifier: offsetAssign.valueType

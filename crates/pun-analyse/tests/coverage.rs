@@ -13,9 +13,6 @@ type Key = (String, i64, String, String, Option<String>);
 /// PHPStan 2.3 errors Pun does not report yet (case directory, file, line, identifier); one Pun reports fails the
 /// test as extra.
 const GAPS: &[(&str, &str, i64, &str)] = &[
-    // UnusedConstructorParametersRule follows VariableWritesNode dataflow: a constructor that never ends (`for (;;)`)
-    // reads no parameter
-    ("strict-rules", "construct-global.php", 61, "constructor.unusedParameter"),
     // PHPStan 2.3.1's loop scope: `while (true) { ...; $x = 1; if ($x) break; }` never reaches a second iteration, so
     // $x is undefined at the loop start; Pun merges the end-of-body scope back in
     ("var_names", "vars.php", 84, "varTag.variableNotFound"),
@@ -28,6 +25,9 @@ const GAPS: &[(&str, &str, i64, &str)] = &[
     ("strict-operators", "operators.php", 105, "void.pure"),
     // First-class callable creation has no declaration-effects producer yet.
     ("types", "types.php", 72, "void.pure"),
+    // The declaration-effects producer does not prove a body only assigns locals.
+    ("unused-parameters", "unused-input-value-flow.php", 12, "void.pure"),
+    ("unused-parameters", "unused-method-parameters-value-flow.php", 15, "void.pure"),
     // Foreach scope/effect joins remain unported for declaration purity.
     ("types", "types.php", 281, "void.pure"),
     // Local class declarations need their own producer, separate from their methods' bodies.

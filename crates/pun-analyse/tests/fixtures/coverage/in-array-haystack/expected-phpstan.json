@@ -1,0 +1,376 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "extra.php",
+   "line": 18,
+   "identifier": "function.impossibleHaystackValue",
+   "message": "Value InArrayHaystackExtra\\Suit::Hearts in the haystack passed to in_array() can never be identical to the needle type int.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 25,
+   "identifier": "function.impossibleHaystackValue",
+   "message": "Value 'abc' in the haystack passed to in_array() can never be equal to the needle type int.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 35,
+   "identifier": "function.impossibleHaystackValue",
+   "message": "Value InArrayHaystackExtra\\Color::Red in the haystack passed to in_array() can never be equal to the needle type InArrayHaystackExtra\\Suit.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 35,
+   "identifier": "function.impossibleHaystackValue",
+   "message": "Value false in the haystack passed to in_array() can never be equal to the needle type InArrayHaystackExtra\\Suit.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 42,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 43,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 44,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 44,
+   "identifier": "function.impossibleHaystackValue",
+   "message": "Value array{1, 2} in the haystack passed to in_array() can never be identical to the needle type int.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 49,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_search() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 49,
+   "identifier": "function.impossibleHaystackValue",
+   "message": "Value 'x' in the haystack passed to array_search() can never be identical to the needle type int.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 49,
+   "identifier": "function.impossibleHaystackValue",
+   "message": "Value InArrayHaystackExtra\\Suit::Hearts in the haystack passed to array_search() can never be identical to the needle type int.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 54,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_keys() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 55,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_keys() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 55,
+   "identifier": "function.impossibleHaystackValue",
+   "message": "Value InArrayHaystackExtra\\Suit::Hearts in the haystack passed to array_keys() can never be equal to the needle type int.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 56,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 56,
+   "identifier": "arguments.count",
+   "message": "Function in_array invoked with 1 parameter, 2-3 required.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 62,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 62,
+   "identifier": "function.impossibleHaystackValue",
+   "message": "Value InArrayHaystackExtra\\Suit::Hearts in the haystack passed to in_array() can never be identical to the needle type int.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 63,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 63,
+   "identifier": "function.impossibleHaystackValue",
+   "message": "Value InArrayHaystackExtra\\Suit::Hearts in the haystack passed to in_array() can never be identical to the needle type int.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 68,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 76,
+   "identifier": "function.impossibleHaystackValue",
+   "message": "Value 1 in the haystack passed to in_array() can never be identical to the needle type 'a'|'b'.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 87,
+   "identifier": "function.impossibleHaystackValue",
+   "message": "Value 'x' in the haystack passed to in_array() can never be identical to the needle type int.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 87,
+   "identifier": "function.impossibleHaystackValue",
+   "message": "Value InArrayHaystackExtra\\Suit::Hearts in the haystack passed to in_array() can never be identical to the needle type int.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 97,
+   "identifier": "function.impossibleHaystackValue",
+   "message": "Value 'b' in the haystack passed to in_array() can never be identical to the needle type mixed.",
+   "tip": "Type 1|'b' has already been eliminated from mixed."
+  },
+  {
+   "file": "extra.php",
+   "line": 97,
+   "identifier": "function.impossibleHaystackValue",
+   "message": "Value 1 in the haystack passed to in_array() can never be identical to the needle type mixed.",
+   "tip": "Type 1|'b' has already been eliminated from mixed."
+  },
+  {
+   "file": "extra.php",
+   "line": 107,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 107,
+   "identifier": "function.impossibleHaystackValue",
+   "message": "Value 'x' in the haystack passed to in_array() can never be identical to the needle type float.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 108,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 108,
+   "identifier": "function.impossibleHaystackValue",
+   "message": "Value 'x' in the haystack passed to in_array() can never be identical to the needle type int|null.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 108,
+   "identifier": "function.impossibleHaystackValue",
+   "message": "Value 0.0 in the haystack passed to in_array() can never be identical to the needle type int|null.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 108,
+   "identifier": "function.impossibleHaystackValue",
+   "message": "Value false in the haystack passed to in_array() can never be identical to the needle type int|null.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 109,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 109,
+   "identifier": "function.impossibleHaystackValue",
+   "message": "Value 'x' in the haystack passed to in_array() can never be equal to the needle type int|null.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 114,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 115,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_keys() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 115,
+   "identifier": "function.impossibleHaystackValue",
+   "message": "Value 'a' in the haystack passed to array_keys() can never be identical to the needle type int.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 115,
+   "identifier": "function.impossibleHaystackValue",
+   "message": "Value 'b' in the haystack passed to array_keys() can never be identical to the needle type int.",
+   "tip": null
+  },
+  {
+   "file": "impossible-in-array-finite-types.php",
+   "line": 19,
+   "identifier": "function.impossibleHaystackValue",
+   "message": "Value ImpossibleInArrayFiniteTypes\\Foo::ONE in the haystack passed to in_array() can never be identical to the needle type int.",
+   "tip": null
+  },
+  {
+   "file": "impossible-in-array-finite-types.php",
+   "line": 26,
+   "identifier": "function.impossibleHaystackValue",
+   "message": "Value ImpossibleInArrayFiniteTypes\\Foo::ONE in the haystack passed to in_array() can never be equal to the needle type int.",
+   "tip": null
+  },
+  {
+   "file": "impossible-in-array-finite-types.php",
+   "line": 33,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_search() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "impossible-in-array-finite-types.php",
+   "line": 33,
+   "identifier": "function.impossibleHaystackValue",
+   "message": "Value ImpossibleInArrayFiniteTypes\\Foo::ONE in the haystack passed to array_search() can never be identical to the needle type int.",
+   "tip": null
+  },
+  {
+   "file": "impossible-in-array-finite-types.php",
+   "line": 38,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_keys() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "impossible-in-array-finite-types.php",
+   "line": 38,
+   "identifier": "function.impossibleHaystackValue",
+   "message": "Value ImpossibleInArrayFiniteTypes\\Foo::ONE in the haystack passed to array_keys() can never be identical to the needle type int.",
+   "tip": null
+  },
+  {
+   "file": "impossible-in-array-finite-types.php",
+   "line": 99,
+   "identifier": "function.impossibleHaystackValue",
+   "message": "Value 'installed' in the haystack passed to in_array() can never be identical to the needle type mixed.",
+   "tip": "Type 'installed' has already been eliminated from mixed."
+  },
+  {
+   "file": "impossible-in-array-finite-types.php",
+   "line": 161,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_keys() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "impossible-in-array-finite-types.php",
+   "line": 219,
+   "identifier": "function.impossibleHaystackValue",
+   "message": "Value ImpossibleInArrayFiniteTypes\\Bar::ONE in the haystack passed to in_array() can never be identical to the needle type ImpossibleInArrayFiniteTypes\\Foo.",
+   "tip": null
+  },
+  {
+   "file": "impossible-in-array-finite-types.php",
+   "line": 226,
+   "identifier": "function.impossibleHaystackValue",
+   "message": "Value '3' in the haystack passed to in_array() can never be identical to the needle type int.",
+   "tip": null
+  },
+  {
+   "file": "impossible-in-array-finite-types.php",
+   "line": 237,
+   "identifier": "function.impossibleHaystackValue",
+   "message": "Value null in the haystack passed to in_array() can never be identical to the needle type string.",
+   "tip": null
+  },
+  {
+   "file": "impossible-in-array-finite-types.php",
+   "line": 246,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_search() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "impossible-in-array-finite-types.php",
+   "line": 246,
+   "identifier": "function.impossibleHaystackValue",
+   "message": "Value ImpossibleInArrayFiniteTypes\\Param::Gclid in the haystack passed to array_search() can never be identical to the needle type ImpossibleInArrayFiniteTypes\\Param::Dclid.",
+   "tip": null
+  },
+  {
+   "file": "impossible-in-array-finite-types.php",
+   "line": 246,
+   "identifier": "function.impossibleHaystackValue",
+   "message": "Value ImpossibleInArrayFiniteTypes\\Param::UtmSource in the haystack passed to array_search() can never be identical to the needle type ImpossibleInArrayFiniteTypes\\Param::Dclid.",
+   "tip": null
+  },
+  {
+   "file": "impossible-in-array-finite-types.php",
+   "line": 261,
+   "identifier": "function.impossibleHaystackValue",
+   "message": "Value ImpossibleInArrayFiniteTypes\\HttpStatus::ServerError in the haystack passed to in_array() can never be identical to the needle type int.",
+   "tip": null
+  }
+ ]
+}

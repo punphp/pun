@@ -1,0 +1,250 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "extra.php",
+   "line": 24,
+   "identifier": "throws.unusedType",
+   "message": "Function UnusedVariableExtra\\mayThrow() has DomainException in PHPDoc @throws tag but it's not thrown.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 109,
+   "identifier": "return.type",
+   "message": "Anonymous function should return int but returns string.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 215,
+   "identifier": "catch.neverThrown",
+   "message": "Dead catch - Throwable is never thrown in the try block.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-broad-catch.php",
+   "line": 57,
+   "identifier": "throws.unusedType",
+   "message": "Function UnusedVariableBroadCatch\\loadFile() has RuntimeException in PHPDoc @throws tag but it's not thrown.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-by-ref-return.php",
+   "line": 58,
+   "identifier": "return.byRefFinally",
+   "message": "Anonymous function should return 0 but returns 2 because the finally block modifies the value returned by reference.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-catch.php",
+   "line": 14,
+   "identifier": "impureFunction.pure",
+   "message": "Function UnusedVariableCatch\\doThrow() is marked as impure but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-dead-branch.php",
+   "line": 13,
+   "identifier": "if.alwaysFalse",
+   "message": "If condition is always false.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-dead-branch.php",
+   "line": 31,
+   "identifier": "if.alwaysTrue",
+   "message": "If condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-dead-branch.php",
+   "line": 44,
+   "identifier": "elseif.alwaysFalse",
+   "message": "Elseif condition is always false.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-dead-branch.php",
+   "line": 53,
+   "identifier": "if.alwaysTrue",
+   "message": "If condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-dead-branch.php",
+   "line": 65,
+   "identifier": "if.alwaysFalse",
+   "message": "If condition is always false.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-inferred-branches.php",
+   "line": 24,
+   "identifier": "foreach.emptyArray",
+   "message": "Empty array passed to foreach.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-inferred-branches.php",
+   "line": 91,
+   "identifier": "if.alwaysTrue",
+   "message": "If condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 96,
+   "identifier": "isset.offset",
+   "message": "Offset 'x' on array{x: 1, y: 2} in isset() always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 104,
+   "identifier": "empty.offset",
+   "message": "Offset 'x' on array{x: 1, y: 2} in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 504,
+   "identifier": "unset.offset",
+   "message": "Cannot unset offset 1 on array{x: 1}.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-overwritten.php",
+   "line": 40,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $a on left side of ?? is never defined.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-overwritten.php",
+   "line": 46,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $a on left side of ?? is never defined.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-overwritten.php",
+   "line": 54,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $a on left side of ?? is never defined.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-result-flow.php",
+   "line": 100,
+   "identifier": "finally.exitPoint",
+   "message": "This return is overwritten by a different one in the finally block below.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-result-flow.php",
+   "line": 103,
+   "identifier": "finally.exitPoint",
+   "message": "The overwriting return is on this line.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-scope-pollution.php",
+   "line": 32,
+   "identifier": "foreach.emptyArray",
+   "message": "Empty array passed to foreach.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-scope-pollution.php",
+   "line": 41,
+   "identifier": "foreach.emptyArray",
+   "message": "Empty array passed to foreach.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-scope-pollution.php",
+   "line": 58,
+   "identifier": "echo.nonString",
+   "message": "Parameter #1 (non-empty-array<int>) of echo cannot be converted to string.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-scope-pollution.php",
+   "line": 74,
+   "identifier": "while.alwaysFalse",
+   "message": "While loop condition is always false.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-scope-pollution.php",
+   "line": 88,
+   "identifier": "echo.nonString",
+   "message": "Parameter #1 (non-empty-array<int>) of echo cannot be converted to string.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-scope-pollution.php",
+   "line": 116,
+   "identifier": "echo.nonString",
+   "message": "Parameter #1 (non-empty-array<int>) of echo cannot be converted to string.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 177,
+   "identifier": "booleanNot.alwaysFalse",
+   "message": "Negated boolean expression is always false.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 447,
+   "identifier": "greater.alwaysTrue",
+   "message": "Comparison operation \">\" between 2 and 1 is always true.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 415,
+   "identifier": "include.fileNotFound",
+   "message": "Path in include() \"template.php\" is not a file or it does not exist.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 421,
+   "identifier": "include.fileNotFound",
+   "message": "Path in include() \"template.php\" is not a file or it does not exist.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 602,
+   "identifier": "method.nonObject",
+   "message": "Cannot call method m() on stdClass.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 609,
+   "identifier": "method.nonObject",
+   "message": "Cannot call method m() on stdClass.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 728,
+   "identifier": "property.onlyWritten",
+   "message": "Property UnusedVariableRule\\Foo::$prop is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 869,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $x on left side of ?? is never defined.",
+   "tip": null
+  }
+ ]
+}

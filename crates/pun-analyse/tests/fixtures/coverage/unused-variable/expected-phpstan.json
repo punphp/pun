@@ -1,0 +1,2042 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "bug-10202.php",
+   "line": 9,
+   "identifier": "variable.unused",
+   "message": "Variable $x is never read.",
+   "tip": null
+  },
+  {
+   "file": "bug-10202.php",
+   "line": 12,
+   "identifier": "variable.unused",
+   "message": "Variable $x is never read.",
+   "tip": null
+  },
+  {
+   "file": "bug-10202.php",
+   "line": 14,
+   "identifier": "variable.unused",
+   "message": "Variable $x is never read.",
+   "tip": null
+  },
+  {
+   "file": "bug-11483.php",
+   "line": 9,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $hello is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "bug-12012.php",
+   "line": 10,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $s1 is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "bug-12012.php",
+   "line": 12,
+   "identifier": "assign.unused",
+   "message": "Value assigned to variable $s1 is never read.",
+   "tip": null
+  },
+  {
+   "file": "bug-12789.php",
+   "line": 12,
+   "identifier": "variable.unused",
+   "message": "Variable $RetVal is never read.",
+   "tip": null
+  },
+  {
+   "file": "bug-13472.php",
+   "line": 14,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $v is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "bug-13472.php",
+   "line": 41,
+   "identifier": "foreach.unusedValue",
+   "message": "Foreach value variable $item is never read.",
+   "tip": null
+  },
+  {
+   "file": "bug-14258.php",
+   "line": 15,
+   "identifier": "variable.unused",
+   "message": "Variable $cutsomerId is never read.",
+   "tip": null
+  },
+  {
+   "file": "bug-15262.php",
+   "line": 22,
+   "identifier": "array.offsetOverwritten",
+   "message": "Offset 'success' of array assigned to variable $result is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 24,
+   "identifier": "throws.unusedType",
+   "message": "Function UnusedVariableExtra\\mayThrow() has DomainException in PHPDoc @throws tag but it's not thrown.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 31,
+   "identifier": "postInc.unused",
+   "message": "Value of variable $a after ++ is never read.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 35,
+   "identifier": "postDec.unused",
+   "message": "Value of variable $c after -- is never read.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 37,
+   "identifier": "preDec.unused",
+   "message": "Value of variable $d after -- is never read.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 38,
+   "identifier": "foreach.unusedKey",
+   "message": "Foreach key variable $k is never read.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 40,
+   "identifier": "foreach.unusedValue",
+   "message": "Foreach value variable $w is never read.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 47,
+   "identifier": "variable.unused",
+   "message": "Variable $y is never read.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 60,
+   "identifier": "array.offsetOverwritten",
+   "message": "Offset 1 of array assigned to variable $a is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 61,
+   "identifier": "assign.redundant",
+   "message": "Offset $a[true] is assigned value 1 but it already has that value.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 67,
+   "identifier": "array.offsetOverwritten",
+   "message": "Offset '' of array assigned to variable $a is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 68,
+   "identifier": "assign.redundant",
+   "message": "Offset $a[''] is assigned value 2 but it already has that value.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 75,
+   "identifier": "assign.redundant",
+   "message": "Offset $a[0][1][0] is assigned value 2 but it already has that value.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 76,
+   "identifier": "assign.redundant",
+   "message": "Offset $a[0][1] is assigned value array{2} but it already has that value.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 81,
+   "identifier": "function.unusedParameter",
+   "message": "Function UnusedVariableExtra\\redundantPhpDocOnly() has an unused parameter $p.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 90,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $x is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 92,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $x is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 94,
+   "identifier": "assign.redundant",
+   "message": "Variable $x is assigned value 1 but it already has that value.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 100,
+   "identifier": "variable.unused",
+   "message": "Variable $x is never read.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 101,
+   "identifier": "variable.unused",
+   "message": "Variable $x is never read.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 107,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $x is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 108,
+   "identifier": "assign.redundant",
+   "message": "Variable $x is assigned value 'a' but it already has that value.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 109,
+   "identifier": "return.type",
+   "message": "Anonymous function should return int but returns string.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 117,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $x is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 118,
+   "identifier": "assign.redundant",
+   "message": "Variable $x is assigned value 2 but it already has that value.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 139,
+   "identifier": "variable.unused",
+   "message": "Variable $s is never read.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 188,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $a is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 210,
+   "identifier": "variable.unused",
+   "message": "Variable $name is never read.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 215,
+   "identifier": "catch.neverThrown",
+   "message": "Dead catch - Throwable is never thrown in the try block.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 222,
+   "identifier": "assign.unused",
+   "message": "Value assigned to $a['x']['y'] is never read.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 227,
+   "identifier": "foreach.unusedValue",
+   "message": "Foreach value variable $v is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-arrow-reference.php",
+   "line": 14,
+   "identifier": "assign.unused",
+   "message": "Value assigned to variable $value is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-broad-catch.php",
+   "line": 57,
+   "identifier": "throws.unusedType",
+   "message": "Function UnusedVariableBroadCatch\\loadFile() has RuntimeException in PHPDoc @throws tag but it's not thrown.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-broad-catch.php",
+   "line": 71,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $file is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-by-ref-return.php",
+   "line": 26,
+   "identifier": "assign.unused",
+   "message": "Value assigned to variable $x is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-by-ref-return.php",
+   "line": 32,
+   "identifier": "variable.unused",
+   "message": "Variable $unused is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-by-ref-return.php",
+   "line": 58,
+   "identifier": "return.byRefFinally",
+   "message": "Anonymous function should return 0 but returns 2 because the finally block modifies the value returned by reference.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-by-ref-return.php",
+   "line": 68,
+   "identifier": "assign.unused",
+   "message": "Value assigned to variable $x is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-catch.php",
+   "line": 14,
+   "identifier": "impureFunction.pure",
+   "message": "Function UnusedVariableCatch\\doThrow() is marked as impure but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-dead-branch.php",
+   "line": 13,
+   "identifier": "if.alwaysFalse",
+   "message": "If condition is always false.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-dead-branch.php",
+   "line": 31,
+   "identifier": "if.alwaysTrue",
+   "message": "If condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-dead-branch.php",
+   "line": 44,
+   "identifier": "elseif.alwaysFalse",
+   "message": "Elseif condition is always false.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-dead-branch.php",
+   "line": 53,
+   "identifier": "if.alwaysTrue",
+   "message": "If condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-dead-branch.php",
+   "line": 65,
+   "identifier": "if.alwaysFalse",
+   "message": "If condition is always false.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-dead-branch.php",
+   "line": 79,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $x is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-destructor.php",
+   "line": 33,
+   "identifier": "variable.unused",
+   "message": "Variable $unused is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-destructor.php",
+   "line": 75,
+   "identifier": "variable.unused",
+   "message": "Variable $object is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-flow-messages-catch.php",
+   "line": 15,
+   "identifier": "catch.unusedVariableFlow",
+   "message": "Catch variable $e only flows into values that are never used.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-flow-messages-catch.php",
+   "line": 17,
+   "identifier": "assign.unusedFlow",
+   "message": "Value assigned to variable $e only flows into values that are never used.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-flow-messages-catch.php",
+   "line": 27,
+   "identifier": "variable.unused",
+   "message": "Variable $copy is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-flow-messages.php",
+   "line": 18,
+   "identifier": "assign.unusedFlow",
+   "message": "Value assigned to variable $a only flows into values that are never used.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-flow-messages.php",
+   "line": 20,
+   "identifier": "assign.unusedFlow",
+   "message": "Value assigned to variable $a only flows into values that are never used.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-flow-messages.php",
+   "line": 26,
+   "identifier": "assign.unusedFlow",
+   "message": "Value assigned to variable $s only flows into values that are never used.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-flow-messages.php",
+   "line": 28,
+   "identifier": "assign.unusedFlow",
+   "message": "Value assigned to variable $s only flows into values that are never used.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-flow-messages.php",
+   "line": 34,
+   "identifier": "array.unusedOffsetFlow",
+   "message": "Offset 'k' of array assigned to variable $a only flows into values that are never used.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-flow-messages.php",
+   "line": 36,
+   "identifier": "assign.unusedFlow",
+   "message": "Value assigned to $a['k'] only flows into values that are never used.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-flow-messages.php",
+   "line": 42,
+   "identifier": "assign.unusedFlow",
+   "message": "Value assigned to variable $a only flows into values that are never used.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-flow-messages.php",
+   "line": 44,
+   "identifier": "assign.unusedFlow",
+   "message": "Value assigned to variable $a only flows into values that are never used.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-flow-messages.php",
+   "line": 50,
+   "identifier": "assign.unusedFlow",
+   "message": "Value assigned to variable $i only flows into values that are never used.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-flow-messages.php",
+   "line": 52,
+   "identifier": "preInc.unusedFlow",
+   "message": "Value of variable $i after ++ only flows into values that are never used.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-flow-messages.php",
+   "line": 58,
+   "identifier": "assign.unusedFlow",
+   "message": "Value assigned to variable $i only flows into values that are never used.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-flow-messages.php",
+   "line": 60,
+   "identifier": "postInc.unusedFlow",
+   "message": "Value of variable $i after ++ only flows into values that are never used.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-flow-messages.php",
+   "line": 66,
+   "identifier": "assign.unusedFlow",
+   "message": "Value assigned to variable $i only flows into values that are never used.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-flow-messages.php",
+   "line": 68,
+   "identifier": "preDec.unusedFlow",
+   "message": "Value of variable $i after -- only flows into values that are never used.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-flow-messages.php",
+   "line": 74,
+   "identifier": "assign.unusedFlow",
+   "message": "Value assigned to variable $i only flows into values that are never used.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-flow-messages.php",
+   "line": 76,
+   "identifier": "postDec.unusedFlow",
+   "message": "Value of variable $i after -- only flows into values that are never used.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-flow-messages.php",
+   "line": 83,
+   "identifier": "foreach.unusedKeyFlow",
+   "message": "Foreach key variable $k only flows into values that are never used.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-flow-messages.php",
+   "line": 83,
+   "identifier": "foreach.unusedValueFlow",
+   "message": "Foreach value variable $v only flows into values that are never used.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-flow-messages.php",
+   "line": 85,
+   "identifier": "assign.unusedFlow",
+   "message": "Value assigned to variable $v only flows into values that are never used.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-flow-messages.php",
+   "line": 86,
+   "identifier": "assign.unusedFlow",
+   "message": "Value assigned to variable $k only flows into values that are never used.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-flow-messages.php",
+   "line": 93,
+   "identifier": "array.unusedOffsetFlow",
+   "message": "Offset 'x' of array assigned to variable $a only flows into values that are never used.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-flow-messages.php",
+   "line": 95,
+   "identifier": "assign.unusedFlow",
+   "message": "Value assigned to $a['x'] only flows into values that are never used.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-flow-messages.php",
+   "line": 103,
+   "identifier": "variable.unused",
+   "message": "Variable $b is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-flow-messages.php",
+   "line": 110,
+   "identifier": "assign.unused",
+   "message": "Value assigned to variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-flow-messages.php",
+   "line": 116,
+   "identifier": "variable.unused",
+   "message": "Variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-flow-messages.php",
+   "line": 116,
+   "identifier": "variable.unused",
+   "message": "Variable $b is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-flow-messages.php",
+   "line": 122,
+   "identifier": "array.unusedOffset",
+   "message": "Offset 'x' of array assigned to variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-inferred-branches.php",
+   "line": 24,
+   "identifier": "foreach.emptyArray",
+   "message": "Empty array passed to foreach.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-inferred-branches.php",
+   "line": 91,
+   "identifier": "if.alwaysTrue",
+   "message": "If condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offset-overwrite.php",
+   "line": 8,
+   "identifier": "assign.unused",
+   "message": "Value assigned to $a[$i] is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 27,
+   "identifier": "array.unusedOffset",
+   "message": "Offset 'x' of array assigned to variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 39,
+   "identifier": "variable.unused",
+   "message": "Variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 44,
+   "identifier": "array.unusedOffset",
+   "message": "Offset 'x' of array assigned to variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 50,
+   "identifier": "array.unusedOffset",
+   "message": "Offset 1 of array assigned to variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 50,
+   "identifier": "array.unusedOffset",
+   "message": "Offset 2 of array assigned to variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 58,
+   "identifier": "array.unusedOffset",
+   "message": "Offset 'y' of array assigned to variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 67,
+   "identifier": "array.offsetOverwritten",
+   "message": "Offset 'x' of array assigned to variable $a is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 95,
+   "identifier": "array.unusedOffset",
+   "message": "Offset 'y' of array assigned to variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 96,
+   "identifier": "isset.offset",
+   "message": "Offset 'x' on array{x: 1, y: 2} in isset() always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 103,
+   "identifier": "array.unusedOffset",
+   "message": "Offset 'y' of array assigned to variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 104,
+   "identifier": "empty.offset",
+   "message": "Offset 'x' on array{x: 1, y: 2} in empty() always exists and is not falsy.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 117,
+   "identifier": "array.unusedOffset",
+   "message": "Offset 'z' of array assigned to variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 124,
+   "identifier": "array.unusedOffset",
+   "message": "Offset 'x' of array assigned to variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 136,
+   "identifier": "array.unusedOffset",
+   "message": "Offset 2 of array assigned to variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 142,
+   "identifier": "array.unusedOffset",
+   "message": "Offset 6 of array assigned to variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 149,
+   "identifier": "array.unusedOffset",
+   "message": "Offset 'x' of array assigned to variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 157,
+   "identifier": "array.unusedOffset",
+   "message": "Offset 'x' of array assigned to variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 163,
+   "identifier": "array.unusedOffset",
+   "message": "Offset 'y' of array assigned to variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 169,
+   "identifier": "array.unusedOffset",
+   "message": "Offset 'y' of array assigned to variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 175,
+   "identifier": "array.unusedOffset",
+   "message": "Offset 'y' of array assigned to variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 191,
+   "identifier": "assign.unused",
+   "message": "Value assigned to $a['x'] is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 211,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to $a['x'] is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 219,
+   "identifier": "assign.unused",
+   "message": "Value assigned to $a['x'] is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 234,
+   "identifier": "assign.unused",
+   "message": "Value assigned to $a[$i] is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 247,
+   "identifier": "assign.unused",
+   "message": "Value assigned to $a[] is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 260,
+   "identifier": "assign.unused",
+   "message": "Value assigned to $a['x']['y'] is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 280,
+   "identifier": "array.offsetOverwritten",
+   "message": "Offset 'x' of array assigned to variable $a is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 295,
+   "identifier": "assign.unused",
+   "message": "Value assigned to $a['x'] is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 315,
+   "identifier": "postInc.unused",
+   "message": "Value of $a['n'] after ++ is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 328,
+   "identifier": "assign.unused",
+   "message": "Value assigned to $s[0] is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 356,
+   "identifier": "assign.unused",
+   "message": "Value assigned to $a['x'] is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 380,
+   "identifier": "assign.unused",
+   "message": "Value assigned to $a['x'] is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 380,
+   "identifier": "assign.unused",
+   "message": "Value assigned to $a['y'] is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 393,
+   "identifier": "foreach.unusedValue",
+   "message": "Foreach value $a['x'] is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 399,
+   "identifier": "assign.unused",
+   "message": "Value assigned to $p['x'] is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 412,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to $a['x'] is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 430,
+   "identifier": "assign.unused",
+   "message": "Value assigned to $a['x'] is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 444,
+   "identifier": "variable.unused",
+   "message": "Variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 450,
+   "identifier": "assign.unused",
+   "message": "Value assigned to variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 474,
+   "identifier": "array.unusedOffset",
+   "message": "Offset 'x' of array assigned to variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 482,
+   "identifier": "assign.unused",
+   "message": "Value assigned to $a['x'] is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 504,
+   "identifier": "unset.offset",
+   "message": "Cannot unset offset 1 on array{x: 1}.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 510,
+   "identifier": "array.unusedOffset",
+   "message": "Offset 'y' of array assigned to variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 539,
+   "identifier": "array.unusedOffset",
+   "message": "Offset 'y' of array assigned to variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 565,
+   "identifier": "assign.unused",
+   "message": "Value assigned to $cache['x'] is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 565,
+   "identifier": "variable.unused",
+   "message": "Variable $v is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-offsets.php",
+   "line": 571,
+   "identifier": "variable.unused",
+   "message": "Variable $b is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-overwritten.php",
+   "line": 24,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $a is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-overwritten.php",
+   "line": 31,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $a is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-overwritten.php",
+   "line": 40,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $a on left side of ?? is never defined.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-overwritten.php",
+   "line": 41,
+   "identifier": "assign.unused",
+   "message": "Value assigned to variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-overwritten.php",
+   "line": 46,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $a on left side of ?? is never defined.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-overwritten.php",
+   "line": 47,
+   "identifier": "assign.unused",
+   "message": "Value assigned to variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-overwritten.php",
+   "line": 48,
+   "identifier": "assign.unused",
+   "message": "Value assigned to variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-overwritten.php",
+   "line": 54,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $a on left side of ?? is never defined.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-overwritten.php",
+   "line": 56,
+   "identifier": "assign.unused",
+   "message": "Value assigned to variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-overwritten.php",
+   "line": 63,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $a is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-overwritten.php",
+   "line": 72,
+   "identifier": "postInc.overwritten",
+   "message": "Value of variable $i after ++ is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-overwritten.php",
+   "line": 79,
+   "identifier": "foreach.valueOverwritten",
+   "message": "Foreach value variable $v is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-overwritten.php",
+   "line": 87,
+   "identifier": "foreach.keyOverwritten",
+   "message": "Foreach key variable $k is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-overwritten.php",
+   "line": 96,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to $a['x'] is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-overwritten.php",
+   "line": 104,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to $a['x'] is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-overwritten.php",
+   "line": 112,
+   "identifier": "assign.unused",
+   "message": "Value assigned to $a['x'] is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-php8.php",
+   "line": 98,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $nightsFrom is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-php8.php",
+   "line": 108,
+   "identifier": "variable.unused",
+   "message": "Variable $b is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-php8.php",
+   "line": 116,
+   "identifier": "variable.unused",
+   "message": "Variable $b is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-redundant-offsets.php",
+   "line": 7,
+   "identifier": "array.offsetOverwritten",
+   "message": "Offset 0 of array assigned to variable $a is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-redundant-offsets.php",
+   "line": 7,
+   "identifier": "array.unusedOffset",
+   "message": "Offset 1 of array assigned to variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-redundant-offsets.php",
+   "line": 8,
+   "identifier": "assign.redundant",
+   "message": "Offset $a[0] is assigned value 1 but it already has that value.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-redundant-offsets.php",
+   "line": 13,
+   "identifier": "array.offsetOverwritten",
+   "message": "Offset 0 of array assigned to variable $a is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-redundant-offsets.php",
+   "line": 14,
+   "identifier": "assign.redundant",
+   "message": "Offset $a[0] is assigned value 1 but it already has that value.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-redundant-offsets.php",
+   "line": 21,
+   "identifier": "assign.redundant",
+   "message": "Offset $a['x']['y'] is assigned value 1 but it already has that value.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-redundant-offsets.php",
+   "line": 27,
+   "identifier": "array.offsetOverwritten",
+   "message": "Offset 0 of array assigned to variable $a is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-redundant-offsets.php",
+   "line": 28,
+   "identifier": "assign.redundant",
+   "message": "Offset $a['0'] is assigned value 1 but it already has that value.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-redundant-offsets.php",
+   "line": 34,
+   "identifier": "array.offsetOverwritten",
+   "message": "Offset 0 of array assigned to variable $a is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-redundant.php",
+   "line": 26,
+   "identifier": "assign.redundant",
+   "message": "Variable $x is assigned value true but it already has that value.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-redundant.php",
+   "line": 42,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $x is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-redundant.php",
+   "line": 43,
+   "identifier": "assign.redundant",
+   "message": "Variable $x is assigned value 1 but it already has that value.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-redundant.php",
+   "line": 51,
+   "identifier": "assign.redundant",
+   "message": "Variable $x is assigned value null but it already has that value.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-redundant.php",
+   "line": 60,
+   "identifier": "assign.redundant",
+   "message": "Variable $s is assigned value 'a' but it already has that value.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-redundant.php",
+   "line": 69,
+   "identifier": "assign.redundant",
+   "message": "Variable $a is assigned value array{k: 1} but it already has that value.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-redundant.php",
+   "line": 95,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $x is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-redundant.php",
+   "line": 118,
+   "identifier": "assign.redundant",
+   "message": "Variable $x is assigned value 1 but it already has that value.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-result-flow.php",
+   "line": 15,
+   "identifier": "assign.unused",
+   "message": "Value assigned to variable $shadowed is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-result-flow.php",
+   "line": 16,
+   "identifier": "assign.unused",
+   "message": "Value assigned to variable $value is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-result-flow.php",
+   "line": 73,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $value is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-result-flow.php",
+   "line": 98,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $value is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-result-flow.php",
+   "line": 100,
+   "identifier": "finally.exitPoint",
+   "message": "This return is overwritten by a different one in the finally block below.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-result-flow.php",
+   "line": 103,
+   "identifier": "finally.exitPoint",
+   "message": "The overwriting return is on this line.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-result-flow.php",
+   "line": 128,
+   "identifier": "assign.unused",
+   "message": "Value assigned to variable $value is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-result-flow.php",
+   "line": 136,
+   "identifier": "variable.unused",
+   "message": "Variable $value is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-scope-pollution.php",
+   "line": 32,
+   "identifier": "foreach.emptyArray",
+   "message": "Empty array passed to foreach.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-scope-pollution.php",
+   "line": 41,
+   "identifier": "foreach.emptyArray",
+   "message": "Empty array passed to foreach.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-scope-pollution.php",
+   "line": 58,
+   "identifier": "echo.nonString",
+   "message": "Parameter #1 (non-empty-array<int>) of echo cannot be converted to string.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-scope-pollution.php",
+   "line": 74,
+   "identifier": "while.alwaysFalse",
+   "message": "While loop condition is always false.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-scope-pollution.php",
+   "line": 88,
+   "identifier": "echo.nonString",
+   "message": "Parameter #1 (non-empty-array<int>) of echo cannot be converted to string.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-scope-pollution.php",
+   "line": 116,
+   "identifier": "echo.nonString",
+   "message": "Parameter #1 (non-empty-array<int>) of echo cannot be converted to string.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 28,
+   "identifier": "assign.unused",
+   "message": "Value assigned to variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 42,
+   "identifier": "assign.unused",
+   "message": "Value assigned to variable $s is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 58,
+   "identifier": "preDec.unused",
+   "message": "Value of variable $i after -- is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 71,
+   "identifier": "postInc.unused",
+   "message": "Value of variable $i after ++ is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 77,
+   "identifier": "postInc.unused",
+   "message": "Value of variable $i after ++ is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 77,
+   "identifier": "variable.unused",
+   "message": "Variable $j is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 98,
+   "identifier": "assign.unusedFlow",
+   "message": "Value assigned to variable $n only flows into values that are never used.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 100,
+   "identifier": "assign.unusedFlow",
+   "message": "Value assigned to variable $n only flows into values that are never used.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 118,
+   "identifier": "variable.unused",
+   "message": "Variable $ok is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 131,
+   "identifier": "variable.unused",
+   "message": "Variable $b is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 144,
+   "identifier": "variable.unused",
+   "message": "Variable $b is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 150,
+   "identifier": "variable.unused",
+   "message": "Variable $b is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 156,
+   "identifier": "variable.unused",
+   "message": "Variable $arr is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 169,
+   "identifier": "variable.unused",
+   "message": "Variable $b is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 170,
+   "identifier": "variable.unused",
+   "message": "Variable $c is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 176,
+   "identifier": "variable.unused",
+   "message": "Variable $b is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 177,
+   "identifier": "booleanNot.alwaysFalse",
+   "message": "Negated boolean expression is always false.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 177,
+   "identifier": "variable.unused",
+   "message": "Variable $c is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 178,
+   "identifier": "variable.unused",
+   "message": "Variable $d is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 184,
+   "identifier": "variable.unused",
+   "message": "Variable $b is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 190,
+   "identifier": "variable.unused",
+   "message": "Variable $b is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 196,
+   "identifier": "variable.unused",
+   "message": "Variable $b is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 202,
+   "identifier": "variable.unused",
+   "message": "Variable $b is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 209,
+   "identifier": "variable.unused",
+   "message": "Variable $b is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 210,
+   "identifier": "variable.unused",
+   "message": "Variable $d is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 216,
+   "identifier": "variable.unused",
+   "message": "Variable $b is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 222,
+   "identifier": "variable.unused",
+   "message": "Variable $b is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 228,
+   "identifier": "variable.unused",
+   "message": "Variable $b is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 234,
+   "identifier": "variable.unused",
+   "message": "Variable $b is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 240,
+   "identifier": "variable.unused",
+   "message": "Variable $f is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 248,
+   "identifier": "variable.unused",
+   "message": "Variable $f is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 254,
+   "identifier": "variable.unused",
+   "message": "Variable $b is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 260,
+   "identifier": "variable.unused",
+   "message": "Variable $b is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 266,
+   "identifier": "variable.unused",
+   "message": "Variable $b is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 272,
+   "identifier": "variable.unused",
+   "message": "Variable $b is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 278,
+   "identifier": "variable.unused",
+   "message": "Variable $b is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 284,
+   "identifier": "variable.unused",
+   "message": "Variable $b is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 289,
+   "identifier": "variable.unused",
+   "message": "Variable $b is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 295,
+   "identifier": "variable.unused",
+   "message": "Variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 302,
+   "identifier": "variable.unused",
+   "message": "Variable $b is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 309,
+   "identifier": "variable.unused",
+   "message": "Variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 309,
+   "identifier": "variable.unused",
+   "message": "Variable $b is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 315,
+   "identifier": "variable.unused",
+   "message": "Variable $b is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 322,
+   "identifier": "variable.unused",
+   "message": "Variable $b is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 331,
+   "identifier": "assign.unused",
+   "message": "Value assigned to $a['x'] is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 345,
+   "identifier": "variable.unused",
+   "message": "Variable $b is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 359,
+   "identifier": "variable.unused",
+   "message": "Variable $b is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 364,
+   "identifier": "variable.unused",
+   "message": "Variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 372,
+   "identifier": "variable.unused",
+   "message": "Variable $d is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 395,
+   "identifier": "assign.unusedFlow",
+   "message": "Value assigned to variable $s only flows into values that are never used.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 396,
+   "identifier": "foreach.unusedValueFlow",
+   "message": "Foreach value variable $v only flows into values that are never used.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 397,
+   "identifier": "assign.unusedFlow",
+   "message": "Value assigned to variable $s only flows into values that are never used.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 404,
+   "identifier": "assign.unused",
+   "message": "Value assigned to variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 447,
+   "identifier": "greater.alwaysTrue",
+   "message": "Comparison operation \">\" between 2 and 1 is always true.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 477,
+   "identifier": "assign.unused",
+   "message": "Value assigned to variable $s is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 484,
+   "identifier": "assign.unused",
+   "message": "Value assigned to variable $s is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable-value-flow.php",
+   "line": 484,
+   "identifier": "variable.unused",
+   "message": "Variable $x is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 27,
+   "identifier": "variable.unused",
+   "message": "Variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 32,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $a is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 40,
+   "identifier": "variable.unused",
+   "message": "Variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 46,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $x is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 70,
+   "identifier": "variable.unused",
+   "message": "Variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 76,
+   "identifier": "variable.unused",
+   "message": "Variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 93,
+   "identifier": "variable.unused",
+   "message": "Variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 95,
+   "identifier": "variable.unused",
+   "message": "Variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 101,
+   "identifier": "variable.unused",
+   "message": "Variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 113,
+   "identifier": "variable.unused",
+   "message": "Variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 119,
+   "identifier": "foreach.unusedKey",
+   "message": "Foreach key variable $k is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 133,
+   "identifier": "foreach.unusedValue",
+   "message": "Foreach value variable $v is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 148,
+   "identifier": "variable.unused",
+   "message": "Variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 157,
+   "identifier": "postInc.unused",
+   "message": "Value of variable $i after ++ is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 223,
+   "identifier": "variable.unused",
+   "message": "Variable $x is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 250,
+   "identifier": "assign.unused",
+   "message": "Value assigned to $x[] is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 251,
+   "identifier": "assign.unused",
+   "message": "Value assigned to $x['k'] is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 264,
+   "identifier": "assign.unused",
+   "message": "Value assigned to variable $s is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 269,
+   "identifier": "variable.unused",
+   "message": "Variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 276,
+   "identifier": "variable.unused",
+   "message": "Variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 283,
+   "identifier": "variable.unused",
+   "message": "Variable $f is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 303,
+   "identifier": "variable.unused",
+   "message": "Variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 337,
+   "identifier": "variable.unused",
+   "message": "Variable $x is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 415,
+   "identifier": "include.fileNotFound",
+   "message": "Path in include() \"template.php\" is not a file or it does not exist.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 421,
+   "identifier": "include.fileNotFound",
+   "message": "Path in include() \"template.php\" is not a file or it does not exist.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 422,
+   "identifier": "assign.unused",
+   "message": "Value assigned to variable $title is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 602,
+   "identifier": "method.nonObject",
+   "message": "Cannot call method m() on stdClass.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 609,
+   "identifier": "method.nonObject",
+   "message": "Cannot call method m() on stdClass.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 614,
+   "identifier": "variable.unused",
+   "message": "Variable $b is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 624,
+   "identifier": "function.unusedParameter",
+   "message": "Function UnusedVariableRule\\parameterOverwritten() has an unused parameter $a.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 630,
+   "identifier": "function.unusedParameter",
+   "message": "Function UnusedVariableRule\\parameterOverwrittenUnread() has an unused parameter $a.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 632,
+   "identifier": "variable.unused",
+   "message": "Variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 637,
+   "identifier": "variable.unused",
+   "message": "Variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 703,
+   "identifier": "assign.unused",
+   "message": "Value assigned to variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 709,
+   "identifier": "assign.unusedFlow",
+   "message": "Value assigned to variable $b only flows into values that are never used.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 719,
+   "identifier": "assign.unusedFlow",
+   "message": "Value assigned to variable $b only flows into values that are never used.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 728,
+   "identifier": "property.onlyWritten",
+   "message": "Property UnusedVariableRule\\Foo::$prop is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 739,
+   "identifier": "variable.unused",
+   "message": "Variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 744,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $a is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 840,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $tags is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 864,
+   "identifier": "postDec.unused",
+   "message": "Value of variable $i after -- is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 869,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $x on left side of ?? is never defined.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 870,
+   "identifier": "assign.unused",
+   "message": "Value assigned to variable $x is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 877,
+   "identifier": "foreach.unusedValue",
+   "message": "Foreach value variable $v is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 885,
+   "identifier": "preInc.unused",
+   "message": "Value of variable $i after ++ is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 892,
+   "identifier": "preDec.unused",
+   "message": "Value of variable $i after -- is never read.",
+   "tip": null
+  },
+  {
+   "file": "unused-variable.php",
+   "line": 915,
+   "identifier": "foreach.unusedValue",
+   "message": "Foreach value $a['x'] is never read.",
+   "tip": null
+  }
+ ]
+}

@@ -230,7 +230,10 @@ fn analyse_observed<'arena>(
             })
             .collect();
         let (_, unset_scopes, unset_roots) = super::unset::expressions(program);
+        let mut assignments = Assignments::default();
+        assignments.walk_program(program, &mut ());
         registry.register_expression_hook(Definedness {
+            assignments: assignments.0,
             ids,
             wanted: wanted.iter().copied().collect(),
             compact_calls,
@@ -319,6 +322,25 @@ fn analyse_observed<'arena>(
     (types, found.defined, origins, artifacts.call_terminations.into_iter().collect(), artifacts.call_scope_observations.into_iter().collect(), keep_void_types, native_types, artifacts.nullsafe_method_receiver_types.into_iter().collect())
 }
 
+/// The plain assignments whose target is a variable or its offsets (`$a['x'][0] = ...`).
+#[derive(Default)]
+struct Assignments(HashMap<Span, (Span, Vec<u8>)>);
+
+impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Assignments {
+    fn walk_in_assignment(&mut self, a: &'ast Assignment<'arena>, _: &mut ()) {
+        if !a.operator.is_assign() {
+            return;
+        }
+        let mut root = a.lhs;
+        while let Expression::ArrayAccess(access) = root {
+            root = access.array;
+        }
+        if let Expression::Variable(Variable::Direct(v)) = root {
+            self.0.insert(a.rhs.span(), (a.lhs.span(), v.name.to_vec()));
+        }
+    }
+}
+
 struct ArrayChildren<'s> {
     wanted: &'s [Span],
     spans: Vec<Span>,
@@ -349,6 +371,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for ArrayChildren<'_> {
 /// expressions (by Mago's expression id, their text without whitespace), from Mago's block context where it reads
 /// them. A loop body is analysed more than once: answers that differ are a maybe.
 struct Definedness {
+    /// The values of plain assignments to a variable or a constant-free offset path of one: value span to (target span,
+    /// root variable name).
+    assignments: HashMap<Span, (Span, Vec<u8>)>,
     ids: HashMap<Span, Vec<u8>>,
     wanted: HashSet<Span>,
     compact_calls: HashSet<Span>,
@@ -493,6 +518,18 @@ impl ExpressionHook for Definedness {
     }
 
     fn after_expression(&self, expr: &Expression<'_>, context: &mut HookContext<'_, '_>) -> HookResult<()> {
+        // AssignHandler::redundant() reads the target in the scope after the assigned value; a loop's last pass wins
+        if let Some((target, name)) = self.assignments.get(&expr.span()) {
+            let mut found = self.found.lock().expect("no hook panics while holding the lock");
+            if context.block_context().variable_certainty(mago_word::word(name)).is_defined()
+                && let Some(ty) = context.get_variable_type(name)
+            {
+                let native = context.get_native_variable_type(name).cloned();
+                found.variables.assigned_roots.insert(*target, ((**ty).clone(), native));
+            } else {
+                found.variables.assigned_roots.remove(target);
+            }
+        }
         if let Expression::Assignment(assignment) = expr {
             for name in &self.offset_names {
                 name.assigned(assignment, context);

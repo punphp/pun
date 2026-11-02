@@ -2,7 +2,8 @@
 # FooObjectStorage's `@extends FooObjectStorage<object>` names the class being declared: PHPStan resolves it while
 # building that class's reflection and gets a plain object type, Pun the intersection with iterable<object>.
 2 Generics/ClassAncestorsRuleTest::testRuleExtends
-# Mago callable union contracts and array-shape insertion order; function NoDiscard stays unported (PLAN.md).
+# Mago's keyed arrays sort their keys, so callable array shapes lose insertion order (`array{1: 'stat', 0: ...}`,
+# `array{answer: true, 3: null}`); callable.nonCallable of a 'Class::method' string naming a non-static method
 2 Functions/HelperFunctionDiscard::testRule
 # PHPStan synthetic multi-level break has line -1; the public Error line is u32 (PLAN.md).
 # echo.nonString of compact(), func_get_args() and get_defined_vars(): PHPStan's dynamic return type extensions
@@ -491,11 +492,6 @@
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug11054
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug14847
 4 DeadCode/UnreachableStatementRuleTest::testMultipleUnreachable
-# PHPStan 2.3: UnusedClosureUsesRule and UnusedConstructorParametersRule follow VariableWritesNode dataflow (a use or
-# parameter overwritten before any read is unused, compact() of a resolved name reads it); Pun keeps the 2.2 name check
-1 Classes/UnusedConstructorParametersRuleTest::testResolvedDynamicUsages
-1 Classes/UnusedConstructorParametersRuleTest::testValueFlow
-1 Classes/UnusedConstructorParametersRuleTest::testValueFlowWithoutBleedingEdge
 # PHPStan 2.3's ClassConstantAccessType: a deferred `T::CONFIG_*` or `static::FOO_*` PHPDoc type is no unresolvable type
 2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testClassConstantWildcardUnresolvable
 2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testBug4548
@@ -606,8 +602,6 @@
 5 Functions/CallToFunctionParametersRuleTest::testUnpackOperator
 9 Functions/CallToFunctionParametersRuleTest::testCallToFunctionWithOptionalParameters
 9 Functions/CallToFunctionParametersRuleTest::testUnpackOperator
-# PHPStan 2.3.1 no longer reports constructor.unusedParameter in bug-6370.php; the dataflow change is not ported
-5 Classes/InstantiationRuleTest::testBug6370
 # PHPStan 2.3.1 reports a match arm's always-false comparison even when the arm is an impossible type check call
 4 Comparison/MatchExpressionRuleTest::testMatchArmComparisonNotSuppressedByImpossibleCheck
 # PHPStan 2.3.1's new regression tests (added since 2.2.7) for the typed receiver, argument, property, offset and

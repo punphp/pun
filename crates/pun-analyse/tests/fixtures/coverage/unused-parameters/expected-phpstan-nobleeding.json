@@ -1,0 +1,411 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "extra.php",
+   "line": 40,
+   "identifier": "assert.unknownExpr",
+   "message": "Assert references unknown $a->foo.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 57,
+   "identifier": "method.unused",
+   "message": "Method UnusedParametersExtra\\E::enumUnused() is unused.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 72,
+   "identifier": "method.unused",
+   "message": "Method UnusedParametersExtra\\Base::__magic() is unused.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 77,
+   "identifier": "method.unused",
+   "message": "Method UnusedParametersExtra\\Base::noOp() is unused.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 82,
+   "identifier": "method.unused",
+   "message": "Static method UnusedParametersExtra\\Base::staticFlow() is unused.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 89,
+   "identifier": "method.unused",
+   "message": "Method UnusedParametersExtra\\Base::promotedNot() is unused.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 94,
+   "identifier": "constructor.unusedParameter",
+   "message": "Constructor of class UnusedParametersExtra\\Base has an unused parameter $plain.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 94,
+   "identifier": "property.onlyWritten",
+   "message": "Property UnusedParametersExtra\\Base::$promoted is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "extra.php",
+   "line": 110,
+   "identifier": "method.unused",
+   "message": "Method class@anonymous/extra.php:109::anonymousUnused() is unused.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 115,
+   "identifier": "constructor.unusedParameter",
+   "message": "Constructor of an anonymous class has an unused parameter $unused.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 137,
+   "identifier": "constructor.unusedParameter",
+   "message": "Constructor of class UnusedParametersExtra\\EmptyConstructor has an unused parameter $s.",
+   "tip": null
+  },
+  {
+   "file": "extra.php",
+   "line": 141,
+   "identifier": "method.unused",
+   "message": "Method UnusedParametersExtra\\EmptyConstructor::literal() is unused.",
+   "tip": null
+  },
+  {
+   "file": "unused-closure-uses-resolved-dynamic.php",
+   "line": 6,
+   "identifier": "closure.unusedUse",
+   "message": "Anonymous function has an unused use $other.",
+   "tip": null
+  },
+  {
+   "file": "unused-closure-uses-resolved-dynamic.php",
+   "line": 11,
+   "identifier": "echo.nonString",
+   "message": "Parameter #1 (stdClass) of echo cannot be converted to string.",
+   "tip": null
+  },
+  {
+   "file": "unused-closure-uses-resolved-dynamic.php",
+   "line": 22,
+   "identifier": "closure.unusedUse",
+   "message": "Anonymous function has an unused use $overwritten.",
+   "tip": null
+  },
+  {
+   "file": "unused-closure-uses-skipped-catch.php",
+   "line": 15,
+   "identifier": "closure.unusedUse",
+   "message": "Anonymous function has an unused use $unused.",
+   "tip": null
+  },
+  {
+   "file": "unused-closure-uses-skipped-catch.php",
+   "line": 19,
+   "identifier": "catch.neverThrown",
+   "message": "Dead catch - RuntimeException is never thrown in the try block.",
+   "tip": null
+  },
+  {
+   "file": "unused-closure-uses-skipped-catch.php",
+   "line": 24,
+   "identifier": "notIdentical.alwaysFalse",
+   "message": "Strict comparison using !== between true and true will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "unused-closure-uses-skipped-catch.php",
+   "line": 25,
+   "identifier": "throw.notThrowable",
+   "message": "Invalid type null to throw.",
+   "tip": null
+  },
+  {
+   "file": "unused-closure-uses.php",
+   "line": 3,
+   "identifier": "closure.unusedUse",
+   "message": "Anonymous function has an unused use $anotherUnused.",
+   "tip": null
+  },
+  {
+   "file": "unused-closure-uses.php",
+   "line": 3,
+   "identifier": "closure.unusedUse",
+   "message": "Anonymous function has an unused use $unused.",
+   "tip": null
+  },
+  {
+   "file": "unused-closure-uses.php",
+   "line": 4,
+   "identifier": "variable.undefined",
+   "message": "Variable $used might not be defined.",
+   "tip": null
+  },
+  {
+   "file": "unused-closure-uses.php",
+   "line": 5,
+   "identifier": "variable.undefined",
+   "message": "Variable $usedInClosureUse might not be defined.",
+   "tip": null
+  },
+  {
+   "file": "unused-closure-uses.php",
+   "line": 6,
+   "identifier": "variable.undefined",
+   "message": "Variable $unused might not be defined.",
+   "tip": null
+  },
+  {
+   "file": "unused-closure-uses.php",
+   "line": 7,
+   "identifier": "variable.undefined",
+   "message": "Variable $anotherUnused might not be defined.",
+   "tip": null
+  },
+  {
+   "file": "unused-closure-uses.php",
+   "line": 10,
+   "identifier": "closure.unusedUse",
+   "message": "Anonymous function has an unused use $usedInClosureUse.",
+   "tip": null
+  },
+  {
+   "file": "unused-closure-uses.php",
+   "line": 22,
+   "identifier": "include.fileNotFound",
+   "message": "Path in include() \"foo.php\" is not a file or it does not exist.",
+   "tip": null
+  },
+  {
+   "file": "unused-closure-uses.php",
+   "line": 38,
+   "identifier": "echo.nonString",
+   "message": "Parameter #1 (stdClass) of echo cannot be converted to string.",
+   "tip": null
+  },
+  {
+   "file": "unused-closure-uses.php",
+   "line": 43,
+   "identifier": "closure.unusedUse",
+   "message": "Anonymous function has an unused use $container.",
+   "tip": null
+  },
+  {
+   "file": "unused-closure-uses.php",
+   "line": 44,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $notContainer",
+   "tip": null
+  },
+  {
+   "file": "unused-constructor-parameters-promoted-properties.php",
+   "line": 8,
+   "identifier": "property.onlyWritten",
+   "message": "Property UnusedConstructorParametersPromotedProperties\\Foo::$y is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "unused-constructor-parameters-resolved-dynamic.php",
+   "line": 8,
+   "identifier": "constructor.unusedParameter",
+   "message": "Constructor of class UnusedConstructorParametersResolvedDynamic\\VariableVariable has an unused parameter $other.",
+   "tip": null
+  },
+  {
+   "file": "unused-constructor-parameters-resolved-dynamic.php",
+   "line": 23,
+   "identifier": "property.onlyWritten",
+   "message": "Property UnusedConstructorParametersResolvedDynamic\\DynamicCompact::$data is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "unused-constructor-parameters-resolved-dynamic.php",
+   "line": 41,
+   "identifier": "property.onlyWritten",
+   "message": "Property UnusedConstructorParametersResolvedDynamic\\OverwrittenParameter::$sum is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "unused-constructor-parameters-resolved-dynamic.php",
+   "line": 43,
+   "identifier": "constructor.unusedParameter",
+   "message": "Constructor of class UnusedConstructorParametersResolvedDynamic\\OverwrittenParameter has an unused parameter $x.",
+   "tip": null
+  },
+  {
+   "file": "unused-constructor-parameters-resolved-dynamic.php",
+   "line": 57,
+   "identifier": "property.onlyWritten",
+   "message": "Property UnusedConstructorParametersResolvedDynamic\\ParameterOverwrittenInOneBranch::$value is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "unused-constructor-parameters-resolved-dynamic.php",
+   "line": 73,
+   "identifier": "property.onlyWritten",
+   "message": "Property UnusedConstructorParametersResolvedDynamic\\OverwrittenParameterObservedByFuncGetArgs::$args is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "unused-constructor-parameters-value-flow.php",
+   "line": 10,
+   "identifier": "constructor.unusedParameter",
+   "message": "Constructor of class UnusedConstructorParametersValueFlow\\Foo has an unused parameter $overwritten.",
+   "tip": null
+  },
+  {
+   "file": "unused-constructor-parameters.php",
+   "line": 8,
+   "identifier": "property.onlyWritten",
+   "message": "Property UnusedConstructorParameters\\Foo::$foo is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "unused-constructor-parameters.php",
+   "line": 9,
+   "identifier": "property.onlyWritten",
+   "message": "Property UnusedConstructorParameters\\Foo::$bar is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "unused-constructor-parameters.php",
+   "line": 11,
+   "identifier": "constructor.unusedParameter",
+   "message": "Constructor of class UnusedConstructorParameters\\Foo has an unused parameter $anotherUnusedParameter.",
+   "tip": null
+  },
+  {
+   "file": "unused-constructor-parameters.php",
+   "line": 11,
+   "identifier": "constructor.unusedParameter",
+   "message": "Constructor of class UnusedConstructorParameters\\Foo has an unused parameter $unusedParameter.",
+   "tip": null
+  },
+  {
+   "file": "unused-constructor-parameters.php",
+   "line": 27,
+   "identifier": "function.notFound",
+   "message": "Function doFoo not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "unused-constructor-parameters.php",
+   "line": 30,
+   "identifier": "closure.unusedUse",
+   "message": "Anonymous function has an unused use $usedParameterInClosureUse.",
+   "tip": null
+  },
+  {
+   "file": "unused-input-value-flow.php",
+   "line": 12,
+   "identifier": "void.pure",
+   "message": "Function UnusedInputValueFlow\\coveredParameter() returns void but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "unused-input-value-flow.php",
+   "line": 49,
+   "identifier": "closure.unusedUse",
+   "message": "Anonymous function has an unused use $input.",
+   "tip": null
+  },
+  {
+   "file": "unused-method-parameters-value-flow.php",
+   "line": 15,
+   "identifier": "void.pure",
+   "message": "Method UnusedMethodParametersValueFlow\\Foo::coveredParameter() returns void but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "unused-method-parameters-value-flow.php",
+   "line": 36,
+   "identifier": "method.resultUnused",
+   "message": "Call to method UnusedMethodParametersValueFlow\\Foo::usedParameter() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "unused-method-parameters-value-flow.php",
+   "line": 37,
+   "identifier": "method.resultUnused",
+   "message": "Call to method UnusedMethodParametersValueFlow\\Foo::overwrittenParameter() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "unused-method-parameters.php",
+   "line": 9,
+   "identifier": "property.onlyWritten",
+   "message": "Property UnusedMethodParameters\\Foo::$y is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "unused-method-parameters.php",
+   "line": 81,
+   "identifier": "method.unused",
+   "message": "Method UnusedMethodParameters\\Foo::__invoke() is unused.",
+   "tip": null
+  },
+  {
+   "file": "unused-method-parameters.php",
+   "line": 94,
+   "identifier": "method.unused",
+   "message": "Method UnusedMethodParameters\\Foo::commentOnlyBody() is unused.",
+   "tip": null
+  },
+  {
+   "file": "unused-method-parameters.php",
+   "line": 101,
+   "identifier": "method.resultUnused",
+   "message": "Call to method UnusedMethodParameters\\Foo::completelyUnused() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "unused-method-parameters.php",
+   "line": 102,
+   "identifier": "method.resultUnused",
+   "message": "Call to method UnusedMethodParameters\\Foo::immediatelyReassigned() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "unused-method-parameters.php",
+   "line": 103,
+   "identifier": "method.resultUnused",
+   "message": "Call to method UnusedMethodParameters\\Foo::readThenReassigned() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "unused-method-parameters.php",
+   "line": 108,
+   "identifier": "method.resultUnused",
+   "message": "Call to method UnusedMethodParameters\\Foo::observedByFuncGetArgs() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "unused-method-parameters.php",
+   "line": 110,
+   "identifier": "method.resultUnused",
+   "message": "Call to method UnusedMethodParameters\\Foo::usedOnlyInClosureUse() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "unused-method-parameters.php",
+   "line": 111,
+   "identifier": "method.alreadyNarrowedType",
+   "message": "Call to method UnusedMethodParameters\\Foo::assertedParameterIsContract() with 1 will always evaluate to true.",
+   "tip": null
+  }
+ ]
+}

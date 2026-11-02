@@ -120,6 +120,14 @@ pub(super) struct Toggled {
     /// PrintfParameterTypeRule: level 5 with `featureToggles.checkPrintfParameterTypes`, then whether
     /// `checkStrictPrintfPlaceholderTypes` is on.
     pub(super) printf_types: Option<bool>,
+    /// ImpossibleInArrayHaystackFiniteTypesRule: level 4 with `featureToggles.finiteTypesInHaystack`.
+    pub(super) finite_haystack: bool,
+    /// UnusedVariableRule: level 4 with `featureToggles.unusedVariable`.
+    pub(super) unused_variable: bool,
+    /// Unused{Function,Method}ParametersRule: level 4 with `featureToggles.unusedParameters`.
+    pub(super) unused_parameters: bool,
+    /// `featureToggles.unusedParameters` itself: the closure use and constructor parameter flow findings.
+    pub(super) unused_flow: bool,
 }
 
 impl Checks {
@@ -198,6 +206,10 @@ impl Checks {
                 castable_to_number: project.level >= 5 && project.check_parameter_castable_to_number_functions,
                 printf_types: (project.level >= 5 && project.check_printf_parameter_types)
                     .then_some(project.check_strict_printf_placeholder_types),
+                finite_haystack: project.level >= 4 && project.finite_types_in_haystack,
+                unused_variable: project.level >= 4 && project.unused_variable,
+                unused_parameters: project.level >= 4 && project.unused_parameters,
+                unused_flow: project.unused_parameters,
             },
         }
     }
@@ -242,6 +254,7 @@ fn checker<'a, 'arena>(
     typed.extend(super::types::typed_expressions(program, &file.contents, project.level,
         project.check_argument_types || project.check_arguments_passed_by_reference, project.check_this_only));
     typed.extend(super::strict::typed_expressions(project, codebase, program));
+    typed.extend(super::dead_code::bodies(program, project.level, project.toggled.unused_parameters || project.toggled.unused_variable));
     typed.extend(super::operators::typed_expressions(project.strict, program));
     typed.extend(super::types::throw_points::typed(
         program,
