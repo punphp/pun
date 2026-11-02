@@ -17232,7 +17232,7 @@
         "ArrowFunctionAttributesRule",
         "PHPStan\\Rules\\Functions\\ArrowFunctionAttributesRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/attributes/invalid-class-attribute",
@@ -17263,7 +17263,7 @@
         "interface.deprecatedAttribute",
         "trait.deprecatedAttribute"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/attributes/invalid-class-constant-attribute",
@@ -17293,7 +17293,7 @@
         "attribute.notAttribute",
         "attribute.notFound"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/attributes/invalid-closure-attribute",
@@ -17316,7 +17316,7 @@
         "ClosureAttributesRule",
         "PHPStan\\Rules\\Functions\\ClosureAttributesRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/attributes/invalid-constant-attribute",
@@ -17341,7 +17341,7 @@
         "constant.attributesNotSupported",
         "constant.attributesRuleCannotRun"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/attributes/invalid-enum-case-attribute",
@@ -17364,7 +17364,7 @@
         "EnumCaseAttributesRule",
         "PHPStan\\Rules\\EnumCases\\EnumCaseAttributesRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/attributes/invalid-function-attribute",
@@ -17387,7 +17387,7 @@
         "FunctionAttributesRule",
         "PHPStan\\Rules\\Functions\\FunctionAttributesRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/attributes/invalid-hook-attribute",
@@ -17410,7 +17410,7 @@
         "PHPStan\\Rules\\Properties\\PropertyHookAttributesRule",
         "PropertyHookAttributesRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/attributes/invalid-method-attribute",
@@ -17433,7 +17433,7 @@
         "MethodAttributesRule",
         "PHPStan\\Rules\\Methods\\MethodAttributesRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/attributes/invalid-parameter-attribute",
@@ -17456,7 +17456,7 @@
         "PHPStan\\Rules\\Functions\\ParamAttributesRule",
         "ParamAttributesRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/attributes/invalid-property-attribute",
@@ -17480,7 +17480,7 @@
         "PropertyAttributesRule",
         "property.overrideAttribute"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/attributes/invalid-trait-attribute",
@@ -17504,7 +17504,7 @@
         "TraitAttributesRule",
         "trait.allowDynamicProperties"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/attributes/trait-as-attribute",
@@ -19649,7 +19649,7 @@
         "function.inVoidCast",
         "function.resultDiscarded"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/dead-code/discarded-method-result",
@@ -19806,7 +19806,7 @@
         "PHPStan\\Rules\\Comparison\\ImpossibleInArrayHaystackFiniteTypesRule",
         "function.impossibleHaystackValue"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/dead-code/impossible-instanceof",
@@ -20344,7 +20344,7 @@
         "function.unusedParameter",
         "function.unusedParameterFlow"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/dead-code/unused-function-result",
@@ -20411,7 +20411,7 @@
         "method.unusedParameter",
         "method.unusedParameterFlow"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/dead-code/unused-method-result",
@@ -20630,7 +20630,7 @@
         "UnusedVariableRule",
         "assign.redundant"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/dead-code/useless-return-value",

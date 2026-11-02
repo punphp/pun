@@ -16065,7 +16065,7 @@
         "rules": [
           "analyse/dead-code/unused-variable"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -16145,7 +16145,7 @@
         "rules": [
           "analyse/attributes/invalid-class-constant-attribute"
         ],
-        "note": "Merged with attribute.noConstructor, attribute.nonRepeatable, attribute.notAttribute and 1 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with attribute.noConstructor, attribute.nonRepeatable, attribute.notAttribute and 1 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -16175,7 +16175,7 @@
         "rules": [
           "analyse/attributes/invalid-class-constant-attribute"
         ],
-        "note": "Merged with attribute.deprecated, attribute.nonRepeatable, attribute.notAttribute and 1 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with attribute.deprecated, attribute.nonRepeatable, attribute.notAttribute and 1 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -16185,7 +16185,7 @@
         "rules": [
           "analyse/attributes/invalid-class-constant-attribute"
         ],
-        "note": "Merged with attribute.deprecated, attribute.noConstructor, attribute.notAttribute and 1 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with attribute.deprecated, attribute.noConstructor, attribute.notAttribute and 1 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -16195,7 +16195,7 @@
         "rules": [
           "analyse/attributes/invalid-class-constant-attribute"
         ],
-        "note": "Merged with attribute.deprecated, attribute.noConstructor, attribute.nonRepeatable and 1 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with attribute.deprecated, attribute.noConstructor, attribute.nonRepeatable and 1 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -16205,7 +16205,7 @@
         "rules": [
           "analyse/attributes/invalid-class-constant-attribute"
         ],
-        "note": "Merged with attribute.deprecated, attribute.noConstructor, attribute.nonRepeatable and 1 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with attribute.deprecated, attribute.noConstructor, attribute.nonRepeatable and 1 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -16505,7 +16505,7 @@
         "rules": [
           "analyse/dead-code/discarded-function-result"
         ],
-        "note": "Merged with callable.resultDiscarded, function.inVoidCast, function.resultDiscarded. Planned: not ported yet.",
+        "note": "Merged with callable.resultDiscarded, function.inVoidCast, function.resultDiscarded.",
         "unsupported": false
       },
       {
@@ -16545,7 +16545,7 @@
         "rules": [
           "analyse/dead-code/discarded-function-result"
         ],
-        "note": "Merged with callable.inVoidCast, function.inVoidCast, function.resultDiscarded. Planned: not ported yet.",
+        "note": "Merged with callable.inVoidCast, function.inVoidCast, function.resultDiscarded.",
         "unsupported": false
       },
       {
@@ -16715,7 +16715,7 @@
         "rules": [
           "analyse/attributes/invalid-class-attribute"
         ],
-        "note": "Merged with class.deprecatedAttribute, enum.allowDynamicProperties, enum.deprecatedAttribute and 3 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with class.deprecatedAttribute, enum.allowDynamicProperties, enum.deprecatedAttribute and 3 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -16735,7 +16735,7 @@
         "rules": [
           "analyse/attributes/invalid-class-attribute"
         ],
-        "note": "Merged with class.allowDynamicPropertiesReadonly, enum.allowDynamicProperties, enum.deprecatedAttribute and 3 others (see the rule's Replaces section). Expanded from %s.deprecatedAttribute. Planned: not ported yet.",
+        "note": "Merged with class.allowDynamicPropertiesReadonly, enum.allowDynamicProperties, enum.deprecatedAttribute and 3 others (see the rule's Replaces section). Expanded from %s.deprecatedAttribute.",
         "unsupported": false
       },
       {
@@ -17445,7 +17445,7 @@
         "rules": [
           "analyse/attributes/invalid-constant-attribute"
         ],
-        "note": "Merged with constant.attributesRuleCannotRun. Planned: not ported yet.",
+        "note": "Merged with constant.attributesRuleCannotRun.",
         "unsupported": false
       },
       {
@@ -17455,7 +17455,7 @@
         "rules": [
           "analyse/attributes/invalid-constant-attribute"
         ],
-        "note": "Merged with constant.attributesNotSupported. Planned: not ported yet.",
+        "note": "Merged with constant.attributesNotSupported.",
         "unsupported": false
       },
       {
@@ -17755,7 +17755,7 @@
         "rules": [
           "analyse/attributes/invalid-class-attribute"
         ],
-        "note": "Merged with class.allowDynamicPropertiesReadonly, class.deprecatedAttribute, enum.deprecatedAttribute and 3 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with class.allowDynamicPropertiesReadonly, class.deprecatedAttribute, enum.deprecatedAttribute and 3 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -17815,7 +17815,7 @@
         "rules": [
           "analyse/attributes/invalid-class-attribute"
         ],
-        "note": "Merged with class.allowDynamicPropertiesReadonly, class.deprecatedAttribute, enum.allowDynamicProperties and 3 others (see the rule's Replaces section). Expanded from %s.deprecatedAttribute. Planned: not ported yet.",
+        "note": "Merged with class.allowDynamicPropertiesReadonly, class.deprecatedAttribute, enum.allowDynamicProperties and 3 others (see the rule's Replaces section). Expanded from %s.deprecatedAttribute.",
         "unsupported": false
       },
       {
@@ -18165,7 +18165,7 @@
         "rules": [
           "analyse/dead-code/impossible-in-array"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -18185,7 +18185,7 @@
         "rules": [
           "analyse/dead-code/discarded-function-result"
         ],
-        "note": "Merged with callable.inVoidCast, callable.resultDiscarded, function.resultDiscarded. Planned: not ported yet.",
+        "note": "Merged with callable.inVoidCast, callable.resultDiscarded, function.resultDiscarded.",
         "unsupported": false
       },
       {
@@ -18235,7 +18235,7 @@
         "rules": [
           "analyse/dead-code/discarded-function-result"
         ],
-        "note": "Merged with callable.inVoidCast, callable.resultDiscarded, function.inVoidCast. Planned: not ported yet.",
+        "note": "Merged with callable.inVoidCast, callable.resultDiscarded, function.inVoidCast.",
         "unsupported": false
       },
       {
@@ -18275,7 +18275,7 @@
         "rules": [
           "analyse/dead-code/unused-function-parameter"
         ],
-        "note": "Merged with function.unusedParameterFlow. Planned: not ported yet.",
+        "note": "Merged with function.unusedParameterFlow.",
         "unsupported": false
       },
       {
@@ -18285,7 +18285,7 @@
         "rules": [
           "analyse/dead-code/unused-function-parameter"
         ],
-        "note": "Merged with function.unusedParameter. Planned: not ported yet.",
+        "note": "Merged with function.unusedParameter.",
         "unsupported": false
       },
       {
@@ -19025,7 +19025,7 @@
         "rules": [
           "analyse/attributes/invalid-class-attribute"
         ],
-        "note": "Merged with class.allowDynamicPropertiesReadonly, class.deprecatedAttribute, enum.allowDynamicProperties and 3 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with class.allowDynamicPropertiesReadonly, class.deprecatedAttribute, enum.allowDynamicProperties and 3 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -19035,7 +19035,7 @@
         "rules": [
           "analyse/attributes/invalid-class-attribute"
         ],
-        "note": "Merged with class.allowDynamicPropertiesReadonly, class.deprecatedAttribute, enum.allowDynamicProperties and 3 others (see the rule's Replaces section). Expanded from %s.deprecatedAttribute. Planned: not ported yet.",
+        "note": "Merged with class.allowDynamicPropertiesReadonly, class.deprecatedAttribute, enum.allowDynamicProperties and 3 others (see the rule's Replaces section). Expanded from %s.deprecatedAttribute.",
         "unsupported": false
       },
       {
@@ -19995,7 +19995,7 @@
         "rules": [
           "analyse/dead-code/unused-method-parameter"
         ],
-        "note": "Merged with method.unusedParameterFlow. Planned: not ported yet.",
+        "note": "Merged with method.unusedParameterFlow.",
         "unsupported": false
       },
       {
@@ -20005,7 +20005,7 @@
         "rules": [
           "analyse/dead-code/unused-method-parameter"
         ],
-        "note": "Merged with method.unusedParameter. Planned: not ported yet.",
+        "note": "Merged with method.unusedParameter.",
         "unsupported": false
       },
       {
@@ -22161,7 +22161,7 @@
         "rules": [
           "analyse/attributes/invalid-property-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -23951,7 +23951,7 @@
         "rules": [
           "analyse/attributes/invalid-trait-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -23961,7 +23961,7 @@
         "rules": [
           "analyse/attributes/invalid-class-attribute"
         ],
-        "note": "Merged with class.allowDynamicPropertiesReadonly, class.deprecatedAttribute, enum.allowDynamicProperties and 3 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with class.allowDynamicPropertiesReadonly, class.deprecatedAttribute, enum.allowDynamicProperties and 3 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -28569,7 +28569,7 @@
         "rules": [
           "analyse/attributes/invalid-class-constant-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
