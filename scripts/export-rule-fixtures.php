@@ -43,13 +43,15 @@ file_put_contents($work.'/ini/pun.ini', "max_memory_limit = -1\n"); // php.ini's
 // PHPStan 2.2 switches to its agent output format when it sees one of these (src/Internal/AgentDetector.php).
 const AGENT_UNSET = '-u AUGMENT_AGENT -u AMP_CURRENT_THREAD_ID -u AI_AGENT -u CURSOR_TRACE_ID -u CURSOR_AGENT -u GEMINI_CLI -u CODEX_SANDBOX -u CODEX_THREAD_ID -u OPENCODE_CLIENT -u OPENCODE -u CLAUDECODE -u CLAUDE_CODE -u REPL_ID';
 
-/** @return list<string> test files of the rules registered at $level */
-function levelTests(string $src, int $level): array
+/** @return list<string> test files of the rules registered at $level (any rule's, for the ones named in $only) */
+function levelTests(string $src, int $level, array $only = []): array
 {
     $tests = [];
     $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($src.'/src/Rules'));
     foreach ($it as $f) {
-        if (! str_ends_with($f->getFilename(), 'Rule.php') || ! str_contains(file_get_contents($f->getPathname()), '#[RegisteredRule(level: '.$level.')]')) {
+        // a rule config.levelN.neon registers (TooWide*ThrowTypeRule) has no RegisteredRule attribute: name its test
+        $named = in_array(basename($f->getFilename(), '.php').'Test', $only, true);
+        if (! str_ends_with($f->getFilename(), 'Rule.php') || (! $named && ! str_contains(file_get_contents($f->getPathname()), '#[RegisteredRule(level: '.$level.')]'))) {
             continue;
         }
         $test = str_replace([$src.'/src/Rules', '.php'], [$src.'/tests/PHPStan/Rules', 'Test.php'], $f->getPathname());
@@ -93,7 +95,7 @@ foreach ($args as $a) {
 $only = array_values(array_filter($args, fn ($a) => ! str_starts_with($a, '--')));
 $started = time();
 $cases = [];
-foreach (levelTests($src, $from) as $test) {
+foreach (levelTests($src, $from, $only) as $test) {
     $short = basename($test, '.php');
     if ($only !== [] && ! in_array($short, $only, true)) {
         continue;

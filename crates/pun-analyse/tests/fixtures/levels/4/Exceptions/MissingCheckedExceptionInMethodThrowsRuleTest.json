@@ -1,0 +1,129 @@
+{
+    "test": "Exceptions/MissingCheckedExceptionInMethodThrowsRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Exceptions/data/missing-exception-method-throws.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/missing-exception-method-throws.php",
+                    "line": 54,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Exceptions/data/missing-exception-method-throws.php",
+                    "line": 83,
+                    "identifier": "throws.notThrowable",
+                    "message": "PHPDoc tag @throws with type ExtendsThrowable\\ExtendsThrowable is not subtype of Throwable",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/missing-exception-method-throws.php",
+                    "line": 83,
+                    "identifier": "throws.unusedType",
+                    "message": "Method MissingExceptionMethodThrows\\Foo::throwsInterface() has ExtendsThrowable\\ExtendsThrowable in PHPDoc @throws tag but it's not thrown.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/missing-exception-method-throws.php",
+                    "line": 116,
+                    "identifier": "method.resultDiscarded",
+                    "message": "Call to method DateTimeImmutable::modify() on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/missing-exception-method-throws.php",
+                    "line": 116,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method DateTimeImmutable::modify() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/missing-exception-method-throws.php",
+                    "line": 122,
+                    "identifier": "method.resultDiscarded",
+                    "message": "Call to method DateTimeImmutable::modify() on a separate line discards return value.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBugArrayOffset",
+            "files": [
+                "Exceptions/data/bug-array-offset.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13792",
+            "files": [
+                "Exceptions/data/bug-13792.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testConditionalThrows",
+            "files": [
+                "Exceptions/data/conditional-throws-method.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/conditional-throws-method.php",
+                    "line": 81,
+                    "identifier": "throws.void",
+                    "message": "Method ConditionalThrowsMethod\\Caller::methodCallZero() throws exception Exception but the PHPDoc contains @throws void.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/conditional-throws-method.php",
+                    "line": 93,
+                    "identifier": "throws.void",
+                    "message": "Method ConditionalThrowsMethod\\Caller::staticCallZero() throws exception Exception but the PHPDoc contains @throws void.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/conditional-throws-method.php",
+                    "line": 105,
+                    "identifier": "throws.void",
+                    "message": "Method ConditionalThrowsMethod\\Caller::constructorZero() throws exception Exception but the PHPDoc contains @throws void.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/conditional-throws-method.php",
+                    "line": 123,
+                    "identifier": "throws.void",
+                    "message": "Method ConditionalThrowsMethod\\Caller::lookupString() throws exception Exception but the PHPDoc contains @throws void.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/conditional-throws-method.php",
+                    "line": 129,
+                    "identifier": "throws.void",
+                    "message": "Method ConditionalThrowsMethod\\Caller::inheritedMethodCallZero() throws exception Exception but the PHPDoc contains @throws void.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testGenericThrows",
+            "files": [
+                "Exceptions/data/generic-throws-9497.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

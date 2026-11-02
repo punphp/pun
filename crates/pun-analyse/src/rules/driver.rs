@@ -95,6 +95,8 @@ pub(crate) struct Checks {
     missing_callable_signature: bool,
     /// [`Project::strict_rules`].
     pub(super) strict: crate::StrictRules,
+    /// [`Project::exceptions`].
+    pub(super) exceptions: crate::Exceptions,
     /// RequireFileExistsRule's path and feature-toggle settings.
     include_file: super::include_file::Settings,
 }
@@ -159,6 +161,7 @@ impl Checks {
             uninitialized_properties: project.check_uninitialized_properties,
             missing_callable_signature: project.check_missing_callable_signature,
             strict: project.strict_rules,
+            exceptions: project.exceptions.clone(),
             include_file: super::include_file::Settings {
                 cwd: project.current_working_directory.clone(),
                 include_paths: project.include_paths.clone(),
@@ -209,6 +212,10 @@ fn checker<'a, 'arena>(
         project.check_argument_types || project.check_arguments_passed_by_reference, project.check_this_only));
     typed.extend(super::strict::typed_expressions(project, codebase, program));
     typed.extend(super::operators::typed_expressions(project.strict, program));
+    typed.extend(super::types::throw_points::typed(
+        program,
+        project.level >= 4 || project.exceptions.missing_checked_exception_in_throws,
+    ));
     let (include_typed, include_state) = super::include_file::prepare(arena, file, program, names, codebase, php_version, project.pollute_scope_with_loop_initial_assignments, project.pollute_scope_with_always_iterable_foreach, project.pollute_scope_with_block, &project.include_file);
     typed.extend(include_typed);
     let mut variables = super::variables::Observations::default();
@@ -315,6 +322,7 @@ fn checker<'a, 'arena>(
         uninitialized_properties: project.uninitialized_properties,
         missing_callable_signature: project.missing_callable_signature,
         strict: project.strict,
+        exceptions: &project.exceptions,
         include_settings: &project.include_file,
         include_state,
         closure_bind: 0,

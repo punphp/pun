@@ -1,0 +1,12 @@
+parameters:
+    level: 4
+    phpVersion: 80500
+    paths: [.]
+    exceptions:
+        uncheckedExceptionClasses:
+            - Error
+            - RuntimeException
+            - ThrowsCoverage\UncheckedException
+        check:
+            missingCheckedExceptionInThrows: true
+            throwTypeCovariance: true

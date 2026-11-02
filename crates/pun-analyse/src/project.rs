@@ -100,6 +100,8 @@ pub struct Project {
     pub deprecation_rules: bool,
     /// The `strictRules` switches of phpstan-strict-rules' rules.neon that Pun ports (all off without it).
     pub strict_rules: StrictRules,
+    /// The `exceptions.*` parameters of the throw point rules.
+    pub exceptions: Exceptions,
     /// How anonymous class names print their file: relative to the working directory and the analysed paths.
     pub relative_path: RelativePath,
     /// Larastan's rules and their switches, when the config includes Larastan's extension.neon.
@@ -184,6 +186,90 @@ impl StrictRules {
             booleans_in_loop_conditions: on("booleansInLoopConditions"),
             useless_cast: on("uselessCast"),
             switch_conditions_matching_type: on("switchConditionsMatchingType"),
+        }
+    }
+}
+
+/// The `exceptions.*` parameters and `checkTooWideThrowTypesInProtectedAndPublicMethods` (config.neon's defaults).
+#[derive(Clone, Debug, PartialEq)]
+pub struct Exceptions {
+    /// `implicitThrows`: a call without `@throws` may throw anything.
+    pub implicit_throws: bool,
+    /// `reportUncheckedExceptionDeadCatch`.
+    pub report_unchecked_exception_dead_catch: bool,
+    /// DefaultExceptionTypeResolver's `uncheckedExceptionRegexes`, `uncheckedExceptionClasses`,
+    /// `checkedExceptionRegexes` and `checkedExceptionClasses`.
+    pub unchecked_exception_regexes: Vec<String>,
+    pub unchecked_exception_classes: Vec<String>,
+    pub checked_exception_regexes: Vec<String>,
+    pub checked_exception_classes: Vec<String>,
+    /// `check.missingCheckedExceptionInThrows`: the MissingCheckedExceptionIn*ThrowsRule rules.
+    pub missing_checked_exception_in_throws: bool,
+    /// `check.tooWideThrowType`: the TooWide*ThrowTypeRule rules (level 4).
+    pub too_wide_throw_type: bool,
+    /// `check.tooWideImplicitThrowType`: TooWideMethodThrowTypeRule also for an inherited `@throws`.
+    pub too_wide_implicit_throw_type: bool,
+    /// `check.throwTypeCovariance`: MethodThrowTypeCovarianceRule.
+    pub throw_type_covariance: bool,
+    /// `checkTooWideThrowTypesInProtectedAndPublicMethods`.
+    pub check_too_wide_throw_types_in_protected_and_public_methods: bool,
+}
+
+impl Default for Exceptions {
+    fn default() -> Self {
+        Exceptions {
+            implicit_throws: true,
+            report_unchecked_exception_dead_catch: true,
+            unchecked_exception_regexes: Vec::new(),
+            unchecked_exception_classes: vec!["Error".into()],
+            checked_exception_regexes: Vec::new(),
+            checked_exception_classes: Vec::new(),
+            missing_checked_exception_in_throws: false,
+            too_wide_throw_type: true,
+            too_wide_implicit_throw_type: false,
+            throw_type_covariance: false,
+            check_too_wide_throw_types_in_protected_and_public_methods: false,
+        }
+    }
+}
+
+impl Exceptions {
+    fn from_params(params: &Array) -> Exceptions {
+        let d = Exceptions::default();
+        let exceptions = params.get_str("exceptions").and_then(Value::as_array);
+        let check = exceptions.and_then(|e| e.get_str("check")).and_then(Value::as_array);
+        let flag = |a: Option<&Array>, k: &str, default: bool| match a.and_then(|a| a.get_str(k)) {
+            Some(Value::Bool(b)) => *b,
+            _ => default,
+        };
+        let list = |k: &str, default: Vec<String>| match exceptions.and_then(|e| e.get_str(k)).and_then(Value::as_array) {
+            Some(a) => a.values().filter_map(Value::as_str).map(str::to_string).collect(),
+            None => default,
+        };
+        Exceptions {
+            implicit_throws: flag(exceptions, "implicitThrows", d.implicit_throws),
+            report_unchecked_exception_dead_catch: flag(
+                exceptions,
+                "reportUncheckedExceptionDeadCatch",
+                d.report_unchecked_exception_dead_catch,
+            ),
+            unchecked_exception_regexes: list("uncheckedExceptionRegexes", d.unchecked_exception_regexes),
+            unchecked_exception_classes: list("uncheckedExceptionClasses", d.unchecked_exception_classes),
+            checked_exception_regexes: list("checkedExceptionRegexes", d.checked_exception_regexes),
+            checked_exception_classes: list("checkedExceptionClasses", d.checked_exception_classes),
+            missing_checked_exception_in_throws: flag(
+                check,
+                "missingCheckedExceptionInThrows",
+                d.missing_checked_exception_in_throws,
+            ),
+            too_wide_throw_type: flag(check, "tooWideThrowType", d.too_wide_throw_type),
+            too_wide_implicit_throw_type: flag(check, "tooWideImplicitThrowType", d.too_wide_implicit_throw_type),
+            throw_type_covariance: flag(check, "throwTypeCovariance", d.throw_type_covariance),
+            check_too_wide_throw_types_in_protected_and_public_methods: flag(
+                Some(params),
+                "checkTooWideThrowTypesInProtectedAndPublicMethods",
+                d.check_too_wide_throw_types_in_protected_and_public_methods,
+            ),
         }
     }
 }
@@ -325,6 +411,7 @@ impl Project {
             check_missing_callable_signature: flag("checkMissingCallableSignature"),
             deprecation_rules: flag("deprecationRulesInstalled"),
             strict_rules: StrictRules::from_params(params),
+            exceptions: Exceptions::from_params(params),
             precise_unused_parameter_line: toggle("reportPreciseLineForUnusedFunctionParameter"),
             relative_path: RelativePath::of(&paths),
             larastan: crate::Larastan::from_params(root, params),
@@ -391,6 +478,7 @@ impl Project {
             check_missing_callable_signature: false,
             deprecation_rules: false,
             strict_rules: StrictRules::default(),
+            exceptions: Exceptions::default(),
             precise_unused_parameter_line: false,
             larastan: None,
             type_aliases: Vec::new(),

@@ -497,6 +497,7 @@ mod tests {
             path_constants: false,
         };
         let (_, include_state) = include_file::prepare(&arena, &file, program, &names, &codebase, 80400, true, true, true, &settings);
+        let exceptions = crate::Exceptions::default();
         let c = Checker {
             file: &file,
             has_compiler_halt: false,
@@ -586,6 +587,7 @@ mod tests {
             uninitialized_properties: false,
             missing_callable_signature: false,
             strict: Default::default(),
+            exceptions: &exceptions,
             include_settings: &settings,
             include_state,
             closure_bind: 0,

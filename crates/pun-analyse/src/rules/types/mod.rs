@@ -29,6 +29,8 @@ mod too_wide;
 pub(super) mod dynamic_names;
 mod nullsafe;
 mod throws_void;
+pub(super) mod throw_points;
+mod throws;
 
 use std::collections::HashMap;
 
@@ -69,6 +71,9 @@ pub(super) use throws_void::{
     method as throws_void_method,
 };
 pub(super) use nullsafe::{method as nullsafe_method, property as nullsafe_property};
+pub(super) use throws::{
+    covariance as throws_covariance, dead_catches as unthrown_catches, function as throws_function, hooks as throws_hooks, method as throws_method,
+};
 pub(super) use too_wide::{
     arrow_function as too_wide_arrow_function, closure as too_wide_closure, function as too_wide_function,
     method as too_wide_method, properties as too_wide_properties,
@@ -76,7 +81,7 @@ pub(super) use too_wide::{
 pub(super) use properties::{assignment as property_assignment, increment as property_increment, unset as property_unset};
 
 /// The identifiers of the rules above level 0 (level-0 ones are in [`super::IDENTIFIERS`]).
-pub const IDENTIFIERS: &[&[&str]] = &[callables::IDENTIFIERS, regex::IDENTIFIERS, arguments::IDENTIFIERS, castable::IDENTIFIERS, receivers::IDENTIFIERS, access::IDENTIFIERS, casts::IDENTIFIERS, comparison::IDENTIFIERS, param_default::IDENTIFIERS, void_match::IDENTIFIERS, returns::IDENTIFIERS, values::IDENTIFIERS, yields::IDENTIFIERS, property_default::IDENTIFIERS, properties::IDENTIFIERS, constant_value::IDENTIFIERS, offsets::IDENTIFIERS, binary_op::IDENTIFIERS, too_wide::IDENTIFIERS, dynamic_names::IDENTIFIERS, nullsafe::IDENTIFIERS, throws_void::IDENTIFIERS, inc_dec::IDENTIFIERS];
+pub const IDENTIFIERS: &[&[&str]] = &[callables::IDENTIFIERS, regex::IDENTIFIERS, arguments::IDENTIFIERS, castable::IDENTIFIERS, receivers::IDENTIFIERS, access::IDENTIFIERS, casts::IDENTIFIERS, comparison::IDENTIFIERS, param_default::IDENTIFIERS, void_match::IDENTIFIERS, returns::IDENTIFIERS, values::IDENTIFIERS, yields::IDENTIFIERS, property_default::IDENTIFIERS, properties::IDENTIFIERS, constant_value::IDENTIFIERS, offsets::IDENTIFIERS, binary_op::IDENTIFIERS, too_wide::IDENTIFIERS, dynamic_names::IDENTIFIERS, nullsafe::IDENTIFIERS, throws_void::IDENTIFIERS, inc_dec::IDENTIFIERS, throws::IDENTIFIERS];
 
 /// The expressions whose type the statement results read, in the function-likes whose missing return could be
 /// reported: those with a non-void return type whose body, by syntax alone, does not always terminate (types only

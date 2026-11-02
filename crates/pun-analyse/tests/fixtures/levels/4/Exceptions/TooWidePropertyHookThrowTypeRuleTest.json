@@ -1,0 +1,119 @@
+{
+    "test": "Exceptions/TooWidePropertyHookThrowTypeRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Exceptions/data/too-wide-throws-property-hook.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/too-wide-throws-property-hook.php",
+                    "line": 41,
+                    "identifier": "throws.void",
+                    "message": "Get hook for property TooWideThrowsPropertyHook\\Foo::$e throws exception InvalidArgumentException but the PHPDoc contains @throws void.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/too-wide-throws-property-hook.php",
+                    "line": 76,
+                    "identifier": "return.missing",
+                    "message": "Get hook for property TooWideThrowsPropertyHook\\Foo::$j should return int but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testAlwaysCheckFinal#0",
+            "files": [
+                "Exceptions/data/too-wide-throw-type-always-check-final-property-hooks.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/too-wide-throw-type-always-check-final-property-hooks.php",
+                    "line": 11,
+                    "identifier": "property.neverRead",
+                    "message": "Readable property TooWideThrowsPropertyHookAlwaysCheckFinal\\Foo::$foo is never read.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/too-wide-throw-type-always-check-final-property-hooks.php",
+                    "line": 13,
+                    "identifier": "throws.unusedType",
+                    "message": "Get hook for property TooWideThrowsPropertyHookAlwaysCheckFinal\\Foo::$foo has RuntimeException in PHPDoc @throws tag but it's not thrown.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/too-wide-throw-type-always-check-final-property-hooks.php",
+                    "line": 34,
+                    "identifier": "throws.unusedType",
+                    "message": "Get hook for property TooWideThrowsPropertyHookAlwaysCheckFinal\\Foo::$baz2 has RuntimeException in PHPDoc @throws tag but it's not thrown.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/too-wide-throw-type-always-check-final-property-hooks.php",
+                    "line": 41,
+                    "identifier": "throws.unusedType",
+                    "message": "Get hook for property TooWideThrowsPropertyHookAlwaysCheckFinal\\Foo::$baz3 has RuntimeException in PHPDoc @throws tag but it's not thrown.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/too-wide-throw-type-always-check-final-property-hooks.php",
+                    "line": 53,
+                    "identifier": "throws.unusedType",
+                    "message": "Get hook for property TooWideThrowsPropertyHookAlwaysCheckFinal\\FinalFoo::$baz has RuntimeException in PHPDoc @throws tag but it's not thrown.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testAlwaysCheckFinal#1",
+            "files": [
+                "Exceptions/data/too-wide-throw-type-always-check-final-property-hooks.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/too-wide-throw-type-always-check-final-property-hooks.php",
+                    "line": 11,
+                    "identifier": "property.neverRead",
+                    "message": "Readable property TooWideThrowsPropertyHookAlwaysCheckFinal\\Foo::$foo is never read.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/too-wide-throw-type-always-check-final-property-hooks.php",
+                    "line": 13,
+                    "identifier": "throws.unusedType",
+                    "message": "Get hook for property TooWideThrowsPropertyHookAlwaysCheckFinal\\Foo::$foo has RuntimeException in PHPDoc @throws tag but it's not thrown.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/too-wide-throw-type-always-check-final-property-hooks.php",
+                    "line": 34,
+                    "identifier": "throws.unusedType",
+                    "message": "Get hook for property TooWideThrowsPropertyHookAlwaysCheckFinal\\Foo::$baz2 has RuntimeException in PHPDoc @throws tag but it's not thrown.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/too-wide-throw-type-always-check-final-property-hooks.php",
+                    "line": 41,
+                    "identifier": "throws.unusedType",
+                    "message": "Get hook for property TooWideThrowsPropertyHookAlwaysCheckFinal\\Foo::$baz3 has RuntimeException in PHPDoc @throws tag but it's not thrown.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/too-wide-throw-type-always-check-final-property-hooks.php",
+                    "line": 53,
+                    "identifier": "throws.unusedType",
+                    "message": "Get hook for property TooWideThrowsPropertyHookAlwaysCheckFinal\\FinalFoo::$baz has RuntimeException in PHPDoc @throws tag but it's not thrown.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

@@ -1,0 +1,23 @@
+{
+    "test": "Exceptions/MethodThrowTypeCovarianceRuleTest",
+    "cases": [
+        {
+            "method": "testRule#0",
+            "files": [
+                "Exceptions/data/method-throw-type-covariance.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testRule#1",
+            "files": [
+                "Exceptions/data/method-throw-type-covariance.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

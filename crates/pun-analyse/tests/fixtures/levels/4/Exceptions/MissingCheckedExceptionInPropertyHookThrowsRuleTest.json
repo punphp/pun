@@ -1,0 +1,14 @@
+{
+    "test": "Exceptions/MissingCheckedExceptionInPropertyHookThrowsRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Exceptions/data/missing-exception-property-hook-throws.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

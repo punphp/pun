@@ -129,6 +129,12 @@ pub fn reports(identifier: &str) -> bool {
 }
 
 pub const IDENTIFIERS: &[&str] = &[
+    // the throw point rules switched on by `exceptions.check.*` (MissingCheckedExceptionIn*ThrowsRule,
+    // MethodThrowTypeCovarianceRule)
+    "missingType.checkedException",
+    "throws.notCovariant",
+    "throws.notCovariantWithImplicitVoid",
+    "throws.shouldBeVoid",
     "argument.parameterRenamedInSubtype",
     "include.fileNotFound",
     "includeOnce.fileNotFound",
@@ -937,6 +943,8 @@ pub struct Checker<'a, 'arena> {
     missing_callable_signature: bool,
     /// The phpstan-strict-rules switches.
     strict: crate::StrictRules,
+    /// [`driver::Checks`]'s `exceptions.*` parameters.
+    exceptions: &'a crate::Exceptions,
     include_settings: &'a include_file::Settings,
     include_state: include_file::State,
     /// How many `Closure::bind()` calls the walk is inside (`isInClosureBind()`).
@@ -1547,6 +1555,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         types::function_returns(self, f);
         types::too_wide_function(self, f);
         types::throws_void_function(self, f);
+        types::throws_function(self, f);
         generics::function(self, f);
         variance::function(self, f);
         functions::function_like(self, f, &f.parameter_list);
@@ -1654,6 +1663,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
                 types::get_hooks(self, p.variable.name, p.hint.as_ref(), p.span(), hooks);
                 types::hook_returns(self, p.variable.name, p.hint.as_ref(), p.span(), hooks);
                 types::throws_void_hooks(self, p.variable.name, hooks);
+                types::throws_hooks(self, p.variable.name, hooks);
                 set_hook::hooks(self, p.variable.name, p.hint.as_ref(), hooks);
                 set_hook::missing_types(self, p.variable.name, p.hint.as_ref(), hooks, p.span());
             }
@@ -1676,6 +1686,8 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         types::method_returns(self, m);
         types::too_wide_method(self, m);
         types::throws_void_method(self, m);
+        types::throws_method(self, m);
+        types::throws_covariance(self, m);
         generics::method(self, m, &method);
         variance::method(self, m, &method);
         declarations::promoted(
@@ -2323,6 +2335,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             types::get_hooks(self, h.item.variable().name, p.hint(), p.span(), &h.hook_list);
             types::hook_returns(self, h.item.variable().name, p.hint(), p.span(), &h.hook_list);
             types::throws_void_hooks(self, h.item.variable().name, &h.hook_list);
+            types::throws_hooks(self, h.item.variable().name, &h.hook_list);
             for hook in h.hook_list.hooks.iter() {
                 phpdoc_types::hook(self, hook, h.item.variable().name, p.hint());
             }
@@ -2457,6 +2470,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_in_try(&mut self, t: &'ast Try<'arena>, _: &mut ()) {
         dead_code::try_statement(self, t);
         types::dead_catches(self, t);
+        types::unthrown_catches(self, t);
     }
     fn walk_in_try_catch_clause(&mut self, clause: &'ast TryCatchClause<'arena>, _: &mut ()) {
         phpdoc_tags::clause(self, clause.span());

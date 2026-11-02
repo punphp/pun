@@ -1,0 +1,212 @@
+{
+    "test": "Exceptions/TooWideMethodThrowTypeRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Exceptions/data/too-wide-throws-method.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/too-wide-throws-method.php",
+                    "line": 23,
+                    "identifier": "throws.unusedType",
+                    "message": "Method TooWideThrowsMethod\\Foo::doFoo3() has InvalidArgumentException in PHPDoc @throws tag but it's not thrown.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/too-wide-throws-method.php",
+                    "line": 29,
+                    "identifier": "throws.unusedType",
+                    "message": "Method TooWideThrowsMethod\\Foo::doFoo4() has DomainException in PHPDoc @throws tag but it's not thrown.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/too-wide-throws-method.php",
+                    "line": 37,
+                    "identifier": "throws.void",
+                    "message": "Method TooWideThrowsMethod\\Foo::doFoo5() throws exception InvalidArgumentException but the PHPDoc contains @throws void.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/too-wide-throws-method.php",
+                    "line": 51,
+                    "identifier": "throws.unusedType",
+                    "message": "Method TooWideThrowsMethod\\Foo::doFoo7() has DomainException in PHPDoc @throws tag but it's not thrown.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/too-wide-throws-method.php",
+                    "line": 60,
+                    "identifier": "throws.unusedType",
+                    "message": "Method TooWideThrowsMethod\\Foo::doFoo8() has DomainException in PHPDoc @throws tag but it's not thrown.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/too-wide-throws-method.php",
+                    "line": 66,
+                    "identifier": "throws.unusedType",
+                    "message": "Method TooWideThrowsMethod\\Foo::doFoo9() has DomainException in PHPDoc @throws tag but it's not thrown.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/too-wide-throws-method.php",
+                    "line": 143,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Exceptions/data/too-wide-throws-method.php",
+                    "line": 167,
+                    "identifier": "throws.unusedType",
+                    "message": "Method TooWideThrowsMethod\\ImmediatelyCalledCallback::doFoo2() has InvalidArgumentException in PHPDoc @throws tag but it's not thrown.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6233",
+            "files": [
+                "Exceptions/data/bug-6233.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testImmediatelyCalledArrowFunction",
+            "files": [
+                "Exceptions/data/immediately-called-arrow-function.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/immediately-called-arrow-function.php",
+                    "line": 19,
+                    "identifier": "throws.unusedType",
+                    "message": "Method ImmediatelyCalledArrowFunction\\ImmediatelyCalledCallback::doFoo2() has InvalidArgumentException in PHPDoc @throws tag but it's not thrown.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testFirstClassCallable",
+            "files": [
+                "Exceptions/data/immediately-called-fcc.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/immediately-called-fcc.php",
+                    "line": 79,
+                    "identifier": "throws.unusedType",
+                    "message": "Function ImmediatelyCalledFcc\\alsoThrowsInvalidArgumentException() has InvalidArgumentException in PHPDoc @throws tag but it's not thrown.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleLookOnlyForExplicitThrowPoints#0",
+            "files": [
+                "Exceptions/data/too-wide-throws-explicit.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testRuleLookOnlyForExplicitThrowPoints#1",
+            "files": [
+                "Exceptions/data/too-wide-throws-explicit.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testAlwaysCheckFinal#0",
+            "files": [
+                "Exceptions/data/too-wide-throw-type-always-check-final.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/too-wide-throw-type-always-check-final.php",
+                    "line": 14,
+                    "identifier": "throws.unusedType",
+                    "message": "Method TooWideThrowTypeAlwaysCheckFinal\\Foo::doFoo() has RuntimeException in PHPDoc @throws tag but it's not thrown.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/too-wide-throw-type-always-check-final.php",
+                    "line": 46,
+                    "identifier": "method.unused",
+                    "message": "Method TooWideThrowTypeAlwaysCheckFinal\\Baz::doBar() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/too-wide-throw-type-always-check-final.php",
+                    "line": 46,
+                    "identifier": "throws.unusedType",
+                    "message": "Method TooWideThrowTypeAlwaysCheckFinal\\Baz::doBar() has RuntimeException in PHPDoc @throws tag but it's not thrown.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testAlwaysCheckFinal#1",
+            "files": [
+                "Exceptions/data/too-wide-throw-type-always-check-final.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/too-wide-throw-type-always-check-final.php",
+                    "line": 14,
+                    "identifier": "throws.unusedType",
+                    "message": "Method TooWideThrowTypeAlwaysCheckFinal\\Foo::doFoo() has RuntimeException in PHPDoc @throws tag but it's not thrown.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/too-wide-throw-type-always-check-final.php",
+                    "line": 46,
+                    "identifier": "method.unused",
+                    "message": "Method TooWideThrowTypeAlwaysCheckFinal\\Baz::doBar() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/too-wide-throw-type-always-check-final.php",
+                    "line": 46,
+                    "identifier": "throws.unusedType",
+                    "message": "Method TooWideThrowTypeAlwaysCheckFinal\\Baz::doBar() has RuntimeException in PHPDoc @throws tag but it's not thrown.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testTooWideImplicitThrows#0",
+            "files": [
+                "Exceptions/data/too-wide-implicit-throws.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testTooWideImplicitThrows#1",
+            "files": [
+                "Exceptions/data/too-wide-implicit-throws.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

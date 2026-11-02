@@ -1,0 +1,57 @@
+{
+    "test": "Exceptions/TooWideFunctionThrowTypeRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Exceptions/data/too-wide-throws-function.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/too-wide-throws-function.php",
+                    "line": 20,
+                    "identifier": "throws.unusedType",
+                    "message": "Function TooWideThrowsFunction\\doFoo3() has InvalidArgumentException in PHPDoc @throws tag but it's not thrown.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/too-wide-throws-function.php",
+                    "line": 26,
+                    "identifier": "throws.unusedType",
+                    "message": "Function TooWideThrowsFunction\\doFoo4() has DomainException in PHPDoc @throws tag but it's not thrown.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/too-wide-throws-function.php",
+                    "line": 34,
+                    "identifier": "throws.void",
+                    "message": "Function TooWideThrowsFunction\\doFoo5() throws exception InvalidArgumentException but the PHPDoc contains @throws void.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/too-wide-throws-function.php",
+                    "line": 48,
+                    "identifier": "throws.unusedType",
+                    "message": "Function TooWideThrowsFunction\\doFoo7() has DomainException in PHPDoc @throws tag but it's not thrown.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/too-wide-throws-function.php",
+                    "line": 57,
+                    "identifier": "throws.unusedType",
+                    "message": "Function TooWideThrowsFunction\\doFoo8() has DomainException in PHPDoc @throws tag but it's not thrown.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/too-wide-throws-function.php",
+                    "line": 63,
+                    "identifier": "throws.unusedType",
+                    "message": "Function TooWideThrowsFunction\\doFoo9() has DomainException in PHPDoc @throws tag but it's not thrown.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

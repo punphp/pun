@@ -1,6 +1,6 @@
 //! Level 3's ThrowsVoidFunctionWithExplicitThrowPointRule, ThrowsVoidMethodWithExplicitThrowPointRule and
 //! ThrowsVoidPropertyHookWithExplicitThrowPointRule (`throws.void`): an explicit throw point of a function-like whose
-//! PHPDoc says `@throws void`, with the default `missingCheckedExceptionInThrows` (off). Also
+//! PHPDoc says `@throws void`, except a checked exception when `missingCheckedExceptionInThrows` is on. Also
 //! CatchWithUnthrownExceptionRule's `catch.alreadyCaught`: a catch whose types the catches above take.
 
 use mago_codex::metadata::function_like::FunctionLikeMetadata;
@@ -153,6 +153,12 @@ fn check(c: &mut Checker, at: Span, of: &str, walk: impl FnOnce(&mut Points)) {
     let points = p.points;
     for (at, ty) in points {
         for t in flatten(ty) {
+            // (MissingCheckedExceptionInThrowsCheck reports it instead)
+            if c.exceptions.missing_checked_exception_in_throws
+                && t.object_class_names().iter().all(|n| super::throws::is_checked_exception(c, n))
+            {
+                continue;
+            }
             let described = declared::with_classes(c, || t.describe(Level::TypeOnly));
             let message = format!("{of} throws exception {described} but the PHPDoc contains @throws void.");
             c.report(at, "throws.void", message, None);

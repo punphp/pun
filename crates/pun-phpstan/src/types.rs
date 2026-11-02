@@ -380,7 +380,7 @@ impl Type {
         matches!(self.unreasoned(), Type::Never(NeverKind::Implicit))
     }
 
-    fn is_never(&self) -> bool {
+    pub fn is_never(&self) -> bool {
         matches!(self.unreasoned(), Type::Never(_))
     }
 
@@ -3873,6 +3873,19 @@ fn scalar_class(t: &Type) -> u8 {
 enum Merge {
     A(Type),
     B(Type),
+}
+
+/// `TypeCombinator::remove()` of object types (a union removes each member in turn): what a `catch` leaves of a
+/// throw point. A type it cannot subtract stays as it is.
+pub fn remove_object(from: &Type, removed: &Type) -> Type {
+    if let Type::Union(parts) = removed {
+        return parts.iter().fold(from.clone(), |from, part| remove_object(&from, part));
+    }
+    match is_super_type_of(removed, from) {
+        Tri::Yes => Type::Never(NeverKind::Implicit),
+        Tri::No => from.clone(),
+        Tri::Maybe => remove_object_exclusion(from, removed).unwrap_or_else(|| from.clone()),
+    }
 }
 
 /// TypeCombinator::remove() and ObjectType::tryRemove() for a named-object exclusion.

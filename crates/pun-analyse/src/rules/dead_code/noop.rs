@@ -180,12 +180,12 @@ fn class_of<'a>(c: &Checker<'a, '_>, e: &Expression) -> Option<&'a ClassLikeMeta
 }
 
 /// ReflectionProvider::getFunction() of a named call.
-pub(super) enum Function<'a> {
+pub(in super::super) enum Function<'a> {
     User(&'a FunctionLikeMetadata),
     Builtin(&'static symbols::Function),
 }
 
-pub(super) fn function_of<'a>(c: &Checker<'a, '_>, callee: &Expression) -> Option<Function<'a>> {
+pub(in super::super) fn function_of<'a>(c: &Checker<'a, '_>, callee: &Expression) -> Option<Function<'a>> {
     let Expression::Identifier(id) = callee else {
         return None;
     };
@@ -360,15 +360,15 @@ impl Checker<'_, '_> {
                     },
                     Call::Method(m) => {
                         self.points(m.object, p);
-                        (self.method_pure(m.object, &m.method), &m.argument_list)
+                        (self.method_call_pure(e, m.object, &m.method, &m.argument_list), &m.argument_list)
                     }
                     Call::NullSafeMethod(m) => {
                         self.points(m.object, p);
-                        (self.method_pure(m.object, &m.method), &m.argument_list)
+                        (self.method_call_pure(e, m.object, &m.method, &m.argument_list), &m.argument_list)
                     }
                     Call::StaticMethod(m) => {
                         self.points(m.class, p);
-                        (self.method_pure(m.class, &m.method), &m.argument_list)
+                        (self.method_call_pure(e, m.class, &m.method, &m.argument_list), &m.argument_list)
                     }
                 };
                 if !pure {
@@ -480,7 +480,7 @@ impl Checker<'_, '_> {
 
     /// MatchHandler's `$isExhaustive`: a `default` arm, or a subject of finite values the arms all match (its remaining
     /// type is never).
-    fn exhaustive(&self, m: &Match) -> bool {
+    pub(in super::super) fn exhaustive(&self, m: &Match) -> bool {
         let values = |e: &Expression| -> Option<Vec<Vec<u8>>> {
             let mut values = Vec::new();
             for atom in self.type_of(e)?.types.iter() {
@@ -551,6 +551,20 @@ impl Checker<'_, '_> {
     fn method_pure(&self, on: &Expression, method: &ClassLikeMemberSelector) -> bool {
         self.method_target(on, method)
             .is_some_and(|m| self.method_without_effects(&m))
+    }
+
+    /// `method_pure()` of a call, which a Date* dynamic throw type extension's explicit throw point makes impure.
+    fn method_call_pure(
+        &self,
+        call: &Expression,
+        on: &Expression,
+        method: &ClassLikeMemberSelector,
+        args: &ArgumentList,
+    ) -> bool {
+        self.method_pure(on, method)
+            && !matches!(self.method_target(on, method), Some(Method::Builtin { declaring, f })
+                if super::super::types::throw_points::date_explicit(self, call.span(), &format!(
+                    "{}::{}", declaring.name.to_ascii_lowercase(), f.name.to_ascii_lowercase()), args))
     }
 
     fn method_without_effects(&self, m: &Method) -> bool {

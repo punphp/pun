@@ -1,0 +1,2698 @@
+{
+    "functions": {
+        "array_chunk": "ValueError",
+        "array_combine": "ValueError",
+        "array_fill": "ValueError",
+        "array_rand": "ValueError",
+        "array_walk": "ArgumentCountError",
+        "assert_options": "ValueError",
+        "bcadd": "ValueError",
+        "bcceil": "ValueError",
+        "bcdiv": "DivisionByZeroError",
+        "bcmod": "DivisionByZeroError",
+        "bcpow": "(DivisionByZeroError | ValueError)",
+        "bcpowmod": "(DivisionByZeroError | ValueError)",
+        "bcround": "ValueError",
+        "bcscale": "ValueError",
+        "bcsqrt": "ValueError",
+        "bind_textdomain_codeset": "ValueError",
+        "constant": "Error",
+        "curl_multi_select": "ValueError",
+        "date_create_from_format": "ValueError",
+        "date_create_immutable_from_format": "ValueError",
+        "date_parse_from_format": "ValueError",
+        "dgettext": "ValueError",
+        "dngettext": "ValueError",
+        "easter_date": "ValueError",
+        "exec": "ValueError",
+        "fgetcsv": "ValueError",
+        "file": "ValueError",
+        "fprintf": "(ArgumentCountError | ValueError)",
+        "ftp_set_option": "(TypeError | ValueError)",
+        "geoslinemerge": "Exception",
+        "geospolygonize": "Exception",
+        "geosrelatematch": "Exception",
+        "geossharedpaths": "Exception",
+        "get_called_class": "Error",
+        "get_class": "Error",
+        "getimagesize": "ValueError",
+        "gmp_binomial": "ValueError",
+        "gmp_random_bits": "ValueError",
+        "gmp_random_range": "ValueError",
+        "gmp_random_seed": "ValueError",
+        "grapheme_str_split": "ValueError",
+        "hash": "ValueError",
+        "hash_hkdf": "ValueError",
+        "hash_hmac": "ValueError",
+        "hash_hmac_file": "ValueError",
+        "hash_init": "ValueError",
+        "hash_pbkdf2": "ValueError",
+        "imageavif": "ValueError",
+        "imagefilter": "ValueError",
+        "imagejpeg": "ValueError",
+        "imagepng": "ValueError",
+        "imagescale": "ValueError",
+        "imagewebp": "ValueError",
+        "imap_clearflag_full": "ValueError",
+        "imap_close": "ValueError",
+        "imap_delete": "ValueError",
+        "imap_gc": "ValueError",
+        "imap_setflag_full": "ValueError",
+        "intdiv": "ArithmeticError",
+        "jdtounix": "ValueError",
+        "json_decode": "ValueError",
+        "json_validate": "ValueError",
+        "libxml_set_streams_context": "TypeError",
+        "max": "ValueError",
+        "mb_convert_encoding": "ValueError",
+        "mb_convert_kana": "ValueError",
+        "mb_decode_numericentity": "ValueError",
+        "mb_encode_numericentity": "ValueError",
+        "mb_encoding_aliases": "ValueError",
+        "mb_http_input": "ValueError",
+        "mb_http_output": "ValueError",
+        "mb_internal_encoding": "ValueError",
+        "mb_stripos": "ValueError",
+        "mb_strpos": "ValueError",
+        "mb_strripos": "ValueError",
+        "mb_strrpos": "ValueError",
+        "min": "ValueError",
+        "mongodb\\driver\\monitoring\\addsubscriber": "InvalidArgumentException",
+        "mongodb\\driver\\monitoring\\removesubscriber": "InvalidArgumentException",
+        "mt_rand": "ValueError",
+        "openssl_random_pseudo_bytes": "Exception",
+        "parallel\\bootstrap": "parallel\\Runtime\\Error\\Bootstrap",
+        "parallel\\run": "(parallel\\Runtime\\Error\\Closed | parallel\\Runtime\\Error\\IllegalFunction | parallel\\Runtime\\Error\\IllegalInstruction | parallel\\Runtime\\Error\\IllegalParameter | parallel\\Runtime\\Error\\IllegalReturn)",
+        "passthru": "ValueError",
+        "pcntl_getcpuaffinity": "ValueError",
+        "pcntl_setcpuaffinity": "(TypeError | ValueError)",
+        "pg_convert": "(TypeError | ValueError)",
+        "pg_fetch_object": "ValueError",
+        "pg_insert": "(TypeError | ValueError)",
+        "pg_set_chunked_rows_size": "ValueError",
+        "posix_fpathconf": "ValueError",
+        "posix_pathconf": "ValueError",
+        "printf": "(ArgumentCountError | ValueError)",
+        "proc_open": "ValueError",
+        "random_bytes": "Random\\RandomException",
+        "random_int": "Random\\RandomException",
+        "range": "ValueError",
+        "request_parse_body": "RequestParseBodyException",
+        "round": "ValueError",
+        "settype": "ValueError",
+        "shmop_open": "ValueError",
+        "shmop_read": "ValueError",
+        "shmop_write": "ValueError",
+        "simdjson_decode": "(SimdJsonException | SimdJsonValueError)",
+        "simdjson_is_valid": "SimdJsonValueError",
+        "simdjson_key_count": "(SimdJsonException | SimdJsonValueError)",
+        "simdjson_key_exists": "(SimdJsonException | SimdJsonValueError)",
+        "simdjson_key_value": "(SimdJsonException | SimdJsonValueError)",
+        "simplexml_import_dom": "TypeError",
+        "sleep": "ValueError",
+        "sodium_add": "SodiumException",
+        "sodium_base642bin": "SodiumException",
+        "sodium_bin2base64": "SodiumException",
+        "sodium_bin2hex": "SodiumException",
+        "sodium_compare": "SodiumException",
+        "sodium_crypto_aead_aes256gcm_decrypt": "SodiumException",
+        "sodium_crypto_aead_aes256gcm_encrypt": "SodiumException",
+        "sodium_crypto_aead_chacha20poly1305_decrypt": "SodiumException",
+        "sodium_crypto_aead_chacha20poly1305_encrypt": "SodiumException",
+        "sodium_crypto_aead_chacha20poly1305_ietf_decrypt": "SodiumException",
+        "sodium_crypto_aead_chacha20poly1305_ietf_encrypt": "SodiumException",
+        "sodium_crypto_aead_xchacha20poly1305_ietf_decrypt": "SodiumException",
+        "sodium_crypto_aead_xchacha20poly1305_ietf_encrypt": "SodiumException",
+        "sodium_crypto_auth": "SodiumException",
+        "sodium_crypto_auth_verify": "SodiumException",
+        "sodium_crypto_box": "SodiumException",
+        "sodium_crypto_box_keypair": "SodiumException",
+        "sodium_crypto_box_keypair_from_secretkey_and_publickey": "SodiumException",
+        "sodium_crypto_box_open": "SodiumException",
+        "sodium_crypto_box_publickey": "SodiumException",
+        "sodium_crypto_box_publickey_from_secretkey": "SodiumException",
+        "sodium_crypto_box_seal": "SodiumException",
+        "sodium_crypto_box_seal_open": "SodiumException",
+        "sodium_crypto_box_secretkey": "SodiumException",
+        "sodium_crypto_box_seed_keypair": "SodiumException",
+        "sodium_crypto_generichash": "SodiumException",
+        "sodium_crypto_generichash_final": "SodiumException",
+        "sodium_crypto_generichash_init": "SodiumException",
+        "sodium_crypto_generichash_update": "SodiumException",
+        "sodium_crypto_kdf_derive_from_key": "SodiumException",
+        "sodium_crypto_kx_client_session_keys": "SodiumException",
+        "sodium_crypto_kx_keypair": "SodiumException",
+        "sodium_crypto_kx_publickey": "SodiumException",
+        "sodium_crypto_kx_secretkey": "SodiumException",
+        "sodium_crypto_kx_seed_keypair": "SodiumException",
+        "sodium_crypto_kx_server_session_keys": "SodiumException",
+        "sodium_crypto_pwhash": "SodiumException",
+        "sodium_crypto_pwhash_scryptsalsa208sha256": "SodiumException",
+        "sodium_crypto_pwhash_scryptsalsa208sha256_str": "SodiumException",
+        "sodium_crypto_pwhash_str": "SodiumException",
+        "sodium_crypto_pwhash_str_verify": "SodiumException",
+        "sodium_crypto_scalarmult": "SodiumException",
+        "sodium_crypto_scalarmult_base": "SodiumException",
+        "sodium_crypto_secretbox": "SodiumException",
+        "sodium_crypto_secretbox_open": "SodiumException",
+        "sodium_crypto_secretstream_xchacha20poly1305_init_pull": "SodiumException",
+        "sodium_crypto_secretstream_xchacha20poly1305_init_push": "SodiumException",
+        "sodium_crypto_secretstream_xchacha20poly1305_rekey": "SodiumException",
+        "sodium_crypto_shorthash": "SodiumException",
+        "sodium_crypto_sign": "SodiumException",
+        "sodium_crypto_sign_detached": "SodiumException",
+        "sodium_crypto_sign_ed25519_pk_to_curve25519": "SodiumException",
+        "sodium_crypto_sign_ed25519_sk_to_curve25519": "SodiumException",
+        "sodium_crypto_sign_keypair": "SodiumException",
+        "sodium_crypto_sign_keypair_from_secretkey_and_publickey": "SodiumException",
+        "sodium_crypto_sign_open": "SodiumException",
+        "sodium_crypto_sign_publickey": "SodiumException",
+        "sodium_crypto_sign_publickey_from_secretkey": "SodiumException",
+        "sodium_crypto_sign_secretkey": "SodiumException",
+        "sodium_crypto_sign_seed_keypair": "SodiumException",
+        "sodium_crypto_sign_verify_detached": "SodiumException",
+        "sodium_crypto_stream": "SodiumException",
+        "sodium_crypto_stream_xor": "SodiumException",
+        "sodium_hex2bin": "SodiumException",
+        "sodium_increment": "SodiumException",
+        "sodium_memcmp": "SodiumException",
+        "sodium_memzero": "SodiumException",
+        "sodium_pad": "SodiumException",
+        "sodium_unpad": "SodiumException",
+        "spl_autoload": "LogicException",
+        "spl_autoload_register": "TypeError",
+        "sprintf": "(ArgumentCountError | ValueError)",
+        "str_decrement": "ValueError",
+        "str_increment": "ValueError",
+        "str_split": "ValueError",
+        "stream_set_chunk_size": "ValueError",
+        "stripos": "ValueError",
+        "strpos": "ValueError",
+        "strripos": "ValueError",
+        "strrpos": "ValueError",
+        "textdomain": "ValueError",
+        "trigger_error": "ValueError",
+        "unserialize": "(TypeError | ValueError)",
+        "uopz_add_function": "RuntimeException",
+        "uopz_del_function": "RuntimeException",
+        "variant_abs": "com_exception",
+        "variant_add": "com_exception",
+        "variant_and": "com_exception",
+        "variant_cat": "com_exception",
+        "variant_div": "com_exception",
+        "variant_eqv": "com_exception",
+        "variant_fix": "com_exception",
+        "variant_idiv": "com_exception",
+        "variant_imp": "com_exception",
+        "variant_int": "com_exception",
+        "variant_mod": "com_exception",
+        "variant_mul": "com_exception",
+        "variant_neg": "com_exception",
+        "variant_not": "com_exception",
+        "variant_or": "com_exception",
+        "variant_pow": "com_exception",
+        "variant_sub": "com_exception",
+        "variant_xor": "com_exception",
+        "version_compare": "ValueError",
+        "vfprintf": "ValueError",
+        "vprintf": "ValueError",
+        "vsprintf": "ValueError",
+        "wordwrap": "ValueError",
+        "xml_parser_get_option": "ValueError",
+        "xml_parser_set_option": "ValueError"
+    },
+    "methods": {
+        "aerospike\\bytes": {
+            "serialize": "Exception"
+        },
+        "amqpchannel": {
+            "__construct": "AMQPConnectionException",
+            "committransaction": "(AMQPChannelException | AMQPConnectionException)",
+            "qos": "AMQPConnectionException",
+            "rollbacktransaction": "(AMQPChannelException | AMQPConnectionException)",
+            "setglobalprefetchcount": "AMQPConnectionException",
+            "setglobalprefetchsize": "AMQPConnectionException",
+            "setprefetchcount": "AMQPConnectionException",
+            "setprefetchsize": "AMQPConnectionException",
+            "starttransaction": "AMQPConnectionException",
+            "waitforbasicreturn": "AMQPQueueException",
+            "waitforconfirm": "AMQPQueueException"
+        },
+        "amqpconnection": {
+            "connect": "AMQPConnectionException",
+            "disconnect": "AMQPConnectionException",
+            "pconnect": "AMQPConnectionException",
+            "pdisconnect": "AMQPConnectionException",
+            "preconnect": "AMQPConnectionException",
+            "sethost": "AMQPConnectionException",
+            "setlogin": "AMQPConnectionException",
+            "setpassword": "AMQPConnectionException",
+            "setport": "AMQPConnectionException",
+            "setreadtimeout": "AMQPConnectionException",
+            "setrpctimeout": "AMQPConnectionException",
+            "settimeout": "AMQPConnectionException",
+            "setvhost": "AMQPConnectionException",
+            "setwritetimeout": "AMQPConnectionException"
+        },
+        "amqpdecimal": {
+            "__construct": "AMQPExchangeValue"
+        },
+        "amqpexchange": {
+            "__construct": "(AMQPConnectionException | AMQPExchangeException)",
+            "bind": "(AMQPChannelException | AMQPConnectionException | AMQPExchangeException)",
+            "declare": "(AMQPChannelException | AMQPConnectionException | AMQPExchangeException)",
+            "declareexchange": "(AMQPChannelException | AMQPConnectionException | AMQPExchangeException)",
+            "delete": "(AMQPChannelException | AMQPConnectionException | AMQPExchangeException)",
+            "getargument": "AMQPExchangeException",
+            "publish": "(AMQPChannelException | AMQPConnectionException | AMQPExchangeException)",
+            "unbind": "(AMQPChannelException | AMQPConnectionException | AMQPExchangeException)"
+        },
+        "amqpqueue": {
+            "__construct": "(AMQPConnectionException | AMQPQueueException)",
+            "ack": "(AMQPChannelException | AMQPConnectionException)",
+            "bind": "(AMQPChannelException | AMQPConnectionException)",
+            "cancel": "(AMQPChannelException | AMQPConnectionException)",
+            "consume": "(AMQPChannelException | AMQPConnectionException | AMQPEnvelopeException | AMQPQueueException)",
+            "declare": "(AMQPChannelException | AMQPConnectionException | AMQPQueueException)",
+            "declarequeue": "(AMQPChannelException | AMQPConnectionException | AMQPQueueException)",
+            "delete": "(AMQPChannelException | AMQPConnectionException)",
+            "get": "(AMQPChannelException | AMQPConnectionException | AMQPQueueException)",
+            "getargument": "AMQPQueueException",
+            "nack": "(AMQPChannelException | AMQPConnectionException)",
+            "purge": "(AMQPChannelException | AMQPConnectionException)",
+            "recover": "(AMQPChannelException | AMQPConnectionException)",
+            "reject": "(AMQPChannelException | AMQPConnectionException)",
+            "unbind": "(AMQPChannelException | AMQPConnectionException)"
+        },
+        "amqptimestamp": {
+            "__construct": "AMQPValueException"
+        },
+        "arrayiterator": {
+            "seek": "OutOfBoundsException",
+            "serialize": "Exception"
+        },
+        "arrayobject": {
+            "serialize": "Exception"
+        },
+        "backedenum": {
+            "from": "(TypeError | ValueError)"
+        },
+        "bcmath\\number": {
+            "__construct": "ValueError",
+            "__unserialize": "ValueError",
+            "add": "ValueError",
+            "compare": "ValueError",
+            "div": "(DivisionByZeroError | ValueError)",
+            "divmod": "(DivisionByZeroError | ValueError)",
+            "mod": "(DivisionByZeroError | ValueError)",
+            "mul": "ValueError",
+            "pow": "(DivisionByZeroError | ValueError)",
+            "powmod": "(DivisionByZeroError | ValueError)",
+            "round": "ValueError",
+            "sqrt": "ValueError",
+            "sub": "ValueError"
+        },
+        "cassandra\\batchstatement": {
+            "add": "Cassandra\\Exception\\InvalidArgumentException"
+        },
+        "cassandra\\cluster\\builder": {
+            "withport": "Cassandra\\Exception\\InvalidArgumentException"
+        },
+        "cassandra\\defaultsession": {
+            "close": "Cassandra\\Exception",
+            "execute": "Cassandra\\Exception",
+            "prepare": "Cassandra\\Exception"
+        },
+        "cassandra\\executionoptions": {
+            "__construct": "Cassandra\\Exception\\InvalidArgumentException"
+        },
+        "cassandra\\future": {
+            "get": "(Cassandra\\Exception\\InvalidArgumentException | Cassandra\\Exception\\TimeoutException)"
+        },
+        "cassandra\\futureclose": {
+            "get": "(Cassandra\\Exception\\InvalidArgumentException | Cassandra\\Exception\\TimeoutException)"
+        },
+        "cassandra\\futurepreparedstatement": {
+            "get": "(Cassandra\\Exception\\InvalidArgumentException | Cassandra\\Exception\\TimeoutException)"
+        },
+        "cassandra\\futurerows": {
+            "get": "(Cassandra\\Exception\\InvalidArgumentException | Cassandra\\Exception\\TimeoutException)"
+        },
+        "cassandra\\futuresession": {
+            "get": "(Cassandra\\Exception\\InvalidArgumentException | Cassandra\\Exception\\TimeoutException)"
+        },
+        "cassandra\\futurevalue": {
+            "get": "(Cassandra\\Exception\\InvalidArgumentException | Cassandra\\Exception\\TimeoutException)"
+        },
+        "cassandra\\map": {
+            "offsetexists": "Cassandra\\Exception\\InvalidArgumentException",
+            "offsetget": "Cassandra\\Exception\\InvalidArgumentException",
+            "offsetset": "Cassandra\\Exception\\InvalidArgumentException",
+            "offsetunset": "Cassandra\\Exception\\InvalidArgumentException"
+        },
+        "cassandra\\rows": {
+            "offsetset": "Cassandra\\Exception\\DomainException",
+            "offsetunset": "Cassandra\\Exception\\DomainException"
+        },
+        "cassandra\\session": {
+            "close": "Cassandra\\Exception",
+            "execute": "Cassandra\\Exception",
+            "prepare": "Cassandra\\Exception"
+        },
+        "cassandra\\ssloptions\\builder": {
+            "withclientcert": "Cassandra\\Exception\\InvalidArgumentException",
+            "withprivatekey": "Cassandra\\Exception\\InvalidArgumentException",
+            "withtrustedcerts": "Cassandra\\Exception\\InvalidArgumentException",
+            "withverifyflags": "Cassandra\\Exception\\InvalidArgumentException"
+        },
+        "cassandra\\type\\collection": {
+            "create": "Cassandra\\Exception\\InvalidArgumentException"
+        },
+        "cassandra\\type\\map": {
+            "create": "Cassandra\\Exception\\InvalidArgumentException"
+        },
+        "cassandra\\type\\set": {
+            "create": "Cassandra\\Exception\\InvalidArgumentException"
+        },
+        "cassandra\\type\\tuple": {
+            "create": "Cassandra\\Exception\\InvalidArgumentException"
+        },
+        "cassandra\\type\\usertype": {
+            "create": "Cassandra\\Exception\\InvalidArgumentException"
+        },
+        "closure": {
+            "getcurrent": "Error"
+        },
+        "dateinterval": {
+            "__construct": "DateMalformedIntervalStringException",
+            "createfromdatestring": "DateMalformedIntervalStringException"
+        },
+        "dateperiod": {
+            "createfromiso8601string": "DateMalformedPeriodStringException"
+        },
+        "datetime": {
+            "__construct": "DateMalformedStringException",
+            "createfromformat": "ValueError",
+            "createfromtimestamp": "DateRangeError",
+            "modify": "DateMalformedStringException",
+            "setmicrosecond": "DateRangeError",
+            "sub": "DateInvalidOperationException"
+        },
+        "datetimeimmutable": {
+            "__construct": "DateMalformedStringException",
+            "createfromformat": "ValueError",
+            "createfromtimestamp": "DateRangeError",
+            "modify": "DateMalformedStringException",
+            "setmicrosecond": "DateRangeError",
+            "sub": "DateInvalidOperationException"
+        },
+        "datetimezone": {
+            "__construct": "DateInvalidTimeZoneException"
+        },
+        "decimal\\decimal": {
+            "__construct": "(BadMethodCallException | DomainException | TypeError)",
+            "add": "TypeError",
+            "avg": "(ArithmeticError | TypeError)",
+            "div": "(ArithmeticError | TypeError)",
+            "mod": "(ArithmeticError | TypeError)",
+            "mul": "TypeError",
+            "pow": "TypeError",
+            "rem": "(ArithmeticError | TypeError)",
+            "round": "InvalidArgumentException",
+            "sub": "TypeError",
+            "sum": "(ArithmeticError | TypeError)",
+            "tofloat": "(OverflowException | UnderflowException)",
+            "toint": "OverflowException"
+        },
+        "directoryiterator": {
+            "__construct": "RuntimeException",
+            "seek": "OutOfBoundsException"
+        },
+        "dom\\adjacentposition": {
+            "from": "(TypeError | ValueError)"
+        },
+        "dom\\attr": {
+            "rename": "DOMException"
+        },
+        "dom\\htmldocument": {
+            "createfromfile": "(Exception | ValueError)",
+            "createfromstring": "ValueError",
+            "savehtmlfile": "ValueError",
+            "savexmlfile": "ValueError"
+        },
+        "dom\\parentnode": {
+            "queryselector": "DOMException"
+        },
+        "dom\\tokenlist": {
+            "add": "(DOMException | ValueError)",
+            "remove": "(DOMException | ValueError)",
+            "replace": "(DOMException | ValueError)",
+            "supports": "TypeError",
+            "toggle": "(DOMException | ValueError)"
+        },
+        "domattr": {
+            "__construct": "DOMException"
+        },
+        "domcharacterdata": {
+            "deletedata": "DOMException",
+            "insertdata": "DOMException",
+            "replacedata": "DOMException",
+            "substringdata": "DOMException"
+        },
+        "domdocument": {
+            "adoptnode": "DOMException",
+            "createattribute": "DOMException",
+            "createattributens": "DOMException",
+            "createelement": "DOMException",
+            "createelementns": "DOMException",
+            "createentityreference": "DOMException",
+            "createprocessinginstruction": "DOMException",
+            "importnode": "DOMException",
+            "savexml": "DOMException"
+        },
+        "domelement": {
+            "__construct": "DOMException",
+            "removeattribute": "DOMException",
+            "removeattributenode": "DOMException",
+            "removeattributens": "DOMException",
+            "setattribute": "DOMException",
+            "setattributenode": "DOMException",
+            "setattributenodens": "DOMException",
+            "setattributens": "DOMException",
+            "setidattribute": "DOMException",
+            "setidattributenode": "DOMException",
+            "setidattributens": "DOMException"
+        },
+        "domimplementation": {
+            "createdocument": "DOMException",
+            "createdocumenttype": "DOMException"
+        },
+        "domnamespacenode": {
+            "__sleep": "Error",
+            "__wakeup": "Error"
+        },
+        "domnode": {
+            "__sleep": "Error",
+            "__wakeup": "Error",
+            "replacechild": "DOMException"
+        },
+        "domxpath": {
+            "query": "Error",
+            "registerphpfunctions": "(TypeError | ValueError)"
+        },
+        "ds\\deque": {
+            "first": "UnderflowException",
+            "get": "OutOfRangeException",
+            "insert": "OutOfRangeException",
+            "last": "UnderflowException",
+            "pop": "UnderflowException",
+            "remove": "OutOfRangeException",
+            "set": "OutOfRangeException",
+            "shift": "UnderflowException"
+        },
+        "ds\\map": {
+            "first": "UnderflowException",
+            "get": "OutOfBoundsException",
+            "last": "UnderflowException",
+            "remove": "OutOfBoundsException",
+            "skip": "OutOfRangeException"
+        },
+        "ds\\priorityqueue": {
+            "peek": "UnderflowException",
+            "pop": "UnderflowException"
+        },
+        "ds\\queue": {
+            "peek": "UnderflowException",
+            "pop": "UnderflowException"
+        },
+        "ds\\sequence": {
+            "first": "UnderflowException",
+            "get": "OutOfRangeException",
+            "insert": "OutOfRangeException",
+            "last": "UnderflowException",
+            "pop": "UnderflowException",
+            "remove": "OutOfRangeException",
+            "set": "OutOfRangeException",
+            "shift": "UnderflowException"
+        },
+        "ds\\set": {
+            "first": "UnderflowException",
+            "get": "OutOfRangeException",
+            "last": "UnderflowException"
+        },
+        "ds\\stack": {
+            "peek": "UnderflowException",
+            "pop": "UnderflowException"
+        },
+        "ds\\vector": {
+            "first": "UnderflowException",
+            "get": "OutOfRangeException",
+            "insert": "OutOfRangeException",
+            "last": "UnderflowException",
+            "pop": "UnderflowException",
+            "remove": "OutOfRangeException",
+            "set": "OutOfRangeException",
+            "shift": "UnderflowException"
+        },
+        "error": {
+            "getcode": "void",
+            "getfile": "void",
+            "getline": "void",
+            "getmessage": "void",
+            "getprevious": "void",
+            "gettrace": "void",
+            "gettraceasstring": "void"
+        },
+        "exception": {
+            "getcode": "void",
+            "getfile": "void",
+            "getline": "void",
+            "getmessage": "void",
+            "getprevious": "void",
+            "gettrace": "void",
+            "gettraceasstring": "void"
+        },
+        "ffi": {
+            "cdef": "FFI\\ParserException",
+            "new": "FFI\\ParserException"
+        },
+        "ffi\\ctype": {
+            "getarrayelementtype": "FFI\\Exception",
+            "getarraylength": "FFI\\Exception",
+            "getenumkind": "FFI\\Exception",
+            "getfuncabi": "FFI\\Exception",
+            "getfuncparametercount": "FFI\\Exception",
+            "getfuncparametertype": "FFI\\Exception",
+            "getfuncreturntype": "FFI\\Exception",
+            "getpointertype": "FFI\\Exception",
+            "getstructfieldnames": "FFI\\Exception",
+            "getstructfieldoffset": "FFI\\Exception",
+            "getstructfieldtype": "FFI\\Exception"
+        },
+        "fiber": {
+            "getreturn": "FiberError",
+            "resume": "Throwable",
+            "start": "Throwable",
+            "suspend": "Throwable",
+            "throw": "Throwable"
+        },
+        "fibererror": {
+            "__construct": "Error"
+        },
+        "filesystemiterator": {
+            "__construct": "UnexpectedValueException"
+        },
+        "geosgeometry": {
+            "__tostring": "Exception",
+            "area": "Exception",
+            "boundary": "Exception",
+            "buffer": "Exception",
+            "centroid": "Exception",
+            "checkvalidity": "Exception",
+            "clipbyrect": "Exception",
+            "contains": "Exception",
+            "convexhull": "Exception",
+            "coordinatedimension": "Exception",
+            "coveredby": "Exception",
+            "covers": "Exception",
+            "crosses": "Exception",
+            "delaunaytriangulation": "Exception",
+            "difference": "Exception",
+            "dimension": "Exception",
+            "disjoint": "Exception",
+            "distance": "Exception",
+            "endpoint": "Exception",
+            "envelope": "Exception",
+            "equals": "Exception",
+            "equalsexact": "Exception",
+            "exteriorring": "Exception",
+            "extractuniquepoints": "Exception",
+            "geometryn": "Exception",
+            "getx": "Exception",
+            "gety": "Exception",
+            "hasz": "Exception",
+            "hausdorffdistance": "Exception",
+            "interiorringn": "Exception",
+            "interpolate": "Exception",
+            "intersection": "Exception",
+            "intersects": "Exception",
+            "isclosed": "Exception",
+            "isempty": "Exception",
+            "isring": "Exception",
+            "issimple": "Exception",
+            "length": "Exception",
+            "node": "Exception",
+            "normalize": "Exception",
+            "numcoordinates": "Exception",
+            "numgeometries": "Exception",
+            "numinteriorrings": "Exception",
+            "numpoints": "Exception",
+            "offsetcurve": "Exception",
+            "overlaps": "Exception",
+            "pointn": "Exception",
+            "pointonsurface": "Exception",
+            "project": "Exception",
+            "relate": "Exception",
+            "relateboundarynoderule": "Exception",
+            "setprecision": "Exception",
+            "setsrid": "Exception",
+            "simplify": "Exception",
+            "startpoint": "Exception",
+            "symdifference": "Exception",
+            "touches": "Exception",
+            "typeid": "Exception",
+            "typename": "Exception",
+            "union": "Exception",
+            "voronoidiagram": "Exception",
+            "within": "Exception"
+        },
+        "geoswkbreader": {
+            "read": "Exception",
+            "readhex": "Exception"
+        },
+        "geoswkbwriter": {
+            "setbyteorder": "Exception",
+            "setincludesrid": "Exception",
+            "setoutputdimension": "Exception",
+            "write": "Exception",
+            "writehex": "Exception"
+        },
+        "geoswktreader": {
+            "read": "Exception"
+        },
+        "geoswktwriter": {
+            "setoutputdimension": "Exception",
+            "write": "Exception"
+        },
+        "globiterator": {
+            "__construct": "(UnexpectedValueException | ValueError)"
+        },
+        "gmagick": {
+            "addimage": "GmagickException",
+            "addnoiseimage": "GmagickException",
+            "annotateimage": "GmagickException",
+            "blurimage": "GmagickException",
+            "borderimage": "GmagickException",
+            "charcoalimage": "GmagickException",
+            "chopimage": "GmagickException",
+            "clear": "GmagickException",
+            "commentimage": "GmagickException",
+            "compositeimage": "GmagickException",
+            "cropimage": "GmagickException",
+            "cropthumbnailimage": "GmagickException",
+            "current": "GmagickException",
+            "cyclecolormapimage": "GmagickException",
+            "deconstructimages": "GmagickException",
+            "despeckleimage": "GmagickException",
+            "destroy": "GmagickException",
+            "drawimage": "GmagickException",
+            "edgeimage": "GmagickException",
+            "embossimage": "GmagickException",
+            "enhanceimage": "GmagickException",
+            "equalizeimage": "GmagickException",
+            "flipimage": "GmagickException",
+            "flopimage": "GmagickException",
+            "frameimage": "GmagickException",
+            "gammaimage": "GmagickException",
+            "getcopyright": "GmagickException",
+            "getfilename": "GmagickException",
+            "getimagebackgroundcolor": "GmagickException",
+            "getimageblueprimary": "GmagickException",
+            "getimagebordercolor": "GmagickException",
+            "getimagechanneldepth": "GmagickException",
+            "getimagecolors": "GmagickException",
+            "getimagecolorspace": "GmagickException",
+            "getimagecompose": "GmagickException",
+            "getimagedelay": "GmagickException",
+            "getimagedepth": "GmagickException",
+            "getimagedispose": "GmagickException",
+            "getimageextrema": "GmagickException",
+            "getimagefilename": "GmagickException",
+            "getimageformat": "GmagickException",
+            "getimagegamma": "GmagickException",
+            "getimagegreenprimary": "GmagickException",
+            "getimageheight": "GmagickException",
+            "getimagehistogram": "GmagickException",
+            "getimageindex": "GmagickException",
+            "getimageinterlacescheme": "GmagickException",
+            "getimageiterations": "GmagickException",
+            "getimagematte": "GmagickException",
+            "getimagemattecolor": "GmagickException",
+            "getimageprofile": "GmagickException",
+            "getimageredprimary": "GmagickException",
+            "getimagerenderingintent": "GmagickException",
+            "getimageresolution": "GmagickException",
+            "getimagescene": "GmagickException",
+            "getimagesignature": "GmagickException",
+            "getimagetype": "GmagickException",
+            "getimagewhitepoint": "GmagickException",
+            "getimagewidth": "GmagickException",
+            "getpackagename": "GmagickException",
+            "getquantumdepth": "GmagickException",
+            "getreleasedate": "GmagickException",
+            "getsamplingfactors": "GmagickException",
+            "getsize": "GmagickException",
+            "getversion": "GmagickException",
+            "hasnextimage": "GmagickException",
+            "haspreviousimage": "GmagickException",
+            "implodeimage": "GmagickException",
+            "labelimage": "GmagickException",
+            "levelimage": "GmagickException",
+            "magnifyimage": "GmagickException",
+            "mapimage": "GmagickException",
+            "medianfilterimage": "GmagickException",
+            "minifyimage": "GmagickException",
+            "modulateimage": "GmagickException",
+            "motionblurimage": "GmagickException",
+            "newimage": "GmagickException",
+            "normalizeimage": "GmagickException",
+            "oilpaintimage": "GmagickException",
+            "previousimage": "GmagickException",
+            "profileimage": "GmagickException",
+            "quantizeimage": "GmagickException",
+            "quantizeimages": "GmagickException",
+            "queryfontmetrics": "GmagickException",
+            "queryfonts": "GmagickException",
+            "queryformats": "GmagickException",
+            "radialblurimage": "GmagickException",
+            "raiseimage": "GmagickException",
+            "read": "GmagickException",
+            "readimage": "GmagickException",
+            "readimageblob": "GmagickException",
+            "readimagefile": "GmagickException",
+            "reducenoiseimage": "GmagickException",
+            "removeimage": "GmagickException",
+            "removeimageprofile": "GmagickException",
+            "resampleimage": "GmagickException",
+            "resizeimage": "GmagickException",
+            "rollimage": "GmagickException",
+            "rotateimage": "GmagickException",
+            "scaleimage": "GmagickException",
+            "separateimagechannel": "GmagickException",
+            "setcompressionquality": "GmagickException",
+            "setfilename": "GmagickException",
+            "setimagebackgroundcolor": "GmagickException",
+            "setimageblueprimary": "GmagickException",
+            "setimagebordercolor": "GmagickException",
+            "setimagechanneldepth": "GmagickException",
+            "setimagecolorspace": "GmagickException",
+            "setimagecompose": "GmagickException",
+            "setimagedelay": "GmagickException",
+            "setimagedepth": "GmagickException",
+            "setimagedispose": "GmagickException",
+            "setimagefilename": "GmagickException",
+            "setimageformat": "GmagickException",
+            "setimagegamma": "GmagickException",
+            "setimagegreenprimary": "GmagickException",
+            "setimageindex": "GmagickException",
+            "setimageinterlacescheme": "GmagickException",
+            "setimageiterations": "GmagickException",
+            "setimageprofile": "GmagickException",
+            "setimageredprimary": "GmagickException",
+            "setimagerenderingintent": "GmagickException",
+            "setimageresolution": "GmagickException",
+            "setimagescene": "GmagickException",
+            "setimagetype": "GmagickException",
+            "setimageunits": "GmagickException",
+            "setimagewhitepoint": "GmagickException",
+            "setsamplingfactors": "GmagickException",
+            "setsize": "GmagickException",
+            "shearimage": "GmagickException",
+            "solarizeimage": "GmagickException",
+            "spreadimage": "GmagickException",
+            "stripimage": "GmagickException",
+            "swirlimage": "GmagickException",
+            "thumbnailimage": "GmagickException",
+            "trimimage": "GmagickException",
+            "write": "GmagickException",
+            "writeimage": "GmagickException"
+        },
+        "gmagickpixel": {
+            "getcolor": "GmagickPixelException",
+            "getcolorcount": "GmagickPixelException",
+            "getcolorvalue": "GmagickPixelException"
+        },
+        "grpc\\call": {
+            "__construct": "InvalidArgumentException",
+            "setcredentials": "InvalidArgumentException",
+            "startbatch": "LogicException"
+        },
+        "grpc\\callcredentials": {
+            "createcomposite": "InvalidArgumentException",
+            "createfromplugin": "InvalidArgumentException"
+        },
+        "grpc\\channel": {
+            "__construct": "InvalidArgumentException",
+            "getconnectivitystate": "InvalidArgumentException",
+            "watchconnectivitystate": "InvalidArgumentException"
+        },
+        "grpc\\channelcredentials": {
+            "createcomposite": "InvalidArgumentException",
+            "createssl": "InvalidArgumentException",
+            "setdefaultrootspem": "InvalidArgumentException"
+        },
+        "grpc\\servercredentials": {
+            "createssl": "InvalidArgumentException"
+        },
+        "grpc\\timeval": {
+            "add": "InvalidArgumentException",
+            "compare": "InvalidArgumentException",
+            "similar": "InvalidArgumentException",
+            "subtract": "InvalidArgumentException"
+        },
+        "http\\client": {
+            "__construct": "(http\\Exception\\InvalidArgumentException | http\\Exception\\RuntimeException | http\\Exception\\UnexpectedValueException)",
+            "addcookies": "http\\Exception\\InvalidArgumentException",
+            "addssloptions": "http\\Exception\\InvalidArgumentException",
+            "attach": "(http\\Exception\\InvalidArgumentException | http\\Exception\\UnexpectedValueException)",
+            "configure": "(http\\Exception\\InvalidArgumentException | http\\Exception\\UnexpectedValueException)",
+            "dequeue": "(http\\Exception\\BadMethodCallException | http\\Exception\\InvalidArgumentException | http\\Exception\\RuntimeException)",
+            "detach": "(http\\Exception\\InvalidArgumentException | http\\Exception\\UnexpectedValueException)",
+            "enableevents": "(http\\Exception\\InvalidArgumentException | http\\Exception\\UnexpectedValueException)",
+            "enablepipelining": "(http\\Exception\\InvalidArgumentException | http\\Exception\\UnexpectedValueException)",
+            "enqueue": "(http\\Exception\\BadMethodCallException | http\\Exception\\InvalidArgumentException | http\\Exception\\RuntimeException)",
+            "getavailableconfiguration": "http\\Exception\\InvalidArgumentException",
+            "getavailableoptions": "http\\Exception\\InvalidArgumentException",
+            "gethistory": "http\\Exception\\InvalidArgumentException",
+            "getobservers": "(http\\Exception\\InvalidArgumentException | http\\Exception\\UnexpectedValueException)",
+            "getprogressinfo": "(http\\Exception\\InvalidArgumentException | http\\Exception\\UnexpectedValueException)",
+            "getresponse": "(http\\Exception\\InvalidArgumentException | http\\Exception\\UnexpectedValueException)",
+            "gettransferinfo": "(http\\Exception\\InvalidArgumentException | http\\Exception\\UnexpectedValueException)",
+            "notify": "(http\\Exception\\InvalidArgumentException | http\\Exception\\UnexpectedValueException)",
+            "requeue": "(http\\Exception\\InvalidArgumentException | http\\Exception\\RuntimeException)",
+            "send": "(http\\Exception\\InvalidArgumentException | http\\Exception\\RuntimeException)",
+            "setcookies": "http\\Exception\\InvalidArgumentException",
+            "setdebug": "http\\Exception\\InvalidArgumentException",
+            "setoptions": "http\\Exception\\InvalidArgumentException",
+            "setssloptions": "http\\Exception\\InvalidArgumentException"
+        },
+        "http\\client\\request": {
+            "__construct": "(http\\Exception\\InvalidArgumentException | http\\Exception\\UnexpectedValueException)",
+            "addquery": "(http\\Exception\\BadQueryStringException | http\\Exception\\InvalidArgumentException)",
+            "addssloptions": "http\\Exception\\InvalidArgumentException",
+            "setcontenttype": "(http\\Exception\\InvalidArgumentException | http\\Exception\\UnexpectedValueException)",
+            "setoptions": "http\\Exception\\InvalidArgumentException",
+            "setquery": "(http\\Exception\\BadQueryStringException | http\\Exception\\InvalidArgumentException)",
+            "setssloptions": "http\\Exception\\InvalidArgumentException"
+        },
+        "http\\client\\response": {
+            "gettransferinfo": "(http\\Exception\\BadMethodCallException | http\\Exception\\InvalidArgumentException | http\\Exception\\UnexpectedValueException)"
+        },
+        "http\\cookie": {
+            "__construct": "(http\\Exception\\InvalidArgumentException | http\\Exception\\RuntimeException)",
+            "addcookie": "http\\Exception\\InvalidArgumentException",
+            "addcookies": "http\\Exception\\InvalidArgumentException",
+            "addextra": "http\\Exception\\InvalidArgumentException",
+            "addextras": "http\\Exception\\InvalidArgumentException",
+            "setcookie": "http\\Exception\\InvalidArgumentException",
+            "setcookies": "http\\Exception\\InvalidArgumentException",
+            "setdomain": "http\\Exception\\InvalidArgumentException",
+            "setexpires": "http\\Exception\\InvalidArgumentException",
+            "setextra": "http\\Exception\\InvalidArgumentException",
+            "setextras": "http\\Exception\\InvalidArgumentException",
+            "setflags": "http\\Exception\\InvalidArgumentException",
+            "setmaxage": "http\\Exception\\InvalidArgumentException",
+            "setpath": "http\\Exception\\InvalidArgumentException"
+        },
+        "http\\encoding\\stream": {
+            "__construct": "(http\\Exception\\InvalidArgumentException | http\\Exception\\RuntimeException)"
+        },
+        "http\\env": {
+            "getrequestbody": "(http\\Exception\\InvalidArgumentException | http\\Exception\\UnexpectedValueException)"
+        },
+        "http\\env\\request": {
+            "__construct": "(http\\Exception\\InvalidArgumentException | http\\Exception\\UnexpectedValueException)"
+        },
+        "http\\env\\response": {
+            "__construct": "(http\\Exception\\InvalidArgumentException | http\\Exception\\UnexpectedValueException)",
+            "setcachecontrol": "http\\Exception\\InvalidArgumentException",
+            "setcontentdisposition": "http\\Exception\\InvalidArgumentException",
+            "setcontentencoding": "http\\Exception\\InvalidArgumentException",
+            "setcontenttype": "http\\Exception\\InvalidArgumentException",
+            "setcookie": "(http\\Exception\\InvalidArgumentException | http\\Exception\\UnexpectedValueException)",
+            "setenvrequest": "http\\Exception\\InvalidArgumentException",
+            "setetag": "http\\Exception\\InvalidArgumentException",
+            "setlastmodified": "http\\Exception\\InvalidArgumentException"
+        },
+        "http\\header": {
+            "serialize": "Exception"
+        },
+        "http\\header\\parser": {
+            "getstate": "http\\Exception\\InvalidArgumentException",
+            "parse": "http\\Exception\\InvalidArgumentException",
+            "stream": "(http\\Exception\\InvalidArgumentException | http\\Exception\\UnexpectedValueException)"
+        },
+        "http\\message": {
+            "__construct": "(http\\Exception\\BadMessageException | http\\Exception\\InvalidArgumentException)",
+            "detach": "http\\Exception\\InvalidArgumentException",
+            "getbody": "(http\\Exception\\InvalidArgumentException | http\\Exception\\UnexpectedValueException)",
+            "getparentmessage": "(http\\Exception\\BadMethodCallException | http\\Exception\\InvalidArgumentException)",
+            "prepend": "(http\\Exception\\InvalidArgumentException | http\\Exception\\UnexpectedValueException)",
+            "reverse": "http\\Exception\\InvalidArgumentException",
+            "serialize": "Exception",
+            "setbody": "(http\\Exception\\InvalidArgumentException | http\\Exception\\UnexpectedValueException)",
+            "sethttpversion": "(http\\Exception\\BadHeaderException | http\\Exception\\InvalidArgumentException)",
+            "setinfo": "(http\\Exception\\BadHeaderException | http\\Exception\\InvalidArgumentException)",
+            "setrequestmethod": "(http\\Exception\\BadMethodCallException | http\\Exception\\InvalidArgumentException)",
+            "setrequesturl": "(http\\Exception\\BadMethodCallException | http\\Exception\\InvalidArgumentException)",
+            "setresponsecode": "(http\\Exception\\BadMethodCallException | http\\Exception\\InvalidArgumentException)",
+            "setresponsestatus": "(http\\Exception\\BadMethodCallException | http\\Exception\\InvalidArgumentException)",
+            "splitmultipartbody": "(http\\Exception\\BadMessageException | http\\Exception\\BadMethodCallException | http\\Exception\\InvalidArgumentException)"
+        },
+        "http\\message\\body": {
+            "__construct": "(http\\Exception\\InvalidArgumentException | http\\Exception\\UnexpectedValueException)",
+            "addform": "(http\\Exception\\InvalidArgumentException | http\\Exception\\RuntimeException)",
+            "addpart": "(http\\Exception\\InvalidArgumentException | http\\Exception\\RuntimeException)",
+            "append": "(http\\Exception\\InvalidArgumentException | http\\Exception\\RuntimeException)",
+            "serialize": "Exception"
+        },
+        "http\\message\\parser": {
+            "getstate": "http\\Exception\\InvalidArgumentException",
+            "parse": "http\\Exception\\InvalidArgumentException",
+            "stream": "(http\\Exception\\InvalidArgumentException | http\\Exception\\UnexpectedValueException)"
+        },
+        "http\\params": {
+            "__construct": "(http\\Exception\\InvalidArgumentException | http\\Exception\\RuntimeException)"
+        },
+        "http\\querystring": {
+            "__construct": "http\\Exception\\BadQueryStringException",
+            "getglobalinstance": "http\\Exception\\UnexpectedValueException",
+            "getiterator": "InvalidArgumentException",
+            "mod": "http\\Exception\\BadQueryStringException",
+            "serialize": "Exception",
+            "unserialize": "http\\Exception",
+            "xlate": "(http\\Exception\\BadConversionException | http\\Exception\\InvalidArgumentException)"
+        },
+        "http\\url": {
+            "__construct": "(http\\Exception\\BadUrlException | http\\Exception\\InvalidArgumentException)",
+            "mod": "(http\\Exception\\BadUrlException | http\\Exception\\InvalidArgumentException)"
+        },
+        "httpquerystring": {
+            "serialize": "Exception"
+        },
+        "imagick": {
+            "__construct": "ImagickException",
+            "adaptiveblurimage": "ImagickException",
+            "adaptiveresizeimage": "ImagickException",
+            "adaptivesharpenimage": "ImagickException",
+            "adaptivethresholdimage": "ImagickException",
+            "addimage": "ImagickException",
+            "addnoiseimage": "ImagickException",
+            "affinetransformimage": "ImagickException",
+            "animateimages": "ImagickException",
+            "annotateimage": "ImagickException",
+            "appendimages": "ImagickException",
+            "autogammaimage": "ImagickException",
+            "autolevelimage": "ImagickException",
+            "autoorient": "ImagickException",
+            "averageimages": "ImagickException",
+            "blackthresholdimage": "ImagickException",
+            "blueshiftimage": "ImagickException",
+            "blurimage": "ImagickException",
+            "borderimage": "ImagickException",
+            "brightnesscontrastimage": "ImagickException",
+            "charcoalimage": "ImagickException",
+            "chopimage": "ImagickException",
+            "clampimage": "ImagickException",
+            "clipimage": "ImagickException",
+            "clipimagepath": "ImagickException",
+            "clippathimage": "ImagickException",
+            "clutimage": "ImagickException",
+            "coalesceimages": "ImagickException",
+            "colorfloodfillimage": "ImagickException",
+            "colorizeimage": "ImagickException",
+            "colormatriximage": "ImagickException",
+            "combineimages": "ImagickException",
+            "commentimage": "ImagickException",
+            "compareimagechannels": "ImagickException",
+            "compareimagelayers": "ImagickException",
+            "compareimages": "ImagickException",
+            "compositeimage": "ImagickException",
+            "compositeimagegravity": "ImagickException",
+            "contrastimage": "ImagickException",
+            "contraststretchimage": "ImagickException",
+            "convolveimage": "ImagickException",
+            "cropimage": "ImagickException",
+            "cropthumbnailimage": "ImagickException",
+            "cyclecolormapimage": "ImagickException",
+            "decipherimage": "ImagickException",
+            "deconstructimages": "ImagickException",
+            "deleteimageartifact": "ImagickException",
+            "deleteimageproperty": "ImagickException",
+            "deskewimage": "ImagickException",
+            "despeckleimage": "ImagickException",
+            "displayimage": "ImagickException",
+            "displayimages": "ImagickException",
+            "distortimage": "ImagickException",
+            "drawimage": "ImagickException",
+            "edgeimage": "ImagickException",
+            "embossimage": "ImagickException",
+            "encipherimage": "ImagickException",
+            "enhanceimage": "ImagickException",
+            "equalizeimage": "ImagickException",
+            "evaluateimage": "ImagickException",
+            "evaluateimages": "ImagickException",
+            "exportimagepixels": "ImagickException",
+            "extentimage": "ImagickException",
+            "filter": "ImagickException",
+            "flattenimages": "ImagickException",
+            "flipimage": "ImagickException",
+            "floodfillpaintimage": "ImagickException",
+            "flopimage": "ImagickException",
+            "forwardfouriertransformimage": "ImagickException",
+            "frameimage": "ImagickException",
+            "functionimage": "ImagickException",
+            "fximage": "ImagickException",
+            "gammaimage": "ImagickException",
+            "gaussianblurimage": "ImagickException",
+            "getimage": "ImagickException",
+            "getimagealphachannel": "ImagickException",
+            "getimageartifact": "ImagickException",
+            "getimagebackgroundcolor": "ImagickException",
+            "getimageblob": "ImagickException",
+            "getimageblueprimary": "ImagickException",
+            "getimagebordercolor": "ImagickException",
+            "getimagechanneldepth": "ImagickException",
+            "getimagechanneldistortion": "ImagickException",
+            "getimagechanneldistortions": "ImagickException",
+            "getimagechannelextrema": "ImagickException",
+            "getimagechannelkurtosis": "ImagickException",
+            "getimagechannelmean": "ImagickException",
+            "getimagechannelrange": "ImagickException",
+            "getimagechannelstatistics": "ImagickException",
+            "getimageclipmask": "ImagickException",
+            "getimagecolormapcolor": "ImagickException",
+            "getimagecolors": "ImagickException",
+            "getimagecolorspace": "ImagickException",
+            "getimagecompose": "ImagickException",
+            "getimagedelay": "ImagickException",
+            "getimagedepth": "ImagickException",
+            "getimagedispose": "ImagickException",
+            "getimagedistortion": "ImagickException",
+            "getimageextrema": "ImagickException",
+            "getimagefilename": "ImagickException",
+            "getimageformat": "ImagickException",
+            "getimagegamma": "ImagickException",
+            "getimagegeometry": "ImagickException",
+            "getimagegravity": "ImagickException",
+            "getimagegreenprimary": "ImagickException",
+            "getimageheight": "ImagickException",
+            "getimagehistogram": "ImagickException",
+            "getimageinterlacescheme": "ImagickException",
+            "getimageinterpolatemethod": "ImagickException",
+            "getimageiterations": "ImagickException",
+            "getimagelength": "ImagickException",
+            "getimagematte": "ImagickException",
+            "getimagemattecolor": "ImagickException",
+            "getimagemimetype": "ImagickException",
+            "getimageorientation": "ImagickException",
+            "getimagepage": "ImagickException",
+            "getimagepixelcolor": "ImagickException",
+            "getimageprofile": "ImagickException",
+            "getimageprofiles": "ImagickException",
+            "getimageproperties": "ImagickException",
+            "getimageproperty": "ImagickException",
+            "getimageredprimary": "ImagickException",
+            "getimageregion": "ImagickException",
+            "getimagerenderingintent": "ImagickException",
+            "getimageresolution": "ImagickException",
+            "getimagesblob": "ImagickException",
+            "getimagescene": "ImagickException",
+            "getimagesignature": "ImagickException",
+            "getimagesize": "ImagickException",
+            "getimagetickspersecond": "ImagickException",
+            "getimagetotalinkdensity": "ImagickException",
+            "getimagetype": "ImagickException",
+            "getimageunits": "ImagickException",
+            "getimagevirtualpixelmethod": "ImagickException",
+            "getimagewhitepoint": "ImagickException",
+            "getimagewidth": "ImagickException",
+            "getpage": "ImagickException",
+            "getpixeliterator": "(ImagickException | ImagickPixelIteratorException)",
+            "getpixelregioniterator": "(ImagickException | ImagickPixelIteratorException)",
+            "getregistry": "ImagickException",
+            "getsize": "ImagickException",
+            "getsizeoffset": "ImagickException",
+            "haldclutimage": "ImagickException",
+            "identifyformat": "ImagickException",
+            "identifyimage": "ImagickException",
+            "identifyimagetype": "ImagickException",
+            "implodeimage": "ImagickException",
+            "importimagepixels": "ImagickException",
+            "inversefouriertransformimage": "ImagickException",
+            "labelimage": "ImagickException",
+            "levelimage": "ImagickException",
+            "linearstretchimage": "ImagickException",
+            "liquidrescaleimage": "ImagickException",
+            "localcontrastimage": "ImagickException",
+            "magnifyimage": "ImagickException",
+            "mapimage": "ImagickException",
+            "mattefloodfillimage": "ImagickException",
+            "medianfilterimage": "ImagickException",
+            "mergeimagelayers": "ImagickException",
+            "minifyimage": "ImagickException",
+            "modulateimage": "ImagickException",
+            "montageimage": "ImagickException",
+            "morphimages": "ImagickException",
+            "morphology": "(ImagickException | ImagickKernelException)",
+            "mosaicimages": "ImagickException",
+            "motionblurimage": "ImagickException",
+            "negateimage": "ImagickException",
+            "newimage": "ImagickException",
+            "newpseudoimage": "ImagickException",
+            "normalizeimage": "ImagickException",
+            "oilpaintimage": "ImagickException",
+            "opaquepaintimage": "ImagickException",
+            "optimizeimagelayers": "ImagickException",
+            "orderedposterizeimage": "ImagickException",
+            "paintfloodfillimage": "ImagickException",
+            "paintopaqueimage": "ImagickException",
+            "painttransparentimage": "ImagickException",
+            "pingimage": "ImagickException",
+            "pingimageblob": "ImagickException",
+            "pingimagefile": "ImagickException",
+            "polaroidimage": "ImagickException",
+            "posterizeimage": "ImagickException",
+            "previewimages": "ImagickException",
+            "profileimage": "ImagickException",
+            "quantizeimage": "ImagickException",
+            "quantizeimages": "ImagickException",
+            "queryfontmetrics": "ImagickException",
+            "radialblurimage": "ImagickException",
+            "raiseimage": "ImagickException",
+            "randomthresholdimage": "ImagickException",
+            "readimage": "ImagickException",
+            "readimageblob": "ImagickException",
+            "readimagefile": "ImagickException",
+            "readimages": "ImagickException",
+            "recolorimage": "ImagickException",
+            "reducenoiseimage": "ImagickException",
+            "remapimage": "ImagickException",
+            "removeimage": "ImagickException",
+            "removeimageprofile": "ImagickException",
+            "resampleimage": "ImagickException",
+            "resetimagepage": "ImagickException",
+            "resizeimage": "ImagickException",
+            "rollimage": "ImagickException",
+            "rotateimage": "ImagickException",
+            "rotationalblurimage": "ImagickException",
+            "roundcorners": "ImagickException",
+            "roundcornersimage": "ImagickException",
+            "sampleimage": "ImagickException",
+            "scaleimage": "ImagickException",
+            "segmentimage": "ImagickException",
+            "selectiveblurimage": "ImagickException",
+            "separateimagechannel": "ImagickException",
+            "sepiatoneimage": "ImagickException",
+            "setantialias": "ImagickException",
+            "setbackgroundcolor": "ImagickException",
+            "setcompression": "ImagickException",
+            "setcompressionquality": "ImagickException",
+            "setfilename": "ImagickException",
+            "setfont": "ImagickException",
+            "setformat": "ImagickException",
+            "setgravity": "ImagickException",
+            "setimage": "ImagickException",
+            "setimagealpha": "ImagickException",
+            "setimagealphachannel": "ImagickException",
+            "setimageartifact": "ImagickException",
+            "setimageattribute": "ImagickException",
+            "setimagebackgroundcolor": "ImagickException",
+            "setimageblueprimary": "ImagickException",
+            "setimagebordercolor": "ImagickException",
+            "setimagechanneldepth": "ImagickException",
+            "setimagechannelmask": "ImagickException",
+            "setimagecolormapcolor": "ImagickException",
+            "setimagecolorspace": "ImagickException",
+            "setimagecompose": "ImagickException",
+            "setimagecompression": "ImagickException",
+            "setimagecompressionquality": "ImagickException",
+            "setimagedelay": "ImagickException",
+            "setimagedepth": "ImagickException",
+            "setimagedispose": "ImagickException",
+            "setimageextent": "ImagickException",
+            "setimagefilename": "ImagickException",
+            "setimageformat": "ImagickException",
+            "setimagegamma": "ImagickException",
+            "setimagegravity": "ImagickException",
+            "setimagegreenprimary": "ImagickException",
+            "setimageindex": "ImagickException",
+            "setimageinterlacescheme": "ImagickException",
+            "setimageinterpolatemethod": "ImagickException",
+            "setimageiterations": "ImagickException",
+            "setimagematte": "ImagickException",
+            "setimagemattecolor": "ImagickException",
+            "setimageopacity": "ImagickException",
+            "setimageorientation": "ImagickException",
+            "setimagepage": "ImagickException",
+            "setimageprofile": "ImagickException",
+            "setimageprogressmonitor": "ImagickException",
+            "setimageproperty": "ImagickException",
+            "setimageredprimary": "ImagickException",
+            "setimagerenderingintent": "ImagickException",
+            "setimageresolution": "ImagickException",
+            "setimagescene": "ImagickException",
+            "setimagetickspersecond": "ImagickException",
+            "setimagetype": "ImagickException",
+            "setimageunits": "ImagickException",
+            "setimagevirtualpixelmethod": "ImagickException",
+            "setimagewhitepoint": "ImagickException",
+            "setinterlacescheme": "ImagickException",
+            "setiteratorindex": "ImagickException",
+            "setoption": "ImagickException",
+            "setpage": "ImagickException",
+            "setpointsize": "ImagickException",
+            "setprogressmonitor": "ImagickException",
+            "setresolution": "ImagickException",
+            "setresourcelimit": "ImagickException",
+            "setsamplingfactors": "ImagickException",
+            "setsize": "ImagickException",
+            "setsizeoffset": "ImagickException",
+            "settype": "ImagickException",
+            "shadeimage": "ImagickException",
+            "shadowimage": "ImagickException",
+            "sharpenimage": "ImagickException",
+            "shaveimage": "ImagickException",
+            "shearimage": "ImagickException",
+            "sigmoidalcontrastimage": "ImagickException",
+            "similarityimage": "ImagickException",
+            "sketchimage": "ImagickException",
+            "smushimages": "ImagickException",
+            "solarizeimage": "ImagickException",
+            "sparsecolorimage": "ImagickException",
+            "spliceimage": "ImagickException",
+            "spreadimage": "ImagickException",
+            "statisticimage": "ImagickException",
+            "steganoimage": "ImagickException",
+            "stereoimage": "ImagickException",
+            "stripimage": "ImagickException",
+            "subimagematch": "ImagickException",
+            "swirlimage": "ImagickException",
+            "textureimage": "ImagickException",
+            "thresholdimage": "ImagickException",
+            "thumbnailimage": "ImagickException",
+            "tintimage": "ImagickException",
+            "transformimage": "ImagickException",
+            "transformimagecolorspace": "ImagickException",
+            "transparentpaintimage": "ImagickException",
+            "transposeimage": "ImagickException",
+            "transverseimage": "ImagickException",
+            "trimimage": "ImagickException",
+            "uniqueimagecolors": "ImagickException",
+            "unsharpmaskimage": "ImagickException",
+            "valid": "ImagickException",
+            "vignetteimage": "ImagickException",
+            "waveimage": "ImagickException",
+            "whitethresholdimage": "ImagickException",
+            "writeimage": "ImagickException",
+            "writeimagefile": "ImagickException",
+            "writeimages": "ImagickException",
+            "writeimagesfile": "ImagickException"
+        },
+        "imagickdraw": {
+            "affine": "ImagickDrawException",
+            "annotation": "ImagickDrawException",
+            "bezier": "ImagickDrawException",
+            "composite": "ImagickException",
+            "getfontresolution": "ImagickException",
+            "gettextundercolor": "ImagickDrawException",
+            "polygon": "ImagickDrawException",
+            "polyline": "ImagickDrawException",
+            "pop": "ImagickException",
+            "poppattern": "ImagickException",
+            "push": "ImagickException",
+            "render": "ImagickException",
+            "setbordercolor": "ImagickDrawException",
+            "setclippath": "ImagickException",
+            "setdensity": "ImagickException",
+            "setfillcolor": "ImagickDrawException",
+            "setfillpatternurl": "ImagickException",
+            "setfont": "(ImagickDrawException | ImagickException)",
+            "setfontfamily": "(ImagickDrawException | ImagickException)",
+            "setfontresolution": "ImagickException",
+            "setfontweight": "ImagickDrawException",
+            "setresolution": "ImagickDrawException",
+            "setstrokecolor": "ImagickDrawException",
+            "setstrokepatternurl": "ImagickException",
+            "settextundercolor": "ImagickDrawException"
+        },
+        "imagickkernel": {
+            "addkernel": "ImagickKernelException",
+            "addunitykernel": "ImagickKernelException",
+            "frommatrix": "ImagickKernelException",
+            "getmatrix": "ImagickKernelException",
+            "scale": "ImagickKernelException",
+            "seperate": "ImagickKernelException"
+        },
+        "imagickpixel": {
+            "__construct": "ImagickPixelException",
+            "clear": "ImagickPixelException",
+            "destroy": "ImagickPixelException",
+            "getcolorasstring": "ImagickPixelException",
+            "getcolorcount": "ImagickPixelException",
+            "getcolorquantum": "ImagickPixelException",
+            "getcolorvalue": "ImagickPixelException",
+            "getcolorvaluequantum": "ImagickPixelException",
+            "gethsl": "ImagickPixelException",
+            "getindex": "ImagickPixelException",
+            "ispixelsimilar": "ImagickPixelException",
+            "ispixelsimilarquantum": "ImagickPixelException",
+            "issimilar": "ImagickPixelException",
+            "setcolor": "ImagickPixelException",
+            "setcolorcount": "ImagickPixelException",
+            "setcolorfrompixel": "ImagickPixelException",
+            "setcolorvalue": "ImagickPixelException",
+            "setcolorvaluequantum": "ImagickPixelException",
+            "sethsl": "ImagickPixelException",
+            "setindex": "ImagickPixelException"
+        },
+        "imagickpixeliterator": {
+            "__construct": "(ImagickException | ImagickPixelIteratorException)",
+            "clear": "ImagickPixelIteratorException",
+            "current": "ImagickPixelIteratorException",
+            "destroy": "ImagickPixelIteratorException",
+            "getcurrentiteratorrow": "ImagickPixelIteratorException",
+            "getiteratorrow": "ImagickPixelIteratorException",
+            "getnextiteratorrow": "ImagickPixelIteratorException",
+            "getpixeliterator": "(ImagickException | ImagickPixelIteratorException)",
+            "getpixelregioniterator": "(ImagickException | ImagickPixelIteratorException)",
+            "getpreviousiteratorrow": "ImagickPixelIteratorException",
+            "key": "ImagickPixelIteratorException",
+            "newpixeliterator": "(ImagickException | ImagickPixelIteratorException)",
+            "newpixelregioniterator": "(ImagickException | ImagickPixelIteratorException)",
+            "next": "ImagickPixelIteratorException",
+            "resetiterator": "ImagickPixelIteratorException",
+            "rewind": "ImagickPixelIteratorException",
+            "setiteratorfirstrow": "ImagickPixelIteratorException",
+            "setiteratorlastrow": "ImagickPixelIteratorException",
+            "setiteratorrow": "ImagickPixelIteratorException",
+            "synciterator": "ImagickPixelIteratorException",
+            "valid": "ImagickPixelIteratorException"
+        },
+        "intlcalendar": {
+            "setminimaldaysinfirstweek": "ValueError"
+        },
+        "intllistformatter": {
+            "__construct": "IntlException"
+        },
+        "jsonpath\\jsonpath": {
+            "find": "JsonPath\\JsonPathException"
+        },
+        "limititerator": {
+            "seek": "OutOfBoundsException"
+        },
+        "luasandbox": {
+            "setmemorylimit": "LuaSandboxMemoryError"
+        },
+        "maxmind\\db\\reader": {
+            "__construct": "(InvalidArgumentException | MaxMind\\Db\\Reader\\InvalidDatabaseException)",
+            "close": "Exception",
+            "get": "(BadMethodCallException | InvalidArgumentException | MaxMind\\Db\\Reader\\InvalidDatabaseException)",
+            "getwithprefixlen": "(BadMethodCallException | InvalidArgumentException | MaxMind\\Db\\Reader\\InvalidDatabaseException)",
+            "metadata": "(BadMethodCallException | InvalidArgumentException)"
+        },
+        "messageformatter": {
+            "__construct": "IntlException"
+        },
+        "mongo": {
+            "connectutil": "MongoConnectionException",
+            "pairconnect": "MongoConnectionException",
+            "pairpersistconnect": "MongoConnectionException",
+            "persistconnect": "MongoConnectionException"
+        },
+        "mongoclient": {
+            "__construct": "MongoConnectionException",
+            "connect": "MongoConnectionException",
+            "selectcollection": "Exception",
+            "selectdb": "InvalidArgumentException",
+            "switchslave": "MongoException"
+        },
+        "mongocollection": {
+            "__construct": "Exception",
+            "batchinsert": "MongoCursorException",
+            "count": "(MongoExecutionTimeoutException | MongoResultException)",
+            "createindex": "MongoException",
+            "ensureindex": "MongoException",
+            "findandmodify": "MongoResultException",
+            "findone": "MongoConnectionException",
+            "insert": "MongoException",
+            "remove": "MongoCursorException",
+            "save": "MongoException",
+            "update": "MongoCursorException"
+        },
+        "mongocursor": {
+            "addoption": "MongoCursorException",
+            "count": "MongoConnectionException",
+            "doquery": "MongoConnectionException",
+            "explain": "MongoConnectionException",
+            "fields": "MongoCursorException",
+            "getnext": "(MongoConnectionException | MongoCursorTimeoutException)",
+            "hasnext": "(MongoConnectionException | MongoCursorTimeoutException)",
+            "hint": "MongoCursorException",
+            "immortal": "MongoCursorException",
+            "limit": "MongoCursorException",
+            "maxtimems": "(MongoCursorException | MongoExecutionTimeoutException)",
+            "next": "(MongoConnectionException | MongoCursorTimeoutException)",
+            "partial": "MongoCursorException",
+            "rewind": "(MongoConnectionException | MongoCursorTimeoutException)",
+            "skip": "MongoCursorException",
+            "slaveokay": "MongoCursorException",
+            "snapshot": "MongoCursorException",
+            "sort": "MongoCursorException",
+            "tailable": "MongoCursorException",
+            "timeout": "MongoCursorTimeoutException"
+        },
+        "mongodb": {
+            "__construct": "Exception",
+            "getcollectionnames": "MongoException",
+            "listcollections": "MongoException",
+            "selectcollection": "Exception"
+        },
+        "mongodb\\bson\\binary": {
+            "jsonserialize": "MongoDB\\Driver\\Exception\\InvalidArgumentException"
+        },
+        "mongodb\\bson\\dbpointer": {
+            "jsonserialize": "MongoDB\\Driver\\Exception\\InvalidArgumentException"
+        },
+        "mongodb\\bson\\decimal128": {
+            "jsonserialize": "MongoDB\\Driver\\Exception\\InvalidArgumentException"
+        },
+        "mongodb\\bson\\int64": {
+            "jsonserialize": "MongoDB\\Driver\\Exception\\InvalidArgumentException"
+        },
+        "mongodb\\bson\\javascript": {
+            "jsonserialize": "MongoDB\\Driver\\Exception\\InvalidArgumentException"
+        },
+        "mongodb\\bson\\maxkey": {
+            "jsonserialize": "MongoDB\\Driver\\Exception\\InvalidArgumentException"
+        },
+        "mongodb\\bson\\minkey": {
+            "jsonserialize": "MongoDB\\Driver\\Exception\\InvalidArgumentException"
+        },
+        "mongodb\\bson\\objectid": {
+            "__construct": "MongoDB\\Driver\\Exception\\InvalidArgumentException"
+        },
+        "mongodb\\bson\\regex": {
+            "jsonserialize": "MongoDB\\Driver\\Exception\\InvalidArgumentException"
+        },
+        "mongodb\\bson\\symbol": {
+            "jsonserialize": "MongoDB\\Driver\\Exception\\InvalidArgumentException"
+        },
+        "mongodb\\bson\\timestamp": {
+            "jsonserialize": "MongoDB\\Driver\\Exception\\InvalidArgumentException"
+        },
+        "mongodb\\bson\\undefined": {
+            "jsonserialize": "MongoDB\\Driver\\Exception\\InvalidArgumentException"
+        },
+        "mongodb\\bson\\utcdatetime": {
+            "jsonserialize": "MongoDB\\Driver\\Exception\\InvalidArgumentException"
+        },
+        "mongodb\\driver\\bulkwrite": {
+            "__construct": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "delete": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "insert": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "update": "MongoDB\\Driver\\Exception\\InvalidArgumentException"
+        },
+        "mongodb\\driver\\bulkwritecommand": {
+            "__construct": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "deletemany": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "deleteone": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "insertone": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "replaceone": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "updatemany": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "updateone": "MongoDB\\Driver\\Exception\\InvalidArgumentException"
+        },
+        "mongodb\\driver\\bulkwritecommandresult": {
+            "getdeletedcount": "MongoDB\\Driver\\Exception\\LogicException",
+            "getdeleteresults": "MongoDB\\Driver\\Exception\\LogicException",
+            "getinsertedcount": "MongoDB\\Driver\\Exception\\LogicException",
+            "getinsertresults": "MongoDB\\Driver\\Exception\\LogicException",
+            "getmatchedcount": "MongoDB\\Driver\\Exception\\LogicException",
+            "getmodifiedcount": "MongoDB\\Driver\\Exception\\LogicException",
+            "getupdateresults": "MongoDB\\Driver\\Exception\\LogicException",
+            "getupsertedcount": "MongoDB\\Driver\\Exception\\LogicException"
+        },
+        "mongodb\\driver\\clientencryption": {
+            "addkeyaltname": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "createdatakey": "(MongoDB\\Driver\\Exception\\EncryptionException | MongoDB\\Driver\\Exception\\InvalidArgumentException)",
+            "decrypt": "(MongoDB\\Driver\\Exception\\EncryptionException | MongoDB\\Driver\\Exception\\InvalidArgumentException)",
+            "deletekey": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "encrypt": "(MongoDB\\Driver\\Exception\\EncryptionException | MongoDB\\Driver\\Exception\\InvalidArgumentException)",
+            "encryptexpression": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "getkey": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "getkeybyaltname": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "getkeys": "MongoDB\\Driver\\Exception\\InvalidArgumentException"
+        },
+        "mongodb\\driver\\command": {
+            "__construct": "MongoDB\\Driver\\Exception\\InvalidArgumentException"
+        },
+        "mongodb\\driver\\cursor": {
+            "getid": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "getserver": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "isdead": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "next": "(MongoDB\\Driver\\Exception\\ConnectionException | MongoDB\\Driver\\Exception\\InvalidArgumentException)",
+            "rewind": "(MongoDB\\Driver\\Exception\\ConnectionException | MongoDB\\Driver\\Exception\\InvalidArgumentException | MongoDB\\Driver\\Exception\\LogicException)",
+            "settypemap": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "toarray": "MongoDB\\Driver\\Exception\\InvalidArgumentException"
+        },
+        "mongodb\\driver\\cursorinterface": {
+            "getid": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "getserver": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "isdead": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "settypemap": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "toarray": "MongoDB\\Driver\\Exception\\InvalidArgumentException"
+        },
+        "mongodb\\driver\\manager": {
+            "__construct": "(MongoDB\\Driver\\Exception\\InvalidArgumentException | MongoDB\\Driver\\Exception\\RuntimeException)",
+            "createclientencryption": "(MongoDB\\Driver\\Exception\\InvalidArgumentException | MongoDB\\Driver\\Exception\\RuntimeException)",
+            "executebulkwrite": "(MongoDB\\Driver\\Exception\\InvalidArgumentException | MongoDB\\Driver\\Exception\\RuntimeException)",
+            "executebulkwritecommand": "(MongoDB\\Driver\\Exception\\InvalidArgumentException | MongoDB\\Driver\\Exception\\RuntimeException)",
+            "executecommand": "MongoDB\\Driver\\Exception\\Exception",
+            "executequery": "MongoDB\\Driver\\Exception\\Exception",
+            "executereadcommand": "MongoDB\\Driver\\Exception\\Exception",
+            "executereadwritecommand": "MongoDB\\Driver\\Exception\\Exception",
+            "executewritecommand": "MongoDB\\Driver\\Exception\\Exception",
+            "getreadconcern": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "getreadpreference": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "getservers": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "getwriteconcern": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "selectserver": "(MongoDB\\Driver\\Exception\\InvalidArgumentException | MongoDB\\Driver\\Exception\\RuntimeException)",
+            "startsession": "(MongoDB\\Driver\\Exception\\InvalidArgumentException | MongoDB\\Driver\\Exception\\RuntimeException)"
+        },
+        "mongodb\\driver\\monitoring\\commandfailedevent": {
+            "getcommandname": "InvalidArgumentException",
+            "getdurationmicros": "InvalidArgumentException",
+            "geterror": "InvalidArgumentException",
+            "gethost": "InvalidArgumentException",
+            "getoperationid": "InvalidArgumentException",
+            "getport": "InvalidArgumentException",
+            "getreply": "InvalidArgumentException",
+            "getrequestid": "InvalidArgumentException"
+        },
+        "mongodb\\driver\\monitoring\\commandstartedevent": {
+            "getcommand": "InvalidArgumentException",
+            "getcommandname": "InvalidArgumentException",
+            "getdatabasename": "InvalidArgumentException",
+            "gethost": "InvalidArgumentException",
+            "getoperationid": "InvalidArgumentException",
+            "getport": "InvalidArgumentException",
+            "getrequestid": "InvalidArgumentException"
+        },
+        "mongodb\\driver\\monitoring\\commandsubscriber": {
+            "commandfailed": "InvalidArgumentException",
+            "commandstarted": "InvalidArgumentException",
+            "commandsucceeded": "InvalidArgumentException"
+        },
+        "mongodb\\driver\\monitoring\\commandsucceededevent": {
+            "getcommandname": "InvalidArgumentException",
+            "getdurationmicros": "InvalidArgumentException",
+            "gethost": "InvalidArgumentException",
+            "getoperationid": "InvalidArgumentException",
+            "getport": "InvalidArgumentException",
+            "getreply": "InvalidArgumentException",
+            "getrequestid": "InvalidArgumentException"
+        },
+        "mongodb\\driver\\query": {
+            "__construct": "MongoDB\\Driver\\Exception\\InvalidArgumentException"
+        },
+        "mongodb\\driver\\readconcern": {
+            "isdefault": "MongoDB\\Driver\\Exception\\InvalidArgumentException"
+        },
+        "mongodb\\driver\\readpreference": {
+            "__construct": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "bsonserialize": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "getmodestring": "MongoDB\\Driver\\Exception\\InvalidArgumentException"
+        },
+        "mongodb\\driver\\server": {
+            "__construct": "MongoDB\\Driver\\Exception\\RuntimeException",
+            "executebulkwrite": "(MongoDB\\Driver\\Exception\\InvalidArgumentException | MongoDB\\Driver\\Exception\\RuntimeException)",
+            "executebulkwritecommand": "(MongoDB\\Driver\\Exception\\InvalidArgumentException | MongoDB\\Driver\\Exception\\RuntimeException)",
+            "executecommand": "(MongoDB\\Driver\\Exception\\InvalidArgumentException | MongoDB\\Driver\\Exception\\RuntimeException)",
+            "executequery": "(MongoDB\\Driver\\Exception\\InvalidArgumentException | MongoDB\\Driver\\Exception\\RuntimeException)",
+            "executereadcommand": "(MongoDB\\Driver\\Exception\\InvalidArgumentException | MongoDB\\Driver\\Exception\\RuntimeException)",
+            "executereadwritecommand": "(MongoDB\\Driver\\Exception\\InvalidArgumentException | MongoDB\\Driver\\Exception\\RuntimeException)",
+            "executewritecommand": "(MongoDB\\Driver\\Exception\\InvalidArgumentException | MongoDB\\Driver\\Exception\\RuntimeException)",
+            "gethost": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "getinfo": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "getlatency": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "getport": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "gettags": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "gettype": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "isarbiter": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "ishidden": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "ispassive": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "isprimary": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "issecondary": "MongoDB\\Driver\\Exception\\InvalidArgumentException"
+        },
+        "mongodb\\driver\\session": {
+            "advanceclustertime": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "advanceoperationtime": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "committransaction": "(MongoDB\\Driver\\Exception\\InvalidArgumentException | MongoDB\\Driver\\Exception\\RuntimeException)",
+            "endsession": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "getclustertime": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "getlogicalsessionid": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "getoperationtime": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "getserver": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "gettransactionoptions": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "gettransactionstate": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "isintransaction": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "starttransaction": "(MongoDB\\Driver\\Exception\\InvalidArgumentException | MongoDB\\Driver\\Exception\\RuntimeException)"
+        },
+        "mongodb\\driver\\writeconcern": {
+            "__construct": "MongoDB\\Driver\\Exception\\InvalidArgumentException",
+            "bsonserialize": "MongoDB\\Driver\\Exception\\InvalidArgumentException"
+        },
+        "mongogridfs": {
+            "delete": "MongoCursorException",
+            "findone": "MongoConnectionException",
+            "put": "MongoGridFSException",
+            "remove": "MongoCursorException",
+            "storebytes": "MongoGridFSException",
+            "storefile": "MongoGridFSException",
+            "storeupload": "MongoGridFSException"
+        },
+        "mongogridfscursor": {
+            "getnext": "(MongoConnectionException | MongoCursorTimeoutException)"
+        },
+        "mongowritebatch": {
+            "execute": "MongoWriteConcernException"
+        },
+        "multipleiterator": {
+            "current": "(InvalidArgumentException | RuntimeException)",
+            "key": "RuntimeException"
+        },
+        "mysqli_result": {
+            "__construct": "mysqli_sql_exception"
+        },
+        "mysqli_stmt": {
+            "__construct": "mysqli_sql_exception"
+        },
+        "oauth": {
+            "__construct": "OAuthException",
+            "fetch": "OAuthException",
+            "getaccesstoken": "OAuthException",
+            "getrequesttoken": "OAuthException"
+        },
+        "parallel\\channel": {
+            "close": "parallel\\Channel\\Error\\Closed",
+            "make": "parallel\\Channel\\Error\\Existence",
+            "open": "parallel\\Channel\\Error\\Existence",
+            "recv": "parallel\\Channel\\Error\\Closed",
+            "send": "(parallel\\Channel\\Error\\Closed | parallel\\Channel\\Error\\IllegalValue)"
+        },
+        "parallel\\events": {
+            "addchannel": "parallel\\Events\\Error\\Existence",
+            "addfuture": "parallel\\Events\\Error\\Existence",
+            "poll": "parallel\\Events\\Error\\Timeout",
+            "remove": "parallel\\Events\\Error\\Existence",
+            "setblocking": "parallel\\Events\\Error",
+            "settimeout": "parallel\\Events\\Error"
+        },
+        "parallel\\events\\input": {
+            "add": "(parallel\\Events\\Input\\Error\\Existence | parallel\\Events\\Input\\Error\\IllegalValue)",
+            "remove": "parallel\\Events\\Input\\Error\\Existence"
+        },
+        "parallel\\future": {
+            "cancel": "(parallel\\Future\\Error\\Cancelled | parallel\\Future\\Error\\Killed)",
+            "value": "Throwable"
+        },
+        "parallel\\runtime": {
+            "__construct": "parallel\\Runtime\\Error",
+            "close": "parallel\\Runtime\\Error\\Closed",
+            "kill": "parallel\\Runtime\\Error\\Closed",
+            "run": "(parallel\\Runtime\\Error\\Closed | parallel\\Runtime\\Error\\IllegalFunction | parallel\\Runtime\\Error\\IllegalInstruction | parallel\\Runtime\\Error\\IllegalParameter | parallel\\Runtime\\Error\\IllegalReturn)"
+        },
+        "parallel\\sync": {
+            "__construct": "parallel\\Sync\\Error\\IllegalValue",
+            "set": "parallel\\Sync\\Error\\IllegalValue"
+        },
+        "pdo": {
+            "__construct": "PDOException",
+            "begintransaction": "PDOException",
+            "commit": "PDOException",
+            "connect": "PDOException",
+            "exec": "PDOException",
+            "getattribute": "PDOException",
+            "lastinsertid": "PDOException",
+            "prepare": "PDOException",
+            "query": "PDOException",
+            "rollback": "PDOException",
+            "setattribute": "PDOException"
+        },
+        "pdo\\pgsql": {
+            "copyfromfile": "PDOException",
+            "copytofile": "PDOException",
+            "getnotify": "ValueError"
+        },
+        "pdo\\sqlite": {
+            "loadextension": "Exception",
+            "openblob": "Exception"
+        },
+        "pdostatement": {
+            "bindcolumn": "PDOException",
+            "bindparam": "PDOException",
+            "bindvalue": "PDOException",
+            "closecursor": "PDOException",
+            "columncount": "PDOException",
+            "execute": "PDOException",
+            "fetch": "PDOException",
+            "fetchall": "PDOException",
+            "fetchcolumn": "PDOException",
+            "nextrowset": "PDOException",
+            "rowcount": "PDOException",
+            "setattribute": "PDOException",
+            "setfetchmode": "PDOException"
+        },
+        "phar": {
+            "__construct": "(BadMethodCallException | UnexpectedValueException)",
+            "buildfromdirectory": "(BadMethodCallException | PharException)",
+            "buildfromiterator": "(BadMethodCallException | PharException | UnexpectedValueException)",
+            "compress": "BadMethodCallException",
+            "compressfiles": "BadMethodCallException",
+            "converttodata": "(BadMethodCallException | PharException)",
+            "converttoexecutable": "(BadMethodCallException | PharException | UnexpectedValueException)",
+            "copy": "(PharException | UnexpectedValueException)",
+            "createdefaultstub": "UnexpectedValueException",
+            "decompress": "BadMethodCallException",
+            "decompressfiles": "BadMethodCallException",
+            "delete": "PharException",
+            "delmetadata": "PharException",
+            "extractto": "PharException",
+            "getstub": "RuntimeException",
+            "isfileformat": "PharException",
+            "loadphar": "PharException",
+            "mapphar": "PharException",
+            "mount": "PharException",
+            "mungserver": "UnexpectedValueException",
+            "offsetget": "BadMethodCallException",
+            "offsetset": "(BadMethodCallException | PharException)",
+            "offsetunset": "(BadMethodCallException | PharException)",
+            "seek": "OutOfBoundsException",
+            "setalias": "(PharException | UnexpectedValueException)",
+            "setdefaultstub": "(PharException | UnexpectedValueException)",
+            "setsignaturealgorithm": "(PharException | UnexpectedValueException)",
+            "setstub": "(PharException | UnexpectedValueException)",
+            "stopbuffering": "PharException",
+            "unlinkarchive": "PharException",
+            "webphar": "(PharException | UnexpectedValueException)"
+        },
+        "phardata": {
+            "__construct": "(BadMethodCallException | UnexpectedValueException)",
+            "buildfromdirectory": "(BadMethodCallException | PharException)",
+            "buildfromiterator": "(BadMethodCallException | PharException | UnexpectedValueException)",
+            "compress": "BadMethodCallException",
+            "compressfiles": "BadMethodCallException",
+            "converttodata": "(BadMethodCallException | PharException)",
+            "converttoexecutable": "(BadMethodCallException | PharException | UnexpectedValueException)",
+            "copy": "(PharException | UnexpectedValueException)",
+            "decompress": "BadMethodCallException",
+            "decompressfiles": "BadMethodCallException",
+            "delete": "PharException",
+            "delmetadata": "PharException",
+            "extractto": "PharException",
+            "offsetset": "PharException",
+            "offsetunset": "PharException",
+            "seek": "OutOfBoundsException",
+            "setalias": "PharException",
+            "setdefaultstub": "PharException",
+            "setsignaturealgorithm": "(BadMethodCallException | PharException | UnexpectedValueException)",
+            "setstub": "PharException",
+            "unlinkarchive": "PharException"
+        },
+        "pharfileinfo": {
+            "__construct": "(BadMethodCallException | UnexpectedValueException)",
+            "compress": "BadMethodCallException",
+            "decompress": "BadMethodCallException",
+            "delmetadata": "(BadMethodCallException | PharException)",
+            "getcrc32": "BadMethodCallException"
+        },
+        "pq\\cancel": {
+            "__construct": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "cancel": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)"
+        },
+        "pq\\connection": {
+            "__construct": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "declare": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "declareasync": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "escapebytea": "pq\\Exception\\BadMethodCallException",
+            "exec": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\DomainException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "execasync": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "execparams": "(pq\\Exception\\DomainException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "execparamsasync": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "flush": "(pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "getresult": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException)",
+            "listen": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "listenasync": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "notify": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "notifyasync": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "off": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException)",
+            "on": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException)",
+            "poll": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "prepare": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "prepareasync": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "quote": "pq\\Exception\\BadMethodCallException",
+            "quotename": "pq\\Exception\\BadMethodCallException",
+            "reset": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "resetasync": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "setconverter": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException)",
+            "starttransaction": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "starttransactionasync": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "trace": "pq\\Exception\\BadMethodCallException",
+            "unescapebytea": "pq\\Exception\\BadMethodCallException",
+            "unlisten": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "unlistenasync": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "unsetconverter": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException)"
+        },
+        "pq\\copy": {
+            "__construct": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "end": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "get": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "put": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)"
+        },
+        "pq\\cursor": {
+            "__construct": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "close": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "closeasync": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "fetch": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "fetchasync": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "move": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "moveasync": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "open": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "openasync": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)"
+        },
+        "pq\\lob": {
+            "__construct": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "read": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "seek": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "tell": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "truncate": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)"
+        },
+        "pq\\result": {
+            "bind": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException)",
+            "desc": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException)",
+            "fetchall": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException)",
+            "fetchallcols": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "fetchbound": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "fetchcol": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "fetchrow": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "map": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)"
+        },
+        "pq\\statement": {
+            "__construct": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\DomainException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "bind": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException)",
+            "deallocate": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "deallocateasync": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "desc": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\DomainException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "descasync": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "exec": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "execasync": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "prepare": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "prepareasync": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)"
+        },
+        "pq\\transaction": {
+            "__construct": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "commit": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\DomainException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "commitasync": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "createlob": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "exportlob": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "exportsnapshot": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\DomainException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "exportsnapshotasync": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "importlob": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "importsnapshot": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\DomainException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "importsnapshotasync": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "openlob": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "rollback": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\DomainException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "rollbackasync": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "savepoint": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "savepointasync": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "unlinklob": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)"
+        },
+        "pq\\types": {
+            "__construct": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)",
+            "refresh": "(pq\\Exception\\BadMethodCallException | pq\\Exception\\InvalidArgumentException | pq\\Exception\\RuntimeException)"
+        },
+        "propertyhooktype": {
+            "from": "(TypeError | ValueError)"
+        },
+        "random\\engine": {
+            "generate": "(Random\\BrokenRandomEngineError | Random\\RandomException)"
+        },
+        "random\\engine\\mt19937": {
+            "generate": "(Random\\BrokenRandomEngineError | Random\\RandomException)"
+        },
+        "random\\engine\\pcgoneseq128xslrr64": {
+            "__construct": "ValueError",
+            "generate": "(Random\\BrokenRandomEngineError | Random\\RandomException)",
+            "jump": "ValueError"
+        },
+        "random\\engine\\secure": {
+            "generate": "Random\\RandomException"
+        },
+        "random\\engine\\xoshiro256starstar": {
+            "__construct": "ValueError",
+            "generate": "(Random\\BrokenRandomEngineError | Random\\RandomException)"
+        },
+        "random\\randomizer": {
+            "getbytes": "ValueError",
+            "getbytesfromstring": "ValueError",
+            "getfloat": "ValueError",
+            "getint": "ValueError",
+            "nextint": "Random\\RandomException",
+            "pickarraykeys": "ValueError"
+        },
+        "rdkafka": {
+            "getmetadata": "RdKafka\\Exception"
+        },
+        "rdkafka\\kafkaconsumer": {
+            "assign": "RdKafka\\Exception",
+            "commit": "RdKafka\\Exception",
+            "commitasync": "RdKafka\\Exception",
+            "consume": "(InvalidArgumentException | RdKafka\\Exception)",
+            "getassignment": "RdKafka\\Exception",
+            "getmetadata": "RdKafka\\Exception",
+            "subscribe": "RdKafka\\Exception",
+            "unsubscribe": "RdKafka\\Exception"
+        },
+        "recursivedirectoryiterator": {
+            "__construct": "UnexpectedValueException"
+        },
+        "recursiveiteratoriterator": {
+            "setmaxdepth": "Exception"
+        },
+        "redis": {
+            "_digest": "RedisException",
+            "connect": "RedisException",
+            "pconnect": "RedisException"
+        },
+        "rediscluster": {
+            "__construct": "RedisClusterException",
+            "_digest": "RedisClusterException",
+            "acl": "RedisClusterException",
+            "append": "RedisClusterException",
+            "bgrewriteaof": "RedisClusterException",
+            "bgsave": "RedisClusterException",
+            "bitcount": "RedisClusterException",
+            "bitop": "RedisClusterException",
+            "bitpos": "RedisClusterException",
+            "blmove": "RedisClusterException",
+            "blmovem": "RedisClusterException",
+            "blmpop": "RedisClusterException",
+            "blpop": "RedisClusterException",
+            "brpop": "RedisClusterException",
+            "brpoplpush": "RedisClusterException",
+            "bzmpop": "RedisClusterException",
+            "bzpopmax": "RedisClusterException",
+            "bzpopmin": "RedisClusterException",
+            "cleartransferredbytes": "RedisClusterException",
+            "client": "RedisClusterException",
+            "cluster": "RedisClusterException",
+            "command": "RedisClusterException",
+            "config": "RedisClusterException",
+            "copy": "RedisClusterException",
+            "dbsize": "RedisClusterException",
+            "decr": "RedisClusterException",
+            "decrby": "RedisClusterException",
+            "decrbyfloat": "RedisClusterException",
+            "del": "RedisClusterException",
+            "delex": "RedisClusterException",
+            "delifeq": "RedisClusterException",
+            "digest": "RedisClusterException",
+            "dump": "RedisClusterException",
+            "echo": "RedisClusterException",
+            "eval": "RedisClusterException",
+            "eval_ro": "RedisClusterException",
+            "evalsha": "RedisClusterException",
+            "evalsha_ro": "RedisClusterException",
+            "exec": "RedisClusterException",
+            "exists": "RedisClusterException",
+            "expire": "RedisClusterException",
+            "expireat": "RedisClusterException",
+            "expiremember": "RedisClusterException",
+            "expirememberat": "RedisClusterException",
+            "expiretime": "RedisClusterException",
+            "flushall": "RedisClusterException",
+            "flushdb": "RedisClusterException",
+            "gcra": "RedisClusterException",
+            "geoadd": "RedisClusterException",
+            "geodist": "RedisClusterException",
+            "geohash": "RedisClusterException",
+            "geopos": "RedisClusterException",
+            "georadius": "RedisClusterException",
+            "georadius_ro": "RedisClusterException",
+            "georadiusbymember": "RedisClusterException",
+            "georadiusbymember_ro": "RedisClusterException",
+            "geosearch": "RedisClusterException",
+            "geosearchstore": "RedisClusterException",
+            "get": "RedisClusterException",
+            "getbit": "RedisClusterException",
+            "getdel": "RedisClusterException",
+            "getex": "RedisClusterException",
+            "getlasterror": "RedisClusterException",
+            "getmode": "RedisClusterException",
+            "getrange": "RedisClusterException",
+            "getset": "RedisClusterException",
+            "gettransferredbytes": "RedisClusterException",
+            "getwithmeta": "RedisClusterException",
+            "hdel": "RedisClusterException",
+            "hexists": "RedisClusterException",
+            "hexpire": "RedisClusterException",
+            "hexpireat": "RedisClusterException",
+            "hexpiretime": "RedisClusterException",
+            "hget": "RedisClusterException",
+            "hgetall": "RedisClusterException",
+            "hgetdel": "RedisClusterException",
+            "hgetex": "RedisClusterException",
+            "hgetwithmeta": "RedisClusterException",
+            "hincrby": "RedisClusterException",
+            "hincrbyfloat": "RedisClusterException",
+            "hkeys": "RedisClusterException",
+            "hlen": "RedisClusterException",
+            "hmget": "RedisClusterException",
+            "hmset": "RedisClusterException",
+            "hpersist": "RedisClusterException",
+            "hpexpire": "RedisClusterException",
+            "hpexpireat": "RedisClusterException",
+            "hpexpiretime": "RedisClusterException",
+            "hpttl": "RedisClusterException",
+            "hrandfield": "RedisClusterException",
+            "hscan": "RedisClusterException",
+            "hset": "RedisClusterException",
+            "hsetex": "RedisClusterException",
+            "hsetnx": "RedisClusterException",
+            "hstrlen": "RedisClusterException",
+            "httl": "RedisClusterException",
+            "hvals": "RedisClusterException",
+            "incr": "RedisClusterException",
+            "incrby": "RedisClusterException",
+            "incrbyfloat": "RedisClusterException",
+            "info": "RedisClusterException",
+            "keys": "RedisClusterException",
+            "lastsave": "RedisClusterException",
+            "lcs": "RedisClusterException",
+            "lget": "RedisClusterException",
+            "lindex": "RedisClusterException",
+            "linsert": "RedisClusterException",
+            "llen": "RedisClusterException",
+            "lmove": "RedisClusterException",
+            "lmovem": "RedisClusterException",
+            "lmpop": "RedisClusterException",
+            "lpop": "RedisClusterException",
+            "lpos": "RedisClusterException",
+            "lpush": "RedisClusterException",
+            "lpushx": "RedisClusterException",
+            "lrange": "RedisClusterException",
+            "lrem": "RedisClusterException",
+            "lset": "RedisClusterException",
+            "ltrim": "RedisClusterException",
+            "mget": "RedisClusterException",
+            "mset": "RedisClusterException",
+            "msetex": "RedisClusterException",
+            "msetnx": "RedisClusterException",
+            "multi": "RedisClusterException",
+            "object": "RedisClusterException",
+            "persist": "RedisClusterException",
+            "pexpire": "RedisClusterException",
+            "pexpireat": "RedisClusterException",
+            "pexpiretime": "RedisClusterException",
+            "pfadd": "RedisClusterException",
+            "pfcount": "RedisClusterException",
+            "pfmerge": "RedisClusterException",
+            "ping": "RedisClusterException",
+            "psetex": "RedisClusterException",
+            "psubscribe": "RedisClusterException",
+            "pttl": "RedisClusterException",
+            "publish": "RedisClusterException",
+            "pubsub": "RedisClusterException",
+            "punsubscribe": "RedisClusterException",
+            "randomkey": "RedisClusterException",
+            "rawcommand": "RedisClusterException",
+            "rename": "RedisClusterException",
+            "renamenx": "RedisClusterException",
+            "restore": "RedisClusterException",
+            "role": "RedisClusterException",
+            "rpop": "RedisClusterException",
+            "rpoplpush": "RedisClusterException",
+            "rpush": "RedisClusterException",
+            "rpushx": "RedisClusterException",
+            "sadd": "RedisClusterException",
+            "saddarray": "RedisClusterException",
+            "save": "RedisClusterException",
+            "scan": "RedisClusterException",
+            "scard": "RedisClusterException",
+            "script": "RedisClusterException",
+            "sdiff": "RedisClusterException",
+            "sdiffcard": "RedisClusterException",
+            "sdiffstore": "RedisClusterException",
+            "set": "RedisClusterException",
+            "setbit": "RedisClusterException",
+            "setex": "RedisClusterException",
+            "setnx": "RedisClusterException",
+            "setrange": "RedisClusterException",
+            "sinter": "RedisClusterException",
+            "sintercard": "RedisClusterException",
+            "sinterstore": "RedisClusterException",
+            "sismember": "RedisClusterException",
+            "slowlog": "RedisClusterException",
+            "smembers": "RedisClusterException",
+            "smismember": "RedisClusterException",
+            "smove": "RedisClusterException",
+            "sort": "RedisClusterException",
+            "sort_ro": "RedisClusterException",
+            "spop": "RedisClusterException",
+            "srandmember": "RedisClusterException",
+            "srem": "RedisClusterException",
+            "sscan": "RedisClusterException",
+            "strlen": "RedisClusterException",
+            "subscribe": "RedisClusterException",
+            "sunion": "RedisClusterException",
+            "sunioncard": "RedisClusterException",
+            "sunionstore": "RedisClusterException",
+            "time": "RedisClusterException",
+            "touch": "RedisClusterException",
+            "ttl": "RedisClusterException",
+            "type": "RedisClusterException",
+            "unlink": "RedisClusterException",
+            "unsubscribe": "RedisClusterException",
+            "unwatch": "RedisClusterException",
+            "vadd": "RedisClusterException",
+            "vcard": "RedisClusterException",
+            "vdim": "RedisClusterException",
+            "vemb": "RedisClusterException",
+            "vgetattr": "RedisClusterException",
+            "vinfo": "RedisClusterException",
+            "vismember": "RedisClusterException",
+            "vlinks": "RedisClusterException",
+            "vrandmember": "RedisClusterException",
+            "vrange": "RedisClusterException",
+            "vrem": "RedisClusterException",
+            "vsetattr": "RedisClusterException",
+            "vsim": "RedisClusterException",
+            "wait": "RedisClusterException",
+            "waitaof": "RedisClusterException",
+            "watch": "RedisClusterException",
+            "xack": "RedisClusterException",
+            "xadd": "RedisClusterException",
+            "xautoclaim": "RedisClusterException",
+            "xclaim": "RedisClusterException",
+            "xdel": "RedisClusterException",
+            "xdelex": "RedisClusterException",
+            "xgroup": "RedisClusterException",
+            "xinfo": "RedisClusterException",
+            "xlen": "RedisClusterException",
+            "xpending": "RedisClusterException",
+            "xrange": "RedisClusterException",
+            "xread": "RedisClusterException",
+            "xreadgroup": "RedisClusterException",
+            "xrevrange": "RedisClusterException",
+            "xtrim": "RedisClusterException",
+            "zadd": "RedisClusterException",
+            "zcard": "RedisClusterException",
+            "zcount": "RedisClusterException",
+            "zdiff": "RedisClusterException",
+            "zdiffstore": "RedisClusterException",
+            "zincrby": "RedisClusterException",
+            "zinter": "RedisClusterException",
+            "zintercard": "RedisClusterException",
+            "zinterstore": "RedisClusterException",
+            "zlexcount": "RedisClusterException",
+            "zmpop": "RedisClusterException",
+            "zmscore": "RedisClusterException",
+            "zpopmax": "RedisClusterException",
+            "zpopmin": "RedisClusterException",
+            "zrandmember": "RedisClusterException",
+            "zrange": "RedisClusterException",
+            "zrangebylex": "RedisClusterException",
+            "zrangebyscore": "RedisClusterException",
+            "zrangestore": "RedisClusterException",
+            "zrank": "RedisClusterException",
+            "zrem": "RedisClusterException",
+            "zremrangebylex": "RedisClusterException",
+            "zremrangebyrank": "RedisClusterException",
+            "zremrangebyscore": "RedisClusterException",
+            "zrevrange": "RedisClusterException",
+            "zrevrangebylex": "RedisClusterException",
+            "zrevrangebyscore": "RedisClusterException",
+            "zrevrank": "RedisClusterException",
+            "zscan": "RedisClusterException",
+            "zscore": "RedisClusterException",
+            "zunion": "RedisClusterException",
+            "zunionstore": "RedisClusterException"
+        },
+        "reflectionclass": {
+            "__construct": "ReflectionException",
+            "getmethod": "ReflectionException",
+            "getproperty": "ReflectionException",
+            "implementsinterface": "ReflectionException"
+        },
+        "reflectionclassconstant": {
+            "__construct": "Exception"
+        },
+        "reflectionconstant": {
+            "__construct": "ReflectionException"
+        },
+        "reflectionenum": {
+            "__construct": "ReflectionException",
+            "getcase": "ReflectionException"
+        },
+        "reflectionextension": {
+            "__construct": "ReflectionException"
+        },
+        "reflectionfunction": {
+            "__construct": "ReflectionException"
+        },
+        "reflectionmethod": {
+            "__construct": "ReflectionException",
+            "createfrommethodname": "ReflectionException",
+            "getclosure": "(ReflectionException | ValueError)",
+            "getprototype": "ReflectionException",
+            "invoke": "ReflectionException",
+            "invokeargs": "ReflectionException"
+        },
+        "reflectionparameter": {
+            "__construct": "ReflectionException",
+            "getdefaultvalue": "ReflectionException",
+            "getdefaultvalueconstantname": "ReflectionException",
+            "isoptional": "void"
+        },
+        "reflectionproperty": {
+            "__construct": "ReflectionException",
+            "getrawvalue": "Error",
+            "isinitialized": "ReflectionException",
+            "setrawvalue": "Error"
+        },
+        "reflectionreference": {
+            "fromarrayelement": "(ReflectionException | TypeError)"
+        },
+        "reflectiontype": {
+            "__tostring": "void"
+        },
+        "reflectionzendextension": {
+            "__construct": "ReflectionException"
+        },
+        "relay\\keytype": {
+            "from": "(TypeError | ValueError)"
+        },
+        "rrdupdater": {
+            "update": "Exception"
+        },
+        "seekableiterator": {
+            "seek": "OutOfBoundsException"
+        },
+        "serializable": {
+            "serialize": "Exception"
+        },
+        "simplekafkaclient": {
+            "getmetadata": "SimpleKafkaClient\\Exception",
+            "offsetsfortimes": "SimpleKafkaClient\\Exception",
+            "querywatermarkoffsets": "SimpleKafkaClient\\Exception"
+        },
+        "simplekafkaclient\\consumer": {
+            "__construct": "SimpleKafkaClient\\Exception",
+            "assign": "SimpleKafkaClient\\Exception",
+            "commit": "SimpleKafkaClient\\Exception",
+            "commitasync": "SimpleKafkaClient\\Exception",
+            "getassignment": "SimpleKafkaClient\\Exception",
+            "getcommittedoffsets": "SimpleKafkaClient\\Exception",
+            "getoffsetpositions": "SimpleKafkaClient\\Exception",
+            "getsubscription": "SimpleKafkaClient\\Exception",
+            "subscribe": "SimpleKafkaClient\\Exception",
+            "unsubscribe": "SimpleKafkaClient\\Exception"
+        },
+        "simplekafkaclient\\metadata": {
+            "getbrokers": "SimpleKafkaClient\\Exception",
+            "getorigbrokerid": "SimpleKafkaClient\\Exception",
+            "getorigbrokername": "SimpleKafkaClient\\Exception",
+            "gettopics": "SimpleKafkaClient\\Exception"
+        },
+        "simplekafkaclient\\producer": {
+            "__construct": "SimpleKafkaClient\\Exception",
+            "aborttransaction": "SimpleKafkaClient\\Exception",
+            "begintransaction": "SimpleKafkaClient\\Exception",
+            "committransaction": "SimpleKafkaClient\\Exception",
+            "inittransactions": "SimpleKafkaClient\\Exception"
+        },
+        "simplekafkaclient\\producertopic": {
+            "produce": "SimpleKafkaClient\\Exception",
+            "producev": "SimpleKafkaClient\\Exception"
+        },
+        "simplekafkaclient\\topicpartition": {
+            "getpartition": "SimpleKafkaClient\\Exception",
+            "gettopicname": "SimpleKafkaClient\\Exception",
+            "settopicname": "SimpleKafkaClient\\Exception"
+        },
+        "simplexmlelement": {
+            "__construct": "Exception"
+        },
+        "soapclient": {
+            "__construct": "SoapFault",
+            "__soapcall": "SoapFault"
+        },
+        "solrclient": {
+            "__construct": "SolrIllegalArgumentException",
+            "adddocument": "(SolrClientException | SolrServerException)",
+            "adddocuments": "(SolrClientException | SolrServerException)",
+            "commit": "(SolrClientException | SolrServerException)",
+            "deletebyid": "(SolrClientException | SolrServerException)",
+            "deletebyids": "(SolrClientException | SolrServerException)",
+            "deletebyqueries": "(SolrClientException | SolrServerException)",
+            "deletebyquery": "(SolrClientException | SolrServerException)",
+            "optimize": "(SolrClientException | SolrServerException)",
+            "ping": "(SolrClientException | SolrServerException)",
+            "query": "(SolrClientException | SolrServerException)",
+            "request": "(SolrClientException | SolrIllegalArgumentException | SolrServerException)",
+            "rollback": "(SolrClientException | SolrServerException)",
+            "system": "(SolrClientException | SolrServerException)",
+            "threads": "(SolrClientException | SolrServerException)"
+        },
+        "solrdocument": {
+            "serialize": "Exception"
+        },
+        "solrinputdocument": {
+            "addchilddocument": "SolrException",
+            "addchilddocuments": "SolrException",
+            "setversion": "SolrIllegalArgumentException",
+            "updatefield": "SolrIllegalArgumentException"
+        },
+        "solrparams": {
+            "serialize": "Exception"
+        },
+        "solrutils": {
+            "digestxmlresponse": "SolrException"
+        },
+        "spldoublylinkedlist": {
+            "serialize": "Exception"
+        },
+        "splfileinfo": {
+            "getatime": "RuntimeException",
+            "getctime": "RuntimeException",
+            "getgroup": "RuntimeException",
+            "getinode": "RuntimeException",
+            "getlinktarget": "RuntimeException",
+            "getowner": "RuntimeException",
+            "getsize": "RuntimeException",
+            "gettype": "RuntimeException",
+            "openfile": "RuntimeException"
+        },
+        "splfileobject": {
+            "__construct": "(LogicException | RuntimeException)",
+            "fgets": "RuntimeException",
+            "rewind": "RuntimeException",
+            "seek": "LogicException",
+            "setmaxlinelen": "DomainException"
+        },
+        "splfixedarray": {
+            "__construct": "ValueError",
+            "setsize": "ValueError"
+        },
+        "splheap": {
+            "extract": "RuntimeException",
+            "top": "RuntimeException"
+        },
+        "splminheap": {
+            "extract": "RuntimeException",
+            "top": "RuntimeException"
+        },
+        "splobjectstorage": {
+            "seek": "OutOfBoundsException",
+            "serialize": "Exception"
+        },
+        "spltempfileobject": {
+            "__construct": "RuntimeException"
+        },
+        "spltype": {
+            "__construct": "UnexpectedValueException"
+        },
+        "spoofchecker": {
+            "setallowedchars": "ValueError"
+        },
+        "sqlite3": {
+            "__construct": "Exception"
+        },
+        "sqlite3result": {
+            "finalize": "Error"
+        },
+        "sqlite3stmt": {
+            "close": "Error",
+            "getsql": "Exception"
+        },
+        "svm": {
+            "__construct": "SVMException",
+            "setoptions": "SVMException",
+            "train": "SMVException"
+        },
+        "svmmodel": {
+            "__construct": "Throws",
+            "load": "SVMException",
+            "predict": "SVMException",
+            "predict_probability": "SVMException",
+            "save": "SVMException"
+        },
+        "syncevent": {
+            "__construct": "Exception"
+        },
+        "syncmutex": {
+            "__construct": "Exception"
+        },
+        "syncreaderwriter": {
+            "__construct": "Exception"
+        },
+        "syncsemaphore": {
+            "__construct": "Exception"
+        },
+        "syncsharedmemory": {
+            "__construct": "Exception"
+        },
+        "throwable": {
+            "getcode": "void",
+            "getfile": "void",
+            "getline": "void",
+            "getmessage": "void",
+            "getprevious": "void",
+            "gettrace": "void",
+            "gettraceasstring": "void"
+        },
+        "uri\\rfc3986\\uri": {
+            "__construct": "Uri\\InvalidUriException",
+            "__serialize": "Exception",
+            "__unserialize": "Exception",
+            "resolve": "Uri\\InvalidUriException",
+            "withfragment": "Uri\\InvalidUriException",
+            "withhost": "Uri\\InvalidUriException",
+            "withpath": "Uri\\InvalidUriException",
+            "withport": "Uri\\InvalidUriException",
+            "withquery": "Uri\\InvalidUriException",
+            "withscheme": "Uri\\InvalidUriException",
+            "withuserinfo": "Uri\\InvalidUriException"
+        },
+        "uri\\whatwg\\url": {
+            "__construct": "Uri\\WhatWg\\InvalidUrlException",
+            "__serialize": "Exception",
+            "__unserialize": "Exception",
+            "resolve": "Uri\\WhatWg\\InvalidUrlException",
+            "withfragment": "Uri\\WhatWg\\InvalidUrlException",
+            "withhost": "Uri\\WhatWg\\InvalidUrlException",
+            "withpassword": "Uri\\WhatWg\\InvalidUrlException",
+            "withpath": "Uri\\WhatWg\\InvalidUrlException",
+            "withport": "Uri\\WhatWg\\InvalidUrlException",
+            "withquery": "Uri\\WhatWg\\InvalidUrlException",
+            "withscheme": "Uri\\WhatWg\\InvalidUrlException",
+            "withusername": "Uri\\WhatWg\\InvalidUrlException"
+        },
+        "xmlreader": {
+            "fromstream": "(TypeError | ValueError)",
+            "fromstring": "ValueError",
+            "fromuri": "ValueError",
+            "open": "ValueError",
+            "xml": "ValueError"
+        },
+        "xmlwriter": {
+            "tostream": "TypeError"
+        },
+        "xsltprocessor": {
+            "importstylesheet": "TypeError",
+            "setparameter": "ValueError"
+        },
+        "yaf\\application": {
+            "__construct": "(Yaf\\Exception\\StartupError | Yaf\\Exception\\TypeError)",
+            "run": "Yaf\\Exception\\StartupError"
+        },
+        "yaf\\config\\ini": {
+            "__construct": "Yaf\\Exception\\TypeError"
+        },
+        "yaf\\dispatcher": {
+            "dispatch": "(Yaf\\Exception\\DispatchFailed | Yaf\\Exception\\LoadFailed | Yaf\\Exception\\RouterFailed | Yaf\\Exception\\TypeError)"
+        },
+        "yaf\\request\\simple": {
+            "__construct": "Yaf\\Exception\\TypeError"
+        },
+        "yaf\\route\\regex": {
+            "__construct": "Yaf\\Exception\\TypeError"
+        },
+        "yaf\\route\\rewrite": {
+            "__construct": "Yaf\\Exception\\TypeError"
+        },
+        "yaf\\route\\simple": {
+            "__construct": "Yaf\\Exception\\TypeError"
+        },
+        "yaf\\route\\supervar": {
+            "__construct": "Yaf\\Exception\\TypeError"
+        },
+        "yaf\\view\\simple": {
+            "__construct": "Yaf\\Exception\\TypeError",
+            "display": "Yaf\\Exception\\LoadFailed\\View",
+            "render": "Yaf\\Exception\\LoadFailed\\View"
+        },
+        "yaf_application": {
+            "__construct": "(Yaf_Exception_StartupError | Yaf_Exception_TypeError)",
+            "run": "Yaf_Exception_StartupError"
+        },
+        "yaf_config_ini": {
+            "__construct": "Yaf_Exception_TypeError"
+        },
+        "yaf_config_simple": {
+            "__construct": "Yaf_Exception_TypeError"
+        },
+        "yaf_dispatcher": {
+            "dispatch": "(Yaf_Exception_DispatchFailed | Yaf_Exception_LoadFailed | Yaf_Exception_RouterFailed | Yaf_Exception_TypeError)"
+        },
+        "yaf_request_simple": {
+            "__construct": "Yaf_Exception_TypeError"
+        },
+        "yaf_route_regex": {
+            "__construct": "Yaf_Exception_TypeError"
+        },
+        "yaf_route_rewrite": {
+            "__construct": "Yaf_Exception_TypeError"
+        },
+        "yaf_route_simple": {
+            "__construct": "Yaf_Exception_TypeError"
+        },
+        "yaf_route_supervar": {
+            "__construct": "Yaf_Exception_TypeError"
+        },
+        "yaf_view_simple": {
+            "__construct": "Yaf_Exception_TypeError",
+            "display": "Yaf_Exception_LoadFailed_View",
+            "render": "Yaf_Exception_LoadFailed_View"
+        },
+        "zmqcontext": {
+            "getopt": "ZMQContextException",
+            "getsocket": "ZMQSocketException",
+            "setopt": "ZMQContextException"
+        },
+        "zmqdevice": {
+            "run": "ZMQDeviceException"
+        },
+        "zmqpoll": {
+            "add": "ZMQPollException",
+            "poll": "ZMQPollException"
+        },
+        "zmqsocket": {
+            "__construct": "ZMQSocketException",
+            "bind": "ZMQSocketException",
+            "connect": "ZMQSocketException",
+            "disconnect": "ZMQSocketException",
+            "getendpoints": "ZMQSocketException",
+            "getsockopt": "ZMQSocketException",
+            "recv": "ZMQSocketException",
+            "recvmulti": "ZMQSocketException",
+            "send": "ZMQSocketException",
+            "sendmulti": "ZMQSocketException",
+            "setsockopt": "ZMQSocketException",
+            "unbind": "ZMQSocketException"
+        },
+        "zookeeper": {
+            "__construct": "ZookeeperException",
+            "addauth": "ZookeeperException",
+            "close": "ZookeeperException",
+            "connect": "ZookeeperException",
+            "create": "ZookeeperException",
+            "delete": "ZookeeperException",
+            "exists": "ZookeeperException",
+            "get": "ZookeeperException",
+            "getacl": "ZookeeperException",
+            "getchildren": "ZookeeperException",
+            "getclientid": "ZookeeperException",
+            "getrecvtimeout": "ZookeeperException",
+            "getstate": "ZookeeperException",
+            "isrecoverable": "ZookeeperException",
+            "set": "ZookeeperException",
+            "setacl": "ZookeeperException",
+            "setwatcher": "ZookeeperException"
+        }
+    },
+    "dynamic": [
+        "array_chunk",
+        "array_combine",
+        "assert",
+        "dateinterval::__construct",
+        "dateinterval::createfromdatestring",
+        "datetime::__construct",
+        "datetime::modify",
+        "datetime::sub",
+        "datetimeimmutable::__construct",
+        "datetimeimmutable::modify",
+        "datetimeimmutable::sub",
+        "datetimezone::__construct",
+        "domdocument::createelement",
+        "ds\\map::get",
+        "ds\\map::remove",
+        "filter_input",
+        "filter_input_array",
+        "filter_var",
+        "filter_var_array",
+        "fprintf",
+        "get_class",
+        "intdiv",
+        "json_decode",
+        "json_encode",
+        "max",
+        "min",
+        "printf",
+        "reflectionclass::__construct",
+        "reflectionclassconstant::__construct",
+        "reflectionfunction::__construct",
+        "reflectionmethod::__construct",
+        "reflectionproperty::__construct",
+        "round",
+        "simplexmlelement::__construct",
+        "sprintf",
+        "str_split",
+        "trigger_error",
+        "unserialize",
+        "version_compare",
+        "vfprintf",
+        "vprintf",
+        "vsprintf"
+    ],
+    "later": {
+        "die": [
+            "status"
+        ],
+        "exit": [
+            "status"
+        ],
+        "header_register_callback": [
+            "callback"
+        ],
+        "pcntl_signal": [
+            "handler"
+        ],
+        "register_shutdown_function": [
+            "callback"
+        ],
+        "register_tick_function": [
+            "callback"
+        ],
+        "set_error_handler": [
+            "callback"
+        ],
+        "set_exception_handler": [
+            "callback"
+        ],
+        "spl_autoload_register": [
+            "callback"
+        ]
+    },
+    "immediate": []
+}

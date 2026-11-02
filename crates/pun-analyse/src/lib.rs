@@ -19,7 +19,7 @@ use rayon::prelude::*;
 pub use codebase::CouldNotReadFile;
 pub use laravel::Laravel;
 pub use mago::{Dumped, MagoIssue, MagoRun, run_mago};
-pub use project::{MethodRules, Project, Reported, StrictRules};
+pub use project::{Exceptions, MethodRules, Project, Reported, StrictRules};
 pub use relative_path::RelativePath;
 pub use rules::Larastan;
 

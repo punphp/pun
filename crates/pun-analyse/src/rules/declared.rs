@@ -402,6 +402,11 @@ pub(super) fn codex_return_type(c: &Checker, f: &FunctionLikeMetadata, declaring
     decide_type(native.unwrap_or_else(mixed), reflected_doc(c, f, declaring, name).ret)
 }
 
+/// `getThrowType()` of a reflected function or method: its `@throws`, a method's inherited one too.
+pub(super) fn reflected_throws(c: &Checker, f: &FunctionLikeMetadata, declaring: Option<&ClassLikeMetadata>, name: &str) -> Option<Type> {
+    reflected_doc(c, f, declaring, name).throws
+}
+
 fn reflected_doc(c: &Checker, f: &FunctionLikeMetadata, declaring: Option<&ClassLikeMetadata>, name: &str) -> Resolved {
     match declaring {
         Some(class) => method_doc(c, class, name.as_bytes(), 0).unwrap_or_default(),
@@ -425,8 +430,8 @@ pub(super) fn value_scope(c: &Checker, f: &FunctionLikeMetadata, class: Option<&
 fn codex_doc(c: &Checker, f: &FunctionLikeMetadata, declaring: Option<&ClassLikeMetadata>) -> Resolved {
     match declaring {
         Some(k) => method_doc(c, k, &f.name.as_bytes().to_ascii_lowercase(), 0),
-        None => doc_at(c, f.span).map(|(doc, _)| {
-            let doc = Doc::parse(&doc);
+        None => doc_at(c, f.span).map(|(raw, _)| {
+            let doc = Doc::parse(&raw);
             let mut scope = scope_at(c, f.span, None);
             let name = text(f.original_name.as_bytes());
             for t in templates(&doc, &scope, &format!("function {name}()")) {
@@ -436,6 +441,7 @@ fn codex_doc(c: &Checker, f: &FunctionLikeMetadata, declaring: Option<&ClassLike
                 params: doc.param_types(&scope).into_iter().map(|(k, (t, _))| (k, t)).collect(),
                 ret: doc.return_type(&scope),
                 closure_this: Doc::named_types(&doc.closure_this, &scope),
+                throws: super::invalid_throws::throws_type(&raw, &scope),
                 ..Resolved::default()
             }
         }),
@@ -535,6 +541,8 @@ struct Resolved {
     /// `@pure-unless-callable-is-impure` and `@pure-unless-parameter-passed` parameters
     pure_unless_callable: Vec<String>,
     pure_unless_passed: Vec<String>,
+    /// `@throws` (`getThrowType()`)
+    throws: Option<Type>,
 }
 
 /// The parameters (without `$`) the tags `names` name.
@@ -624,6 +632,7 @@ fn resolved_own(
         },
         pure_unless_callable: tagged_params(&raw, &["@pure-unless-callable-is-impure", "@phpstan-pure-unless-callable-is-impure"]),
         pure_unless_passed: tagged_params(&raw, &["@pure-unless-parameter-passed", "@phpstan-pure-unless-parameter-passed"]),
+        throws: super::invalid_throws::throws_type(&raw, &scope),
     })
 }
 
@@ -859,6 +868,10 @@ fn merge(
     }
     if out.self_out.is_none() {
         out.self_out = parent.self_out;
+    }
+    // `mergeThrowsTags()`
+    if out.throws.is_none() {
+        out.throws = parent.throws.map(types);
     }
     // `mergeAssertTags()`
     if out.asserts.is_empty() {

@@ -1,0 +1,334 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "checked.php",
+   "line": 29,
+   "identifier": "missingType.checkedException",
+   "message": "Function ThrowsCoverage\\callsChecked() throws checked exception ThrowsCoverage\\CheckedException but it's missing from the PHPDoc @throws tag.",
+   "tip": null
+  },
+  {
+   "file": "checked.php",
+   "line": 31,
+   "identifier": "missingType.checkedException",
+   "message": "Function ThrowsCoverage\\callsChecked() throws checked exception ThrowsCoverage\\SubChecked but it's missing from the PHPDoc @throws tag.",
+   "tip": null
+  },
+  {
+   "file": "checked.php",
+   "line": 41,
+   "identifier": "throws.unusedType",
+   "message": "Function ThrowsCoverage\\tooWide() has ThrowsCoverage\\CheckedException in PHPDoc @throws tag but it's not thrown.",
+   "tip": null
+  },
+  {
+   "file": "checked.php",
+   "line": 55,
+   "identifier": "missingType.checkedException",
+   "message": "Function ThrowsCoverage\\deadCatches() throws checked exception ThrowsCoverage\\CheckedException but it's missing from the PHPDoc @throws tag.",
+   "tip": null
+  },
+  {
+   "file": "checked.php",
+   "line": 58,
+   "identifier": "catch.neverThrown",
+   "message": "Dead catch - ThrowsCoverage\\UncheckedException is never thrown in the try block.",
+   "tip": null
+  },
+  {
+   "file": "checked.php",
+   "line": 70,
+   "identifier": "catch.neverThrown",
+   "message": "Dead catch - LogicException is never thrown in the try block.",
+   "tip": null
+  },
+  {
+   "file": "checked.php",
+   "line": 76,
+   "identifier": "catch.neverThrown",
+   "message": "Dead catch - ThrowsCoverage\\UncheckedException is never thrown in the try block.",
+   "tip": null
+  },
+  {
+   "file": "checked.php",
+   "line": 78,
+   "identifier": "catch.neverThrown",
+   "message": "Dead catch - Error is never thrown in the try block.",
+   "tip": null
+  },
+  {
+   "file": "checked.php",
+   "line": 97,
+   "identifier": "throws.notCovariant",
+   "message": "PHPDoc tag @throws type Exception of method ThrowsCoverage\\Implementation::run() should be covariant with PHPDoc @throws type ThrowsCoverage\\CheckedException of method ThrowsCoverage\\HasThrows::run().",
+   "tip": null
+  },
+  {
+   "file": "checked.php",
+   "line": 103,
+   "identifier": "throws.shouldBeVoid",
+   "message": "Method ThrowsCoverage\\Implementation::quiet() should not throw ThrowsCoverage\\UncheckedException because parent method ThrowsCoverage\\HasThrows::quiet() has PHPDoc tag @throws void.",
+   "tip": null
+  },
+  {
+   "file": "checked.php",
+   "line": 115,
+   "identifier": "throws.unusedType",
+   "message": "Method ThrowsCoverage\\Implementation::privateTooWide() has ThrowsCoverage\\CheckedException in PHPDoc @throws tag but it's not thrown.",
+   "tip": null
+  },
+  {
+   "file": "checked.php",
+   "line": 121,
+   "identifier": "missingType.checkedException",
+   "message": "Method ThrowsCoverage\\Implementation::caller() throws checked exception ThrowsCoverage\\CheckedException but it's missing from the PHPDoc @throws tag.",
+   "tip": null
+  },
+  {
+   "file": "checked.php",
+   "line": 122,
+   "identifier": "missingType.checkedException",
+   "message": "Method ThrowsCoverage\\Implementation::caller() throws checked exception Exception but it's missing from the PHPDoc @throws tag.",
+   "tip": null
+  },
+  {
+   "file": "checked.php",
+   "line": 134,
+   "identifier": "missingType.checkedException",
+   "message": "Set hook for property ThrowsCoverage\\Hooks::$value throws checked exception ThrowsCoverage\\CheckedException but it's missing from the PHPDoc @throws tag.",
+   "tip": null
+  },
+  {
+   "file": "checked.php",
+   "line": 138,
+   "identifier": "property.neverRead",
+   "message": "Readable property ThrowsCoverage\\Hooks::$quiet is never read.",
+   "tip": null
+  },
+  {
+   "file": "checked.php",
+   "line": 140,
+   "identifier": "throws.unusedType",
+   "message": "Get hook for property ThrowsCoverage\\Hooks::$quiet has ThrowsCoverage\\UncheckedException in PHPDoc @throws tag but it's not thrown.",
+   "tip": null
+  },
+  {
+   "file": "method-throw-type-covariance.php",
+   "line": 56,
+   "identifier": "throws.notCovariant",
+   "message": "PHPDoc tag @throws type RuntimeException of method MethodThrowTypeCovariance\\Baz::logicException() should be covariant with PHPDoc @throws type LogicException of method MethodThrowTypeCovariance\\Foo::logicException().",
+   "tip": null
+  },
+  {
+   "file": "method-throw-type-covariance.php",
+   "line": 122,
+   "identifier": "throws.shouldBeVoid",
+   "message": "Method MethodThrowTypeCovariance\\VoidInChild3::throwVoid() should not throw RuntimeException because parent method MethodThrowTypeCovariance\\VoidInParent::throwVoid() has PHPDoc tag @throws void.",
+   "tip": null
+  },
+  {
+   "file": "missing-exception-function-throws.php",
+   "line": 18,
+   "identifier": "throws.unusedType",
+   "message": "Function MissingExceptionFunctionThrows\\doBaz() has RuntimeException in PHPDoc @throws tag but it's not thrown.",
+   "tip": null
+  },
+  {
+   "file": "missing-exception-function-throws.php",
+   "line": 20,
+   "identifier": "missingType.checkedException",
+   "message": "Function MissingExceptionFunctionThrows\\doBaz() throws checked exception InvalidArgumentException but it's missing from the PHPDoc @throws tag.",
+   "tip": null
+  },
+  {
+   "file": "missing-exception-function-throws.php",
+   "line": 24,
+   "identifier": "throws.unusedType",
+   "message": "Function MissingExceptionFunctionThrows\\doLorem() has RuntimeException in PHPDoc @throws tag but it's not thrown.",
+   "tip": null
+  },
+  {
+   "file": "missing-exception-function-throws.php",
+   "line": 26,
+   "identifier": "missingType.checkedException",
+   "message": "Function MissingExceptionFunctionThrows\\doLorem() throws checked exception InvalidArgumentException but it's missing from the PHPDoc @throws tag.",
+   "tip": null
+  },
+  {
+   "file": "missing-exception-function-throws.php",
+   "line": 31,
+   "identifier": "missingType.checkedException",
+   "message": "Function MissingExceptionFunctionThrows\\doLorem2() throws checked exception InvalidArgumentException but it's missing from the PHPDoc @throws tag.",
+   "tip": null
+  },
+  {
+   "file": "missing-exception-function-throws.php",
+   "line": 47,
+   "identifier": "missingType.checkedException",
+   "message": "Function MissingExceptionFunctionThrows\\doIpsum() throws checked exception PHPStan\\ShouldNotHappenException but it's missing from the PHPDoc @throws tag.",
+   "tip": null
+  },
+  {
+   "file": "missing-exception-function-throws.php",
+   "line": 51,
+   "identifier": "throws.unusedType",
+   "message": "Function MissingExceptionFunctionThrows\\doBar2() has InvalidArgumentException in PHPDoc @throws tag but it's not thrown.",
+   "tip": null
+  },
+  {
+   "file": "missing-exception-function-throws.php",
+   "line": 53,
+   "identifier": "missingType.checkedException",
+   "message": "Function MissingExceptionFunctionThrows\\doBar2() throws checked exception LogicException but it's missing from the PHPDoc @throws tag.",
+   "tip": null
+  },
+  {
+   "file": "missing-exception-function-throws.php",
+   "line": 59,
+   "identifier": "missingType.checkedException",
+   "message": "Function MissingExceptionFunctionThrows\\doBar3() throws checked exception LogicException but it's missing from the PHPDoc @throws tag.",
+   "tip": null
+  },
+  {
+   "file": "missing-exception-method-throws.php",
+   "line": 23,
+   "identifier": "missingType.checkedException",
+   "message": "Method MissingExceptionMethodThrows\\Foo::doBaz() throws checked exception InvalidArgumentException but it's missing from the PHPDoc @throws tag.",
+   "tip": null
+  },
+  {
+   "file": "missing-exception-method-throws.php",
+   "line": 29,
+   "identifier": "missingType.checkedException",
+   "message": "Method MissingExceptionMethodThrows\\Foo::doLorem() throws checked exception InvalidArgumentException but it's missing from the PHPDoc @throws tag.",
+   "tip": null
+  },
+  {
+   "file": "missing-exception-method-throws.php",
+   "line": 34,
+   "identifier": "missingType.checkedException",
+   "message": "Method MissingExceptionMethodThrows\\Foo::doLorem2() throws checked exception InvalidArgumentException but it's missing from the PHPDoc @throws tag.",
+   "tip": null
+  },
+  {
+   "file": "missing-exception-method-throws.php",
+   "line": 48,
+   "identifier": "missingType.checkedException",
+   "message": "Method MissingExceptionMethodThrows\\Foo::doIpsum() throws checked exception PHPStan\\ShouldNotHappenException but it's missing from the PHPDoc @throws tag.",
+   "tip": null
+  },
+  {
+   "file": "missing-exception-method-throws.php",
+   "line": 54,
+   "identifier": "function.notFound",
+   "message": "Function doFoo not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "missing-exception-method-throws.php",
+   "line": 63,
+   "identifier": "missingType.checkedException",
+   "message": "Method MissingExceptionMethodThrows\\Foo::doSit() throws checked exception ExtendsThrowable\\ExtendsThrowable but it's missing from the PHPDoc @throws tag.",
+   "tip": null
+  },
+  {
+   "file": "missing-exception-method-throws.php",
+   "line": 72,
+   "identifier": "missingType.checkedException",
+   "message": "Method MissingExceptionMethodThrows\\Foo::doSit2() throws checked exception ExtendsThrowable\\ExtendsThrowable but it's missing from the PHPDoc @throws tag.",
+   "tip": null
+  },
+  {
+   "file": "missing-exception-method-throws.php",
+   "line": 83,
+   "identifier": "throws.unusedType",
+   "message": "Method MissingExceptionMethodThrows\\Foo::throwsInterface() has ExtendsThrowable\\ExtendsThrowable in PHPDoc @throws tag but it's not thrown.",
+   "tip": null
+  },
+  {
+   "file": "missing-exception-method-throws.php",
+   "line": 83,
+   "identifier": "throws.notThrowable",
+   "message": "PHPDoc tag @throws with type ExtendsThrowable\\ExtendsThrowable is not subtype of Throwable",
+   "tip": null
+  },
+  {
+   "file": "missing-exception-method-throws.php",
+   "line": 95,
+   "identifier": "missingType.checkedException",
+   "message": "Method MissingExceptionMethodThrows\\Foo::dateTimeZoneDoesThrows() throws checked exception DateInvalidTimeZoneException but it's missing from the PHPDoc @throws tag.",
+   "tip": null
+  },
+  {
+   "file": "missing-exception-method-throws.php",
+   "line": 105,
+   "identifier": "missingType.checkedException",
+   "message": "Method MissingExceptionMethodThrows\\Foo::dateIntervalDoesThrows() throws checked exception DateMalformedIntervalStringException but it's missing from the PHPDoc @throws tag.",
+   "tip": null
+  },
+  {
+   "file": "missing-exception-method-throws.php",
+   "line": 116,
+   "identifier": "method.resultDiscarded",
+   "message": "Call to method DateTimeImmutable::modify() on a separate line discards return value.",
+   "tip": null
+  },
+  {
+   "file": "missing-exception-method-throws.php",
+   "line": 116,
+   "identifier": "method.resultUnused",
+   "message": "Call to method DateTimeImmutable::modify() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "missing-exception-method-throws.php",
+   "line": 121,
+   "identifier": "missingType.checkedException",
+   "message": "Method MissingExceptionMethodThrows\\Foo::dateTimeModifyDoesThrows() throws checked exception DateMalformedStringException but it's missing from the PHPDoc @throws tag.",
+   "tip": null
+  },
+  {
+   "file": "missing-exception-method-throws.php",
+   "line": 122,
+   "identifier": "method.resultDiscarded",
+   "message": "Call to method DateTimeImmutable::modify() on a separate line discards return value.",
+   "tip": null
+  },
+  {
+   "file": "missing-exception-method-throws.php",
+   "line": 122,
+   "identifier": "missingType.checkedException",
+   "message": "Method MissingExceptionMethodThrows\\Foo::dateTimeModifyDoesThrows() throws checked exception DateMalformedStringException but it's missing from the PHPDoc @throws tag.",
+   "tip": null
+  },
+  {
+   "file": "missing-exception-property-hook-throws.php",
+   "line": 25,
+   "identifier": "missingType.checkedException",
+   "message": "Get hook for property MissingExceptionPropertyHookThrows\\Foo::$k throws checked exception InvalidArgumentException but it's missing from the PHPDoc @throws tag.",
+   "tip": null
+  },
+  {
+   "file": "missing-exception-property-hook-throws.php",
+   "line": 32,
+   "identifier": "missingType.checkedException",
+   "message": "Set hook for property MissingExceptionPropertyHookThrows\\Foo::$l throws checked exception InvalidArgumentException but it's missing from the PHPDoc @throws tag.",
+   "tip": null
+  },
+  {
+   "file": "missing-exception-property-hook-throws.php",
+   "line": 38,
+   "identifier": "missingType.checkedException",
+   "message": "Get hook for property MissingExceptionPropertyHookThrows\\Foo::$m throws checked exception InvalidArgumentException but it's missing from the PHPDoc @throws tag.",
+   "tip": null
+  },
+  {
+   "file": "missing-exception-property-hook-throws.php",
+   "line": 43,
+   "identifier": "missingType.checkedException",
+   "message": "Get hook for property MissingExceptionPropertyHookThrows\\Foo::$n throws checked exception InvalidArgumentException but it's missing from the PHPDoc @throws tag.",
+   "tip": null
+  }
+ ]
+}

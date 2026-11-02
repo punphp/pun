@@ -52,3 +52,5 @@
 # Isset/property reads and their branch effects are unknown, not manufactured empty.
 5 Properties/AccessPropertiesRuleTest::testBug12390 | Properties/data/bug-12390.php:3
 5 Properties/AccessPropertiesRuleTest::testBug12390 | Properties/data/bug-12390.php:9
+# A function whose only statement is a `try` with an empty catch: its try/catch effect join is not produced.
+4 Exceptions/MissingCheckedExceptionInFunctionThrowsRuleTest::testRule | Exceptions/data/missing-exception-function-throws.php:34

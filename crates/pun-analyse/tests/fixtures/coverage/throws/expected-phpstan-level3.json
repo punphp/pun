@@ -1,0 +1,40 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "missing-exception-function-throws.php",
+   "line": 59,
+   "identifier": "throws.void",
+   "message": "Function MissingExceptionFunctionThrows\\doBar3() throws exception LogicException but the PHPDoc contains @throws void.",
+   "tip": null
+  },
+  {
+   "file": "missing-exception-method-throws.php",
+   "line": 54,
+   "identifier": "function.notFound",
+   "message": "Function doFoo not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "missing-exception-method-throws.php",
+   "line": 83,
+   "identifier": "throws.notThrowable",
+   "message": "PHPDoc tag @throws with type ExtendsThrowable\\ExtendsThrowable is not subtype of Throwable",
+   "tip": null
+  },
+  {
+   "file": "missing-exception-method-throws.php",
+   "line": 116,
+   "identifier": "method.resultDiscarded",
+   "message": "Call to method DateTimeImmutable::modify() on a separate line discards return value.",
+   "tip": null
+  },
+  {
+   "file": "missing-exception-method-throws.php",
+   "line": 122,
+   "identifier": "method.resultDiscarded",
+   "message": "Call to method DateTimeImmutable::modify() on a separate line discards return value.",
+   "tip": null
+  }
+ ]
+}

@@ -71,7 +71,6 @@
 4 Methods/CallToMethodStatementWithoutSideEffectsRuleTest::testPhpDoc
 # an-dead: PHPStan's built-in throw-type extensions (DateTime*::createFromFormat, DateTimeImmutable::sub) make an explicit throw point
 4 Methods/CallToMethodStatementWithoutSideEffectsRuleTest::testRule
-4 Methods/CallToMethodStatementWithoutSideEffectsRuleTest::testBug11503
 4 Methods/CallToStaticMethodStatementWithoutSideEffectsRuleTest::testRule
 4 Methods/CallToStaticMethodStatementWithoutSideEffectsRuleTest::testBug10819
 # an-types2: other rules' identifiers in the level-5/9 exports of the call and property rules (statement
@@ -726,3 +725,20 @@
 # cross-branch after the nullsafe + NullCoalesce + templateType merges (owners notified)
 4 Variables/NullCoalesceRuleTest::testBug7109
 9 Functions/CallToFunctionParametersRuleTest::testBug10297
+# catch.neverThrown: the call's throw point comes from a dynamic throw type extension Pun does not port (trigger_error,
+# min/max, array_chunk, printf, get_class, round, str_split, unserialize, Ds\Map; only json_* and assert are ported),
+# so Pun keeps an unknown throw point there and reports none of those dead catches
+4 Exceptions/CatchWithUnthrownExceptionRuleTest::testBug9066
+4 Exceptions/CatchWithUnthrownExceptionRuleTest::testTriggerErrorThrowType
+4 Exceptions/CatchWithUnthrownExceptionRuleTest::testMinMaxThrowType
+4 Exceptions/CatchWithUnthrownExceptionRuleTest::testArrayChunkThrowType
+4 Exceptions/CatchWithUnthrownExceptionRuleTest::testPrintfThrowType
+4 Exceptions/CatchWithUnthrownExceptionRuleTest::testGetClassThrowType
+4 Exceptions/CatchWithUnthrownExceptionRuleTest::testRoundThrowType
+4 Exceptions/CatchWithUnthrownExceptionRuleTest::testStrSplitThrowType
+4 Exceptions/CatchWithUnthrownExceptionRuleTest::testDsMapVoidThrowType
+4 Exceptions/CatchWithUnthrownExceptionRuleTest::testUnserializeThrowType
+# throws.void of a call to a conditional `@throws ($x is 0 ? Exception : void)`: ConditionalTypeResolver::resolveForCall()
+# against the arguments is not ported in ThrowsVoid*WithExplicitThrowPointRule
+4 Exceptions/MissingCheckedExceptionInFunctionThrowsRuleTest::testConditionalThrows
+4 Exceptions/MissingCheckedExceptionInMethodThrowsRuleTest::testConditionalThrows

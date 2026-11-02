@@ -1219,7 +1219,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/closure-param-default" = { preset = "essential", ported = true, status = "decided" }
 "types/closure-return" = { preset = "essential", ported = true, status = "decided" }
 "types/constant-value" = { preset = "essential", status = "decided" }
-"types/dead-catch" = { preset = "recommended", fixed_by = ["lint/dead-code/no-dead-catch"], status = "decided" }
+"types/dead-catch" = { preset = "recommended", ported = true, fixed_by = ["lint/dead-code/no-dead-catch"], status = "decided" }
 "types/define-value" = { preset = "essential", status = "decided" }
 "types/echo-non-string" = { preset = "essential", ported = true, status = "decided" }
 "types/enum-template-not-allowed" = { preset = "essential", ported = true, status = "decided" }
@@ -1265,17 +1265,17 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/method-param-default" = { preset = "essential", ported = true, status = "decided" }
 "types/method-variance" = { preset = "essential", status = "decided" }
 "types/missing-constant-type" = { preset = "strict", ported = true, status = "decided" }
-"types/missing-hook-throws" = { preset = "max", status = "decided" }
+"types/missing-hook-throws" = { preset = "max", ported = true, status = "decided" }
 "types/missing-method-param-type" = { preset = "strict", ported = true, status = "decided" }
 "types/missing-method-return-type" = { preset = "strict", ported = true, status = "decided" }
-"types/missing-method-throws" = { preset = "max", status = "decided" }
+"types/missing-method-throws" = { preset = "max", ported = true, status = "decided" }
 "types/missing-param-type" = { preset = "strict", ported = true, status = "decided" }
 "types/missing-preg-quote-delimiter" = { preset = "recommended", ported = true, status = "decided" }
 "types/missing-property-type" = { preset = "strict", ported = true, status = "decided" }
 "types/missing-return" = { preset = "basic", ported = true, status = "decided" }
 "types/missing-return-type" = { preset = "strict", ported = true, fixed_by = ["lint/types/add-void-return-type"], status = "decided", note = "level 6; fixed by the Rector-derived return-type rules where the type is inferable" }
 "types/missing-self-out-type" = { preset = "strict", ported = true, status = "decided" }
-"types/missing-throws" = { preset = "max", status = "decided" }
+"types/missing-throws" = { preset = "max", ported = true, status = "decided" }
 "types/nullsafe-by-ref-return" = { preset = "basic", ported = true, status = "decided" }
 "types/offset-assign" = { preset = "essential", ported = true, status = "decided" }
 "types/offset-assign-op" = { preset = "essential", ported = true, status = "decided" }
@@ -1303,7 +1303,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/this-in-global" = { preset = "basic", ported = true, status = "decided" }
 "types/this-in-static" = { preset = "basic", ported = true, status = "decided" }
 "types/throw-non-throwable" = { preset = "essential", ported = true, status = "decided" }
-"types/throws-not-covariant" = { preset = "basic", status = "decided" }
+"types/throws-not-covariant" = { preset = "basic", ported = true, status = "decided" }
 "types/throws-void-function" = { preset = "essential", ported = true, status = "decided" }
 "types/throws-void-hook" = { preset = "essential", ported = true, status = "decided" }
 "types/throws-void-method" = { preset = "essential", ported = true, status = "decided" }
@@ -1316,9 +1316,9 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/too-wide-property" = { preset = "recommended", ported = true, status = "decided" }
 "types/unpack-non-iterable" = { preset = "essential", ported = true, status = "decided" }
 "types/unpack-string-key" = { preset = "essential", ported = true, status = "decided" }
-"types/unused-hook-throws-type" = { preset = "recommended", status = "decided" }
-"types/unused-method-throws-type" = { preset = "recommended", status = "decided" }
-"types/unused-throws-type" = { preset = "recommended", status = "decided" }
+"types/unused-hook-throws-type" = { preset = "recommended", ported = true, status = "decided" }
+"types/unused-method-throws-type" = { preset = "recommended", ported = true, status = "decided" }
+"types/unused-throws-type" = { preset = "recommended", ported = true, status = "decided" }
 "types/useless-array-filter" = { preset = "recommended", ported = true, status = "decided" }
 "types/void-match-used" = { preset = "essential", ported = true, status = "decided" }
 "types/write-to-readonly-property" = { preset = "basic", ported = true, status = "decided" }

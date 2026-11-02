@@ -1,0 +1,17 @@
+parameters:
+    level: 4
+    phpVersion: 80500
+    paths: [.]
+    checkTooWideThrowTypesInProtectedAndPublicMethods: true
+    exceptions:
+        implicitThrows: false
+        reportUncheckedExceptionDeadCatch: false
+        checkedExceptionClasses:
+            - ThrowsCoverage\CheckedException
+            - LogicException
+        uncheckedExceptionRegexes:
+            - '#^ThrowsCoverage\\Unchecked#'
+        check:
+            missingCheckedExceptionInThrows: true
+            tooWideImplicitThrowType: true
+            throwTypeCovariance: true

@@ -21,6 +21,7 @@ pub(crate) use conditions::conditions_in_traits;
 pub(crate) use impure_points::resolve as impure_points;
 pub(super) use impure_points::{function as impure_function, method as impure_method};
 pub(super) use unreachable::{Statements as UnreachableStatements, find as unreachable_statements};
+pub(super) use noop::{Function, function_of};
 
 use std::collections::HashSet;
 
