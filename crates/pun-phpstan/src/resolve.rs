@@ -688,6 +688,13 @@ fn generic(base: &str, args: &[Node], scope: &dyn Scope) -> Type {
             [key, item] => Type::Iterable(Box::new(key.clone()), Box::new(item.clone())),
             _ => Type::Error,
         },
+        "enum-string" => match types.as_slice() {
+            [g] => Type::ClassString(Some(Box::new(intersect(vec![
+                g.clone(),
+                Type::Object("UnitEnum".into(), vec![], false),
+            ])))),
+            _ => Type::Error,
+        },
         "class-string" | "interface-string" => match types.as_slice() {
             // (a `TemplateMixedType` is a `MixedType`)
             [g] if g.is_object().yes()

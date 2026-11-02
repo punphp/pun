@@ -1,0 +1,152 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "impure-points.php",
+   "line": 8,
+   "identifier": "impure.eval",
+   "message": "Impure eval in pure function PureImpurePoints\\evaluates().",
+   "tip": null
+  },
+  {
+   "file": "impure-points.php",
+   "line": 16,
+   "identifier": "impure.include",
+   "message": "Impure include in pure function PureImpurePoints\\includes().",
+   "tip": null
+  },
+  {
+   "file": "impure-points.php",
+   "line": 17,
+   "identifier": "impure.include",
+   "message": "Impure include in pure function PureImpurePoints\\includes().",
+   "tip": null
+  },
+  {
+   "file": "impure-points.php",
+   "line": 18,
+   "identifier": "impure.require",
+   "message": "Impure require in pure function PureImpurePoints\\includes().",
+   "tip": null
+  },
+  {
+   "file": "impure-points.php",
+   "line": 19,
+   "identifier": "impure.require",
+   "message": "Impure require in pure function PureImpurePoints\\includes().",
+   "tip": null
+  },
+  {
+   "file": "impure-points.php",
+   "line": 30,
+   "identifier": "impure.yield",
+   "message": "Impure yield in pure function PureImpurePoints\\yields().",
+   "tip": null
+  },
+  {
+   "file": "impure-points.php",
+   "line": 31,
+   "identifier": "impure.yield",
+   "message": "Impure yield in pure function PureImpurePoints\\yields().",
+   "tip": null
+  },
+  {
+   "file": "impure-points.php",
+   "line": 32,
+   "identifier": "impure.yieldFrom",
+   "message": "Impure yield from in pure function PureImpurePoints\\yields().",
+   "tip": null
+  },
+  {
+   "file": "impure-points.php",
+   "line": 45,
+   "identifier": "impure.propertyUnset",
+   "message": "Impure property unset in pure method PureImpurePoints\\Box::unsets().",
+   "tip": null
+  },
+  {
+   "file": "impure-points.php",
+   "line": 53,
+   "identifier": "impure.print",
+   "message": "Impure print in pure method PureImpurePoints\\Box::prints().",
+   "tip": null
+  },
+  {
+   "file": "impure-points.php",
+   "line": 59,
+   "identifier": "impure.die",
+   "message": "Impure die in pure method PureImpurePoints\\Box::dies().",
+   "tip": null
+  },
+  {
+   "file": "impure-points.php",
+   "line": 63,
+   "identifier": "impureMethod.pure",
+   "message": "Method PureImpurePoints\\Box::throwsVoidPure() is marked as impure but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "impure-points.php",
+   "line": 98,
+   "identifier": "impure.staticPropertyAccess",
+   "message": "Impure static property access in pure method PureImpurePoints\\Box::readsStatic().",
+   "tip": null
+  },
+  {
+   "file": "impure-points.php",
+   "line": 98,
+   "identifier": "impure.staticPropertyAccess",
+   "message": "Impure static property access in pure method PureImpurePoints\\Box::readsStatic().",
+   "tip": null
+  },
+  {
+   "file": "impure-points.php",
+   "line": 104,
+   "identifier": "impure.propertyAssign",
+   "message": "Impure property assignment in pure method PureImpurePoints\\Box::incrementsStatic().",
+   "tip": null
+  },
+  {
+   "file": "impure-points.php",
+   "line": 104,
+   "identifier": "impure.staticPropertyAccess",
+   "message": "Impure static property access in pure method PureImpurePoints\\Box::incrementsStatic().",
+   "tip": null
+  },
+  {
+   "file": "impure-points.php",
+   "line": 112,
+   "identifier": "pureFunction.void",
+   "message": "Function PureImpurePoints\\echoTag() is marked as pure but returns void.",
+   "tip": null
+  },
+  {
+   "file": "impure-points.php",
+   "line": 114,
+   "identifier": "impure.echo",
+   "message": "Impure echo in pure function PureImpurePoints\\echoTag().",
+   "tip": null
+  },
+  {
+   "file": "impure-points.php",
+   "line": 125,
+   "identifier": "impure.functionCall",
+   "message": "Impure call to a Closure with by-ref use in pure function PureImpurePoints\\closureByRefUse().",
+   "tip": null
+  },
+  {
+   "file": "impure-points.php",
+   "line": 141,
+   "identifier": "possiblyImpure.methodCall",
+   "message": "Possibly impure call to method Stringable::__toString() in pure function PureImpurePoints\\concatToString().",
+   "tip": null
+  },
+  {
+   "file": "impure-points.php",
+   "line": 145,
+   "identifier": "impureFunction.pure",
+   "message": "Function PureImpurePoints\\impureButPure() is marked as impure but does not have any side effects.",
+   "tip": null
+  }
+ ]
+}

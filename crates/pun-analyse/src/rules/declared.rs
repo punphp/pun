@@ -552,7 +552,7 @@ struct Resolved {
 }
 
 /// The parameters (without `$`) the tags `names` name.
-fn tagged_params(raw: &[u8], names: &[&str]) -> Vec<String> {
+pub(super) fn tagged_params(raw: &[u8], names: &[&str]) -> Vec<String> {
     let raw = String::from_utf8_lossy(raw);
     raw.lines()
         .filter_map(|l| {
@@ -587,6 +587,14 @@ pub(super) fn method_purity(c: &Checker, class: &ClassLikeMetadata, name: &[u8])
         }
     }
     (pure, !doc.pure_unless_callable.is_empty(), !doc.pure_unless_passed.is_empty())
+}
+
+/// `getPureUnlessCallableIsImpureParameters()` and `getPureUnlessParameterPassedParameters()` of method `name` (its
+/// resolved PHPDoc, inherited tags renamed to the method's own parameters).
+/// With its resolved `@throws` type (`getThrowType()`).
+pub(super) fn method_conditional_purity(c: &Checker, class: &ClassLikeMetadata, name: &[u8]) -> (Vec<String>, Vec<String>, Option<Type>) {
+    let doc = method_doc(c, class, &name.to_ascii_lowercase(), 0).unwrap_or_default();
+    (doc.pure_unless_callable, doc.pure_unless_passed, doc.throws)
 }
 
 /// The own PHPDoc of method `m` declared in `class`, `self` being `context`.

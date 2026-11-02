@@ -14,6 +14,7 @@ mod date_interval;
 mod dead_code;
 mod declaration_effects;
 mod declaration_purity;
+mod purity_points;
 mod debug;
 mod declarations;
 mod declared;
@@ -110,8 +111,7 @@ pub(crate) use unused_trait::unused_traits;
 
 pub fn reports(identifier: &str) -> bool {
     IDENTIFIERS.contains(&identifier)
-        // Only the conservative unspecified-declaration branch; the complete Pure*Rule mappings stay unported.
-        || identifier == "void.pure"
+        || declaration_purity::IDENTIFIERS.contains(&identifier)
         || missing_types::IDENTIFIERS.contains(&identifier)
         || generics::IDENTIFIERS.contains(&identifier)
         || larastan::IDENTIFIERS.contains(&identifier)
@@ -2396,6 +2396,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         signatures::property(self, p.span(), p.hint(), &names);
         if let Property::Hooked(h) = p {
             signatures::hooks(self, h.item.variable().name, &h.hook_list);
+            declaration_purity::hooks(self, h.item.variable().name, &h.hook_list);
             signatures::hook_phpdoc_classes(self, h.item.variable().name, &h.hook_list, p.span());
             set_hook::hooks(self, h.item.variable().name, p.hint(), &h.hook_list);
             set_hook::missing_types(self, h.item.variable().name, p.hint(), &h.hook_list, p.span());

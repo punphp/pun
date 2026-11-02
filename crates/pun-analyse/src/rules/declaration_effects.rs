@@ -424,6 +424,25 @@ impl Producer<'_, '_, '_> {
                 effects.merge(self.expression(b.rhs)?);
                 Some(effects)
             }
+            // BinaryOpHandler adds points only for division, modulo and concatenation.
+            Expression::Binary(b)
+                if matches!(
+                    b.operator,
+                    BinaryOperator::Addition(_)
+                        | BinaryOperator::Subtraction(_)
+                        | BinaryOperator::Multiplication(_)
+                        | BinaryOperator::Exponentiation(_)
+                        | BinaryOperator::BitwiseAnd(_)
+                        | BinaryOperator::BitwiseOr(_)
+                        | BinaryOperator::BitwiseXor(_)
+                        | BinaryOperator::LeftShift(_)
+                        | BinaryOperator::RightShift(_)
+                ) =>
+            {
+                let mut effects = self.expression(b.lhs)?;
+                effects.merge(self.expression(b.rhs)?);
+                Some(effects)
+            }
             Expression::UnaryPrefix(u) if matches!(u.operator, UnaryPrefixOperator::Not(_)) => {
                 self.expression(u.operand)
             }

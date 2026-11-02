@@ -48,7 +48,7 @@ impl Points {
 }
 
 /// PHPStan's `pureUnlessCallableIsImpureParameters` (resources/functionMetadata.php).
-const PURE_UNLESS_CALLABLE_IS_IMPURE: &[(&str, &[&str])] = &[
+pub(in super::super) const PURE_UNLESS_CALLABLE_IS_IMPURE: &[(&str, &[&str])] = &[
     ("array_all", &["callback"]),
     ("array_any", &["callback"]),
     ("array_diff_uassoc", &["key_compare_func"]),
@@ -77,7 +77,7 @@ const PURE_UNLESS_CALLABLE_IS_IMPURE: &[(&str, &[&str])] = &[
 ];
 
 /// SimpleImpurePoint::SIDE_EFFECT_FLIP_PARAMETERS: no side effects when the `return` argument is true.
-const FLIP: &[&str] = &["print_r", "var_export", "highlight_string"];
+pub(in super::super) const FLIP: &[&str] = &["print_r", "var_export", "highlight_string"];
 
 const PURE_TAGS: &[&str] = &[
     "@pure",
@@ -535,7 +535,7 @@ impl Checker<'_, '_> {
         values(m.expression).is_some_and(|v| v.iter().all(|v| covered.contains(v)))
     }
 
-    pub(super) fn method_target(
+    pub(in super::super) fn method_target(
         &self,
         on: &Expression,
         method: &ClassLikeMemberSelector,

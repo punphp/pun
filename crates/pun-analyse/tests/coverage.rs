@@ -20,14 +20,10 @@ const GAPS: &[(&str, &str, i64, &str)] = &[
     ("types", "offsets.php", 216, "nullCoalesce.variable"),
     // The conservative declaration-effects producer does not follow labels/goto or general branches.
     ("level4-unused", "src/labels.php", 5, "void.pure"),
-    // Arithmetic expression effects and branch joins remain unknown, not proven empty.
+    // `||` conditions and branch joins remain unknown, not proven empty.
     ("strict-operators", "operators.php", 95, "void.pure"),
-    ("strict-operators", "operators.php", 105, "void.pure"),
     // First-class callable creation has no declaration-effects producer yet.
     ("types", "types.php", 72, "void.pure"),
-    // The declaration-effects producer does not prove a body only assigns locals.
-    ("unused-parameters", "unused-input-value-flow.php", 12, "void.pure"),
-    ("unused-parameters", "unused-method-parameters-value-flow.php", 15, "void.pure"),
     // Foreach scope/effect joins remain unported for declaration purity.
     ("types", "types.php", 281, "void.pure"),
     // Local class declarations need their own producer, separate from their methods' bodies.

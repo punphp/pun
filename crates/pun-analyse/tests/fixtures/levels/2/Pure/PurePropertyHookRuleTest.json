@@ -1,0 +1,64 @@
+{
+    "test": "Pure/PurePropertyHookRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Pure/data/pure-property-hook.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Pure/data/pure-property-hook.php",
+                    "line": 15,
+                    "identifier": "impure.echo",
+                    "message": "Impure echo in pure get hook for property PurePropertyHook\\Foo::$pureGetWithSideEffect.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-property-hook.php",
+                    "line": 28,
+                    "identifier": "impurePropertyHook.pure",
+                    "message": "Get hook for property PurePropertyHook\\Foo::$impureGetWithoutSideEffect is marked as impure but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-property-hook.php",
+                    "line": 50,
+                    "identifier": "purePropertyHook.void",
+                    "message": "Set hook for property PurePropertyHook\\Foo::$pureSet is marked as pure but returns void.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-property-hook.php",
+                    "line": 51,
+                    "identifier": "impure.propertyAssign",
+                    "message": "Impure property assignment in pure set hook for property PurePropertyHook\\Foo::$pureSet.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-property-hook.php",
+                    "line": 74,
+                    "identifier": "impurePropertyHook.pure",
+                    "message": "Get hook for property PurePropertyHook\\NotFinal::$finalImpureGetWithoutSideEffect is marked as impure but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-property-hook.php",
+                    "line": 85,
+                    "identifier": "purePropertyHook.void",
+                    "message": "Set hook for property PurePropertyHook\\AbstractGetHookFollowedBySetHook::$mixedHooks is marked as pure but returns void.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-property-hook.php",
+                    "line": 86,
+                    "identifier": "impure.echo",
+                    "message": "Impure echo in pure set hook for property PurePropertyHook\\AbstractGetHookFollowedBySetHook::$mixedHooks.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

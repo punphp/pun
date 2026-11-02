@@ -1,0 +1,932 @@
+{
+    "test": "Pure/PureFunctionRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Pure/data/pure-function.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Pure/data/pure-function.php",
+                    "line": 8,
+                    "identifier": "pureFunction.parameterByRef",
+                    "message": "Function PureFunction\\doFoo() is marked as pure but parameter $p is passed by reference.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-function.php",
+                    "line": 10,
+                    "identifier": "impure.echo",
+                    "message": "Impure echo in pure function PureFunction\\doFoo().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-function.php",
+                    "line": 16,
+                    "identifier": "pureFunction.void",
+                    "message": "Function PureFunction\\doFoo2() is marked as pure but returns void.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-function.php",
+                    "line": 18,
+                    "identifier": "impure.exit",
+                    "message": "Impure exit in pure function PureFunction\\doFoo2().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-function.php",
+                    "line": 26,
+                    "identifier": "impure.propertyAssign",
+                    "message": "Impure property assignment in pure function PureFunction\\doFoo3().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-function.php",
+                    "line": 60,
+                    "identifier": "possiblyImpure.functionCall",
+                    "message": "Possibly impure call to a callable in pure function PureFunction\\testThese().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-function.php",
+                    "line": 61,
+                    "identifier": "possiblyImpure.functionCall",
+                    "message": "Possibly impure call to a callable in pure function PureFunction\\testThese().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-function.php",
+                    "line": 63,
+                    "identifier": "impure.functionCall",
+                    "message": "Impure call to function PureFunction\\impureFunction() in pure function PureFunction\\testThese().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-function.php",
+                    "line": 64,
+                    "identifier": "impure.functionCall",
+                    "message": "Impure call to function PureFunction\\voidFunction() in pure function PureFunction\\testThese().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-function.php",
+                    "line": 65,
+                    "identifier": "possiblyImpure.functionCall",
+                    "message": "Possibly impure call to function PureFunction\\possiblyImpureFunction() in pure function PureFunction\\testThese().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-function.php",
+                    "line": 66,
+                    "identifier": "function.notFound",
+                    "message": "Function unknownFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Pure/data/pure-function.php",
+                    "line": 66,
+                    "identifier": "possiblyImpure.functionCall",
+                    "message": "Possibly impure call to unknown function in pure function PureFunction\\testThese().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-function.php",
+                    "line": 72,
+                    "identifier": "impureFunction.pure",
+                    "message": "Function PureFunction\\actuallyPure() is marked as impure but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-function.php",
+                    "line": 84,
+                    "identifier": "void.pure",
+                    "message": "Function PureFunction\\emptyVoidFunction() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-function.php",
+                    "line": 102,
+                    "identifier": "impure.superglobal",
+                    "message": "Impure access to superglobal variable in pure function PureFunction\\pureButAccessSuperGlobal().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-function.php",
+                    "line": 103,
+                    "identifier": "impure.superglobal",
+                    "message": "Impure access to superglobal variable in pure function PureFunction\\pureButAccessSuperGlobal().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-function.php",
+                    "line": 105,
+                    "identifier": "impure.superglobal",
+                    "message": "Impure access to superglobal variable in pure function PureFunction\\pureButAccessSuperGlobal().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-function.php",
+                    "line": 118,
+                    "identifier": "impure.global",
+                    "message": "Impure global variable in pure function PureFunction\\functionWithGlobal().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-function.php",
+                    "line": 128,
+                    "identifier": "impure.static",
+                    "message": "Impure static variable in pure function PureFunction\\functionWithStaticVariable().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-function.php",
+                    "line": 139,
+                    "identifier": "possiblyImpure.functionCall",
+                    "message": "Possibly impure call to a Closure in pure function PureFunction\\callsClosures().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-function.php",
+                    "line": 140,
+                    "identifier": "possiblyImpure.functionCall",
+                    "message": "Possibly impure call to a Closure in pure function PureFunction\\callsClosures().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-function.php",
+                    "line": 152,
+                    "identifier": "return.missing",
+                    "message": "Function PureFunction\\callsPureCallableIdentifierTypeNode() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-function.php",
+                    "line": 160,
+                    "identifier": "impure.betweenPhpTags",
+                    "message": "Impure output between PHP opening and closing tags in pure function PureFunction\\justContainsInlineHtml().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-function.php",
+                    "line": 171,
+                    "identifier": "impure.functionCall",
+                    "message": "Impure call to function array_push() in pure function PureFunction\\bug13288().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-function.php",
+                    "line": 175,
+                    "identifier": "impure.functionCall",
+                    "message": "Impure call to function array_push() in pure function PureFunction\\bug13288().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-function.php",
+                    "line": 182,
+                    "identifier": "impure.functionCall",
+                    "message": "Impure call to function array_push() in pure function PureFunction\\bug13288().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-function.php",
+                    "line": 200,
+                    "identifier": "impure.exit",
+                    "message": "Impure exit in pure function PureFunction\\bug13288b().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-function.php",
+                    "line": 217,
+                    "identifier": "impure.exit",
+                    "message": "Impure exit in pure function PureFunction\\bug13288c().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-function.php",
+                    "line": 230,
+                    "identifier": "impure.exit",
+                    "message": "Impure exit in pure function PureFunction\\bug13288d().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testFirstClassCallable",
+            "files": [
+                "Pure/data/first-class-callable-pure-function.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Pure/data/first-class-callable-pure-function.php",
+                    "line": 61,
+                    "identifier": "impure.methodCall",
+                    "message": "Impure call to method FirstClassCallablePureFunction\\Foo::impureFunction() in pure function FirstClassCallablePureFunction\\testThese().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/first-class-callable-pure-function.php",
+                    "line": 64,
+                    "identifier": "impure.methodCall",
+                    "message": "Impure call to method FirstClassCallablePureFunction\\Foo::voidFunction() in pure function FirstClassCallablePureFunction\\testThese().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/first-class-callable-pure-function.php",
+                    "line": 70,
+                    "identifier": "impure.functionCall",
+                    "message": "Impure call to function FirstClassCallablePureFunction\\impureFunction() in pure function FirstClassCallablePureFunction\\testThese().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/first-class-callable-pure-function.php",
+                    "line": 73,
+                    "identifier": "impure.functionCall",
+                    "message": "Impure call to function FirstClassCallablePureFunction\\voidFunction() in pure function FirstClassCallablePureFunction\\testThese().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/first-class-callable-pure-function.php",
+                    "line": 75,
+                    "identifier": "impure.functionCall",
+                    "message": "Impure call to function FirstClassCallablePureFunction\\voidFunction() in pure function FirstClassCallablePureFunction\\testThese().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/first-class-callable-pure-function.php",
+                    "line": 81,
+                    "identifier": "impure.functionCall",
+                    "message": "Impure call to function FirstClassCallablePureFunction\\impureFunction() in pure function FirstClassCallablePureFunction\\testThese().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/first-class-callable-pure-function.php",
+                    "line": 84,
+                    "identifier": "impure.functionCall",
+                    "message": "Impure call to function FirstClassCallablePureFunction\\voidFunction() in pure function FirstClassCallablePureFunction\\testThese().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/first-class-callable-pure-function.php",
+                    "line": 90,
+                    "identifier": "impure.methodCall",
+                    "message": "Impure call to method FirstClassCallablePureFunction\\Foo::impureFunction() in pure function FirstClassCallablePureFunction\\testThese().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/first-class-callable-pure-function.php",
+                    "line": 93,
+                    "identifier": "impure.methodCall",
+                    "message": "Impure call to method FirstClassCallablePureFunction\\Foo::voidFunction() in pure function FirstClassCallablePureFunction\\testThese().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/first-class-callable-pure-function.php",
+                    "line": 102,
+                    "identifier": "possiblyImpure.functionCall",
+                    "message": "Possibly impure call to a callable in pure function FirstClassCallablePureFunction\\callCallbackImmediately().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11361",
+            "files": [
+                "Pure/data/bug-11361-pure.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Pure/data/bug-11361-pure.php",
+                    "line": 14,
+                    "identifier": "impure.functionCall",
+                    "message": "Impure call to a Closure with by-ref parameter in pure function Bug11361Pure\\foo().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12224",
+            "files": [
+                "Pure/data/bug-12224.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Pure/data/bug-12224.php",
+                    "line": 18,
+                    "identifier": "pureFunction.void",
+                    "message": "Function PHPStan\\Rules\\Pure\\data\\pureWithThrowsVoid() is marked as pure but returns void.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/bug-12224.php",
+                    "line": 47,
+                    "identifier": "pureMethod.void",
+                    "message": "Method PHPStan\\Rules\\Pure\\data\\A::pureWithThrowsVoid() is marked as pure but returns void.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug13201",
+            "files": [
+                "Pure/data/bug-13201.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12119",
+            "files": [
+                "Pure/data/bug-12119.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14504",
+            "files": [
+                "Pure/data/bug-14504.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14511",
+            "files": [
+                "Pure/data/bug-14511.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14557",
+            "files": [
+                "Pure/data/bug-14557-function.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6574",
+            "files": [
+                "Pure/data/bug-6574.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testPureUnlessCallableIsImpure",
+            "files": [
+                "Pure/data/pure-unless-callable-is-impure.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Pure/data/pure-unless-callable-is-impure.php",
+                    "line": 22,
+                    "identifier": "impure.functionCall",
+                    "message": "Impure call to function array_map() in pure function PureUnlessCallableIsImpureFunction\\pureWithImpureCallback().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-callable-is-impure.php",
+                    "line": 23,
+                    "identifier": "impure.echo",
+                    "message": "Impure echo in pure function PureUnlessCallableIsImpureFunction\\pureWithImpureCallback().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-callable-is-impure.php",
+                    "line": 36,
+                    "identifier": "possiblyImpure.functionCall",
+                    "message": "Possibly impure call to a callable in pure function PureUnlessCallableIsImpureFunction\\pureWithOpaqueCallback().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-callable-is-impure.php",
+                    "line": 36,
+                    "identifier": "possiblyImpure.functionCall",
+                    "message": "Possibly impure call to function array_map() in pure function PureUnlessCallableIsImpureFunction\\pureWithOpaqueCallback().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-callable-is-impure.php",
+                    "line": 129,
+                    "identifier": "impure.methodCall",
+                    "message": "Impure call to method PureUnlessCallableIsImpureFunction\\Mapper::map() in pure function PureUnlessCallableIsImpureFunction\\pureCallingMethodWithImpureCallback().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-callable-is-impure.php",
+                    "line": 143,
+                    "identifier": "possiblyImpure.methodCall",
+                    "message": "Possibly impure call to method PureUnlessCallableIsImpureFunction\\Mapper::map() in pure function PureUnlessCallableIsImpureFunction\\pureCallingMethodWithOpaqueCallback().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-callable-is-impure.php",
+                    "line": 155,
+                    "identifier": "possiblyImpure.functionCall",
+                    "message": "Possibly impure call to function array_map() in pure function PureUnlessCallableIsImpureFunction\\pureWithMaybeNullCallback().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-callable-is-impure.php",
+                    "line": 167,
+                    "identifier": "possiblyImpure.functionCall",
+                    "message": "Possibly impure call to function array_map() in pure function PureUnlessCallableIsImpureFunction\\pureWithMaybeCallablePureCallback().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-callable-is-impure.php",
+                    "line": 200,
+                    "identifier": "impure.new",
+                    "message": "Impure instantiation of class PureUnlessCallableIsImpureFunction\\Baz in pure function PureUnlessCallableIsImpureFunction\\pureInstantiatingWithImpureCallback().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-callable-is-impure.php",
+                    "line": 213,
+                    "identifier": "possiblyImpure.new",
+                    "message": "Possibly impure instantiation of class PureUnlessCallableIsImpureFunction\\Baz in pure function PureUnlessCallableIsImpureFunction\\pureInstantiatingWithOpaqueCallback().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-callable-is-impure.php",
+                    "line": 238,
+                    "identifier": "possiblyImpure.new",
+                    "message": "Possibly impure instantiation of class PureUnlessCallableIsImpureFunction\\Baz in pure function PureUnlessCallableIsImpureFunction\\pureInstantiatingWithUnionCallback().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-callable-is-impure.php",
+                    "line": 253,
+                    "identifier": "impure.echo",
+                    "message": "Impure echo in pure function PureUnlessCallableIsImpureFunction\\pureUnlessCallableWithImpureStatementOutsideCallback().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-callable-is-impure.php",
+                    "line": 268,
+                    "identifier": "pureFunction.redundantUnlessCallable",
+                    "message": "Function PureUnlessCallableIsImpureFunction\\redundantPureUnlessCallableWithPureCallable() is marked @pure-unless-callable-is-impure for parameter $f, but $f is already a pure callable, so function PureUnlessCallableIsImpureFunction\\redundantPureUnlessCallableWithPureCallable() can be marked @phpstan-pure instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-callable-is-impure.php",
+                    "line": 374,
+                    "identifier": "possiblyImpure.methodCall",
+                    "message": "Possibly impure call to method PureUnlessCallableIsImpureFunction\\InheritedMapperChild::map() in pure function PureUnlessCallableIsImpureFunction\\pureCallingInheritedMethodWithOpaqueCallback().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-callable-is-impure.php",
+                    "line": 399,
+                    "identifier": "possiblyImpure.methodCall",
+                    "message": "Possibly impure call to method PureUnlessCallableIsImpureFunction\\InheritedMapperRenamedChild::map() in pure function PureUnlessCallableIsImpureFunction\\pureCallingRenamedInheritedMethodWithOpaqueCallback().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPureUnlessCallableIsImpureFirstClassCallable",
+            "files": [
+                "Pure/data/pure-unless-callable-is-impure-first-class-callable.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Pure/data/pure-unless-callable-is-impure-first-class-callable.php",
+                    "line": 27,
+                    "identifier": "impure.functionCall",
+                    "message": "Impure call to function array_map() in pure function PureUnlessCallableIsImpureFirstClassCallable\\pureCallingFirstClassCallableWithImpureCallback().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-callable-is-impure-first-class-callable.php",
+                    "line": 45,
+                    "identifier": "possiblyImpure.functionCall",
+                    "message": "Possibly impure call to function array_map() in pure function PureUnlessCallableIsImpureFirstClassCallable\\pureCallingFirstClassCallableWithOpaqueCallback().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPureUnlessCallableIsImpureNamedArgs",
+            "files": [
+                "Pure/data/pure-unless-callable-is-impure-named-arg.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Pure/data/pure-unless-callable-is-impure-named-arg.php",
+                    "line": 61,
+                    "identifier": "impure.functionCall",
+                    "message": "Impure call to function PureUnlessCallableIsImpureNamedArg\\myMap() in pure function PureUnlessCallableIsImpureNamedArg\\pureCallingUserlandWithImpureCallbackByName().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-callable-is-impure-named-arg.php",
+                    "line": 62,
+                    "identifier": "impure.echo",
+                    "message": "Impure echo in pure function PureUnlessCallableIsImpureNamedArg\\pureCallingUserlandWithImpureCallbackByName().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-callable-is-impure-named-arg.php",
+                    "line": 75,
+                    "identifier": "possiblyImpure.functionCall",
+                    "message": "Possibly impure call to a callable in pure function PureUnlessCallableIsImpureNamedArg\\pureCallingUserlandWithOpaqueCallbackByName().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-callable-is-impure-named-arg.php",
+                    "line": 75,
+                    "identifier": "possiblyImpure.functionCall",
+                    "message": "Possibly impure call to function PureUnlessCallableIsImpureNamedArg\\myMap() in pure function PureUnlessCallableIsImpureNamedArg\\pureCallingUserlandWithOpaqueCallbackByName().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-callable-is-impure-named-arg.php",
+                    "line": 85,
+                    "identifier": "impure.functionCall",
+                    "message": "Impure call to function array_map() in pure function PureUnlessCallableIsImpureNamedArg\\pureWithImpureCallbackByName().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-callable-is-impure-named-arg.php",
+                    "line": 86,
+                    "identifier": "impure.echo",
+                    "message": "Impure echo in pure function PureUnlessCallableIsImpureNamedArg\\pureWithImpureCallbackByName().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-callable-is-impure-named-arg.php",
+                    "line": 99,
+                    "identifier": "possiblyImpure.functionCall",
+                    "message": "Possibly impure call to a callable in pure function PureUnlessCallableIsImpureNamedArg\\pureWithOpaqueCallbackByName().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-callable-is-impure-named-arg.php",
+                    "line": 99,
+                    "identifier": "possiblyImpure.functionCall",
+                    "message": "Possibly impure call to function array_map() in pure function PureUnlessCallableIsImpureNamedArg\\pureWithOpaqueCallbackByName().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-callable-is-impure-named-arg.php",
+                    "line": 121,
+                    "identifier": "impure.functionCall",
+                    "message": "Impure call to function PureUnlessCallableIsImpureNamedArg\\myMap() in pure function PureUnlessCallableIsImpureNamedArg\\pureCallingUserlandWithImpureCallbackShuffled().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-callable-is-impure-named-arg.php",
+                    "line": 122,
+                    "identifier": "impure.echo",
+                    "message": "Impure echo in pure function PureUnlessCallableIsImpureNamedArg\\pureCallingUserlandWithImpureCallbackShuffled().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-callable-is-impure-named-arg.php",
+                    "line": 134,
+                    "identifier": "impure.methodCall",
+                    "message": "Impure call to method PureUnlessCallableIsImpureNamedArg\\Mapper::map() in pure function PureUnlessCallableIsImpureNamedArg\\pureCallingMethodWithImpureCallbackByName().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPureUnlessCallableIsImpurePhp84",
+            "files": [
+                "Pure/data/pure-unless-callable-is-impure-php84.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Pure/data/pure-unless-callable-is-impure-php84.php",
+                    "line": 29,
+                    "identifier": "impure.functionCall",
+                    "message": "Impure call to function array_any() in pure function PureUnlessCallableIsImpureFunctionPhp84\\anyWithImpureCallback().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-callable-is-impure-php84.php",
+                    "line": 30,
+                    "identifier": "impure.echo",
+                    "message": "Impure echo in pure function PureUnlessCallableIsImpureFunctionPhp84\\anyWithImpureCallback().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-callable-is-impure-php84.php",
+                    "line": 59,
+                    "identifier": "impure.functionCall",
+                    "message": "Impure call to function array_find() in pure function PureUnlessCallableIsImpureFunctionPhp84\\findWithImpureCallback().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-callable-is-impure-php84.php",
+                    "line": 60,
+                    "identifier": "impure.echo",
+                    "message": "Impure echo in pure function PureUnlessCallableIsImpureFunctionPhp84\\findWithImpureCallback().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-callable-is-impure-php84.php",
+                    "line": 71,
+                    "identifier": "impure.functionCall",
+                    "message": "Impure call to function array_find_key() in pure function PureUnlessCallableIsImpureFunctionPhp84\\findKeyWithImpureCallback().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-callable-is-impure-php84.php",
+                    "line": 72,
+                    "identifier": "impure.echo",
+                    "message": "Impure echo in pure function PureUnlessCallableIsImpureFunctionPhp84\\findKeyWithImpureCallback().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPropertyHookImpurePoint",
+            "files": [
+                "Pure/data/property-hook-impure-point.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Pure/data/property-hook-impure-point.php",
+                    "line": 42,
+                    "identifier": "impure.propertyHookCall",
+                    "message": "Impure call to get hook of property PropertyHookImpurePoint\\Foo::$impureGet in pure method PropertyHookImpurePoint\\Foo::readOwnImpureGet().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/property-hook-impure-point.php",
+                    "line": 56,
+                    "identifier": "impure.propertyHookCall",
+                    "message": "Impure call to get hook of property PropertyHookImpurePoint\\Foo::$impureGet in pure function PropertyHookImpurePoint\\readImpureGet().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/property-hook-impure-point.php",
+                    "line": 62,
+                    "identifier": "impure.propertyHookCall",
+                    "message": "Impure call to get hook of property PropertyHookImpurePoint\\Foo::$impureGet in pure function PropertyHookImpurePoint\\readImpureGetNullsafe().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/property-hook-impure-point.php",
+                    "line": 69,
+                    "identifier": "impure.propertyHookCall",
+                    "message": "Impure call to get hook of property PropertyHookImpurePoint\\Foo::$impureGet in pure function PropertyHookImpurePoint\\readImpureGetInCompoundAssign().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPureUnlessParameterPassed",
+            "files": [
+                "Pure/data/pure-unless-parameter-passed.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Pure/data/pure-unless-parameter-passed.php",
+                    "line": 44,
+                    "identifier": "impure.functionCall",
+                    "message": "Impure call to function PureUnlessParameterPassedFunction\\myReplace() in pure function PureUnlessParameterPassedFunction\\purePassingByRef().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-parameter-passed.php",
+                    "line": 62,
+                    "identifier": "impure.functionCall",
+                    "message": "Impure call to function PureUnlessParameterPassedFunction\\myReplacePhpstanAlias() in pure function PureUnlessParameterPassedFunction\\purePassingByRefAlias().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-parameter-passed.php",
+                    "line": 72,
+                    "identifier": "possiblyImpure.functionCall",
+                    "message": "Possibly impure call to function PureUnlessParameterPassedFunction\\myReplace() in pure function PureUnlessParameterPassedFunction\\pureUnpackingArgs().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-parameter-passed.php",
+                    "line": 91,
+                    "identifier": "impure.functionCall",
+                    "message": "Impure call to function PureUnlessParameterPassedFunction\\myReplace() in pure function PureUnlessParameterPassedFunction\\pureNamedArgForFlaggedParameter().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-parameter-passed.php",
+                    "line": 127,
+                    "identifier": "impure.new",
+                    "message": "Impure instantiation of class PureUnlessParameterPassedFunction\\MyReplacerConstructor in pure function PureUnlessParameterPassedFunction\\pureConstructorPassingByRef().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-parameter-passed.php",
+                    "line": 167,
+                    "identifier": "possiblyImpure.methodCall",
+                    "message": "Possibly impure call to method PureUnlessParameterPassedFunction\\PureUnlessParameterPassedA::m() in pure function PureUnlessParameterPassedFunction\\pureUnionMethodPassingCount().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-parameter-passed.php",
+                    "line": 206,
+                    "identifier": "impure.methodCall",
+                    "message": "Impure call to method PureUnlessParameterPassedFunction\\PureUnlessParameterPassedIntersectionA::m() in pure function PureUnlessParameterPassedFunction\\pureIntersectionMethodPassingCount().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-parameter-passed.php",
+                    "line": 241,
+                    "identifier": "impure.methodCall",
+                    "message": "Impure call to method PureUnlessParameterPassedFunction\\Replacer::replace() in pure function PureUnlessParameterPassedFunction\\pureCallingMethodPassingByRef().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-parameter-passed.php",
+                    "line": 297,
+                    "identifier": "impure.methodCall",
+                    "message": "Impure call to method PureUnlessParameterPassedFunction\\InheritedReplacerChild::replace() in pure function PureUnlessParameterPassedFunction\\pureCallingInheritedMethodPassingByRef().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-parameter-passed.php",
+                    "line": 318,
+                    "identifier": "impure.methodCall",
+                    "message": "Impure call to method PureUnlessParameterPassedFunction\\InheritedReplacerRenamedChild::replace() in pure function PureUnlessParameterPassedFunction\\pureCallingRenamedInheritedMethodPassingByRef().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-parameter-passed.php",
+                    "line": 341,
+                    "identifier": "impure.functionCall",
+                    "message": "Impure call to function PureUnlessParameterPassedFunction\\myReplace() in pure function PureUnlessParameterPassedFunction\\pureCallingFirstClassCallablePassingCount().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-parameter-passed.php",
+                    "line": 348,
+                    "identifier": "pureFunction.nonOptionalParameterPassed",
+                    "message": "Function PureUnlessParameterPassedFunction\\nonOptionalUnlessParameterPassed() is marked @pure-unless-parameter-passed for parameter $count, but $count is not optional, so function PureUnlessParameterPassedFunction\\nonOptionalUnlessParameterPassed() is never pure.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-parameter-passed.php",
+                    "line": 385,
+                    "identifier": "impure.functionCall",
+                    "message": "Impure call to function PureUnlessParameterPassedFunction\\myReplaceVariadic() in pure function PureUnlessParameterPassedFunction\\pureVariadicPassingCount().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-parameter-passed.php",
+                    "line": 396,
+                    "identifier": "impure.functionCall",
+                    "message": "Impure call to function PureUnlessParameterPassedFunction\\myReplaceVariadic() in pure function PureUnlessParameterPassedFunction\\pureVariadicPassingCountWithExtra().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-parameter-passed.php",
+                    "line": 428,
+                    "identifier": "impure.functionCall",
+                    "message": "Impure call to function PureUnlessParameterPassedFunction\\myVariadicOut() in pure function PureUnlessParameterPassedFunction\\pureVariadicOutPositional().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-parameter-passed.php",
+                    "line": 439,
+                    "identifier": "impure.functionCall",
+                    "message": "Impure call to function PureUnlessParameterPassedFunction\\myVariadicOut() in pure function PureUnlessParameterPassedFunction\\pureVariadicOutNamed().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-parameter-passed.php",
+                    "line": 455,
+                    "identifier": "pureFunction.parameterPassedNotByRef",
+                    "message": "Function PureUnlessParameterPassedFunction\\byValueUnlessParameterPassed() is marked @pure-unless-parameter-passed for parameter $flag, but $flag is not passed by reference.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-parameter-passed.php",
+                    "line": 470,
+                    "identifier": "impure.echo",
+                    "message": "Impure echo in pure function PureUnlessParameterPassedFunction\\sideEffectUnlessParameterPassed().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-parameter-passed.php",
+                    "line": 505,
+                    "identifier": "impure.functionCall",
+                    "message": "Impure call to function PureUnlessParameterPassedFunction\\myReplaceCallback() in pure function PureUnlessParameterPassedFunction\\pureBothPureCallbackPassingCount().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-parameter-passed.php",
+                    "line": 514,
+                    "identifier": "impure.functionCall",
+                    "message": "Impure call to function PureUnlessParameterPassedFunction\\myReplaceCallback() in pure function PureUnlessParameterPassedFunction\\pureBothImpureCallbackOmittingCount().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-parameter-passed.php",
+                    "line": 515,
+                    "identifier": "impure.echo",
+                    "message": "Impure echo in pure function PureUnlessParameterPassedFunction\\pureBothImpureCallbackOmittingCount().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-parameter-passed.php",
+                    "line": 528,
+                    "identifier": "possiblyImpure.functionCall",
+                    "message": "Possibly impure call to a callable in pure function PureUnlessParameterPassedFunction\\pureBothOpaqueCallbackOmittingCount().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-parameter-passed.php",
+                    "line": 528,
+                    "identifier": "possiblyImpure.functionCall",
+                    "message": "Possibly impure call to function PureUnlessParameterPassedFunction\\myReplaceCallback() in pure function PureUnlessParameterPassedFunction\\pureBothOpaqueCallbackOmittingCount().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-parameter-passed.php",
+                    "line": 539,
+                    "identifier": "impure.functionCall",
+                    "message": "Impure call to function PureUnlessParameterPassedFunction\\myReplaceCallback() in pure function PureUnlessParameterPassedFunction\\pureBothOpaqueCallbackPassingCount().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-parameter-passed.php",
+                    "line": 539,
+                    "identifier": "possiblyImpure.functionCall",
+                    "message": "Possibly impure call to a callable in pure function PureUnlessParameterPassedFunction\\pureBothOpaqueCallbackPassingCount().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPureUnlessParameterPassedBuiltin",
+            "files": [
+                "Pure/data/pure-unless-parameter-passed-builtin.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Pure/data/pure-unless-parameter-passed-builtin.php",
+                    "line": 22,
+                    "identifier": "impure.functionCall",
+                    "message": "Impure call to function str_replace() in pure function PureUnlessParameterPassedBuiltin\\pureStrReplaceWithCount().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-parameter-passed-builtin.php",
+                    "line": 32,
+                    "identifier": "possiblyImpure.functionCall",
+                    "message": "Possibly impure call to function preg_match() in pure function PureUnlessParameterPassedBuiltin\\purePregMatchWithoutMatches().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-parameter-passed-builtin.php",
+                    "line": 52,
+                    "identifier": "impure.functionCall",
+                    "message": "Impure call to function str_ireplace() in pure function PureUnlessParameterPassedBuiltin\\pureStrIreplaceWithCount().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-parameter-passed-builtin.php",
+                    "line": 70,
+                    "identifier": "impure.functionCall",
+                    "message": "Impure call to function similar_text() in pure function PureUnlessParameterPassedBuiltin\\pureSimilarTextWithPercent().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

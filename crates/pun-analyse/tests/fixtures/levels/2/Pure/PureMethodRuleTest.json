@@ -1,0 +1,837 @@
+{
+    "test": "Pure/PureMethodRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Pure/data/pure-method.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 11,
+                    "identifier": "pureMethod.parameterByRef",
+                    "message": "Method PureMethod\\Foo::doFoo() is marked as pure but parameter $p is passed by reference.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 13,
+                    "identifier": "impure.echo",
+                    "message": "Impure echo in pure method PureMethod\\Foo::doFoo().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 19,
+                    "identifier": "pureMethod.void",
+                    "message": "Method PureMethod\\Foo::doFoo2() is marked as pure but returns void.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 21,
+                    "identifier": "impure.die",
+                    "message": "Impure die in pure method PureMethod\\Foo::doFoo2().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 29,
+                    "identifier": "impure.propertyAssign",
+                    "message": "Impure property assignment in pure method PureMethod\\Foo::doFoo3().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 45,
+                    "identifier": "return.missing",
+                    "message": "Method PureMethod\\Foo::returningMethod() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 53,
+                    "identifier": "return.missing",
+                    "message": "Method PureMethod\\Foo::pureReturningMethod() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 63,
+                    "identifier": "return.missing",
+                    "message": "Method PureMethod\\Foo::impureReturningMethod() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 71,
+                    "identifier": "impure.methodCall",
+                    "message": "Impure call to method PureMethod\\Foo::voidMethod() in pure method PureMethod\\Foo::doFoo4().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 72,
+                    "identifier": "impure.methodCall",
+                    "message": "Impure call to method PureMethod\\Foo::impureVoidMethod() in pure method PureMethod\\Foo::doFoo4().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 73,
+                    "identifier": "possiblyImpure.methodCall",
+                    "message": "Possibly impure call to method PureMethod\\Foo::returningMethod() in pure method PureMethod\\Foo::doFoo4().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 75,
+                    "identifier": "impure.methodCall",
+                    "message": "Impure call to method PureMethod\\Foo::impureReturningMethod() in pure method PureMethod\\Foo::doFoo4().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 76,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method PureMethod\\Foo::unknownMethod().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 76,
+                    "identifier": "possiblyImpure.methodCall",
+                    "message": "Possibly impure call to unknown method in pure method PureMethod\\Foo::doFoo4().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 84,
+                    "identifier": "impure.methodCall",
+                    "message": "Impure call to method PureMethod\\Foo::voidMethod() in pure method PureMethod\\Foo::doFoo5().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 85,
+                    "identifier": "impure.methodCall",
+                    "message": "Impure call to method PureMethod\\Foo::impureVoidMethod() in pure method PureMethod\\Foo::doFoo5().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 86,
+                    "identifier": "possiblyImpure.methodCall",
+                    "message": "Possibly impure call to method PureMethod\\Foo::returningMethod() in pure method PureMethod\\Foo::doFoo5().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 88,
+                    "identifier": "impure.methodCall",
+                    "message": "Impure call to method PureMethod\\Foo::impureReturningMethod() in pure method PureMethod\\Foo::doFoo5().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 89,
+                    "identifier": "possiblyImpure.methodCall",
+                    "message": "Possibly impure call to unknown method in pure method PureMethod\\Foo::doFoo5().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 89,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method PureMethod\\Foo::unknownMethod().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 140,
+                    "identifier": "impure.new",
+                    "message": "Impure instantiation of class PureMethod\\ImpureConstructor in pure method PureMethod\\TestConstructors::doFoo().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 141,
+                    "identifier": "possiblyImpure.new",
+                    "message": "Possibly impure instantiation of class PureMethod\\PossiblyImpureConstructor in pure method PureMethod\\TestConstructors::doFoo().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 142,
+                    "identifier": "possiblyImpure.new",
+                    "message": "Possibly impure instantiation of unknown class in pure method PureMethod\\TestConstructors::doFoo().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 153,
+                    "identifier": "impureMethod.pure",
+                    "message": "Method PureMethod\\ActuallyPure::doFoo() is marked as impure but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 164,
+                    "identifier": "return.missing",
+                    "message": "Method PureMethod\\ToBeExtended::pure() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 183,
+                    "identifier": "impure.echo",
+                    "message": "Impure echo in pure method PureMethod\\ExtendingClass::pure().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 187,
+                    "identifier": "impureMethod.pure",
+                    "message": "Method PureMethod\\ExtendingClass::impure() is marked as impure but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 214,
+                    "identifier": "void.pure",
+                    "message": "Method PureMethod\\ClassWithVoidMethods::privateEmptyVoidFunction() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 230,
+                    "identifier": "impure.superglobal",
+                    "message": "Impure assign to superglobal variable in pure method PureMethod\\ClassWithVoidMethods::purePostGetAssign().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 231,
+                    "identifier": "impure.superglobal",
+                    "message": "Impure assign to superglobal variable in pure method PureMethod\\ClassWithVoidMethods::purePostGetAssign().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 293,
+                    "identifier": "cast.string",
+                    "message": "Cannot cast PureMethod\\NoMagicMethods to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 295,
+                    "identifier": "possiblyImpure.methodCall",
+                    "message": "Possibly impure call to method PureMethod\\MaybePureMagicMethods::__toString() in pure method PureMethod\\TestMagicMethods::doFoo().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 296,
+                    "identifier": "impure.methodCall",
+                    "message": "Impure call to method PureMethod\\ImpureMagicMethods::__toString() in pure method PureMethod\\TestMagicMethods::doFoo().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 309,
+                    "identifier": "echo.nonString",
+                    "message": "Parameter #1 (PureMethod\\NoMagicMethods) of echo cannot be converted to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 309,
+                    "identifier": "impure.echo",
+                    "message": "Impure echo in pure method PureMethod\\TestMagicMethods::doEcho().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 310,
+                    "identifier": "impure.echo",
+                    "message": "Impure echo in pure method PureMethod\\TestMagicMethods::doEcho().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 311,
+                    "identifier": "impure.echo",
+                    "message": "Impure echo in pure method PureMethod\\TestMagicMethods::doEcho().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 311,
+                    "identifier": "possiblyImpure.methodCall",
+                    "message": "Possibly impure call to method PureMethod\\MaybePureMagicMethods::__toString() in pure method PureMethod\\TestMagicMethods::doEcho().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 312,
+                    "identifier": "impure.echo",
+                    "message": "Impure echo in pure method PureMethod\\TestMagicMethods::doEcho().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 312,
+                    "identifier": "impure.methodCall",
+                    "message": "Impure call to method PureMethod\\ImpureMagicMethods::__toString() in pure method PureMethod\\TestMagicMethods::doEcho().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 324,
+                    "identifier": "impure.print",
+                    "message": "Impure print in pure method PureMethod\\TestMagicMethods::doPrint().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 325,
+                    "identifier": "impure.print",
+                    "message": "Impure print in pure method PureMethod\\TestMagicMethods::doPrint().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 325,
+                    "identifier": "possiblyImpure.methodCall",
+                    "message": "Possibly impure call to method PureMethod\\MaybePureMagicMethods::__toString() in pure method PureMethod\\TestMagicMethods::doPrint().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 326,
+                    "identifier": "impure.methodCall",
+                    "message": "Impure call to method PureMethod\\ImpureMagicMethods::__toString() in pure method PureMethod\\TestMagicMethods::doPrint().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 326,
+                    "identifier": "impure.print",
+                    "message": "Impure print in pure method PureMethod\\TestMagicMethods::doPrint().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 339,
+                    "identifier": "possiblyImpure.methodCall",
+                    "message": "Possibly impure call to method PureMethod\\MaybePureMagicMethods::__toString() in pure method PureMethod\\TestMagicMethods::doConcat().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 340,
+                    "identifier": "impure.methodCall",
+                    "message": "Impure call to method PureMethod\\ImpureMagicMethods::__toString() in pure method PureMethod\\TestMagicMethods::doConcat().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 355,
+                    "identifier": "possiblyImpure.methodCall",
+                    "message": "Possibly impure call to method PureMethod\\MaybePureMagicMethods::__toString() in pure method PureMethod\\TestMagicMethods::doConcatAssign().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 357,
+                    "identifier": "impure.methodCall",
+                    "message": "Impure call to method PureMethod\\ImpureMagicMethods::__toString() in pure method PureMethod\\TestMagicMethods::doConcatAssign().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 370,
+                    "identifier": "possiblyImpure.methodCall",
+                    "message": "Possibly impure call to method PureMethod\\MaybePureMagicMethods::__toString() in pure method PureMethod\\TestMagicMethods::doInterpolation().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 371,
+                    "identifier": "impure.methodCall",
+                    "message": "Impure call to method PureMethod\\ImpureMagicMethods::__toString() in pure method PureMethod\\TestMagicMethods::doInterpolation().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 405,
+                    "identifier": "possiblyImpure.functionCall",
+                    "message": "Possibly impure call to a callable in pure method PureMethod\\MaybeCallableFromUnion::doFoo().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 405,
+                    "identifier": "possiblyImpure.functionCall",
+                    "message": "Possibly impure call to a callable in pure method PureMethod\\MaybeCallableFromUnion::doFoo().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 422,
+                    "identifier": "phpstan.dumpType",
+                    "message": "Dumped type: 1",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 463,
+                    "identifier": "impure.staticPropertyAccess",
+                    "message": "Impure static property access in pure method PureMethod\\StaticMethodAccessingStaticProperty::getA().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-method.php",
+                    "line": 484,
+                    "identifier": "impure.propertyAssign",
+                    "message": "Impure property assignment in pure method PureMethod\\StaticMethodAssigningStaticProperty::getA().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPureConstructor",
+            "files": [
+                "Pure/data/pure-constructor.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Pure/data/pure-constructor.php",
+                    "line": 19,
+                    "identifier": "impure.propertyAssign",
+                    "message": "Impure property assignment in pure method PureConstructor\\Foo::__construct().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-constructor.php",
+                    "line": 19,
+                    "identifier": "impure.staticPropertyAccess",
+                    "message": "Impure static property access in pure method PureConstructor\\Foo::__construct().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-constructor.php",
+                    "line": 30,
+                    "identifier": "impureMethod.pure",
+                    "message": "Method PureConstructor\\Bar::__construct() is marked as impure but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-constructor.php",
+                    "line": 49,
+                    "identifier": "impure.propertyAssign",
+                    "message": "Impure property assignment in pure method PureConstructor\\AssignOtherThanThis::__construct().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testImpureAssignRef",
+            "files": [
+                "Pure/data/impure-assign-ref.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Pure/data/impure-assign-ref.php",
+                    "line": 49,
+                    "identifier": "possiblyImpure.propertyAssignByRef",
+                    "message": "Possibly impure property assignment by reference in pure method ImpureAssignRef\\HelloWorld::bar6().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11207#0",
+            "files": [
+                "Pure/data/bug-11207.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11207#1",
+            "files": [
+                "Pure/data/bug-11207.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12048",
+            "files": [
+                "Pure/data/bug-12048.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12224",
+            "files": [
+                "Pure/data/bug-12224.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Pure/data/bug-12224.php",
+                    "line": 18,
+                    "identifier": "pureFunction.void",
+                    "message": "Function PHPStan\\Rules\\Pure\\data\\pureWithThrowsVoid() is marked as pure but returns void.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/bug-12224.php",
+                    "line": 47,
+                    "identifier": "pureMethod.void",
+                    "message": "Method PHPStan\\Rules\\Pure\\data\\A::pureWithThrowsVoid() is marked as pure but returns void.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testAllMethodsArePure",
+            "files": [
+                "Pure/data/all-methods-are-pure.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Pure/data/all-methods-are-pure.php",
+                    "line": 30,
+                    "identifier": "pureMethod.void",
+                    "message": "Method AllMethodsArePure\\Foo::pureVoid() is marked as pure but returns void.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/all-methods-are-pure.php",
+                    "line": 37,
+                    "identifier": "impureMethod.pure",
+                    "message": "Method AllMethodsArePure\\Foo::impure() is marked as impure but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/all-methods-are-pure.php",
+                    "line": 45,
+                    "identifier": "impureMethod.pure",
+                    "message": "Method AllMethodsArePure\\Foo::impureVoid() is marked as impure but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/all-methods-are-pure.php",
+                    "line": 55,
+                    "identifier": "impureMethod.pure",
+                    "message": "Method AllMethodsArePure\\Bar::test() is marked as impure but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/all-methods-are-pure.php",
+                    "line": 60,
+                    "identifier": "impureMethod.pure",
+                    "message": "Method AllMethodsArePure\\Bar::testVoid() is marked as impure but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/all-methods-are-pure.php",
+                    "line": 75,
+                    "identifier": "pureMethod.void",
+                    "message": "Method AllMethodsArePure\\Bar::pureVoid() is marked as pure but returns void.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/all-methods-are-pure.php",
+                    "line": 82,
+                    "identifier": "impureMethod.pure",
+                    "message": "Method AllMethodsArePure\\Bar::impure() is marked as impure but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/all-methods-are-pure.php",
+                    "line": 90,
+                    "identifier": "impureMethod.pure",
+                    "message": "Method AllMethodsArePure\\Bar::impureVoid() is marked as impure but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/all-methods-are-pure.php",
+                    "line": 120,
+                    "identifier": "impure.methodCall",
+                    "message": "Impure call to method AllMethodsArePure\\Test::impure() in pure method AllMethodsArePure\\SideEffectPure::nothingWithImpure().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/all-methods-are-pure.php",
+                    "line": 120,
+                    "identifier": "return.missing",
+                    "message": "Method AllMethodsArePure\\SideEffectPure::nothingWithImpure() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/all-methods-are-pure.php",
+                    "line": 123,
+                    "identifier": "return.missing",
+                    "message": "Method AllMethodsArePure\\SideEffectPure::nothingWithPure() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/all-methods-are-pure.php",
+                    "line": 127,
+                    "identifier": "return.missing",
+                    "message": "Method AllMethodsArePure\\SideEffectPure::impureWithImpure() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/all-methods-are-pure.php",
+                    "line": 130,
+                    "identifier": "impureMethod.pure",
+                    "message": "Method AllMethodsArePure\\SideEffectPure::impureWithPure() is marked as impure but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/all-methods-are-pure.php",
+                    "line": 131,
+                    "identifier": "return.missing",
+                    "message": "Method AllMethodsArePure\\SideEffectPure::impureWithPure() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/all-methods-are-pure.php",
+                    "line": 141,
+                    "identifier": "return.missing",
+                    "message": "Method AllMethodsArePure\\SideEffectImpure::nothingWithImpure() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/all-methods-are-pure.php",
+                    "line": 143,
+                    "identifier": "impureMethod.pure",
+                    "message": "Method AllMethodsArePure\\SideEffectImpure::nothingWithPure() is marked as impure but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/all-methods-are-pure.php",
+                    "line": 144,
+                    "identifier": "return.missing",
+                    "message": "Method AllMethodsArePure\\SideEffectImpure::nothingWithPure() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/all-methods-are-pure.php",
+                    "line": 148,
+                    "identifier": "impure.methodCall",
+                    "message": "Impure call to method AllMethodsArePure\\Test::impure() in pure method AllMethodsArePure\\SideEffectImpure::pureWithImpure().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/all-methods-are-pure.php",
+                    "line": 148,
+                    "identifier": "return.missing",
+                    "message": "Method AllMethodsArePure\\SideEffectImpure::pureWithImpure() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/all-methods-are-pure.php",
+                    "line": 152,
+                    "identifier": "return.missing",
+                    "message": "Method AllMethodsArePure\\SideEffectImpure::pureWithPure() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/all-methods-are-pure.php",
+                    "line": 163,
+                    "identifier": "impure.methodCall",
+                    "message": "Impure call to method AllMethodsArePure\\FooWithMixed::impureMethod() in pure method AllMethodsArePure\\FooWithMixed::testMixed().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/all-methods-are-pure.php",
+                    "line": 171,
+                    "identifier": "impure.methodCall",
+                    "message": "Impure call to method AllMethodsArePure\\FooWithMixed::impureMethod() in pure method AllMethodsArePure\\FooWithMixed::testMixed2().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14138Pure",
+            "files": [
+                "Pure/data/bug-14138-pure.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12382",
+            "files": [
+                "Pure/data/bug-12382.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Pure/data/bug-12382.php",
+                    "line": 25,
+                    "identifier": "impureMethod.pure",
+                    "message": "Method Bug12382\\FinalHelloWorld1::dummy() is marked as impure but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/bug-12382.php",
+                    "line": 33,
+                    "identifier": "impureMethod.pure",
+                    "message": "Method Bug12382\\FinalHelloWorld2::dummy() is marked as impure but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/bug-12382.php",
+                    "line": 42,
+                    "identifier": "impureMethod.pure",
+                    "message": "Method Bug12382\\FinalHelloWorld3::dummy() is marked as impure but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/bug-12382.php",
+                    "line": 53,
+                    "identifier": "impureMethod.pure",
+                    "message": "Method Bug12382\\FinalHelloWorld4::dummy() is marked as impure but does not have any side effects.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14504",
+            "files": [
+                "Pure/data/bug-14504-method.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11100",
+            "files": [
+                "Pure/data/bug-11100.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14511",
+            "files": [
+                "Pure/data/bug-14511-method.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testPropertyHookImpurePoint",
+            "files": [
+                "Pure/data/property-hook-impure-point.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Pure/data/property-hook-impure-point.php",
+                    "line": 42,
+                    "identifier": "impure.propertyHookCall",
+                    "message": "Impure call to get hook of property PropertyHookImpurePoint\\Foo::$impureGet in pure method PropertyHookImpurePoint\\Foo::readOwnImpureGet().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/property-hook-impure-point.php",
+                    "line": 56,
+                    "identifier": "impure.propertyHookCall",
+                    "message": "Impure call to get hook of property PropertyHookImpurePoint\\Foo::$impureGet in pure function PropertyHookImpurePoint\\readImpureGet().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/property-hook-impure-point.php",
+                    "line": 62,
+                    "identifier": "impure.propertyHookCall",
+                    "message": "Impure call to get hook of property PropertyHookImpurePoint\\Foo::$impureGet in pure function PropertyHookImpurePoint\\readImpureGetNullsafe().",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/property-hook-impure-point.php",
+                    "line": 69,
+                    "identifier": "impure.propertyHookCall",
+                    "message": "Impure call to get hook of property PropertyHookImpurePoint\\Foo::$impureGet in pure function PropertyHookImpurePoint\\readImpureGetInCompoundAssign().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14557",
+            "files": [
+                "Pure/data/bug-14557.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Pure/data/bug-14557.php",
+                    "line": 93,
+                    "identifier": "impure.methodCall",
+                    "message": "Impure call to method Bug14557\\SomeClass::impureStaticMethod() in pure method Bug14557\\Foo::impureViaClassString().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPureUnlessParameterPassed",
+            "files": [
+                "Pure/data/pure-unless-parameter-passed-method.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Pure/data/pure-unless-parameter-passed-method.php",
+                    "line": 12,
+                    "identifier": "pureMethod.nonOptionalParameterPassed",
+                    "message": "Method PureUnlessParameterPassedMethod\\Replacer::replace() is marked @pure-unless-parameter-passed for parameter $count, but $count is not optional, so method PureUnlessParameterPassedMethod\\Replacer::replace() is never pure.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-parameter-passed-method.php",
+                    "line": 33,
+                    "identifier": "pureMethod.parameterPassedNotByRef",
+                    "message": "Method PureUnlessParameterPassedMethod\\Replacer::replaceByValue() is marked @pure-unless-parameter-passed for parameter $flag, but $flag is not passed by reference.",
+                    "tip": null
+                },
+                {
+                    "file": "Pure/data/pure-unless-parameter-passed-method.php",
+                    "line": 44,
+                    "identifier": "impure.echo",
+                    "message": "Impure echo in pure method PureUnlessParameterPassedMethod\\Replacer::replaceWithSideEffect().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}
