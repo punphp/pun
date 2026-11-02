@@ -1,0 +1,966 @@
+{
+    "test": "Classes/ClassConstantRuleTest",
+    "cases": [
+        {
+            "method": "testClassConstant",
+            "files": [
+                "Classes/data/class-constant.php",
+                "Classes/data/class-constant-defined.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/class-constant.php",
+                    "line": 6,
+                    "identifier": "class.notFound",
+                    "message": "Class ClassConstantNamespace\\Bar not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/class-constant.php",
+                    "line": 7,
+                    "identifier": "outOfClass.self",
+                    "message": "Using self outside of class scope.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant.php",
+                    "line": 10,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant ClassConstantNamespace\\Foo::DOLOR.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant.php",
+                    "line": 11,
+                    "identifier": "variable.undefined",
+                    "message": "Variable $bar might not be defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant.php",
+                    "line": 16,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant ClassConstantNamespace\\Foo::DOLOR.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant.php",
+                    "line": 18,
+                    "identifier": "outOfClass.static",
+                    "message": "Using static outside of class scope.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant.php",
+                    "line": 19,
+                    "identifier": "outOfClass.parent",
+                    "message": "Using parent outside of class scope.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant.php",
+                    "line": 21,
+                    "identifier": "class.notFound",
+                    "message": "Access to constant FOO on an unknown class ClassConstantNamespace\\UnknownClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/class-constant.php",
+                    "line": 26,
+                    "identifier": "class.nameCase",
+                    "message": "Class ClassConstantNamespace\\Foo referenced with incorrect case: ClassConstantNamespace\\FOO.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant.php",
+                    "line": 27,
+                    "identifier": "class.nameCase",
+                    "message": "Class ClassConstantNamespace\\Foo referenced with incorrect case: ClassConstantNamespace\\FOO.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant.php",
+                    "line": 27,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant ClassConstantNamespace\\Foo::DOLOR.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant.php",
+                    "line": 28,
+                    "identifier": "class.nameCase",
+                    "message": "Class ClassConstantNamespace\\Foo referenced with incorrect case: ClassConstantNamespace\\FOO.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant.php",
+                    "line": 31,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/class-constant.php",
+                    "line": 33,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant ClassConstantNamespace\\Foo|string::DOLOR.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testClassConstantVisibility",
+            "files": [
+                "Classes/data/class-constant-visibility.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/class-constant-visibility.php",
+                    "line": 25,
+                    "identifier": "classConstant.private",
+                    "message": "Access to private constant PRIVATE_BAR of class ClassConstantVisibility\\Bar.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant-visibility.php",
+                    "line": 27,
+                    "identifier": "class.noParent",
+                    "message": "Access to parent::BAZ but ClassConstantVisibility\\Foo does not extend any class.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant-visibility.php",
+                    "line": 45,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant ClassConstantVisibility\\Bar::PRIVATE_FOO.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant-visibility.php",
+                    "line": 46,
+                    "identifier": "classConstant.private",
+                    "message": "Access to private constant PRIVATE_FOO of class ClassConstantVisibility\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant-visibility.php",
+                    "line": 47,
+                    "identifier": "classConstant.private",
+                    "message": "Access to private constant PRIVATE_FOO of class ClassConstantVisibility\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant-visibility.php",
+                    "line": 60,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant ClassConstantVisibility\\Bar::PRIVATE_FOO.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant-visibility.php",
+                    "line": 71,
+                    "identifier": "classConstant.protected",
+                    "message": "Access to protected constant PROTECTED_FOO of class ClassConstantVisibility\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant-visibility.php",
+                    "line": 99,
+                    "identifier": "class.notFound",
+                    "message": "Property ClassConstantVisibility\\Ipsum::$unknown has unknown class ClassConstantVisibility\\UnknownClassFirst as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/class-constant-visibility.php",
+                    "line": 99,
+                    "identifier": "class.notFound",
+                    "message": "Property ClassConstantVisibility\\Ipsum::$unknown has unknown class ClassConstantVisibility\\UnknownClassSecond as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/class-constant-visibility.php",
+                    "line": 106,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant ClassConstantVisibility\\WithFooAndBarConstant&ClassConstantVisibility\\WithFooConstant::BAZ.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant-visibility.php",
+                    "line": 112,
+                    "identifier": "class.notFound",
+                    "message": "Access to constant FOO on an unknown class ClassConstantVisibility\\UnknownClassFirst.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/class-constant-visibility.php",
+                    "line": 112,
+                    "identifier": "class.notFound",
+                    "message": "Access to constant FOO on an unknown class ClassConstantVisibility\\UnknownClassSecond.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/class-constant-visibility.php",
+                    "line": 115,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/class-constant-visibility.php",
+                    "line": 116,
+                    "identifier": "classConstant.nonObject",
+                    "message": "Cannot access constant FOO on int|string.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant-visibility.php",
+                    "line": 128,
+                    "identifier": "staticClassAccess.privateConstant",
+                    "message": "Unsafe access to private constant ClassConstantVisibility\\AccessWithStatic::FOO through static::.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant-visibility.php",
+                    "line": 129,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant static(ClassConstantVisibility\\AccessWithStatic)::BAR.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant-visibility.php",
+                    "line": 135,
+                    "identifier": "class.nameCase",
+                    "message": "Class ClassConstantVisibility\\Foo referenced with incorrect case: ClassConstantVisibility\\FOO.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant-visibility.php",
+                    "line": 135,
+                    "identifier": "classConstant.private",
+                    "message": "Access to private constant PRIVATE_FOO of class ClassConstantVisibility\\Foo.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testClassExists",
+            "files": [
+                "Classes/data/class-exists.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/class-exists.php",
+                    "line": 24,
+                    "identifier": "class.notFound",
+                    "message": "Class UnknownClass\\Bar not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/class-exists.php",
+                    "line": 26,
+                    "identifier": "class.notFound",
+                    "message": "Class UnknownClass\\Foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/class-exists.php",
+                    "line": 29,
+                    "identifier": "class.notFound",
+                    "message": "Class UnknownClass\\Foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testEnumExists",
+            "files": [
+                "Classes/data/enum-exists.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/enum-exists.php",
+                    "line": 7,
+                    "identifier": "class.notFound",
+                    "message": "Class UnknownEnum\\Foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testClassConstantOnExpression",
+            "files": [
+                "Classes/data/class-constant-on-expr.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/class-constant-on-expr.php",
+                    "line": 16,
+                    "identifier": "classConstant.dynamicString",
+                    "message": "Accessing ::class constant on a dynamic string is not supported in PHP.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant-on-expr.php",
+                    "line": 18,
+                    "identifier": "classConstant.dynamicString",
+                    "message": "Accessing ::class constant on a dynamic string is not supported in PHP.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testAttributes",
+            "files": [
+                "Classes/data/class-constant-attribute.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/class-constant-attribute.php",
+                    "line": 5,
+                    "identifier": "attribute.notFound",
+                    "message": "Attribute class ClassConstantAttribute\\MyAttr does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant-attribute.php",
+                    "line": 5,
+                    "identifier": "attribute.notFound",
+                    "message": "Attribute class ClassConstantAttribute\\MyAttr does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant-attribute.php",
+                    "line": 5,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant ClassConstantAttribute\\Foo::BAR.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant-attribute.php",
+                    "line": 9,
+                    "identifier": "attribute.notFound",
+                    "message": "Attribute class ClassConstantAttribute\\MyAttr does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant-attribute.php",
+                    "line": 9,
+                    "identifier": "attribute.notFound",
+                    "message": "Attribute class ClassConstantAttribute\\MyAttr does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant-attribute.php",
+                    "line": 9,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant ClassConstantAttribute\\Foo::BAR.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant-attribute.php",
+                    "line": 12,
+                    "identifier": "attribute.notFound",
+                    "message": "Attribute class ClassConstantAttribute\\MyAttr does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant-attribute.php",
+                    "line": 12,
+                    "identifier": "attribute.notFound",
+                    "message": "Attribute class ClassConstantAttribute\\MyAttr does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant-attribute.php",
+                    "line": 12,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant ClassConstantAttribute\\Foo::BAR.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant-attribute.php",
+                    "line": 15,
+                    "identifier": "attribute.notFound",
+                    "message": "Attribute class ClassConstantAttribute\\MyAttr does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant-attribute.php",
+                    "line": 15,
+                    "identifier": "attribute.notFound",
+                    "message": "Attribute class ClassConstantAttribute\\MyAttr does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant-attribute.php",
+                    "line": 15,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant ClassConstantAttribute\\Foo::BAR.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant-attribute.php",
+                    "line": 17,
+                    "identifier": "attribute.notFound",
+                    "message": "Attribute class ClassConstantAttribute\\MyAttr does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant-attribute.php",
+                    "line": 17,
+                    "identifier": "attribute.notFound",
+                    "message": "Attribute class ClassConstantAttribute\\MyAttr does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant-attribute.php",
+                    "line": 17,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant ClassConstantAttribute\\Foo::BAR.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant-attribute.php",
+                    "line": 26,
+                    "identifier": "attribute.notFound",
+                    "message": "Attribute class ClassConstantAttribute\\MyAttr does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant-attribute.php",
+                    "line": 26,
+                    "identifier": "attribute.notFound",
+                    "message": "Attribute class ClassConstantAttribute\\MyAttr does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant-attribute.php",
+                    "line": 26,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant ClassConstantAttribute\\Foo::BAR.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-constant-attribute.php",
+                    "line": 26,
+                    "identifier": "classConstant.private",
+                    "message": "Access to private constant FOO of class ClassConstantAttribute\\Foo.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleWithNullsafeVariant",
+            "files": [
+                "Classes/data/class-constant-nullsafe.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7675",
+            "files": [
+                "Classes/data/bug-7675.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8034",
+            "files": [
+                "Classes/data/bug-8034.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/bug-8034.php",
+                    "line": 12,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property static(Bug8034\\HelloWorld)::$fields.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-8034.php",
+                    "line": 19,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant static(Bug8034\\HelloWorld)::FIELDS.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testClassConstFetchDefined",
+            "files": [
+                "Classes/data/class-const-fetch-defined.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/class-const-fetch-defined.php",
+                    "line": 12,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant ClassConstFetchDefined\\Foo::TEST.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-const-fetch-defined.php",
+                    "line": 13,
+                    "identifier": "class.notFound",
+                    "message": "Access to constant TEST on an unknown class Foo.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/class-const-fetch-defined.php",
+                    "line": 14,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant ClassConstFetchDefined\\Foo::TEST.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-const-fetch-defined.php",
+                    "line": 16,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant ClassConstFetchDefined\\Foo::TEST.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-const-fetch-defined.php",
+                    "line": 17,
+                    "identifier": "class.notFound",
+                    "message": "Access to constant TEST on an unknown class Foo.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/class-const-fetch-defined.php",
+                    "line": 18,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant ClassConstFetchDefined\\Foo::TEST.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-const-fetch-defined.php",
+                    "line": 22,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant ClassConstFetchDefined\\Foo::TEST.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-const-fetch-defined.php",
+                    "line": 23,
+                    "identifier": "class.notFound",
+                    "message": "Access to constant TEST on an unknown class Foo.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/class-const-fetch-defined.php",
+                    "line": 24,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant ClassConstFetchDefined\\Foo::TEST.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-const-fetch-defined.php",
+                    "line": 26,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant ClassConstFetchDefined\\Foo::TEST.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-const-fetch-defined.php",
+                    "line": 27,
+                    "identifier": "class.notFound",
+                    "message": "Access to constant TEST on an unknown class Foo.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/class-const-fetch-defined.php",
+                    "line": 28,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant ClassConstFetchDefined\\Foo::TEST.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-const-fetch-defined.php",
+                    "line": 33,
+                    "identifier": "class.notFound",
+                    "message": "Access to constant TEST on an unknown class Foo.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/class-const-fetch-defined.php",
+                    "line": 36,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant ClassConstFetchDefined\\Foo::TEST.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-const-fetch-defined.php",
+                    "line": 37,
+                    "identifier": "class.notFound",
+                    "message": "Access to constant TEST on an unknown class Foo.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/class-const-fetch-defined.php",
+                    "line": 38,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant ClassConstFetchDefined\\Foo::TEST.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-const-fetch-defined.php",
+                    "line": 43,
+                    "identifier": "class.notFound",
+                    "message": "Access to constant TEST on an unknown class Foo.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/class-const-fetch-defined.php",
+                    "line": 46,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant ClassConstFetchDefined\\Foo::TEST.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-const-fetch-defined.php",
+                    "line": 47,
+                    "identifier": "class.notFound",
+                    "message": "Access to constant TEST on an unknown class Foo.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/class-const-fetch-defined.php",
+                    "line": 48,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant ClassConstFetchDefined\\Foo::TEST.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-const-fetch-defined.php",
+                    "line": 52,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant ClassConstFetchDefined\\Foo::TEST.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-const-fetch-defined.php",
+                    "line": 53,
+                    "identifier": "class.notFound",
+                    "message": "Access to constant TEST on an unknown class Foo.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/class-const-fetch-defined.php",
+                    "line": 54,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant ClassConstFetchDefined\\Foo::TEST.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-const-fetch-defined.php",
+                    "line": 56,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant ClassConstFetchDefined\\Foo::TEST.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-const-fetch-defined.php",
+                    "line": 57,
+                    "identifier": "class.notFound",
+                    "message": "Access to constant TEST on an unknown class Foo.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/class-const-fetch-defined.php",
+                    "line": 58,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant ClassConstFetchDefined\\Foo::TEST.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPhpstanInternalClass",
+            "files": [
+                "Classes/data/phpstan-internal-class.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 14,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPStan class: _PHPStan_156ee64ba\\PrefixedRuntimeException.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\PrefixedRuntimeException?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 16,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPStan class: _PHPStan_156ee64ba\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 19,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPStan class: _PHPStan_156ee64ba\\PrefixedRuntimeException.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\PrefixedRuntimeException?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 25,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPStan class: _PHPStan_156ee64ba\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 28,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPStan class: _PHPStan_156ee64ba\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 30,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPStan class: _PHPStan_156ee64ba\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 34,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPStan class: _PHPStan_156ee64ba\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 56,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed Rector class: RectorPrefix202302\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 59,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHP-Scoper class: _PhpScoper19ae93be897e\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 62,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPUnit class: PHPUnitPHAR\\SebastianBergmann\\Diff\\Exception.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\SebastianBergmann\\Diff\\Exception?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 73,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed Box class: _HumbugBox02f3b3909847\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testClassConstantAccessedOnTrait",
+            "files": [
+                "Classes/data/class-constant-accessed-on-trait.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/class-constant-accessed-on-trait.php",
+                    "line": 16,
+                    "identifier": "classConstant.onTrait",
+                    "message": "Cannot access constant TEST on trait ClassConstantAccessedOnTrait\\Foo.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testDynamicAccess",
+            "files": [
+                "Classes/data/dynamic-constant-access.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/dynamic-constant-access.php",
+                    "line": 17,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant ClassConstantDynamicAccess\\Foo::FOO.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/dynamic-constant-access.php",
+                    "line": 20,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant ClassConstantDynamicAccess\\Foo::BUZ.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/dynamic-constant-access.php",
+                    "line": 20,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant ClassConstantDynamicAccess\\Foo::FOO.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/dynamic-constant-access.php",
+                    "line": 37,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant ClassConstantDynamicAccess\\Foo::FOO.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/dynamic-constant-access.php",
+                    "line": 39,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant ClassConstantDynamicAccess\\Foo::BUZ.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/dynamic-constant-access.php",
+                    "line": 41,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant ClassConstantDynamicAccess\\Foo::QUX.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/dynamic-constant-access.php",
+                    "line": 44,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant ClassConstantDynamicAccess\\Foo::BUZ.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/dynamic-constant-access.php",
+                    "line": 44,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant ClassConstantDynamicAccess\\Foo::FOO.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/dynamic-constant-access.php",
+                    "line": 44,
+                    "identifier": "classConstant.notFound",
+                    "message": "Access to undefined constant ClassConstantDynamicAccess\\Foo::QUX.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testStringableDynamicAccess",
+            "files": [
+                "Classes/data/dynamic-constant-stringable-access.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/dynamic-constant-stringable-access.php",
+                    "line": 16,
+                    "identifier": "classConstant.nameType",
+                    "message": "Class constant name in dynamic fetch can only be a string, Stringable given.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/dynamic-constant-stringable-access.php",
+                    "line": 17,
+                    "identifier": "classConstant.nameType",
+                    "message": "Class constant name in dynamic fetch can only be a string, int given.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/dynamic-constant-stringable-access.php",
+                    "line": 18,
+                    "identifier": "classConstant.nameType",
+                    "message": "Class constant name in dynamic fetch can only be a string, int given.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/dynamic-constant-stringable-access.php",
+                    "line": 20,
+                    "identifier": "classConstant.nameType",
+                    "message": "Class constant name in dynamic fetch can only be a string, int given.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/dynamic-constant-stringable-access.php",
+                    "line": 22,
+                    "identifier": "classConstant.nameType",
+                    "message": "Class constant name in dynamic fetch can only be a string, Stringable given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12827#0",
+            "files": [
+                "Classes/data/bug-12827.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12827#1",
+            "files": [
+                "Classes/data/bug-12827.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12827Enum#0",
+            "files": [
+                "Classes/data/bug-12827-enum.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12827Enum#1",
+            "files": [
+                "Classes/data/bug-12827-enum.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testConditionallyExecutedClassConstantOnExpression",
+            "files": [
+                "Classes/data/class-constant-on-expr-php-versions.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

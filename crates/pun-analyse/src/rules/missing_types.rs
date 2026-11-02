@@ -451,7 +451,8 @@ pub fn property(c: &mut Checker, p: &Property) {
             );
             out
         });
-        report(c, p.span(), found);
+        // PropertyHandler gives the ClassPropertyNode the property item's position, after any attributes
+        report(c, v.span(), found);
     }
 }
 
