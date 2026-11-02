@@ -17092,7 +17092,7 @@
         "PHPStan\\Rules\\Arrays\\DuplicateKeysInLiteralArraysRule",
         "array.duplicateKey"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/arrays/invalid-array-key",
@@ -17117,7 +17117,7 @@
         "PHPStan\\Rules\\Arrays\\InvalidKeyInArrayItemRule",
         "array.invalidKey"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/arrays/invalid-destructuring",
@@ -17148,7 +17148,7 @@
         "PossiblyNullArrayAccess",
         "offsetAccess.nonArray"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/arrays/read-without-offset",
@@ -21415,7 +21415,7 @@
         "purePropertyHook.redundantUnlessCallable",
         "void.pure"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/functions/invalid-pure-method",
@@ -21437,7 +21437,7 @@
         "PHPStan\\Rules\\Pure\\PureMethodRule",
         "PureMethodRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/functions/invalid-pure-property-hook",
@@ -21459,7 +21459,7 @@
         "PHPStan\\Rules\\Pure\\PurePropertyHookRule",
         "PurePropertyHookRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/functions/invalid-vprintf-arguments",
@@ -21649,7 +21649,7 @@
         "NoMissingTranslationsRule",
         "larastan.missingTranslations"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/laravel/no-auth-facade-in-request-scope",
@@ -21799,7 +21799,7 @@
         "NoUnnecessaryCollectionCallRule",
         "larastan.noUnnecessaryCollectionCall"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/laravel/redundant-to-array-call",
@@ -21868,7 +21868,7 @@
         "ModelAppendsRule",
         "rules.modelAppends"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/laravel/undefined-relation",
@@ -21891,7 +21891,7 @@
         "RelationExistenceRule",
         "larastan.relationExistence"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/laravel/unexpected-dispatch-arguments",
@@ -21938,7 +21938,7 @@
         "UnusedViewsRule",
         "larastan.unusedViews"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/laravel/useless-value-call",
@@ -23177,7 +23177,7 @@
         "nullCoalesce.property",
         "nullCoalesce.variable"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/statements/invalid-isset",
@@ -23200,7 +23200,7 @@
         "IssetRule",
         "PHPStan\\Rules\\Variables\\IssetRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/statements/magic-constant-out-of-context",
@@ -23318,7 +23318,7 @@
         "DateTimeInstantiationRule",
         "PHPStan\\Rules\\DateTimeInstantiationRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/argument",
@@ -26392,7 +26392,7 @@
         "classConstant.private",
         "classConstant.protected"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/undefined/compact-variable",
@@ -26574,7 +26574,7 @@
         "require.fileNotFound",
         "requireOnce.fileNotFound"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/undefined/instanceof-class",
@@ -26666,7 +26666,7 @@
         "offsetAccess.nonOffsetAccessible",
         "offsetAccess.notFound"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/undefined/property",

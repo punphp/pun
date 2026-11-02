@@ -15835,7 +15835,7 @@
         "rules": [
           "analyse/arrays/duplicate-array-key"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -15845,7 +15845,7 @@
         "rules": [
           "analyse/arrays/invalid-array-key"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -16985,7 +16985,7 @@
         "rules": [
           "analyse/undefined/class-constant"
         ],
-        "note": "Merged with classConstant.deprecatedEnum, classConstant.deprecatedInterface, classConstant.deprecatedTrait and 12 others (see the rule's Replaces section). Expanded from classConstant.%s. Planned: not ported yet.",
+        "note": "Merged with classConstant.deprecatedEnum, classConstant.deprecatedInterface, classConstant.deprecatedTrait and 12 others (see the rule's Replaces section). Expanded from classConstant.%s.",
         "unsupported": false
       },
       {
@@ -16995,7 +16995,7 @@
         "rules": [
           "analyse/undefined/class-constant"
         ],
-        "note": "Merged with classConstant.deprecatedClass, classConstant.deprecatedInterface, classConstant.deprecatedTrait and 12 others (see the rule's Replaces section). Expanded from classConstant.%s. Planned: not ported yet.",
+        "note": "Merged with classConstant.deprecatedClass, classConstant.deprecatedInterface, classConstant.deprecatedTrait and 12 others (see the rule's Replaces section). Expanded from classConstant.%s.",
         "unsupported": false
       },
       {
@@ -17005,7 +17005,7 @@
         "rules": [
           "analyse/undefined/class-constant"
         ],
-        "note": "Merged with classConstant.deprecatedClass, classConstant.deprecatedEnum, classConstant.deprecatedTrait and 12 others (see the rule's Replaces section). Expanded from classConstant.%s. Planned: not ported yet.",
+        "note": "Merged with classConstant.deprecatedClass, classConstant.deprecatedEnum, classConstant.deprecatedTrait and 12 others (see the rule's Replaces section). Expanded from classConstant.%s.",
         "unsupported": false
       },
       {
@@ -17015,7 +17015,7 @@
         "rules": [
           "analyse/undefined/class-constant"
         ],
-        "note": "Merged with classConstant.deprecatedClass, classConstant.deprecatedEnum, classConstant.deprecatedInterface and 12 others (see the rule's Replaces section). Expanded from classConstant.%s. Planned: not ported yet.",
+        "note": "Merged with classConstant.deprecatedClass, classConstant.deprecatedEnum, classConstant.deprecatedInterface and 12 others (see the rule's Replaces section). Expanded from classConstant.%s.",
         "unsupported": false
       },
       {
@@ -17035,7 +17035,7 @@
         "rules": [
           "analyse/undefined/class-constant"
         ],
-        "note": "Merged with classConstant.deprecatedClass, classConstant.deprecatedEnum, classConstant.deprecatedInterface and 12 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with classConstant.deprecatedClass, classConstant.deprecatedEnum, classConstant.deprecatedInterface and 12 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -17095,7 +17095,7 @@
         "rules": [
           "analyse/undefined/class-constant"
         ],
-        "note": "Merged with classConstant.deprecatedClass, classConstant.deprecatedEnum, classConstant.deprecatedInterface and 12 others (see the rule's Replaces section). Expanded from classConstant.%s. Planned: not ported yet.",
+        "note": "Merged with classConstant.deprecatedClass, classConstant.deprecatedEnum, classConstant.deprecatedInterface and 12 others (see the rule's Replaces section). Expanded from classConstant.%s.",
         "unsupported": false
       },
       {
@@ -17105,7 +17105,7 @@
         "rules": [
           "analyse/undefined/class-constant"
         ],
-        "note": "Merged with classConstant.deprecatedClass, classConstant.deprecatedEnum, classConstant.deprecatedInterface and 12 others (see the rule's Replaces section). Expanded from classConstant.%s. Planned: not ported yet.",
+        "note": "Merged with classConstant.deprecatedClass, classConstant.deprecatedEnum, classConstant.deprecatedInterface and 12 others (see the rule's Replaces section). Expanded from classConstant.%s.",
         "unsupported": false
       },
       {
@@ -17115,7 +17115,7 @@
         "rules": [
           "analyse/undefined/class-constant"
         ],
-        "note": "Merged with classConstant.deprecatedClass, classConstant.deprecatedEnum, classConstant.deprecatedInterface and 12 others (see the rule's Replaces section). Expanded from classConstant.%s. Planned: not ported yet.",
+        "note": "Merged with classConstant.deprecatedClass, classConstant.deprecatedEnum, classConstant.deprecatedInterface and 12 others (see the rule's Replaces section). Expanded from classConstant.%s.",
         "unsupported": false
       },
       {
@@ -17125,7 +17125,7 @@
         "rules": [
           "analyse/undefined/class-constant"
         ],
-        "note": "Merged with classConstant.deprecatedClass, classConstant.deprecatedEnum, classConstant.deprecatedInterface and 12 others (see the rule's Replaces section). Expanded from classConstant.%s. Planned: not ported yet.",
+        "note": "Merged with classConstant.deprecatedClass, classConstant.deprecatedEnum, classConstant.deprecatedInterface and 12 others (see the rule's Replaces section). Expanded from classConstant.%s.",
         "unsupported": false
       },
       {
@@ -17145,7 +17145,7 @@
         "rules": [
           "analyse/undefined/class-constant"
         ],
-        "note": "Merged with classConstant.deprecatedClass, classConstant.deprecatedEnum, classConstant.deprecatedInterface and 12 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with classConstant.deprecatedClass, classConstant.deprecatedEnum, classConstant.deprecatedInterface and 12 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -17195,7 +17195,7 @@
         "rules": [
           "analyse/undefined/class-constant"
         ],
-        "note": "Merged with classConstant.deprecatedClass, classConstant.deprecatedEnum, classConstant.deprecatedInterface and 12 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with classConstant.deprecatedClass, classConstant.deprecatedEnum, classConstant.deprecatedInterface and 12 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -17205,7 +17205,7 @@
         "rules": [
           "analyse/undefined/class-constant"
         ],
-        "note": "Merged with classConstant.deprecatedClass, classConstant.deprecatedEnum, classConstant.deprecatedInterface and 12 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with classConstant.deprecatedClass, classConstant.deprecatedEnum, classConstant.deprecatedInterface and 12 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -17215,7 +17215,7 @@
         "rules": [
           "analyse/undefined/class-constant"
         ],
-        "note": "Merged with classConstant.deprecatedClass, classConstant.deprecatedEnum, classConstant.deprecatedInterface and 12 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with classConstant.deprecatedClass, classConstant.deprecatedEnum, classConstant.deprecatedInterface and 12 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -17225,7 +17225,7 @@
         "rules": [
           "analyse/undefined/class-constant"
         ],
-        "note": "Merged with classConstant.deprecatedClass, classConstant.deprecatedEnum, classConstant.deprecatedInterface and 12 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with classConstant.deprecatedClass, classConstant.deprecatedEnum, classConstant.deprecatedInterface and 12 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -17245,7 +17245,7 @@
         "rules": [
           "analyse/undefined/class-constant"
         ],
-        "note": "Merged with classConstant.deprecatedClass, classConstant.deprecatedEnum, classConstant.deprecatedInterface and 12 others (see the rule's Replaces section). Expanded from classConstant.%s. Planned: not ported yet.",
+        "note": "Merged with classConstant.deprecatedClass, classConstant.deprecatedEnum, classConstant.deprecatedInterface and 12 others (see the rule's Replaces section). Expanded from classConstant.%s.",
         "unsupported": false
       },
       {
@@ -17255,7 +17255,7 @@
         "rules": [
           "analyse/undefined/class-constant"
         ],
-        "note": "Merged with classConstant.deprecatedClass, classConstant.deprecatedEnum, classConstant.deprecatedInterface and 12 others (see the rule's Replaces section). Expanded from classConstant.%s. Planned: not ported yet.",
+        "note": "Merged with classConstant.deprecatedClass, classConstant.deprecatedEnum, classConstant.deprecatedInterface and 12 others (see the rule's Replaces section). Expanded from classConstant.%s.",
         "unsupported": false
       },
       {
@@ -17695,7 +17695,7 @@
         "rules": [
           "analyse/statements/invalid-empty"
         ],
-        "note": "Merged with empty.offset, empty.property, empty.variable and 8 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with empty.offset, empty.property, empty.variable and 8 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -17715,7 +17715,7 @@
         "rules": [
           "analyse/statements/invalid-empty"
         ],
-        "note": "Merged with empty.initializedProperty, empty.property, empty.variable and 8 others (see the rule's Replaces section). Expanded from %s.offset. Planned: not ported yet.",
+        "note": "Merged with empty.initializedProperty, empty.property, empty.variable and 8 others (see the rule's Replaces section). Expanded from %s.offset.",
         "unsupported": false
       },
       {
@@ -17725,7 +17725,7 @@
         "rules": [
           "analyse/statements/invalid-empty"
         ],
-        "note": "Merged with empty.initializedProperty, empty.offset, empty.variable and 8 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with empty.initializedProperty, empty.offset, empty.variable and 8 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -17735,7 +17735,7 @@
         "rules": [
           "analyse/statements/invalid-empty"
         ],
-        "note": "Merged with empty.initializedProperty, empty.offset, empty.property and 8 others (see the rule's Replaces section). Expanded from %s.variable. Planned: not ported yet.",
+        "note": "Merged with empty.initializedProperty, empty.offset, empty.property and 8 others (see the rule's Replaces section). Expanded from %s.variable.",
         "unsupported": false
       },
       {
@@ -18735,7 +18735,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.die, impure.echo, impure.eval and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.die, impure.echo, impure.eval and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -18745,7 +18745,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.echo, impure.eval and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.echo, impure.eval and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -18755,7 +18755,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.eval and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.eval and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -18765,7 +18765,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -18775,7 +18775,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -18785,7 +18785,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -18795,7 +18795,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -18805,7 +18805,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -18815,7 +18815,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -18825,7 +18825,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -18835,7 +18835,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -18845,7 +18845,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -18855,7 +18855,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -18865,7 +18865,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -18875,7 +18875,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -18885,7 +18885,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -18895,7 +18895,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -18905,7 +18905,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -18915,7 +18915,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -18925,7 +18925,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -18965,7 +18965,7 @@
         "rules": [
           "analyse/undefined/include-file"
         ],
-        "note": "Merged with includeOnce.fileNotFound, require.fileNotFound, requireOnce.fileNotFound. Planned: not ported yet.",
+        "note": "Merged with includeOnce.fileNotFound, require.fileNotFound, requireOnce.fileNotFound.",
         "unsupported": false
       },
       {
@@ -18975,7 +18975,7 @@
         "rules": [
           "analyse/undefined/include-file"
         ],
-        "note": "Merged with include.fileNotFound, require.fileNotFound, requireOnce.fileNotFound. Planned: not ported yet.",
+        "note": "Merged with include.fileNotFound, require.fileNotFound, requireOnce.fileNotFound.",
         "unsupported": false
       },
       {
@@ -19185,7 +19185,7 @@
         "rules": [
           "analyse/statements/invalid-empty"
         ],
-        "note": "Merged with empty.initializedProperty, empty.offset, empty.property and 8 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with empty.initializedProperty, empty.offset, empty.property and 8 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -19195,7 +19195,7 @@
         "rules": [
           "analyse/statements/invalid-empty"
         ],
-        "note": "Merged with empty.initializedProperty, empty.offset, empty.property and 8 others (see the rule's Replaces section). Expanded from %s.offset. Planned: not ported yet.",
+        "note": "Merged with empty.initializedProperty, empty.offset, empty.property and 8 others (see the rule's Replaces section). Expanded from %s.offset.",
         "unsupported": false
       },
       {
@@ -19205,7 +19205,7 @@
         "rules": [
           "analyse/statements/invalid-empty"
         ],
-        "note": "Merged with empty.initializedProperty, empty.offset, empty.property and 8 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with empty.initializedProperty, empty.offset, empty.property and 8 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -19215,7 +19215,7 @@
         "rules": [
           "analyse/statements/invalid-empty"
         ],
-        "note": "Merged with empty.initializedProperty, empty.offset, empty.property and 8 others (see the rule's Replaces section). Expanded from %s.variable. Planned: not ported yet.",
+        "note": "Merged with empty.initializedProperty, empty.offset, empty.property and 8 others (see the rule's Replaces section). Expanded from %s.variable.",
         "unsupported": false
       },
       {
@@ -20465,7 +20465,7 @@
         "rules": [
           "analyse/statements/invalid-empty"
         ],
-        "note": "Merged with empty.initializedProperty, empty.offset, empty.property and 8 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with empty.initializedProperty, empty.offset, empty.property and 8 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -20475,7 +20475,7 @@
         "rules": [
           "analyse/statements/invalid-empty"
         ],
-        "note": "Merged with empty.initializedProperty, empty.offset, empty.property and 8 others (see the rule's Replaces section). Expanded from %s.offset. Planned: not ported yet.",
+        "note": "Merged with empty.initializedProperty, empty.offset, empty.property and 8 others (see the rule's Replaces section). Expanded from %s.offset.",
         "unsupported": false
       },
       {
@@ -20485,7 +20485,7 @@
         "rules": [
           "analyse/statements/invalid-empty"
         ],
-        "note": "Merged with empty.initializedProperty, empty.offset, empty.property and 8 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with empty.initializedProperty, empty.offset, empty.property and 8 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -20505,7 +20505,7 @@
         "rules": [
           "analyse/statements/invalid-empty"
         ],
-        "note": "Merged with empty.initializedProperty, empty.offset, empty.property and 8 others (see the rule's Replaces section). Expanded from %s.variable. Planned: not ported yet.",
+        "note": "Merged with empty.initializedProperty, empty.offset, empty.property and 8 others (see the rule's Replaces section). Expanded from %s.variable.",
         "unsupported": false
       },
       {
@@ -20595,7 +20595,7 @@
         "rules": [
           "analyse/arrays/invalid-destructuring"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -20605,7 +20605,7 @@
         "rules": [
           "analyse/undefined/offset"
         ],
-        "note": "Merged with offsetAccess.notFound. Planned: not ported yet.",
+        "note": "Merged with offsetAccess.notFound.",
         "unsupported": false
       },
       {
@@ -20615,7 +20615,7 @@
         "rules": [
           "analyse/undefined/offset"
         ],
-        "note": "Merged with offsetAccess.nonOffsetAccessible. Planned: not ported yet.",
+        "note": "Merged with offsetAccess.nonOffsetAccessible.",
         "unsupported": false
       },
       {
@@ -21301,7 +21301,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -21311,7 +21311,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -21321,7 +21321,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -21331,7 +21331,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -21341,7 +21341,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -21351,7 +21351,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -21361,7 +21361,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -21371,7 +21371,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -21381,7 +21381,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -21391,7 +21391,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -21401,7 +21401,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -21411,7 +21411,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -21421,7 +21421,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -21431,7 +21431,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -21441,7 +21441,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -21451,7 +21451,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -21461,7 +21461,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -21471,7 +21471,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -21481,7 +21481,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -21491,7 +21491,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -22601,7 +22601,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Expanded from pure%s.nonOptionalParameterPassed. Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Expanded from pure%s.nonOptionalParameterPassed.",
         "unsupported": false
       },
       {
@@ -22611,7 +22611,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Expanded from pure%s.parameterByRef. Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Expanded from pure%s.parameterByRef.",
         "unsupported": false
       },
       {
@@ -22621,7 +22621,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Expanded from pure%s.parameterPassedNotByRef. Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Expanded from pure%s.parameterPassedNotByRef.",
         "unsupported": false
       },
       {
@@ -22631,7 +22631,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Expanded from pure%s.redundantUnlessCallable. Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Expanded from pure%s.redundantUnlessCallable.",
         "unsupported": false
       },
       {
@@ -22651,7 +22651,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Expanded from pure%s.nonOptionalParameterPassed. Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Expanded from pure%s.nonOptionalParameterPassed.",
         "unsupported": false
       },
       {
@@ -22661,7 +22661,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Expanded from pure%s.parameterByRef. Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Expanded from pure%s.parameterByRef.",
         "unsupported": false
       },
       {
@@ -22671,7 +22671,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Expanded from pure%s.parameterPassedNotByRef. Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Expanded from pure%s.parameterPassedNotByRef.",
         "unsupported": false
       },
       {
@@ -22681,7 +22681,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Expanded from pure%s.redundantUnlessCallable. Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Expanded from pure%s.redundantUnlessCallable.",
         "unsupported": false
       },
       {
@@ -22701,7 +22701,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Expanded from pure%s.nonOptionalParameterPassed. Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Expanded from pure%s.nonOptionalParameterPassed.",
         "unsupported": false
       },
       {
@@ -22711,7 +22711,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Expanded from pure%s.parameterByRef. Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Expanded from pure%s.parameterByRef.",
         "unsupported": false
       },
       {
@@ -22721,7 +22721,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Expanded from pure%s.parameterPassedNotByRef. Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Expanded from pure%s.parameterPassedNotByRef.",
         "unsupported": false
       },
       {
@@ -22731,7 +22731,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Expanded from pure%s.redundantUnlessCallable. Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Expanded from pure%s.redundantUnlessCallable.",
         "unsupported": false
       },
       {
@@ -22761,7 +22761,7 @@
         "rules": [
           "analyse/undefined/include-file"
         ],
-        "note": "Merged with include.fileNotFound, includeOnce.fileNotFound, requireOnce.fileNotFound. Planned: not ported yet.",
+        "note": "Merged with include.fileNotFound, includeOnce.fileNotFound, requireOnce.fileNotFound.",
         "unsupported": false
       },
       {
@@ -22971,7 +22971,7 @@
         "rules": [
           "analyse/undefined/include-file"
         ],
-        "note": "Merged with include.fileNotFound, includeOnce.fileNotFound, require.fileNotFound. Planned: not ported yet.",
+        "note": "Merged with include.fileNotFound, includeOnce.fileNotFound, require.fileNotFound.",
         "unsupported": false
       },
       {
@@ -24431,7 +24431,7 @@
         "rules": [
           "analyse/functions/invalid-pure"
         ],
-        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with impure.betweenPhpTags, impure.die, impure.echo and 49 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -24553,7 +24553,7 @@
         "rules": [
           "analyse/laravel/missing-translation"
         ],
-        "note": "Same. Options: Larastan parameters carry as rule options. Planned: not ported yet.",
+        "note": "Same. Options: Larastan parameters carry as rule options.",
         "unsupported": false
       },
       {
@@ -24623,7 +24623,7 @@
         "rules": [
           "analyse/laravel/redundant-collection-call"
         ],
-        "note": "Same. Options: Larastan parameters carry as rule options. Planned: not ported yet.",
+        "note": "Same. Options: Larastan parameters carry as rule options.",
         "unsupported": false
       },
       {
@@ -24643,7 +24643,7 @@
         "rules": [
           "analyse/laravel/undefined-relation"
         ],
-        "note": "Same. Options: Larastan parameters carry as rule options. Planned: not ported yet.",
+        "note": "Same. Options: Larastan parameters carry as rule options.",
         "unsupported": false
       },
       {
@@ -24663,7 +24663,7 @@
         "rules": [
           "analyse/laravel/unused-view"
         ],
-        "note": "Same. Options: Larastan parameters carry as rule options. Planned: not ported yet.",
+        "note": "Same. Options: Larastan parameters carry as rule options.",
         "unsupported": false
       },
       {
@@ -24693,7 +24693,7 @@
         "rules": [
           "analyse/laravel/undefined-model-append"
         ],
-        "note": "Same. Options: Larastan parameters carry as rule options. Planned: not ported yet.",
+        "note": "Same. Options: Larastan parameters carry as rule options.",
         "unsupported": false
       }
     ],
@@ -27033,7 +27033,7 @@
         "rules": [
           "analyse/arrays/duplicate-array-key"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -27191,7 +27191,7 @@
         "rules": [
           "analyse/arrays/invalid-destructuring"
         ],
-        "note": "Merged with InvalidArrayAccess, MixedArrayAccess, NullArrayAccess and 3 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with InvalidArrayAccess, MixedArrayAccess, NullArrayAccess and 3 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -27603,7 +27603,7 @@
         "rules": [
           "analyse/arrays/invalid-destructuring"
         ],
-        "note": "Merged with FalseArrayAccess, MixedArrayAccess, NullArrayAccess and 3 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with FalseArrayAccess, MixedArrayAccess, NullArrayAccess and 3 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -27629,7 +27629,7 @@
         "rules": [
           "analyse/arrays/invalid-array-key"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -28363,7 +28363,7 @@
         "rules": [
           "analyse/arrays/invalid-destructuring"
         ],
-        "note": "Merged with FalseArrayAccess, InvalidArrayAccess, NullArrayAccess and 3 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with FalseArrayAccess, InvalidArrayAccess, NullArrayAccess and 3 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -28599,7 +28599,7 @@
         "rules": [
           "analyse/undefined/class-constant"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -28699,7 +28699,7 @@
         "rules": [
           "analyse/arrays/invalid-destructuring"
         ],
-        "note": "Merged with FalseArrayAccess, InvalidArrayAccess, MixedArrayAccess and 3 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with FalseArrayAccess, InvalidArrayAccess, MixedArrayAccess and 3 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -28860,7 +28860,7 @@
         "rules": [
           "analyse/arrays/invalid-destructuring"
         ],
-        "note": "Merged with FalseArrayAccess, InvalidArrayAccess, MixedArrayAccess and 3 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with FalseArrayAccess, InvalidArrayAccess, MixedArrayAccess and 3 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -28898,7 +28898,7 @@
         "rules": [
           "analyse/arrays/invalid-destructuring"
         ],
-        "note": "Merged with FalseArrayAccess, InvalidArrayAccess, MixedArrayAccess and 3 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with FalseArrayAccess, InvalidArrayAccess, MixedArrayAccess and 3 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -28974,7 +28974,7 @@
         "rules": [
           "analyse/arrays/invalid-destructuring"
         ],
-        "note": "Merged with FalseArrayAccess, InvalidArrayAccess, MixedArrayAccess and 3 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with FalseArrayAccess, InvalidArrayAccess, MixedArrayAccess and 3 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -29038,7 +29038,7 @@
         "rules": [
           "analyse/undefined/offset"
         ],
-        "note": "Merged with PossiblyUndefinedIntArrayIndex, PossiblyUndefinedStringArrayIndex, UndefinedIntArrayIndex and 1 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with PossiblyUndefinedIntArrayIndex, PossiblyUndefinedStringArrayIndex, UndefinedIntArrayIndex and 1 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -29048,7 +29048,7 @@
         "rules": [
           "analyse/undefined/offset"
         ],
-        "note": "Merged with PossiblyUndefinedArrayIndex, PossiblyUndefinedStringArrayIndex, UndefinedIntArrayIndex and 1 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with PossiblyUndefinedArrayIndex, PossiblyUndefinedStringArrayIndex, UndefinedIntArrayIndex and 1 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -29058,7 +29058,7 @@
         "rules": [
           "analyse/undefined/offset"
         ],
-        "note": "Merged with PossiblyUndefinedArrayIndex, PossiblyUndefinedIntArrayIndex, UndefinedIntArrayIndex and 1 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with PossiblyUndefinedArrayIndex, PossiblyUndefinedIntArrayIndex, UndefinedIntArrayIndex and 1 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -29134,7 +29134,7 @@
         "rules": [
           "analyse/statements/invalid-empty"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -29422,7 +29422,7 @@
         "rules": [
           "analyse/undefined/offset"
         ],
-        "note": "Merged with PossiblyUndefinedArrayIndex, PossiblyUndefinedIntArrayIndex, PossiblyUndefinedStringArrayIndex and 1 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with PossiblyUndefinedArrayIndex, PossiblyUndefinedIntArrayIndex, PossiblyUndefinedStringArrayIndex and 1 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -29432,7 +29432,7 @@
         "rules": [
           "analyse/undefined/offset"
         ],
-        "note": "Merged with PossiblyUndefinedArrayIndex, PossiblyUndefinedIntArrayIndex, PossiblyUndefinedStringArrayIndex and 1 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with PossiblyUndefinedArrayIndex, PossiblyUndefinedIntArrayIndex, PossiblyUndefinedStringArrayIndex and 1 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
