@@ -111,3 +111,16 @@ function many(array $many): int
 {
 	return $many['a'] + $many['z'];
 }
+
+/**
+ * @param array{first: int, second: string} $record
+ */
+function narrowed(array $record): void
+{
+	foreach (['first', 'missing'] as $column) {
+		if (array_key_exists($column, $record)) {
+			echo $record[$column];
+		}
+		echo $record[$column];
+	}
+}

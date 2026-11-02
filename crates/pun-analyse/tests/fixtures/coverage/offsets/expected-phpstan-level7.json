@@ -266,6 +266,13 @@
    "identifier": "offsetAccess.notFound",
    "message": "Offset 'z' does not exist on array{a?: int, b?: int, c?: int, d?: int, e?: int, f?: int, g?: int, h?: int, ...}.",
    "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 124,
+   "identifier": "offsetAccess.notFound",
+   "message": "Offset 'first'|'missing' might not exist on array{first: int, second: string}.",
+   "tip": null
   }
  ]
 }

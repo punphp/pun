@@ -64,6 +64,7 @@ pub(super) use returns::{
 pub(super) use void_match::void_match;
 pub(super) use values::{array, array_access, clone, foreach, throw};
 pub(super) use dim_fetch::{array_item, destructuring, dim_fetch};
+pub(super) use dim_fetch::watched as dim_fetches;
 pub(super) use yields::program as yields_outside;
 pub(super) use property_default::property as property_default;
 pub(super) use constant_value::{class_constant, define_value, global_constant};

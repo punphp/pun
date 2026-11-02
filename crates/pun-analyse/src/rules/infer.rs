@@ -149,8 +149,11 @@ pub(super) fn infer<'arena>(
     wanted.extend(extra);
     wanted.extend(super::unset::expressions(program).0);
     wanted.extend(dead_code::flow_types(program, level));
-    let (typed, watched, initializations) = dead_code::coalesce_types(program, level);
+    let (typed, mut watched, initializations) = dead_code::coalesce_types(program, level);
     wanted.extend(typed);
+    if level >= 3 {
+        watched.extend(super::types::dim_fetches(program));
+    }
     let by_ref = if level >= 3 { super::types::param_out::watched(program) } else { Vec::new() };
     wanted.extend(by_ref.iter().map(|(body, _)| *body));
     analyse_observed(arena, file, program, names, codebase, php_version, pollute_scope_with_loop_initial_assignments, pollute_scope_with_always_iterable_foreach, pollute_scope_with_block, wanted, watched, calls, Some(variables), Some(variable_writes), initializations, Some(property_initializations), by_ref, larastan)

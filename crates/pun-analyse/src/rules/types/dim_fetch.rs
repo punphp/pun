@@ -293,6 +293,11 @@ pub(in super::super) fn dim_fetch(c: &mut Checker, node: Span, holder: &Expressi
         c.report(holder, "class.notFound", unknown(&name), Some(super::super::DISCOVERING_SYMBOLS_TIP));
     }
     let Some(found) = found else { return };
+    // `$scope->hasExpressionType($node)->yes()`: a fetch the scope narrowed, as array_key_exists() with a key that
+    // is not constant does
+    if c.defined.get(&node) == Some(&Tri::Yes) {
+        return;
+    }
     let assigned = property_access::dim_assigned(c, node);
     let allowed = undefined_allowed(c, node);
     let message = declared::with_classes(c, || {
@@ -323,6 +328,19 @@ pub(in super::super) fn dim_fetch(c: &mut Checker, node: Span, holder: &Expressi
     if let Some((identifier, message)) = message {
         c.report(node, identifier, message, None);
     }
+}
+
+/// The dim fetches whose `hasExpressionType()` [`dim_fetch`] reads.
+pub(in super::super) fn watched(program: &Program) -> Vec<Span> {
+    struct Fetches(Vec<Span>);
+    impl<'ast, 'arena> mago_syntax::walker::MutWalker<'ast, 'arena, ()> for Fetches {
+        fn walk_in_array_access(&mut self, a: &'ast ArrayAccess<'arena>, _: &mut ()) {
+            self.0.push(a.span());
+        }
+    }
+    let mut fetches = Fetches(Vec::new());
+    mago_syntax::walker::MutWalker::walk_program(&mut fetches, program, &mut ());
+    fetches.0
 }
 
 /// ArrayDestructuringRule on `[...] = $value` (`value` the assigned expression's type), reported at `at`.
