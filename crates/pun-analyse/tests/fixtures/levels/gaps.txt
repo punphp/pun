@@ -734,3 +734,31 @@
 # a caught class extending an unknown class: PHPStan types the catch variable Bug10684\HookBreaker, Mago Throwable,
 # so Pun reports parameterByRef.type for `$brokenBy = $e` and method.notFound for `$e->getReturnValue()`
 4 TooWideTypehints/TooWideMethodParameterOutTypeRuleTest::testBug10684
+# batch-offsets: the cases of the newly exported ArrayDestructuringRule and NonexistentOffsetInArrayDimFetchRule
+# tests that differ by inference or another rule. offsetAccess.notFound/nonOffsetAccessible: Mago's PHPDoc array
+# shapes sort their keys (bug-8075 `array{age: int, name: string}`); explode() of a constant string is not folded to a
+# constant array (bug-15013, PHPStan's ExplodeFunctionDynamicReturnTypeExtension); `$mixed - $mixed` is mixed, not
+# float|int (bug-5169); a do-while condition's `++$offset` ranges (bug-5743); `preg_match()` writing into
+# `$matches[2]` (bug-11655); a static property is not invalidated by a `$this` call (bug-3747); a `Closure` native
+# type is `Closure(mixed ...): mixed` (bug-8068); `array_key_last()` of `[]` keeps `list<*NEVER*>` (and
+# return.type); assignOp.invalid of DOM offsets, method.tentativeReturnType of anonymous classes (the exporter's
+# absolute paths) and offsetAccess.invalidOffset of array_rand() (as testBug12981 above)
+3 Arrays/ArrayDestructuringRuleTest::testBug8075
+3 Arrays/ArrayDestructuringRuleTest::testBug15013
+3 Arrays/NonexistentOffsetInArrayDimFetchRuleTest::testBug5169
+3 Arrays/NonexistentOffsetInArrayDimFetchRuleTest::testBug5743
+3 Arrays/NonexistentOffsetInArrayDimFetchRuleTest::testBug8068
+3 Arrays/NonexistentOffsetInArrayDimFetchRuleTest::testBug11655
+3 Arrays/NonexistentOffsetInArrayDimFetchRuleTest::testBug3747
+3 Arrays/NonexistentOffsetInArrayDimFetchRuleTest::testArrayDimFetchAfterArrayKeyFirstOrLast
+3 Arrays/NonexistentOffsetInArrayDimFetchRuleTest::testOffsetAccessLegal
+3 Arrays/NonexistentOffsetInArrayDimFetchRuleTest::testInternalClassesWithOverloadedOffsetAccessInvalid
+3 Arrays/NonexistentOffsetInArrayDimFetchRuleTest::testInternalClassesWithOverloadedOffsetAccessInvalid84
+3 Arrays/NonexistentOffsetInArrayDimFetchRuleTest::testBug12981
+# class.notFound (NonexistentOffsetInArrayDimFetchRule): Mago types a property by its `@psalm-var Params` where PHPStan
+# takes the `@phpstan-var array<string, mixed>` beside it, so the offset write's holder is an unknown class
+3 Properties/TypesAssignedToPropertiesRuleTest::testBug4906
+# offsetAccess.notFound: the do-while condition's `++$offset` ranges of bug-5743 (as NonexistentOffsetInArrayDimFetchRule's)
+4 Comparison/BooleanAndConstantConditionRuleTest::testBug5743
+# offsetAccess.notFound: `count($a) === 2` does not narrow Mago's union of array shapes to the two-key one
+9 Functions/CallToFunctionParametersRuleTest::testBug11494

@@ -77,6 +77,10 @@ const PORTED: &[&str] = &[
     "arrayUnpacking.nonIterable",
     "arrayUnpacking.stringOffset",
     "offsetAccess.invalidOffset",
+    "array.invalidKey",
+    "offsetAccess.nonArray",
+    "offsetAccess.nonOffsetAccessible",
+    "offsetAccess.notFound",
     "foreach.emptyArray",
     "echo.nonString",
     "print.nonString",
@@ -472,6 +476,9 @@ const GENERICS_NOT_FOUND: &[&str] = &[
     "Iterating over an object of an unknown class ",
     "PHPDoc tag @phpstan-assert",
     "Invoking callable on an unknown class ",
+    // NonexistentOffsetInArrayDimFetchRule's
+    "Access to offset ",
+    "Access to an offset on an unknown class ",
     // FunctionDefinitionCheck's (native types from level 0, PHPDoc ones from level 2)
     "Parameter $",
     "Function ",

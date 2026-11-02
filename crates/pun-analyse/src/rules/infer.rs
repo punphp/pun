@@ -304,6 +304,7 @@ fn analyse_observed<'arena>(
     }
     if let Some(variables) = variables {
         *variables = std::mem::take(&mut found.variables);
+        variables.allowed = std::mem::take(&mut found.allowed);
         if let Some(o) = param_out {
             variables.param_out = std::mem::take(&mut *o.found.lock().expect("no hook panics while holding the lock"));
         }

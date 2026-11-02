@@ -1,0 +1,194 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "offsets.php",
+   "line": 30,
+   "identifier": "offsetAccess.nonOffsetAccessible",
+   "message": "Cannot access offset 'a' on int.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 31,
+   "identifier": "offsetAccess.nonOffsetAccessible",
+   "message": "Cannot access offset 'a' on Closure(): void.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 33,
+   "identifier": "offsetAccess.nonOffsetAccessible",
+   "message": "Cannot access offset 'a' on Closure(): void.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 34,
+   "identifier": "offsetAccess.nonOffsetAccessible",
+   "message": "Cannot access offset 'a' on (Closure(): void)|int.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 36,
+   "identifier": "offsetAccess.nonOffsetAccessible",
+   "message": "Cannot access offset 'a' on T of int.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 42,
+   "identifier": "offsetAccess.notFound",
+   "message": "Offset 'c' does not exist on array{a: int, b?: string}.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 46,
+   "identifier": "offsetAccess.notFound",
+   "message": "Offset -1 does not exist on list<int>.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 48,
+   "identifier": "offsetAccess.notFound",
+   "message": "Offset 1 does not exist on array<string, int>.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 50,
+   "identifier": "offsetAccess.notFound",
+   "message": "Offset 'z' does not exist on array{a: int}.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 60,
+   "identifier": "class.notFound",
+   "message": "Call to static method get() on an unknown class CoverageOffsets\\Missing.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "offsets.php",
+   "line": 61,
+   "identifier": "offsetAccess.invalidOffset",
+   "message": "Invalid array key type array.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 66,
+   "identifier": "offsetAccess.nonOffsetAccessible",
+   "message": "Cannot access an offset on int.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 67,
+   "identifier": "offsetAccess.nonOffsetAccessible",
+   "message": "Cannot access offset 'a' on int.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 74,
+   "identifier": "class.notFound",
+   "message": "Instantiated class CoverageOffsets\\Unknown not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "offsets.php",
+   "line": 75,
+   "identifier": "class.notFound",
+   "message": "Access to an offset on an unknown class CoverageOffsets\\Unknown.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "offsets.php",
+   "line": 76,
+   "identifier": "class.notFound",
+   "message": "Access to offset 'a' on an unknown class CoverageOffsets\\Unknown.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "offsets.php",
+   "line": 87,
+   "identifier": "offsetAccess.notFound",
+   "message": "Offset 'z' does not exist on array{a: int, b: array{c: int}}.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 88,
+   "identifier": "offsetAccess.notFound",
+   "message": "Offset 'd' does not exist on array{c: int}.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 89,
+   "identifier": "offsetAccess.notFound",
+   "message": "Offset 3 does not exist on array{1, 2}.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 90,
+   "identifier": "offsetAccess.nonArray",
+   "message": "Cannot use array destructuring on int.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 93,
+   "identifier": "offsetAccess.notFound",
+   "message": "Offset 1 does not exist on array{2}.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 94,
+   "identifier": "offsetAccess.notFound",
+   "message": "Offset 'y' does not exist on array{x: int}.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 96,
+   "identifier": "offsetAccess.notFound",
+   "message": "Offset 0 does not exist on array{x: int}.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 99,
+   "identifier": "array.invalidKey",
+   "message": "Invalid array key type DateTimeImmutable.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 101,
+   "identifier": "array.invalidKey",
+   "message": "Invalid array key type float.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 102,
+   "identifier": "array.invalidKey",
+   "message": "Invalid array key type null.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 112,
+   "identifier": "offsetAccess.notFound",
+   "message": "Offset 'z' does not exist on array{a?: int, b?: int, c?: int, d?: int, e?: int, f?: int, g?: int, h?: int, ...}.",
+   "tip": null
+  }
+ ]
+}

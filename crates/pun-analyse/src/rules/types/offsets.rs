@@ -78,7 +78,7 @@ fn class_accessible(t: &Type) -> Tri {
     let Some(class) = class else { return Tri::Maybe };
     if is("ArrayAccess") || EXTRA.iter().any(|c| is(c)) {
         Tri::Yes
-    } else if class.is_interface || !(class.is_final || class.is_enum) {
+    } else if class.is_interface || !(class.is_final || class.is_enum || matches!(t, Type::Object(_, _, true))) {
         Tri::Maybe
     } else {
         Tri::No

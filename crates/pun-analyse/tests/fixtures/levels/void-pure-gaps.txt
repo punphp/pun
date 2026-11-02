@@ -54,3 +54,13 @@
 5 Properties/AccessPropertiesRuleTest::testBug12390 | Properties/data/bug-12390.php:9
 # A function whose only statement is a `try` with an empty catch: its try/catch effect join is not produced.
 4 Exceptions/MissingCheckedExceptionInFunctionThrowsRuleTest::testRule | Exceptions/data/missing-exception-function-throws.php:34
+# Newly exported NonexistentOffsetInArrayDimFetchRule cases: functions whose only statement is an offset read.
+3 Arrays/NonexistentOffsetInArrayDimFetchRuleTest::testOffsetAccessLegal | Arrays/data/offset-access-legal.php:5
+3 Arrays/NonexistentOffsetInArrayDimFetchRuleTest::testOffsetAccessLegal | Arrays/data/offset-access-legal.php:34
+3 Arrays/NonexistentOffsetInArrayDimFetchRuleTest::testOffsetAccessLegal | Arrays/data/offset-access-legal.php:39
+3 Arrays/NonexistentOffsetInArrayDimFetchRuleTest::testOffsetAccessLegal | Arrays/data/offset-access-legal.php:44
+3 Arrays/NonexistentOffsetInArrayDimFetchRuleTest::testOffsetAccessLegal | Arrays/data/offset-access-legal.php:49
+3 Arrays/NonexistentOffsetInArrayDimFetchRuleTest::testOffsetAccessLegal | Arrays/data/offset-access-legal.php:54
+3 Arrays/NonexistentOffsetInArrayDimFetchRuleTest::testBug11572 | Arrays/data/bug-11572.php:13
+3 Arrays/NonexistentOffsetInArrayDimFetchRuleTest::testBug11572 | Arrays/data/bug-11572.php:43
+3 Arrays/NonexistentOffsetInArrayDimFetchRuleTest::testBug11218 | Arrays/data/bug-11218.php:5

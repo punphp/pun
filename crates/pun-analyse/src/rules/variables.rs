@@ -30,6 +30,9 @@ pub(super) struct Observations {
     /// A plain assignment's target (by span): its root variable's full and native types once the assigned value is
     /// evaluated, when the variable is certainly defined (UnusedVariableRule's redundant assignments).
     pub assigned_roots: HashMap<Span, (TUnion, Option<TUnion>)>,
+    /// `isUndefinedExpressionAllowed()` as the inference saw it: the targets of `isset()`, `??` and the like, and
+    /// the arguments of by-reference parameters that create a variable.
+    pub allowed: HashSet<Span>,
 }
 
 pub(super) struct Certainty {

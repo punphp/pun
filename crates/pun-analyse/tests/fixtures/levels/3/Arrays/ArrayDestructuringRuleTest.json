@@ -1,0 +1,144 @@
+{
+    "test": "Arrays/ArrayDestructuringRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Arrays/data/array-destructuring.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/array-destructuring.php",
+                    "line": 12,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 0 does not exist on array{}.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/array-destructuring.php",
+                    "line": 13,
+                    "identifier": "offsetAccess.nonArray",
+                    "message": "Cannot use array destructuring on stdClass.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/array-destructuring.php",
+                    "line": 15,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 2 does not exist on array{1, 2}.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/array-destructuring.php",
+                    "line": 22,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'a' does not exist on array{b: 1}.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/array-destructuring.php",
+                    "line": 36,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method ArrayDestructuring\\FooArrayObject::offsetGet() is not covariant with tentative return type mixed of method ArrayAccess<mixed,mixed>::offsetGet().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14270",
+            "files": [
+                "Arrays/data/bug-14270.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8075",
+            "files": [
+                "Arrays/data/bug-8075.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/bug-8075.php",
+                    "line": 12,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'b' does not exist on array{a: 0}.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-8075.php",
+                    "line": 14,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'b' does not exist on array{a: 0}.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-8075.php",
+                    "line": 17,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'b' does not exist on array{a: 0}.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-8075.php",
+                    "line": 24,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'b' does not exist on array{a: 0}.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-8075.php",
+                    "line": 36,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'missing' does not exist on array{name: string, age: int}.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-8075.php",
+                    "line": 48,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 2 does not exist on array{string, int}.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-8075.php",
+                    "line": 60,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'z' does not exist on array{x: int, y: int}.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug15013",
+            "files": [
+                "Arrays/data/bug-15013.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/bug-15013.php",
+                    "line": 8,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 1 does not exist on array{'App/Service::foo'}.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleWithNullsafeVariant",
+            "files": [
+                "Arrays/data/array-destructuring-nullsafe.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

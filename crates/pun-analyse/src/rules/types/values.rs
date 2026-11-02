@@ -28,6 +28,10 @@ pub(super) fn typed(e: &Expression, level: u8, spans: &mut Vec<Span>) {
         Expression::Throw(t) => spans.push(t.exception.span()),
         Expression::Clone(c) => spans.push(c.object.span()),
         Expression::ArrayAccess(a) => spans.extend([a.array.span(), a.index.span()]),
+        Expression::ArrayAppend(a) => spans.push(a.array.span()),
+        Expression::Assignment(a) if matches!(super::flow::unparen(a.lhs), Expression::Array(_) | Expression::List(_)) => {
+            spans.push(a.rhs.span());
+        }
         Expression::Array(Array { elements, .. }) | Expression::LegacyArray(LegacyArray { elements, .. }) => {
             spans.extend(elements.iter().filter_map(|e| match e {
                 ArrayElement::Variadic(v) => Some(v.value.span()),
@@ -133,7 +137,7 @@ pub(in super::super) fn array(c: &mut Checker, elements: &[ArrayElement]) {
 }
 
 /// `AllowedArrayKeysTypes::getType()` (without `reportNonIntStringArrayKey`).
-fn allowed_keys(php_version: u32) -> Type {
+pub(super) fn allowed_keys(php_version: u32) -> Type {
     let mut types = vec![Type::Int, Type::String, Type::Bool];
     if php_version < 80100 {
         types.push(Type::Float);

@@ -29,6 +29,9 @@ pub struct State {
     /// `isInExpressionAssign()` as ReadingWriteOnlyPropertiesRule sees it: also the target of `??=`, of a foreach
     /// and the referenced side of `= &`.
     expression_assign: HashSet<(u32, u32)>,
+    /// `isInExpressionAssign()` of an offset fetch: every link of the target of `=`, `??=` and a foreach (a
+    /// destructuring's items too) and the referenced side of `= &`.
+    dim_assigned: HashSet<(u32, u32)>,
     /// Whether `$this` is defined in each function-like entered (static methods and closures have none).
     this: Vec<bool>,
 }
@@ -36,6 +39,11 @@ pub struct State {
 /// `isUndefinedExpressionAllowed()` of the expression at `span`.
 pub fn undefined_allowed(c: &Checker, span: Span) -> bool {
     c.property_access.allowed.contains(&key(span))
+}
+
+/// `isInExpressionAssign()` of the offset fetch at `span`.
+pub fn dim_assigned(c: &Checker, span: Span) -> bool {
+    c.property_access.dim_assigned.contains(&key(span))
 }
 
 fn key(s: Span) -> (u32, u32) {
@@ -89,6 +97,31 @@ impl Contexts<'_> {
             }
             Expression::List(l) => l.elements.iter().for_each(|el| self.destructured(el)),
             Expression::Array(a) => a.elements.iter().for_each(|el| self.destructured(el)),
+            _ => {}
+        }
+    }
+
+    /// The offset fetches of an assignment target (AssignHandler's `enterExpressionAssign()` of each link).
+    fn dim_assigned(&mut self, e: &Expression) {
+        match unparen(e) {
+            e @ Expression::ArrayAccess(a) => {
+                self.state.dim_assigned.insert(key(e.span()));
+                self.dim_assigned(a.array);
+            }
+            e @ Expression::ArrayAppend(a) => {
+                self.state.dim_assigned.insert(key(e.span()));
+                self.dim_assigned(a.array);
+            }
+            Expression::List(l) => l.elements.iter().for_each(|el| self.dim_assigned_item(el)),
+            Expression::Array(a) => a.elements.iter().for_each(|el| self.dim_assigned_item(el)),
+            _ => {}
+        }
+    }
+
+    fn dim_assigned_item(&mut self, el: &ArrayElement) {
+        match el {
+            ArrayElement::KeyValue(kv) => self.dim_assigned(kv.value),
+            ArrayElement::Value(v) => self.dim_assigned(v.value),
             _ => {}
         }
     }
@@ -150,20 +183,25 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Contexts<'_> {
     fn walk_in_assignment(&mut self, a: &'ast Assignment<'arena>, _: &mut ()) {
         if matches!(a.operator, AssignmentOperator::Assign(_)) {
             self.assigned(a.lhs);
+            self.dim_assigned(a.lhs);
             if let Expression::UnaryPrefix(u) = unparen(a.rhs)
                 && u.operator.is_reference()
             {
                 self.expression_assigned(u.operand);
+                self.dim_assigned(u.operand);
             }
         } else if matches!(a.operator, AssignmentOperator::Coalesce(_)) {
             self.expression_assigned(a.lhs);
+            self.dim_assigned(a.lhs);
         }
     }
     fn walk_in_foreach(&mut self, f: &'ast Foreach<'arena>, _: &mut ()) {
         if let ForeachTarget::KeyValue(t) = &f.target {
             self.expression_assigned(t.key);
+            self.dim_assigned(t.key);
         }
         self.expression_assigned(f.target.value());
+        self.dim_assigned(f.target.value());
     }
 }
 

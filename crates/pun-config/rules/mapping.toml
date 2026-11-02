@@ -957,9 +957,9 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/require-strict-param" = { fix = "mixed", intent = "suspicious", sets = ["coding-style"], ported = true, status = "decided", summary = "Functions should be used with `$strict` param set to `true`.", note = "fix is safe where the haystack type is known (Rector StrictInArray/StrictArraySearch), unsafe otherwise (CS-Fixer strict_param)" }
 
 [rules.analyse]
-"arrays/duplicate-array-key" = { preset = "basic", fixed_by = ["lint/dead-code/no-duplicate-array-key"], status = "decided" }
-"arrays/invalid-array-key" = { preset = "essential", status = "decided" }
-"arrays/invalid-destructuring" = { preset = "essential", status = "decided" }
+"arrays/duplicate-array-key" = { preset = "basic", fixed_by = ["lint/dead-code/no-duplicate-array-key"], ported = true, status = "decided" }
+"arrays/invalid-array-key" = { preset = "essential", ported = true, status = "decided" }
+"arrays/invalid-destructuring" = { preset = "essential", ported = true, status = "decided" }
 "arrays/read-without-offset" = { preset = "basic", ported = true, status = "decided" }
 "attributes/invalid" = { preset = "basic", ported = true, status = "decided" }
 "attributes/invalid-arrow-function-attribute" = { preset = "basic", ported = true, status = "decided" }
@@ -1336,7 +1336,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "undefined/include-file" = { preset = "basic", status = "decided" }
 "undefined/instanceof-class" = { preset = "basic", ported = true, status = "decided" }
 "undefined/method" = { preset = "basic", ported = true, status = "decided" }
-"undefined/offset" = { preset = "essential", status = "decided" }
+"undefined/offset" = { preset = "essential", ported = true, status = "decided" }
 "undefined/property" = { preset = "basic", ported = true, status = "decided" }
 "undefined/static-method" = { preset = "basic", ported = true, status = "decided" }
 "undefined/static-property" = { preset = "basic", ported = true, status = "decided" }

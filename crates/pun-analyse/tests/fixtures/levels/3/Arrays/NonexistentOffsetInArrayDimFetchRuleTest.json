@@ -1,0 +1,2055 @@
+{
+    "test": "Arrays/NonexistentOffsetInArrayDimFetchRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Arrays/data/nonexistent-offset.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 15,
+                    "identifier": "echo.nonString",
+                    "message": "Parameter #1 (stdClass) of echo cannot be converted to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 17,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'b' does not exist on array{a: stdClass, 0: 2}.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 18,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 1 does not exist on array{a: stdClass, 0: 2}.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 28,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 38,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 50,
+                    "identifier": "echo.nonString",
+                    "message": "Parameter #1 (stdClass) of echo cannot be converted to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 55,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'a' does not exist on array{b: 1}.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 79,
+                    "identifier": "constant.notFound",
+                    "message": "Constant NONEXISTENT_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 99,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $foo of method NonexistentOffset\\Foo::classDoesNotExist() has invalid type NonexistentOffset\\Bar.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 101,
+                    "identifier": "class.notFound",
+                    "message": "Access to offset 'bar' on an unknown class NonexistentOffset\\Bar.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 102,
+                    "identifier": "class.notFound",
+                    "message": "Access to an offset on an unknown class NonexistentOffset\\Bar.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 111,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 0 does not exist on array<string, string>.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 112,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset '0' does not exist on array<string, string>.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 114,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset int does not exist on array<string, string>.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 126,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'test' does not exist on null.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 142,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 42 on int.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 143,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 42 on float.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 144,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 42 on bool.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 145,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 42 on resource.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 163,
+                    "identifier": "echo.nonString",
+                    "message": "Parameter #1 (array{c: bool}) of echo cannot be converted to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 167,
+                    "identifier": "echo.nonString",
+                    "message": "Parameter #1 (array{c: false}) of echo cannot be converted to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 225,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'b' does not exist on array{a: 'blabla'}.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 228,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'b' does not exist on array{a: 'blabla'}.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 253,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'a' on Closure(): void.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 310,
+                    "identifier": "offsetAccess.invalidOffset",
+                    "message": "Invalid array key type null.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 310,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset null does not exist on array<int, string>.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 312,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset int does not exist on array<string, string>.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 315,
+                    "identifier": "offsetAccess.invalidOffset",
+                    "message": "Invalid array key type null.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 320,
+                    "identifier": "offsetAccess.invalidOffset",
+                    "message": "Invalid array key type null.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 411,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'foo' does not exist on ArrayAccess<int, stdClass>.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 423,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'foo' on stdClass.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 426,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'foo' on true.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 429,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'foo' on false.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 432,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type resource is not subtype of native type null.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 433,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'foo' on resource.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 436,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'foo' on 42.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 439,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'foo' on 4.141.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 469,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 474,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method NonexistentOffset\\MessageDescriptorTest::fail().",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/nonexistent-offset.php",
+                    "line": 517,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'foo' on bool.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testStrings",
+            "files": [
+                "Arrays/data/strings-offset-access.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/strings-offset-access.php",
+                    "line": 4,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int|object is not subtype of native type null.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/strings-offset-access.php",
+                    "line": 10,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'foo' does not exist on 'foo'.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/strings-offset-access.php",
+                    "line": 13,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 12.34 does not exist on 'foo'.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testAssignOp",
+            "files": [
+                "Arrays/data/offset-access-assignop.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/offset-access-assignop.php",
+                    "line": 4,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'foo' does not exist on array{}.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignop.php",
+                    "line": 10,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'foo' does not exist on 'Foo'.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignop.php",
+                    "line": 13,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'foo' on stdClass.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignop.php",
+                    "line": 16,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'foo' on true.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignop.php",
+                    "line": 19,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'foo' on false.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignop.php",
+                    "line": 22,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type resource is not subtype of native type null.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignop.php",
+                    "line": 23,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'foo' on resource.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignop.php",
+                    "line": 26,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'foo' on 4.141.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignop.php",
+                    "line": 33,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'foo' on 42.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testCoalesceAssign",
+            "files": [
+                "Arrays/data/nonexistent-offset-coalesce-assign.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testIntersection",
+            "files": [
+                "Arrays/data/nonexistent-offset-intersection.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3782",
+            "files": [
+                "Arrays/data/bug-3782.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/bug-3782.php",
+                    "line": 11,
+                    "identifier": "assign.this",
+                    "message": "Cannot re-assign $this.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4432",
+            "files": [
+                "Arrays/data/bug-4432.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug1664",
+            "files": [
+                "Arrays/data/bug-1664.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug2689",
+            "files": [
+                "Arrays/data/bug-2689.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5169",
+            "files": [
+                "Arrays/data/bug-5169.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/bug-5169.php",
+                    "line": 29,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset mixed on (float|int).",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug3297",
+            "files": [
+                "Arrays/data/bug-3297.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4829",
+            "files": [
+                "Arrays/data/bug-4829.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7893",
+            "files": [
+                "Arrays/data/bug-7893.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug2294",
+            "files": [
+                "Arrays/data/bug-2294.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3795",
+            "files": [
+                "Arrays/data/bug-3795.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13699",
+            "files": [
+                "Arrays/data/bug-13699.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14448",
+            "files": [
+                "Arrays/data/bug-14448.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7905",
+            "files": [
+                "Arrays/data/bug-7905.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3784",
+            "files": [
+                "Arrays/data/bug-3784.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14054",
+            "files": [
+                "Arrays/data/bug-14054.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3700",
+            "files": [
+                "Arrays/data/bug-3700.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4842",
+            "files": [
+                "Arrays/data/bug-4842.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5669",
+            "files": [
+                "Arrays/data/bug-5669.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/bug-5669.php",
+                    "line": 13,
+                    "identifier": "class.notFound",
+                    "message": "Method Bug5669\\a::getReplacer() has invalid return type Bug5669\\arr.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-5669.php",
+                    "line": 13,
+                    "identifier": "class.notFound",
+                    "message": "Method Bug5669\\a::getReplacer() has invalid return type Bug5669\\str.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-5669.php",
+                    "line": 15,
+                    "identifier": "return.type",
+                    "message": "Method Bug5669\\a::getReplacer() should return Bug5669\\arr<Bug5669\\str> but returns array.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-5669.php",
+                    "line": 23,
+                    "identifier": "class.notFound",
+                    "message": "Method Bug5669\\c::getReplacer() has invalid return type Bug5669\\arr.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-5669.php",
+                    "line": 23,
+                    "identifier": "class.notFound",
+                    "message": "Method Bug5669\\c::getReplacer() has invalid return type Bug5669\\str.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-5669.php",
+                    "line": 26,
+                    "identifier": "class.notFound",
+                    "message": "Access to offset '%customer…' on an unknown class Bug5669\\arr.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug5744",
+            "files": [
+                "Arrays/data/bug-5744.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testRuleWithNullsafeVariant",
+            "files": [
+                "Arrays/data/nonexistent-offset-nullsafe.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/nonexistent-offset-nullsafe.php",
+                    "line": 18,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 1 does not exist on array{a: int}.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4926",
+            "files": [
+                "Arrays/data/bug-4926.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3171",
+            "files": [
+                "Arrays/data/bug-3171.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4747",
+            "files": [
+                "Arrays/data/bug-4747.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4885",
+            "files": [
+                "Arrays/data/bug-4885.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7000",
+            "files": [
+                "Arrays/data/bug-7000.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/bug-7000.php",
+                    "line": 12,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type 'require'|'require-dev' is not subtype of native type ''.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7000b",
+            "files": [
+                "Arrays/data/bug-7000b.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/bug-7000b.php",
+                    "line": 12,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type 'require'|'require-dev' is not subtype of native type ''.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6508",
+            "files": [
+                "Arrays/data/bug-6508.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7229",
+            "files": [
+                "Arrays/data/bug-7229.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7142",
+            "files": [
+                "Arrays/data/bug-7142.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/bug-7142.php",
+                    "line": 10,
+                    "identifier": "arguments.count",
+                    "message": "Function rand invoked with 1 parameter, 2 required.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6000",
+            "files": [
+                "Arrays/data/bug-6000.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5743",
+            "files": [
+                "Comparison/data/bug-5743.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-5743.php",
+                    "line": 10,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 1|int<3, max> does not exist on array{}.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6364",
+            "files": [
+                "Arrays/data/bug-6364.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5758",
+            "files": [
+                "Arrays/data/bug-5758.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7469",
+            "files": [
+                "Arrays/data/bug-7469.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7763",
+            "files": [
+                "Arrays/data/bug-7763.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testSpecifyExistentOffsetWhenEnteringForeach",
+            "files": [
+                "Arrays/data/specify-existent-offset-when-entering-foreach.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3872",
+            "files": [
+                "Arrays/data/bug-3872.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6783",
+            "files": [
+                "Arrays/data/bug-6783.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testSlevomatForeachUnsetBug",
+            "files": [
+                "Arrays/data/slevomat-foreach-unset-bug.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testSlevomatForeachArrayKeyExistsBug",
+            "files": [
+                "Arrays/data/slevomat-foreach-array-key-exists-bug.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7954",
+            "files": [
+                "Arrays/data/bug-7954.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/bug-7954.php",
+                    "line": 156,
+                    "identifier": "class.notFound",
+                    "message": "Type alias SonataAdminConfiguration contains unknown class Bug7954\\Item.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Arrays/data/bug-7954.php",
+                    "line": 159,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $config of method Bug7954\\HelloWorld::sayHello() has invalid type Bug7954\\Item.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8097",
+            "files": [
+                "Arrays/data/bug-8097.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8068",
+            "files": [
+                "Arrays/data/bug-8068.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/bug-8068.php",
+                    "line": 18,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'path' on Closure.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-8068.php",
+                    "line": 26,
+                    "identifier": "return.missing",
+                    "message": "Method Bug8097\\HelloWorld::test3() should return bool but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6243",
+            "files": [
+                "Arrays/data/bug-6243.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8356",
+            "files": [
+                "Arrays/data/bug-8356.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6605",
+            "files": [
+                "Arrays/data/bug-6605.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/bug-6605.php",
+                    "line": 11,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'invalidoffset' on Bug6605\\X.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-6605.php",
+                    "line": 16,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'invalid' does not exist on array{a: array{b: array{5}}}.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-6605.php",
+                    "line": 17,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'invalid' does not exist on array{b: array{5}}.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug9991",
+            "files": [
+                "Arrays/data/bug-9991.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8166",
+            "files": [
+                "Arrays/data/bug-8166.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/bug-8166.php",
+                    "line": 22,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'b' does not exist on array{a: 1}.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-8166.php",
+                    "line": 23,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'b' does not exist on array<'a', string>.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10926",
+            "files": [
+                "Arrays/data/bug-10926.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testMixed",
+            "files": [
+                "Arrays/data/offset-access-mixed.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testOffsetAccessLegal",
+            "files": [
+                "Arrays/data/offset-access-legal.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/offset-access-legal.php",
+                    "line": 5,
+                    "identifier": "void.pure",
+                    "message": "Function OffsetAccessLegal\\closure() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-legal.php",
+                    "line": 7,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 0 on Closure(): void.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-legal.php",
+                    "line": 12,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 0 on stdClass.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-legal.php",
+                    "line": 18,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method ArrayAccess@anonymous/repo/.oracle/phpstan-src/tests/PHPStan/Rules/Arrays/data/offset-access-legal.php:17::offsetExists() is not covariant with tentative return type bool of method ArrayAccess<mixed,mixed>::offsetExists().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Arrays/data/offset-access-legal.php",
+                    "line": 22,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method ArrayAccess@anonymous/repo/.oracle/phpstan-src/tests/PHPStan/Rules/Arrays/data/offset-access-legal.php:17::offsetGet() is not covariant with tentative return type mixed of method ArrayAccess<mixed,mixed>::offsetGet().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Arrays/data/offset-access-legal.php",
+                    "line": 26,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method ArrayAccess@anonymous/repo/.oracle/phpstan-src/tests/PHPStan/Rules/Arrays/data/offset-access-legal.php:17::offsetSet() is not covariant with tentative return type void of method ArrayAccess<mixed,mixed>::offsetSet().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Arrays/data/offset-access-legal.php",
+                    "line": 29,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method ArrayAccess@anonymous/repo/.oracle/phpstan-src/tests/PHPStan/Rules/Arrays/data/offset-access-legal.php:17::offsetUnset() is not covariant with tentative return type void of method ArrayAccess<mixed,mixed>::offsetUnset().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Arrays/data/offset-access-legal.php",
+                    "line": 34,
+                    "identifier": "void.pure",
+                    "message": "Function OffsetAccessLegal\\array_() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-legal.php",
+                    "line": 39,
+                    "identifier": "void.pure",
+                    "message": "Function OffsetAccessLegal\\integer() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-legal.php",
+                    "line": 44,
+                    "identifier": "void.pure",
+                    "message": "Function OffsetAccessLegal\\float() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-legal.php",
+                    "line": 49,
+                    "identifier": "void.pure",
+                    "message": "Function OffsetAccessLegal\\null() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-legal.php",
+                    "line": 54,
+                    "identifier": "void.pure",
+                    "message": "Function OffsetAccessLegal\\bool() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-legal.php",
+                    "line": 61,
+                    "identifier": "callable.void",
+                    "message": "Result of closure (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-legal.php",
+                    "line": 72,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method ArrayAccess@anonymous/repo/.oracle/phpstan-src/tests/PHPStan/Rules/Arrays/data/offset-access-legal.php:71::offsetExists() is not covariant with tentative return type bool of method ArrayAccess<mixed,mixed>::offsetExists().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Arrays/data/offset-access-legal.php",
+                    "line": 76,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method ArrayAccess@anonymous/repo/.oracle/phpstan-src/tests/PHPStan/Rules/Arrays/data/offset-access-legal.php:71::offsetGet() is not covariant with tentative return type mixed of method ArrayAccess<mixed,mixed>::offsetGet().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Arrays/data/offset-access-legal.php",
+                    "line": 80,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method ArrayAccess@anonymous/repo/.oracle/phpstan-src/tests/PHPStan/Rules/Arrays/data/offset-access-legal.php:71::offsetSet() is not covariant with tentative return type void of method ArrayAccess<mixed,mixed>::offsetSet().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Arrays/data/offset-access-legal.php",
+                    "line": 83,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method ArrayAccess@anonymous/repo/.oracle/phpstan-src/tests/PHPStan/Rules/Arrays/data/offset-access-legal.php:71::offsetUnset() is not covariant with tentative return type void of method ArrayAccess<mixed,mixed>::offsetUnset().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNonExistentParentOffsetAccessLegal",
+            "files": [
+                "Arrays/data/offset-access-legal-non-existent-parent.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/offset-access-legal-non-existent-parent.php",
+                    "line": 9,
+                    "identifier": "class.noParent",
+                    "message": "OffsetAccessLegalNonExistentParent\\Foo::doBar() calls new parent but OffsetAccessLegalNonExistentParent\\Foo does not extend any class.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testReportPossiblyNonexistentArrayOffset#0",
+            "files": [
+                "Arrays/data/report-possibly-nonexistent-array-offset.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testReportPossiblyNonexistentArrayOffset#1",
+            "files": [
+                "Arrays/data/report-possibly-nonexistent-array-offset.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testReportPossiblyNonexistentArrayOffset#2",
+            "files": [
+                "Arrays/data/report-possibly-nonexistent-array-offset.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testReportPossiblyNonexistentArrayOffset#3",
+            "files": [
+                "Arrays/data/report-possibly-nonexistent-array-offset.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10997",
+            "files": [
+                "Arrays/data/bug-10997.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11572",
+            "files": [
+                "Arrays/data/bug-11572.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/bug-11572.php",
+                    "line": 13,
+                    "identifier": "void.pure",
+                    "message": "Function bug11572\\doFoo() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-11572.php",
+                    "line": 15,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign new offset to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-11572.php",
+                    "line": 16,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign new offset to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-11572.php",
+                    "line": 17,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign new offset to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-11572.php",
+                    "line": 18,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign new offset to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-11572.php",
+                    "line": 19,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign new offset to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-11572.php",
+                    "line": 20,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign new offset to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-11572.php",
+                    "line": 24,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign new offset to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-11572.php",
+                    "line": 36,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign new offset to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-11572.php",
+                    "line": 43,
+                    "identifier": "void.pure",
+                    "message": "Function bug11572\\doInt() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-11572.php",
+                    "line": 45,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access an offset on int.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-11572.php",
+                    "line": 46,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access an offset on int<3, 4>.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug2313",
+            "files": [
+                "Arrays/data/bug-2313.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11655",
+            "files": [
+                "Arrays/data/bug-11655.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/bug-11655.php",
+                    "line": 15,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 3 does not exist on array{non-falsy-string, 'x', array{non-falsy-string, 'x'}}.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug2634",
+            "files": [
+                "Arrays/data/bug-2634.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11390",
+            "files": [
+                "Arrays/data/bug-11390.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testInternalClassesWithOverloadedOffsetAccess",
+            "files": [
+                "Arrays/data/internal-classes-overload-offset-access.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testInternalClassesWithOverloadedOffsetAccess84",
+            "files": [
+                "Arrays/data/internal-classes-overload-offset-access-php84.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testInternalClassesWithOverloadedOffsetAccessInvalid",
+            "files": [
+                "Arrays/data/internal-classes-overload-offset-access-invalid.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testInternalClassesWithOverloadedOffsetAccessInvalid84",
+            "files": [
+                "Arrays/data/internal-classes-overload-offset-access-invalid-php84.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12122",
+            "files": [
+                "Arrays/data/bug-12122.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testArrayDimFetchAfterArrayKeyFirstOrLast",
+            "files": [
+                "Arrays/data/array-dim-after-array-key-first-or-last.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/array-dim-after-array-key-first-or-last.php",
+                    "line": 19,
+                    "identifier": "offsetAccess.invalidOffset",
+                    "message": "Invalid array key type null.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/array-dim-after-array-key-first-or-last.php",
+                    "line": 19,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset null does not exist on array{}.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testArrayDimFetchAfterCount",
+            "files": [
+                "Arrays/data/array-dim-after-count.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testArrayDimFetchAfterArraySearch",
+            "files": [
+                "Arrays/data/array-dim-after-array-search.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/array-dim-after-array-search.php",
+                    "line": 11,
+                    "identifier": "return.missing",
+                    "message": "Method ArrayDimAfterArraySeach\\HelloWorld::doFoo() should return string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/array-dim-after-array-search.php",
+                    "line": 12,
+                    "identifier": "return.missing",
+                    "message": "Method ArrayDimAfterArraySeach\\HelloWorld::doFoo() should return string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/array-dim-after-array-search.php",
+                    "line": 19,
+                    "identifier": "return.missing",
+                    "message": "Method ArrayDimAfterArraySeach\\HelloWorld::doBar() should return string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/array-dim-after-array-search.php",
+                    "line": 20,
+                    "identifier": "return.missing",
+                    "message": "Method ArrayDimAfterArraySeach\\HelloWorld::doBar() should return string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/array-dim-after-array-search.php",
+                    "line": 26,
+                    "identifier": "return.missing",
+                    "message": "Method ArrayDimAfterArraySeach\\HelloWorld::doFooBar() should return string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/array-dim-after-array-search.php",
+                    "line": 27,
+                    "identifier": "return.missing",
+                    "message": "Method ArrayDimAfterArraySeach\\HelloWorld::doFooBar() should return string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/array-dim-after-array-search.php",
+                    "line": 33,
+                    "identifier": "return.missing",
+                    "message": "Method ArrayDimAfterArraySeach\\HelloWorld::doBaz() should return string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/array-dim-after-array-search.php",
+                    "line": 34,
+                    "identifier": "return.missing",
+                    "message": "Method ArrayDimAfterArraySeach\\HelloWorld::doBaz() should return string but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testArrayDimFetchOnArrayKeyFirsOrLastOrCount",
+            "files": [
+                "Arrays/data/array-dim-fetch-on-array-key-first-last.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12406",
+            "files": [
+                "Arrays/data/bug-12406.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12406b",
+            "files": [
+                "Arrays/data/bug-12406b.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11679",
+            "files": [
+                "Arrays/data/bug-11679.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8649",
+            "files": [
+                "Arrays/data/bug-8649.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11447",
+            "files": [
+                "Arrays/data/bug-11447.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testNarrowSuperglobals",
+            "files": [
+                "Arrays/data/narrow-superglobal.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12605",
+            "files": [
+                "Arrays/data/bug-12605.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4809",
+            "files": [
+                "Arrays/data/bug-4809.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12593",
+            "files": [
+                "Arrays/data/bug-12593.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12981",
+            "files": [
+                "Arrays/data/bug-12981.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/bug-12981.php",
+                    "line": 31,
+                    "identifier": "offsetAccess.invalidOffset",
+                    "message": "Invalid array key type list<(int|string)>.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-12981.php",
+                    "line": 33,
+                    "identifier": "offsetAccess.invalidOffset",
+                    "message": "Invalid array key type list<(int|string)>.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBugObject",
+            "files": [
+                "Arrays/data/bug-object.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/bug-object.php",
+                    "line": 12,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset int|object does not exist on array{baz: 21}|array{foo: 17, bar: 19}.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug3747",
+            "files": [
+                "Arrays/data/bug-3747.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12447",
+            "files": [
+                "Arrays/data/bug-12447.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug1061",
+            "files": [
+                "Arrays/data/bug-1061.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4532",
+            "files": [
+                "Arrays/data/bug-4532.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12115",
+            "files": [
+                "Arrays/data/bug-12115.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10492",
+            "files": [
+                "Arrays/data/bug-10492.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12574a",
+            "files": [
+                "Arrays/data/bug-12574a.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12574b",
+            "files": [
+                "Arrays/data/bug-12574b.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12574c",
+            "files": [
+                "Arrays/data/bug-12574c.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12926",
+            "files": [
+                "Arrays/data/bug-12926.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13538",
+            "files": [
+                "Arrays/data/bug-13538.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testPR4385",
+            "files": [
+                "Arrays/data/pr-4385.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/pr-4385.php",
+                    "line": 23,
+                    "identifier": "offsetAccess.invalidOffset",
+                    "message": "Invalid array key type array<int>.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/pr-4385.php",
+                    "line": 27,
+                    "identifier": "offsetAccess.invalidOffset",
+                    "message": "Invalid array key type array<int>|object.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/pr-4385.php",
+                    "line": 32,
+                    "identifier": "offsetAccess.invalidOffset",
+                    "message": "Invalid array key type array<int>.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/pr-4385.php",
+                    "line": 36,
+                    "identifier": "offsetAccess.invalidOffset",
+                    "message": "Invalid array key type array<int>|object.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPR4385Bis",
+            "files": [
+                "Arrays/data/pr-4385-bis.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7143",
+            "files": [
+                "Arrays/data/bug-7143.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12805",
+            "files": [
+                "Arrays/data/bug-12805.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6209",
+            "files": [
+                "Arrays/data/bug-6209.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11602",
+            "files": [
+                "Arrays/data/bug-11602.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11276",
+            "files": [
+                "Arrays/data/bug-11276.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/bug-11276.php",
+                    "line": 15,
+                    "identifier": "class.notFound",
+                    "message": "Class Bug11276\\ArrayAccess not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Arrays/data/bug-11276.php",
+                    "line": 21,
+                    "identifier": "class.notFound",
+                    "message": "Class Bug11276\\ArrayAccess not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug13526",
+            "files": [
+                "Arrays/data/bug-13526.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14215",
+            "files": [
+                "Arrays/data/bug-14215.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13770",
+            "files": [
+                "Arrays/data/bug-13770.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14234",
+            "files": [
+                "Arrays/data/bug-14234.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13773",
+            "files": [
+                "Arrays/data/bug-13773.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14308",
+            "files": [
+                "Arrays/data/bug-14308.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11218",
+            "files": [
+                "Arrays/data/bug-11218.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/bug-11218.php",
+                    "line": 5,
+                    "identifier": "void.pure",
+                    "message": "Function Bug11218Array\\test() returns void but does not have any side effects.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug9240",
+            "files": [
+                "Arrays/data/bug-9240.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14758",
+            "files": [
+                "Arrays/data/bug-14758.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13688",
+            "files": [
+                "Arrays/data/bug-13688.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6379",
+            "files": [
+                "Arrays/data/bug-6379.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13075",
+            "files": [
+                "Arrays/data/bug-13075.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testUnsealedArrayShapes#0",
+            "files": [
+                "Arrays/data/unsealed-array-shapes-has-offset.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/unsealed-array-shapes-has-offset.php",
+                    "line": 25,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset non-decimal-int-string does not exist on array{int, ...<int, int>}.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/unsealed-array-shapes-has-offset.php",
+                    "line": 25,
+                    "identifier": "return.missing",
+                    "message": "Method UnsealedArrayShapesHasOffset\\Foo::doFoo() should return array but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testUnsealedArrayShapes#1",
+            "files": [
+                "Arrays/data/unsealed-array-shapes-has-offset.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/unsealed-array-shapes-has-offset.php",
+                    "line": 25,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset non-decimal-int-string does not exist on array{int, ...<int, int>}.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/unsealed-array-shapes-has-offset.php",
+                    "line": 25,
+                    "identifier": "return.missing",
+                    "message": "Method UnsealedArrayShapesHasOffset\\Foo::doFoo() should return array but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testUnsealedArrayShapes#2",
+            "files": [
+                "Arrays/data/unsealed-array-shapes-has-offset.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/unsealed-array-shapes-has-offset.php",
+                    "line": 25,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset non-decimal-int-string does not exist on array{int, ...<int, int>}.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/unsealed-array-shapes-has-offset.php",
+                    "line": 25,
+                    "identifier": "return.missing",
+                    "message": "Method UnsealedArrayShapesHasOffset\\Foo::doFoo() should return array but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testUnsealedArrayShapes#3",
+            "files": [
+                "Arrays/data/unsealed-array-shapes-has-offset.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/unsealed-array-shapes-has-offset.php",
+                    "line": 25,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset non-decimal-int-string does not exist on array{int, ...<int, int>}.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/unsealed-array-shapes-has-offset.php",
+                    "line": 25,
+                    "identifier": "return.missing",
+                    "message": "Method UnsealedArrayShapesHasOffset\\Foo::doFoo() should return array but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

@@ -19,6 +19,7 @@ mod receivers;
 pub(super) mod regex;
 mod returns;
 mod values;
+mod dim_fetch;
 mod yields;
 mod void_match;
 mod constant_value;
@@ -62,6 +63,7 @@ pub(super) use returns::{
 };
 pub(super) use void_match::void_match;
 pub(super) use values::{array, array_access, clone, foreach, throw};
+pub(super) use dim_fetch::{array_item, destructuring, dim_fetch};
 pub(super) use yields::program as yields_outside;
 pub(super) use property_default::property as property_default;
 pub(super) use constant_value::{class_constant, define_value, global_constant};
@@ -83,7 +85,7 @@ pub(super) use param_out::{function as param_out_function, method as param_out_m
 pub(super) use properties::{assignment as property_assignment, increment as property_increment, unset as property_unset};
 
 /// The identifiers of the rules above level 0 (level-0 ones are in [`super::IDENTIFIERS`]).
-pub const IDENTIFIERS: &[&[&str]] = &[callables::IDENTIFIERS, regex::IDENTIFIERS, arguments::IDENTIFIERS, castable::IDENTIFIERS, receivers::IDENTIFIERS, access::IDENTIFIERS, casts::IDENTIFIERS, comparison::IDENTIFIERS, param_default::IDENTIFIERS, void_match::IDENTIFIERS, returns::IDENTIFIERS, values::IDENTIFIERS, yields::IDENTIFIERS, property_default::IDENTIFIERS, properties::IDENTIFIERS, constant_value::IDENTIFIERS, offsets::IDENTIFIERS, binary_op::IDENTIFIERS, too_wide::IDENTIFIERS, dynamic_names::IDENTIFIERS, nullsafe::IDENTIFIERS, throws_void::IDENTIFIERS, inc_dec::IDENTIFIERS, throws::IDENTIFIERS, param_out::IDENTIFIERS];
+pub const IDENTIFIERS: &[&[&str]] = &[callables::IDENTIFIERS, regex::IDENTIFIERS, arguments::IDENTIFIERS, castable::IDENTIFIERS, receivers::IDENTIFIERS, access::IDENTIFIERS, casts::IDENTIFIERS, comparison::IDENTIFIERS, param_default::IDENTIFIERS, void_match::IDENTIFIERS, returns::IDENTIFIERS, values::IDENTIFIERS, dim_fetch::IDENTIFIERS, yields::IDENTIFIERS, property_default::IDENTIFIERS, properties::IDENTIFIERS, constant_value::IDENTIFIERS, offsets::IDENTIFIERS, binary_op::IDENTIFIERS, too_wide::IDENTIFIERS, dynamic_names::IDENTIFIERS, nullsafe::IDENTIFIERS, throws_void::IDENTIFIERS, inc_dec::IDENTIFIERS, throws::IDENTIFIERS, param_out::IDENTIFIERS];
 
 /// The expressions whose type the statement results read, in the function-likes whose missing return could be
 /// reported: those with a non-void return type whose body, by syntax alone, does not always terminate (types only

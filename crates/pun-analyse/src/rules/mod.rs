@@ -2094,6 +2094,10 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         operators::assignment(self, a);
         if let AssignmentOperator::Assign(_) = a.operator {
             arrays::destructuring(self, a.lhs, true);
+            if matches!(types::flow::unparen(a.lhs), Expression::Array(_) | Expression::List(_)) {
+                let value = self.phpstan_type(a.rhs);
+                types::destructuring(self, a.span(), a.lhs, value, Some(a.rhs.span()));
+            }
         }
         if let Expression::Variable(Variable::Direct(v)) = a.lhs {
             let guards = self.truthy(a.rhs).into_iter().filter(scope::remembered_guard).collect::<Vec<_>>();
@@ -2343,6 +2347,10 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_in_array_access(&mut self, a: &'ast ArrayAccess<'arena>, _: &mut ()) {
         types::array_access(self, a);
+        types::dim_fetch(self, a.span(), a.array, Some(a.index));
+    }
+    fn walk_in_key_value_array_element(&mut self, kv: &'ast KeyValueArrayElement<'arena>, _: &mut ()) {
+        types::array_item(self, kv);
     }
     fn walk_in_throw(&mut self, t: &'ast Throw<'arena>, _: &mut ()) {
         statements::throw_expression(self, t);
@@ -2745,6 +2753,10 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             self.invalidate_expression(target);
             arrays::destructuring(self, target, true);
         }
+        if matches!(types::flow::unparen(value), Expression::Array(_) | Expression::List(_)) {
+            let iterated = self.phpstan_type(f.expression).map(|t| declared::with_classes(self, || t.iterable_value_type()));
+            types::destructuring(self, value.span(), value, iterated, None);
+        }
     }
     fn walk_out_foreach(&mut self, _: &'ast Foreach<'arena>, _: &mut ()) {
         self.syntax.parents.pop();
@@ -2808,6 +2820,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_in_array_append(&mut self, a: &'ast ArrayAppend<'arena>, _: &mut ()) {
         assign::array_append(self, a);
+        types::dim_fetch(self, a.span(), a.array, None);
     }
     fn walk_in_shell_execute_string(&mut self, s: &'ast ShellExecuteString<'arena>, _: &mut ()) {
         statements::backtick(self, s);

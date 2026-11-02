@@ -321,7 +321,7 @@ pub(super) fn late_offset(on: &Type, index: &Type) -> Option<Type> {
 }
 
 /// `hasOffsetValueType()`: no RuleLevelHelper filtering (in particular, no union member is discarded).
-fn has_offset(c: &Checker, ty: &Type, offset: &Type) -> Tri {
+pub(super) fn has_offset(c: &Checker, ty: &Type, offset: &Type) -> Tri {
     match ty {
         Type::Union(ts) => Tri::extreme_identity(ts.iter().map(|t| has_offset(c, t, offset))),
         Type::Benevolent(ts) => ts
@@ -404,7 +404,11 @@ fn shape_offset(array: &ConstArray, offset: &Type) -> Tri {
     }
     let mut result = Tri::No;
     for (i, key) in array.keys.iter().enumerate() {
-        if matches!(key, Type::ConstInt(_)) && !offset.is_string().no() && !constant(offset) {
+        if matches!(key, Type::ConstInt(_))
+            && !offset.is_string().no()
+            && !constant(offset)
+            && !offset.is_decimal_int_string().no()
+        {
             return Tri::Maybe;
         }
         let has = is_super_type_of(key, offset);

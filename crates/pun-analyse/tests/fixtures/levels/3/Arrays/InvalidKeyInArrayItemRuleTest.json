@@ -1,0 +1,268 @@
+{
+    "test": "Arrays/InvalidKeyInArrayItemRuleTest",
+    "cases": [
+        {
+            "method": "testInvalidKey",
+            "files": [
+                "Arrays/data/invalid-key-array-item.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/invalid-key-array-item.php",
+                    "line": 6,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Arrays/data/invalid-key-array-item.php",
+                    "line": 10,
+                    "identifier": "array.duplicateKey",
+                    "message": "Array has 2 duplicate keys with value 1 (1, '1').",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/invalid-key-array-item.php",
+                    "line": 12,
+                    "identifier": "array.invalidKey",
+                    "message": "Invalid array key type DateTimeImmutable.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/invalid-key-array-item.php",
+                    "line": 13,
+                    "identifier": "array.invalidKey",
+                    "message": "Invalid array key type array.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/invalid-key-array-item.php",
+                    "line": 18,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Arrays/data/invalid-key-array-item.php",
+                    "line": 26,
+                    "identifier": "array.invalidKey",
+                    "message": "Invalid array key type float.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/invalid-key-array-item.php",
+                    "line": 27,
+                    "identifier": "array.invalidKey",
+                    "message": "Invalid array key type null.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testInvalidMixedKey",
+            "files": [
+                "Arrays/data/invalid-key-array-item.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/invalid-key-array-item.php",
+                    "line": 6,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Arrays/data/invalid-key-array-item.php",
+                    "line": 10,
+                    "identifier": "array.duplicateKey",
+                    "message": "Array has 2 duplicate keys with value 1 (1, '1').",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/invalid-key-array-item.php",
+                    "line": 12,
+                    "identifier": "array.invalidKey",
+                    "message": "Invalid array key type DateTimeImmutable.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/invalid-key-array-item.php",
+                    "line": 13,
+                    "identifier": "array.invalidKey",
+                    "message": "Invalid array key type array.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/invalid-key-array-item.php",
+                    "line": 18,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Arrays/data/invalid-key-array-item.php",
+                    "line": 26,
+                    "identifier": "array.invalidKey",
+                    "message": "Invalid array key type float.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/invalid-key-array-item.php",
+                    "line": 27,
+                    "identifier": "array.invalidKey",
+                    "message": "Invalid array key type null.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testInvalidKeyReportingCastedArrayKey",
+            "files": [
+                "Arrays/data/invalid-key-array-item.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/invalid-key-array-item.php",
+                    "line": 6,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Arrays/data/invalid-key-array-item.php",
+                    "line": 10,
+                    "identifier": "array.duplicateKey",
+                    "message": "Array has 2 duplicate keys with value 1 (1, '1').",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/invalid-key-array-item.php",
+                    "line": 12,
+                    "identifier": "array.invalidKey",
+                    "message": "Invalid array key type DateTimeImmutable.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/invalid-key-array-item.php",
+                    "line": 13,
+                    "identifier": "array.invalidKey",
+                    "message": "Invalid array key type array.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/invalid-key-array-item.php",
+                    "line": 18,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Arrays/data/invalid-key-array-item.php",
+                    "line": 26,
+                    "identifier": "array.invalidKey",
+                    "message": "Invalid array key type float.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/invalid-key-array-item.php",
+                    "line": 27,
+                    "identifier": "array.invalidKey",
+                    "message": "Invalid array key type null.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testInvalidKeyInList",
+            "files": [
+                "Arrays/data/invalid-key-list.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/invalid-key-list.php",
+                    "line": 7,
+                    "identifier": "array.invalidKey",
+                    "message": "Invalid array key type DateTimeImmutable.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/invalid-key-list.php",
+                    "line": 8,
+                    "identifier": "array.invalidKey",
+                    "message": "Invalid array key type array.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/invalid-key-list.php",
+                    "line": 9,
+                    "identifier": "variable.undefined",
+                    "message": "Variable $arr might not be defined.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testInvalidKeyShortArray",
+            "files": [
+                "Arrays/data/invalid-key-short-array.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/invalid-key-short-array.php",
+                    "line": 7,
+                    "identifier": "array.invalidKey",
+                    "message": "Invalid array key type DateTimeImmutable.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/invalid-key-short-array.php",
+                    "line": 8,
+                    "identifier": "array.invalidKey",
+                    "message": "Invalid array key type array.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/invalid-key-short-array.php",
+                    "line": 9,
+                    "identifier": "variable.undefined",
+                    "message": "Variable $a might not be defined.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testInvalidKeyEnum",
+            "files": [
+                "Arrays/data/invalid-key-array-item-enum.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/invalid-key-array-item-enum.php",
+                    "line": 11,
+                    "identifier": "void.pure",
+                    "message": "Function InvalidKeyArrayItemEnum\\doFoo() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/invalid-key-array-item-enum.php",
+                    "line": 14,
+                    "identifier": "array.invalidKey",
+                    "message": "Invalid array key type InvalidKeyArrayItemEnum\\FooEnum::A.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

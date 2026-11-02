@@ -37,6 +37,16 @@ const GAPS: &[(&str, &str, i64, &str)] = &[
     ("dynamic-constant-values", "value-assigned-to-global-constant.php", 5, "constant.value"),
 ];
 
+/// Errors Pun reports where PHPStan does not, by an inference difference (case directory, file, line, identifier).
+/// Each must still be reported: one that disappears fails the test as missing.
+const EXTRA: &[(&str, &str, i64, &str)] = &[
+    // PHPStan makes a holder an ErrorType after an invalid offset write (`$a[1] = 2`, `$closed['x'] = 1`, `$i['k'] = 1`);
+    // Mago keeps its type, so NonexistentOffsetInArrayDimFetchRule still checks the later `.=` offsets
+    ("types", "offsets.php", 122, "offsetAccess.notFound"),
+    ("types", "offsets.php", 124, "offsetAccess.nonOffsetAccessible"),
+    ("types", "offsets.php", 125, "offsetAccess.nonOffsetAccessible"),
+];
+
 fn check(dir: &Path, neon: &str) -> Result<(), String> {
     let root = dir.to_string_lossy().into_owned();
     let options = Options {
@@ -54,6 +64,13 @@ fn check(dir: &Path, neon: &str) -> Result<(), String> {
         })
         .collect();
     got.sort();
+    for (case, file, line, id) in EXTRA.iter().filter(|(case, ..)| dir.ends_with(case)) {
+        let at = got
+            .iter()
+            .position(|k| k.0 == *file && k.1 == *line && k.2 == *id)
+            .ok_or_else(|| format!("EXTRA lists {case} {file}:{line} {id}, which Pun no longer reports"))?;
+        got.remove(at);
+    }
     let expected: Value =
         serde_json::from_slice(&std::fs::read(dir.join(format!("expected-{neon}.json"))).unwrap())
             .unwrap();

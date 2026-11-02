@@ -144,7 +144,8 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             return None;
         }
         if let Some(unknown) = top {
-            let missing = t.object_class_names().into_iter().filter(|n| match self.codebase.get_class_like(n.as_bytes()) {
+            // (an anonymous class, by its display name, always exists)
+            let missing = t.object_class_names().into_iter().filter(|n| !n.contains("@anonymous")).filter(|n| match self.codebase.get_class_like(n.as_bytes()) {
                 Some(k) => k.kind == mago_codex::symbol::SymbolKind::Trait,
                 None => pun_phpstan::symbols::class(n).is_none(),
             });
