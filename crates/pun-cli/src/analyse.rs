@@ -149,7 +149,7 @@ fn project(cfg: &Config, analysed: Vec<PathBuf>) -> Result<pun_analyse::Project>
     params.set(Key::Str("fileExtensions".into()), Value::Array(extensions));
     params.set(
         Key::Str("phpVersion".into()),
-        Value::Int(i64::from(cfg.php_version().to_id())),
+        Value::Int(i64::from(cfg.analyse_php_id)),
     );
     let mut project = pun_analyse::Project::from_config(&cfg.root, &params);
     let excluded = Exclusions::new(cfg, Command::Analyse)?;

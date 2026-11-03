@@ -47,6 +47,8 @@ pub struct Locked {
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct Composer {
     pub php: Option<PhpRequire>,
+    /// `config.platform.php` of composer.json, as written (`8.3.12`).
+    pub platform_php: Option<String>,
     /// `laravel/framework`.
     pub laravel: Option<Locked>,
     /// `pestphp/pest`.
@@ -58,6 +60,19 @@ pub struct Composer {
 }
 
 impl Composer {
+    /// PhpVersionFactory::create()'s version from `config.platform.php`: `explode('.')`, each part read as PHP's
+    /// `(int)` does (its leading digits), clamped to MIN_PHP_VERSION and MAX_PHP_VERSION.
+    pub fn platform_php_id(&self) -> Option<u32> {
+        let mut parts = self.platform_php.as_deref()?.split('.');
+        let mut part = || {
+            let p = parts.next().unwrap_or("");
+            let digits = p.len() - p.trim_start_matches(|c: char| c.is_ascii_digit()).len();
+            p[..digits].parse::<u32>().unwrap_or(0)
+        };
+        let id = part() * 10_000 + part() * 100 + part();
+        Some(id.clamp(70_100, 80_699))
+    }
+
     /// The default `[php] version`: the lowest PHP version composer.json admits.
     pub fn php_version(&self) -> Option<crate::PhpVersion> {
         let v = self.php.as_ref()?.lowest?;
@@ -72,7 +87,10 @@ impl Composer {
 /// JSON or an unparsable `require.php` is.
 pub fn detect(root: &Path) -> Result<Composer> {
     let mut out = Composer::default();
-    out.php = php_require(root, &mut out.sources)?;
+    if let Some(json) = read(&root.join("composer.json"), &mut out.sources)? {
+        out.php = php_require(&json)?;
+        out.platform_php = (json.pointer("/config/platform/php").and_then(Value::as_str)).map(str::to_string);
+    }
     if let Some(lock) = read(&root.join("composer.lock"), &mut out.sources)? {
         for key in ["packages", "packages-dev"] {
             for p in lock
@@ -98,11 +116,8 @@ pub fn detect(root: &Path) -> Result<Composer> {
     Ok(out)
 }
 
-/// `require.php` of `root/composer.json`, recording the file in `sources` when it exists.
-pub(crate) fn php_require(root: &Path, sources: &mut Vec<PathBuf>) -> Result<Option<PhpRequire>> {
-    let Some(json) = read(&root.join("composer.json"), sources)? else {
-        return Ok(None);
-    };
+/// `require.php` of a composer.json.
+fn php_require(json: &Value) -> Result<Option<PhpRequire>> {
     let Some(c) = json.pointer("/require/php").and_then(Value::as_str) else {
         return Ok(None);
     };

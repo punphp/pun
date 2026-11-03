@@ -53,7 +53,7 @@ exclude = ["tests/**"]
 
 | Key | Meaning |
 | --- | --- |
-| `[php] version` | Target PHP version as `major.minor`. Default: lowest version allowed by `composer.json` `require.php`, otherwise 8.4 |
+| `[php] version` | Target PHP version as `major.minor`. Default: lowest version allowed by `composer.json` `require.php`, otherwise 8.4. Without it, `pun analyse` uses `composer.json` `config.platform.php`, otherwise PHP 8.5, as PHPStan does |
 | `[files] paths` | Default paths when no command-line paths are given |
 | `[files] exclude` | Shared exclusions, combined with command-specific exclusions |
 

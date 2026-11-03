@@ -280,6 +280,27 @@ fn php_version() {
     );
 }
 
+/// `pun analyse`'s phpVersion follows PhpVersionFactory::create(): `[php] version`, else `config.platform.php`
+/// (patch kept, clamped to 70100..=80699), else the runtime PHP, not composer.json's lowest `require.php`.
+#[test]
+fn analyse_php_version() {
+    let id = |files: &[(&str, &str)]| load(&dir(files), &Options::default()).unwrap().analyse_php_id;
+    let toml = ("pun.toml", "");
+    assert_eq!(id(&[toml, ("composer.json", r#"{"require":{"php":"^8.4"}}"#)]), 80500);
+    assert_eq!(
+        id(&[toml, ("composer.json", r#"{"require":{"php":"^8.4"},"config":{"platform":{"php":"8.3.12"}}}"#)]),
+        80312
+    );
+    assert_eq!(id(&[toml, ("composer.json", r#"{"config":{"platform":{"php":"9.1"}}}"#)]), 80699);
+    assert_eq!(
+        id(&[
+            ("pun.toml", "[php]\nversion = \"8.4\"\n"),
+            ("composer.json", r#"{"config":{"platform":{"php":"8.3.12"}}}"#)
+        ]),
+        80400
+    );
+}
+
 /// `[lint] sets` turn on every rule tagged with them, at `error`. Rule lists hand-read from [rules.lint] of
 /// rules/mapping.toml.
 #[test]

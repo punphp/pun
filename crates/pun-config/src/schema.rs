@@ -411,6 +411,8 @@ pub struct PhpVersion {
 impl PhpVersion {
     /// Pun's floor: the version a project without `[php] version` or `require.php` targets.
     pub const FLOOR: PhpVersion = PhpVersion { major: 8, minor: 4 };
+    /// The newest PHP release: what PHPStan reads as its runtime version when nothing else names one.
+    pub const NEWEST: PhpVersion = PhpVersion { major: 8, minor: 5 };
 
     /// `PHP_VERSION_ID` of the `.0` release: 8.4 is 80400.
     pub fn to_id(self) -> u32 {

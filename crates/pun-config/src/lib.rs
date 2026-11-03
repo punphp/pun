@@ -77,6 +77,9 @@ pub struct Config {
     /// Target PHP version: `[php] version`, else the lowest composer.json admits, else 8.4. [`Config::php_version`]
     /// is the same as a [`PhpVersion`]; this string goes once pun-cli reads that.
     pub php: String,
+    /// The `phpVersion` `pun analyse` runs with, as PHPStan's PhpVersionFactory picks it: `[php] version` when set, else
+    /// composer.json's `config.platform.php`, else the PHP running PHPStan, which Pun takes as the newest release.
+    pub analyse_php_id: u32,
     /// `pun format`'s fixers: the preset's and `[format.rules]`, minus lint rules. The pipeline sorts by priority.
     pub rules: Vec<Rule>,
     pub finder: Finder,
@@ -238,6 +241,7 @@ fn parse(
         }
         _ => {}
     }
+    let explicit = php.version.is_some();
     let php = match php.version {
         Some(v) => v.parse::<PhpVersion>().map_err(|_| {
             anyhow::anyhow!(
@@ -245,6 +249,10 @@ fn parse(
             )
         })?,
         None => composer.php_version().unwrap_or(PhpVersion::FLOOR),
+    };
+    let analyse_php_id = match explicit {
+        true => php.to_id(),
+        false => composer.platform_php_id().unwrap_or(PhpVersion::NEWEST.to_id()),
     };
     let files = Files::from(files);
     let gates = schema::Gates { php, composer };
@@ -282,6 +290,7 @@ fn parse(
         root: root.to_path_buf(),
         preset,
         php: php.to_string(),
+        analyse_php_id,
         rules,
         finder: Finder {
             in_dirs: files.paths.clone(),
