@@ -9,6 +9,7 @@ use mago_codex::metadata::CodebaseMetadata;
 use mago_codex::symbol::SymbolKind;
 use mago_database::file::{File, FileId};
 use mago_names::ResolvedNames;
+use mago_span::Span;
 use mago_syntax::cst::Program;
 use mago_syntax::walker::MutWalker;
 use pun_phpstan::comments::lines_to_ignore;
@@ -27,6 +28,8 @@ use crate::relative_path::RelativePath;
 
 /// What the rules read of the project (its `ignoreErrors` stay on the calling thread).
 pub(crate) struct Checks {
+    /// The declarations a stub patches, by span, with the stub declaration's span.
+    patched_docs: HashMap<Span, Span>,
     php_version: u32,
     report_ignores_without_comments: bool,
     report_unmatched_ignores: bool,
@@ -132,6 +135,18 @@ pub(super) struct Toggled {
     pub(super) new_on_non_object: bool,
 }
 
+/// Each declaration a stub with a PHPDoc patches (a method, a function, a class-like) with the stub declaration's span:
+/// PHPStan reads a stub's PHPDoc in place of the original's (StubPhpDocProvider).
+fn patched_docs(codebase: &CodebaseMetadata) -> HashMap<Span, Span> {
+    let functions = codebase.patch_function_likes.iter().filter(|(_, p)| p.has_docblock).filter_map(|(key, patch)| {
+        Some((codebase.function_likes.get(key)?.span, patch.span))
+    });
+    let classes = codebase.patch_class_likes.iter().filter(|(_, p)| p.has_docblock).filter_map(|(key, patch)| {
+        Some((codebase.class_likes.get(key)?.span, patch.span))
+    });
+    functions.chain(classes).filter(|(original, patch)| original != patch).collect()
+}
+
 impl Checks {
     /// Drops the errors of identifiers the run doesn't report.
     pub(crate) fn keep_reported(&self, errors: &mut Vec<Error>) {
@@ -178,6 +193,7 @@ impl Checks {
             precise_unused_parameter_line: project.precise_unused_parameter_line,
             internal_members,
             deprecations: project.deprecation_rules,
+            patched_docs: patched_docs(codebase),
             bleeding_edge: project.bleeding_edge,
             unused_label: project.level >= 4 && project.unused_label,
             switch_condition: project.switch_condition,
@@ -273,7 +289,7 @@ fn checker<'a, 'arena>(
     };
     let mut variable_writes = HashMap::new();
     let mut property_initializations = HashMap::new();
-    let (mut types, defined, origins, call_terminations, named_call_scopes, keep_void_types, native_types, nullsafe_method_receiver_types) = infer(arena, file, program, names, codebase, php_version, project.level, project.pollute_scope_with_loop_initial_assignments, project.pollute_scope_with_always_iterable_foreach, project.pollute_scope_with_block, typed, calls, &mut variables, &mut variable_writes, &mut property_initializations, project.larastan.is_some());
+    let (mut types, defined, origins, call_terminations, named_call_scopes, keep_void_types, native_types, nullsafe_method_receiver_types) = infer(arena, file, program, names, codebase, php_version, project.level, project.pollute_scope_with_loop_initial_assignments, project.pollute_scope_with_always_iterable_foreach, project.pollute_scope_with_block, typed, calls, &mut variables, &mut variable_writes, &mut property_initializations, project.larastan.as_ref());
     if project.level >= 4 {
         let (subjects, unknown) = super::dead_code::match_subject_types(file, program, codebase, php_version, project.pollute_scope_with_loop_initial_assignments, project.pollute_scope_with_always_iterable_foreach, project.pollute_scope_with_block);
         types.extend(subjects);
@@ -328,6 +344,7 @@ fn checker<'a, 'arena>(
         immutable: HashMap::new(),
         files,
         sources,
+        patched_docs: &project.patched_docs,
         syntax: syntax::State::default(),
         assign: assign::State::default(),
         signatures: signatures::State::default(),

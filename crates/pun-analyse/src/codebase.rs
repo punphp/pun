@@ -448,6 +448,9 @@ pub(crate) fn build(
         .map(|(key, f)| (*key, f.clone()))
         .collect();
     metadata.function_likes.extend(pseudo);
+    if let Some(larastan) = &project.larastan {
+        crate::larastan::app::App::load(&larastan.root).contract_mixins(&mut metadata);
+    }
     populate_codebase_parallel(
         &mut metadata,
         &mut references,

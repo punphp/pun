@@ -1572,10 +1572,14 @@ impl CodebaseMetadata {
             inherited_overrides.extend(inherited.iter().map(|method| (fqcn, *method)));
             let constructor_name = word("__construct");
             let patch_declares_constructor = self.patch_class_likes[&fqcn].methods.contains(&constructor_name);
+            let removed = working.removed_pseudo_methods(&self.patch_class_likes[&fqcn]);
             if let Some(patch_entry) = self.patch_class_likes.get_mut(&fqcn)
                 && working.apply_patch(patch_entry, &inherited)
             {
                 applied_classes.push(fqcn);
+                for name in removed {
+                    self.function_likes.remove(&(fqcn, name));
+                }
             }
             if working.flags.has_consistent_constructor()
                 && !patch_declares_constructor

@@ -415,6 +415,28 @@ pub fn get_union_from_type(
                         ),
                     ))));
                 }
+                // PHPStan's `__benevolent<T>` (TypeNodeResolver): T as a benevolent union, which Pun marks with both
+                // ignore flags. Larastan's TypeNodeResolverExtensions: `view-string` and `model-property<T>` (without
+                // `checkModelProperties`) are strings, `collection-of<TModel>` is the model's Eloquent collection.
+                // ponytail: a model's own collection class (`newCollection()`, `#[CollectedBy]`) is not read
+                let single = reference_type.parameters.as_ref().filter(|p| p.entries.len() == 1).map(|p| &p.entries[0].inner);
+                match (identifier.value, single) {
+                    (b"view-string", None) | (b"model-property", Some(_)) => return Ok(get_string()),
+                    (b"__benevolent", Some(inner)) => {
+                        let mut union = get_union_from_type(inner, scope, type_context, classname)?;
+                        union.set_ignore_nullable_issues(true);
+                        union.set_ignore_falsable_issues(true);
+                        return Ok(union);
+                    }
+                    (b"collection-of", Some(inner)) => {
+                        let model = get_union_from_type(inner, scope, type_context, classname)?;
+                        return Ok(wrap_atomic(TAtomic::Object(TObject::Named(TNamedObject::new_with_type_parameters(
+                            word("Illuminate\\Database\\Eloquent\\Collection"),
+                            Some(vec![get_int(), model]),
+                        )))));
+                    }
+                    _ => {}
+                }
                 let reference_name_atom = word(identifier.value);
 
                 if let Some((source_class, original_name)) = type_context.get_imported_type_alias(reference_name_atom) {
@@ -994,16 +1016,8 @@ fn get_reference_from_kind(
         let mut parameters = vec![];
         let mut variances = vec![];
         for generic in &generics.entries {
-            let mut generic_type = get_union_from_type(&generic.inner, scope, type_context, classname)?;
-
-            for atomic in generic_type.types.to_mut() {
-                if let TAtomic::Object(TObject::Named(named)) = atomic
-                    && named.is_this
-                {
-                    named.name = classname.unwrap_or_else(|| word("static"));
-                    named.is_this = false;
-                }
-            }
+            // PHPStan keeps a `$this` type argument (`HasMany<Link, $this>`) a ThisType, not `static`
+            let generic_type = get_union_from_type(&generic.inner, scope, type_context, classname)?;
 
             parameters.push(generic_type);
 

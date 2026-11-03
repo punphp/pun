@@ -32,7 +32,7 @@ pub(super) fn studly(value: &str) -> String {
 }
 
 /// `Str::camel($value)`: `studly` with the first letter lowercase.
-pub(super) fn camel(value: &str) -> String {
+pub(crate) fn camel(value: &str) -> String {
     let s = studly(value);
     let mut c = s.chars();
     c.next().map_or_else(String::new, |f| {

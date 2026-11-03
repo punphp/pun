@@ -159,10 +159,11 @@ impl<'a> Checker<'a, '_> {
         if let Some(m) = native.filter(|m| nominal(&m.declaring_name())) {
             let mut method = method_reflection::Method::leaf(self, t, m);
             // Keep the declaring class's supplied arguments in semantic parameter types too, not just their
-            // descriptions. Re-reading a User parameter later would otherwise restore its unbound template.
+            // descriptions. Re-reading a User parameter later would otherwise restore its unbound template and
+            // its `static` (bound to an object receiver).
             if let members::Method::User { declaring, .. } = &method.declaring
                 && let Type::Object(receiver, actual, _) | Type::Static(receiver, actual) = t
-                && !actual.is_empty()
+                && (!actual.is_empty() || matches!(t, Type::Object(..)))
             {
                 let class = declared::original_name(declaring);
                 let args = declared::with_classes(self, || {
@@ -172,12 +173,13 @@ impl<'a> Checker<'a, '_> {
                 });
                 let names: Vec<_> = declared::class_templates(self, declaring).into_iter().map(|t| t.name).collect();
                 let scope = format!("class {class}");
-                for variant in &mut method.variants.all {
+                declared::with_classes(self, || for variant in &mut method.variants.all {
                     variant.param_types = (0..variant.names.len()).map(|i| {
                         let ty = super::declared_type(self, variant, i).unwrap_or_else(pun_phpstan::types::mixed);
-                        params::ParamType::Typed(super::properties::with_args(&ty, &scope, &names, &args))
+                        let ty = super::properties::with_args(&ty, &scope, &names, &args);
+                        params::ParamType::Typed(method_reflection::called_on(&ty, t))
                     }).collect();
-                }
+                });
             }
             return Ok(Some(method));
         }
@@ -225,6 +227,84 @@ impl<'a> Checker<'a, '_> {
                 }
             }
             interfaces.extend(self.all_interfaces(Class::User(interface)).into_iter().rev());
+        }
+        if let Some(larastan) = self.larastan {
+            let original = declared::original_name(k);
+            // ModelForwardsCallsExtension: a model's `Builder<Model>` methods (the builder's mixin included).
+            // ponytail: a custom builder (`newEloquentBuilder()`, `#[UseEloquentBuilder]`) is not read
+            if super::super::larastan::is_model(self, k) {
+                let builder = Type::Object(
+                    "Illuminate\\Database\\Eloquent\\Builder".to_string(),
+                    vec![Type::Object(original, vec![], false)],
+                    false,
+                );
+                return self.extended_method(&builder, name, active);
+            }
+            let args = match t {
+                Type::Object(_, args, _) | Type::Static(_, args) => args.clone(),
+                _ => Vec::new(),
+            };
+            // the receiver's arguments for an ancestor's templates
+            let ancestor_args = |ancestor: &str| -> Vec<Type> {
+                if original.eq_ignore_ascii_case(ancestor) {
+                    return args.clone();
+                }
+                declared::with_classes(self, || {
+                    pun_phpstan::symbols::lookup(&original)
+                        .and_then(|k| pun_phpstan::types::ancestor_args(&k, ancestor, &args))
+                        .unwrap_or_default()
+                })
+            };
+            // EloquentBuilderForwardsCallsExtension (BuilderHelper::searchOnEloquentBuilder()): the model's scopes,
+            // then the query builder's native methods.
+            // ponytail: macros, dynamic wheres and the SoftDeletes methods are not seen
+            if super::super::larastan::is_a(self, k.name.as_bytes(), b"illuminate\\database\\eloquent\\builder") {
+                let model = ancestor_args("Illuminate\\Database\\Eloquent\\Builder")
+                    .into_iter()
+                    .next()
+                    .map(|m| m.resolve_to_bounds())
+                    .unwrap_or_else(|| Type::Object("Illuminate\\Database\\Eloquent\\Model".into(), vec![], false));
+                for class in model.object_class_names() {
+                    if super::super::larastan::has_scope(self, &class, name) {
+                        // ponytail: a scope's parameters (its first one shifted off) are not reflected
+                        return Err(());
+                    }
+                }
+                let query = "Illuminate\\Database\\Query\\Builder";
+                if let Lookup::Found(q) = self.class_like(query)
+                    && members::method(self, q, name).is_some()
+                {
+                    return self.extended_method(&Type::Object(query.into(), vec![], false), name, active);
+                }
+                return Ok(None);
+            }
+            // HigherOrderCollectionProxyExtension: `$collection->each->method()` calls the value's method
+            if original.eq_ignore_ascii_case("Illuminate\\Support\\HigherOrderCollectionProxy") {
+                let [proxied, value, _] = args.as_slice() else { return Ok(None) };
+                if proxied.constant_strings().len() != 1 || !self.can_call_methods(value).yes() || !self.has_method(value, name).yes() {
+                    return Ok(None);
+                }
+                return self.extended_method(value, name, active);
+            }
+            // RelationForwardsCallsExtension: a relation's `Builder<TRelatedModel>` methods
+            if super::super::larastan::is_a(self, k.name.as_bytes(), b"illuminate\\database\\eloquent\\relations\\relation") {
+                let related = ancestor_args("Illuminate\\Database\\Eloquent\\Relations\\Relation")
+                    .into_iter()
+                    .next()
+                    .filter(|r| !r.object_class_names().is_empty())
+                    .unwrap_or_else(|| Type::Object("Illuminate\\Database\\Eloquent\\Model".into(), vec![], false));
+                let builder = Type::Object("Illuminate\\Database\\Eloquent\\Builder".into(), vec![related], false);
+                return self.extended_method(&builder, name, active);
+            }
+            // ContractsMethodsExtension: an `Illuminate\Contracts` interface's method is its concrete's
+            if k.kind.is_interface()
+                && original.starts_with("Illuminate\\Contracts")
+                && let Some(concrete) = larastan.app.resolve(&original)
+                && let Lookup::Found(c) = self.class_like(concrete)
+            {
+                let concrete = Type::Object(declared::original_name(c), vec![], false);
+                return self.extended_method(&concrete, name, active);
+            }
         }
         Ok(None)
     }
@@ -481,7 +561,11 @@ fn check_single_method<'arena>(
     };
     let declaring = &method.display;
     let visibility = method.visibility();
-    if !calls::can_call(c, c.class_scope(), &method.declaring.declaring_name(), visibility) {
+    // ModelForwardsCallsExtension answers a model's `increment()` and `decrement()` with a public method
+    let forwarded = c.larastan.is_some()
+        && ["increment", "decrement"].iter().any(|m| method.name.eq_ignore_ascii_case(m))
+        && t.object_class_names().iter().all(|n| c.class_like(n).found().is_some_and(|k| super::super::larastan::is_model(c, k)));
+    if !forwarded && !calls::can_call(c, c.class_scope(), &method.declaring.declaring_name(), visibility) {
         let v = super::super::restricted(visibility);
         let identifier = if visibility.is_private() { "method.private" } else { "method.protected" };
         let message = format!("Call to {v} method {}() of class {declaring}.", method.name);

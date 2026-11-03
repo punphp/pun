@@ -490,6 +490,11 @@ impl Project {
             stubs: strings(params, "stubFiles")
                 .into_iter()
                 .map(PathBuf::from)
+                // Larastan's StubFilesExtension adds its own
+                .chain(match params.get_str("noModelMake") {
+                    Some(_) => crate::larastan::stubs::files(root),
+                    None => Vec::new(),
+                })
                 .collect(),
             reported: None,
             method_rules: MethodRules::default(),

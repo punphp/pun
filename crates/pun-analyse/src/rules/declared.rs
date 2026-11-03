@@ -43,6 +43,7 @@ fn file_contents<'a>(c: &Checker<'a, '_>, id: FileId) -> Option<std::borrow::Cow
 
 /// The doc comment before `offset` in the file `span` is in, with that file's contents.
 pub fn doc_at(c: &Checker, span: Span) -> Option<(Vec<u8>, Arc<FileScopes>)> {
+    let span = c.patched_docs.get(&span).copied().unwrap_or(span);
     let contents = file_contents(c, span.file_id)?;
     let doc = doc_before(&contents, span.start.offset as usize)?.to_vec();
     Some((doc, scopes_of(span.file_id, &contents)))
@@ -50,6 +51,7 @@ pub fn doc_at(c: &Checker, span: Span) -> Option<(Vec<u8>, Arc<FileScopes>)> {
 
 /// The `NameScope` of a PHPDoc at `span` in class-like `class` (`None` outside one), with `templates` in scope.
 pub fn scope_at(c: &Checker, span: Span, class: Option<&ClassLikeMetadata>) -> NameScope {
+    let span = c.patched_docs.get(&span).copied().unwrap_or(span);
     let names = file_contents(c, span.file_id)
         .map(|contents| scopes_of(span.file_id, &contents).at(span.start.offset))
         .unwrap_or_default();
@@ -673,7 +675,7 @@ fn method_doc(
             source.as_bytes() == name && class.declaring_method_ids.get(alias)
                 == class.declaring_method_ids.get(&mago_word::word(name))
         });
-    let own = if m.has_docblock && !aliased_source {
+    let own = if (m.has_docblock || c.patched_docs.contains_key(&m.span)) && !aliased_source {
         resolved_own(c, m, storage, class)
     } else {
         None

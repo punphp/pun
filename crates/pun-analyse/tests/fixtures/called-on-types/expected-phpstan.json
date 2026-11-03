@@ -1,0 +1,74 @@
+[
+ {
+  "line": 25,
+  "identifier": "missingType.generics",
+  "message": "Method CalledOn\\Box::take() has parameter $self with generic class CalledOn\\Box but does not specify its types: T",
+  "tip": null
+ },
+ {
+  "line": 44,
+  "identifier": "argument.type",
+  "message": "Parameter #1 $this_ of method CalledOn\\Box<ArrayObject<int, int>>::take() expects callable(CalledOn\\Box<ArrayObject<int, int>>): void, 5 given.",
+  "tip": null
+ },
+ {
+  "line": 44,
+  "identifier": "argument.type",
+  "message": "Parameter #2 $statics of method CalledOn\\Box<ArrayObject<int, int>>::take() expects array<CalledOn\\Box<ArrayObject<int, int>>>, 5 given.",
+  "tip": null
+ },
+ {
+  "line": 44,
+  "identifier": "argument.type",
+  "message": "Parameter #3 $self of method CalledOn\\Box<ArrayObject<int, int>>::take() expects callable(CalledOn\\Box): void, 5 given.",
+  "tip": null
+ },
+ {
+  "line": 45,
+  "identifier": "argument.type",
+  "message": "Parameter #1 $callback of method CalledOn\\Box<ArrayObject<int, int>>::whenThis() expects callable(CalledOn\\Box<ArrayObject<int, int>>): void, 5 given.",
+  "tip": null
+ },
+ {
+  "line": 46,
+  "identifier": "argument.type",
+  "message": "Parameter #1 $callback of method CalledOn\\Box<ArrayObject<int, int>>::whenThis() expects callable(CalledOn\\Box<ArrayObject<int, int>>): void, Closure(int): void given.",
+  "tip": null
+ },
+ {
+  "line": 48,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: Closure(CalledOn\\Box): void",
+  "tip": null
+ },
+ {
+  "line": 49,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: Closure(CalledOn\\Box|CalledOn\\Pair): void",
+  "tip": null
+ },
+ {
+  "line": 51,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: ArrayObject<int, int>|SplStack<string>",
+  "tip": null
+ },
+ {
+  "line": 53,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: ArrayObject<int, int>|SplStack<string>",
+  "tip": null
+ },
+ {
+  "line": 53,
+  "identifier": "argument.type",
+  "message": "Parameter #1 $callback of method CalledOn\\Box<ArrayObject<int, int>|SplStack<string>>::each() expects callable(ArrayObject<int, int>|SplStack<string>): void, Closure(Countable|string): mixed given.",
+  "tip": null
+ },
+ {
+  "line": 55,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: ArrayObject<int, int>|SplStack<string>",
+  "tip": null
+ }
+]

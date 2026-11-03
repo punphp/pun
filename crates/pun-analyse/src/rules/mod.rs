@@ -924,6 +924,8 @@ pub struct Checker<'a, 'arena> {
     /// A symbol's file, and the analysed files' sources (other files are read when a rule needs them).
     files: &'a HashMap<FileId, PathBuf>,
     sources: &'a Sources,
+    /// [`driver::Checks`]'s stub declarations: a patched declaration's span to its stub's, whose PHPDoc PHPStan reads.
+    patched_docs: &'a HashMap<Span, Span>,
     syntax: syntax::State,
     assign: assign::State,
     signatures: signatures::State,

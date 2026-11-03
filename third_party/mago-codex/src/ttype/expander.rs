@@ -985,8 +985,17 @@ fn resolve_static_type(
 
             named.name = static_obj.name;
             let effectively_final = is_effectively_final(&static_obj.name, codebase, options);
-            named.is_static = !effectively_final;
-            named.is_this = !effectively_final && is_this_type;
+            // PHPStan's CalledOnTypeUnresolvedMethodPrototypeReflection: on a `$this` receiver a `$this` type stays
+            // `$this`, even in a final class (StaticType::changeBaseClass()); on a `static` receiver it is `static`,
+            // and `static` is the object in a final class; on an object receiver both are that object.
+            if static_obj.is_this || static_obj.is_static {
+                let keep_this = is_this_type && static_obj.is_this;
+                named.is_static = keep_this || !effectively_final;
+                named.is_this = keep_this;
+            } else {
+                named.is_static = false;
+                named.is_this = false;
+            }
         }
         StaticClassType::Name(static_class)
             if (!check_compatibility || codebase.is_instance_of(static_class.as_bytes(), named.name.as_bytes())) =>

@@ -130,6 +130,10 @@ pub struct ClassLikeMetadata {
     pub issues: Vec<Issue>,
     pub attribute_flags: Option<AttributeFlags>,
     pub flags: MetadataFlags,
+    /// Whether the declaration has a docblock: a patch's replaces the original's class-level tags, as a PHPStan stub's
+    /// PHPDoc does.
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub has_docblock: bool,
     #[cfg_attr(feature = "serde", serde(default))]
     pub(crate) explicit_docblock_flags: MetadataFlags,
     pub type_aliases: WordMap<TypeMetadata>,
@@ -188,6 +192,7 @@ impl ClassLikeMetadata {
             trait_constant_ids: WordMap::default(),
             enum_cases: WordMap::default(),
             flags,
+            has_docblock: false,
             explicit_docblock_flags: MetadataFlags::empty(),
             kind: SymbolKind::Class,
             direct_parent_interfaces: WordSet::default(),
@@ -691,6 +696,25 @@ impl ClassLikeMetadata {
             PATCHABLE_CLASS_DOCBLOCK_FLAGS,
         );
 
+        // StubPhpDocProvider::findClassPhpDoc(): a stub class's PHPDoc replaces the original's, so its `@mixin` and
+        // `@method` tags replace the original's (the caller drops the removed methods' function-likes)
+        if patch.has_docblock {
+            self.mixins.clone_from(&patch.mixins);
+            if !patch.template_types.is_empty() {
+                self.template_types.clear();
+                self.template_variance.clear();
+                self.template_readonly.clear();
+            }
+            for name in self.removed_pseudo_methods(patch) {
+                self.methods.remove(&name);
+                self.pseudo_methods.remove(&name);
+                self.static_pseudo_methods.remove(&name);
+                self.declaring_method_ids.remove(&name);
+                self.appearing_method_ids.remove(&name);
+                self.inheritable_method_ids.remove(&name);
+            }
+        }
+
         self.patch_templates(patch);
         self.template_extended_offsets.extend(
             patch
@@ -714,6 +738,19 @@ impl ClassLikeMetadata {
         // Type aliases
         self.type_aliases.extend(patch.type_aliases.iter().map(|(k, v)| (*k, v.clone())));
         true
+    }
+
+    /// The original's `@method` methods a patch with a docblock does not declare again.
+    pub(crate) fn removed_pseudo_methods(&self, patch: &ClassLikeMetadata) -> Vec<Word> {
+        if !patch.has_docblock {
+            return Vec::new();
+        }
+        self.pseudo_methods
+            .iter()
+            .chain(self.static_pseudo_methods.iter())
+            .filter(|name| !patch.pseudo_methods.contains(*name) && !patch.static_pseudo_methods.contains(*name))
+            .copied()
+            .collect()
     }
 
     /// Reports a `kind` mismatch between the patch and the original symbol.

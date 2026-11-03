@@ -73,6 +73,7 @@ pub fn analyse_project(project: &Project) -> Result<Analysis, CouldNotReadFile> 
         .iter()
         .chain(&project.scanned)
         .chain(project.autoloaded.iter().map(|a| &a.path))
+        .chain(&project.stubs)
         .map(|p| {
             (
                 mago_database::file::FileId::new(display(p).as_bytes()),

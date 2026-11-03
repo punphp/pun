@@ -1,0 +1,167 @@
+[
+ {
+  "line": 25,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: Illuminate\\Auth\\AuthManager"
+ },
+ {
+  "line": 26,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: App\\Models\\User|null"
+ },
+ {
+  "line": 27,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: App\\Models\\User|null"
+ },
+ {
+  "line": 28,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: Illuminate\\Contracts\\Auth\\StatefulGuard"
+ },
+ {
+  "line": 29,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: App\\Models\\User|null"
+ },
+ {
+  "line": 30,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: Carbon\\CarbonImmutable"
+ },
+ {
+  "line": 31,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: Carbon\\CarbonImmutable"
+ },
+ {
+  "line": 32,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: Illuminate\\Filesystem\\FilesystemAdapter"
+ },
+ {
+  "line": 33,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: bool"
+ },
+ {
+  "line": 34,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: string"
+ },
+ {
+  "line": 35,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: Illuminate\\Support\\Collection<(int|string), mixed>"
+ },
+ {
+  "line": 36,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: Illuminate\\Support\\Collection<(int|string), mixed>"
+ },
+ {
+  "line": 37,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: Illuminate\\Support\\Collection<string, non-falsy-string>"
+ },
+ {
+  "line": 38,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: Illuminate\\Support\\Collection<string, string>"
+ },
+ {
+  "line": 39,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: Illuminate\\Support\\Collection<string, non-empty-string>"
+ },
+ {
+  "line": 40,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: Illuminate\\Support\\Collection<int, string>"
+ },
+ {
+  "line": 43,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: Illuminate\\Support\\Collection<int, non-empty-string>"
+ },
+ {
+  "line": 44,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: Illuminate\\Support\\Collection<int, int|string>"
+ },
+ {
+  "line": 45,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: Illuminate\\Support\\Collection<(int|string), int<0, max>>"
+ },
+ {
+  "line": 46,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: Illuminate\\Support\\Collection<int, bool|float>"
+ },
+ {
+  "line": 47,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: Illuminate\\Support\\Collection<int, bool|float|int|string>"
+ },
+ {
+  "line": 48,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: Illuminate\\Support\\Collection<int, true>"
+ },
+ {
+  "line": 49,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: Illuminate\\Support\\Collection<int, float|int<min, -1>|int<1, max>|object|non-falsy-string|true>"
+ },
+ {
+  "line": 49,
+  "identifier": "argument.type",
+  "message": "Parameter #1 $callback of method Illuminate\\Support\\Collection<int,bool|float|int|object|string|null>::filter() expects (callable(bool|float|int|object|string|null, int): bool)|null, Closure(mixed): (bool|float|int|object|string|null) given."
+ },
+ {
+  "line": 50,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: Illuminate\\Support\\Collection<int, int<min, -1>|int<1, max>>"
+ },
+ {
+  "line": 51,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: Illuminate\\Support\\Collection<int, bool|float|int|object|string|null>"
+ },
+ {
+  "line": 52,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: Illuminate\\Support\\Collection<int, bool|float|int|object|string|null>"
+ },
+ {
+  "line": 53,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: Illuminate\\Support\\Collection<int, bool|float|int|object|string|null>"
+ },
+ {
+  "line": 58,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: Illuminate\\Support\\Collection<int, 0|0.0|''|'0'|false|null>"
+ },
+ {
+  "line": 59,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: Illuminate\\Support\\Collection<int, string>"
+ },
+ {
+  "line": 60,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: Illuminate\\Support\\Collection<int, string>"
+ },
+ {
+  "line": 61,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: null"
+ },
+ {
+  "line": 62,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: (array|string)"
+ }
+]

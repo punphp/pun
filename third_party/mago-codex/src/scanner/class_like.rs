@@ -404,6 +404,7 @@ where
         .map(|docblock| parse_docblock_trivia(context, docblock));
 
     if let Some(document) = document {
+        class_like_metadata.has_docblock = true;
         for parse_error in document.errors {
             class_like_metadata.issues.push(
                 Issue::error("Failed to parse class-like docblock comment.")

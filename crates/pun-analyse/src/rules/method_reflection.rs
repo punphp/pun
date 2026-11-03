@@ -39,7 +39,8 @@ impl<'a> Method<'a> {
         let (display, names, args) = context(c, receiver, &declaring);
         let mut variants = declaring.variants();
         let scope = format!("class {}", declaring.declaring_name());
-        let variant_types = variants
+        // `static` in a PHPDoc type resolves against the class reflection (a nested one too)
+        let variant_types = declared::with_classes(c, || variants
             .all
             .iter_mut()
             .map(|v| {
@@ -47,13 +48,13 @@ impl<'a> Method<'a> {
                     .map(|i| {
                         let ty = super::types::declared_type(c, v, i)
                             .unwrap_or_else(pun_phpstan::types::mixed);
-                        super::types::with_args(&ty, &scope, &names, &args)
+                        called_on(&super::types::with_args(&ty, &scope, &names, &args), receiver)
                     })
                     .collect();
                 v.types = types.iter().map(|t| t.describe(Level::TypeOnly)).collect();
                 types
             })
-            .collect();
+            .collect());
         Self {
             display,
             name: declaring.name(),
@@ -175,6 +176,15 @@ impl<'a> Method<'a> {
         acceptor.builtin = self.builtin();
         acceptor.accepts_named_arguments = Tri::from(self.accepts);
         acceptor
+    }
+}
+
+/// `CalledOnTypeUnresolvedMethodPrototypeReflection`: a method called on an object resolves its `static` and
+/// `$this` types to that object; called on `static`/`$this` they stay late.
+pub(super) fn called_on(t: &Type, receiver: &Type) -> Type {
+    match t {
+        Type::Static(..) | Type::This(_) if matches!(receiver, Type::Object(..)) => receiver.clone(),
+        _ => t.traverse(&|i| called_on(i, receiver)),
     }
 }
 

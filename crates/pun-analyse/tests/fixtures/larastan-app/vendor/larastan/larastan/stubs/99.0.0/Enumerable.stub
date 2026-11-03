@@ -1,0 +1,17 @@
+<?php
+
+namespace Illuminate\Support;
+
+/**
+ * A stub of a Laravel version later than the installed one, which Larastan does not load.
+ *
+ * @template TKey of array-key
+ * @template TValue
+ */
+interface Enumerable
+{
+    /**
+     * @return int
+     */
+    public function pluck($value, $key = null);
+}

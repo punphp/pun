@@ -549,6 +549,7 @@ mod tests {
             immutable: Default::default(),
             files: &Default::default(),
             sources: &Default::default(),
+            patched_docs: &Default::default(),
             syntax: Default::default(),
             assign: Default::default(),
             signatures: Default::default(),

@@ -135,7 +135,7 @@ pub(super) fn infer<'arena>(
     variables: &mut variables::Observations,
     variable_writes: &mut HashMap<Span, mago_analyzer::variable_flow::VariableWritesNode>,
     property_initializations: &mut HashMap<Span, PropertyInitializationCertainty>,
-    larastan: bool,
+    larastan: Option<&super::Larastan>,
 ) -> (HashMap<Span, TUnion>, HashMap<Span, Tri>, Origins, HashMap<(u32, u32), bool>, HashMap<Span, Vec<NamedCallScope>>, HashMap<Span, TUnion>, HashMap<Span, TUnion>, HashMap<Span, TUnion>) {
     let mut wanted = TypedExpressions {
         spans: Vec::new(),
@@ -173,7 +173,7 @@ pub(super) fn analyse<'arena>(
     wanted: Vec<Span>,
     watched: Vec<Span>,
 ) -> (HashMap<Span, TUnion>, HashMap<Span, Tri>, Origins, HashMap<(u32, u32), bool>, HashMap<Span, Vec<NamedCallScope>>, HashMap<Span, TUnion>, HashMap<Span, TUnion>, HashMap<Span, TUnion>) {
-    analyse_observed(arena, file, program, names, codebase, php_version, pollute_scope_with_loop_initial_assignments, pollute_scope_with_always_iterable_foreach, pollute_scope_with_block, wanted, watched, Vec::new(), None, None, Vec::new(), None, Vec::new(), false)
+    analyse_observed(arena, file, program, names, codebase, php_version, pollute_scope_with_loop_initial_assignments, pollute_scope_with_always_iterable_foreach, pollute_scope_with_block, wanted, watched, Vec::new(), None, None, Vec::new(), None, Vec::new(), None)
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -195,7 +195,7 @@ fn analyse_observed<'arena>(
     initializations: Vec<(Span, PropertyInitializationRequest)>,
     property_initializations: Option<&mut HashMap<Span, PropertyInitializationCertainty>>,
     by_ref: Vec<(Span, Vec<Vec<u8>>)>,
-    larastan: bool,
+    larastan: Option<&super::Larastan>,
 ) -> (HashMap<Span, TUnion>, HashMap<Span, Tri>, Origins, HashMap<(u32, u32), bool>, HashMap<Span, Vec<NamedCallScope>>, HashMap<Span, TUnion>, HashMap<Span, TUnion>, HashMap<Span, TUnion>) {
     let mut wanted = wanted;
     wanted.extend(calls.iter().flat_map(|call| call.expressions.iter().copied()));

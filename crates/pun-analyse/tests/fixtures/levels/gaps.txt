@@ -43,9 +43,7 @@
 3 Methods/ReturnTypeRuleTest::testBug3523
 3 Methods/ReturnTypeRuleTest::testBug5979
 3 Methods/ReturnTypeRuleTest::testBug7574
-3 Methods/ReturnTypeRuleTest::testBug11857
 3 Methods/ReturnTypeRuleTest::testBug1O580
-3 Methods/ReturnTypeRuleTest::testBug5946
 3 Methods/ReturnTypeRuleTest::testBug9669
 # A conditional type's branches are not narrowed by its condition (`getNormalizedIf()`, types.rs), so
 # GenericObjectTypeCheck finds the unnarrowed template arguments out of bounds.
@@ -212,7 +210,6 @@
 5 Functions/ParameterCastableToStringRuleTest::testEnum
 5 Functions/ParameterCastableToStringRuleTest::testRule
 5 Methods/CallMethodsRuleTest::testAcceptThrowable
-5 Methods/CallMethodsRuleTest::testBug11463
 5 Methods/CallMethodsRuleTest::testBug13171
 5 Methods/CallMethodsRuleTest::testBug13993
 5 Methods/CallMethodsRuleTest::testBug1661
@@ -273,7 +270,6 @@
 9 Functions/CallToFunctionParametersRuleTest::testIsSubclassAllowString
 9 Methods/CallMethodsRuleTest::testAcceptThrowable
 9 Methods/CallMethodsRuleTest::testBug10719
-9 Methods/CallMethodsRuleTest::testBug11463
 9 Methods/CallMethodsRuleTest::testBug13171
 9 Methods/CallMethodsRuleTest::testBug13272
 9 Methods/CallMethodsRuleTest::testBug13511
@@ -700,7 +696,6 @@
 4 Methods/NullsafeMethodCallRuleTest::testBug8523b
 4 Methods/NullsafeMethodCallRuleTest::testBug8523c
 # Mago's explicit mixed and benevolent unions describe differently.
-9 Operators/InvalidIncDecOperationRuleTest::testUnion
 # cross-branch after the nullsafe + NullCoalesce + templateType merges (owners notified)
 9 Functions/CallToFunctionParametersRuleTest::testBug10297
 # catch.neverThrown: the call's throw point comes from a dynamic throw type extension Pun does not port (trigger_error,

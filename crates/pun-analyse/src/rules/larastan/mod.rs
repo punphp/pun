@@ -10,6 +10,7 @@ mod collectors;
 mod config;
 mod console;
 mod dispatch;
+mod extensions;
 mod forwards;
 mod octane;
 mod relations;
@@ -33,6 +34,7 @@ pub(crate) use appends::property;
 pub(crate) use calls::{function_call, method_call, static_method_call};
 pub(crate) use classes::{class, method};
 pub(crate) use collectors::finish;
+pub(super) use extensions::{Functions as AppFunctions, Methods as AppMethods};
 pub(super) use forwards::ModelForwards;
 
 pub const IDENTIFIERS: &[&str] = &[
@@ -99,6 +101,10 @@ pub struct Larastan {
     pub check_config_types: bool,
     /// The app's config files (filled by [`Larastan::load`] when `checkConfigTypes` is on).
     pub(crate) configs: crate::larastan::config::Configs,
+    /// The models' database properties and their types, by lowercase class name (filled by [`Larastan::load`]).
+    pub(crate) models: std::sync::Arc<crate::laravel::Models>,
+    /// What the extensions ask the booted app (filled by [`Larastan::load`]).
+    pub(crate) app: std::sync::Arc<crate::larastan::app::App>,
     /// The app's console commands (filled by [`Larastan::load`]).
     pub(crate) commands: Vec<crate::larastan::console::Command>,
 }
@@ -126,6 +132,8 @@ impl Larastan {
             no_unnecessary_collection_call: true,
             no_unnecessary_collection_call_methods: collections::should_handle(&[], &[]),
             configs: Default::default(),
+            app: Default::default(),
+            models: Default::default(),
         }
     }
 
@@ -135,14 +143,14 @@ impl Larastan {
         project: &crate::Project,
         codebase: &mago_codex::metadata::CodebaseMetadata,
     ) {
-        if self.check_model_appends || self.no_unnecessary_collection_call {
-            let app = crate::Laravel {
-                root: &self.root,
-                parse_casts_method: false,
-            };
-            self.database_properties = crate::laravel::database_properties(app, project, codebase);
-        }
+        let app = crate::Laravel {
+            root: &self.root,
+            parse_casts_method: false,
+        };
+        self.database_properties = crate::laravel::database_properties(app, project, codebase);
+        self.models = std::sync::Arc::new(crate::laravel::models(app, project, codebase));
         self.commands = crate::larastan::console::commands(project, codebase);
+        self.app = std::sync::Arc::new(crate::larastan::app::App::load(&self.root));
         if self.check_config_types {
             self.configs = crate::larastan::config::Configs::load(
                 &self.config_directories,
@@ -237,11 +245,61 @@ fn has_database_property(c: &Checker, model: &str, column: &str) -> bool {
     })
 }
 
+/// Larastan's model property extensions on `$property` (with its `$`): ModelAccessorExtension, ModelPropertyExtension
+/// (a database column) and ModelRelationsExtension (a relation method, or its `_count`).
+pub(crate) fn has_model_property(c: &Checker, k: &ClassLikeMetadata, property: &[u8]) -> bool {
+    if c.larastan.is_none() || !is_model(c, k) {
+        return false;
+    }
+    let name = String::from_utf8_lossy(property.strip_prefix(b"$").unwrap_or(property)).into_owned();
+    let class = k.original_name.as_str_lossy().into_owned();
+    if crate::laravel::has_accessor(c.codebase, &class, &name)
+        || !k.flags.is_abstract() && has_database_property(c, &class, &name)
+    {
+        return true;
+    }
+    if appends::property_tag(k, &name) {
+        return false;
+    }
+    let methods = match name.strip_suffix("_count") {
+        Some(relation) => vec![crate::laravel::camel(relation), relation.to_string()],
+        None => vec![name.clone()],
+    };
+    methods.iter().any(|m| {
+        c.codebase
+            .get_declaring_method(k.name.as_bytes(), m.as_bytes())
+            .and_then(|f| f.return_type_metadata.as_ref())
+            .is_some_and(|t| is_object_of(c, &t.type_union, b"illuminate\\database\\eloquent\\relations\\relation"))
+    })
+}
+
+/// BuilderHelper::searchOnEloquentBuilder()'s scopes of `model`: a non-public native method with the `#[Scope]`
+/// attribute, a `@method` tag `scopeName` or a native `scopeName` method.
+pub(crate) fn has_scope(c: &Checker, model: &str, method: &[u8]) -> bool {
+    let codebase = c.codebase;
+    let Some(k) = codebase.get_class_like(model.as_bytes()) else {
+        return false;
+    };
+    let attribute = codebase.get_declaring_method(k.name.as_bytes(), method).is_some_and(|m| {
+        m.method_metadata.as_ref().is_some_and(|mm| !mm.visibility.is_public())
+            && m.attributes.iter().any(|a| a.name.as_bytes().eq_ignore_ascii_case(b"Illuminate\\Database\\Eloquent\\Attributes\\Scope"))
+    });
+    let mut scope = b"scope".to_vec();
+    scope.extend(method.iter().take(1).map(u8::to_ascii_uppercase));
+    scope.extend(method.iter().skip(1));
+    attribute || codebase.get_declaring_method(k.name.as_bytes(), &scope).is_some()
+}
+
 /// `ObjectType($parent)->isSuperTypeOf(ObjectType($class))->yes()`, for lowercase `parent`.
-fn is_a(c: &Checker, class: &[u8], parent: &[u8]) -> bool {
+pub(crate) fn is_a(c: &Checker, class: &[u8], parent: &[u8]) -> bool {
     class.eq_ignore_ascii_case(parent)
         || c.codebase
             .is_instance_of(&class.to_ascii_lowercase(), parent)
+}
+
+/// `$classReflection->is(Model::class)`.
+pub(crate) fn is_model(c: &Checker, k: &ClassLikeMetadata) -> bool {
+    class_is(c, k, MODEL)
 }
 
 /// `$classReflection->is($parent)` for the class a node is in.

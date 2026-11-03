@@ -590,11 +590,45 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             // Callable expansion erases declaration metadata too. Restore only matching source identities and
             // explicitness, so an instantiated receiver or a narrower inferred value is never widened.
             for (param, source) in signature.params.iter_mut().zip(declared::codex_params(self, f, class)) {
-                param.ty = restore(param.ty.clone(), &source);
+                param.ty = self.unfilled(restore(param.ty.clone(), &source), &source);
             }
             signature.ret = restore(signature.ret, &declared::codex_return_type(self, f, class, &text(f.original_name.as_bytes())));
         }
         Box::new(signature)
+    }
+
+    /// Mago fills a generic class written without type arguments with its templates' bounds, PHPStan keeps the
+    /// declaration's plain ObjectType (a union's member too).
+    fn unfilled(&self, actual: Type, source: &Type) -> Type {
+        match (actual, source) {
+            (Type::Union(members), Type::Union(_)) => {
+                Type::Union(members.into_iter().map(|m| self.unfilled(m, source)).collect())
+            }
+            (Type::Object(name, args, exact), source) => {
+                let written = match source {
+                    Type::Union(sources) => sources.iter().find(|s| matches!(s, Type::Object(n, ..) if n.eq_ignore_ascii_case(&name))),
+                    s => Some(s),
+                };
+                match written {
+                    Some(written @ Type::Object(n, none, _))
+                        if none.is_empty()
+                            && n.eq_ignore_ascii_case(&name)
+                            && self.codebase.get_class_like(name.as_bytes()).is_some_and(|k| {
+                                let templates = declared::class_templates(self, k);
+                                templates.len() == args.len()
+                                    && templates.iter().zip(&args).all(|(t, a)| {
+                                        let same = |b: &Type| b == a || matches!((b, a), (Type::Mixed { .. }, Type::Mixed { .. }));
+                                        same(t.default.as_ref().unwrap_or(&t.bound)) || same(&t.bound)
+                                    })
+                            }) =>
+                    {
+                        written.clone()
+                    }
+                    _ => Type::Object(name, args, exact),
+                }
+            }
+            (actual, _) => actual,
+        }
     }
 
     /// `InitializerExprTypeResolver::createFirstClassCallable()`: every positional source variant is a closure,

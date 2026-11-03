@@ -1062,3 +1062,22 @@ Its analyser control compares eleven complete PHPStan records, distinguishing kn
 effects from possibly impure user methods. The source contract is PHPStan 2.3.1's
 `NativeMethodReflection::hasSideEffects()` and `resources/functionMetadata.php` at
 `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`.
+
+## Stub class PHPDoc replaces the original's
+
+`ClassLikeMetadata::has_docblock` records whether a declaration has a docblock. In `apply_patch`, a patch with a
+docblock replaces the original's `@mixin` tags, its template types when the patch declares any, and drops the
+original's `@method` methods the patch does not declare again (`removed_pseudo_methods`; `apply_patches_pass` also
+drops their function-likes). This is PHPStan 2.3.1's `StubPhpDocProvider::findClassPhpDoc()`: a stub class's PHPDoc
+replaces the class's own. Larastan's stubs rely on it, for example the `Http` facade's `@mixin Factory`.
+
+## Larastan's PHPDoc types and `$this` type arguments
+
+`ttype/builder.rs` resolves PHPStan's `__benevolent<T>` to T with both ignore flags (Pun's benevolent union), and
+the types of Larastan's TypeNodeResolverExtensions: `view-string` and `model-property<T>` are `string`,
+`collection-of<TModel>` is `Illuminate\Database\Eloquent\Collection<int, TModel>`. A `$this` type argument
+(`HasMany<Link, $this>`) stays `$this`, as PHPStan's ThisType does, instead of becoming `static`.
+
+`ttype/expander.rs` `resolve_static_type()` follows `CalledOnTypeUnresolvedMethodPrototypeReflection`: on a `$this`
+receiver a `$this` type stays `$this`, also in a final class; on a `static` receiver it is `static` (the object in a
+final class); on an object receiver both are that object.

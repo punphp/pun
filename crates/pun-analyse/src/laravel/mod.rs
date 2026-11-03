@@ -35,7 +35,8 @@ use mago_word::Word;
 use crate::codebase::read;
 use crate::{Project, php_files};
 use schema::{Column, SchemaAggregator};
-use strings::{camel, class_basename, plural_studly, snake, studly};
+pub(crate) use strings::camel;
+use strings::{class_basename, plural_studly, snake, studly};
 
 const MODEL: &str = "Illuminate\\Database\\Eloquent\\Model";
 const ATTRIBUTE: &str = "Illuminate\\Database\\Eloquent\\Casts\\Attribute";
@@ -57,7 +58,7 @@ pub(crate) fn register(
     codebase: &CodebaseMetadata,
 ) {
     registry.register_expression_hook(ModelAttributes {
-        models: models(app, project, codebase),
+        models: std::sync::Arc::new(models(app, project, codebase)),
     });
 }
 
@@ -358,7 +359,15 @@ pub(crate) fn database_properties(
 }
 
 /// The models' column types, by lowercase class name and column.
-fn models(
+pub(crate) type Models = HashMap<String, HashMap<String, TUnion>>;
+
+/// Registers the model-attribute hook with the models [`models()`] read.
+pub(crate) fn register_models(registry: &mut PluginRegistry, models: std::sync::Arc<Models>) {
+    registry.register_expression_hook(ModelAttributes { models });
+}
+
+/// The models' column types, by lowercase class name and column: a column an accessor hides is left out.
+pub(crate) fn models(
     app: Laravel,
     project: &Project,
     codebase: &CodebaseMetadata,
@@ -511,6 +520,24 @@ pub(crate) fn has_accessor(codebase: &CodebaseMetadata, class: &str, property: &
         .is_some_and(|t| t.type_union.types.iter().all(|a| is_named(a, ATTRIBUTE)))
 }
 
+/// ModelRelationsExtension::hasProperty() of a model's `{relation}_count`: a native relation method.
+fn relation_count(codebase: &CodebaseMetadata, class: &[u8], property: &str) -> bool {
+    let Some(relation) = property.strip_suffix("_count") else { return false };
+    codebase.is_instance_of(class, MODEL.as_bytes())
+        && [camel(relation), relation.to_string()].iter().any(|m| {
+            codebase
+                .get_declaring_method(class, m.as_bytes())
+                .and_then(|f| f.return_type_metadata.as_ref())
+                .is_some_and(|t| {
+                    !t.type_union.types.is_empty()
+                        && t.type_union.types.iter().all(|a| {
+                            matches!(a, TAtomic::Object(TObject::Named(n))
+                                if codebase.is_instance_of(n.name.as_bytes(), b"Illuminate\\Database\\Eloquent\\Relations\\Relation"))
+                        })
+                })
+        })
+}
+
 fn is_named(atomic: &TAtomic, class: &str) -> bool {
     matches!(atomic, TAtomic::Object(TObject::Named(n)) if n.name.as_bytes().eq_ignore_ascii_case(class.as_bytes()))
 }
@@ -518,7 +545,7 @@ fn is_named(atomic: &TAtomic, class: &str) -> bool {
 /// The hook: `$model->column` and `$model?->column` read the column's type, unless the class declares the property
 /// or a `@property` tag (PHPStan's own reflection comes before Larastan's extension).
 struct ModelAttributes {
-    models: HashMap<String, HashMap<String, TUnion>>,
+    models: std::sync::Arc<Models>,
 }
 
 impl Provider for ModelAttributes {
@@ -571,6 +598,10 @@ impl ExpressionHook for ModelAttributes {
                         .and_then(|m| m.get(name.as_ref()));
                     match column {
                         Some(ty) if !declared => ty.clone(),
+                        // ModelRelationsExtension: a relation's `_count`
+                        None if !declared && relation_count(context.codebase(), class, &name) => {
+                            get_int_range(Some(0), None)
+                        }
                         _ => return Ok(()),
                     }
                 }

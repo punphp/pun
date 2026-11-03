@@ -3525,3 +3525,12 @@ removed.
 `src/expression/yield.rs` gives `yield $value` the inferred key type `int` instead of `int<0, max>`, as PHPStan's
 `ClosureTypeResolver` does (`$yieldNode->key === null` gives `new IntegerType()`). A generator closure's inferred
 type then prints `Generator<int, ...>` (InstantiationRuleTest::testBug3425).
+
+## Declared closure parameters take a narrower callable parameter type
+
+`statement/function_like/mod.rs` gives a closure or arrow function parameter with a declared type the parameter
+type the called function's callable expects when that type is contained in the declared one (and not `mixed`). This
+is the result of PHPStan 2.3.1's `MutatingScope::enterAnonymousFunctionWithoutReflection()`, which intersects every
+parameter's type with the callable's (`intersectButNotNever()`): `fn (Builder $q) => ...` passed to
+`callable(Builder<User>)` sees `Builder<User>`, `function (string $p)` passed to `callable(class-string<T>)` sees
+`class-string<T>`.

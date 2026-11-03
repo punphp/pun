@@ -620,12 +620,19 @@ pub(super) fn has_instance_property(c: &Checker, k: &ClassLikeMetadata, property
     }
     // ponytail: the mixin and require-extends extensions (and Larastan's) are not consulted
     allows_dynamic_properties(c, k)
-        && (k.magic_property_ids.contains_key(&word(property)) || is_universal_object_crate(k))
+        && (k.magic_property_ids.contains_key(&word(property)) || is_universal_object_crate(c, k))
 }
 
-/// UniversalObjectCratesClassReflectionExtension with the default `universalObjectCratesClasses: [stdClass]`.
-fn is_universal_object_crate(k: &ClassLikeMetadata) -> bool {
-    k.name.as_bytes() == b"stdclass" || k.all_parent_classes.contains(&word(b"stdclass"))
+/// UniversalObjectCratesClassReflectionExtension with the default `universalObjectCratesClasses: [stdClass]`, and
+/// Larastan's `Illuminate\Http\Request` and `Illuminate\Support\Optional`.
+fn is_universal_object_crate(c: &Checker, k: &ClassLikeMetadata) -> bool {
+    let larastan: &[&[u8]] = match c.larastan {
+        Some(_) => &[b"illuminate\\http\\request", b"illuminate\\support\\optional"],
+        None => &[],
+    };
+    std::iter::once(b"stdclass".as_slice()).chain(larastan.iter().copied()).any(|crate_| {
+        k.name.as_bytes() == crate_ || k.all_parent_classes.contains(&word(crate_))
+    })
 }
 
 fn check(c: &mut Checker, p: &PropertyAccess, write: bool) {

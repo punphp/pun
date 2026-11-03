@@ -604,11 +604,15 @@ where
             !union.is_vanilla_array() && !union.is_vanilla_mixed()
         });
 
-        let mut final_parameter_type = if declared_type_is_specific {
-            declared_parameter_type
-        } else if let Some(inferred_map) = inferred_parameter_types.as_mut()
+        // MutatingScope::enterAnonymousFunctionWithoutReflection(): a declared type is intersected with the
+        // callable's parameter type (`intersectButNotNever()`), which is the inferred type when it is narrower
+        let mut final_parameter_type = if let Some(inferred_map) = inferred_parameter_types.as_mut()
             && let Some(inferred_type) = inferred_map.remove(&i)
             && !is_unresolved_template_with_mixed_bound(&inferred_type)
+            // ponytail: a literal scalar inferred from an argument may stand for a generalized template (array_reduce's
+            // initial `0` is `int` to PHPStan); a declared parameter keeps its type then
+            && (!declared_type_is_specific
+                || (!inferred_type.is_mixed() && !inferred_type.types.iter().any(|t| matches!(t, TAtomic::Scalar(s) if s.is_literal_value()))))
             && (parameter_metadata.get_type_metadata().is_none()
                 || union_comparator::is_contained_by(
                     context.codebase,
