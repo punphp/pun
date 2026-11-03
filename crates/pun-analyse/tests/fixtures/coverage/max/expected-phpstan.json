@@ -2,6 +2,13 @@
  "general": [],
  "errors": [
   {
+   "file": "inherited-constructor-templates.php",
+   "line": 39,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: MaxInheritedConstructor\\Collection<*NEVER*, *NEVER*>",
+   "tip": null
+  },
+  {
    "file": "max.php",
    "line": 5,
    "identifier": "missingType.return",

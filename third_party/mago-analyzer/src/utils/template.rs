@@ -204,13 +204,16 @@ pub fn get_generic_parameter_for_offset(
                 }) = extended_atomic_type
                     && *current_parameter_name == template_name
                     && *current_defining_class == class_like_name
-                {
-                    return get_generic_parameter_for_offset(
+                    // another ancestor mapping the same template (an interface beside the parent class) can be
+                    // the one the bounds were found for
+                    && let Some(found) = get_generic_parameter_for_offset(
                         *extending_class_name,
                         *extended_template_name,
                         template_extended_parameters,
                         found_generic_parameters,
-                    );
+                    )
+                {
+                    return Some(found);
                 }
             }
         }
