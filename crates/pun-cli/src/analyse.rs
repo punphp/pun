@@ -158,6 +158,8 @@ fn project(cfg: &Config, analysed: Vec<PathBuf>, analysed_paths: &[PathBuf]) -> 
         .autoloaded
         .retain(|a| !excluded.is_excluded(&a.path));
     project.analysed = analysed;
+    // InceptionResult::isOnlyFiles() over the analysed paths: the parameters carry no `paths`
+    project.only_files = analysed_paths.iter().all(|p| p.is_file());
     // FuzzyRelativePathHelper (anonymous class names) over the analysed paths
     let analysed_paths: Vec<String> = analysed_paths.iter().map(|p| p.to_string_lossy().into_owned()).collect();
     project.relative_path = pun_analyse::RelativePath::of(&analysed_paths);

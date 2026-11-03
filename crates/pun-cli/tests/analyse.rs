@@ -149,6 +149,29 @@ fn anonymous_class_names_match_phpstan() {
     assert_eq!(run(&d, &[PUN, "analyse"], &["--error-format=raw"]), want);
 }
 
+/// NotAnalysedTraitRule reports an unused trait when a configured path is a directory, and skips it when every
+/// analysed path is a file (InceptionResult::isOnlyFiles()).
+#[test]
+fn unused_traits_follow_the_analysed_paths() {
+    let Some(phar) = phpstan() else { return };
+    let d = project(
+        "analyse",
+        "unused-trait",
+        &[
+            ("phpstan.neon", "parameters:\n    level: max\n    paths:\n        - src\n"),
+            ("pun.toml", "[analyse]\npreset = \"max\"\npaths = [\"src\"]\n"),
+            ("src/a.php", "<?php\n\nnamespace App;\n\ntrait Unused\n{\n}\n"),
+        ],
+    );
+    let phpstan = ["php", phar.to_str().unwrap(), "analyse", "--no-progress", "-c", "phpstan.neon"];
+    let want = run(&d, &phpstan, &["--error-format=raw"]);
+    assert!(want.0.contains("Trait App\\Unused is used zero times"), "{}", want.0);
+    assert_eq!(run(&d, &[PUN, "analyse"], &["--error-format=raw"]), want);
+    let want = run(&d, &phpstan, &["--error-format=raw", "src/a.php"]);
+    assert!(!want.0.contains("Trait App\\Unused"), "{}", want.0);
+    assert_eq!(run(&d, &[PUN, "analyse"], &["--error-format=raw", "src/a.php"]), want);
+}
+
 #[test]
 fn formats_match_phpstan_dumps() {
     formats_match_phpstan(
