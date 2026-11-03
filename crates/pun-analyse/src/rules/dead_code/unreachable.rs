@@ -14,6 +14,8 @@ use super::finally;
 pub(in super::super) struct Statements {
     pub(in super::super) reported: HashSet<Span>,
     pub(in super::super) skipped: HashSet<Span>,
+    /// The original statement of each UnreachableStatementNode, built at every level.
+    pub(in super::super) nodes: HashSet<Span>,
 }
 
 /// UnreachableStatementNode positions and statements the source walker never processes.
@@ -80,10 +82,11 @@ impl Finder<'_, '_, '_> {
                                 | Statement::HaltCompiler(_)
                         ))
                 });
-            if self.c.level >= 4
-                && let Some(next) = next
-            {
-                self.out.reported.insert(next.span());
+            if let Some(next) = next {
+                self.out.nodes.insert(next.span());
+                if self.c.level >= 4 {
+                    self.out.reported.insert(next.span());
+                }
             }
         }
     }

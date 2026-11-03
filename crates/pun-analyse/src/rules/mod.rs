@@ -2693,6 +2693,12 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         if self.unreachable.reported.contains(&s.span()) {
             self.report(s, "deadCode.unreachable", "Unreachable statement - code above always terminates.".into(), None);
         }
+        // The UnreachableStatementNode is a Stmt with the original's doc comment. The phpdoc tag value rules and
+        // WrongVariableNameInVarTagRule skip virtual nodes.
+        if self.unreachable.nodes.contains(&s.span()) {
+            invalid_throws::node(self, s.span());
+            var_tags::node(self, s.span());
+        }
         if !self.unreachable.skipped.contains(&s.span()) {
             mago_syntax::walker::walk_statement_mut(self, s, context);
         }
