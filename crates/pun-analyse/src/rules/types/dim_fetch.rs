@@ -84,7 +84,11 @@ fn shortcircuited(c: &Checker, holder: &Expression) -> Option<Type> {
             _ => false,
         }
     }
-    let t = c.phpstan_type(holder)?;
+    // `$scope->getType($node->var)` in the scope before the fetch, not after its dimension (`$a[$a = '0']`)
+    let t = match c.variables.dim_receivers.get(&holder.span()) {
+        Some(before) => c.phpstan_type_from(holder, before),
+        None => c.phpstan_type(holder)?,
+    };
     Some(if nullsafe(holder) && !t.is_null().no() { t.remove_null() } else { t })
 }
 

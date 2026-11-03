@@ -24,6 +24,10 @@ pub(super) struct Observations {
     pub scopes: HashMap<Span, Certainty>,
     pub compact_scopes: HashMap<Span, Certainty>,
     pub unset_entries: HashMap<Span, TUnion>,
+    /// A dim fetch's direct-variable receiver (by span): its type in the scope before the fetch, which
+    /// NonexistentOffsetInArrayDimFetchRule reads. Mago analyses the dimension first, so the receiver's own type
+    /// already sees the dimension's assignments.
+    pub dim_receivers: HashMap<Span, TUnion>,
     pub property_selectors: HashSet<Span>,
     /// The by-reference parameters' types around their bodies' statements and writes.
     pub param_out: super::types::param_out::Observed,

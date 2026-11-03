@@ -480,6 +480,13 @@ impl ExpressionHook for Definedness {
                 Expression::Array(a) => literal_reference_reads(a.elements.as_slice(), &mut found.allowed),
                 Expression::LegacyArray(a) => literal_reference_reads(a.elements.as_slice(), &mut found.allowed),
                 Expression::Variable(v) => observe_variable(v, context, &mut found),
+                Expression::ArrayAccess(a) => {
+                    if let Expression::Variable(Variable::Direct(v)) = a.array
+                        && let Some(ty) = context.get_variable_type(v.name)
+                    {
+                        found.variables.dim_receivers.insert(v.span(), (**ty).clone());
+                    }
+                }
                 Expression::Access(Access::StaticProperty(p)) => {
                     if let Variable::Nested(v) = &p.property {
                         observe_variable(v.variable, context, &mut found);
