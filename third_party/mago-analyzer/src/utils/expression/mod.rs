@@ -335,6 +335,7 @@ fn get_extended_expression_id<'ast, 'arena>(
 
             concat_word!(object.as_bytes(), b"->", method.value, b"()")
         }
+        Expression::Call(Call::Function(call)) => get_remembered_function_call_id(call, resolved_names, codebase?)?,
         Expression::Self_(_) => {
             if let Some(class_name) = this_class_name {
                 class_name
@@ -363,6 +364,47 @@ fn get_extended_expression_id<'ast, 'arena>(
         }
         _ => return None,
     })
+}
+
+/// FuncCallHandler::isFuncCallNarrowable() with rememberPossiblyImpureFunctionValues: a call of a known function that
+/// may be pure (no `@phpstan-impure`, no `void` return; a built-in one only when it is pure) keeps its narrowed type
+/// while its expression is unchanged. Only calls whose arguments are all literal strings or integers are tracked, so
+/// no variable write can change them. The arguments are hashed, so that the id holds none of `[`, `-` and `:`.
+pub fn get_remembered_function_call_id<'arena>(
+    call: &FunctionCall<'arena>,
+    resolved_names: &ResolvedNames<'arena>,
+    codebase: &CodebaseMetadata,
+) -> Option<Word> {
+    let Expression::Identifier(identifier) = call.function else {
+        return None;
+    };
+    let name = resolved_names.get(identifier);
+    let function = codebase.get_function(name).or_else(|| codebase.get_function(identifier.value()))?;
+    let void = function.return_type_metadata.as_ref().is_some_and(|t| t.type_union.is_void());
+    if void
+        || function.declared_purity() == Some(false)
+        || (function.flags.is_built_in() && !function.flags.is_pure())
+        || function.parameters.iter().any(|p| p.flags.is_by_reference())
+    {
+        return None;
+    }
+    let mut hash: u64 = 0xcbf2_9ce4_8422_2325;
+    for argument in call.argument_list.arguments.iter() {
+        let mago_syntax::cst::Argument::Positional(argument) = argument else {
+            return None;
+        };
+        let raw = match argument.value {
+            _ if argument.ellipsis.is_some() => return None,
+            Expression::Literal(Literal::String(string)) => string.value?,
+            Expression::Literal(Literal::Integer(integer)) => integer.raw,
+            _ => return None,
+        };
+        for byte in raw.iter().chain(b"\0,") {
+            hash = (hash ^ u64::from(*byte)).wrapping_mul(0x0100_0000_01b3);
+        }
+        hash = (hash ^ u64::from(matches!(argument.value, Expression::Literal(Literal::Integer(_))))).wrapping_mul(0x0100_0000_01b3);
+    }
+    Some(word(format!("{}#{hash:016x}()", String::from_utf8_lossy(name).to_ascii_lowercase()).as_bytes()))
 }
 
 pub fn get_property_access_expression_id<'ast, 'arena>(

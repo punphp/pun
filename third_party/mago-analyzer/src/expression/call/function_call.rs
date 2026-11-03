@@ -32,6 +32,8 @@ use crate::expression::call::get_function_like_target_with_skip;
 use crate::invocation::InvocationArgumentsSource;
 use crate::invocation::InvocationTarget;
 use crate::plugin::ExpressionHookResult;
+use crate::reconciler::assertion_reconciler;
+use crate::utils::expression::get_remembered_function_call_id;
 use crate::plugin::context::HookContext;
 use crate::visibility::is_callable_method_inaccessible;
 
@@ -135,6 +137,28 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for FunctionCall<'arena> {
         // ErrorType. This does not turn an implicit-never callee into termination.
         if artifacts.get_expression_type(&self.span()).is_none() {
             artifacts.set_resolved_expression_type(&self.span(), get_error());
+        }
+
+        // rememberPossiblyImpureFunctionValues: the call's type as an earlier condition on the same call narrowed it
+        if let Some(id) = get_remembered_function_call_id(self, context.resolved_names, context.codebase) {
+            if let Some(assertions) = block_context.stable_method_call_assertions.get(&id).cloned()
+                && let Some(mut narrowed) = artifacts.get_expression_type(&self.span()).cloned()
+            {
+                for assertion in assertions.iter().flatten() {
+                    narrowed = assertion_reconciler::reconcile(
+                        context,
+                        assertion,
+                        Some(&narrowed),
+                        None,
+                        block_context.flags.inside_loop(),
+                        None,
+                        false,
+                        false,
+                    );
+                }
+                artifacts.set_resolved_expression_type(&self.span(), narrowed);
+            }
+            block_context.stable_method_calls.insert(id);
         }
 
         if block_context.native_locals.is_some()

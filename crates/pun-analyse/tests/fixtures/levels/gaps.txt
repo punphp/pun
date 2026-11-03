@@ -386,7 +386,6 @@
 4 Comparison/IfConstantConditionRuleTest::testBug8926
 4 Comparison/IfConstantConditionRuleTest::testBug10903
 4 Comparison/IfConstantConditionRuleTest::testBug6211
-4 Comparison/IfConstantConditionRuleTest::testBug8980
 4 Comparison/NumberComparisonOperatorsConstantConditionRuleTest::testBug12167
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testStrictComparison
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug14904
@@ -531,7 +530,6 @@
 4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug9666
 4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug13799
 4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testInTrait
-4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug8980
 4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug6211
 4 Comparison/ImpossibleCheckTypeMethodCallRuleTest::testBug12473
 4 Comparison/ImpossibleCheckTypeMethodCallRuleTest::testBug12087b

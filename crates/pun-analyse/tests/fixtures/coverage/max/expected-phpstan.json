@@ -65,6 +65,34 @@
    "tip": null
   },
   {
+   "file": "remembered-function-calls.php",
+   "line": 22,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: int",
+   "tip": null
+  },
+  {
+   "file": "remembered-function-calls.php",
+   "line": 24,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: int",
+   "tip": null
+  },
+  {
+   "file": "remembered-function-calls.php",
+   "line": 25,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: mixed",
+   "tip": null
+  },
+  {
+   "file": "remembered-function-calls.php",
+   "line": 28,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: mixed",
+   "tip": null
+  },
+  {
    "file": "template-self-reference.php",
    "line": 32,
    "identifier": "return.type",
