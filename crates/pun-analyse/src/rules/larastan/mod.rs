@@ -11,6 +11,7 @@ mod config;
 mod console;
 mod dispatch;
 mod extensions;
+mod factories;
 mod forwards;
 mod octane;
 mod relations;

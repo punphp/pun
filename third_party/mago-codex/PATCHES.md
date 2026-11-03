@@ -1083,3 +1083,11 @@ the types of Larastan's TypeNodeResolverExtensions: `view-string` and `model-pro
 `ttype/expander.rs` `resolve_static_type()` follows `CalledOnTypeUnresolvedMethodPrototypeReflection`: on a `$this`
 receiver a `$this` type stays `$this`, also in a final class; on a `static` receiver it is `static` (the object in a
 final class); on an object receiver both are that object.
+`resolve_static_type()` also drops the type arguments of a generic `static<...>` resolved on a class without
+templates, as PHPStan's `GenericStaticType::changeBaseClass()` does (`UserCollection`, not `UserCollection<int, User>`).
+
+## Templates inside object shapes
+
+`ttype/template/inferred_type_replacer.rs` `replace_atomic()` also replaces the templates in the property types of an
+object shape (`TObject::WithProperties`), as PHPStan's ObjectShapeType::traverse() does. Larastan's BelongsToMany stubs
+need it: `TRelatedModel&object{pivot: TPivotModel}` resolves its `TPivotModel`.

@@ -8,6 +8,7 @@
 //! `$keyType`, `$incrementing`, `$timestamps`, `$casts`, `casts()`, the `SoftDeletes` trait, and a `Date::use()`
 //! call anywhere in the analysed files.
 
+mod collections;
 mod schema;
 mod strings;
 
@@ -35,6 +36,7 @@ use mago_word::Word;
 use crate::codebase::read;
 use crate::{Project, php_files};
 use schema::{Column, SchemaAggregator};
+pub(crate) use collections::{collection_class, references_collection, replace_collections};
 pub(crate) use strings::camel;
 use strings::{class_basename, plural_studly, snake, studly};
 
@@ -528,13 +530,7 @@ fn relation_count(codebase: &CodebaseMetadata, class: &[u8], property: &str) -> 
             codebase
                 .get_declaring_method(class, m.as_bytes())
                 .and_then(|f| f.return_type_metadata.as_ref())
-                .is_some_and(|t| {
-                    !t.type_union.types.is_empty()
-                        && t.type_union.types.iter().all(|a| {
-                            matches!(a, TAtomic::Object(TObject::Named(n))
-                                if codebase.is_instance_of(n.name.as_bytes(), b"Illuminate\\Database\\Eloquent\\Relations\\Relation"))
-                        })
-                })
+                .is_some_and(|t| collections::is_relation(codebase, &t.type_union))
         })
 }
 
@@ -601,6 +597,13 @@ impl ExpressionHook for ModelAttributes {
                         // ModelRelationsExtension: a relation's `_count`
                         None if !declared && relation_count(context.codebase(), class, &name) => {
                             get_int_range(Some(0), None)
+                        }
+                        // ModelRelationsExtension: a relation method's result
+                        None if !declared && context.codebase().is_instance_of(class, MODEL.as_bytes()) => {
+                            match collections::relation_property(context.codebase(), n, &name) {
+                                Some(ty) => ty,
+                                None => return Ok(()),
+                            }
                         }
                         _ => return Ok(()),
                     }

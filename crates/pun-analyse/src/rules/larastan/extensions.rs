@@ -8,7 +8,8 @@
 //!   AppFacadeEnvironmentReturnTypeExtension (`environment()`);
 //! - ContractsMethodsExtension's methods: a method an `Illuminate\Contracts` interface lacks is its concrete's;
 //! - Helpers\CollectExtension (`collect()`) and CollectionFilterRejectDynamicReturnTypeExtension (`filter()`,
-//!   `reject()` and `where()` of an `Enumerable`).
+//!   `reject()` and `where()` of an `Enumerable`);
+//! - the model factory extensions (`Model::factory()` and a factory's methods), in [`super::factories`].
 
 use std::sync::Arc;
 
@@ -146,6 +147,13 @@ impl MethodReturnTypeProvider for Methods {
         };
         let method_name = String::from_utf8_lossy(method).to_ascii_lowercase();
         match method_name.as_str() {
+            "factory" if codebase.is_instance_of(receiver, b"Illuminate\\Database\\Eloquent\\Model") => {
+                return super::factories::model_factory(context, receiver, invocation);
+            }
+            _ if is("Illuminate\\Database\\Eloquent\\Factories\\Factory") => {
+                let span = self.receiver(invocation, method);
+                return super::factories::factory_method(context, method, invocation, span);
+            }
             "user" if is("Illuminate\\Support\\Facades\\Auth") || is("Illuminate\\Auth\\AuthManager") => {
                 return auth_models(codebase, self.0.auth_models(None));
             }

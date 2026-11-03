@@ -983,6 +983,11 @@ fn resolve_static_type(
                 named.type_parameters.clone_from(&static_obj.type_parameters);
             }
 
+            // PHPStan's GenericStaticType::changeBaseClass(): `static<...>` on a class without templates is the class
+            if codebase.get_class_like(static_obj.name.as_bytes()).is_some_and(|k| k.template_types.is_empty()) {
+                named.type_parameters = None;
+            }
+
             named.name = static_obj.name;
             let effectively_final = is_effectively_final(&static_obj.name, codebase, options);
             // PHPStan's CalledOnTypeUnresolvedMethodPrototypeReflection: on a `$this` receiver a `$this` type stays

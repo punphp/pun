@@ -331,6 +331,11 @@ fn replace_atomic(
                         .into_owned();
             }
         }
+        TAtomic::Object(TObject::WithProperties(shape)) => {
+            for (_, property) in shape.known_properties.values_mut() {
+                *property = replace_with_polarity(property, template_result, codebase, polarity);
+            }
+        }
         TAtomic::Callable(TCallable::Signature(signature)) => {
             for parameter in signature.get_parameters_mut() {
                 if let Some(t) = parameter.get_type_signature_mut() {

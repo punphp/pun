@@ -111,12 +111,21 @@ impl MethodReturnTypeProvider for ModelForwards {
                 receiver.clone(),
             )))));
         }
-        if class.eq_ignore_ascii_case(PROXY) {
+        // the proxy's `@mixin TValue` names the value's class as the method's
+        let on_proxy = invocation.inner().target.get_method_context().is_some_and(|t| {
+            matches!(&t.class_type, StaticClassType::Object(TObject::Named(n)) if n.name.as_bytes().eq_ignore_ascii_case(PROXY))
+        });
+        if class.eq_ignore_ascii_case(PROXY) || on_proxy {
             return higher_order_proxy(context, method, invocation);
         }
         if !codebase.method_exists(class, method)
             && let Some(ty) = forward_builder_or_relation(context, class, method, invocation)
                 .or_else(|| facade_mixin(context, class, method, invocation, 0))
+        {
+            return Some(ty);
+        }
+        if codebase.method_exists(class, method)
+            && let Some(ty) = own_collection(context, method, invocation)
         {
             return Some(ty);
         }
@@ -129,7 +138,8 @@ impl MethodReturnTypeProvider for ModelForwards {
         let builder_type =
             TNamedObject::new_with_type_parameters(builder.original_name, Some(vec![model]));
         if codebase.method_exists(BUILDER, method) {
-            return method_type(codebase, BUILDER, &builder_type, method, Some((context, invocation)));
+            let ty = method_type(codebase, BUILDER, &builder_type, method, Some((context, invocation)))?;
+            return Some(crate::laravel::replace_collections(codebase, &ty));
         }
         // EloquentBuilderForwardsCallsExtension on the model's builder: a query builder method returns the
         // Eloquent builder, unless it is passed through
@@ -211,7 +221,82 @@ fn forward_builder_or_relation(
     if is_builder {
         return Some(TUnion::from_atomic(TAtomic::Object(TObject::Named(receiver.clone()))));
     }
-    Some(ty)
+    // RelationCollectionExtension
+    Some(crate::laravel::replace_collections(codebase, &ty))
+}
+
+/// The related models' own collections in what a builder's or relation's method returns, or a model's static method:
+/// EloquentBuilderExtension (and `collection-of<TModel>` for the `find` methods), RelationCollectionExtension and
+/// ModelDynamicStaticMethodReturnTypeExtension.
+fn own_collection(
+    context: &ProviderContext<'_, '_, '_>,
+    method: &[u8],
+    invocation: &InvocationInfo<'_, '_, '_>,
+) -> Option<TUnion> {
+    let codebase = context.codebase();
+    let target = invocation.inner().target.get_method_context()?;
+    let StaticClassType::Object(TObject::Named(receiver)) = &target.class_type else {
+        return None;
+    };
+    let name = String::from_utf8_lossy(method).to_ascii_lowercase();
+    let receiver_class = receiver.name.as_bytes();
+    let template = |defining: &[u8], template: &str| {
+        let defining = codebase.get_class_like(defining)?.name;
+        let metadata = codebase.get_class_like(receiver_class)?;
+        get_specialized_template_type(
+            codebase,
+            mago_word::word(template),
+            defining,
+            metadata,
+            receiver.type_parameters.as_deref(),
+        )
+    };
+    let models = |ty: Option<TUnion>| -> Vec<mago_word::Word> {
+        ty.iter()
+            .flat_map(|t| t.types.iter())
+            .filter_map(|t| match t {
+                TAtomic::Object(TObject::Named(n)) => Some(n.name),
+                _ => None,
+            })
+            .collect()
+    };
+    let returned = || method_type(codebase, receiver_class, receiver, method, Some((context, invocation)));
+    let is = |parent: &[u8]| receiver_class.eq_ignore_ascii_case(parent) || codebase.is_instance_of(receiver_class, parent);
+    if is(BUILDER) && codebase.method_exists(BUILDER, method) {
+        let models = models(template(BUILDER, "TModel"));
+        let ty = returned()?;
+        if models.is_empty() || !crate::laravel::references_collection(&ty) {
+            return None;
+        }
+        if name.starts_with("find") {
+            return Some(crate::laravel::replace_collections(codebase, &ty));
+        }
+        return Some(TUnion::from_atomic(crate::laravel::collection_class(codebase, models[0].as_bytes())));
+    }
+    if is(RELATION) {
+        if models(template(RELATION, "TRelatedModel")).is_empty() {
+            return None;
+        }
+        let ty = returned()?;
+        return crate::laravel::references_collection(&ty).then(|| crate::laravel::replace_collections(codebase, &ty));
+    }
+    // ponytail: an instance call is not told from a static one (Mago keeps the invocation kind private)
+    if is(MODEL)
+        && codebase.method_exists(MODEL, method)
+        && !name.starts_with("find")
+        && name != "__construct"
+    {
+        let ty = returned()?;
+        if !crate::laravel::references_collection(&ty) {
+            return None;
+        }
+        // ponytail: a Builder return (the model's custom builder) is left to the declared type
+        if ty.types.iter().any(|t| matches!(t, TAtomic::Object(TObject::Named(n)) if n.name.as_bytes().eq_ignore_ascii_case(BUILDER))) {
+            return None;
+        }
+        return Some(TUnion::from_atomic(crate::laravel::collection_class(codebase, receiver_class)));
+    }
+    None
 }
 
 /// HigherOrderCollectionProxyExtension and HigherOrderCollectionProxyHelper::determineReturnType(): a method of the
