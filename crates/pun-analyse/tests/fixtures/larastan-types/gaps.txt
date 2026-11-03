@@ -49,8 +49,6 @@ tests/Type/data/collection-generic-static-methods.php:175
 tests/Type/data/collection-generic-static-methods.php:181
 tests/Type/data/collection-generic-static-methods.php:182
 tests/Type/data/collection-generic-static-methods.php:183
-tests/Type/data/collection-generic-static-methods.php:185
-tests/Type/data/collection-generic-static-methods.php:186
 tests/Type/data/collection-generic-static-methods.php:187
 tests/Type/data/collection-generic-static-methods.php:191
 tests/Type/data/collection-generic-static-methods.php:192

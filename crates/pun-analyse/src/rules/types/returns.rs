@@ -82,6 +82,19 @@ pub(super) fn strict_types(c: &Checker) -> bool {
     text.windows(23).any(|w| w == b"declare(strict_types=1)")
 }
 
+/// `TemplateTypeHelper::toArgument()`: MutatingScope gives a function body its PHPDoc return type with every template
+/// on TemplateTypeArgumentStrategy.
+fn to_argument(t: &Type) -> Type {
+    match t {
+        Type::Template(tt) => Type::Template(Box::new(pun_phpstan::types::Template {
+            argument: true,
+            bound: to_argument(&tt.bound),
+            ..(**tt).clone()
+        })),
+        _ => t.traverse(&to_argument),
+    }
+}
+
 /// `FunctionReturnTypeCheck::checkReturnType()` for one return of a function-like described by `of`.
 fn check(c: &mut Checker, ret: &Type, value: Option<&Expression>, at: Span, of: &str, generator: bool) {
     if matches!(ret, Type::Never(NeverKind::Explicit)) {
@@ -89,7 +102,7 @@ fn check(c: &mut Checker, ret: &Type, value: Option<&Expression>, at: Span, of: 
         c.report(at, "return.never", message, None);
         return;
     }
-    let mut ret = ret.clone();
+    let mut ret = to_argument(ret);
     if generator {
         let Some(r) = generator_return(&ret) else {
             return;
@@ -135,7 +148,11 @@ fn check(c: &mut Checker, ret: &Type, value: Option<&Expression>, at: Span, of: 
         })
     });
     if let Some((identifier, message)) = message {
-        c.report(at, identifier, message, None);
+        // RuleErrorBuilder::acceptsReasonsTip() of the AcceptsResult
+        let tip = (identifier == "return.type")
+            .then(|| declared::with_classes(c, || levels.accepts_tip(&ret, &value_type, strict)))
+            .flatten();
+        c.report(at, identifier, message, tip.as_deref());
     }
 }
 

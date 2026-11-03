@@ -75,7 +75,8 @@ pub(in super::super) fn is_late(t: &Type) -> bool {
 fn parameter_type(resolved: &[Option<Type>], p: usize, constructor: bool) -> Option<Type> {
     fn late(t: &Type, constructor: bool) -> bool {
         let found = std::cell::Cell::new(match t {
-            Type::Template(tt) => !constructor || is_callees(tt),
+            // an enclosing function's template (TemplateTypeArgumentStrategy) is checked in place
+            Type::Template(tt) => !(tt.argument && is_callees(tt)) && (!constructor || is_callees(tt)),
             Type::Static(..) | Type::This(_) | Type::Conditional(_) => true,
             _ => false,
         });
@@ -120,7 +121,7 @@ fn infer(c: &Checker, acceptor: &Acceptor, args: &[Entry], parameters: &[Option<
     // ponytail: a constructor's parameters keep the class's templates, which PHPStan's accepts() checks in place;
     // Pun infers them from the arguments like the callee's own (bug 7171), but leaves uninferred ones as templates
     let any_template = !templates.borrow().is_empty();
-    let templates: Vec<Template> = templates.into_inner().into_iter().filter(is_callees).collect();
+    let templates: Vec<Template> = templates.into_inner().into_iter().filter(|t| is_callees(t) && !t.argument).collect();
     let mut passed: Vec<Option<Type>> = vec![None; declared.len()];
     for (e, p) in args.iter().zip(parameters) {
         if let Some(p) = *p
@@ -188,8 +189,9 @@ fn late_parameter_type(t: &Type, argument: &dyn Fn(&str) -> Option<Type>) -> Typ
     };
     let t = t.traverse(&|t| late_parameter_type(t, argument));
     let t = match &t {
+        // LateResolvableTypeTrait::accepts() resolves one of an enclosing function's template (argument strategy)
         Type::Object(name, args, _) if matches!(name.as_str(), "key-of" | "value-of")
-            && args.len() == 1 && !is_late(&args[0]) => {
+            && args.len() == 1 && (!is_late(&args[0]) || matches!(&args[0], Type::Template(tt) if tt.argument)) => {
                 pun_phpstan::resolve::key_or_value_of(&args[0], name == "value-of")
             }
         Type::Conditional(cond) if cond.is_resolvable() => return late_parameter_type(&cond.resolve(), argument),

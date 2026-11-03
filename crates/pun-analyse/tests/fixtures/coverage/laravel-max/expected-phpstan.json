@@ -177,6 +177,118 @@
    "tip": null
   },
   {
+   "file": "round2.php",
+   "line": 19,
+   "identifier": "argument.type",
+   "message": "Parameter #1 of callable callable(TWhenParameter): TWhenReturnType expects TWhenParameter, array|float|int|string|false|null given.",
+   "tip": "\u2022 Type array is not always the same as TWhenParameter. It breaks the contract for some argument types, typically subtypes.\n\u2022 Type null is not always the same as TWhenParameter. It breaks the contract for some argument types, typically subtypes.\n\u2022 Type false is not always the same as TWhenParameter. It breaks the contract for some argument types, typically subtypes.\n\u2022 Type int is not always the same as TWhenParameter. It breaks the contract for some argument types, typically subtypes.\n\u2022 Type float is not always the same as TWhenParameter. It breaks the contract for some argument types, typically subtypes.\n\u2022 Type string is not always the same as TWhenParameter. It breaks the contract for some argument types, typically subtypes."
+  },
+  {
+   "file": "round2.php",
+   "line": 30,
+   "identifier": "return.type",
+   "message": "Method LaravelMax\\Round2\\Box::get() should return T but returns int.",
+   "tip": "Type int is not always the same as T. It breaks the contract for some argument types, typically subtypes."
+  },
+  {
+   "file": "round2.php",
+   "line": 41,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method ReflectionType::getName().",
+   "tip": null
+  },
+  {
+   "file": "round2.php",
+   "line": 41,
+   "identifier": "return.type",
+   "message": "Function LaravelMax\\Round2\\reflected() should return string but returns mixed.",
+   "tip": null
+  },
+  {
+   "file": "round2.php",
+   "line": 46,
+   "identifier": "offsetAccess.nonOffsetAccessible",
+   "message": "Cannot access offset 'a' on mixed.",
+   "tip": null
+  },
+  {
+   "file": "round2.php",
+   "line": 48,
+   "identifier": "binaryOp.invalid",
+   "message": "Binary operation \".\" between ''|'x' and mixed results in an error.",
+   "tip": null
+  },
+  {
+   "file": "round2.php",
+   "line": 48,
+   "identifier": "offsetAccess.nonOffsetAccessible",
+   "message": "Cannot access offset 'b' on mixed.",
+   "tip": null
+  },
+  {
+   "file": "round2.php",
+   "line": 53,
+   "identifier": "offsetAccess.nonOffsetAccessible",
+   "message": "Cannot access offset 'a' on mixed.",
+   "tip": null
+  },
+  {
+   "file": "round2.php",
+   "line": 54,
+   "identifier": "offsetAccess.nonOffsetAccessible",
+   "message": "Cannot access offset 'b' on mixed.",
+   "tip": null
+  },
+  {
+   "file": "round2.php",
+   "line": 65,
+   "identifier": "argument.type",
+   "message": "Parameter #2 $haystack of function in_array expects array, array<string, class-string>|false given.",
+   "tip": null
+  },
+  {
+   "file": "round2.php",
+   "line": 73,
+   "identifier": "missingType.generics",
+   "message": "Method LaravelMax\\Round2\\Items::getIterator() return type with generic class ArrayIterator does not specify its types: TKey, TValue",
+   "tip": null
+  },
+  {
+   "file": "round2.php",
+   "line": 97,
+   "identifier": "offsetAccess.nonOffsetAccessible",
+   "message": "Cannot access offset 'exp' on mixed.",
+   "tip": null
+  },
+  {
+   "file": "round2.php",
+   "line": 97,
+   "identifier": "cast.int",
+   "message": "Cannot cast mixed to int.",
+   "tip": null
+  },
+  {
+   "file": "round2.php",
+   "line": 132,
+   "identifier": "return.type",
+   "message": "Method LaravelMax\\Round2\\Model::newQuery() should return LaravelMax\\Round2\\Query<static(LaravelMax\\Round2\\Model)> but returns LaravelMax\\Round2\\Query<mixed>.",
+   "tip": null
+  },
+  {
+   "file": "round2.php",
+   "line": 165,
+   "identifier": "missingType.generics",
+   "message": "Method LaravelMax\\Round2\\Mixed_::getIterator() return type with generic class ArrayIterator does not specify its types: TKey, TValue",
+   "tip": null
+  },
+  {
+   "file": "round2.php",
+   "line": 208,
+   "identifier": "offsetAccess.nonOffsetAccessible",
+   "message": "Cannot access offset 'foo' on mixed.",
+   "tip": null
+  },
+  {
    "file": "strings.php",
    "line": 9,
    "identifier": "offsetAccess.nonOffsetAccessible",

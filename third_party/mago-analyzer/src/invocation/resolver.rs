@@ -254,6 +254,12 @@ where
             {
                 return vec![TAtomic::Object(this_type.clone())];
             }
+            if variable.as_bytes().eq_ignore_ascii_case(b"$this")
+                && let Some(method_context) = invocation.target.get_method_context()
+                && let StaticClassType::Generic(parameter) = &method_context.class_type
+            {
+                return vec![TAtomic::GenericParameter(parameter.clone())];
+            }
 
             parameters
                 .get(&variable)

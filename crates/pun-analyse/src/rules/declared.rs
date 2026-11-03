@@ -1665,10 +1665,34 @@ impl<'c, 'a, 'arena> Classes<'c, 'a, 'arena> {
                     (text(m.as_bytes()).to_ascii_lowercase(), f)
                 })
                 .collect(),
-            iterable: None,
+            iterable: self.iterable(k),
             generics,
             property_docs: HashMap::new(),
         })
+    }
+
+    /// ObjectType::getIterableKeyType()/getIterableValueType() of a user class: an Iterator's `key()` and
+    /// `current()`, an IteratorAggregate's `getIterator()` return type's iterable types.
+    fn iterable(&self, k: &ClassLikeMetadata) -> Option<(String, String)> {
+        let c = self.checker;
+        let returned = |method: &str| {
+            let id = k.declaring_method_ids.get(&mago_word::word(method))?;
+            let f = c.codebase.get_method_by_id(id)?;
+            let t = f.return_type_metadata.as_ref().or(f.return_type_declaration_metadata.as_ref())?;
+            Some(c.to_phpstan(&t.type_union))
+        };
+        let own = |t: &Type| matches!(t, Type::Object(n, ..) | Type::Static(n, _) | Type::This(n) if n.eq_ignore_ascii_case(&original_name(k)));
+        if c.codebase.class_implements(k.name.as_bytes(), b"Iterator") {
+            Some((serialize(&returned("key")?), serialize(&returned("current")?)))
+        } else if c.codebase.class_implements(k.name.as_bytes(), b"IteratorAggregate") {
+            let t = returned("getiterator")?;
+            if own(&t) {
+                return None;
+            }
+            Some((serialize(&t.iterable_key_type()), serialize(&t.iterable_value_type())))
+        } else {
+            None
+        }
     }
 
     /// The type arguments of each generic ancestor (`@extends` / `@implements`, through the parents' own), over the

@@ -218,6 +218,59 @@ fn build_prelude(php_version: u32) -> (CodebaseMetadata, SymbolReferences) {
             });
         }
     }
+    // PHPStan's own stubs type some built-in methods with other classes than Mago's prelude (ReflectionType for
+    // getReturnType() where the prelude lists its subclasses). When both are plain class names and null, the method
+    // returns PHPStan's reflected type.
+    for ((class, name), method) in &mut metadata.function_likes {
+        let Some([variant]) = builtins
+            .classes
+            .get(&String::from_utf8_lossy(class.as_bytes()).to_ascii_lowercase())
+            .and_then(|class| class.methods.get(&String::from_utf8_lossy(name.as_bytes()).to_ascii_lowercase()))
+            .map(|method| method.variants.as_slice())
+        else {
+            continue;
+        };
+        let Some(ret) = method.return_type_metadata.as_ref().or(method.return_type_declaration_metadata.as_ref())
+        else {
+            continue;
+        };
+        let plain = |a: &TAtomic| match a {
+            TAtomic::Null => true,
+            TAtomic::Object(mago_codex::ttype::atomic::object::TObject::Named(n)) => {
+                n.type_parameters.is_none() && !n.is_static && n.intersection_types.is_none()
+            }
+            _ => false,
+        };
+        if !ret.type_union.types.iter().all(plain) {
+            continue;
+        }
+        let reflected: Option<Vec<TAtomic>> = variant
+            .ret
+            .trim_start_matches('(')
+            .trim_end_matches(')')
+            .split(" | ")
+            .map(|part| match part {
+                "null" => Some(TAtomic::Null),
+                p if !p.is_empty() && p.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'\\') => {
+                    get_named_object(mago_word::word(p), None).types.first().cloned()
+                }
+                _ => None,
+            })
+            .collect();
+        let Some(reflected) = reflected else { continue };
+        let lower = |types: &[TAtomic]| {
+            let mut names: Vec<String> = types
+                .iter()
+                .map(|a| String::from_utf8_lossy(mago_codex::ttype::TType::get_id(a).as_bytes()).to_ascii_lowercase())
+                .collect();
+            names.sort();
+            names
+        };
+        if lower(&reflected) != lower(&ret.type_union.types) {
+            let span = ret.span;
+            method.return_type_metadata = Some(TypeMetadata::new(TUnion::from_vec(reflected), span));
+        }
+    }
     // Runtime reflection supplies empty-array constructor defaults even when an API stub
     // writes null (ArrayObject and ArrayIterator). Generic inference must see the real value.
     for ((class, name), constructor) in &mut metadata.function_likes {

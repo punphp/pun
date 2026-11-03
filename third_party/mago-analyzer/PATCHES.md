@@ -3586,3 +3586,27 @@ These changes follow PHPStan 2.3.1 where laravel-framework at level max showed M
 - `expression/binary/concat.rs` also types each inner concat node of a flattened chain, as PHPStan types every
   `Concat` node: in `$s.'@'.$m` the left operand `$s.'@'` has a type, so InvalidBinaryOperationRule sees
   `non-falsy-string` and `mixed`.
+- `reconciler/simple_negated_assertion_reconciler.rs` `reconcile_falsy_or_empty()`: a falsey or `empty()` context
+  intersects a mixed with `StaticTypeFactory::falsey()`, so `!$m` makes `$m` the finite union
+  `0|0.0|''|'0'|array{}|false|null` (minus what the mixed already excludes), with its members in `falsey()`'s order.
+  A template's mixed bound keeps Mago's falsy mixed.
+- `reconciler/mod.rs` `adjust_array_offset()` and `simple_assertion_reconciler.rs` `reconcile_has_nonnull_entry_for_key()`:
+  `MutatingScope::specifyExpressionType()` never specifies a `MixedType` holder of a narrowed offset. After
+  `empty($m['a'])` or `isset($m['a'])` the holder stays mixed (only `null` is removed by `isset`), so later reads of
+  other offsets are still checked. `get_value_for_key()` gives the narrowed offset of a mixed holder its own holder
+  (`MixedType::getOffsetValueType()`), so the narrowed offset itself has an expression type.
+- `invocation/template_inference.rs` `infer_templates_from_input_and_container_types()`: as
+  `UnionType::inferTemplateTypes()`, an input member another (non-template) container member definitely accepts is
+  absorbed by it and is not inferred for a naked template beside it: `TValue|Closure(): TValue` receiving
+  `TDefault|Closure(): TDefault` infers `TValue = TDefault`, not `TDefault|Closure`.
+- `resolver/method.rs` resolves an instance method on a template receiver (`TModel of Model`) with
+  `StaticClassType::Generic(TModel)`, as `static_method.rs` already does for `TModel::method()`: the method's `static`
+  and `$this` are the template, as PHPStan's TemplateObjectType gives them, not its bound (`$model->newQuery()` is
+  `Builder<TModel>`). `invocation/template_result.rs` reads the bound's type arguments for such a receiver, and
+  `invocation/resolver.rs` resolves `$this` to the template.
+- `resolver/class_name.rs` `get_class_name_from_atomic()`: `class-string<T>` of an unbounded template resolves to
+  that class-string, so `new $class()` is `T` (as with an object bound) and not `object`.
+- `expression/call/static_method_call.rs` (with `invocation/post_process.rs` `clear_object_property_narrowings()` made
+  `pub(crate)`): as StaticCallHandler, a `Name::method()` / `self::`/`parent::`/`static::` call with side effects to a
+  method the scope's class inherits or declares invalidates `$this`, so narrowed `$this->prop` types are forgotten after
+  `parent::populate()`. A static method keeps the property fetches.

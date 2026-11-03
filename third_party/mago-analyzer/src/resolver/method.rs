@@ -225,11 +225,14 @@ pub(crate) fn resolve_method_targets_after_receiver<'ctx, 'ast, 'arena, A: Arena
     }
 
     if let Some(object_type) = receiver_type.or_else(|| artifacts.get_expression_type(object)) {
-        let mut object_atomics = object_type.types.iter().collect::<Vec<_>>();
+        // Each atomic with the template it is the bound of: PHPStan's TemplateObjectType resolves the called method's
+        // `static` and `$this` to the template itself (CalledOnTypeUnresolvedMethodPrototypeReflection).
+        let mut object_atomics = object_type.types.iter().map(|atomic| (atomic, None)).collect::<Vec<_>>();
 
-        while let Some(object_atomic) = object_atomics.pop() {
-            if let TAtomic::GenericParameter(TGenericParameter { constraint, .. }) = object_atomic {
-                object_atomics.extend(constraint.types.iter());
+        while let Some((object_atomic, template)) = object_atomics.pop() {
+            if let TAtomic::GenericParameter(parameter @ TGenericParameter { constraint, .. }) = object_atomic {
+                let template: Option<&TGenericParameter> = template.or(Some(parameter));
+                object_atomics.extend(constraint.types.iter().map(|atomic| (atomic, template)));
                 continue;
             }
 
@@ -435,6 +438,16 @@ pub(crate) fn resolve_method_targets_after_receiver<'ctx, 'ast, 'arena, A: Arena
                         }
                     }
                     result.property_initialization_method = selected;
+                }
+                let mut resolved_methods = resolved_methods;
+                if let Some(template) = template {
+                    for method in &mut resolved_methods {
+                        if method.declaring_object.is_none()
+                            && matches!(&method.static_class_type, StaticClassType::Object(o) if o == obj_type)
+                        {
+                            method.static_class_type = StaticClassType::Generic(template.clone());
+                        }
+                    }
                 }
                 result.resolved_methods.extend(resolved_methods);
             }

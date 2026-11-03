@@ -34,7 +34,18 @@ pub fn accepts_reasons(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Vec
             reasons
         }
         T::Conditional(c) => accepts_reasons(&c.resolve(), b, strict, sm),
-        T::Template(t) if !compound => accepts_reasons(&t.bound, b, strict, sm),
+        T::Template(t) if !compound => {
+            let mut reasons = accepts_reasons(&t.bound, b, strict, sm);
+            if t.argument && !accepts_with(&t.bound, b, strict, sm).no() {
+                let level = recommended_level(a, Some(b));
+                reasons.push(format!(
+                    "Type {} is not always the same as {}. It breaks the contract for some argument types, typically subtypes.",
+                    b.describe(level),
+                    t.name
+                ));
+            }
+            reasons
+        }
         T::Callable(_) if matches!(b, T::Callable(_)) || !compound => match a {
             T::Callable(Some(ours)) if !b.is_callable().no() && !matches!(b, T::Callable(None)) => {
                 merged(callable_signatures(b).iter().map(|theirs| signature(ours, theirs, strict)))

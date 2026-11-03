@@ -916,6 +916,36 @@ fn infer_templates_from_input_and_container_types<A>(
         }
     }
 
+    // UnionType::inferTemplateTypes(): an input member another container member definitely accepts is absorbed by
+    // that member and tells nothing about a naked template beside it (`T|Closure(): T` receiving a closure).
+    let absorbing: Vec<&TAtomic> =
+        generic_container_parts.iter().copied().filter(|t| !matches!(t, TAtomic::GenericParameter(_))).collect();
+    let naked_input_types = residual_input_type
+        .types
+        .iter()
+        .filter(|input| {
+            input.is_never()
+                || !absorbing.iter().any(|container| {
+                    atomic_comparator::is_contained_by(
+                        context.codebase,
+                        input,
+                        container,
+                        false,
+                        &mut ComparisonResult::default(),
+                    )
+                })
+        })
+        .cloned()
+        .collect::<Vec<_>>();
+    if naked_input_types.is_empty() {
+        return;
+    }
+    let residual_input_type = if naked_input_types.len() == residual_input_type.types.len() {
+        residual_input_type
+    } else {
+        TUnion::from_vec(naked_input_types).with_never_kind(input_type.never_kind().unwrap_or_default())
+    };
+
     for container_atomic_part in generic_container_parts {
         let TAtomic::GenericParameter(container_generic) = container_atomic_part else {
             continue;

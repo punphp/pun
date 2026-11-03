@@ -12,15 +12,10 @@
 7 Functions/HelperDeadCode::testRule
 8 Functions/HelperDeadCode::testRule
 # return.type: the accepts reasons PHPStan puts in the tip (AcceptsResult::$reasons, acceptsReasonsTip()) are not ported
-3 Functions/ReturnTypeRuleTest::testBug3801
-3 Functions/ReturnTypeRuleTest::testBug7766
 3 Functions/ReturnTypeRuleTest::testBug3028
 3 Methods/ReturnTypeRuleTest::testBug4590
-3 Methods/ReturnTypeRuleTest::testTaggedUnions
-3 Methods/ReturnTypeRuleTest::testBug6358
 3 Methods/ReturnTypeRuleTest::testBug8146bErrors
 3 Methods/ReturnTypeRuleTest::testRuleError
-3 Methods/ReturnTypeRuleTest::testWrongListTip
 # return.type: generics and templates in accepts() (template covariance, inherited and nested generic arguments,
 # class-string<T> bounds) and the method.childReturnType/phpdoc merge cases they share
 3 Functions/ReturnTypeRuleTest::testBug5594
@@ -241,7 +236,6 @@
 9 Functions/CallToFunctionParametersRuleTest::testBug10974
 9 Functions/CallToFunctionParametersRuleTest::testBug11533
 9 Functions/CallToFunctionParametersRuleTest::testBug12676
-9 Functions/CallToFunctionParametersRuleTest::testBug12847
 9 Functions/CallToFunctionParametersRuleTest::testBug13247
 9 Functions/CallToFunctionParametersRuleTest::testBug14312
 9 Functions/CallToFunctionParametersRuleTest::testBug14312b
@@ -300,7 +294,6 @@
 9 Methods/CallStaticMethodsRuleTest::testBug13267
 9 Methods/CallStaticMethodsRuleTest::testBug2164
 9 Methods/CallStaticMethodsRuleTest::testBug3641
-9 Methods/CallStaticMethodsRuleTest::testBug4550
 9 Methods/CallStaticMethodsRuleTest::testBug5259
 9 Methods/CallStaticMethodsRuleTest::testBugWrongMethodNameWithTemplateMixed
 9 Methods/CallStaticMethodsRuleTest::testDynamicCall
@@ -601,6 +594,7 @@
 9 Functions/CallToFunctionParametersRuleTest::testBug13114#2
 9 Functions/CallToFunctionParametersRuleTest::testBug13334
 9 Functions/CallToFunctionParametersRuleTest::testBug15168
+9 Methods/CallStaticMethodsRuleTest::testBug15168
 9 Functions/CallToFunctionParametersRuleTest::testBug9377
 9 Functions/CallToFunctionParametersRuleTest::testClosureSignatureFromUsages
 9 Functions/CallToFunctionParametersRuleTest::testClosureSignatureFromUsagesOfGenericObject

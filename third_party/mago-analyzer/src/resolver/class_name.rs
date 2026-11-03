@@ -544,6 +544,14 @@ pub fn get_class_name_from_atomic(codebase: &CodebaseMetadata, atomic: &TAtomic)
                     return None; // This type cannot be interpreted as a class name.
                 }
             }
+            // pun: `class-string<T>` of an unbounded template instantiates `T` (TemplateMixedType's class-string)
+            TAtomic::Mixed(_) if matches!(active_class_string, Some(TClassLikeString::Generic { .. })) => {
+                ResolvedClassname::new(
+                    None,
+                    ResolutionOrigin::SpecificClassLikeString(active_class_string.expect("matched").clone()),
+                    false,
+                )
+            }
             TAtomic::Mixed(_) => ResolvedClassname::new(None, ResolutionOrigin::Mixed, false),
             _ => {
                 // This type cannot be interpreted as a class name.

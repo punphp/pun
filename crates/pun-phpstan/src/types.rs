@@ -744,7 +744,8 @@ impl Type {
                 Type::Array(..) | Type::Iterable(..) | Type::Accessory(Accessory::List) => {
                     Tri::Maybe
                 }
-                Type::Object(..) | Type::ObjectWithoutClass | Type::Callable(_) => Tri::Maybe,
+                // StaticType asks its static object type
+                Type::Object(..) | Type::Static(..) | Type::This(_) | Type::ObjectWithoutClass | Type::Callable(_) => Tri::Maybe,
                 _ => Tri::No,
             }),
         }

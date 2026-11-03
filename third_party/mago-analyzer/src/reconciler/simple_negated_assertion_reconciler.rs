@@ -1260,8 +1260,19 @@ where
 
             match atomic {
                 TAtomic::GenericParameter(generic_parameter) => {
+                    // a mixed bound keeps Mago's falsy mixed (PHPStan intersects each falsey value with the template)
+                    let falsy_mixed = |constraint: &TUnion| match constraint.types.as_ref() {
+                        [TAtomic::Mixed(mixed)] => Some(TUnion::from_atomic(TAtomic::Mixed(if is_empty_assertion {
+                            mixed.clone().as_empty()
+                        } else {
+                            mixed.clone().with_truthiness(TMixedTruthiness::Falsy)
+                        }))),
+                        _ => None,
+                    };
                     if let Some(atomic) = map_generic_constraint(&generic_parameter, |constraint| {
-                        reconcile_falsy_or_empty(context, assertion, constraint, None, false, None)
+                        falsy_mixed(constraint).unwrap_or_else(|| {
+                            reconcile_falsy_or_empty(context, assertion, constraint, None, false, None)
+                        })
                     }) {
                         acceptable_types.push(atomic);
                     }
@@ -1274,6 +1285,34 @@ where
                 }
                 TAtomic::Array(TArray::Keyed(_)) => {
                     acceptable_types.push(TAtomic::Array(TArray::Keyed(TKeyedArray::new())));
+                }
+                // TypeSpecifier's falsey context intersects with StaticTypeFactory::falsey(): a mixed becomes the
+                // finite union `0|0.0|''|'0'|array{}|false|null`, minus what it already excludes. A template's
+                // mixed bound stays on the constraint path above.
+                TAtomic::Mixed(mixed) if !mixed.is_error() && !mixed.is_isset_from_loop() => {
+                    let narrowed = intersect_union_types(
+                        &TUnion::from_atomic(TAtomic::Mixed(mixed.clone())),
+                        &get_empty(),
+                        context.codebase,
+                    );
+                    match narrowed {
+                        Some(narrowed) => {
+                            // falsey()'s member order: null, false, 0, 0.0, strings, array{}
+                            let rank = |atomic: &TAtomic| match atomic {
+                                TAtomic::Null => 0,
+                                TAtomic::Scalar(TScalar::Bool(_)) => 1,
+                                TAtomic::Scalar(TScalar::Integer(_)) => 2,
+                                TAtomic::Scalar(TScalar::Float(_)) => 3,
+                                TAtomic::Scalar(_) => 4,
+                                _ => 5,
+                            };
+                            let mut narrowed = narrowed.types.iter().cloned().collect::<Vec<_>>();
+                            narrowed.sort_by_key(rank);
+                            acceptable_types.extend(narrowed);
+                        }
+                        None if is_empty_assertion => acceptable_types.push(TAtomic::Mixed(mixed.as_empty())),
+                        None => acceptable_types.push(TAtomic::Mixed(mixed.with_truthiness(TMixedTruthiness::Falsy))),
+                    }
                 }
                 TAtomic::Mixed(mixed) => {
                     if is_empty_assertion {

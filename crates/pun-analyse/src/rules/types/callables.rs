@@ -92,6 +92,21 @@ fn of_signature(c: &Checker, s: &Signature, source: Span) -> Acceptor {
         // by check() before selecting a signature.
         (a, types, named.or(other_named), references)
     });
+    // A PHPDoc callable type's templates other than its own are the enclosing function's, which its body sees with
+    // TemplateTypeArgumentStrategy (MutatingScope's TemplateTypeHelper::toArgument() of the parameter types)
+    let sourced = c.types.get(&source).into_iter().flat_map(|t| t.types.iter()).any(|a| match a {
+        TAtomic::Callable(TCallable::Signature(s)) => s.get_source().is_some(),
+        TAtomic::Callable(TCallable::Alias(_)) => true,
+        _ => false,
+    });
+    fn outer_arguments(t: &Type, own: &[pun_phpstan::types::Template]) -> Type {
+        match t {
+            Type::Template(tt) if super::arguments::is_callees(tt) && !own.contains(tt) => {
+                Type::Template(Box::new(pun_phpstan::types::Template { argument: true, ..(**tt).clone() }))
+            }
+            _ => t.traverse(&|inner| outer_arguments(inner, own)),
+        }
+    }
     let (bindings, types, named, references) = metadata.unwrap_or_else(||
         (vec![false; s.params.len()], vec![None; s.params.len()], pun_phpstan::types::Tri::Yes, by_ref()));
     Acceptor {
@@ -103,7 +118,9 @@ fn of_signature(c: &Checker, s: &Signature, source: Span) -> Acceptor {
         variadics: s.params.iter().map(|p| p.variadic).collect(),
         builtin: false,
         accepts_named_arguments: named,
-        param_types: s.params.iter().zip(types).map(|(p, t)| ParamType::Typed(t.unwrap_or_else(|| p.ty.clone()))).collect(),
+        param_types: s.params.iter().zip(types).map(|(p, t)| ParamType::Typed(t.unwrap_or_else(|| {
+            if sourced { p.ty.clone() } else { outer_arguments(&p.ty, &s.templates) }
+        }))).collect(),
         by_ref: references,
         closure_this: bindings,
         class: None,

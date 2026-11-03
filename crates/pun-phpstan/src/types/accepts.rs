@@ -59,8 +59,8 @@ pub fn accepts_with(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Tri {
         T::Union(types) | T::Benevolent(types) => union(a, types, b, strict, sm),
         T::Intersection(types) => types.iter().map(|t| rec(t, b)).fold(Tri::Yes, Tri::and),
         T::Conditional(c) => rec(&c.resolve(), b),
-        // TemplateTypeParameterStrategy
-        T::Template(t) => if compound { by() } else { rec(&t.bound, b) },
+        // TemplateTypeParameterStrategy; TemplateTypeArgumentStrategy adds a maybe
+        T::Template(t) => if compound { by() } else if t.argument { rec(&t.bound, b).and(Tri::Maybe) } else { rec(&t.bound, b) },
         _ if compound && !matches!(a, T::Float | T::ConstFloat(_) | T::ConstInt(_) | T::ConstBool(_) | T::ConstString(_)
             | T::Int | T::IntRange(..) | T::Bool | T::Null | T::Resource | T::String | T::StringAcceptingStringable
             | T::StringNotAcceptingStringable | T::Iterable(..) | T::Accessory(_) | T::Callable(_) | T::ConstArray(_) | T::EnumCase(..)) =>

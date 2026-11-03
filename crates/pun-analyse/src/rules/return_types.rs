@@ -66,6 +66,7 @@ pub(super) fn registry(
     }
     registry.register_function_provider(Benevolent);
     registry.register_function_provider(GetClass);
+    registry.register_function_provider(ClassRelations);
     registry.register_function_provider(
         mago_analyzer::plugin::libraries::stdlib::array::ArrayIsListProvider,
     );
@@ -1546,7 +1547,64 @@ impl FunctionReturnTypeProvider for GetClass {
         if in_trait && argument.types.iter().any(|a| matches!(a, TAtomic::Object(TObject::Named(n)) if n.is_this)) {
             return None;
         }
+        // an object-bounded template's getClassStringType(): `class-string<T>`
+        if let [TAtomic::GenericParameter(t)] = argument.types.as_ref()
+            && let [bound @ TAtomic::Object(_)] = t.constraint.types.as_ref()
+        {
+            use mago_codex::ttype::atomic::scalar::class_like_string::{TClassLikeString, TClassLikeStringKind};
+            let generic = TClassLikeString::generic(
+                TClassLikeStringKind::Class,
+                t.parameter_name,
+                t.defining_entity.clone(),
+                bound.clone(),
+            );
+            return Some(TUnion::from_atomic(TAtomic::Scalar(mago_codex::ttype::atomic::scalar::TScalar::ClassLikeString(generic))));
+        }
         mago_analyzer::plugin::libraries::stdlib::object::GetClassProvider.get_return_type(context, invocation)
+    }
+}
+
+/// PHPStan 2.3.1's ClassImplementsFunctionReturnTypeExtension over the functions' reflected
+/// `array<string, class-string>|false`: an object has no `false`, an object or class-string with autoloading makes
+/// the union benevolent.
+struct ClassRelations;
+
+impl Provider for ClassRelations {
+    fn meta() -> &'static ProviderMeta {
+        &META
+    }
+}
+
+impl FunctionReturnTypeProvider for ClassRelations {
+    fn targets() -> FunctionTarget {
+        FunctionTarget::ExactMultiple(&[b"class_implements", b"class_uses", b"class_parents"])
+    }
+
+    fn get_return_type(
+        &self,
+        context: &ProviderContext<'_, '_, '_>,
+        invocation: &InvocationInfo<'_, '_, '_>,
+    ) -> Option<TUnion> {
+        use mago_codex::ttype::atomic::scalar::class_like_string::{TClassLikeString, TClassLikeStringKind};
+        let first = context.get_expression_type(invocation.get_argument(0, &[b"object_or_class"])?)?;
+        let class_string = TUnion::from_atomic(TAtomic::Scalar(TScalar::ClassLikeString(TClassLikeString::any(
+            TClassLikeStringKind::Class,
+        ))));
+        let array = TAtomic::Array(TArray::Keyed(TKeyedArray::new_with_parameters(
+            Arc::new(mago_codex::ttype::get_string()),
+            Arc::new(class_string),
+        )));
+        if first.types.iter().all(|a| matches!(a, TAtomic::Object(_))) {
+            return Some(TUnion::from_atomic(array));
+        }
+        let variant = TUnion::from_vec(vec![array, TAtomic::Scalar(TScalar::r#false())]);
+        let autoload = invocation
+            .get_argument(1, &[b"autoload"])
+            .is_none_or(|a| context.get_expression_type(a).is_some_and(TUnion::is_true));
+        if first.types.iter().all(|a| matches!(a, TAtomic::Object(_) | TAtomic::Scalar(TScalar::ClassLikeString(_)))) {
+            return Some(if autoload { benevolent(variant) } else { variant });
+        }
+        Some(variant)
     }
 }
 

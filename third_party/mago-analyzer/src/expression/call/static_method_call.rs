@@ -17,7 +17,9 @@ use crate::expression::call::method_call::analyze_undocumented_method_return_typ
 use crate::expression::call::method_call::prepare_unresolved_method_targets;
 use crate::expression::call::record_external_method_call;
 use crate::expression::call::record_external_method_call_targets;
+use crate::invocation::Invocation;
 use crate::invocation::InvocationArgumentsSource;
+use crate::invocation::post_process::clear_object_property_narrowings;
 use crate::invocation::InvocationTarget;
 use crate::invocation::MethodInvocationKind;
 use crate::invocation::MethodTargetContext;
@@ -157,6 +159,26 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for StaticMethodCall<'arena> {
 
         let class_has_nullsafe_null = artifacts.get_expression_type(self.class).is_some_and(|t| t.has_nullsafe_null());
 
+        // pun: StaticCallHandler invalidates `$this` after a `Name::method()` call with side effects whose declaring
+        // class the scope's class is (a static method keeps the property fetches)
+        let this_targets: Vec<InvocationTarget<'ctx>> = if matches!(
+            self.class,
+            Expression::Identifier(_) | Expression::Self_(_) | Expression::Parent(_) | Expression::Static(_)
+        ) && let Some(scope_class) = block_context.scope.get_class_like_name()
+        {
+            invocation_targets
+                .iter()
+                .filter(|target| {
+                    target.get_method_context().and_then(|method| method.declaring_method_id).is_some_and(|declaring| {
+                        context.codebase.is_instance_of(scope_class.as_bytes(), declaring.get_class_name().as_bytes())
+                    })
+                })
+                .cloned()
+                .collect()
+        } else {
+            vec![]
+        };
+
         if has_resolved_methods || method_resolution.undocumented_methods.is_empty() {
             analyze_invocation_targets(
                 context,
@@ -174,6 +196,15 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for StaticMethodCall<'arena> {
                 false,
                 matches!(&self.method, ClassLikeMemberSelector::Identifier(_)),
             )?;
+        }
+
+        for target in this_targets {
+            let invocation = Invocation {
+                target,
+                arguments_source: InvocationArgumentsSource::ArgumentList(&self.argument_list),
+                span: self.span(),
+            };
+            clear_object_property_narrowings(context, block_context, &invocation, Some(b"$this"));
         }
 
         if !method_resolution.undocumented_methods.is_empty() {

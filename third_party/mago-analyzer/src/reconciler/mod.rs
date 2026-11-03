@@ -27,7 +27,6 @@ use mago_codex::ttype::combiner::CombinerOptions;
 use mago_codex::ttype::expander;
 use mago_codex::ttype::expander::StaticClassType;
 use mago_codex::ttype::expander::TypeExpansionOptions;
-use mago_codex::ttype::get_arraykey;
 use mago_codex::ttype::get_iterable_value_parameter;
 use mago_codex::ttype::get_mixed;
 use mago_codex::ttype::get_mixed_maybe_from_loop;
@@ -764,25 +763,11 @@ fn adjust_array_offset(
                     }
                 }
             }
+            // MutatingScope::specifyExpressionType() never specifies a MixedType holder of a narrowed offset: only
+            // the offset expression itself is remembered.
             TAtomic::Mixed(_) => {
-                let key = if has_string_offset {
-                    ArrayKey::String(word(arraykey_offset))
-                } else if let Some(arraykey_value) =
-                    std::str::from_utf8(arraykey_offset).ok().and_then(|s| s.parse::<i64>().ok())
-                {
-                    ArrayKey::Integer(arraykey_value)
-                } else {
-                    compatible_types.push(base_atomic_type);
-                    continue;
-                };
-
-                base_atomic_type = TAtomic::Array(TArray::Keyed(TKeyedArray {
-                    callable: None,
-                    known_items: Some(BTreeMap::from([(key, (optional, result_type.clone()))]).into()),
-                    parameters: Some((Arc::new(get_arraykey()), Arc::new(get_mixed()))),
-                    non_empty: !optional,
-                    known_non_list: false,
-                }));
+                compatible_types.push(base_atomic_type);
+                continue;
             }
             TAtomic::GenericParameter(generic) => {
                 let mut constraint = (*generic.constraint).clone();
@@ -1199,7 +1184,12 @@ fn add_nested_assertions(
                     if key_parts.is_empty() {
                         // Only remove the nested key if it contains ONLY isset-related assertions
                         // If it has other assertions (e.g., IsType from is_string()), keep them
-                        if only_isset_assertions {
+                        // a mixed holder stays mixed (see adjust_array_offset()): the offset keeps its own holder
+                        let mixed_holder = context
+                            .locals
+                            .get(&base_key_atom)
+                            .is_some_and(|t| t.types.iter().any(|a| matches!(a, TAtomic::Mixed(_))));
+                        if only_isset_assertions && !mixed_holder {
                             keys_to_remove.push(nk);
 
                             if nesting == 0 && base_key_set && active_new_types.swap_remove(&nk).is_some() {
@@ -1569,6 +1559,27 @@ where
                         }
 
                         new_base_type_candidate = get_mixed();
+                    } else if let TAtomic::Mixed(mixed) = existing_key_type_part
+                        && !mixed.is_error()
+                        && new_assertions.contains_key(&new_base_key_atom)
+                    {
+                        // MixedType::getOffsetValueType(): the narrowed offset of a mixed holder is its own
+                        // expression holder (the holder itself stays mixed, see adjust_array_offset())
+                        new_base_type_candidate =
+                            TUnion::from_atomic(TAtomic::Mixed(
+                                mago_codex::ttype::atomic::mixed::TMixed::new().with_is_explicit(mixed.is_explicit()),
+                            ));
+                        if has_inverted_isset && new_base_key_atom == key {
+                            new_base_type_candidate = add_union_type(
+                                new_base_type_candidate,
+                                &get_null(),
+                                context.codebase,
+                                CombinerOptions::default(),
+                            );
+                        }
+                        if (has_isset || has_inverted_isset || has_inverted_key_exists) && new_base_key_atom == key {
+                            new_base_type_candidate.set_possibly_undefined(true, None);
+                        }
                     } else {
                         continue;
                     }

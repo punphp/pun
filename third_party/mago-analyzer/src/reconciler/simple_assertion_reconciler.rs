@@ -2189,23 +2189,10 @@ where
             TAtomic::Variable { .. } => {
                 acceptable_types.push(atomic);
             }
-            TAtomic::Mixed(_) => {
-                // Narrow mixed to a keyed array with the specific key having a non-null value
-                let mut keyed_array = get_mixed_keyed_array();
-                keyed_array.types.to_mut()[0] = TAtomic::Array(TArray::Keyed(TKeyedArray {
-                    callable: None,
-                    known_items: Some(
-                        BTreeMap::from([(
-                            *key_name,
-                            (false, subtract_null(context, assertion, &get_mixed(), None, negated, None)),
-                        )])
-                        .into(),
-                    ),
-                    parameters: Some((Arc::new(get_arraykey()), Arc::new(get_mixed()))),
-                    non_empty: false,
-                    known_non_list: false,
-                }));
-                acceptable_types.extend(keyed_array.types.into_owned());
+            // isset() of an offset never specifies a MixedType holder as an array
+            // (MutatingScope::specifyExpressionType()); the holder is only known not to be null.
+            TAtomic::Mixed(mixed) => {
+                acceptable_types.extend(mixed.subtract(&get_null(), context.codebase).types.iter().cloned());
             }
             TAtomic::Object(TObject::Named(_)) => {
                 acceptable_types.push(atomic);

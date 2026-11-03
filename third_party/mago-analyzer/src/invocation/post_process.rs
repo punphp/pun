@@ -669,7 +669,7 @@ where
 }
 
 /// Clears observations dependent on receivers or arguments that may have changed.
-fn clear_object_property_narrowings<'ctx, 'arena, A>(
+pub(crate) fn clear_object_property_narrowings<'ctx, 'arena, A>(
     context: &Context<'ctx, 'arena, A>,
     block_context: &mut BlockContext<'ctx>,
     invocation: &Invocation<'ctx, '_, 'arena>,
