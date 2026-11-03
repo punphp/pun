@@ -163,5 +163,191 @@
   "line": 62,
   "identifier": "phpstan.dumpType",
   "message": "Dumped type: (array|string)"
+ },
+ {
+  "line": 66,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: Illuminate\\Foundation\\Application"
+ },
+ {
+  "line": 67,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: Illuminate\\Auth\\AuthManager"
+ },
+ {
+  "line": 68,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: Illuminate\\Auth\\AuthManager"
+ },
+ {
+  "line": 69,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: Illuminate\\Auth\\AuthManager"
+ },
+ {
+  "line": 70,
+  "identifier": "larastan.uselessConstructs.value",
+  "message": "Calling the helper function 'value()' without a closure as the first argument simply returns the first argument without doing anything"
+ },
+ {
+  "line": 70,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: 5"
+ },
+ {
+  "line": 71,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: 1"
+ },
+ {
+  "line": 72,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: Illuminate\\Contracts\\Validation\\Factory"
+ },
+ {
+  "line": 73,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: Illuminate\\Validation\\Validator"
+ },
+ {
+  "line": 74,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: Illuminate\\Support\\Stringable"
+ },
+ {
+  "line": 75,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: mixed"
+ },
+ {
+  "line": 76,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: Illuminate\\Support\\HigherOrderTapProxy<Exception>"
+ },
+ {
+  "line": 77,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: Exception"
+ },
+ {
+  "line": 78,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: array<int, Illuminate\\Http\\UploadedFile>"
+ },
+ {
+  "line": 79,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: (array<int, Illuminate\\Http\\UploadedFile>|Illuminate\\Http\\UploadedFile|null)"
+ },
+ {
+  "line": 80,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: Illuminate\\Routing\\Route|null"
+ },
+ {
+  "line": 81,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: (object|string)"
+ },
+ {
+  "line": 82,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: (array|string|null)"
+ },
+ {
+  "file": "app/Console/Commands/ProbeCommand.php",
+  "line": 15,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: array{argument: string, item: string|null, level: string, list: array<int, string>}"
+ },
+ {
+  "file": "app/Console/Commands/ProbeCommand.php",
+  "line": 16,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: array{argument: string, item: string|null, level: string, list: array<int, string>}"
+ },
+ {
+  "file": "app/Console/Commands/ProbeCommand.php",
+  "line": 17,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: string"
+ },
+ {
+  "file": "app/Console/Commands/ProbeCommand.php",
+  "line": 18,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: string|null"
+ },
+ {
+  "file": "app/Console/Commands/ProbeCommand.php",
+  "line": 19,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: string"
+ },
+ {
+  "file": "app/Console/Commands/ProbeCommand.php",
+  "line": 20,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: array<int, string>"
+ },
+ {
+  "file": "app/Console/Commands/ProbeCommand.php",
+  "line": 21,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: bool"
+ },
+ {
+  "file": "app/Console/Commands/ProbeCommand.php",
+  "line": 22,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: bool"
+ },
+ {
+  "file": "app/Console/Commands/ProbeCommand.php",
+  "line": 23,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: string|null"
+ },
+ {
+  "file": "app/Console/Commands/ProbeCommand.php",
+  "line": 24,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: array<int, string|null>"
+ },
+ {
+  "file": "app/Console/Commands/ProbeCommand.php",
+  "line": 25,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: bool|null"
+ },
+ {
+  "file": "app/Console/Commands/ProbeCommand.php",
+  "line": 26,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: bool"
+ },
+ {
+  "file": "app/Console/Commands/ProbeCommand.php",
+  "line": 27,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: true"
+ },
+ {
+  "file": "app/Console/Commands/ProbeCommand.php",
+  "line": 28,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: false"
+ },
+ {
+  "file": "app/Console/Commands/ProbeCommand.php",
+  "line": 29,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: true"
+ },
+ {
+  "file": "app/Console/Commands/ProbeCommand.php",
+  "line": 30,
+  "identifier": "phpstan.dumpType",
+  "message": "Dumped type: false"
  }
 ]

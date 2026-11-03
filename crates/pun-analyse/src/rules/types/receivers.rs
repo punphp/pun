@@ -283,6 +283,14 @@ impl<'a> Checker<'a, '_> {
                 }
                 return self.extended_method(value, name, active);
             }
+            // HigherOrderTapProxyExtension: `tap($object)->method()` is the method of the proxy's object
+            if original.eq_ignore_ascii_case("Illuminate\\Support\\HigherOrderTapProxy") {
+                let [target] = args.as_slice() else { return Ok(None) };
+                if target.object_class_names().is_empty() || !self.has_method(target, name).yes() {
+                    return Ok(None);
+                }
+                return self.extended_method(target, name, active);
+            }
             // RelationForwardsCallsExtension: a relation's `Builder<TRelatedModel>` methods
             if super::super::larastan::is_a(self, k.name.as_bytes(), b"illuminate\\database\\eloquent\\relations\\relation") {
                 let related = ancestor_args("Illuminate\\Database\\Eloquent\\Relations\\Relation")

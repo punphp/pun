@@ -126,10 +126,27 @@ where
     if resulting_union.types.iter().any(needs_invocation_resolution) {
         let mut resulting_atomics = Vec::with_capacity(resulting_union.types.len());
         let mut never_kind = resulting_union.never_kind().unwrap_or_default();
-        for atomic_to_resolve in resulting_union.types.into_owned() {
-            let return_atomics =
-                resolve_atomic(context, invocation, template_result, parameters, atomic_to_resolve, &mut never_kind);
-            resulting_atomics.extend(return_atomics);
+        // A return type that is one conditional is the branch it resolves to, a benevolent union included
+        if let [TAtomic::Conditional(conditional)] = resulting_union.types.as_ref() {
+            let resolved = resolve_conditional(context, invocation, template_result, parameters, conditional.clone());
+            if resolved.ignore_nullable_issues() && resolved.ignore_falsable_issues() {
+                resulting_union.set_ignore_nullable_issues(true);
+                resulting_union.set_ignore_falsable_issues(true);
+            }
+            never_kind = never_kind.max(resolved.never_kind().unwrap_or_default());
+            resulting_atomics.extend(resolved.types.into_owned());
+        } else {
+            for atomic_to_resolve in resulting_union.types.into_owned() {
+                let return_atomics = resolve_atomic(
+                    context,
+                    invocation,
+                    template_result,
+                    parameters,
+                    atomic_to_resolve,
+                    &mut never_kind,
+                );
+                resulting_atomics.extend(return_atomics);
+            }
         }
 
         resulting_union.types = Cow::Owned(resulting_atomics);

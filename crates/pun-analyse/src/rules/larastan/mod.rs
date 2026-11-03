@@ -13,6 +13,7 @@ mod dispatch;
 mod extensions;
 mod factories;
 mod forwards;
+mod helpers;
 mod octane;
 mod relations;
 
@@ -36,6 +37,8 @@ pub(crate) use calls::{function_call, method_call, static_method_call};
 pub(crate) use classes::{class, method};
 pub(crate) use collectors::finish;
 pub(super) use extensions::{Functions as AppFunctions, Methods as AppMethods};
+pub(super) use console::Types as ConsoleTypes;
+pub(super) use helpers::{Functions as HelperFunctions, Methods as HelperMethods};
 pub(super) use forwards::{ModelForwards, ScopeStaticCalls, Tap, builder_name};
 
 pub const IDENTIFIERS: &[&str] = &[
@@ -100,6 +103,8 @@ pub struct Larastan {
     pub translation_directories: Vec<PathBuf>,
     /// `checkConfigTypes` (default false).
     pub check_config_types: bool,
+    /// `generalizeEnvReturnType` (default false).
+    pub generalize_env_return_type: bool,
     /// The app's config files (filled by [`Larastan::load`] when `checkConfigTypes` is on).
     pub(crate) configs: crate::larastan::config::Configs,
     /// The models' database properties and their types, by lowercase class name (filled by [`Larastan::load`]).
@@ -107,7 +112,7 @@ pub struct Larastan {
     /// What the extensions ask the booted app (filled by [`Larastan::load`]).
     pub(crate) app: std::sync::Arc<crate::larastan::app::App>,
     /// The app's console commands (filled by [`Larastan::load`]).
-    pub(crate) commands: Vec<crate::larastan::console::Command>,
+    pub(crate) commands: std::sync::Arc<Vec<crate::larastan::console::Command>>,
 }
 
 impl Larastan {
@@ -123,8 +128,9 @@ impl Larastan {
             check_auth_calls_when_in_request_scope: false,
             check_model_appends: true,
             database_properties: HashMap::new(),
-            commands: Vec::new(),
+            commands: Default::default(),
             check_config_types: false,
+            generalize_env_return_type: false,
             check_unused_views: false,
             view_directories: Vec::new(),
             check_missing_translations: false,
@@ -150,7 +156,7 @@ impl Larastan {
         };
         self.database_properties = crate::laravel::database_properties(app, project, codebase);
         self.models = std::sync::Arc::new(crate::laravel::models(app, project, codebase));
-        self.commands = crate::larastan::console::commands(project, codebase);
+        self.commands = std::sync::Arc::new(crate::larastan::console::commands(project, codebase));
         self.app = std::sync::Arc::new(crate::larastan::app::App::load(&self.root));
         if self.check_config_types {
             self.configs = crate::larastan::config::Configs::load(
@@ -191,6 +197,7 @@ impl Larastan {
             flag("checkAuthCallsWhenInRequestScope", false);
         larastan.check_model_appends = flag("checkModelAppends", true);
         larastan.check_config_types = flag("checkConfigTypes", false);
+        larastan.generalize_env_return_type = flag("generalizeEnvReturnType", false);
         larastan.no_unnecessary_enumerable_to_array_calls =
             flag("noUnnecessaryEnumerableToArrayCalls", false);
         larastan.no_unnecessary_collection_call = flag("noUnnecessaryCollectionCall", true);

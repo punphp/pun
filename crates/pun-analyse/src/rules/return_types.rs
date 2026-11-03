@@ -49,10 +49,16 @@ pub(super) fn registry(
 ) -> PluginRegistry {
     let mut registry = PluginRegistry::new();
     if let Some(larastan) = larastan {
+        registry.register_method_provider(super::larastan::HelperMethods(Arc::clone(&larastan.app)));
         registry.register_method_provider(super::larastan::ModelForwards(contents.to_vec()));
+        registry.register_method_provider(super::larastan::ConsoleTypes(Arc::clone(&larastan.commands)));
         registry.register_method_provider(super::larastan::AppMethods(Arc::clone(&larastan.app), contents.to_vec()));
         registry.register_function_provider(super::larastan::AppFunctions(Arc::clone(&larastan.app)));
         registry.register_function_provider(super::larastan::Tap);
+        registry.register_function_provider(super::larastan::HelperFunctions {
+            app: Arc::clone(&larastan.app),
+            generalize_env: larastan.generalize_env_return_type,
+        });
         registry.register_expression_hook(super::larastan::ScopeStaticCalls(
             names.iter().map(|(start, _, name, _)| (start, name.to_vec())).collect(),
         ));

@@ -162,6 +162,37 @@ namespace Illuminate\Support\Traits {
 namespace Illuminate\Support {
     class Carbon extends \Carbon\Carbon {}
 
+    class Stringable {}
+
+    /**
+     * @template TTarget
+     */
+    class HigherOrderTapProxy
+    {
+        /**
+         * The target being tapped.
+         *
+         * @var TTarget
+         */
+        public $target;
+
+        /**
+         * Create a new tap proxy instance.
+         *
+         * @param  TTarget  $target
+         */
+        public function __construct($target) {}
+
+        /**
+         * Dynamically pass method calls to the target.
+         *
+         * @param  string  $method
+         * @param  array  $parameters
+         * @return TTarget
+         */
+        public function __call($method, $parameters) {}
+    }
+
     /**
      * @template TKey of array-key
      *
@@ -247,6 +278,166 @@ namespace Illuminate\Support {
     }
 }
 
+namespace Illuminate\Container {
+    class Container implements \Illuminate\Contracts\Container\Container
+    {
+        /**
+         * Resolve the given type from the container.
+         *
+         * @template TClass of object
+         *
+         * @param  string|class-string<TClass>  $abstract
+         * @return ($abstract is class-string<TClass> ? TClass : mixed)
+         */
+        public function make($abstract, array $parameters = []) {}
+    }
+}
+
+namespace Illuminate\Contracts\Validation {
+    interface Factory {}
+
+    interface Validator {}
+}
+
+namespace Illuminate\Validation {
+    class Validator implements \Illuminate\Contracts\Validation\Validator {}
+}
+
+namespace Illuminate\Routing {
+    class Route {}
+}
+
+namespace Illuminate\Http\Concerns {
+    trait InteractsWithInput
+    {
+        /**
+         * Retrieve a query string item from the request.
+         *
+         * @param  string|null  $key
+         * @param  string|array|null  $default
+         * @return string|array|null
+         */
+        public function query($key = null, $default = null) {}
+
+        /**
+         * Retrieve a request payload item from the request.
+         *
+         * @param  string|null  $key
+         * @param  string|array|null  $default
+         * @return string|array|null
+         */
+        public function post($key = null, $default = null) {}
+
+        /**
+         * Retrieve a server variable from the request.
+         *
+         * @param  string|null  $key
+         * @param  string|array|null  $default
+         * @return string|array|null
+         */
+        public function server($key = null, $default = null) {}
+
+        /**
+         * Retrieve a file from the request.
+         *
+         * @param  string|null  $key
+         * @param  mixed  $default
+         * @return ($key is null ? array<string, \Illuminate\Http\UploadedFile|\Illuminate\Http\UploadedFile[]> : \Illuminate\Http\UploadedFile|\Illuminate\Http\UploadedFile[]|null)
+         */
+        public function file($key = null, $default = null) {}
+    }
+}
+
+namespace Illuminate\Http {
+    class UploadedFile {}
+
+    class Request
+    {
+        use Concerns\InteractsWithInput;
+
+        /**
+         * Get the route handling the request.
+         *
+         * @param  string|null  $param
+         * @param  mixed  $default
+         * @return ($param is null ? \Illuminate\Routing\Route|null : object|string|null)
+         */
+        public function route($param = null, $default = null) {}
+    }
+}
+
+namespace Symfony\Component\Console\Command {
+    class Command
+    {
+        protected function configure() {}
+    }
+}
+
+namespace Illuminate\Console {
+    class Command extends \Symfony\Component\Console\Command\Command
+    {
+        /**
+         * The name and signature of the console command.
+         *
+         * @var string
+         */
+        protected $signature;
+
+        /**
+         * The console command name.
+         *
+         * @var string
+         */
+        protected $name;
+
+        /**
+         * Determine if the given argument is present.
+         *
+         * @param  string|int  $name
+         * @return bool
+         */
+        public function hasArgument($name) {}
+
+        /**
+         * Get the value of a command argument.
+         *
+         * @param  string|null  $key
+         * @return ($key is null ? array<array|string|float|int|bool|null> : array|string|float|int|bool|null)
+         */
+        public function argument($key = null) {}
+
+        /**
+         * Get all of the arguments passed to the command.
+         *
+         * @return array<array|string|float|int|bool|null>
+         */
+        public function arguments() {}
+
+        /**
+         * Determine whether the option is defined in the command signature.
+         *
+         * @param  string  $name
+         * @return bool
+         */
+        public function hasOption($name) {}
+
+        /**
+         * Get the value of a command option.
+         *
+         * @param  string|null  $key
+         * @return ($key is null ? array<array|string|float|int|bool|null> : array|string|float|int|bool|null)
+         */
+        public function option($key = null) {}
+
+        /**
+         * Get all of the options passed to the command.
+         *
+         * @return array<array|string|float|int|bool|null>
+         */
+        public function options() {}
+    }
+}
+
 namespace Illuminate\Support\Facades {
     abstract class Facade
     {
@@ -317,4 +508,62 @@ namespace {
      * @return \Illuminate\Support\Collection<TKey, TValue>
      */
     function collect($value = []) {}
+
+    /**
+     * Get the available container instance.
+     *
+     * @template TClass of object
+     *
+     * @param  string|class-string<TClass>|null  $abstract
+     * @return ($abstract is class-string<TClass> ? TClass : ($abstract is null ? \Illuminate\Foundation\Application : mixed))
+     */
+    function app($abstract = null, array $parameters = []) {}
+
+    /**
+     * Resolve a service from the container.
+     *
+     * @template TClass of object
+     *
+     * @param  string|class-string<TClass>  $name
+     * @return ($name is class-string<TClass> ? TClass : mixed)
+     */
+    function resolve($name, array $parameters = []) {}
+
+    /**
+     * Return the default value of the given value.
+     *
+     * @template TValue
+     * @template TArgs
+     *
+     * @param  TValue|\Closure(TArgs): TValue  $value
+     * @param  TArgs  ...$args
+     * @return TValue
+     */
+    function value($value, ...$args) {}
+
+    /**
+     * Create a new Validator instance.
+     *
+     * @return ($data is null ? \Illuminate\Contracts\Validation\Factory : \Illuminate\Contracts\Validation\Validator)
+     */
+    function validator(?array $data = null, array $rules = [], array $messages = [], array $attributes = []): \Illuminate\Contracts\Validation\Validator|\Illuminate\Contracts\Validation\Factory {}
+
+    /**
+     * Get a new stringable object from the given string.
+     *
+     * @param  string|null  $string
+     * @return ($string is null ? object : \Illuminate\Support\Stringable)
+     */
+    function str($string = null) {}
+
+    /**
+     * Call the given Closure with the given value then return the value.
+     *
+     * @template TValue
+     *
+     * @param  TValue  $value
+     * @param  (callable(TValue): mixed)|null  $callback
+     * @return ($callback is null ? \Illuminate\Support\HigherOrderTapProxy<TValue> : TValue)
+     */
+    function tap($value, $callback = null) {}
 }

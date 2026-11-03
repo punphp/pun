@@ -4,7 +4,8 @@
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
-/// The stub files Larastan installed in `root`'s vendor directory adds, in no particular order.
+/// The stub files Larastan adds, in no particular order: the `stubs` directory of Larastan installed in `root`'s
+/// vendor directory, or of `root` itself when it is Larastan's checkout (StubFilesExtension's `dirname(__DIR__, 2)`).
 pub(crate) fn files(root: &Path) -> Vec<PathBuf> {
     let stubs = package(root).join("stubs");
     let laravel = laravel_version(root);

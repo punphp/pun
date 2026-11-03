@@ -61,4 +61,24 @@ final class Probe
         dumpType(__());
         dumpType(__('messages.welcome'));
     }
+    public function helpers(\Illuminate\Http\Request $request, \Illuminate\Container\Container $container): void
+    {
+        dumpType(app());
+        dumpType(app('auth'));
+        dumpType(resolve('auth'));
+        dumpType($container->make('auth'));
+        dumpType(value(5));
+        dumpType(value(fn (): int => 1));
+        dumpType(validator());
+        dumpType(validator([], []));
+        dumpType(str('a'));
+        dumpType(str());
+        dumpType(tap(new \Exception()));
+        dumpType(tap(new \Exception())->getCode());
+        dumpType($request->file());
+        dumpType($request->file('a'));
+        dumpType($request->route());
+        dumpType($request->route('a', 'b'));
+        dumpType($request->query('a'));
+    }
 }
