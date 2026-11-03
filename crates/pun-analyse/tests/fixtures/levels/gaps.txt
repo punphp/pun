@@ -159,10 +159,6 @@
 9 Methods/CallMethodsRuleTest::testBug14893
 9 Methods/CallMethodsRuleTest::testCallMethods
 9 Methods/CallMethodsRuleTest::testCallMethodsOnThisOnly
-9 Methods/CallMethodsRuleTest::testCallablesWithoutCheckNullables#0
-9 Methods/CallMethodsRuleTest::testCallablesWithoutCheckNullables#1
-9 Methods/CallMethodsRuleTest::testCallablesWithoutCheckNullables#2
-9 Methods/CallMethodsRuleTest::testCallablesWithoutCheckNullables#3
 9 Methods/CallMethodsRuleTest::testPureCallable
 # an-types2: anonymous-class display names (`Stringable@anonymous`, the exporter's absolute paths)
 5 Classes/InstantiationRuleTest::testInstantiation

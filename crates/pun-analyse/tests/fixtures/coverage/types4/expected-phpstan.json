@@ -2,6 +2,174 @@
  "general": [],
  "errors": [
   {
+   "file": "closure-returns.php",
+   "line": 10,
+   "identifier": "return.type",
+   "message": "Anonymous function should return string but returns int.",
+   "tip": null
+  },
+  {
+   "file": "closure-returns.php",
+   "line": 10,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: array{string, string}",
+   "tip": null
+  },
+  {
+   "file": "closure-returns.php",
+   "line": 11,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: array{1, 2}",
+   "tip": null
+  },
+  {
+   "file": "closure-returns.php",
+   "line": 12,
+   "identifier": "return.type",
+   "message": "Anonymous function should return string but returns mixed.",
+   "tip": null
+  },
+  {
+   "file": "closure-returns.php",
+   "line": 12,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: array{string, string}",
+   "tip": null
+  },
+  {
+   "file": "closure-returns.php",
+   "line": 13,
+   "identifier": "return.type",
+   "message": "Anonymous function should return int but returns mixed.",
+   "tip": null
+  },
+  {
+   "file": "closure-returns.php",
+   "line": 13,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: array{int, int}",
+   "tip": null
+  },
+  {
+   "file": "closure-returns.php",
+   "line": 14,
+   "identifier": "return.type",
+   "message": "Anonymous function should return string but returns int.",
+   "tip": null
+  },
+  {
+   "file": "closure-returns.php",
+   "line": 14,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: array{string, string}",
+   "tip": null
+  },
+  {
+   "file": "closure-returns.php",
+   "line": 15,
+   "identifier": "return.type",
+   "message": "Anonymous function should return int but returns mixed.",
+   "tip": null
+  },
+  {
+   "file": "closure-returns.php",
+   "line": 15,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: array{int, int}",
+   "tip": null
+  },
+  {
+   "file": "closure-returns.php",
+   "line": 16,
+   "identifier": "return.type",
+   "message": "Anonymous function should return string but returns int.",
+   "tip": null
+  },
+  {
+   "file": "closure-returns.php",
+   "line": 16,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: array{3: string, a: string}",
+   "tip": null
+  },
+  {
+   "file": "closure-returns.php",
+   "line": 17,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: array{array{1}, array{2}}",
+   "tip": null
+  },
+  {
+   "file": "closure-returns.php",
+   "line": 18,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: array{1, 2}",
+   "tip": null
+  },
+  {
+   "file": "closure-returns.php",
+   "line": 19,
+   "identifier": "return.unusedType",
+   "message": "Anonymous function never returns null so it can be removed from the return type.",
+   "tip": null
+  },
+  {
+   "file": "closure-returns.php",
+   "line": 19,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: Closure(): (5|null)",
+   "tip": null
+  },
+  {
+   "file": "closure-returns.php",
+   "line": 20,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: Closure(): float",
+   "tip": null
+  },
+  {
+   "file": "closure-returns.php",
+   "line": 21,
+   "identifier": "return.type",
+   "message": "Anonymous function should return int but returns int|null.",
+   "tip": null
+  },
+  {
+   "file": "closure-returns.php",
+   "line": 21,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: Closure(): int",
+   "tip": null
+  },
+  {
+   "file": "closure-returns.php",
+   "line": 22,
+   "identifier": "return.missing",
+   "message": "Anonymous function should return int but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "closure-returns.php",
+   "line": 22,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: Closure(): int",
+   "tip": null
+  },
+  {
+   "file": "closure-returns.php",
+   "line": 26,
+   "identifier": "return.type",
+   "message": "Anonymous function should return string but returns int.",
+   "tip": null
+  },
+  {
+   "file": "closure-returns.php",
+   "line": 27,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: array{string, string}",
+   "tip": null
+  },
+  {
    "file": "types4.php",
    "line": 37,
    "identifier": "argument.type",

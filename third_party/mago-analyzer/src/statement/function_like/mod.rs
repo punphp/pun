@@ -163,17 +163,68 @@ where
                 ));
             }
 
-            if let Some(inferred_return_type) = inferred_return_type {
-                signature.return_type = Some(Arc::new(inferred_return_type));
+            let inferred_return_type = if let Some(inferred_return_type) = inferred_return_type {
+                inferred_return_type
             } else if inner_has_returned {
-                signature.return_type = Some(Arc::new(get_non_accepting_never()));
+                get_non_accepting_never()
             } else {
-                signature.return_type = Some(Arc::new(get_void()));
-            }
+                get_void()
+            };
+
+            // ClosureTypeResolver: a declared native return type is combined with the inferred one through
+            // `MutatingScope::intersectButNotNever($nativeReturnType, $returnType)`
+            let return_type = match &function_metadata.return_type_declaration_metadata {
+                Some(native) => {
+                    let mut native = native.type_union.clone();
+                    expander::expand_union(
+                        context.codebase,
+                        &mut native,
+                        &TypeExpansionOptions {
+                            self_class: scope.get_class_like_name(),
+                            static_class_type: scope
+                                .get_class_like_name()
+                                .map_or(StaticClassType::None, StaticClassType::Name),
+                            ..Default::default()
+                        },
+                    );
+                    intersect_but_not_never(context, &native, inferred_return_type)
+                }
+                None => inferred_return_type,
+            };
+            signature.return_type = Some(Arc::new(return_type));
         }
     }
 
     TUnion::from_atomic(TAtomic::Callable(TCallable::Signature(signature)))
+}
+
+/// PHPStan 2.3.1's `MutatingScope::intersectButNotNever()`: the declared type when the inferred one cannot be
+/// part of it, otherwise their intersection, keeping the declared type's `null`.
+fn intersect_but_not_never<A: Arena>(context: &Context<'_, '_, A>, native: &TUnion, inferred: TUnion) -> TUnion {
+    // `isSuperTypeOf()`: an int is no float, which only acceptance allows
+    let is_part_of_native = |ty: &TUnion| {
+        union_comparator::is_contained_by(
+            context.codebase,
+            ty,
+            native,
+            false,
+            false,
+            true,
+            &mut ComparisonResult::default(),
+        )
+    };
+    let result = if is_part_of_native(&inferred) {
+        inferred
+    } else {
+        // `$nativeType->isSuperTypeOf($inferredType)->no()`: no common value
+        match intersect_union_types(native, &inferred, context.codebase) {
+            Some(intersection) if !intersection.is_never() && is_part_of_native(&intersection) => intersection,
+            _ => return native.clone(),
+        }
+    };
+
+    // the inferred type says no value is ever produced - the native type's nullability must not resurrect one
+    if result.is_never() || !native.has_null() { result } else { result.as_nullable() }
 }
 
 pub fn analyze_function_like<'ctx, 'ast, 'arena, A>(

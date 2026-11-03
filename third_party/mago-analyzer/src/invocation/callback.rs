@@ -3,9 +3,13 @@
 use std::rc::Rc;
 
 use mago_allocator::{Arena, vec_in};
+use mago_codex::ttype::atomic::{TAtomic, callable::TCallable};
+use mago_codex::ttype::get_mixed;
 use mago_codex::ttype::union::TUnion;
 use mago_span::{HasSpan, Span};
-use mago_syntax::cst::{Argument, ArgumentList, FunctionCall, PositionalArgument, sequence::TokenSeparatedSequence};
+use mago_syntax::cst::{
+    Argument, ArgumentList, Expression, FunctionCall, PositionalArgument, sequence::TokenSeparatedSequence,
+};
 use mago_word::word;
 
 use crate::analyzable::Analyzable;
@@ -27,6 +31,21 @@ pub(super) fn evaluate<'ctx, 'arena, A: Arena>(
     // These synthetic full-only values are not native observations of source operands.
     scope.native_locals = None;
     let mut scratch = AnalysisArtifacts::new();
+    // ArrayMapFunctionReturnTypeExtension::resolveCallbackReturnType(): an inline closure is typed again with
+    // its parameters taking the supplied values, and its own return answers
+    if matches!(request.callback, Expression::Closure(_) | Expression::ArrowFunction(_)) {
+        scratch.inferred_parameter_types = Some(request.arguments.iter().cloned().enumerate().collect());
+        return context.gather_callback(|context| {
+            request.callback.analyze(context, &mut scope, &mut scratch)?;
+            Ok(scratch
+                .get_expression_type(request.callback)
+                .and_then(|closure| match closure.types.as_ref() {
+                    [TAtomic::Callable(TCallable::Signature(signature))] => signature.return_type.as_deref().cloned(),
+                    _ => None,
+                })
+                .unwrap_or_else(get_mixed))
+        });
+    }
     let callback = artifacts
         .get_expression_type(request.callback)
         .expect("a callback request refers to an evaluated operand")

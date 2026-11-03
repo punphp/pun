@@ -3534,3 +3534,26 @@ is the result of PHPStan 2.3.1's `MutatingScope::enterAnonymousFunctionWithoutRe
 parameter's type with the callable's (`intersectButNotNever()`): `fn (Builder $q) => ...` passed to
 `callable(Builder<User>)` sees `Builder<User>`, `function (string $p)` passed to `callable(class-string<T>)` sees
 `class-string<T>`.
+
+## Declared closure return types and per-value callback pricing
+
+`statement/function_like/mod.rs` combines a closure or arrow function's declared native return type with the type
+its body infers, as PHPStan 2.3.1's `ClosureTypeResolver` does through `MutatingScope::intersectButNotNever()`: the
+declared type when no inferred value can be part of it, otherwise their intersection, with the declared type's `null`
+added unless the result is `never`. Mago kept the body's type alone, so `fn ($v): string => $v` over `1|2` returned
+`1|2`, and `fn (int $v): int => $m` with a mixed `$m` returned `mixed`. Containment uses the comparator's assertion
+mode, because `isSuperTypeOf()` does not accept an `int` as a `float` (`fn (): float => 1` returns `float`).
+Generator closures keep their own path: PHPStan applies the native type only when the closure does not yield.
+
+`invocation/callback.rs` prices an inline closure or arrow function callback as
+`ArrayMapFunctionReturnTypeExtension::resolveCallbackReturnType()` does: the closure is walked again inside the
+callback gather with its parameters taking the supplied values, and its resulting return type answers. Other
+callbacks are still priced as a call on their type. Mago's `ArrayMapProvider` is the only provider that requests
+callback invocations; with this change `array_map(fn ($v): int => $v, [1, 2])` maps to `array{1, 2}`, not
+`array{1|2, 1|2}`.
+
+The declared-parameter narrowing above still keeps a declared type against a literal value, so
+`array_map(fn (int $v) => $v + 1, [1, 2])` is `array{int, int}` where PHPStan has `array{2, 3}`.
+
+`crates/pun-analyse/tests/fixtures/coverage/types4/closure-returns.php` holds PHPStan's dumped types for these cases,
+and `closure_freshness` checks that an edited declaration reaches `array_map`'s result.

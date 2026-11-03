@@ -9,7 +9,10 @@ use mago_analyzer::plugin::context::{HookContext, InvocationInfo, ProviderContex
 use mago_analyzer::plugin::hook::{ExpressionHookResult, FunctionCallHook};
 use mago_analyzer::plugin::provider::Provider;
 use mago_analyzer::plugin::provider::ProviderMeta;
-use mago_analyzer::plugin::provider::function::{FunctionReturnTypeProvider, FunctionTarget};
+use mago_analyzer::plugin::libraries::stdlib::array::ArrayMapProvider;
+use mago_analyzer::plugin::provider::function::{
+    CallbackInvocation, FunctionReturnTypeProvider, FunctionTarget,
+};
 use mago_analyzer::plugin::provider::method::{MethodReturnTypeProvider, MethodTarget};
 use mago_codex::identifier::function_like::FunctionLikeIdentifier;
 use mago_codex::metadata::CodebaseMetadata;
@@ -51,11 +54,72 @@ pub(super) fn registry(contents: &[u8], larastan: Option<&super::Larastan>) -> P
     registry.register_function_provider(
         mago_analyzer::plugin::libraries::stdlib::array::ArrayIsListProvider,
     );
+    registry.register_function_provider(ConstantArrayMap);
     let builtins = BuiltinFunctions::default();
     registry.register_function_call_hook(builtins.clone());
     registry.register_function_provider(builtins);
     registry.register_method_provider(ClosureMethods(contents.to_vec()));
     registry
+}
+
+/// PHPStan 2.3.1's ArrayMapFunctionReturnTypeExtension with one array, through Mago's ArrayMapProvider: a `null`
+/// callback returns the array itself, and a constant array's values are mapped one by one (`mapValueType()`).
+/// Every other call keeps the prelude's generic return, which is the extension's `array<K, V>` with the input's
+/// accessories.
+struct ConstantArrayMap;
+
+impl ConstantArrayMap {
+    fn applies(context: &ProviderContext<'_, '_, '_>, invocation: &InvocationInfo<'_, '_, '_>) -> bool {
+        let Some(callback) = invocation
+            .get_argument(0, &[b"callback"])
+            .and_then(|callback| context.get_expression_type(callback))
+        else {
+            return false;
+        };
+        invocation.argument_count() == 2
+            && (callback.is_null()
+                || invocation
+                    .get_argument(1, &[b"array"])
+                    .and_then(|array| context.get_expression_type(array))
+                    .and_then(TUnion::get_single_array)
+                    .is_some_and(|array| match array {
+                        TArray::Keyed(keyed) => keyed.known_items.is_some() && keyed.parameters.is_none(),
+                        TArray::List(list) => list.known_elements.is_some() && list.element_type.is_never(),
+                    }))
+    }
+}
+
+impl Provider for ConstantArrayMap {
+    fn meta() -> &'static ProviderMeta {
+        &META
+    }
+}
+
+impl FunctionReturnTypeProvider for ConstantArrayMap {
+    fn targets() -> FunctionTarget {
+        FunctionTarget::Exact(b"array_map")
+    }
+
+    fn callback_invocations<'ast, 'arena>(
+        &self,
+        context: &ProviderContext<'_, '_, '_>,
+        invocation: &InvocationInfo<'_, 'ast, 'arena>,
+    ) -> Vec<CallbackInvocation<'ast, 'arena>> {
+        if !Self::applies(context, invocation) {
+            return Vec::new();
+        }
+        ArrayMapProvider.callback_invocations(context, invocation)
+    }
+
+    fn get_return_type(
+        &self,
+        context: &ProviderContext<'_, '_, '_>,
+        invocation: &InvocationInfo<'_, '_, '_>,
+    ) -> Option<TUnion> {
+        Self::applies(context, invocation)
+            .then(|| ArrayMapProvider.get_return_type(context, invocation))
+            .flatten()
+    }
 }
 
 /// Marks a Mago type as one of PHPStan's `BenevolentUnionType`s (`to_phpstan()` reads both flags together).
