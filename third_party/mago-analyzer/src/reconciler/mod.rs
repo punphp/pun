@@ -1457,7 +1457,31 @@ where
                             None
                         };
 
-                        if let Some(known_item) = known_item {
+                        // A variable key of constant keys (`foreach (['a', 'b'] as $k)`): PHPStan's
+                        // ConstantArrayType::getOffsetValueType() is the union of those keys' values.
+                        let variable_keys_item = if known_item.is_none()
+                            && resolved_key.starts_with(b"$")
+                            && let Some(known_items) = known_items
+                            && let Some(key_type) = block_context.locals.get(&word(resolved_key))
+                            && !key_type.types.is_empty()
+                        {
+                            key_type
+                                .types
+                                .iter()
+                                .map(|key| known_items.get(&key.to_array_key()?))
+                                .collect::<Option<Vec<_>>>()
+                                .map(|items| {
+                                    let optional = items.iter().any(|item| item.0);
+                                    let value = items.iter().skip(1).fold(items[0].1.clone(), |value, item| {
+                                        add_union_type(value, &item.1, context.codebase, CombinerOptions::default())
+                                    });
+                                    (optional, value)
+                                })
+                        } else {
+                            None
+                        };
+
+                        if let Some(known_item) = known_item.or(variable_keys_item.as_ref()) {
                             new_base_type_candidate = known_item.1.clone();
 
                             if known_item.0 {

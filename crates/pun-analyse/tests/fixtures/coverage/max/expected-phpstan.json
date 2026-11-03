@@ -23,6 +23,48 @@
    "tip": null
   },
   {
+   "file": "parse-url.php",
+   "line": 17,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: string",
+   "tip": null
+  },
+  {
+   "file": "parse-url.php",
+   "line": 21,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: int<0, 65535>",
+   "tip": null
+  },
+  {
+   "file": "parse-url.php",
+   "line": 23,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: int<0, 65535>|false|null",
+   "tip": null
+  },
+  {
+   "file": "parse-url.php",
+   "line": 24,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: string|false|null",
+   "tip": null
+  },
+  {
+   "file": "parse-url.php",
+   "line": 25,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: lowercase-string|false|null",
+   "tip": null
+  },
+  {
+   "file": "parse-url.php",
+   "line": 26,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: false",
+   "tip": null
+  },
+  {
    "file": "template-self-reference.php",
    "line": 32,
    "identifier": "return.type",

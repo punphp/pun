@@ -55,6 +55,7 @@ pub(super) fn registry(contents: &[u8], larastan: Option<&super::Larastan>) -> P
         mago_analyzer::plugin::libraries::stdlib::array::ArrayIsListProvider,
     );
     registry.register_function_provider(ConstantArrayMap);
+    registry.register_function_provider(ParseUrl);
     let builtins = BuiltinFunctions::default();
     registry.register_function_call_hook(builtins.clone());
     registry.register_function_provider(builtins);
@@ -1384,6 +1385,121 @@ impl RandomInt {
                 })
                 .collect(),
         )
+    }
+}
+
+/// PHPStan 2.3.1's ParseUrlFunctionDynamicReturnTypeExtension. A URL of constant strings, which upstream runs
+/// `parse_url()` on, keeps the functionMap return.
+struct ParseUrl;
+
+impl ParseUrl {
+    /// `$this->componentTypesPairedStrings` (or `...ForLowercaseString`) as optional keys of one shape.
+    fn components_array(lowercase: bool) -> TAtomic {
+        let string = Self::string(lowercase);
+        let items = [
+            ("scheme", string.clone()),
+            ("host", string.clone()),
+            ("port", Self::port()),
+            ("user", string.clone()),
+            ("pass", string.clone()),
+            ("path", string.clone()),
+            ("query", string.clone()),
+            ("fragment", string),
+        ]
+        .into_iter()
+        .map(|(key, value)| (ArrayKey::String(mago_word::word(key.as_bytes())), (true, value)))
+        .collect();
+        TAtomic::Array(TArray::Keyed(TKeyedArray::new().with_known_items(items)))
+    }
+
+    fn port() -> TUnion {
+        get_int_range(Some(0), Some(65535))
+    }
+
+    fn string(lowercase: bool) -> TUnion {
+        if lowercase {
+            TUnion::from_atomic(TAtomic::Scalar(TScalar::String(TString::lowercase())))
+        } else {
+            mago_codex::ttype::get_string()
+        }
+    }
+}
+
+impl Provider for ParseUrl {
+    fn meta() -> &'static ProviderMeta {
+        &META
+    }
+}
+
+impl FunctionReturnTypeProvider for ParseUrl {
+    fn targets() -> FunctionTarget {
+        FunctionTarget::Exact(b"parse_url")
+    }
+
+    fn get_return_type(
+        &self,
+        context: &ProviderContext<'_, '_, '_>,
+        invocation: &InvocationInfo<'_, '_, '_>,
+    ) -> Option<TUnion> {
+        let url = context.get_expression_type(invocation.get_argument(0, &[b"url"])?)?;
+        if !url.types.is_empty()
+            && url.types.iter().all(|t| {
+                matches!(t, TAtomic::Scalar(TScalar::String(s)) if s.get_known_literal_value().is_some())
+            })
+        {
+            return None;
+        }
+        let lowercase = !url.types.is_empty()
+            && url
+                .types
+                .iter()
+                .all(|t| matches!(t, TAtomic::Scalar(TScalar::String(s)) if s.is_lowercase()));
+        let component = match invocation.get_argument(1, &[b"component"]) {
+            None => -1,
+            // `$componentType->isConstantValue()` and `toInteger()` a ConstantIntegerType
+            Some(arg) => match context
+                .get_expression_type(arg)
+                .and_then(|t| match t.types.as_ref() {
+                    [TAtomic::Scalar(TScalar::Integer(i))] => i.get_literal_value(),
+                    [TAtomic::Scalar(TScalar::Bool(b))] if b.is_true() => Some(1),
+                    [TAtomic::Scalar(TScalar::Bool(b))] if b.is_false() => Some(0),
+                    [TAtomic::Null] => Some(0),
+                    _ => None,
+                }) {
+                Some(component) => component,
+                // createAllComponentsReturnType()
+                None => {
+                    return Some(TUnion::from_vec(
+                        [&get_false(), &get_null(), &Self::port(), &Self::string(lowercase)]
+                            .into_iter()
+                            .flat_map(|t| t.types.iter().cloned())
+                            .chain([Self::components_array(lowercase)])
+                            .collect(),
+                    ));
+                }
+            },
+        };
+        let or_false_or_null = |t: TUnion| {
+            TUnion::from_vec(
+                [&t, &get_false(), &get_null()]
+                    .into_iter()
+                    .flat_map(|t| t.types.iter().cloned())
+                    .collect(),
+            )
+        };
+        Some(match component {
+            -1 => TUnion::from_vec(
+                [Self::components_array(lowercase)]
+                    .into_iter()
+                    .chain(get_false().types.iter().cloned())
+                    .collect(),
+            ),
+            // PHP_URL_PORT
+            2 => or_false_or_null(Self::port()),
+            // PHP_URL_SCHEME, PHP_URL_HOST, PHP_URL_USER, PHP_URL_PASS, PHP_URL_PATH, PHP_URL_QUERY, PHP_URL_FRAGMENT
+            0 | 1 | 3..=7 => or_false_or_null(Self::string(lowercase)),
+            _ => get_false(),
+        })
     }
 }
 
