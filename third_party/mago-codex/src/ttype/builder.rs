@@ -939,8 +939,8 @@ fn get_callable_from_type(
         }
     } else {
         // `callable` without a specification should be treated the same as
-        // `callable(mixed...): mixed`
-        parameters.push(TCallableParameter::new(Some(Arc::new(get_mixed())), false, true, false));
+        // `callable(mixed...): mixed`, the native hint's TCallableSignature::mixed()
+        parameters.push(TCallableParameter::new(Some(Arc::new(get_mixed())), false, true, true));
         return_type = Some(get_mixed());
     }
 
@@ -997,13 +997,9 @@ fn get_reference_from_kind(
 
             let (fq_reference_name, _) = scope.resolve(NameKind::Default, reference_name);
 
-            // `Closure` -> `Closure(mixed...): mixed`
+            // `Closure` -> `Closure(mixed...): mixed`, the native hint's TCallableSignature::mixed(true)
             if fq_reference_name.eq_ignore_ascii_case(b"Closure") && generics.is_none() {
-                return Ok(TAtomic::Callable(TCallable::Signature(
-                    TCallableSignature::new(false, true)
-                        .with_parameters(vec![TCallableParameter::new(Some(Arc::new(get_mixed())), false, true, false)])
-                        .with_return_type(Some(Arc::new(get_mixed()))),
-                )));
+                return Ok(TAtomic::Callable(TCallable::Signature(TCallableSignature::mixed(true))));
             }
 
             word(&fq_reference_name)

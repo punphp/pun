@@ -1091,3 +1091,10 @@ templates, as PHPStan's `GenericStaticType::changeBaseClass()` does (`UserCollec
 `ttype/template/inferred_type_replacer.rs` `replace_atomic()` also replaces the templates in the property types of an
 object shape (`TObject::WithProperties`), as PHPStan's ObjectShapeType::traverse() does. Larastan's BelongsToMany stubs
 need it: `TRelatedModel&object{pivot: TPivotModel}` resolves its `TPivotModel`.
+
+## Laravel-framework level max parity
+
+- `ttype/builder.rs`: a bare `callable` tag has an optional variadic parameter, so it prints `callable(): mixed`, and a
+  bare `Closure` tag uses `TCallableSignature::mixed(true)`, PHPStan's plain `Closure` object.
+- `scanner/class_like.rs`: a `@method` parameter whose default is `null` gets a `null` default type, so its type
+  includes `null`, as `PhpDocNodeResolver::resolveMethodTags()` adds it (`string $default = null` accepts `null`).

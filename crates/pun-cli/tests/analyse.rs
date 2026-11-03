@@ -125,6 +125,30 @@ fn formats_match_phpstan_trait_context() {
     );
 }
 
+/// An anonymous class's name holds its file relative to the analysed paths' common directory (FuzzyRelativePathHelper).
+#[test]
+fn anonymous_class_names_match_phpstan() {
+    let Some(phar) = phpstan() else { return };
+    let source = |class: &str, function: &str| {
+        format!(
+            "<?php\n\nnamespace App;\n\nclass {class}\n{{\n    public function __construct(public int $x)\n    {{\n    }}\n}}\n\nfunction {function}(): void\n{{\n    new class('a') extends {class} {{}};\n}}\n"
+        )
+    };
+    let d = project(
+        "analyse",
+        "anonymous-names",
+        &[
+            ("phpstan.neon", "parameters:\n    level: max\n    paths:\n        - src\n"),
+            ("pun.toml", "[analyse]\npreset = \"max\"\npaths = [\"src\"]\n"),
+            ("src/Sub/a.php", &source("R", "f")),
+            ("src/b.php", &source("Q", "g")),
+        ],
+    );
+    let want = run(&d, &["php", phar.to_str().unwrap(), "analyse", "--no-progress", "-c", "phpstan.neon"], &["--error-format=raw"]);
+    assert!(want.0.contains("App\\R@anonymous/Sub/a.php:14 constructor"), "{}", want.0);
+    assert_eq!(run(&d, &[PUN, "analyse"], &["--error-format=raw"]), want);
+}
+
 #[test]
 fn formats_match_phpstan_dumps() {
     formats_match_phpstan(

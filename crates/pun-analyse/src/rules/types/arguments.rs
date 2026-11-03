@@ -101,7 +101,9 @@ struct Inference {
 }
 
 fn infer(c: &Checker, acceptor: &Acceptor, args: &[Entry], parameters: &[Option<usize>]) -> Inference {
-    let declared: Vec<Option<Type>> = (0..acceptor.names.len()).map(|p| declared_type(c, acceptor, p)).collect();
+    // `static` and `$this` in a PHPDoc type resolve against the class reflection
+    let declared: Vec<Option<Type>> =
+        declared::with_classes(c, || (0..acceptor.names.len()).map(|p| declared_type(c, acceptor, p)).collect());
     let templates = std::cell::RefCell::new(Vec::new());
     fn collect(t: &Type, out: &std::cell::RefCell<Vec<Template>>) {
         if let Type::Template(tt) = t

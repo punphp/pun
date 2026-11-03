@@ -39,7 +39,6 @@
 3 Functions/ReturnTypeRuleTest::testReturnTypeRule
 3 Functions/ReturnTypeRuleTest::testBug11301
 3 Methods/ReturnTypeRuleTest::testReturnTypeRule
-3 Methods/ReturnTypeRuleTest::testBug4648
 3 Methods/ReturnTypeRuleTest::testBug3523
 3 Methods/ReturnTypeRuleTest::testBug5979
 3 Methods/ReturnTypeRuleTest::testBug7574
@@ -99,7 +98,6 @@
 9 Functions/CallToFunctionParametersRuleTest::testBug9697
 9 Functions/CallToFunctionParametersRuleTest::testConstantParameterCheck
 9 Methods/CallMethodsRuleTest::testBug12544
-9 Methods/CallMethodsRuleTest::testBug2837
 9 Methods/CallMethodsRuleTest::testBug3465
 9 Methods/CallMethodsRuleTest::testBug5536
 9 Methods/CallMethodsRuleTest::testBug6828
@@ -209,7 +207,6 @@
 5 Methods/CallMethodsRuleTest::testBug13171
 5 Methods/CallMethodsRuleTest::testBug13993
 5 Methods/CallMethodsRuleTest::testBug1661
-5 Methods/CallMethodsRuleTest::testBug3555
 5 Methods/CallMethodsRuleTest::testBug5372
 5 Methods/CallMethodsRuleTest::testBug6371
 5 Methods/CallMethodsRuleTest::testBug9487
@@ -250,7 +247,6 @@
 9 Functions/CallToFunctionParametersRuleTest::testBug14312b
 9 Functions/CallToFunctionParametersRuleTest::testBug2911
 9 Functions/CallToFunctionParametersRuleTest::testBug4371
-9 Functions/CallToFunctionParametersRuleTest::testBug6175
 9 Functions/CallToFunctionParametersRuleTest::testBug6987
 9 Functions/CallToFunctionParametersRuleTest::testBug7082
 9 Functions/CallToFunctionParametersRuleTest::testBug7156
@@ -274,7 +270,6 @@
 9 Methods/CallMethodsRuleTest::testBug13993
 9 Methods/CallMethodsRuleTest::testBug14719
 9 Methods/CallMethodsRuleTest::testBug1661
-9 Methods/CallMethodsRuleTest::testBug3555
 9 Methods/CallMethodsRuleTest::testBug3589
 9 Methods/CallMethodsRuleTest::testBug4188
 9 Methods/CallMethodsRuleTest::testBug5372
@@ -330,13 +325,9 @@
 6 Methods/MissingMethodParameterTypehintRuleTest::testBug14549
 # an-dead: ConstantConditionInTraitRule: Mago types a trait's `$this` as the trait, so a condition on the using class (its methods' return types) is not constant in any context
 4 Comparison/BooleanAndConstantConditionRuleTest::testInTrait
-4 Comparison/BooleanNotConstantConditionRuleTest::testInTrait
 4 Comparison/BooleanOrConstantConditionRuleTest::testInTrait
 4 Comparison/DoWhileLoopConstantConditionRuleTest::testInTrait
-4 Comparison/ElseIfConstantConditionRuleTest::testInTrait
-4 Comparison/IfConstantConditionRuleTest::testInTrait
 4 Comparison/LogicalXorConstantConditionRuleTest::testInTrait
-4 Comparison/TernaryOperatorConstantConditionRuleTest::testInTrait
 4 Comparison/WhileLoopAlwaysFalseConditionRuleTest::testInTrait
 4 Comparison/WhileLoopAlwaysTrueConditionRuleTest::testInTrait
 # an-dead: constant conditions whose expected tip needs native types (treatPhpDocTypesAsCertain), the possibly impure tip, or a type Mago infers differently
@@ -379,7 +370,6 @@
 4 Comparison/MatchExpressionRuleTest::testBug13303
 4 Comparison/MatchExpressionRuleTest::testBug9534
 # an-dead: constant conditions where Mago's types differ (closures writing $this properties, casts not narrowing, static:: constants, loops, method_exists() on @method, ImpossibleCheckType ownership)
-4 Comparison/BooleanNotConstantConditionRuleTest::testBug12267
 4 Comparison/BooleanOrConstantConditionRuleTest::testBug6551
 4 Comparison/ElseIfConstantConditionRuleTest::testBug11674
 4 Comparison/IfConstantConditionRuleTest::testBug4864
@@ -389,7 +379,6 @@
 4 Comparison/NumberComparisonOperatorsConstantConditionRuleTest::testBug12167
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testStrictComparison
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug14904
-4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug8060
 4 Comparison/TernaryOperatorConstantConditionRuleTest::testBug3370
 # an-types: property writes: trait context, `already assigned`, WeakMap's template default, array offset and list values, generic declaring-class display, set-hook parameter types, accepts tips, @param-out values, clone with, constant/range types where Mago's differ
 3 Properties/ReadOnlyByPhpDocPropertyAssignRuleTest::testRule
@@ -468,7 +457,6 @@
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug3761
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug11609
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testPossiblyImpureTip
-4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testInTrait
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug11054
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug14847
 4 DeadCode/UnreachableStatementRuleTest::testMultipleUnreachable
@@ -529,13 +517,10 @@
 4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug4570
 4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug9666
 4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug13799
-4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testInTrait
 4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug6211
 4 Comparison/ImpossibleCheckTypeMethodCallRuleTest::testBug12473
 4 Comparison/ImpossibleCheckTypeMethodCallRuleTest::testBug12087b
-4 Comparison/ImpossibleCheckTypeMethodCallRuleTest::testInTrait
 4 Comparison/ImpossibleCheckTypeStaticMethodCallRuleTest::testBug12087b
-4 Comparison/ImpossibleCheckTypeStaticMethodCallRuleTest::testInTrait
 # an-types2: the level 5 and 9 fixtures with the comparison, offset and property-write rules merged from main (their
 # Mago inference and impure-call differences), and property.private/protected on by-ref and clone-with writes
 3 Properties/ReadOnlyByPhpDocPropertyAssignRefRuleTest::testRule
@@ -639,7 +624,6 @@
 4 Comparison/MatchExpressionRuleTest::testBug9436
 4 Comparison/MatchExpressionRuleTest::testBug12998
 4 Comparison/MatchExpressionRuleTest::testBug12790
-4 Comparison/MatchExpressionRuleTest::testInTrait
 # pipe calls (`|>`) are not checked as calls (restored after the pipe binaryOp fix dropped them)
 5 Functions/CallToFunctionParametersRuleTest::testPipeOperator
 5 Methods/CallMethodsRuleTest::testPipeOperator
@@ -656,7 +640,6 @@
 4 Classes/ImpossibleInstanceOfRuleTest::testReportAlwaysTrueInLastCondition#1
 4 Classes/ImpossibleInstanceOfRuleTest::testBug3632
 4 Classes/ImpossibleInstanceOfRuleTest::testBug10353
-4 Classes/ImpossibleInstanceOfRuleTest::testBug12267
 4 Classes/ImpossibleInstanceOfRuleTest::testNewIsAlwaysFinalClass
 4 Classes/ImpossibleInstanceOfRuleTest::testBug13975#0
 4 Classes/ImpossibleInstanceOfRuleTest::testPossiblyImpureTip
@@ -728,7 +711,6 @@
 3 Arrays/ArrayDestructuringRuleTest::testBug15013
 3 Arrays/NonexistentOffsetInArrayDimFetchRuleTest::testBug5169
 3 Arrays/NonexistentOffsetInArrayDimFetchRuleTest::testBug5743
-3 Arrays/NonexistentOffsetInArrayDimFetchRuleTest::testBug8068
 3 Arrays/NonexistentOffsetInArrayDimFetchRuleTest::testBug11655
 3 Arrays/NonexistentOffsetInArrayDimFetchRuleTest::testBug3747
 3 Arrays/NonexistentOffsetInArrayDimFetchRuleTest::testArrayDimFetchAfterArrayKeyFirstOrLast

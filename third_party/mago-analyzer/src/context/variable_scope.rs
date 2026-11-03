@@ -379,6 +379,13 @@ impl BlockContext<'_> {
                     .or_insert_with(|| Rc::clone(ty));
             }
         }
+        // MutatingScope::mergeWith keeps a call's remembered type only with Yes certainty: a call specified on some
+        // branches is read again from its declaration after the join
+        let live: Vec<_> = branches.iter().filter(|branch| !branch.state.impossible).collect();
+        self.locals.retain(|name, _| {
+            !name.as_bytes().ends_with(b")")
+                || live.iter().all(|branch| branch.locals.contains_key(name) && !branch.state.absent.contains(name))
+        });
         self.merge_variable_scopes(branches, codebase);
         for ty in self.locals.values_mut() {
             if ty.types.len() < 2 {

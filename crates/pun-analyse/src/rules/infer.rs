@@ -408,6 +408,8 @@ struct Found {
     /// The `defined` and variable-read spans with a certainty from a possible branch (see [`merge`]).
     possible_defined: HashSet<Span>,
     possible_reads: HashSet<Span>,
+    /// The `read` spans with a type from a possible branch.
+    possible_read_types: HashSet<Span>,
 }
 
 /// A loop body is analysed more than once; differing answers are a maybe. An answer from a branch Mago marked impossible
@@ -579,11 +581,31 @@ impl ExpressionHook for Definedness {
         {
             // Repeated live loop evaluations contribute alternatives. Keeping only the last
             // narrowed read can turn a do-while's incoming bool into an always-true condition,
-            // incorrectly hiding the initialized-property check on its normal exit.
-            self.found.lock().expect("no hook panics while holding the lock").read.entry(expr.span())
-                .and_modify(|previous| *previous = mago_codex::ttype::combine_union_types(
-                    previous, ty, context.codebase(), Default::default()))
-                .or_insert_with(|| ty.clone());
+            // incorrectly hiding the initialized-property check on its normal exit. As in merge(), a
+            // read in a branch Mago marked impossible (an `isset()` of a variable absent on the first
+            // pass) only counts until a possible branch answers.
+            let impossible = context.block_context().variable_state.impossible;
+            let mut found = self.found.lock().expect("no hook panics while holding the lock");
+            let found = &mut *found;
+            let span = expr.span();
+            let answered = found.possible_read_types.contains(&span);
+            match found.read.entry(span) {
+                std::collections::hash_map::Entry::Occupied(_) if impossible && answered => {}
+                std::collections::hash_map::Entry::Occupied(mut previous) if impossible || answered => {
+                    let combined = mago_codex::ttype::combine_union_types(
+                        previous.get(), ty, context.codebase(), Default::default());
+                    previous.insert(combined);
+                }
+                std::collections::hash_map::Entry::Occupied(mut previous) => {
+                    previous.insert(ty.clone());
+                }
+                std::collections::hash_map::Entry::Vacant(v) => {
+                    v.insert(ty.clone());
+                }
+            }
+            if !impossible {
+                found.possible_read_types.insert(span);
+            }
         }
         if self.wanted.contains(&expr.span())
             && let Some(ty) = context.get_keep_void_expression_type(expr)

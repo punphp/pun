@@ -284,14 +284,16 @@ fn find_on<'a>(c: &Checker<'a, '_>, f: &Fetch, holder: Type, native_only: bool, 
     if native_only && declaring.kind == mago_codex::symbol::SymbolKind::Enum {
         return None;
     }
-    let declaring = if native_only && declaring.kind == mago_codex::symbol::SymbolKind::Trait {
-        // Mago's appearing id still names the trait. PHP reflects its property on the class that directly
-        // imports it (possibly through another trait), not on a later inheriting class.
+    // Mago's appearing id still names the trait. PHP reflects its property on the class that directly imports it
+    // (possibly through another trait), not on a later inheriting class.
+    let importer = (declaring.kind == mago_codex::symbol::SymbolKind::Trait).then(|| {
         std::iter::successors(Some(class), |k| k.direct_parent_class.and_then(|p| c.codebase.get_class_like(p.as_bytes())))
             .take(super::super::overriding::ANCESTRY)
-            .find(|k| k.direct_trait_names().any(|t| t == declaring.name))?
-    } else {
-        declaring
+            .find(|k| k.direct_trait_names().any(|t| t == declaring.name))
+    });
+    let declaring = match importer {
+        Some(importer) if native_only => importer?,
+        _ => declaring,
     };
     let ty = if magic {
         let readable = meta.type_metadata.as_ref().map_or_else(mixed, |t| c.to_phpstan(&t.type_union));
@@ -302,7 +304,7 @@ fn find_on<'a>(c: &Checker<'a, '_>, f: &Fetch, holder: Type, native_only: bool, 
     } else {
         declared::property_of(c, declaring, meta, &f.name[1..])
     };
-    let mut display = c.display(declaring);
+    let mut display = c.display(importer.flatten().unwrap_or(declaring));
     // ObjectType's CalledOnTypeUnresolvedPropertyPrototypeReflection resolves the declaring ancestor's
     // active template map for native and annotation properties alike, not just annotation overlays.
     let receiver_args = match &holder {

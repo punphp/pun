@@ -51,6 +51,7 @@ pub(super) fn registry(contents: &[u8], larastan: Option<&super::Larastan>) -> P
         crate::laravel::register_models(&mut registry, Arc::clone(&larastan.models));
     }
     registry.register_function_provider(Benevolent);
+    registry.register_function_provider(GetClass);
     registry.register_function_provider(
         mago_analyzer::plugin::libraries::stdlib::array::ArrayIsListProvider,
     );
@@ -1500,6 +1501,38 @@ impl FunctionReturnTypeProvider for ParseUrl {
             0 | 1 | 3..=7 => or_false_or_null(Self::string(lowercase)),
             _ => get_false(),
         })
+    }
+}
+
+/// PHPStan 2.3.1's GetClassDynamicReturnTypeExtension for an object argument: `toGetClassResultType()`, each object's
+/// class-string, through Mago's GetClassProvider. Inside a trait, `$this`'s is a plain class-string (the stub's).
+struct GetClass;
+
+impl Provider for GetClass {
+    fn meta() -> &'static ProviderMeta {
+        &META
+    }
+}
+
+impl FunctionReturnTypeProvider for GetClass {
+    fn targets() -> FunctionTarget {
+        FunctionTarget::Exact(b"get_class")
+    }
+
+    fn get_return_type(
+        &self,
+        context: &ProviderContext<'_, '_, '_>,
+        invocation: &InvocationInfo<'_, '_, '_>,
+    ) -> Option<TUnion> {
+        use mago_codex::reference::ReferenceOrigin;
+        use mago_codex::ttype::atomic::object::TObject;
+        let argument = context.get_expression_type(invocation.get_argument(0, &[b"object"])?)?;
+        let in_trait = matches!(context.scope().get_reference_origin(), ReferenceOrigin::Symbol((class, _))
+            if context.codebase().get_class_like(class.as_bytes()).is_some_and(|k| k.kind.is_trait()));
+        if in_trait && argument.types.iter().any(|a| matches!(a, TAtomic::Object(TObject::Named(n)) if n.is_this)) {
+            return None;
+        }
+        mago_analyzer::plugin::libraries::stdlib::object::GetClassProvider.get_return_type(context, invocation)
     }
 }
 

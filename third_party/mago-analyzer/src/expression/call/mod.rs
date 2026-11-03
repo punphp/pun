@@ -23,6 +23,8 @@ use mago_word::WordMap;
 use mago_word::ascii_lowercase_word;
 use mago_word::concat_word;
 
+use crate::utils::expression::literal_arguments_hash;
+use crate::utils::expression::remembered_method_name;
 use crate::analyzable::Analyzable;
 use crate::artifacts::AnalysisArtifacts;
 use crate::artifacts::ResolvedMethodCall;
@@ -157,7 +159,13 @@ where
             ..
         } = target
         {
-            Some(metadata.original_name)
+            // MethodCallHandler remembers a call by its arguments too; only literal ones, which no write changes
+            match invocation_arguments {
+                InvocationArgumentsSource::ArgumentList(arguments) => {
+                    remembered_method_name(metadata.original_name.as_bytes(), arguments)
+                }
+                _ => Some(metadata.original_name),
+            }
         } else {
             None
         }
@@ -165,7 +173,8 @@ where
 
     let method_call_is_stable = matches!(
         invocation_arguments,
-        InvocationArgumentsSource::ArgumentList(arguments) if arguments.arguments.is_empty()
+        InvocationArgumentsSource::ArgumentList(arguments)
+            if arguments.arguments.is_empty() || literal_arguments_hash(arguments).is_some()
     ) && !invocation_targets.is_empty()
         && invocation_targets.iter().all(|target| {
             let InvocationTarget::FunctionLike { metadata, method_context: Some(_), .. } = target else {

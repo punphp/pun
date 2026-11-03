@@ -16,6 +16,7 @@ use mago_codex::ttype::atomic::object::named::TNamedObject;
 use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::atomic::scalar::bool::TBool;
 use mago_codex::ttype::atomic::scalar::string::TString;
+use mago_codex::ttype::TType;
 use mago_codex::ttype::combiner;
 use mago_codex::ttype::combiner::CombinerOptions;
 use mago_codex::ttype::comparator::ComparisonResult;
@@ -174,6 +175,33 @@ fn subtract_complex_type<A>(
                 let assertion_classlike_name = assertion_named_object.get_name();
 
                 if let Some(class_like_metadata) = context.codebase.get_class_like(existing_classlike_name.as_bytes()) {
+                    // ObjectType::subtract(): a class that does not list its allowed subtypes keeps a removed
+                    // subclass as its subtracted type (`ReflectionType~ReflectionUnionType`)
+                    if class_like_metadata.permitted_inheritors.is_none()
+                        && class_like_metadata.kind != mago_codex::symbol::SymbolKind::Enum
+                        && existing_named_object.type_parameters.is_none()
+                        && assertion_named_object.type_parameters.is_none()
+                        && !existing_named_object.has_intersection_types()
+                        && !assertion_named_object.has_intersection_types()
+                        && !existing_classlike_name.as_bytes().eq_ignore_ascii_case(assertion_classlike_name.as_bytes())
+                        && context
+                            .codebase
+                            .is_instance_of(assertion_classlike_name.as_bytes(), existing_classlike_name.as_bytes())
+                    {
+                        let assertion_object = TUnion::from_atomic(TAtomic::Object(TObject::Named(TNamedObject::new(
+                            assertion_classlike_name,
+                        ))));
+                        let excluded = match &existing_named_object.subtracted_type {
+                            Some(excluded) => mago_codex::ttype::combine_union_types(excluded, &assertion_object, context.codebase, CombinerOptions::default()),
+                            None => assertion_object,
+                        };
+                        acceptable_types
+                            .push(TAtomic::Object(TObject::Named(existing_named_object.clone().with_subtracted_type(Some(excluded)))));
+                        *can_be_disjunct = true;
+
+                        continue;
+                    }
+
                     // handle __Sealed classes, negating where possible
                     if let Some(child_classlikes) = class_like_metadata.child_class_likes.as_ref()
                         && child_classlikes.contains(&assertion_classlike_name)

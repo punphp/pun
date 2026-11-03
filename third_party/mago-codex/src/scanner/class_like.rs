@@ -1020,6 +1020,14 @@ where
                     );
                 }
 
+                // PHPStan's PhpDocNodeResolver: a `null` default adds `null` to the parameter's type
+                if let Some(default) = &argument.default
+                    && matches!(default.value, mago_phpdoc_syntax::cst::ConstantExpression::Null(_))
+                {
+                    function_parameter_metadata.default_type =
+                        Some(TypeMetadata::new(crate::ttype::get_null(), default.value.span()));
+                }
+
                 if argument.is_variadic() {
                     function_parameter_metadata.flags.set(MetadataFlags::VARIADIC, true);
                 }

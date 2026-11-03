@@ -859,8 +859,15 @@ where
                 break;
             }
 
+            // PHPStan's next pass starts from the entry scope joined with the back edge: a variable only the body
+            // defines is maybe defined there, with the body's type
             for variable_id in variables_to_remove {
-                continue_context.locals.remove(&variable_id);
+                if let Some(back_edge) = continue_context.locals.get(&variable_id) {
+                    let mut maybe = (**back_edge).clone();
+                    maybe.set_possibly_undefined(true, None);
+                    continue_context.locals.insert(variable_id, Rc::new(maybe));
+                    continue_context.variable_state.absent.remove(&variable_id);
+                }
             }
 
             continue_context.clauses.clone_from(&pre_loop_context.clauses);

@@ -13,6 +13,7 @@ use mago_codex::ttype::union::TUnion;
 use mago_names::ResolvedNames;
 use mago_span::HasSpan;
 use mago_syntax::cst::Access;
+use mago_syntax::cst::ArgumentList;
 use mago_syntax::cst::ArrayAccess;
 use mago_syntax::cst::Call;
 use mago_syntax::cst::ClassLikeConstantSelector;
@@ -327,13 +328,14 @@ fn get_extended_expression_id<'ast, 'arena>(
             method: ClassLikeMemberSelector::Identifier(method),
             argument_list,
             ..
-        })) if argument_list.arguments.is_empty() => {
+        })) => {
+            let method = remembered_method_name(method.value, argument_list)?;
             let object = get_expression_id(object, this_class_name, resolved_names, codebase)?;
             if object.as_bytes().ends_with(b"()") {
                 return None;
             }
 
-            concat_word!(object.as_bytes(), b"->", method.value, b"()")
+            concat_word!(object.as_bytes(), b"->", method.as_bytes(), b"()")
         }
         Expression::Call(Call::Function(call)) => get_remembered_function_call_id(call, resolved_names, codebase?)?,
         Expression::Self_(_) => {
@@ -388,8 +390,14 @@ pub fn get_remembered_function_call_id<'arena>(
     {
         return None;
     }
+    let hash = literal_arguments_hash(&call.argument_list)?;
+    Some(word(format!("{}#{hash:016x}()", String::from_utf8_lossy(name).to_ascii_lowercase()).as_bytes()))
+}
+
+/// A hash of a call's arguments when all are positional literal strings or integers, which no write can change.
+pub fn literal_arguments_hash(argument_list: &ArgumentList<'_>) -> Option<u64> {
     let mut hash: u64 = 0xcbf2_9ce4_8422_2325;
-    for argument in call.argument_list.arguments.iter() {
+    for argument in argument_list.arguments.iter() {
         let mago_syntax::cst::Argument::Positional(argument) = argument else {
             return None;
         };
@@ -404,7 +412,16 @@ pub fn get_remembered_function_call_id<'arena>(
         }
         hash = (hash ^ u64::from(matches!(argument.value, Expression::Literal(Literal::Integer(_))))).wrapping_mul(0x0100_0000_01b3);
     }
-    Some(word(format!("{}#{hash:016x}()", String::from_utf8_lossy(name).to_ascii_lowercase()).as_bytes()))
+    Some(hash)
+}
+
+/// The method name part of a remembered method call's id: the name, with a hash of literal arguments after `#`.
+pub fn remembered_method_name(method: &[u8], argument_list: &ArgumentList<'_>) -> Option<Word> {
+    if argument_list.arguments.is_empty() {
+        return Some(word(method));
+    }
+    let hash = literal_arguments_hash(argument_list)?;
+    Some(word(format!("{}#{hash:016x}", String::from_utf8_lossy(method)).as_bytes()))
 }
 
 pub fn get_property_access_expression_id<'ast, 'arena>(

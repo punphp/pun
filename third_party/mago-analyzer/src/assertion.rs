@@ -30,6 +30,7 @@ use mago_codex::ttype::union::TUnion;
 use mago_span::HasSpan;
 use mago_span::Span;
 use mago_syntax::cst::Access;
+use mago_syntax::cst::Assignment;
 use mago_syntax::cst::BinaryOperator;
 use mago_syntax::cst::Call;
 use mago_syntax::cst::ClassConstantAccess;
@@ -113,6 +114,26 @@ where
                     ));
                 }
                 _ => {}
+            }
+
+            // TypeSpecifier::create(): an assignment argument specifies its variable and its assigned expression,
+            // along a chain of assignments
+            if let Call::Function(function_call) = call {
+                for argument in &function_call.argument_list.arguments {
+                    let mut current = unwrap_expression(argument.value());
+                    let Some(set) = assertion_context.get_expression_id(current).and_then(|id| if_types.get(&id).cloned())
+                    else {
+                        continue;
+                    };
+                    while let Expression::Assignment(assignment) = current
+                        && assignment.operator.is_assign()
+                    {
+                        if let Some(rhs_id) = assigned_expression_id(assignment, assertion_context) {
+                            if_types.entry(rhs_id).or_insert_with(|| set.clone());
+                        }
+                        current = unwrap_expression(assignment.rhs);
+                    }
+                }
             }
 
             if let Call::Function(FunctionCall { function: _, argument_list }) = call
@@ -241,6 +262,26 @@ where
     }
 
     if if_types.is_empty() { vec![] } else { vec![if_types] }
+}
+
+/// The id of an assignment's assigned expression, which `TypeSpecifier::create()` specifies with its variable. An
+/// expression reading the variable itself (`$name = $name->value`) describes the value before the assignment.
+pub(crate) fn assigned_expression_id<A>(
+    assignment: &Assignment,
+    assertion_context: AssertionContext<'_, '_, A>,
+) -> Option<Word>
+where
+    A: Arena,
+{
+    if !assignment.operator.is_assign() {
+        return None;
+    }
+
+    let rhs_id = assertion_context.get_expression_id(assignment.rhs)?;
+    match assertion_context.get_expression_id(assignment.lhs) {
+        Some(lhs_id) if crate::context::scope::var_has_root(rhs_id, lhs_id) => None,
+        _ => Some(rhs_id),
+    }
 }
 
 fn process_custom_assertions(expression_span: Span, artifacts: &AnalysisArtifacts) -> WordMap<AssertionSet> {

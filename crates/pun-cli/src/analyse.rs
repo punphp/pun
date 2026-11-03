@@ -139,7 +139,7 @@ fn run_error(message: String, hint: Option<String>) -> anyhow::Error {
 /// The project pun-analyse works on: the analysed files, Composer's autoloaded files for symbols (minus the
 /// excludes), the target PHP version, and `[analyse]` as PHPStan's parameters (the level, `stubFiles`,
 /// `ignoreErrors`, Larastan, rule options). Only the enabled rules' identifiers are reported.
-fn project(cfg: &Config, analysed: Vec<PathBuf>) -> Result<pun_analyse::Project> {
+fn project(cfg: &Config, analysed: Vec<PathBuf>, analysed_paths: &[PathBuf]) -> Result<pun_analyse::Project> {
     use pun_phpstan::ignore::IgnoredErrors;
     use pun_phpstan::{Array, Key, Value};
     let mut params = cfg.analyse.parameters(&cfg.root);
@@ -158,6 +158,9 @@ fn project(cfg: &Config, analysed: Vec<PathBuf>) -> Result<pun_analyse::Project>
         .autoloaded
         .retain(|a| !excluded.is_excluded(&a.path));
     project.analysed = analysed;
+    // FuzzyRelativePathHelper (anonymous class names) over the analysed paths
+    let analysed_paths: Vec<String> = analysed_paths.iter().map(|p| p.to_string_lossy().into_owned()).collect();
+    project.relative_path = pun_analyse::RelativePath::of(&analysed_paths);
     let ignores = (params.get_str("ignoreErrors").and_then(Value::as_array)).cloned();
     project.ignore_errors =
         IgnoredErrors::new(&ignores.unwrap_or_default(), true).with_rules(rule_of_identifier);
@@ -202,7 +205,17 @@ fn project(cfg: &Config, analysed: Vec<PathBuf>) -> Result<pun_analyse::Project>
 pub(crate) fn analyse(cfg: &Config, paths: &[PathBuf], use_baseline: bool) -> Result<Analysed> {
     let files = pun_workspace::files(cfg, Some(Command::Analyse), paths)?;
     let count = files.len();
-    let project = project(cfg, files)?;
+    let configured: Vec<PathBuf> = match paths.is_empty() {
+        false => paths.to_vec(),
+        true => cfg.analyse.paths.iter().map(PathBuf::from).collect(),
+    };
+    let mut paths: Vec<PathBuf> = (configured.iter())
+        .map(|p| PathBuf::from(normalize_path(&cfg.root.join(p).to_string_lossy())))
+        .collect();
+    if paths.is_empty() {
+        paths.push(cfg.root.clone());
+    }
+    let project = project(cfg, files, &paths)?;
     let analysis =
         pun_analyse::analyse_project(&project).map_err(|e| run_error(e.to_string(), None))?;
     let mut errors = analysis.errors;
@@ -259,16 +272,6 @@ pub(crate) fn analyse(cfg: &Config, paths: &[PathBuf], use_baseline: bool) -> Re
     {
         let b = baseline::Baseline::read(&cfg.root.join(path))?;
         unmatched_baseline = b.filter(&mut findings);
-    }
-    let configured: Vec<PathBuf> = match paths.is_empty() {
-        false => paths.to_vec(),
-        true => cfg.analyse.paths.iter().map(PathBuf::from).collect(),
-    };
-    let mut paths: Vec<PathBuf> = (configured.iter())
-        .map(|p| PathBuf::from(normalize_path(&cfg.root.join(p).to_string_lossy())))
-        .collect();
-    if paths.is_empty() {
-        paths.push(cfg.root.clone());
     }
     Ok(Analysed {
         findings,

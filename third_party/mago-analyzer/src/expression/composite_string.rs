@@ -2,6 +2,7 @@ use mago_allocator::Arena;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::atomic::scalar::string::TString;
+use mago_codex::ttype::atomic::scalar::string::TStringCasing;
 use mago_codex::ttype::atomic::scalar::string::TStringLiteral;
 use mago_codex::ttype::get_literal_string;
 use mago_codex::ttype::get_never;
@@ -35,6 +36,9 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for CompositeString<'arena> {
         A: Arena,
     {
         let mut non_empty = false;
+        // PHPStan folds the parts with resolveConcatType(): non-falsy once a part is, or once a non-empty part
+        // follows a non-empty prefix
+        let mut truthy = false;
         let mut all_literals = true;
         let mut resulting_strings: Option<Vec<String>> = Some(vec![String::new()]);
         let mut impossible = false;
@@ -42,7 +46,10 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for CompositeString<'arena> {
         for part in self.parts().as_slice() {
             let (part_type, part_expression_id) = match part {
                 StringPart::Literal(literal_string_part) => {
-                    non_empty = non_empty || !literal_string_part.raw.is_empty();
+                    let part_non_empty = !literal_string_part.raw.is_empty();
+                    let part_truthy = part_non_empty && literal_string_part.value != Some(b"0".as_slice());
+                    truthy = truthy || part_truthy || (non_empty && part_non_empty);
+                    non_empty = non_empty || part_non_empty;
                     if let Some(strings) = resulting_strings.as_mut() {
                         if let Some(Ok(part_str)) = literal_string_part.value.map(str::from_utf8) {
                             for s in strings.iter_mut() {
@@ -103,12 +110,14 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for CompositeString<'arena> {
             }
 
             let mut is_non_empty_part = true;
+            let mut is_truthy_part = true;
             let mut part_is_all_literals = true;
             let mut has_unspecified_literal = false;
             let mut part_literal_values: Vec<Word> = Vec::new();
 
             for cast_part_atomic in casted_part_type.types.as_ref() {
                 is_non_empty_part = is_non_empty_part && cast_part_atomic.is_non_empty_string();
+                is_truthy_part = is_truthy_part && cast_part_atomic.is_truthy();
 
                 if !part_is_all_literals {
                     continue;
@@ -132,6 +141,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for CompositeString<'arena> {
                 }
             }
 
+            truthy = truthy || (is_truthy_part && is_non_empty_part) || (non_empty && is_non_empty_part);
             non_empty = non_empty || is_non_empty_part;
             all_literals = all_literals && part_is_all_literals;
 
@@ -190,6 +200,12 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for CompositeString<'arena> {
                         .collect(),
                 )
             }
+        } else if truthy {
+            TUnion::from_atomic(TAtomic::Scalar(TScalar::String(if all_literals {
+                TString::unspecified_literal_with_props(false, true, true, false, TStringCasing::Unspecified)
+            } else {
+                TString::general_with_props(false, true, true, false, TStringCasing::Unspecified)
+            })))
         } else if non_empty {
             if all_literals { get_non_empty_unspecified_literal_string() } else { get_non_empty_string() }
         } else if all_literals {

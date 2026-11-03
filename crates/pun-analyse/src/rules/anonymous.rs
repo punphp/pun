@@ -11,7 +11,7 @@ use mago_span::HasSpan;
 use mago_syntax::cst::{AnonymousClass, Program};
 use mago_syntax::walker::MutWalker;
 
-use crate::relative_path::RelativePath;
+use crate::relative_path::{RelativePath, absolute};
 
 struct Collect<'ast, 'arena> {
     classes: Vec<&'ast AnonymousClass<'arena>>,
@@ -45,7 +45,8 @@ pub(crate) fn names(
         classes: Vec::new(),
     };
     collect.walk_program(program, &mut ());
-    let path = relative.get(&String::from_utf8_lossy(&file.name));
+    // PHPStan's file names are absolute; a run's are relative to its working directory
+    let path = relative.get(&absolute(std::path::Path::new(&*String::from_utf8_lossy(&file.name))));
     let lines: Vec<u32> = collect
         .classes
         .iter()

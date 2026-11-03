@@ -88,6 +88,29 @@ where
         analyze_string_concat_operand(context, artifacts, operand, side);
     }
 
+    // PHPStan types every concat node of the chain (`$a . '@'` in `$a . '@' . $b` is the left operand that
+    // InvalidBinaryOperationRule reads): record the inner nodes' types too, children before parents
+    let mut stack = vec![(binary.rhs, false), (binary.lhs, false)];
+    let mut inner_nodes = Vec::new();
+    while let Some((expression, visited)) = stack.pop() {
+        if let Expression::Binary(inner) = expression
+            && matches!(&inner.operator, BinaryOperator::StringConcat(_))
+        {
+            if visited {
+                inner_nodes.push(inner);
+            } else {
+                stack.push((expression, true));
+                stack.push((inner.rhs, false));
+                stack.push((inner.lhs, false));
+            }
+        }
+    }
+    for inner in inner_nodes {
+        let inner_type =
+            fold_concat_operands(&[inner.lhs, inner.rhs], artifacts, context.settings.string_combination_threshold);
+        artifacts.set_rc_expression_type(inner, Rc::new(inner_type));
+    }
+
     let result_type = fold_concat_operands(&operands, artifacts, context.settings.string_combination_threshold);
     artifacts.set_rc_expression_type(binary, Rc::new(result_type));
 

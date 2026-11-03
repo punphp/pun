@@ -465,6 +465,22 @@ pub(super) fn check_static_method<'arena>(
     let first_level = c.is_top_level(call.span());
     let counts = params::count(&call.argument_list);
     let mut variants = method.variants();
+    // CalledOnTypeUnresolvedMethodPrototypeReflection: a call on a class name resolves the parameters' `static` and
+    // `$this` to that class
+    if matches!(call.class, Expression::Identifier(_)) && matches!(method, members::Method::User { .. }) {
+        let receiver = pun_phpstan::types::Type::Object(super::declared::original_name(class), vec![], false);
+        super::declared::with_classes(c, || {
+            for v in &mut variants.all {
+                for i in 0..v.names.len() {
+                    let Some(declared) = super::types::declared_type(c, v, i) else { continue };
+                    let called = super::method_reflection::called_on(&declared, &receiver);
+                    if called != declared {
+                        v.param_types[i] = params::ParamType::Typed(called);
+                    }
+                }
+            }
+        });
+    }
     // ClosureBindArgVisitor: `Closure::bind($var, ...)`
     if let Expression::Identifier(id) = call.class
         && c.written(id.span()).trim_start_matches('\\').eq_ignore_ascii_case("closure")

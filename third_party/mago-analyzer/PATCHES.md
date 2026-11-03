@@ -3557,3 +3557,32 @@ The declared-parameter narrowing above still keeps a declared type against a lit
 
 `crates/pun-analyse/tests/fixtures/coverage/types4/closure-returns.php` holds PHPStan's dumped types for these cases,
 and `closure_freshness` checks that an edited declaration reaches `array_map`'s result.
+
+## Laravel-framework level max parity
+
+These changes follow PHPStan 2.3.1 where laravel-framework at level max showed Mago's result differing.
+`crates/pun-analyse/tests/fixtures/coverage/laravel-max` holds PHPStan's output for a reduced case of each.
+
+- `expression/composite_string.rs` folds an interpolated string's parts as `resolveConcatType()` does: the string is
+  `non-falsy-string` once a part is truthy, or once a non-empty part follows a non-empty prefix.
+- `statement/class_like/method.rs` analyses a trait method with the using class (`trait_context_class`) as its scope
+  class, so `self`, `static` and `$this` are that class, as in NodeScopeResolver. `statement/function_like/mod.rs`
+  `trait_context_parameter_type()` finds the trait through the scope's reference origin instead.
+- `statement/loop/mod.rs` keeps a variable that only the loop body defines after the loop, possibly undefined and with
+  the back edge's type, instead of removing it.
+- `context/variable_scope.rs` keeps a remembered call's type (an id ending in `)`) after a branch join only when every
+  live branch has it, as `MutatingScope::mergeWith()` keeps only `Yes`-certainty expressions.
+  `expression/binary/null_coalesce.rs` also joins the isset-success scope's remembered calls after the right side.
+- `assertion.rs` and `formula.rs`: `TypeSpecifier::create()` specifies both the variable and the assigned expression
+  of an assignment argument (`is_string($a = $b)`, along a chain). The falsey side negates each variable's clauses on
+  their own, so both sides are narrowed, not just one of them. An assigned expression that reads the variable itself
+  (`$name = $name->value`) is left out.
+- `reconciler/negated_assertion_reconciler.rs` removes a subclass from a class that lists no allowed subtypes as
+  `ObjectType::subtract()` does: `ReflectionType` without `ReflectionUnionType` is `ReflectionType~ReflectionUnionType`,
+  not the union of the other known children.
+- `utils/expression/mod.rs` and `expression/call/mod.rs` remember a method call whose arguments are all literal strings
+  or integers, as MethodCallHandler remembers calls with arguments: `$this->option('x')` keeps the narrowed type of an
+  earlier `if ($this->option('x'))`. The arguments are hashed into the id (`$this->option#<hash>()`).
+- `expression/binary/concat.rs` also types each inner concat node of a flattened chain, as PHPStan types every
+  `Concat` node: in `$s.'@'.$m` the left operand `$s.'@'` has a type, so InvalidBinaryOperationRule sees
+  `non-falsy-string` and `mixed`.

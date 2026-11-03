@@ -18,6 +18,7 @@ use mago_word::WordMap;
 
 use crate::artifacts::AnalysisArtifacts;
 use crate::assertion::OtherValuePosition;
+use crate::assertion::assigned_expression_id;
 use crate::assertion::has_null_variable;
 use crate::assertion::scrape_assertions;
 use crate::context::assertion::AssertionContext;
@@ -342,18 +343,20 @@ where
         }
 
         let unary_operand_span = unary_prefix.operand.span();
-        let negated = negate_formula(
-            get_base_formula(
-                conditional_object_id,
-                unary_operand_span,
-                unary_prefix.operand,
-                assertion_context,
-                artifacts,
-                algebra_thresholds,
-                formula_size_threshold,
-            )?,
+        let formula = get_base_formula(
+            conditional_object_id,
+            unary_operand_span,
+            unary_prefix.operand,
+            assertion_context,
+            artifacts,
             algebra_thresholds,
+            formula_size_threshold,
         )?;
+        let negated = if assigns_to_expression(unary_prefix.operand, assertion_context) {
+            negate_each_clause(formula, algebra_thresholds)?
+        } else {
+            negate_formula(formula, algebra_thresholds)?
+        };
 
         return if negated.len() > usize::from(formula_size_threshold) { None } else { Some(negated) };
     }
@@ -900,6 +903,48 @@ fn get_formula_from_assertions(
     )])
 }
 
+/// A function call with an argument `$a = <expression with an id>`: `TypeSpecifier::create()` specifies both sides.
+fn assigns_to_expression<A>(expression: &Expression, assertion_context: AssertionContext<'_, '_, A>) -> bool
+where
+    A: Arena,
+{
+    let mut expression = unwrap_expression(expression);
+    while let Expression::UnaryPrefix(unary_prefix) = expression
+        && unary_prefix.operator.is_not()
+    {
+        expression = unwrap_expression(unary_prefix.operand);
+    }
+
+    matches!(expression, Expression::Call(Call::Function(function_call))
+        if function_call.argument_list.arguments.iter().any(|argument| matches!(
+            unwrap_expression(argument.value()),
+            Expression::Assignment(assignment) if assigned_expression_id(assignment, assertion_context).is_some()
+        )))
+}
+
+/// PHPStan's falsey context specifies each side of an assigned argument as not the type. Negating the conjunction
+/// of their clauses would only give a disjunction, so negate each variable's clauses on their own.
+fn negate_each_clause(clauses: Vec<Clause>, algebra_thresholds: &AlgebraThresholds) -> Option<Vec<Clause>> {
+    if clauses.iter().any(|clause| clause.possibilities.len() != 1) {
+        return negate_formula(clauses, algebra_thresholds);
+    }
+
+    let mut by_variable: Vec<(Word, Vec<Clause>)> = Vec::new();
+    for clause in clauses {
+        let variable = *clause.possibilities.keys().next()?;
+        match by_variable.iter_mut().find(|(v, _)| *v == variable) {
+            Some((_, group)) => group.push(clause),
+            None => by_variable.push((variable, vec![clause])),
+        }
+    }
+
+    by_variable
+        .into_iter()
+        .map(|(_, group)| negate_formula(group, algebra_thresholds))
+        .collect::<Option<Vec<_>>>()
+        .map(|negated| negated.into_iter().flatten().collect())
+}
+
 pub fn negate_or_synthesize<A>(
     clauses: Vec<Clause>,
     conditional: &Expression,
@@ -911,8 +956,9 @@ pub fn negate_or_synthesize<A>(
 where
     A: Arena,
 {
-    let negated_clauses =
-        if collect_conditional_assertions(conditional, true, artifacts, formula_size_threshold).is_empty() {
+    let negated_clauses = if assigns_to_expression(conditional, assertion_context) {
+        negate_each_clause(clauses, algebra_thresholds)
+    } else if collect_conditional_assertions(conditional, true, artifacts, formula_size_threshold).is_empty() {
             negate_formula(clauses, algebra_thresholds)
         } else {
             get_base_formula(

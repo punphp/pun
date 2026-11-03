@@ -79,7 +79,16 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Method<'arena> {
         if let MethodBody::Concrete(concrete_body) = &self.body {
             let mut scope =
                 ScopeContext::new(ReferenceOrigin::Symbol((class_like_metadata.name, method_metadata.name)));
-            scope.set_class_like(Some(class_like_metadata));
+            // NodeScopeResolver walks a trait's methods in the context of its using class: `self`, `static` and
+            // `$this` are that class
+            scope.set_class_like(Some(
+                context
+                    .settings
+                    .trait_context_class
+                    .filter(|_| class_like_metadata.kind.is_trait())
+                    .and_then(|class| context.codebase.get_class_like(class.as_bytes()))
+                    .unwrap_or(class_like_metadata),
+            ));
             scope.set_function_like(Some(method_metadata));
             scope.set_static(self.is_static());
 

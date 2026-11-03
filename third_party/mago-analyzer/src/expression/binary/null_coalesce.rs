@@ -316,6 +316,8 @@ where
         block_context.flags.set_has_returned(false);
         binary.rhs.analyze(context, block_context, artifacts)?;
         block_context.flags.set_has_returned(block_context.flags.has_returned() && has_returned);
+        // CoalesceHandler joins the isset-success scope too: a call specified only on the RHS edge is not remembered
+        block_context.retain_common_method_calls(&lhs_context);
         rhs_scope = block_context.variable_scope();
         native_right_scope = block_context.native_locals.clone();
 

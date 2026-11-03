@@ -27,6 +27,21 @@ use pun_phpstan::types::{
 use super::super::{Checker, arrays, declared, doc, infer};
 use crate::text;
 
+thread_local! {
+    /// Converting a closure's parameter: its generic arguments came from the callable it is passed to, so a filled
+    /// template fallback is kept (see `object()`).
+    static KEEP_FILLED: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
+    /// The callee of a callback was found, but the parameter it is passed to has no callable signature.
+    static WITHOUT_SIGNATURE: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
+}
+
+fn keeping_filled<R>(keep: bool, f: impl FnOnce() -> R) -> R {
+    let previous = KEEP_FILLED.replace(keep);
+    let result = f();
+    KEEP_FILLED.set(previous);
+    result
+}
+
 #[derive(Clone, Copy)]
 enum ConversionScope {
     Current,
@@ -59,10 +74,10 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         types: &HashMap<Span, TUnion, impl BuildHasher>,
     ) -> Option<Type> {
         let actual = types.get(&at)?;
-        Some(declared::with_classes(self, || {
+        Some(keeping_filled(self.closure_parameter(at), || declared::with_classes(self, || {
             let source = self.source_type(at, &self.origins, types);
             self.restore_inferred(at, self.to_phpstan(actual), source.as_ref())
-        }))
+        })))
     }
 
     /// Convert an observed scope value using the expression's own source metadata.
@@ -132,7 +147,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         scope: ConversionScope,
     ) -> Type {
         use mago_syntax::cst::Expression as E;
-        declared::with_classes(self, || {
+        keeping_filled(self.closure_parameter(e.span()), || declared::with_classes(self, || {
             let source = self.source_type(e.span(), &self.origins, types).or_else(|| {
                 match e.unparenthesized() {
                     E::Access(Access::ClassConstant(_)) => {
@@ -160,7 +175,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                 ConversionScope::Selected => self.refine_method_guards_in(e, ty, types),
             };
             self.restore_inferred(e.span(), ty, source.as_ref())
-        })
+        }))
     }
 
     fn restore_inferred(&self, at: Span, actual: Type, source: Option<&Type>) -> Type {
@@ -168,7 +183,40 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         // An inline @var annotation does not: its source restores that distinct template strategy.
         let ty = inferred_argument(&actual);
         source.map_or(ty.clone(), |source| {
-            restore_metadata(ty, source, !self.source_is_mutated(at, &self.origins))
+            let restored = restore_metadata(ty, source, !self.source_is_mutated(at, &self.origins));
+            // a closure's parameter takes the type of the callable parameter it is passed to
+            if self.closure_parameter(at) { restored } else { self.unfilled(restored, source) }
+        })
+    }
+
+    /// The expression is (a copy of) a closure's or an arrow function's parameter.
+    fn closure_parameter(&self, at: Span) -> bool {
+        let mut origin = self.origins.get(&at);
+        while let Some(infer::Origin::Copy(from)) = origin {
+            origin = self.origins.get(from);
+        }
+        // A parameter of a closure passed as an argument: PHPStan intersects its native type with the callable's
+        // parameter type, so only that type's arguments survive
+        if matches!(origin, Some(infer::Origin::Callback(..))) {
+            fn has_arguments(t: &Type) -> bool {
+                match t {
+                    Type::Object(_, args, _) => !args.is_empty(),
+                    Type::Union(ts) | Type::Intersection(ts) => ts.iter().any(has_arguments),
+                    _ => false,
+                }
+            }
+            WITHOUT_SIGNATURE.set(false);
+            let source = declared::with_classes(self, || self.source_type(at, &self.origins, &self.types));
+            // a callee Pun cannot resolve (a call forwarded by `__call`) keeps Mago's inferred arguments
+            return source.map_or(!WITHOUT_SIGNATURE.replace(false), |t| has_arguments(&t));
+        }
+        let Some(infer::Origin::Parameter(key, _)) = origin else { return false };
+        self.codebase.function_likes.get(key).is_some_and(|f| {
+            matches!(
+                f.kind,
+                mago_codex::metadata::function_like::FunctionLikeKind::Closure
+                    | mago_codex::metadata::function_like::FunctionLikeKind::ArrowFunction
+            )
         })
     }
 
@@ -492,9 +540,21 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                         pun_phpstan::types::infer_template_types(p, &actual)
                     }));
                 }
-                let Type::Callable(Some(signature)) =
-                    pun_phpstan::types::resolve_template_types(callable, &map)
-                else {
+                // the callable part of the parameter type, as `(\Closure(Builder<T>): mixed)|null` passes it on
+                fn signature(t: &Type) -> Option<&Signature> {
+                    match t {
+                        Type::Callable(Some(s)) | Type::Closure(s) => Some(s),
+                        Type::Union(ts) => {
+                            let mut callables = ts.iter().filter(|t| !matches!(t, Type::Null));
+                            let only = callables.next()?;
+                            if callables.next().is_some() { None } else { signature(only) }
+                        }
+                        _ => None,
+                    }
+                }
+                let resolved = pun_phpstan::types::resolve_template_types(callable, &map);
+                let Some(signature) = signature(&resolved) else {
+                    WITHOUT_SIGNATURE.set(true);
                     return None;
                 };
                 signature.params.get(*parameter).map(|p| p.ty.clone())
@@ -695,7 +755,15 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             }
             TAtomic::Callable(TCallable::Signature(s)) => {
                 if s.is_closure {
-                    self.builtin_closures(s).unwrap_or_else(|| Type::Closure(self.signature(s)))
+                    // a `Closure` hint or tag is Mago's TCallableSignature::mixed(true), PHPStan's ObjectType
+                    self.builtin_closures(s).unwrap_or_else(|| {
+                        let signature = self.signature(s);
+                        if unspecified_callable(&signature) {
+                            Type::Object("Closure".to_string(), vec![], false)
+                        } else {
+                            Type::Closure(signature)
+                        }
+                    })
                 } else if unspecified_callable(&self.signature(s)) {
                     Type::Callable(None)
                 } else {
@@ -775,7 +843,12 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                     .codebase
                     .get_method(class.as_bytes(), method.as_bytes())
                     .map_or(method.as_bytes(), |m| m.original_name.as_bytes());
-                format!("method {}::{}()", self.reflected_name(class.as_bytes()), text(name))
+                // the methods of a trait analysed in a class's context are that class's
+                let owner = match &self.trait_context {
+                    Some(t) if t.trait_name.as_bytes().eq_ignore_ascii_case(class.as_bytes()) => t.class.as_bytes(),
+                    _ => class.as_bytes(),
+                };
+                format!("method {}::{}()", self.reflected_name(owner), text(name))
             }
         }
     }
@@ -898,6 +971,12 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                         }
                     })
                     .collect();
+                // Mago fills a generic class written without type arguments with its templates' bounds or defaults;
+                // PHPStan keeps the plain ObjectType
+                let unfilled = !n.is_exact
+                    && !KEEP_FILLED.get()
+                    && n.type_parameters.as_ref().is_some_and(|p| !p.is_empty() && p.iter().all(TUnion::from_template_fallback));
+                let args = if unfilled { Vec::new() } else { args };
                 let t = if n.is_this {
                     Type::This(name)
                 } else if n.is_static {
@@ -1131,6 +1210,8 @@ fn restore_metadata(actual: Type, source: &Type, restore_list: bool) -> Type {
             matching(&actual, source)
                 .map_or_else(|| actual.clone(), |i| restore_metadata(actual.clone(), &source[i], restore_list))
         }
+        // Mago reads a `*` type argument as `mixed`; the declaration's bivariant wildcard survives in PHPStan
+        (Type::Mixed { .. }, Type::Wildcard) => Type::Wildcard,
         (Type::Mixed { explicit: inferred }, Type::Mixed { explicit }) => Type::Mixed {
             // Recover erased declaration metadata without erasing an assertion's source-owned identity.
             explicit: inferred || *explicit,

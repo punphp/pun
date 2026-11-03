@@ -18,6 +18,7 @@ use mago_codex::metadata::function_like::FunctionLikeMetadata;
 use mago_codex::metadata::parameter::FunctionLikeParameterMetadata;
 use mago_codex::metadata::ttype::TypeMetadata;
 use mago_codex::misc::GenericParent;
+use mago_codex::reference::ReferenceOrigin;
 use mago_codex::ttype::TType;
 use mago_codex::ttype::TypeRef;
 use mago_codex::ttype::add_optional_union_type;
@@ -849,12 +850,12 @@ fn trait_context_parameter_type<A: Arena>(
     offset: usize,
 ) -> Option<TUnion> {
     let class_name = context.settings.trait_context_class?;
+    // the scope's class is the using class; the reference origin still names the trait
+    let ReferenceOrigin::Symbol((declaring, _)) = block_context.scope.get_reference_origin() else {
+        return None;
+    };
     if !function_like_metadata.kind.is_method()
-        || !block_context
-            .scope
-            .get_class_like_name()
-            .and_then(|name| context.codebase.get_class_like(name.as_bytes()))
-            .is_some_and(|declaring| declaring.kind.is_trait())
+        || !context.codebase.get_class_like(declaring.as_bytes()).is_some_and(|declaring| declaring.kind.is_trait())
     {
         return None;
     }

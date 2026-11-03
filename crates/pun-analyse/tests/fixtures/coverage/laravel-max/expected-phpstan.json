@@ -1,0 +1,320 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "callables.php",
+   "line": 10,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $function of class ReflectionFunction constructor expects Closure|string, callable(): mixed given.",
+   "tip": null
+  },
+  {
+   "file": "callables.php",
+   "line": 16,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $string of method LaravelMax\\Callables\\Callables::takesString() expects string, array<mixed>|Closure|string given.",
+   "tip": null
+  },
+  {
+   "file": "callables.php",
+   "line": 22,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $string of method LaravelMax\\Callables\\Callables::takesString() expects string, Closure given.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 21,
+   "identifier": "method.nonObject",
+   "message": "Cannot call method foo() on string|null.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 23,
+   "identifier": "binaryOp.invalid",
+   "message": "Binary operation \".\" between 'queue:' and mixed results in an error.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 29,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $int of method LaravelMax\\Calls\\Calls::takesInt() expects int, class-string<Countable> given.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 31,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $int of method LaravelMax\\Calls\\Calls::takesInt() expects int, class-string<stdClass> given.",
+   "tip": null
+  },
+  {
+   "file": "generics.php",
+   "line": 41,
+   "identifier": "missingType.generics",
+   "message": "Property LaravelMax\\Generics\\Generics::$commands with generic class LaravelMax\\Generics\\Fluent does not specify its types: TKey, TValue",
+   "tip": null
+  },
+  {
+   "file": "generics.php",
+   "line": 44,
+   "identifier": "missingType.generics",
+   "message": "Method LaravelMax\\Generics\\Generics::written() has parameter $data with generic interface LaravelMax\\Generics\\Arrayable but does not specify its types: TKey, TValue",
+   "tip": null
+  },
+  {
+   "file": "generics.php",
+   "line": 46,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $array of method LaravelMax\\Generics\\Generics::takesArray() expects array<mixed>, array<mixed>|LaravelMax\\Generics\\Arrayable given.",
+   "tip": null
+  },
+  {
+   "file": "generics.php",
+   "line": 52,
+   "identifier": "return.type",
+   "message": "Method LaravelMax\\Generics\\Generics::wildcard() should return int but returns LaravelMax\\Generics\\Relation<*, *>|string.",
+   "tip": null
+  },
+  {
+   "file": "generics.php",
+   "line": 58,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property LaravelMax\\Generics\\Fluent::$shouldBeSkipped.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "generics.php",
+   "line": 72,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $int of method LaravelMax\\Generics\\Generics::takesInt() expects int, LaravelMax\\Generics\\Builder<stdClass> given.",
+   "tip": null
+  },
+  {
+   "file": "generics.php",
+   "line": 84,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $int of method LaravelMax\\Generics\\Generics::takesInt() expects int, LaravelMax\\Generics\\Builder<stdClass> given.",
+   "tip": null
+  },
+  {
+   "file": "generics.php",
+   "line": 105,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method LaravelMax\\Generics\\Builder::withTrashed().",
+   "tip": null
+  },
+  {
+   "file": "loops.php",
+   "line": 12,
+   "identifier": "method.nonObject",
+   "message": "Cannot call method foo() on int<0, max>.",
+   "tip": null
+  },
+  {
+   "file": "loops.php",
+   "line": 21,
+   "identifier": "method.nonObject",
+   "message": "Cannot call method foo() on $this(LaravelMax\\Loops\\Loops)|null.",
+   "tip": null
+  },
+  {
+   "file": "memory.php",
+   "line": 20,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $string of method LaravelMax\\Memory\\Command::takesString() expects string, array<string>|string|true given.",
+   "tip": null
+  },
+  {
+   "file": "memory.php",
+   "line": 25,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $string of method LaravelMax\\Memory\\Command::takesString() expects string, array<string>|bool|string|null given.",
+   "tip": null
+  },
+  {
+   "file": "narrowing.php",
+   "line": 45,
+   "identifier": "argument.type",
+   "message": "Parameter #2 $default of method LaravelMax\\Narrowing\\Factory::ask() expects string|null, true given.",
+   "tip": null
+  },
+  {
+   "file": "narrowing.php",
+   "line": 51,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $fallback of static method LaravelMax\\Narrowing\\Prompt::fallbackUsing() expects Closure(LaravelMax\\Narrowing\\TextPrompt): mixed, Closure(int): '' given.",
+   "tip": null
+  },
+  {
+   "file": "narrowing.php",
+   "line": 52,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $fallback of static method LaravelMax\\Narrowing\\Prompt::fallbackStatic() expects Closure(LaravelMax\\Narrowing\\TextPrompt): mixed, Closure(int): '' given.",
+   "tip": null
+  },
+  {
+   "file": "narrowing.php",
+   "line": 60,
+   "identifier": "argument.type",
+   "message": "Parameter #2 $array of function array_key_exists expects array, array<string, string|null>|null given.",
+   "tip": null
+  },
+  {
+   "file": "narrowing.php",
+   "line": 83,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $prompt of method LaravelMax\\Narrowing\\Narrowing::takesPrompt() expects LaravelMax\\Narrowing\\TextPrompt, null given.",
+   "tip": null
+  },
+  {
+   "file": "narrowing.php",
+   "line": 84,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $prompt of method LaravelMax\\Narrowing\\Narrowing::takesPrompt() expects LaravelMax\\Narrowing\\TextPrompt, null given.",
+   "tip": null
+  },
+  {
+   "file": "strings.php",
+   "line": 9,
+   "identifier": "offsetAccess.nonOffsetAccessible",
+   "message": "Cannot access offset non-falsy-string on mixed.",
+   "tip": null
+  },
+  {
+   "file": "strings.php",
+   "line": 9,
+   "identifier": "method.nonObject",
+   "message": "Cannot call method foo() on mixed.",
+   "tip": null
+  },
+  {
+   "file": "strings.php",
+   "line": 15,
+   "identifier": "offsetAccess.nonOffsetAccessible",
+   "message": "Cannot access offset non-falsy-string on mixed.",
+   "tip": null
+  },
+  {
+   "file": "strings.php",
+   "line": 15,
+   "identifier": "method.nonObject",
+   "message": "Cannot call method foo() on mixed.",
+   "tip": null
+  },
+  {
+   "file": "strings.php",
+   "line": 20,
+   "identifier": "offsetAccess.nonOffsetAccessible",
+   "message": "Cannot access offset non-empty-string on mixed.",
+   "tip": null
+  },
+  {
+   "file": "strings.php",
+   "line": 20,
+   "identifier": "method.nonObject",
+   "message": "Cannot call method foo() on mixed.",
+   "tip": null
+  },
+  {
+   "file": "strings.php",
+   "line": 26,
+   "identifier": "offsetAccess.nonOffsetAccessible",
+   "message": "Cannot access offset literal-string&non-falsy-string on mixed.",
+   "tip": null
+  },
+  {
+   "file": "strings.php",
+   "line": 26,
+   "identifier": "method.nonObject",
+   "message": "Cannot call method foo() on mixed.",
+   "tip": null
+  },
+  {
+   "file": "strings.php",
+   "line": 32,
+   "identifier": "binaryOp.invalid",
+   "message": "Binary operation \".\" between non-falsy-string and mixed results in an error.",
+   "tip": null
+  },
+  {
+   "file": "strings.php",
+   "line": 33,
+   "identifier": "binaryOp.invalid",
+   "message": "Binary operation \".\" between non-falsy-string and mixed results in an error.",
+   "tip": null
+  },
+  {
+   "file": "strings.php",
+   "line": 34,
+   "identifier": "binaryOp.invalid",
+   "message": "Binary operation \".\" between non-falsy-string and mixed results in an error.",
+   "tip": null
+  },
+  {
+   "file": "subtraction.php",
+   "line": 27,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: ReflectionType~ReflectionUnionType",
+   "tip": null
+  },
+  {
+   "file": "subtraction.php",
+   "line": 32,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: LaravelMax\\Subtraction\\Shape~LaravelMax\\Subtraction\\Circle",
+   "tip": null
+  },
+  {
+   "file": "subtraction.php",
+   "line": 35,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: LaravelMax\\Subtraction\\Shape~(LaravelMax\\Subtraction\\Circle|LaravelMax\\Subtraction\\Square)",
+   "tip": null
+  },
+  {
+   "file": "traits.php (in context of class LaravelMax\\Traits\\Manager)",
+   "line": 16,
+   "identifier": "assign.propertyType",
+   "message": "Property LaravelMax\\Traits\\Manager::$connection (string|null) does not accept mixed.",
+   "tip": null
+  },
+  {
+   "file": "traits.php (in context of class LaravelMax\\Traits\\Manager)",
+   "line": 24,
+   "identifier": "return.type",
+   "message": "Method LaravelMax\\Traits\\Manager::provider() should return int but returns LaravelMax\\Traits\\Application.",
+   "tip": null
+  },
+  {
+   "file": "traits.php (in context of class LaravelMax\\Traits\\Manager)",
+   "line": 29,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $int of method LaravelMax\\Traits\\Manager::takesInt() expects int, string given.",
+   "tip": null
+  },
+  {
+   "file": "traits.php (in context of class LaravelMax\\Traits\\Manager)",
+   "line": 30,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $int of method LaravelMax\\Traits\\Manager::takesInt() expects int, string given.",
+   "tip": null
+  },
+  {
+   "file": "traits.php (in context of class LaravelMax\\Traits\\Manager)",
+   "line": 31,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $int of method LaravelMax\\Traits\\Manager::takesInt() expects int, list<int> given.",
+   "tip": null
+  },
+  {
+   "file": "traits.php (in context of class LaravelMax\\Traits\\Manager)",
+   "line": 36,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $int of method LaravelMax\\Traits\\Manager::takesInt() expects int, class-string given.",
+   "tip": null
+  }
+ ]
+}

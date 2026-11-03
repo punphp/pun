@@ -35,7 +35,6 @@ Functions/CallToFunctionParametersRuleTest::testBug7823
 Functions/CallToFunctionParametersRuleTest::testBug8389
 Methods/CallMethodsRuleTest::testBug6904
 Methods/CallMethodsRuleTest::testBug6917
-Methods/CallMethodsRuleTest::testBug9542
 Properties/AccessPropertiesRuleTest::testTraitMixin
 Variables/UnsetRuleTest::testBug3391
 Variables/UnsetRuleTest::testBug7417
