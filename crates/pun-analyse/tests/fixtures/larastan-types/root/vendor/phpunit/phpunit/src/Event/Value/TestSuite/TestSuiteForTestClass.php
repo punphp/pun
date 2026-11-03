@@ -1,0 +1,54 @@
+<?php declare(strict_types=1);
+/*
+ * This file is part of PHPUnit.
+ *
+ * (c) Sebastian Bergmann <sebastian@phpunit.de>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+namespace PHPUnit\Event\TestSuite;
+
+use PHPUnit\Event\Code\TestCollection;
+
+/**
+ * @immutable
+ *
+ * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit
+ */
+final readonly class TestSuiteForTestClass extends TestSuite
+{
+    /**
+     * @var class-string
+     */
+    private string $className;
+    private string $prettifiedName;
+    private string $file;
+    private int $line;
+
+    /**
+     * @param class-string $name
+     *
+     * @internal This method is not covered by the backward compatibility promise for PHPUnit
+     */
+    public function __construct(string $name, int $size, TestCollection $tests, string $prettifiedName, string $file, int $line)
+    {}
+
+    /**
+     * @return class-string
+     */
+    public function className(): string
+    {}
+
+    public function prettifiedName(): string
+    {}
+
+    public function file(): string
+    {}
+
+    public function line(): int
+    {}
+
+    public function isForTestClass(): true
+    {}
+}

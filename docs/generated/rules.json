@@ -20619,7 +20619,7 @@
       "id": "analyse/debug/assert-type",
       "command": "analyse",
       "group": "debug",
-      "summary": "",
+      "summary": "Reports each assertType(), assertNativeType(), assertSuperType() or assertVariableCertainty() call that does not hold. Ignore comments and baselines cannot suppress these diagnostics.",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -20641,7 +20641,7 @@
         "phpstan.unknownExpectation",
         "phpstan.variable"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/debug/dump-native-type",

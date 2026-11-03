@@ -1,0 +1,20 @@
+{
+    "test": "Type/ModelCastsParsingTest",
+    "configs": [
+        "tests/Type/data/config-with-migrations-and-parsing-casts.neon"
+    ],
+    "cases": [
+        {
+            "file": "tests/Type/data/model-casts-parsing.php",
+            "declares": [
+                "modelcastsparsing\\modelwithcasts",
+                "modelcastsparsing\\test"
+            ],
+            "asserts": [
+                12,
+                13
+            ],
+            "errors": []
+        }
+    ]
+}

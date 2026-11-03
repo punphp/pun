@@ -1,0 +1,63 @@
+<?php
+
+/*
+ * This file is part of the Symfony package.
+ *
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Symfony\Component\Mailer\Transport;
+
+use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Mailer\Envelope;
+use Symfony\Component\Mailer\SentMessage;
+use Symfony\Component\Mailer\Transport\Smtp\SmtpTransport;
+use Symfony\Component\Mailer\Transport\Smtp\Stream\AbstractStream;
+use Symfony\Component\Mailer\Transport\Smtp\Stream\ProcessStream;
+use Symfony\Component\Mime\RawMessage;
+
+/**
+ * SendmailTransport for sending mail through a Sendmail/Postfix (etc..) binary.
+ *
+ * Transport can be instantiated through SendmailTransportFactory or NativeTransportFactory:
+ *
+ * - SendmailTransportFactory to use most common sendmail path and recommended options
+ * - NativeTransportFactory when configuration is set via php.ini
+ *
+ * @author Fabien Potencier <fabien@symfony.com>
+ * @author Chris Corbyn
+ */
+class SendmailTransport extends AbstractTransport
+{
+    private string $command = '/usr/sbin/sendmail -bs';
+    private ProcessStream $stream;
+    private ?SmtpTransport $transport = null;
+
+    /**
+     * Constructor.
+     *
+     * Supported modes are -bs and -t, with any additional flags desired.
+     *
+     * The recommended mode is "-bs" since it is interactive and failure notifications are hence possible.
+     * Note that the -t mode does not support error reporting and does not support Bcc properly (the Bcc headers are not removed).
+     *
+     * If using -t mode, you are strongly advised to include -oi or -i in the flags (like /usr/sbin/sendmail -oi -t)
+     *
+     * -f<sender> flag will be appended automatically if one is not present.
+     */
+    public function __construct(?string $command = null, ?EventDispatcherInterface $dispatcher = null, ?LoggerInterface $logger = null)
+    {}
+
+    public function send(RawMessage $message, ?Envelope $envelope = null): ?SentMessage
+    {}
+
+    public function __toString(): string
+    {}
+
+    protected function doSend(SentMessage $message): void
+    {}
+}

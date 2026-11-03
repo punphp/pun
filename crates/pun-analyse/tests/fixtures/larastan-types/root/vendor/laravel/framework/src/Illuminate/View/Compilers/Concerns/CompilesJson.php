@@ -1,0 +1,22 @@
+<?php
+
+namespace Illuminate\View\Compilers\Concerns;
+
+trait CompilesJson
+{
+    /**
+     * The default JSON encoding options.
+     *
+     * @var int
+     */
+    private $encodingOptions = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT;
+
+    /**
+     * Compile the JSON statement into valid PHP.
+     *
+     * @param  string  $expression
+     * @return string
+     */
+    protected function compileJson($expression)
+    {}
+}

@@ -1,0 +1,25 @@
+<?php
+
+namespace Illuminate\Database\Console\Migrations;
+
+class TableGuesser
+{
+    const CREATE_PATTERNS = [
+        '/^create_(\w+)_table$/',
+        '/^create_(\w+)$/',
+    ];
+
+    const CHANGE_PATTERNS = [
+        '/.+_(to|from|in)_(\w+)_table$/',
+        '/.+_(to|from|in)_(\w+)$/',
+    ];
+
+    /**
+     * Attempt to guess the table name and "creation" status of the given migration.
+     *
+     * @param  string  $migration
+     * @return array{string, bool}|null
+     */
+    public static function guess($migration)
+    {}
+}

@@ -1,0 +1,37 @@
+<?php declare(strict_types=1);
+/*
+ * This file is part of phpunit/php-code-coverage.
+ *
+ * (c) Sebastian Bergmann <sebastian@phpunit.de>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+namespace SebastianBergmann\CodeCoverage\Report\Xml;
+
+use function sprintf;
+use SebastianBergmann\CodeCoverage\CodeCoverage;
+use SebastianBergmann\CodeCoverage\Util\EnsuresUtf8;
+use XMLWriter;
+
+/**
+ * @internal This class is not covered by the backward compatibility promise for phpunit/php-code-coverage
+ *
+ * @no-named-arguments Parameter names are not covered by the backward compatibility promise for phpunit/php-code-coverage
+ *
+ * @phpstan-import-type TestType from CodeCoverage
+ */
+final readonly class Tests
+{
+    use EnsuresUtf8;
+    private XMLWriter $xmlWriter;
+
+    public function __construct(XMLWriter $xmlWriter)
+    {}
+
+    /**
+     * @param TestType $result
+     */
+    public function addTest(string $test, array $result): void
+    {}
+}

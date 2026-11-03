@@ -1,0 +1,2264 @@
+{
+    "test": "Type/GeneralTypeTest",
+    "configs": [
+        "tests/Type/data/config-with-migrations.neon"
+    ],
+    "cases": [
+        {
+            "file": "tests/Type/data/abort.php",
+            "declares": [
+                "aborttests\\test"
+            ],
+            "asserts": [
+                19,
+                25,
+                29,
+                33,
+                37
+            ],
+            "errors": [
+                {
+                    "line": 12,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $value",
+                    "tip": null
+                },
+                {
+                    "line": 28,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int|string is not subtype of native type int<min, -1>|int<1, max>.",
+                    "tip": null
+                },
+                {
+                    "line": 32,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int|null is not subtype of native type int<min, -1>|int<1, max>.",
+                    "tip": null
+                },
+                {
+                    "line": 36,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int|string is not subtype of native type int<min, -1>|int<1, max>.",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "file": "tests/Type/data/abstract-manager.php",
+            "declares": [
+                "abstractmanager\\abstractmanager",
+                "abstractmanager\\realmanager",
+                "abstractmanager\\test"
+            ],
+            "asserts": [
+                22
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/app-make.php",
+            "declares": [
+                "appmake\\test"
+            ],
+            "asserts": [
+                12,
+                13
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/application-make.php",
+            "declares": [
+                "applicationmake\\test"
+            ],
+            "asserts": [
+                16,
+                17,
+                18,
+                19,
+                21,
+                22,
+                23,
+                24,
+                26,
+                27,
+                28
+            ],
+            "errors": [
+                {
+                    "line": 18,
+                    "identifier": "method.protected",
+                    "message": "Call to protected method resolve() of class Illuminate\\Foundation\\Application.",
+                    "tip": null
+                },
+                {
+                    "line": 19,
+                    "identifier": "method.protected",
+                    "message": "Call to protected method resolve() of class Illuminate\\Foundation\\Application.",
+                    "tip": null
+                },
+                {
+                    "line": 23,
+                    "identifier": "method.protected",
+                    "message": "Call to protected method resolve() of class Illuminate\\Foundation\\Application.",
+                    "tip": null
+                },
+                {
+                    "line": 24,
+                    "identifier": "method.protected",
+                    "message": "Call to protected method resolve() of class Illuminate\\Foundation\\Application.",
+                    "tip": null
+                },
+                {
+                    "line": 28,
+                    "identifier": "method.protected",
+                    "message": "Call to protected method resolve() of class Illuminate\\Foundation\\Application.",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "file": "tests/Type/data/auth.php",
+            "declares": [
+                "auth\\test"
+            ],
+            "asserts": [
+                14,
+                15,
+                16,
+                17,
+                18,
+                19,
+                20,
+                21,
+                22
+            ],
+            "errors": [
+                {
+                    "line": 17,
+                    "identifier": "method.void",
+                    "message": "Result of method Illuminate\\Auth\\SessionGuard::logout() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "line": 22,
+                    "identifier": "method.void",
+                    "message": "Result of method Illuminate\\Auth\\SessionGuard::login() (void) is used.",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "file": "tests/Type/data/benchmark.php",
+            "declares": [
+                "benchmark\\test"
+            ],
+            "asserts": [
+                11,
+                12,
+                13,
+                14
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/bug-1346.php",
+            "declares": [
+                "bug1346\\dailyquery"
+            ],
+            "asserts": [
+                17
+            ],
+            "errors": [
+                {
+                    "line": 13,
+                    "identifier": "property.onlyRead",
+                    "message": "Property Bug1346\\DailyQuery::$query is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "line": 15,
+                    "identifier": "missingType.return",
+                    "message": "Method Bug1346\\DailyQuery::daily() has no return type specified.",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "file": "tests/Type/data/bug-1565.php",
+            "declares": [
+                "bug1565\\test",
+                "bug1565\\testcollection"
+            ],
+            "asserts": [
+                28,
+                29
+            ],
+            "errors": [
+                {
+                    "line": 9,
+                    "identifier": "missingType.generics",
+                    "message": "Class Bug1565\\TestCollection extends generic class Illuminate\\Support\\Collection but does not specify its types: TKey, TValue",
+                    "tip": null
+                },
+                {
+                    "line": 17,
+                    "identifier": "new.static",
+                    "message": "Unsafe usage of new static().",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-error-unsafe-usage-of-new-static"
+                },
+                {
+                    "line": 22,
+                    "identifier": "method.nonObject",
+                    "message": "Cannot call method toArray() on mixed.",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "file": "tests/Type/data/bug-1718.php",
+            "declares": [
+                "bug1718\\authedrequest",
+                "bug1718\\test"
+            ],
+            "asserts": [
+                29,
+                30
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/bug-1760.php",
+            "declares": [
+                "collectionhelper\\ok",
+                "collectionhelper\\some",
+                "collectionhelper\\test"
+            ],
+            "asserts": [
+                27,
+                28
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/bug-1830.php",
+            "declares": [
+                "infiniterecursion\\basemodel",
+                "infiniterecursion\\test",
+                "infiniterecursion\\user"
+            ],
+            "asserts": [
+                17
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/bug-1985.php",
+            "declares": [
+                "bug1985\\modelcollection",
+                "bug1985\\test",
+                "bug1985\\user"
+            ],
+            "asserts": [
+                11
+            ],
+            "errors": [
+                {
+                    "line": 17,
+                    "identifier": "method.childReturnType",
+                    "message": "Return type (Bug1985\\ModelCollection<int, Bug1985\\User>) of method Bug1985\\User::newCollection() should be compatible with return type (Illuminate\\Database\\Eloquent\\Collection<(int|string), static(Illuminate\\Database\\Eloquent\\Model)>) of method Illuminate\\Database\\Eloquent\\Model::newCollection()",
+                    "tip": null
+                },
+                {
+                    "line": 19,
+                    "identifier": "return.type",
+                    "message": "Method Bug1985\\User::newCollection() should return Bug1985\\ModelCollection<int, Bug1985\\User> but returns Bug1985\\ModelCollection<(int|string), Illuminate\\Database\\Eloquent\\Model>.",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "file": "tests/Type/data/bug-2073.php",
+            "declares": [
+                "bug2073\\modelcollection",
+                "bug2073\\test",
+                "bug2073\\user"
+            ],
+            "asserts": [
+                17,
+                18
+            ],
+            "errors": [
+                {
+                    "line": 38,
+                    "identifier": "method.childReturnType",
+                    "message": "Return type (Bug2073\\ModelCollection<int, Bug2073\\User>) of method Bug2073\\User::newCollection() should be compatible with return type (Illuminate\\Database\\Eloquent\\Collection<(int|string), static(Illuminate\\Database\\Eloquent\\Model)>) of method Illuminate\\Database\\Eloquent\\Model::newCollection()",
+                    "tip": null
+                },
+                {
+                    "line": 38,
+                    "identifier": "missingType.generics",
+                    "message": "Method Bug2073\\User::newCollection() has parameter $models with generic class Bug2073\\User but does not specify its types: T",
+                    "tip": null
+                },
+                {
+                    "line": 38,
+                    "identifier": "missingType.generics",
+                    "message": "Method Bug2073\\User::newCollection() return type with generic class Bug2073\\User does not specify its types: T",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "file": "tests/Type/data/bug-2111.php",
+            "declares": [
+                "bug2111\\team",
+                "bug2111\\user"
+            ],
+            "asserts": [
+                16,
+                17,
+                25
+            ],
+            "errors": [
+                {
+                    "line": 24,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'activeSubscriptions' is not found in Bug2111\\Team model.",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "file": "tests/Type/data/bug-2188.php",
+            "declares": [
+                "bug2188\\test"
+            ],
+            "asserts": [
+                13,
+                14,
+                15
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/conditionable.php",
+            "declares": [
+                "conditionablestubs\\foo",
+                "conditionablestubs\\test"
+            ],
+            "asserts": [
+                19,
+                23,
+                27,
+                33,
+                36,
+                40,
+                44,
+                48
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/container-array-access.php",
+            "declares": [
+                "containerarrayaccess\\test"
+            ],
+            "asserts": [
+                14,
+                15,
+                16
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/container-make.php",
+            "declares": [
+                "containermake\\test"
+            ],
+            "asserts": [
+                18,
+                19,
+                20,
+                22,
+                23,
+                24,
+                26,
+                27,
+                28
+            ],
+            "errors": [
+                {
+                    "line": 20,
+                    "identifier": "method.protected",
+                    "message": "Call to protected method resolve() of class Illuminate\\Container\\Container.",
+                    "tip": null
+                },
+                {
+                    "line": 24,
+                    "identifier": "method.protected",
+                    "message": "Call to protected method resolve() of class Illuminate\\Foundation\\Application.",
+                    "tip": null
+                },
+                {
+                    "line": 26,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $foo",
+                    "tip": null
+                },
+                {
+                    "line": 27,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $foo",
+                    "tip": null
+                },
+                {
+                    "line": 28,
+                    "identifier": "method.protected",
+                    "message": "Call to protected method resolve() of class Illuminate\\Container\\Container.",
+                    "tip": null
+                },
+                {
+                    "line": 28,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $foo",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "file": "tests/Type/data/contracts.php",
+            "declares": [
+                "contracts\\test"
+            ],
+            "asserts": [
+                12,
+                13
+            ],
+            "errors": [
+                {
+                    "line": 13,
+                    "identifier": "method.void",
+                    "message": "Result of method Illuminate\\Session\\Store::ageFlashData() (void) is used.",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "file": "tests/Type/data/custom-eloquent-builder.php",
+            "declares": [
+                "customeloquentbuilder\\childnongenericbuilder",
+                "customeloquentbuilder\\custombuilder2",
+                "customeloquentbuilder\\customeloquentbuilder",
+                "customeloquentbuilder\\foomodel",
+                "customeloquentbuilder\\modelwithcustombuilder",
+                "customeloquentbuilder\\modelwithcustombuilderanddocblocks",
+                "customeloquentbuilder\\modelwithnongenericbuilder",
+                "customeloquentbuilder\\nongenericbuilder",
+                "customeloquentbuilder\\test"
+            ],
+            "asserts": [
+                14,
+                15,
+                16,
+                17,
+                18,
+                19,
+                20,
+                21,
+                22,
+                23,
+                24,
+                25,
+                26,
+                27,
+                28,
+                29,
+                30,
+                31,
+                32,
+                33,
+                34,
+                35,
+                36,
+                37,
+                38,
+                39,
+                40,
+                41,
+                42,
+                43,
+                44,
+                45,
+                46,
+                47,
+                48,
+                49,
+                50,
+                51,
+                53,
+                54,
+                55,
+                108,
+                116,
+                128
+            ],
+            "errors": [
+                {
+                    "line": 67,
+                    "identifier": "generics.lessTypes",
+                    "message": "Generic type Illuminate\\Database\\Eloquent\\Relations\\HasMany<App\\User> in PHPDoc tag @return does not specify all template types of class Illuminate\\Database\\Eloquent\\Relations\\HasMany: TRelatedModel, TDeclaringModel",
+                    "tip": null
+                },
+                {
+                    "line": 69,
+                    "identifier": "return.type",
+                    "message": "Method CustomEloquentBuilder\\ModelWithCustomBuilder::users() should return Illuminate\\Database\\Eloquent\\Relations\\HasMany<App\\User> but returns Illuminate\\Database\\Eloquent\\Relations\\HasMany<App\\User, $this(CustomEloquentBuilder\\ModelWithCustomBuilder)>.",
+                    "tip": null
+                },
+                {
+                    "line": 130,
+                    "identifier": "return.type",
+                    "message": "Method CustomEloquentBuilder\\CustomEloquentBuilder::categories() should return CustomEloquentBuilder\\CustomEloquentBuilder<CustomEloquentBuilder\\ModelWithCustomBuilder> but returns CustomEloquentBuilder\\CustomEloquentBuilder<TModel of CustomEloquentBuilder\\ModelWithCustomBuilder>.",
+                    "tip": "Template type TModel on class CustomEloquentBuilder\\CustomEloquentBuilder is not covariant. Learn more: https://phpstan.org/blog/whats-up-with-template-covariant"
+                }
+            ]
+        },
+        {
+            "file": "tests/Type/data/custom-eloquent-collection.php",
+            "declares": [
+                "customeloquentcollection\\test"
+            ],
+            "asserts": [
+                15,
+                16,
+                17,
+                18,
+                20,
+                21,
+                22,
+                23,
+                25,
+                26,
+                27,
+                28,
+                30,
+                31,
+                32,
+                33,
+                35,
+                36,
+                37,
+                38,
+                40,
+                41,
+                42,
+                43,
+                45,
+                46,
+                47,
+                48,
+                50,
+                51,
+                52,
+                53,
+                55,
+                56,
+                57,
+                58,
+                60,
+                61,
+                62,
+                63,
+                65,
+                66,
+                67,
+                68,
+                70,
+                71,
+                72,
+                73,
+                75,
+                76,
+                77,
+                78,
+                80,
+                81,
+                82,
+                83,
+                85,
+                86,
+                87,
+                88,
+                90,
+                91,
+                92,
+                93,
+                95,
+                96,
+                98,
+                99,
+                100,
+                101,
+                103,
+                104,
+                106,
+                107,
+                109,
+                110,
+                112,
+                113,
+                115,
+                116,
+                117,
+                118,
+                119,
+                120,
+                121,
+                122,
+                123,
+                124,
+                125,
+                126,
+                127,
+                128,
+                129,
+                130,
+                131,
+                132,
+                133
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/database-transaction.php",
+            "declares": [
+                "databasetransaction\\test"
+            ],
+            "asserts": [
+                13,
+                14,
+                15,
+                16,
+                17,
+                20
+            ],
+            "errors": [
+                {
+                    "line": 17,
+                    "identifier": "staticMethod.void",
+                    "message": "Result of static method Illuminate\\Database\\Connection::transaction() (void) is used.",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "file": "tests/Type/data/collection-of-type.php",
+            "declares": [
+                "collectionoftype\\genericmethod",
+                "collectionoftype\\test"
+            ],
+            "asserts": [
+                16,
+                17,
+                18,
+                20,
+                21
+            ],
+            "errors": [
+                {
+                    "line": 33,
+                    "identifier": "return.type",
+                    "message": "Function CollectionOfType\\genericMethod() should return Illuminate\\Database\\Eloquent\\Collection<int, Illuminate\\Database\\Eloquent\\Model> but returns Illuminate\\Database\\Eloquent\\Collection<(int|string), T of Illuminate\\Database\\Eloquent\\Model>.",
+                    "tip": "Template type TModel on class Illuminate\\Database\\Eloquent\\Collection is not covariant. Learn more: https://phpstan.org/blog/whats-up-with-template-covariant"
+                }
+            ]
+        },
+        {
+            "file": "tests/Type/data/date-extension-l12.php",
+            "declares": [
+                "dateextension\\test"
+            ],
+            "asserts": [
+                11,
+                12,
+                13,
+                14,
+                15,
+                16,
+                17,
+                18,
+                19,
+                20,
+                21,
+                22,
+                23,
+                24,
+                25,
+                26,
+                27,
+                28,
+                29
+            ],
+            "errors": [
+                {
+                    "line": 21,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $date of static method Illuminate\\Support\\Facades\\Date::instance() expects DateTimeInterface, mixed given.",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "file": "tests/Type/data/environment-helper.php",
+            "declares": [
+                "environmenthelper\\test"
+            ],
+            "asserts": [
+                9,
+                10,
+                11
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/form-request.php",
+            "declares": [
+                "formrequest\\test"
+            ],
+            "asserts": [
+                13,
+                14,
+                15
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/gate-facade.php",
+            "declares": [
+                "gatefacade\\test"
+            ],
+            "asserts": [
+                12,
+                13,
+                14
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/has-events.php",
+            "declares": [
+                "helpers\\test"
+            ],
+            "asserts": [
+                11
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/helpers.php",
+            "declares": [
+                "helpers\\test",
+                "helpers\\testunion"
+            ],
+            "asserts": [
+                22,
+                23,
+                24,
+                25,
+                26,
+                28,
+                29,
+                30,
+                31,
+                32,
+                33,
+                34,
+                35,
+                36,
+                37,
+                38,
+                39,
+                40,
+                41,
+                43,
+                44,
+                46,
+                47,
+                49,
+                50,
+                51,
+                53,
+                61,
+                69,
+                79,
+                89,
+                97,
+                98,
+                100,
+                103,
+                107,
+                113,
+                119,
+                120,
+                122,
+                123,
+                124,
+                126,
+                131,
+                132,
+                133,
+                135,
+                136,
+                138,
+                139,
+                140,
+                142,
+                146,
+                147,
+                148,
+                150,
+                151,
+                154,
+                156,
+                159,
+                160,
+                161,
+                164,
+                165,
+                166,
+                169,
+                171,
+                175,
+                177,
+                180,
+                181,
+                182,
+                183,
+                184,
+                186,
+                187,
+                188,
+                189,
+                190,
+                191,
+                192,
+                193,
+                194,
+                195,
+                196,
+                197,
+                198,
+                205
+            ],
+            "errors": [
+                {
+                    "line": 41,
+                    "identifier": "method.void",
+                    "message": "Result of method Illuminate\\Auth\\SessionGuard::login() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "line": 100,
+                    "identifier": "function.void",
+                    "message": "Result of function retry (void) is used.",
+                    "tip": null
+                },
+                {
+                    "line": 133,
+                    "identifier": "arguments.count",
+                    "message": "Method Illuminate\\Validation\\Validator::addReplacers() invoked with 0 parameters, 1 required.",
+                    "tip": null
+                },
+                {
+                    "line": 146,
+                    "identifier": "larastan.uselessConstructs.value",
+                    "message": "Calling the helper function 'value()' without a closure as the first argument simply returns the first argument without doing anything",
+                    "tip": null
+                },
+                {
+                    "line": 147,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $value of function value expects (Closure(never): string)|string, (Closure(mixed): string)|int given.",
+                    "tip": null
+                },
+                {
+                    "line": 180,
+                    "identifier": "larastan.noEnvCallsOutsideOfConfig",
+                    "message": "Called 'env' outside of the config directory which returns null when the config is cached, use 'config'.",
+                    "tip": null
+                },
+                {
+                    "line": 181,
+                    "identifier": "larastan.noEnvCallsOutsideOfConfig",
+                    "message": "Called 'env' outside of the config directory which returns null when the config is cached, use 'config'.",
+                    "tip": null
+                },
+                {
+                    "line": 182,
+                    "identifier": "larastan.noEnvCallsOutsideOfConfig",
+                    "message": "Called 'env' outside of the config directory which returns null when the config is cached, use 'config'.",
+                    "tip": null
+                },
+                {
+                    "line": 183,
+                    "identifier": "larastan.noEnvCallsOutsideOfConfig",
+                    "message": "Called 'env' outside of the config directory which returns null when the config is cached, use 'config'.",
+                    "tip": null
+                },
+                {
+                    "line": 184,
+                    "identifier": "larastan.noEnvCallsOutsideOfConfig",
+                    "message": "Called 'env' outside of the config directory which returns null when the config is cached, use 'config'.",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "file": "tests/Type/data/higher-order-collection-proxy-methods.php",
+            "declares": [
+                "higherordercollectionproxymethods\\test"
+            ],
+            "asserts": [
+                33,
+                34,
+                35,
+                36,
+                37,
+                38,
+                39,
+                40,
+                41,
+                42,
+                43,
+                44,
+                46,
+                47,
+                48,
+                49,
+                50,
+                51,
+                52,
+                53,
+                54,
+                55,
+                56,
+                57,
+                58,
+                60,
+                61,
+                62,
+                63,
+                64,
+                65,
+                66,
+                67,
+                68,
+                69,
+                70,
+                71,
+                72,
+                73,
+                74,
+                75,
+                76,
+                77,
+                78,
+                79,
+                80,
+                81,
+                82,
+                83,
+                85,
+                88,
+                89,
+                90,
+                91,
+                92,
+                93
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/model-factories.php",
+            "declares": [
+                "modelfactories\\comment",
+                "modelfactories\\commentfactory",
+                "modelfactories\\test"
+            ],
+            "asserts": [
+                15,
+                16,
+                17,
+                18,
+                19,
+                20,
+                22,
+                23,
+                24,
+                26,
+                27,
+                28,
+                30,
+                31,
+                32,
+                33,
+                35,
+                36,
+                37,
+                38,
+                40,
+                41,
+                42,
+                43,
+                45,
+                46,
+                47,
+                48,
+                50,
+                51,
+                52,
+                53,
+                55,
+                56,
+                57,
+                58,
+                60,
+                61,
+                62,
+                63,
+                64,
+                65,
+                67,
+                68,
+                69,
+                70,
+                72,
+                73,
+                74,
+                75,
+                76,
+                77,
+                78,
+                79,
+                81,
+                82,
+                83,
+                85,
+                86,
+                87,
+                89,
+                90,
+                105
+            ],
+            "errors": [
+                {
+                    "line": 55,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $state of method Illuminate\\Database\\Eloquent\\Factories\\Factory<App\\User>::state() expects array<string, mixed>|(callable(array<string, mixed>, Illuminate\\Database\\Eloquent\\Model|null): array<string, mixed>), array{'foo'} given.",
+                    "tip": null
+                },
+                {
+                    "line": 56,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $state of method Illuminate\\Database\\Eloquent\\Factories\\Factory<App\\User>::state() expects array<string, mixed>|(callable(array<string, mixed>, Illuminate\\Database\\Eloquent\\Model|null): array<string, mixed>), array{'foo'} given.",
+                    "tip": null
+                },
+                {
+                    "line": 57,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $state of method Illuminate\\Database\\Eloquent\\Factories\\Factory<App\\User>::state() expects array<string, mixed>|(callable(array<string, mixed>, Illuminate\\Database\\Eloquent\\Model|null): array<string, mixed>), array{'foo'} given.",
+                    "tip": null
+                },
+                {
+                    "line": 58,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $state of method Illuminate\\Database\\Eloquent\\Factories\\Factory<App\\User>::state() expects array<string, mixed>|(callable(array<string, mixed>, Illuminate\\Database\\Eloquent\\Model|null): array<string, mixed>), array{'foo'} given.",
+                    "tip": null
+                },
+                {
+                    "line": 90,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method Database\\Factories\\Post\\PostFactory::trashed().",
+                    "tip": null
+                },
+                {
+                    "line": 95,
+                    "identifier": "missingType.generics",
+                    "message": "Class ModelFactories\\Comment uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types: TFactory",
+                    "tip": null
+                },
+                {
+                    "line": 103,
+                    "identifier": "method.unused",
+                    "message": "Method ModelFactories\\Comment::test() is unused.",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "file": "tests/Type/data/model-methods.php",
+            "declares": [
+                "modelmethods\\test"
+            ],
+            "asserts": [
+                11,
+                12,
+                13,
+                14,
+                18,
+                19,
+                20,
+                21
+            ],
+            "errors": [
+                {
+                    "line": 14,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $foo",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "file": "tests/Type/data/model-properties-relations.php",
+            "declares": [
+                "modelpropertiesrelations\\ancestors",
+                "modelpropertiesrelations\\bar",
+                "modelpropertiesrelations\\baz",
+                "modelpropertiesrelations\\foo",
+                "modelpropertiesrelations\\test"
+            ],
+            "asserts": [
+                96,
+                97,
+                98,
+                99,
+                100,
+                101,
+                102,
+                103,
+                104,
+                105,
+                106,
+                107
+            ],
+            "errors": [
+                {
+                    "line": 52,
+                    "identifier": "return.missing",
+                    "message": "Method ModelPropertiesRelations\\Foo::ancestors() should return ModelPropertiesRelations\\Ancestors<ModelPropertiesRelations\\Foo, $this(ModelPropertiesRelations\\Foo)> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "line": 76,
+                    "identifier": "return.type",
+                    "message": "Method ModelPropertiesRelations\\Bar::morphToUnionRelation() should return Illuminate\\Database\\Eloquent\\Relations\\MorphTo<App\\Account|App\\User, $this(ModelPropertiesRelations\\Bar)> but returns Illuminate\\Database\\Eloquent\\Relations\\MorphTo<Illuminate\\Database\\Eloquent\\Model, $this(ModelPropertiesRelations\\Bar)>.",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "file": "tests/Type/data/model-properties.php",
+            "declares": [
+                "modelproperties\\modelwithcasts",
+                "modelproperties\\test"
+            ],
+            "asserts": [
+                37,
+                38,
+                39,
+                40,
+                41,
+                42,
+                43,
+                46,
+                47,
+                48,
+                49,
+                50,
+                51,
+                52,
+                53,
+                54,
+                55,
+                56,
+                57,
+                58,
+                59,
+                60,
+                61,
+                62,
+                63,
+                64,
+                65,
+                66,
+                67,
+                70,
+                73,
+                75,
+                76,
+                77,
+                78,
+                79,
+                80,
+                81,
+                82,
+                83,
+                84,
+                85,
+                86,
+                87,
+                88,
+                89,
+                90,
+                91,
+                92,
+                93,
+                94,
+                95,
+                96,
+                97,
+                98,
+                99,
+                100,
+                101,
+                102,
+                103,
+                104,
+                106,
+                107
+            ],
+            "errors": [
+                {
+                    "line": 37,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property App\\User::$newStyleAttribute.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                }
+            ]
+        },
+        {
+            "file": "tests/Type/data/model-relations.php",
+            "declares": [
+                "modelrelations\\extendsmodelwithpropertyannotations",
+                "modelrelations\\modelwithoutpropertyannotation",
+                "modelrelations\\modelwithpropertyannotations",
+                "modelrelations\\relationcreateexample",
+                "modelrelations\\test"
+            ],
+            "asserts": [
+                32,
+                33,
+                34,
+                35,
+                36,
+                37,
+                38,
+                39,
+                40,
+                41,
+                42,
+                46,
+                47,
+                48,
+                54,
+                55,
+                56,
+                57,
+                58,
+                59,
+                60,
+                61,
+                62,
+                63,
+                64,
+                67,
+                68,
+                69,
+                70,
+                71,
+                72,
+                73,
+                74,
+                75,
+                76,
+                77,
+                78,
+                79,
+                80,
+                81,
+                82,
+                83,
+                84,
+                85,
+                86,
+                87,
+                88,
+                93,
+                98,
+                99,
+                100,
+                101,
+                104,
+                105,
+                106,
+                107,
+                108,
+                109,
+                112,
+                113,
+                114,
+                115,
+                116,
+                117,
+                119,
+                120,
+                121,
+                123,
+                124,
+                125,
+                126,
+                127,
+                128,
+                129,
+                130,
+                131,
+                132,
+                133,
+                134,
+                135,
+                136,
+                138,
+                139,
+                140,
+                141,
+                142,
+                143,
+                144,
+                145,
+                146,
+                147,
+                149,
+                150,
+                151,
+                152,
+                153,
+                154,
+                155,
+                156,
+                157,
+                158,
+                159,
+                160,
+                163,
+                164,
+                165,
+                166,
+                167,
+                168,
+                169,
+                170,
+                171,
+                172,
+                173,
+                174,
+                176,
+                177,
+                178,
+                179,
+                180,
+                181,
+                182,
+                183,
+                184,
+                185,
+                186,
+                188,
+                189,
+                190,
+                191,
+                192,
+                193,
+                194,
+                197,
+                198,
+                199,
+                200,
+                201,
+                202,
+                203,
+                205,
+                206,
+                207,
+                208,
+                210,
+                211,
+                212,
+                213,
+                214,
+                215,
+                216,
+                217,
+                218,
+                220,
+                221,
+                222,
+                223,
+                225,
+                226,
+                227,
+                228,
+                230,
+                231,
+                232,
+                233,
+                234,
+                235,
+                236,
+                238,
+                239,
+                240,
+                243,
+                246,
+                251
+            ],
+            "errors": [
+                {
+                    "line": 52,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property App\\User::$__children.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                }
+            ]
+        },
+        {
+            "file": "tests/Type/data/model-scopes.php",
+            "declares": [
+                "modelscope\\fortimeline",
+                "modelscope\\scopes",
+                "modelscope\\test"
+            ],
+            "asserts": [
+                14,
+                15,
+                16,
+                34,
+                36,
+                37,
+                38,
+                39,
+                40,
+                42,
+                43,
+                44,
+                45
+            ],
+            "errors": [
+                {
+                    "line": 21,
+                    "identifier": "property.onlyRead",
+                    "message": "Property ModelScope\\Scopes::$user is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "line": 23,
+                    "identifier": "missingType.generics",
+                    "message": "Method ModelScope\\Scopes::scopeWithVoidReturn() has parameter $query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types: TModel",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "file": "tests/Type/data/optional-helper.php",
+            "declares": [
+                "optionaltype\\foo",
+                "optionaltype\\test"
+            ],
+            "asserts": [
+                17,
+                18,
+                21,
+                24,
+                25,
+                26
+            ],
+            "errors": [
+                {
+                    "line": 21,
+                    "identifier": "argument.type",
+                    "message": "Parameter #2 $callback of function optional expects (callable(null): 1)|null, Closure(string): 1 given.",
+                    "tip": null
+                },
+                {
+                    "line": 25,
+                    "identifier": "property.nonObject",
+                    "message": "Cannot access property $foo on mixed.",
+                    "tip": null
+                },
+                {
+                    "line": 26,
+                    "identifier": "method.nonObject",
+                    "message": "Cannot call method doFoo() on mixed.",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "file": "tests/Type/data/paginator-extension.php",
+            "declares": [
+                "paginatorextension\\test"
+            ],
+            "asserts": [
+                13,
+                14,
+                15,
+                16,
+                18,
+                19,
+                20,
+                21,
+                23,
+                24,
+                25,
+                26,
+                28,
+                31,
+                34
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/query-builder.php",
+            "declares": [
+                "querybuilder\\test"
+            ],
+            "asserts": [
+                14,
+                15,
+                23,
+                28,
+                34,
+                39,
+                44,
+                49,
+                51,
+                52,
+                53,
+                54,
+                55,
+                56
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/request-header.php",
+            "declares": [
+                "requestheader\\test"
+            ],
+            "asserts": [
+                13,
+                14,
+                15
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/request-object.php",
+            "declares": [
+                "requestobject\\test"
+            ],
+            "asserts": [
+                13,
+                14,
+                15,
+                17,
+                18,
+                19,
+                20,
+                22,
+                23,
+                24,
+                26,
+                27,
+                28,
+                30,
+                31,
+                32
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/route.php",
+            "declares": [
+                "route\\test"
+            ],
+            "asserts": [
+                14,
+                15,
+                16
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/tappable.php",
+            "declares": [
+                "tappable\\tappableclass",
+                "tappable\\test"
+            ],
+            "asserts": [
+                16,
+                22
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/throw.php",
+            "declares": [
+                "throw\\test"
+            ],
+            "asserts": [
+                14,
+                18,
+                21,
+                25,
+                29,
+                33,
+                37,
+                41,
+                45
+            ],
+            "errors": [
+                {
+                    "line": 24,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int|string is not subtype of native type int.",
+                    "tip": null
+                },
+                {
+                    "line": 28,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int|string is not subtype of native type int.",
+                    "tip": null
+                },
+                {
+                    "line": 32,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int|string is not subtype of native type int.",
+                    "tip": null
+                },
+                {
+                    "line": 36,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int|string is not subtype of native type int.",
+                    "tip": null
+                },
+                {
+                    "line": 40,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int|string is not subtype of native type int.",
+                    "tip": null
+                },
+                {
+                    "line": 44,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int|string is not subtype of native type int.",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "file": "tests/Type/data/translate.php",
+            "declares": [
+                "translate\\test"
+            ],
+            "asserts": [
+                11,
+                12,
+                13,
+                15,
+                16,
+                17
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/translator.php",
+            "declares": [
+                "translator\\test"
+            ],
+            "asserts": [
+                12,
+                13
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/validator.php",
+            "declares": [
+                "validatorsafe\\test"
+            ],
+            "asserts": [
+                13,
+                14
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/view-exists.php",
+            "declares": [
+                "illuminateview\\test"
+            ],
+            "asserts": [
+                10,
+                13
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/view.php",
+            "declares": [
+                "illuminateview\\test"
+            ],
+            "asserts": [
+                9,
+                10,
+                11,
+                12
+            ],
+            "errors": [
+                {
+                    "line": 10,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $view of function view expects view-string|null, string given.",
+                    "tip": null
+                },
+                {
+                    "line": 11,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $view of function view expects view-string|null, string given.",
+                    "tip": null
+                },
+                {
+                    "line": 12,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $view of function view expects view-string|null, string given.",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "file": "tests/Type/data/where-relation.php",
+            "declares": [
+                "whererelation\\field",
+                "whererelation\\test"
+            ],
+            "asserts": [
+                16,
+                19,
+                22
+            ],
+            "errors": [
+                {
+                    "line": 18,
+                    "identifier": "larastan.relationExistence",
+                    "message": "Relation 'orderTypes' is not found in WhereRelation\\Field model.",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "file": "tests/Type/data/bug-1997.php",
+            "declares": [
+                "bug1997\\team",
+                "bug1997\\test",
+                "bug1997\\user"
+            ],
+            "asserts": [
+                22
+            ],
+            "errors": [
+                {
+                    "line": 12,
+                    "identifier": "generics.notSubtype",
+                    "message": "Type Bug1997\\Team in generic type Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany<Bug1997\\Team, Illuminate\\Database\\Eloquent\\Relations\\Pivot, string> in PHPDoc tag @return is not subtype of template type TRelatedModel of Illuminate\\Database\\Eloquent\\Model of class Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany.",
+                    "tip": null
+                },
+                {
+                    "line": 12,
+                    "identifier": "generics.notSubtype",
+                    "message": "Type string in generic type Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany<Bug1997\\Team, Illuminate\\Database\\Eloquent\\Relations\\Pivot, string> in PHPDoc tag @return is not subtype of template type TPivotModel of Illuminate\\Database\\Eloquent\\Relations\\Pivot = Illuminate\\Database\\Eloquent\\Relations\\Pivot of class Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany.",
+                    "tip": null
+                },
+                {
+                    "line": 14,
+                    "identifier": "missingType.return",
+                    "message": "Method Bug1997\\User::getKey() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "line": 22,
+                    "identifier": "method.private",
+                    "message": "Call to private method whereKey() of parent class Illuminate\\Database\\Eloquent\\Relations\\Relation<TRelatedModel of Illuminate\\Database\\Eloquent\\Model,TDeclaringModel of Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Collection<int, object{pivot: TPivotModel of Illuminate\\Database\\Eloquent\\Relations\\Pivot = Illuminate\\Database\\Eloquent\\Relations\\Pivot}&TRelatedModel of Illuminate\\Database\\Eloquent\\Model>>.",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "file": "tests/Type/data/bug-1819.php",
+            "declares": [
+                "bug1819\\test"
+            ],
+            "asserts": [
+                11
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/model-collections-l11-28.php",
+            "declares": [
+                "modelcollectionsl1128\\test",
+                "modelcollectionsl1128\\user",
+                "modelcollectionsl1128\\usercollection"
+            ],
+            "asserts": [
+                12,
+                13
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/model-l11-42.php",
+            "declares": [
+                "model\\abstractmodel",
+                "model\\bar",
+                "model\\child",
+                "model\\foo",
+                "model\\hasbar",
+                "model\\test"
+            ],
+            "asserts": [
+                21,
+                32,
+                42,
+                43,
+                45,
+                46,
+                47,
+                48,
+                82,
+                84,
+                85,
+                86,
+                87,
+                88,
+                89,
+                90,
+                91,
+                93,
+                94,
+                95,
+                96,
+                97,
+                98,
+                100,
+                101,
+                102,
+                103,
+                104,
+                105,
+                106,
+                108,
+                109,
+                110,
+                111,
+                112,
+                113,
+                117,
+                118,
+                120,
+                121,
+                122,
+                123,
+                125,
+                126,
+                127,
+                128,
+                129,
+                131,
+                132,
+                133,
+                134,
+                135,
+                138,
+                140,
+                141,
+                142,
+                143,
+                144,
+                145,
+                146,
+                147,
+                148,
+                149,
+                150,
+                154,
+                155,
+                156,
+                158,
+                159,
+                160,
+                161,
+                162,
+                167,
+                168,
+                169,
+                170,
+                171,
+                172,
+                174,
+                175,
+                178,
+                183,
+                188,
+                193,
+                198,
+                202,
+                206,
+                210,
+                214,
+                219,
+                224,
+                229,
+                234,
+                239,
+                244,
+                249,
+                254,
+                259,
+                264,
+                269,
+                274,
+                279,
+                284,
+                289,
+                294,
+                299,
+                304,
+                309,
+                314,
+                319,
+                324,
+                328
+            ],
+            "errors": [
+                {
+                    "line": 117,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type int, actual: int|false",
+                    "tip": null
+                },
+                {
+                    "line": 118,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type int, actual: int|false",
+                    "tip": null
+                },
+                {
+                    "line": 121,
+                    "identifier": "larastan.noModelMake",
+                    "message": "Called 'Model::make()' which performs unnecessary work, use 'new Model()'.",
+                    "tip": null
+                },
+                {
+                    "line": 223,
+                    "identifier": "argument.type",
+                    "message": "Parameter #2 $callback of static method Illuminate\\Database\\Eloquent\\Builder<App\\User>::withWhereHas() expects (Closure(Illuminate\\Database\\Eloquent\\Builder<*>|Illuminate\\Database\\Eloquent\\Relations\\Relation<*, *, *>): mixed)|null, Closure(Illuminate\\Database\\Eloquent\\Builder): void given.",
+                    "tip": "Type #1 from the union: Type Illuminate\\Database\\Eloquent\\Builder of parameter #1 $query of passed callable needs to be same or wider than parameter type Illuminate\\Database\\Eloquent\\Builder<*>|Illuminate\\Database\\Eloquent\\Relations\\Relation<*, *, *> of accepting callable."
+                },
+                {
+                    "line": 228,
+                    "identifier": "argument.type",
+                    "message": "Parameter #2 $callback of static method App\\PostBuilder<App\\Post>::withWhereHas() expects (Closure(Illuminate\\Database\\Eloquent\\Builder<*>|Illuminate\\Database\\Eloquent\\Relations\\Relation<*, *, *>): mixed)|null, Closure(Illuminate\\Database\\Eloquent\\Builder): void given.",
+                    "tip": "Type #1 from the union: Type Illuminate\\Database\\Eloquent\\Builder of parameter #1 $query of passed callable needs to be same or wider than parameter type Illuminate\\Database\\Eloquent\\Builder<*>|Illuminate\\Database\\Eloquent\\Relations\\Relation<*, *, *> of accepting callable."
+                }
+            ]
+        },
+        {
+            "file": "tests/Type/data/eloquent-builder-l11-42.php",
+            "declares": [
+                "eloquentbuilder\\custombuilder",
+                "eloquentbuilder\\foo",
+                "eloquentbuilder\\footrait",
+                "eloquentbuilder\\onlyusers",
+                "eloquentbuilder\\teamclass",
+                "eloquentbuilder\\test",
+                "eloquentbuilder\\testmodel",
+                "eloquentbuilder\\unionclass"
+            ],
+            "asserts": [
+                36,
+                41,
+                46,
+                51,
+                56,
+                61,
+                66,
+                71,
+                76,
+                81,
+                86,
+                91,
+                96,
+                101,
+                106,
+                111,
+                116,
+                121,
+                126,
+                131,
+                136,
+                141,
+                146,
+                151,
+                156,
+                160,
+                164,
+                169,
+                175,
+                176,
+                177,
+                182,
+                186,
+                190,
+                191,
+                192,
+                193,
+                197,
+                198,
+                199,
+                200,
+                202,
+                203,
+                204,
+                205,
+                207,
+                209,
+                210,
+                211,
+                212,
+                213,
+                214,
+                216,
+                217,
+                218,
+                219,
+                220,
+                221,
+                223,
+                224,
+                225,
+                226,
+                227,
+                228,
+                229,
+                231,
+                232,
+                233,
+                234,
+                235,
+                236,
+                237,
+                239,
+                240,
+                241,
+                242,
+                243,
+                248,
+                253,
+                254,
+                259,
+                264,
+                269,
+                274,
+                279,
+                280,
+                281,
+                283,
+                284,
+                289,
+                294,
+                295,
+                299,
+                303,
+                306,
+                309,
+                310,
+                317,
+                318,
+                320,
+                321,
+                322,
+                323,
+                327,
+                328,
+                329,
+                330,
+                335,
+                336,
+                338,
+                362,
+                363,
+                364,
+                379,
+                393
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/model-scope-attribute-l12.php",
+            "declares": [
+                "modelscopeattribute\\activity",
+                "modelscopeattribute\\test"
+            ],
+            "asserts": [
+                14,
+                15,
+                16,
+                17,
+                18,
+                19,
+                20
+            ],
+            "errors": [
+                {
+                    "line": 20,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method Illuminate\\Database\\Eloquent\\Builder<ModelScopeAttribute\\Activity>::notAScope().",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "file": "tests/Type/data/eloquent-builder-l12-19.php",
+            "declares": [
+                "eloquentbuilder1215\\a",
+                "eloquentbuilder1215\\anothercustombuilder",
+                "eloquentbuilder1215\\b",
+                "eloquentbuilder1215\\custombuilder",
+                "eloquentbuilder1215\\test"
+            ],
+            "asserts": [
+                31,
+                32
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/passthru-l12-15.php",
+            "declares": [
+                "passthru\\test"
+            ],
+            "asserts": [
+                10
+            ],
+            "errors": [
+                {
+                    "line": 9,
+                    "identifier": "missingType.return",
+                    "message": "Function Passthru\\test() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "line": 10,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type int<0, max>, actual: Illuminate\\Database\\Eloquent\\Builder<App\\User>",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "file": "tests/Type/data/facades-l12-41.php",
+            "declares": [
+                "facadesl1241\\test"
+            ],
+            "asserts": [
+                12,
+                13,
+                14,
+                15,
+                16,
+                17,
+                18,
+                19,
+                20,
+                22,
+                23,
+                24,
+                25,
+                26,
+                28,
+                29,
+                34
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/application/app/Console/Commands/BarCommand.php",
+            "declares": [
+                "app\\console\\commands\\barcommand"
+            ],
+            "asserts": [
+                17,
+                18,
+                19,
+                21,
+                25,
+                27
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/application/app/Console/Commands/BazCommand.php",
+            "declares": [
+                "app\\console\\commands\\bazcommand"
+            ],
+            "asserts": [
+                17,
+                18,
+                19,
+                21
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/application/app/Console/Commands/FooCommand.php",
+            "declares": [
+                "app\\console\\commands\\foocommand"
+            ],
+            "asserts": [
+                17,
+                18,
+                19,
+                20,
+                21,
+                24,
+                25,
+                26,
+                27,
+                31,
+                32,
+                33,
+                34,
+                35,
+                38,
+                39,
+                40,
+                41,
+                42,
+                43
+            ],
+            "errors": []
+        }
+    ]
+}

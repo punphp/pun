@@ -1,0 +1,34 @@
+<?php
+
+namespace Illuminate\Foundation\Console;
+
+use Exception;
+use Illuminate\Console\Command;
+use Illuminate\Foundation\Events\MaintenanceModeDisabled;
+use Symfony\Component\Console\Attribute\AsCommand;
+
+#[AsCommand(name: 'up')]
+class UpCommand extends Command
+{
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'up';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Bring the application out of maintenance mode';
+
+    /**
+     * Execute the console command.
+     *
+     * @return int
+     */
+    public function handle()
+    {}
+}

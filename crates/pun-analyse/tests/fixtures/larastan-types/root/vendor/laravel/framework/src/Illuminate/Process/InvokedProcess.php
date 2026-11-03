@@ -1,0 +1,136 @@
+<?php
+
+namespace Illuminate\Process;
+
+use Illuminate\Contracts\Process\InvokedProcess as InvokedProcessContract;
+use Illuminate\Process\Exceptions\ProcessTimedOutException;
+use Illuminate\Support\Traits\Macroable;
+use Symfony\Component\Process\Exception\ProcessTimedOutException as SymfonyTimeoutException;
+use Symfony\Component\Process\Process;
+
+class InvokedProcess implements InvokedProcessContract
+{
+    use Macroable;
+
+    /**
+     * The underlying process instance.
+     *
+     * @var \Symfony\Component\Process\Process
+     */
+    protected $process;
+
+    /**
+     * Create a new invoked process instance.
+     *
+     * @param  \Symfony\Component\Process\Process  $process
+     */
+    public function __construct(Process $process)
+    {}
+
+    /**
+     * Get the process ID if the process is still running.
+     *
+     * @return int|null
+     */
+    public function id()
+    {}
+
+    /**
+     * Get the command line for the process.
+     *
+     * @return string
+     */
+    public function command()
+    {}
+
+    /**
+     * Send a signal to the process.
+     *
+     * @param  int  $signal
+     * @return $this
+     */
+    public function signal(int $signal)
+    {}
+
+    /**
+     * Stop the process if it is still running.
+     *
+     * @param  float  $timeout
+     * @param  int|null  $signal
+     * @return int|null
+     */
+    public function stop(float $timeout = 10, ?int $signal = null)
+    {}
+
+    /**
+     * Determine if the process is still running.
+     *
+     * @return bool
+     */
+    public function running()
+    {}
+
+    /**
+     * Get the standard output for the process.
+     *
+     * @return string
+     */
+    public function output()
+    {}
+
+    /**
+     * Get the error output for the process.
+     *
+     * @return string
+     */
+    public function errorOutput()
+    {}
+
+    /**
+     * Get the latest standard output for the process.
+     *
+     * @return string
+     */
+    public function latestOutput()
+    {}
+
+    /**
+     * Get the latest error output for the process.
+     *
+     * @return string
+     */
+    public function latestErrorOutput()
+    {}
+
+    /**
+     * Ensure that the process has not timed out.
+     *
+     * @return void
+     *
+     * @throws \Illuminate\Process\Exceptions\ProcessTimedOutException
+     */
+    public function ensureNotTimedOut()
+    {}
+
+    /**
+     * Wait for the process to finish.
+     *
+     * @param  callable|null  $output
+     * @return \Illuminate\Process\ProcessResult
+     *
+     * @throws \Illuminate\Process\Exceptions\ProcessTimedOutException
+     */
+    public function wait(?callable $output = null)
+    {}
+
+    /**
+     * Wait until the given callback returns true.
+     *
+     * @param  callable|null  $output
+     * @return \Illuminate\Process\ProcessResult
+     *
+     * @throws \Illuminate\Process\Exceptions\ProcessTimedOutException
+     */
+    public function waitUntil(?callable $output = null)
+    {}
+}

@@ -9,8 +9,8 @@ DECISIONS.md, TASKS.md and REQUESTS.md (their history is in git). Finished work 
 One lead agent works on `main` and spawns subagents for independent slices in worktrees (AGENTS.md "How work runs").
 Pushpak resumed all commands on 2026-10-25. CI stays disabled.
 
-- **Counts** (local mapping.toml `ported = true`): format 168 of 168, lint 701 of 701, analyse 361 of 369.
-  Pending: format 0, lint 0, analyse 86 (86 total). Ported rules still have the explicit parity gaps below.
+- **Counts** (local mapping.toml `ported = true`): format 168 of 168, lint 701 of 701, analyse 362 of 369.
+  Pending: format 0, lint 0, analyse 7 (7 total). Ported rules still have the explicit parity gaps below.
 - **Analyse keeps only what lint and format cannot fix** (Pushpak, 2026-11-02). 16 analyse rules whose reports a
   lint or format rule fixes are gone, and their PHPStan classes and identifiers map to that rule (rules.md §2 O5).
   Ten more identifiers moved alone, and their analyse rules keep the reports nothing fixes. The analyser still

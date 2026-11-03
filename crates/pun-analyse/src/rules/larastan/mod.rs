@@ -168,7 +168,7 @@ impl Larastan {
             Some(Value::Bool(b)) => *b,
             _ => default,
         };
-        let mut larastan = Larastan::new(root);
+        let mut larastan = Larastan::new(&app_root(root));
         let directories: Vec<String> = params
             .get_str("configDirectories")
             .and_then(Value::as_array)
@@ -220,6 +220,17 @@ impl Larastan {
             &names("noUnnecessaryCollectionCallExcept"),
         );
         Some(larastan)
+    }
+}
+
+/// The app Larastan's bootstrap.php boots from the working directory `root`: `bootstrap/app.php`'s, else (a package)
+/// Testbench's default skeleton, which ApplicationResolver::resolve() creates when orchestra/testbench is installed.
+fn app_root(root: &Path) -> PathBuf {
+    let skeleton = root.join("vendor/orchestra/testbench-core/laravel");
+    if !root.join("bootstrap/app.php").is_file() && skeleton.join("bootstrap/app.php").is_file() {
+        skeleton
+    } else {
+        root.to_path_buf()
     }
 }
 

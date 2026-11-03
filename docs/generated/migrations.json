@@ -21061,7 +21061,7 @@
         "rules": [
           "analyse/debug/assert-type"
         ],
-        "note": "Merged with phpstan.superType, phpstan.type, phpstan.unknownExpectation and 1 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with phpstan.superType, phpstan.type, phpstan.unknownExpectation and 1 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -21071,7 +21071,7 @@
         "rules": [
           "analyse/debug/assert-type"
         ],
-        "note": "Merged with phpstan.nativeType, phpstan.type, phpstan.unknownExpectation and 1 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with phpstan.nativeType, phpstan.type, phpstan.unknownExpectation and 1 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -21081,7 +21081,7 @@
         "rules": [
           "analyse/debug/assert-type"
         ],
-        "note": "Merged with phpstan.nativeType, phpstan.superType, phpstan.unknownExpectation and 1 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with phpstan.nativeType, phpstan.superType, phpstan.unknownExpectation and 1 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -21091,7 +21091,7 @@
         "rules": [
           "analyse/debug/assert-type"
         ],
-        "note": "Merged with phpstan.nativeType, phpstan.superType, phpstan.type and 1 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with phpstan.nativeType, phpstan.superType, phpstan.type and 1 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -21101,7 +21101,7 @@
         "rules": [
           "analyse/debug/assert-type"
         ],
-        "note": "Merged with phpstan.nativeType, phpstan.superType, phpstan.type and 1 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with phpstan.nativeType, phpstan.superType, phpstan.type and 1 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {

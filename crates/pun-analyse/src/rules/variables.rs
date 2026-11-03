@@ -323,7 +323,8 @@ pub(super) fn typed_expressions(
             self.spans.push(c.span());
         }
         fn walk_in_function_call(&mut self, f: &'ast FunctionCall<'arena>, _: &mut ()) {
-            if is_compact(f, self.names) {
+            // FileAssertRule's assertVariableCertainty() reads the same scope before its arguments
+            if is_compact(f, self.names) || super::debug::is_variable_certainty(f, self.names) {
                 self.compact_calls.insert(f.span());
                 self.spans.push(f.span());
                 self.spans
@@ -639,6 +640,9 @@ fn single_variable(
 /// describe assignments made by their evaluation.
 pub(super) fn compact(c: &mut Checker, call: &FunctionCall) {
     // Only calls selected by the name-resolution pass can have a compact scope observation.
+    if !is_compact(call, c.names) {
+        return;
+    }
     let Some(scope) = c.variables.compact_scopes.get(&call.span()) else {
         return;
     };

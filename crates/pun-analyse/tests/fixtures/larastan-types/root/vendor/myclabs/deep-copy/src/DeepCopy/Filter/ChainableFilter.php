@@ -1,0 +1,20 @@
+<?php
+
+namespace DeepCopy\Filter;
+
+/**
+ * Defines a decorator filter that will not stop the chain of filters.
+ */
+class ChainableFilter implements Filter
+{
+    /**
+     * @var Filter
+     */
+    protected $filter;
+
+    public function __construct(Filter $filter)
+    {}
+
+    public function apply($object, $property, $objectCopier)
+    {}
+}

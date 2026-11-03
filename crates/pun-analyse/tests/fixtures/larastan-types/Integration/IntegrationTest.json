@@ -1,0 +1,540 @@
+{
+    "test": "Integration/IntegrationTest",
+    "configs": [
+        "tests/Type/data/config-check-model-properties.neon"
+    ],
+    "cases": [
+        {
+            "file": "tests/Integration/data/bug-2074.php",
+            "declares": [
+                "bug2074\\test"
+            ],
+            "larastan": [],
+            "errors": []
+        },
+        {
+            "file": "tests/Integration/data/bug-2431.php",
+            "declares": [
+                "bug2431\\test"
+            ],
+            "larastan": [],
+            "errors": []
+        },
+        {
+            "file": "tests/Integration/data/bug-final_model_query.php",
+            "declares": [
+                "bugfinalmodelquery\\user"
+            ],
+            "larastan": [],
+            "errors": []
+        },
+        {
+            "file": "tests/Integration/data/test-case-extension.php",
+            "declares": [
+                "testcaseextension",
+                "testtestcase"
+            ],
+            "larastan": {
+                "34": [
+                    "Call to function method_exists() with $this(TestTestCase) and 'partialMock' will always evaluate to true."
+                ]
+            },
+            "errors": [
+                {
+                    "line": 34,
+                    "identifier": "function.alreadyNarrowedType",
+                    "message": "Call to function method_exists() with $this(TestTestCase) and 'partialMock' will always evaluate to true.",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "file": "tests/Integration/data/model-builder.php",
+            "declares": [
+                "modelbuilder\\test",
+                "modelbuilder\\user"
+            ],
+            "larastan": [],
+            "errors": [
+                {
+                    "line": 45,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type int, actual: int|false",
+                    "tip": null
+                },
+                {
+                    "line": 46,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type int, actual: int|false",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "file": "tests/Integration/data/model-properties.php",
+            "declares": [
+                "testbooleanacceptsfalse",
+                "testbooleanacceptsone",
+                "testbooleanacceptszero",
+                "testdatecast",
+                "testinboundcast",
+                "testknowncolumnnamewithunknowntype",
+                "testnullablepropertywithcast",
+                "testwriteidpropertywhenmigrationscouldntberead",
+                "testwriteidpropertywhenmigrationscouldntbereadandkeytypeisstring",
+                "testwritetoproperty",
+                "testwritetosoftdeletescolumn",
+                "testwriteuuidproperty"
+            ],
+            "larastan": {
+                "32": [
+                    "Property App\\User::$unsigned_integer (int<0, max>) does not accept -5."
+                ],
+                "33": [
+                    "Property App\\User::$unsigned_integer_method (int<0, max>) does not accept -5."
+                ]
+            },
+            "errors": [
+                {
+                    "line": 32,
+                    "identifier": "assign.propertyType",
+                    "message": "Property App\\User::$unsigned_integer (int<0, max>) does not accept -5.",
+                    "tip": null
+                },
+                {
+                    "line": 33,
+                    "identifier": "assign.propertyType",
+                    "message": "Property App\\User::$unsigned_integer_method (int<0, max>) does not accept -5.",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "file": "tests/Integration/data/model-factories.php",
+            "declares": [
+                "modelfactories\\test"
+            ],
+            "larastan": [],
+            "errors": []
+        },
+        {
+            "file": "tests/Integration/data/blade-view.php",
+            "declares": [
+                "bladeviewtype"
+            ],
+            "larastan": [],
+            "errors": []
+        },
+        {
+            "file": "tests/Integration/data/helpers.php",
+            "declares": [
+                "retryacceptscallableassleepmilliseconds",
+                "transformacceptsnonnullablecallable"
+            ],
+            "larastan": [],
+            "errors": []
+        },
+        {
+            "file": "tests/Integration/data/model-property-builder.php",
+            "declares": [
+                "modelpropertybuilder\\getkey",
+                "modelpropertybuilder\\test"
+            ],
+            "larastan": {
+                "15": [
+                    "Parameter #1 $column of method Illuminate\\Database\\Eloquent\\Builder<App\\User>::firstWhere() expects array<int|model property of App\\User, mixed>|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\User>): Illuminate\\Database\\Eloquent\\Builder<App\\User>)|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\User>): void)|Illuminate\\Contracts\\Database\\Query\\Expression|model property of App\\User, 'foo' given."
+                ],
+                "16": [
+                    "Parameter #1 $column of method Illuminate\\Database\\Eloquent\\Builder<App\\User>::firstWhere() expects array<int|model property of App\\User, mixed>|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\User>): Illuminate\\Database\\Eloquent\\Builder<App\\User>)|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\User>): void)|Illuminate\\Contracts\\Database\\Query\\Expression|model property of App\\User, 'id'|'unionNotExisting' given."
+                ],
+                "17": [
+                    "Parameter #1 $column of method Illuminate\\Database\\Eloquent\\Builder<App\\User>::where() expects array<int|model property of App\\User, mixed>|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\User>): Illuminate\\Database\\Eloquent\\Builder<App\\User>)|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\User>): void)|Illuminate\\Contracts\\Database\\Query\\Expression|model property of App\\User, 'foo' given."
+                ],
+                "19": [
+                    "Parameter #1 $column of method Illuminate\\Database\\Eloquent\\Builder<App\\User>::where() expects array<int|model property of App\\User, mixed>|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\User>): Illuminate\\Database\\Eloquent\\Builder<App\\User>)|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\User>): void)|Illuminate\\Contracts\\Database\\Query\\Expression|model property of App\\User, 'foo' given."
+                ],
+                "20": [
+                    "Parameter #1 $column of method Illuminate\\Database\\Eloquent\\Builder<App\\User>::where() expects array<int|model property of App\\User, mixed>|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\User>): Illuminate\\Database\\Eloquent\\Builder<App\\User>)|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\User>): void)|Illuminate\\Contracts\\Database\\Query\\Expression|model property of App\\User, 'foo' given."
+                ],
+                "24": [
+                    "Parameter #1 $column of method Illuminate\\Database\\Eloquent\\Builder<App\\User>::where() expects array<int|model property of App\\User, mixed>|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\User>): Illuminate\\Database\\Eloquent\\Builder<App\\User>)|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\User>): void)|Illuminate\\Contracts\\Database\\Query\\Expression|model property of App\\User, string given."
+                ],
+                "25": [
+                    "Parameter #1 $column of method Illuminate\\Database\\Eloquent\\Builder<App\\User>::orWhere() expects array<int|model property of App\\User, mixed>|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\User>): Illuminate\\Database\\Eloquent\\Builder<App\\User>)|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\User>): void)|Illuminate\\Contracts\\Database\\Query\\Expression|model property of App\\User, 'foo' given."
+                ],
+                "26": [
+                    "Parameter #1 $column of method Illuminate\\Database\\Eloquent\\Builder<App\\User>::orWhere() expects array<int|model property of App\\User, mixed>|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\User>): Illuminate\\Database\\Eloquent\\Builder<App\\User>)|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\User>): void)|Illuminate\\Contracts\\Database\\Query\\Expression|model property of App\\User, 'foo' given."
+                ],
+                "27": [
+                    "Parameter #1 $column of method Illuminate\\Database\\Eloquent\\Builder<App\\User>::orWhere() expects array<int|model property of App\\User, mixed>|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\User>): Illuminate\\Database\\Eloquent\\Builder<App\\User>)|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\User>): void)|Illuminate\\Contracts\\Database\\Query\\Expression|model property of App\\User, array{foo: 'foo'} given."
+                ],
+                "30": [
+                    "Parameter #1 $column of method Illuminate\\Database\\Eloquent\\Builder<App\\User>::value() expects Illuminate\\Contracts\\Database\\Query\\Expression|model property of App\\User, string given."
+                ],
+                "35": [
+                    "Parameter #1 $columns of method Illuminate\\Database\\Eloquent\\Builder<App\\User>::first() expects '*'|array<int, '*'|Illuminate\\Contracts\\Database\\Query\\Expression|model property of App\\User>|Illuminate\\Contracts\\Database\\Query\\Expression|model property of App\\User, array{'foo', 'bar'} given."
+                ],
+                "36": [
+                    "Parameter #1 $columns of method Illuminate\\Database\\Eloquent\\Builder<App\\User>::first() expects '*'|array<int, '*'|Illuminate\\Contracts\\Database\\Query\\Expression|model property of App\\User>|Illuminate\\Contracts\\Database\\Query\\Expression|model property of App\\User, 'foo' given."
+                ],
+                "39": [
+                    "Parameter #1 $column of method Illuminate\\Database\\Eloquent\\Builder<App\\User>::where() expects array<int|model property of App\\User, mixed>|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\User>): Illuminate\\Database\\Eloquent\\Builder<App\\User>)|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\User>): void)|Illuminate\\Contracts\\Database\\Query\\Expression|model property of App\\User, 'roles.foo' given."
+                ]
+            },
+            "errors": [
+                {
+                    "line": 15,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $column of method Illuminate\\Database\\Eloquent\\Builder<App\\User>::firstWhere() expects array<int|model property of App\\User, mixed>|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\User>): Illuminate\\Database\\Eloquent\\Builder<App\\User>)|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\User>): void)|Illuminate\\Contracts\\Database\\Query\\Expression|model property of App\\User, 'foo' given.",
+                    "tip": "Type #5 from the union: The given string should be a property of App\\User, foo given."
+                },
+                {
+                    "line": 16,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $column of method Illuminate\\Database\\Eloquent\\Builder<App\\User>::firstWhere() expects array<int|model property of App\\User, mixed>|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\User>): Illuminate\\Database\\Eloquent\\Builder<App\\User>)|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\User>): void)|Illuminate\\Contracts\\Database\\Query\\Expression|model property of App\\User, 'id'|'unionNotExisting' given.",
+                    "tip": "Type #5 from the union: The given string should be a property of App\\User, unionNotExisting given."
+                },
+                {
+                    "line": 17,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $column of method Illuminate\\Database\\Eloquent\\Builder<App\\User>::where() expects array<int|model property of App\\User, mixed>|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\User>): Illuminate\\Database\\Eloquent\\Builder<App\\User>)|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\User>): void)|Illuminate\\Contracts\\Database\\Query\\Expression|model property of App\\User, 'foo' given.",
+                    "tip": "Type #5 from the union: The given string should be a property of App\\User, foo given."
+                },
+                {
+                    "line": 19,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $column of method Illuminate\\Database\\Eloquent\\Builder<App\\User>::where() expects array<int|model property of App\\User, mixed>|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\User>): Illuminate\\Database\\Eloquent\\Builder<App\\User>)|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\User>): void)|Illuminate\\Contracts\\Database\\Query\\Expression|model property of App\\User, 'foo' given.",
+                    "tip": "Type #5 from the union: The given string should be a property of App\\User, foo given."
+                },
+                {
+                    "line": 20,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $column of method Illuminate\\Database\\Eloquent\\Builder<App\\User>::where() expects array<int|model property of App\\User, mixed>|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\User>): Illuminate\\Database\\Eloquent\\Builder<App\\User>)|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\User>): void)|Illuminate\\Contracts\\Database\\Query\\Expression|model property of App\\User, 'foo' given.",
+                    "tip": "Type #5 from the union: The given string should be a property of App\\User, foo given."
+                },
+                {
+                    "line": 25,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $column of method Illuminate\\Database\\Eloquent\\Builder<App\\User>::orWhere() expects array<int|model property of App\\User, mixed>|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\User>): Illuminate\\Database\\Eloquent\\Builder<App\\User>)|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\User>): void)|Illuminate\\Contracts\\Database\\Query\\Expression|model property of App\\User, 'foo' given.",
+                    "tip": "Type #5 from the union: The given string should be a property of App\\User, foo given."
+                },
+                {
+                    "line": 26,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $column of method Illuminate\\Database\\Eloquent\\Builder<App\\User>::orWhere() expects array<int|model property of App\\User, mixed>|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\User>): Illuminate\\Database\\Eloquent\\Builder<App\\User>)|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\User>): void)|Illuminate\\Contracts\\Database\\Query\\Expression|model property of App\\User, 'foo' given.",
+                    "tip": "Type #5 from the union: The given string should be a property of App\\User, foo given."
+                },
+                {
+                    "line": 27,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $column of method Illuminate\\Database\\Eloquent\\Builder<App\\User>::orWhere() expects array<int|model property of App\\User, mixed>|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\User>): Illuminate\\Database\\Eloquent\\Builder<App\\User>)|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\User>): void)|Illuminate\\Contracts\\Database\\Query\\Expression|model property of App\\User, array{foo: 'foo'} given.",
+                    "tip": "Type #1 from the union: Type #2 from the union: The given string should be a property of App\\User, foo given."
+                },
+                {
+                    "line": 30,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $column of method Illuminate\\Database\\Eloquent\\Builder<App\\User>::value() expects Illuminate\\Contracts\\Database\\Query\\Expression|model property of App\\User, string given.",
+                    "tip": "Type #2 from the union: The given string should be a property of App\\User, foo given."
+                },
+                {
+                    "line": 35,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $columns of method Illuminate\\Database\\Eloquent\\Builder<App\\User>::first() expects '*'|array<int, '*'|Illuminate\\Contracts\\Database\\Query\\Expression|model property of App\\User>|Illuminate\\Contracts\\Database\\Query\\Expression|model property of App\\User, array{'foo', 'bar'} given.",
+                    "tip": "• Type #2 from the union: Type #3 from the union: The given string should be a property of App\\User, foo given.\n• Type #2 from the union: Type #3 from the union: The given string should be a property of App\\User, bar given."
+                },
+                {
+                    "line": 36,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $columns of method Illuminate\\Database\\Eloquent\\Builder<App\\User>::first() expects '*'|array<int, '*'|Illuminate\\Contracts\\Database\\Query\\Expression|model property of App\\User>|Illuminate\\Contracts\\Database\\Query\\Expression|model property of App\\User, 'foo' given.",
+                    "tip": "Type #4 from the union: The given string should be a property of App\\User, foo given."
+                },
+                {
+                    "line": 39,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $column of method Illuminate\\Database\\Eloquent\\Builder<App\\User>::where() expects array<int|model property of App\\User, mixed>|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\User>): Illuminate\\Database\\Eloquent\\Builder<App\\User>)|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\User>): void)|Illuminate\\Contracts\\Database\\Query\\Expression|model property of App\\User, 'roles.foo' given.",
+                    "tip": "Type #5 from the union: Database table \"roles\" does not have column \"foo\""
+                }
+            ]
+        },
+        {
+            "file": "tests/Integration/data/model-property-model.php",
+            "declares": [
+                "modelpropertymodel\\acceptsaccountproperty",
+                "modelpropertymodel\\acceptsuseroraccountproperty",
+                "modelpropertymodel\\acceptsuserproperty",
+                "modelpropertymodel\\getaccountproperty",
+                "modelpropertymodel\\getstring",
+                "modelpropertymodel\\modelpropertycustommethods",
+                "modelpropertymodel\\modelpropertycustommethodsinnormalclass",
+                "modelpropertymodel\\modelpropertyonmodel",
+                "modelpropertymodel\\testmodelpropertyalias"
+            ],
+            "larastan": {
+                "11": [
+                    "Parameter #1 $attributes of method Illuminate\\Database\\Eloquent\\Model::update() expects array<model property of static(ModelPropertyModel\\ModelPropertyOnModel), mixed>, array<string, string> given."
+                ],
+                "18": [
+                    "Parameter #1 $attributes of method Illuminate\\Database\\Eloquent\\Model::update() expects array<model property of App\\Account|model property of App\\User, mixed>, array<string, string> given."
+                ],
+                "25": [
+                    "Parameter #1 $attributes of method Illuminate\\Database\\Eloquent\\Model::update() expects array<model property of App\\Account|App\\User, mixed>, array<string, string> given."
+                ],
+                "49": [
+                    "Parameter #1 $property of method ModelPropertyModel\\ModelPropertyCustomMethods::foo() expects model property of App\\User, string given."
+                ],
+                "68": [
+                    "Parameter #1 $property of method ModelPropertyModel\\ModelPropertyCustomMethodsInNormalClass::foo() expects model property of App\\User, string given."
+                ],
+                "94": [
+                    "Parameter #1 $userModelProperty of function ModelPropertyModel\\acceptsUserProperty expects model property of App\\User, model property of App\\Account given."
+                ],
+                "107": [
+                    "Parameter #1 $accountModelProperty of function ModelPropertyModel\\acceptsUserOrAccountProperty expects model property of App\\Account|App\\User, string given."
+                ]
+            },
+            "errors": [
+                {
+                    "line": 11,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $attributes of method Illuminate\\Database\\Eloquent\\Model::update() expects array<model property of static(ModelPropertyModel\\ModelPropertyOnModel), mixed>, array<string, string> given.",
+                    "tip": "The given string should be a property of static(ModelPropertyModel\\ModelPropertyOnModel), foo given."
+                },
+                {
+                    "line": 18,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $attributes of method Illuminate\\Database\\Eloquent\\Model::update() expects array<model property of App\\User, mixed>, array<string, string> given.",
+                    "tip": "The given string should be a property of App\\User, foo given."
+                },
+                {
+                    "line": 49,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $property of method ModelPropertyModel\\ModelPropertyCustomMethods::foo() expects model property of App\\User, string given.",
+                    "tip": "The given string should be a property of App\\User, foo given."
+                },
+                {
+                    "line": 68,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $property of method ModelPropertyModel\\ModelPropertyCustomMethodsInNormalClass::foo() expects model property of App\\User, string given.",
+                    "tip": "The given string should be a property of App\\User, foo given."
+                },
+                {
+                    "line": 94,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $userModelProperty of function ModelPropertyModel\\acceptsUserProperty expects model property of App\\User, model property of App\\Account given.",
+                    "tip": "The given string should be a property of App\\User"
+                },
+                {
+                    "line": 107,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $accountModelProperty of function ModelPropertyModel\\acceptsUserOrAccountProperty expects model property of App\\Account|App\\User, string given.",
+                    "tip": "The given string should be a property of App\\Account|App\\User, email given."
+                }
+            ]
+        },
+        {
+            "file": "tests/Integration/data/model-property-model-factory.php",
+            "declares": [
+                "modelpropertymodelfactory\\foo"
+            ],
+            "larastan": {
+                "7": [
+                    "Parameter #1 $attributes of method Illuminate\\Database\\Eloquent\\Factories\\Factory<App\\User>::createOne() expects array<model property of App\\User, mixed>|(callable(array<string, mixed>): array<string, mixed>), array{foo: 'bar'} given."
+                ]
+            },
+            "errors": [
+                {
+                    "line": 7,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $attributes of method Illuminate\\Database\\Eloquent\\Factories\\Factory<App\\User>::createOne() expects array<model property of App\\User, mixed>|(callable(array<string, mixed>): array<string, mixed>), array{foo: 'bar'} given.",
+                    "tip": "Type #1 from the union: The given string should be a property of App\\User, foo given."
+                }
+            ]
+        },
+        {
+            "file": "tests/Integration/data/model-property-relation.php",
+            "declares": [],
+            "larastan": {
+                "4": [
+                    "Parameter #1 $column of method Illuminate\\Database\\Eloquent\\Builder<App\\Account>::where() expects array<int|model property of App\\Account, mixed>|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\Account>): Illuminate\\Database\\Eloquent\\Builder<App\\Account>)|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\Account>): void)|Illuminate\\Contracts\\Database\\Query\\Expression|model property of App\\Account, 'foo' given."
+                ],
+                "5": [
+                    "Parameter #1 $attributes of method Illuminate\\Database\\Eloquent\\Relations\\HasOneOrMany<App\\Account,App\\User,Illuminate\\Database\\Eloquent\\Collection<int, App\\Account>>::create() expects array<model property of App\\Account, mixed>, array<string, string> given."
+                ],
+                "6": [
+                    "Parameter #1 $attributes of method Illuminate\\Database\\Eloquent\\Relations\\HasOneOrMany<App\\Account,App\\User,Illuminate\\Database\\Eloquent\\Collection<int, App\\Account>>::firstOrNew() expects array<model property of App\\Account, mixed>, array<string, string> given."
+                ],
+                "7": [
+                    "Parameter #1 $attributes of method Illuminate\\Database\\Eloquent\\Relations\\HasOneOrMany<App\\Account,App\\User,Illuminate\\Database\\Eloquent\\Collection<int, App\\Account>>::firstOrCreate() expects array<model property of App\\Account, mixed>, array<string, string> given."
+                ],
+                "8": [
+                    "Parameter #1 $attributes of method Illuminate\\Database\\Eloquent\\Relations\\HasOneOrMany<App\\Account,App\\User,Illuminate\\Database\\Eloquent\\Collection<int, App\\Account>>::updateOrCreate() expects array<model property of App\\Account, mixed>, array<string, string> given."
+                ],
+                "10": [
+                    "Parameter #1 $column of method Illuminate\\Database\\Eloquent\\Builder<App\\Post>::where() expects array<int|model property of App\\Post, mixed>|(Closure(App\\PostBuilder<App\\Post>): App\\PostBuilder<App\\Post>)|(Closure(App\\PostBuilder<App\\Post>): void)|Illuminate\\Contracts\\Database\\Query\\Expression|model property of App\\Post, 'foo' given."
+                ],
+                "12": [
+                    "Parameter #1 $attributes of method Illuminate\\Database\\Eloquent\\Relations\\HasOneOrMany<App\\Account,App\\User,Illuminate\\Database\\Eloquent\\Collection<int, App\\Account>>::createOrFirst() expects array<model property of App\\Account, mixed>, array<string, string> given."
+                ]
+            },
+            "errors": [
+                {
+                    "line": 4,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $column of method Illuminate\\Database\\Eloquent\\Builder<App\\Account>::where() expects array<int|model property of App\\Account, mixed>|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\Account>): Illuminate\\Database\\Eloquent\\Builder<App\\Account>)|(Closure(Illuminate\\Database\\Eloquent\\Builder<App\\Account>): void)|Illuminate\\Contracts\\Database\\Query\\Expression|model property of App\\Account, 'foo' given.",
+                    "tip": "Type #5 from the union: The given string should be a property of App\\Account, foo given."
+                },
+                {
+                    "line": 5,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $attributes of method Illuminate\\Database\\Eloquent\\Relations\\HasOneOrMany<App\\Account,App\\User,Illuminate\\Database\\Eloquent\\Collection<int, App\\Account>>::create() expects array<model property of App\\Account, mixed>, array<string, string> given.",
+                    "tip": "The given string should be a property of App\\Account, foo given."
+                },
+                {
+                    "line": 6,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $attributes of method Illuminate\\Database\\Eloquent\\Relations\\HasOneOrMany<App\\Account,App\\User,Illuminate\\Database\\Eloquent\\Collection<int, App\\Account>>::firstOrNew() expects array<model property of App\\Account, mixed>, array<string, string> given.",
+                    "tip": "The given string should be a property of App\\Account, foo given."
+                },
+                {
+                    "line": 7,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $attributes of method Illuminate\\Database\\Eloquent\\Relations\\HasOneOrMany<App\\Account,App\\User,Illuminate\\Database\\Eloquent\\Collection<int, App\\Account>>::firstOrCreate() expects array<model property of App\\Account, mixed>, array<string, string> given.",
+                    "tip": "The given string should be a property of App\\Account, foo given."
+                },
+                {
+                    "line": 8,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $attributes of method Illuminate\\Database\\Eloquent\\Relations\\HasOneOrMany<App\\Account,App\\User,Illuminate\\Database\\Eloquent\\Collection<int, App\\Account>>::updateOrCreate() expects array<model property of App\\Account, mixed>, array<string, string> given.",
+                    "tip": "The given string should be a property of App\\Account, foo given."
+                },
+                {
+                    "line": 10,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $column of method Illuminate\\Database\\Eloquent\\Builder<App\\Post>::where() expects array<int|model property of App\\Post, mixed>|(Closure(App\\PostBuilder<App\\Post>): App\\PostBuilder<App\\Post>)|(Closure(App\\PostBuilder<App\\Post>): void)|Illuminate\\Contracts\\Database\\Query\\Expression|model property of App\\Post, 'foo' given.",
+                    "tip": "Type #5 from the union: The given string should be a property of App\\Post, foo given."
+                },
+                {
+                    "line": 12,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $attributes of method Illuminate\\Database\\Eloquent\\Relations\\HasOneOrMany<App\\Account,App\\User,Illuminate\\Database\\Eloquent\\Collection<int, App\\Account>>::createOrFirst() expects array<model property of App\\Account, mixed>, array<string, string> given.",
+                    "tip": "The given string should be a property of App\\Account, foo given."
+                }
+            ]
+        },
+        {
+            "file": "tests/Integration/data/model-property-static-call.php",
+            "declares": [
+                "modelpropertystaticcall\\foo",
+                "modelpropertystaticcall\\modelpropertystaticcallsinclass"
+            ],
+            "larastan": {
+                "10": [
+                    "Parameter #1 $attributes of static method Illuminate\\Database\\Eloquent\\Builder<App\\User>::create() expects array<model property of App\\User, mixed>, array<string, string> given."
+                ],
+                "14": [
+                    "Parameter #1 $attributes of static method Illuminate\\Database\\Eloquent\\Builder<App\\User>::create() expects array<model property of App\\User, mixed>, array<string, string> given."
+                ],
+                "26": [
+                    "Parameter #1 $attributes of static method Illuminate\\Database\\Eloquent\\Builder<ModelPropertyStaticCall\\ModelPropertyStaticCallsInClass>::create() expects array<model property of ModelPropertyStaticCall\\ModelPropertyStaticCallsInClass, mixed>, array<string, string> given."
+                ],
+                "34": [
+                    "Parameter #1 $attributes of static method Illuminate\\Database\\Eloquent\\Builder<ModelPropertyStaticCall\\ModelPropertyStaticCallsInClass>::create() expects array<model property of ModelPropertyStaticCall\\ModelPropertyStaticCallsInClass, mixed>, array<string, string> given."
+                ]
+            },
+            "errors": [
+                {
+                    "line": 10,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $attributes of static method Illuminate\\Database\\Eloquent\\Builder<App\\User>::create() expects array<model property of App\\User, mixed>, array<string, string> given.",
+                    "tip": "The given string should be a property of App\\User, foo given."
+                },
+                {
+                    "line": 14,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $attributes of static method Illuminate\\Database\\Eloquent\\Builder<App\\User>::create() expects array<model property of App\\User, mixed>, array<string, string> given.",
+                    "tip": "The given string should be a property of App\\User, foo given."
+                },
+                {
+                    "line": 26,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $attributes of static method Illuminate\\Database\\Eloquent\\Builder<ModelPropertyStaticCall\\ModelPropertyStaticCallsInClass>::create() expects array<model property of ModelPropertyStaticCall\\ModelPropertyStaticCallsInClass, mixed>, array<string, string> given.",
+                    "tip": "The given string should be a property of ModelPropertyStaticCall\\ModelPropertyStaticCallsInClass, foo given."
+                },
+                {
+                    "line": 34,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $attributes of static method Illuminate\\Database\\Eloquent\\Builder<ModelPropertyStaticCall\\ModelPropertyStaticCallsInClass>::create() expects array<model property of ModelPropertyStaticCall\\ModelPropertyStaticCallsInClass, mixed>, array<string, string> given.",
+                    "tip": "The given string should be a property of ModelPropertyStaticCall\\ModelPropertyStaticCallsInClass, foo given."
+                }
+            ]
+        },
+        {
+            "file": "tests/Integration/data/collection-of-type.php",
+            "declares": [
+                "collectionoftype\\collectionoftypetest",
+                "collectionoftype\\generictest",
+                "collectionoftype\\testgenericcollectionhandler"
+            ],
+            "larastan": {
+                "36": [
+                    "Parameter #1 $accounts of method CollectionOfType\\CollectionOfTypeTest::acceptsAccountCollection() expects App\\AccountCollection<int, App\\Account>, Illuminate\\Database\\Eloquent\\Collection<int, App\\User> given."
+                ],
+                "39": [
+                    "Parameter #1 $users of method CollectionOfType\\CollectionOfTypeTest::acceptsUserCollection() expects Illuminate\\Database\\Eloquent\\Collection<int, App\\User>, App\\AccountCollection<int, App\\Account> given."
+                ],
+                "69": [
+                    "Parameter #1 $collection of method CollectionOfType\\GenericTest::acceptsAccountCollection() expects App\\AccountCollection<(int|string), App\\Account>, Illuminate\\Database\\Eloquent\\Collection<int, App\\User> given."
+                ]
+            },
+            "errors": [
+                {
+                    "line": 36,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $accounts of method CollectionOfType\\CollectionOfTypeTest::acceptsAccountCollection() expects App\\AccountCollection<int, App\\Account>, Illuminate\\Database\\Eloquent\\Collection<int, App\\User> given.",
+                    "tip": null
+                },
+                {
+                    "line": 39,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $users of method CollectionOfType\\CollectionOfTypeTest::acceptsUserCollection() expects Illuminate\\Database\\Eloquent\\Collection<int, App\\User>, App\\AccountCollection<int, App\\Account> given.",
+                    "tip": null
+                },
+                {
+                    "line": 69,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $collection of method CollectionOfType\\GenericTest::acceptsAccountCollection() expects App\\AccountCollection<(int|string), App\\Account>, Illuminate\\Database\\Eloquent\\Collection<int, App\\User> given.",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "file": "tests/Integration/data/model-property-mutator-and-casting.php",
+            "declares": [
+                "modelpropertymutatorandcasting\\address",
+                "modelpropertymutatorandcasting\\modelpropertymutatorandcastinginclass"
+            ],
+            "larastan": {
+                "24": [
+                    "Parameter #1 $lineOne of class ModelPropertyMutatorAndCasting\\Address constructor expects string, mixed given."
+                ],
+                "25": [
+                    "Parameter #2 $lineTwo of class ModelPropertyMutatorAndCasting\\Address constructor expects string, mixed given."
+                ]
+            },
+            "errors": [
+                {
+                    "line": 24,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $lineOne of class ModelPropertyMutatorAndCasting\\Address constructor expects string, mixed given.",
+                    "tip": null
+                },
+                {
+                    "line": 25,
+                    "identifier": "argument.type",
+                    "message": "Parameter #2 $lineTwo of class ModelPropertyMutatorAndCasting\\Address constructor expects string, mixed given.",
+                    "tip": null
+                }
+            ]
+        }
+    ]
+}

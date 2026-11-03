@@ -1,0 +1,52 @@
+<?php
+
+/**
+ * Mockery (https://docs.mockery.io/en/stable/)
+ *
+ * @copyright https://github.com/mockery/mockery/blob/HEAD/COPYRIGHT.md
+ * @license   https://github.com/mockery/mockery/blob/HEAD/LICENSE BSD 3-Clause License
+ * @see       https://github.com/mockery/mockery for the canonical source repository
+ */
+
+namespace Mockery\Generator;
+
+use InvalidArgumentException;
+
+class MockDefinition
+{
+    /**
+     * @var string
+     */
+    protected $code;
+
+    /**
+     * @var MockConfiguration
+     */
+    protected $config;
+
+    /**
+     * @param string $code
+     *
+     * @throws InvalidArgumentException
+     */
+    public function __construct(MockConfiguration $config, $code)
+    {}
+
+    /**
+     * @return string
+     */
+    public function getClassName()
+    {}
+
+    /**
+     * @return string
+     */
+    public function getCode()
+    {}
+
+    /**
+     * @return MockConfiguration
+     */
+    public function getConfig()
+    {}
+}

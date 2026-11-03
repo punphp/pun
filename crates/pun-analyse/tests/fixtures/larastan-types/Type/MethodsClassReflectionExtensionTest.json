@@ -1,0 +1,97 @@
+{
+    "test": "Type/MethodsClassReflectionExtensionTest",
+    "configs": [
+        "tests/phpstan-tests.neon"
+    ],
+    "cases": [
+        {
+            "file": "tests/Type/data/macros.php",
+            "declares": [
+                "macros\\foo",
+                "macros\\test"
+            ],
+            "asserts": [
+                30,
+                31,
+                32,
+                33,
+                35,
+                36,
+                37,
+                38,
+                40,
+                41,
+                42,
+                44,
+                45,
+                47,
+                48,
+                50,
+                51,
+                53,
+                55,
+                58,
+                62
+            ],
+            "errors": [
+                {
+                    "line": 33,
+                    "identifier": "method.nonObject",
+                    "message": "Cannot call method accounts() on App\\User|null.",
+                    "tip": null
+                },
+                {
+                    "line": 38,
+                    "identifier": "method.nonObject",
+                    "message": "Cannot call method accounts() on App\\User|null.",
+                    "tip": null
+                },
+                {
+                    "line": 45,
+                    "identifier": "method.staticCall",
+                    "message": "Static call to instance method CustomCollectionMacro::customMacro().",
+                    "tip": null
+                },
+                {
+                    "line": 48,
+                    "identifier": "method.staticCall",
+                    "message": "Static call to instance method CustomCollectionMacro::customMacroString().",
+                    "tip": null
+                },
+                {
+                    "line": 50,
+                    "identifier": "method.staticCall",
+                    "message": "Static call to instance method Illuminate\\Support\\Str::trimMacro().",
+                    "tip": null
+                },
+                {
+                    "line": 55,
+                    "identifier": "variable.undefined",
+                    "message": "Variable $foo might not be defined.",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "file": "tests/Type/data/redirect-response.php",
+            "declares": [
+                "redirectresponse\\test"
+            ],
+            "asserts": [
+                11,
+                12
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/macros-php-81.php",
+            "declares": [
+                "macrosphp81\\test"
+            ],
+            "asserts": [
+                11
+            ],
+            "errors": []
+        }
+    ]
+}

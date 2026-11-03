@@ -1,0 +1,36 @@
+<?php
+
+namespace Illuminate\Database\Eloquent;
+
+use Illuminate\Database\Eloquent\Attributes\CollectedBy;
+use ReflectionClass;
+
+/**
+ * @template TCollection of \Illuminate\Database\Eloquent\Collection
+ */
+trait HasCollection
+{
+    /**
+     * The resolved collection class names by model.
+     *
+     * @var array<class-string<static>, class-string<TCollection>>
+     */
+    protected static array $resolvedCollectionClasses = [];
+
+    /**
+     * Create a new Eloquent Collection instance.
+     *
+     * @param  array<array-key, \Illuminate\Database\Eloquent\Model>  $models
+     * @return TCollection
+     */
+    public function newCollection(array $models = [])
+    {}
+
+    /**
+     * Resolve the collection class name from the CollectedBy attribute.
+     *
+     * @return class-string<TCollection>|null
+     */
+    public function resolveCollectionFromAttribute()
+    {}
+}

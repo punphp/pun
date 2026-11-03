@@ -1,0 +1,41 @@
+<?php declare(strict_types=1);
+/*
+ * This file is part of PHPUnit.
+ *
+ * (c) Sebastian Bergmann <sebastian@phpunit.de>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+namespace PHPUnit\Framework\TestCase;
+
+use function assert;
+use function putenv;
+use PHPUnit\Metadata\Parser\Registry as MetadataRegistry;
+use PHPUnit\Metadata\WithEnvironmentVariable;
+
+/**
+ * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit
+ *
+ * @internal This class is not covered by the backward compatibility promise for PHPUnit
+ */
+final class EnvironmentVariables
+{
+    /**
+     * @var list<BackedUpEnvironmentVariable>
+     */
+    private array $backup = [];
+
+    /**
+     * Backs up and then sets the environment variables that are configured
+     * using #[WithEnvironmentVariable] for the given test method.
+     *
+     * @param class-string     $className
+     * @param non-empty-string $methodName
+     */
+    public function set(string $className, string $methodName): void
+    {}
+
+    public function restore(): void
+    {}
+}

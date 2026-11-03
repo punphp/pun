@@ -1,0 +1,15 @@
+<?php
+
+namespace Illuminate\Queue;
+
+class TimeoutExceededException extends MaxAttemptsExceededException
+{
+    /**
+     * Create a new instance for the job.
+     *
+     * @param  \Illuminate\Contracts\Queue\Job  $job
+     * @return static
+     */
+    public static function forJob($job)
+    {}
+}

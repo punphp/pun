@@ -1,0 +1,243 @@
+<?php
+
+declare(strict_types=1);
+
+namespace GuzzleHttp\Psr7;
+
+use Psr\Http\Message\UriInterface;
+
+/**
+ * Provides methods to normalize and compare URIs.
+ *
+ * @author Tobias Schultze
+ *
+ * @see https://datatracker.ietf.org/doc/html/rfc3986#section-6
+ */
+final class UriNormalizer
+{
+    /**
+     * Default normalizations which only include the ones that preserve
+     * semantics.
+     */
+    public const PRESERVING_NORMALIZATIONS =
+        self::CAPITALIZE_PERCENT_ENCODING |
+        self::DECODE_UNRESERVED_CHARACTERS |
+        self::CONVERT_EMPTY_PATH |
+        self::REMOVE_DEFAULT_HOST |
+        self::REMOVE_DEFAULT_PORT |
+        self::REMOVE_DOT_SEGMENTS |
+        self::CANONICALIZE_IPV6_HOST;
+
+    /**
+     * All letters within a percent-encoding triplet (e.g., "%3A") are
+     * case-insensitive, and should be capitalized. This applies to the
+     * userinfo, host, path, query, and fragment components. Bracketed
+     * IP-literal hosts are skipped as a legacy tolerance for nonstandard values
+     * other implementations may carry; zone-identifier text was briefly valid
+     * URI syntax under RFC 6874, which RFC 9844 obsoleted and reverted. The
+     * userinfo and host are only rewritten when the value returned by the
+     * implementation matches the normalized form, and a userinfo with an empty
+     * user segment is never rewritten. No percent-encoding normalization is
+     * applied to a component that contains malformed percent syntax, such as a
+     * `%` not followed by two hexadecimal digits.
+     *
+     * Example: http://example.org/a%c2%b1b → http://example.org/a%C2%B1b
+     */
+    public const CAPITALIZE_PERCENT_ENCODING = 1;
+
+    /**
+     * Decodes percent-encoded octets of unreserved characters.
+     *
+     * For consistency, percent-encoded octets in the ranges of ALPHA (%41–%5A
+     * and %61–%7A), DIGIT (%30–%39), hyphen (%2D), period (%2E), underscore
+     * (%5F), or tilde (%7E) should not be created by URI producers and, when
+     * found in a URI, should be decoded to their corresponding unreserved
+     * characters by URI normalizers. This applies to the userinfo, host, path,
+     * query, and fragment components. Since the host is case-insensitive and
+     * PSR-7 requires it to be lowercase, octets decoded in the host are
+     * lowercased (e.g., "%41" becomes "a"). Bracketed IP-literal hosts are
+     * skipped as a legacy tolerance for nonstandard values other
+     * implementations may carry; zone-identifier text was briefly valid URI
+     * syntax under RFC 6874, which RFC 9844 obsoleted and reverted. The
+     * userinfo and host are only rewritten when the value returned by the
+     * implementation matches the normalized form, and a userinfo with an empty
+     * user segment is never rewritten. No percent-encoding normalization is
+     * applied to a component that contains malformed percent syntax, such as a
+     * `%` not followed by two hexadecimal digits.
+     *
+     * Example: http://example.org/%7Eusern%61me/ → http://example.org/~username/
+     */
+    public const DECODE_UNRESERVED_CHARACTERS = 2;
+
+    /**
+     * Converts the empty path to "/" for http and https URIs.
+     *
+     * Example: http://example.org → http://example.org/
+     */
+    public const CONVERT_EMPTY_PATH = 4;
+
+    /**
+     * Removes the default host of the given URI scheme from the URI.
+     *
+     * Only the "file" scheme defines the default host "localhost". All of
+     * `file:/myfile`, `file:///myfile`, and `file://localhost/myfile` are
+     * equivalent according to RFC 3986. The first format is not accepted by
+     * PHPs stream functions and thus already normalized implicitly to the
+     * second format in the Uri class. See
+     * `GuzzleHttp\Psr7\Uri::composeComponents`.
+     *
+     * When removing the host leaves a URI without an authority whose path
+     * begins with `//`, the path is serialized with a `/.` prefix.
+     *
+     * Example: file://localhost/myfile → file:///myfile
+     * Example: file://localhost//x → file:///.//x
+     */
+    public const REMOVE_DEFAULT_HOST = 8;
+
+    /**
+     * Removes the default port of the given URI scheme from the URI.
+     *
+     * Example: http://example.org:80/ → http://example.org/
+     */
+    public const REMOVE_DEFAULT_PORT = 16;
+
+    /**
+     * Removes unnecessary dot-segments.
+     *
+     * Dot-segments in relative-path references are not removed as it would
+     * change the semantics of the URI reference.
+     *
+     * Example: http://example.org/../a/b/../c/./d.html → http://example.org/a/c/d.html
+     */
+    public const REMOVE_DOT_SEGMENTS = 32;
+
+    /**
+     * Paths which include two or more adjacent slashes are converted to one.
+     *
+     * Webservers usually ignore duplicate slashes and treat those URIs
+     * equivalent. But in theory those URIs do not need to be equivalent. So
+     * this normalization may change the semantics. Encoded slashes (%2F) are
+     * not removed.
+     *
+     * Example: http://example.org//foo///bar.html → http://example.org/foo/bar.html
+     */
+    public const REMOVE_DUPLICATE_SLASHES = 64;
+
+    /**
+     * Sort query parameters with their values in alphabetical order.
+     *
+     * However, the order of parameters in a URI may be significant (this is not
+     * defined by the standard). So this normalization is not safe and may
+     * change the semantics of the URI.
+     *
+     * Example: ?lang=en&article=fred → ?article=fred&lang=en
+     *
+     * Note: The sorting is neither locale nor Unicode aware (the URI query does
+     * not get decoded at all) as the purpose is to be able to compare URIs in a
+     * reproducible way, not to have the params sorted perfectly.
+     */
+    public const SORT_QUERY_PARAMETERS = 128;
+
+    /**
+     * Canonicalizes IPv6 hosts to their RFC 5952 form.
+     *
+     * IPv6 addresses allow leading zeros and multiple placements of the `::`
+     * elision, so the same address has many textual spellings. The canonical
+     * form is required for IPv6 literals in URIs by RFC 5952 Section 6 and
+     * never changes what the URI refers to. Native `Uri` instances already
+     * guarantee canonical output; for other implementations, the canonical
+     * host is requested through `withHost()` and the result is kept only when
+     * the returned `getHost()` exactly matches the requested spelling,
+     * otherwise this step leaves the URI unchanged while other selected
+     * normalizations still apply, and setter exceptions propagate.
+     *
+     * Example: http://[::0:0a]/ → http://[::a]/
+     */
+    public const CANONICALIZE_IPV6_HOST = 256;
+
+    /**
+     * Returns a normalized URI.
+     *
+     * The scheme and host component are already normalized to lowercase per
+     * PSR-7 UriInterface. This method adds additional normalizations that can
+     * be configured with the `$flags` parameter, which is a bitmask of
+     * normalizations to apply.
+     *
+     * PSR-7 UriInterface cannot distinguish between an empty component and a
+     * missing component as `getQuery()`, `getFragment()` etc. always return a
+     * string. This means the URIs `/?#` and `/` are treated equivalent which is
+     * not necessarily true according to RFC 3986. But that difference is highly
+     * uncommon in reality. So this potential normalization is implied in PSR-7
+     * as well.
+     *
+     * A path the URI cannot hold, such as a `//`-leading path without an
+     * authority or a relative-path reference whose first segment contains a
+     * colon, is prefixed with `/.` or `./` respectively instead of throwing, as
+     * `UriResolver::resolve()` does. The percent-encoding normalizations only
+     * do so where they rewrote the path. For example, decoding `a%41:` yields
+     * `./aA:`, since `aA:` would be an absolute URI with the scheme `aa`.
+     *
+     * @param UriInterface $uri   The URI to normalize
+     * @param int          $flags A bitmask of normalizations to apply, see constants
+     *
+     * @see https://datatracker.ietf.org/doc/html/rfc3986#section-6.2
+     */
+    public static function normalize(UriInterface $uri, int $flags = self::PRESERVING_NORMALIZATIONS): UriInterface
+    {}
+
+    /**
+     * Whether two URIs can be considered equivalent.
+     *
+     * Both URIs are normalized automatically before comparison with the given
+     * `$normalizations` bitmask. The method also accepts relative URI
+     * references and returns true when they are equivalent. This of course
+     * assumes they will be resolved against the same base URI. If this is not
+     * the case, determination of equivalence or difference of relative
+     * references does not mean anything.
+     *
+     * @param UriInterface $uri1           An URI to compare
+     * @param UriInterface $uri2           An URI to compare
+     * @param int          $normalizations A bitmask of normalizations to apply, see constants
+     *
+     * @see https://datatracker.ietf.org/doc/html/rfc3986#section-6.1
+     */
+    public static function isEquivalent(UriInterface $uri1, UriInterface $uri2, int $normalizations = self::PRESERVING_NORMALIZATIONS): bool
+    {}
+
+    private static function capitalizePercentEncoding(UriInterface $uri): UriInterface
+    {}
+
+    private static function decodeUnreservedCharacters(UriInterface $uri): UriInterface
+    {}
+
+    /**
+     * Writes the given path only when it differs from the current one, guarded
+     * so the write cannot throw.
+     */
+    private static function withGuardedPath(UriInterface $uri, string $path): UriInterface
+    {}
+
+    /**
+     * @param callable(array): string $callback
+     */
+    private static function withNormalizedUserInfo(UriInterface $uri, string $regex, callable $callback): UriInterface
+    {}
+
+    /**
+     * @param callable(array): string $callback
+     */
+    private static function withNormalizedHost(UriInterface $uri, string $regex, callable $callback): UriInterface
+    {}
+
+    /**
+     * @param callable(array): string $callback
+     */
+    private static function normalizePercentEncodingInComponent(string $component, string $regex, callable $callback): string
+    {}
+
+    private static function canonicalizeIpv6Host(UriInterface $uri): UriInterface
+    {}
+
+    private function __construct()
+    {}
+}

@@ -24,3 +24,19 @@ Classes/ExistingClassInClassExtendsRuleTest::testEnums
 # PHPStan 2.3 replaced PrintfHelper with PrintfFormatParser (`%5%`, `%ls`, `%*2$d` and positional width/precision
 # arguments, sscanf() counted by PHP itself); not ported
 Methods/OverridingMethodRuleTest::testBug9615
+# phpstan.type (FileAssertRule, which runs at every level): the fixture's assertType() calls, where Pun's inferred type
+# still differs from PHPStan's (subtracted types, array accessories, mixin and template resolution, closures)
+Classes/AllowedSubTypesRuleTest::testSealedOnConcreteClass
+Functions/CallToFunctionParametersRuleTest::testVaryingAcceptor
+Functions/CallToFunctionParametersRuleTest::testDiscussion7450WithoutCheckExplicitMixed
+Functions/CallToFunctionParametersRuleTest::testDiscussion7450WithCheckExplicitMixed
+Functions/CallToFunctionParametersRuleTest::testBug7156
+Functions/CallToFunctionParametersRuleTest::testBug7823
+Functions/CallToFunctionParametersRuleTest::testBug8389
+Methods/CallMethodsRuleTest::testBug6904
+Methods/CallMethodsRuleTest::testBug6917
+Methods/CallMethodsRuleTest::testBug9542
+Properties/AccessPropertiesRuleTest::testTraitMixin
+Variables/UnsetRuleTest::testBug3391
+Variables/UnsetRuleTest::testBug7417
+Variables/UnsetRuleTest::testBug8113

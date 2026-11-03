@@ -1,0 +1,32 @@
+<?php
+
+namespace Illuminate\Foundation\Console;
+
+use Illuminate\Console\Command;
+use Symfony\Component\Console\Attribute\AsCommand;
+
+#[AsCommand(name: 'clear-compiled')]
+class ClearCompiledCommand extends Command
+{
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'clear-compiled';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Remove the compiled class file';
+
+    /**
+     * Execute the console command.
+     *
+     * @return void
+     */
+    public function handle()
+    {}
+}

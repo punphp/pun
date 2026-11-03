@@ -1,0 +1,96 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "asserts.php",
+   "line": 18,
+   "identifier": "phpstan.type",
+   "message": "Expected type int, actual: int<1, max>",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 19,
+   "identifier": "phpstan.unknownExpectation",
+   "message": "Expected type must be a literal string.",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 21,
+   "identifier": "phpstan.nativeType",
+   "message": "Expected native type positive-int, actual: int",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 22,
+   "identifier": "phpstan.unknownExpectation",
+   "message": "Expected native type must be a literal string.",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 24,
+   "identifier": "phpstan.superType",
+   "message": "Expected subtype of string, actual: int<1, max>",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 25,
+   "identifier": "phpstan.unknownExpectation",
+   "message": "Expected super type must be a literal string.",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 33,
+   "identifier": "phpstan.variable",
+   "message": "Expected variable $maybe certainty Yes, actual: Maybe",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 34,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $undefined",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 36,
+   "identifier": "phpstan.variable",
+   "message": "Expected offset 'b' certainty Yes, actual: Maybe",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 38,
+   "identifier": "phpstan.variable",
+   "message": "Expected offset 'c' certainty Yes, actual: No",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 39,
+   "identifier": "phpstan.unknownExpectation",
+   "message": "First argument of %s() must be TrinaryLogic call",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 40,
+   "identifier": "phpstan.unknownExpectation",
+   "message": "Invalid TrinaryLogic call.",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 41,
+   "identifier": "phpstan.unknownExpectation",
+   "message": "Invalid assertVariableCertainty call.",
+   "tip": null
+  }
+ ]
+}

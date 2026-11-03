@@ -60,7 +60,7 @@ impl<'a> Checker<'a, '_> {
         // the class reflection extensions answer instance properties only
         let extended = || {
             // MixinPropertiesClassReflectionExtension; ponytail: a mixin other than a class (`@mixin T`) is not resolved
-            self.mixins(k).iter().any(|t| !matches!(t, Type::Object(..)) || self.has_property(t, property, false).yes())
+            self.mixins(k).iter().any(|t| !matches!(t, Type::Object(..)) || self.mixin_has_property(t, property))
                 || xml
                 || self.required(k).iter().any(|r| property_access::has_instance_property(self, r, property))
                 || super::super::larastan::has_model_property(self, k, property)
@@ -71,6 +71,21 @@ impl<'a> Checker<'a, '_> {
         let is_final = k.flags.is_final() || k.original_name.as_bytes().starts_with(b"{anonymous-class:");
         let dynamic = !is_static && property_access::allows_dynamic_properties(self, k);
         if dynamic || !is_final { Tri::Maybe } else { Tri::No }
+    }
+
+    /// MixinPropertiesClassReflectionExtension::findProperty(): a mixin type already being asked for the same property
+    /// (a mixin of the class itself, or of a descendant) is skipped.
+    fn mixin_has_property(&self, t: &Type, property: &[u8]) -> bool {
+        thread_local! {
+            static IN_PROCESS: std::cell::RefCell<std::collections::HashSet<(String, Vec<u8>)>> = Default::default();
+        }
+        let key = (declared::with_classes(self, || t.describe(Level::TypeOnly)), property.to_vec());
+        if !IN_PROCESS.with_borrow_mut(|p| p.insert(key.clone())) {
+            return false;
+        }
+        let has = self.has_property(t, property, false).yes();
+        IN_PROCESS.with_borrow_mut(|p| p.remove(&key));
+        has
     }
 
     /// `Type::hasInstanceProperty()` (`is_static` false) or `hasStaticProperty()`; `property` has its `$`.

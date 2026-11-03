@@ -1,0 +1,107 @@
+<?php declare(strict_types=1);
+/*
+ * This file is part of PHPUnit.
+ *
+ * (c) Sebastian Bergmann <sebastian@phpunit.de>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+namespace PHPUnit\Framework\TestCase;
+
+use PHPUnit\Event;
+use PHPUnit\Framework\AssertionFailedError;
+use PHPUnit\Framework\SkippedTest;
+use PHPUnit\Framework\TestCase;
+use PHPUnit\Metadata\Api\HookMethods;
+use PHPUnit\Runner\HookMethodCollection;
+use PHPUnit\Util\Reflection;
+use ReflectionClass;
+use Throwable;
+
+/**
+ * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit
+ *
+ * @internal This class is not covered by the backward compatibility promise for PHPUnit
+ *
+ * @phpstan-import-type HookMethodsByType from HookMethods
+ */
+final readonly class HookMethodInvoker
+{
+    /**
+     * @param HookMethodsByType $hookMethods
+     *
+     * @throws Throwable
+     *
+     * @codeCoverageIgnore
+     */
+    public static function invokeBeforeClass(TestCase $test, array $hookMethods): void
+    {}
+
+    /**
+     * @param HookMethodsByType $hookMethods
+     *
+     * @throws Throwable
+     */
+    public static function invokeBeforeTest(TestCase $test, array $hookMethods, Event\Emitter $emitter): void
+    {}
+
+    /**
+     * @param HookMethodsByType $hookMethods
+     *
+     * @throws Throwable
+     */
+    public static function invokePreCondition(TestCase $test, array $hookMethods, Event\Emitter $emitter): void
+    {}
+
+    /**
+     * @param HookMethodsByType $hookMethods
+     *
+     * @throws Throwable
+     */
+    public static function invokePostCondition(TestCase $test, array $hookMethods, Event\Emitter $emitter): void
+    {}
+
+    /**
+     * @param HookMethodsByType $hookMethods
+     *
+     * @throws Throwable
+     */
+    public static function invokeAfterTest(TestCase $test, array $hookMethods, Event\Emitter $emitter): void
+    {}
+
+    /**
+     * @param HookMethodsByType $hookMethods
+     *
+     * @throws Throwable
+     *
+     * @codeCoverageIgnore
+     */
+    public static function invokeAfterClass(TestCase $test, array $hookMethods): void
+    {}
+
+    /**
+     * @param 'afterTestMethodCalled'|'beforeTestMethodCalled'|'postConditionCalled'|'preConditionCalled'         $calledMethod
+     * @param 'afterTestMethodErrored'|'beforeTestMethodErrored'|'postConditionErrored'|'preConditionErrored'     $erroredMethod
+     * @param 'afterTestMethodFailed'|'beforeTestMethodFailed'|'postConditionFailed'|'preConditionFailed'         $failedMethod
+     * @param 'afterTestMethodFinished'|'beforeTestMethodFinished'|'postConditionFinished'|'preConditionFinished' $finishedMethod
+     *
+     * @throws Throwable
+     */
+    private static function invokeMethodLevel(TestCase $test, HookMethodCollection $hookMethods, Event\Emitter $emitter, string $calledMethod, string $erroredMethod, string $failedMethod, string $finishedMethod): void
+    {}
+
+    /**
+     * The before-first-test methods and after-last-test methods of a test that
+     * runs in process isolation are called again in the child process, as part
+     * of running that test. The test runner calls them for the test class in
+     * its own process and reports that it does. In the child process, they are
+     * part of the test, so their outcome is the outcome of the test.
+     *
+     * @throws Throwable
+     *
+     * @codeCoverageIgnore
+     */
+    private static function invokeWithoutEmittingEvents(TestCase $test, HookMethodCollection $hookMethods): void
+    {}
+}

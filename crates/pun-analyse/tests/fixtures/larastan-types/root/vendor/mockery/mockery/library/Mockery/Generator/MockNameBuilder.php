@@ -1,0 +1,39 @@
+<?php
+
+/**
+ * Mockery (https://docs.mockery.io/en/stable/)
+ *
+ * @copyright https://github.com/mockery/mockery/blob/HEAD/COPYRIGHT.md
+ * @license   https://github.com/mockery/mockery/blob/HEAD/LICENSE BSD 3-Clause License
+ * @see       https://github.com/mockery/mockery for the canonical source repository
+ */
+
+namespace Mockery\Generator;
+
+use function implode;
+use function str_replace;
+
+class MockNameBuilder
+{
+    /**
+     * @var int
+     */
+    protected static $mockCounter = 0;
+
+    /**
+     * @var list<string>
+     */
+    protected $parts = [];
+
+    /**
+     * @param string $part
+     */
+    public function addPart($part)
+    {}
+
+    /**
+     * @return class-string
+     */
+    public function build()
+    {}
+}

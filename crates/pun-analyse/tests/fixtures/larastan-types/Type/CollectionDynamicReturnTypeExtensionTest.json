@@ -1,0 +1,187 @@
+{
+    "test": "Type/CollectionDynamicReturnTypeExtensionTest",
+    "configs": [
+        "extension.neon"
+    ],
+    "cases": [
+        {
+            "file": "tests/Type/data/collection-filter.php",
+            "declares": [
+                "collectionfilter\\converttoaccount",
+                "collectionfilter\\dummyfilter",
+                "collectionfilter\\test"
+            ],
+            "asserts": [
+                30,
+                32,
+                34,
+                37,
+                39,
+                42,
+                44,
+                54,
+                56,
+                64,
+                67
+            ],
+            "errors": [
+                {
+                    "line": 12,
+                    "identifier": "return.missing",
+                    "message": "Function CollectionFilter\\convertToAccount() should return App\\Account|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "line": 15,
+                    "identifier": "missingType.parameter",
+                    "message": "Function CollectionFilter\\dummyFilter() has parameter $value with no type specified.",
+                    "tip": null
+                },
+                {
+                    "line": 15,
+                    "identifier": "missingType.return",
+                    "message": "Function CollectionFilter\\dummyFilter() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "line": 21,
+                    "identifier": "greater.alwaysFalse",
+                    "message": "Comparison operation \">\" between int<0, 1> and 1 is always false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "line": 57,
+                    "identifier": "function.notFound",
+                    "message": "Function CollectionStubs\\dummyFilter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ]
+        },
+        {
+            "file": "tests/Type/data/collection-reject.php",
+            "declares": [
+                "collectionreject\\converttoaccount",
+                "collectionreject\\dummyreject",
+                "collectionreject\\test"
+            ],
+            "asserts": [
+                27,
+                29,
+                31,
+                34,
+                36,
+                39,
+                41,
+                51,
+                53,
+                61
+            ],
+            "errors": [
+                {
+                    "line": 12,
+                    "identifier": "return.missing",
+                    "message": "Function CollectionReject\\convertToAccount() should return App\\Account|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "line": 15,
+                    "identifier": "missingType.parameter",
+                    "message": "Function CollectionReject\\dummyReject() has parameter $value with no type specified.",
+                    "tip": null
+                },
+                {
+                    "line": 15,
+                    "identifier": "missingType.return",
+                    "message": "Function CollectionReject\\dummyReject() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "line": 21,
+                    "identifier": "greater.alwaysFalse",
+                    "message": "Comparison operation \">\" between int<0, 1> and 1 is always false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "line": 54,
+                    "identifier": "function.notFound",
+                    "message": "Function CollectionStubs\\dummyReject not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ]
+        },
+        {
+            "file": "tests/Type/data/collection-where.php",
+            "declares": [
+                "collectionwhere\\converttoaccount",
+                "collectionwhere\\dummyfilter",
+                "collectionwhere\\test"
+            ],
+            "asserts": [
+                30,
+                32,
+                35,
+                37,
+                40,
+                42,
+                52,
+                54,
+                62
+            ],
+            "errors": [
+                {
+                    "line": 12,
+                    "identifier": "return.missing",
+                    "message": "Function CollectionWhere\\convertToAccount() should return App\\Account|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "line": 15,
+                    "identifier": "missingType.parameter",
+                    "message": "Function CollectionWhere\\dummyFilter() has parameter $value with no type specified.",
+                    "tip": null
+                },
+                {
+                    "line": 15,
+                    "identifier": "missingType.return",
+                    "message": "Function CollectionWhere\\dummyFilter() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "line": 21,
+                    "identifier": "greater.alwaysFalse",
+                    "message": "Comparison operation \">\" between int<0, 1> and 1 is always false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "line": 55,
+                    "identifier": "function.notFound",
+                    "message": "Function CollectionStubs\\dummyFilter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ]
+        },
+        {
+            "file": "tests/Type/data/collection-where-not-null.php",
+            "declares": [
+                "collectionwherenotnull\\test"
+            ],
+            "asserts": [
+                12,
+                13,
+                14,
+                15,
+                19,
+                20,
+                21
+            ],
+            "errors": [
+                {
+                    "line": 10,
+                    "identifier": "generics.notSubtype",
+                    "message": "Type App\\User|null in generic type Illuminate\\Database\\Eloquent\\Collection<int, App\\User|null> in PHPDoc tag @param for parameter $foo is not subtype of template type TModel of Illuminate\\Database\\Eloquent\\Model of class Illuminate\\Database\\Eloquent\\Collection.",
+                    "tip": null
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,209 @@
+<?php
+
+namespace Illuminate\Cache;
+
+use Illuminate\Cache\Events\CacheFailedOver;
+use Illuminate\Contracts\Cache\CanFlushLocks;
+use Illuminate\Contracts\Cache\LockProvider;
+use Illuminate\Contracts\Events\Dispatcher;
+use RuntimeException;
+use Throwable;
+
+class FailoverStore extends TaggableStore implements CanFlushLocks, LockProvider
+{
+    /**
+     * The caches which failed on the last action.
+     *
+     * @var list<string>
+     */
+    protected array $failingCaches = [];
+
+    /**
+     * Create a new failover store.
+     *
+     * @param  array<int, string>  $stores
+     */
+    public function __construct(
+        protected CacheManager $cache,
+        protected Dispatcher $events,
+        protected array $stores
+    ) {}
+
+    /**
+     * Retrieve an item from the cache by key.
+     *
+     * @param  string  $key
+     * @return mixed
+     */
+    public function get($key)
+    {}
+
+    /**
+     * Retrieve multiple items from the cache by key.
+     *
+     * Items not found in the cache will have a null value.
+     *
+     * @return array
+     */
+    public function many(array $keys)
+    {}
+
+    /**
+     * Store an item in the cache for a given number of seconds.
+     *
+     * @param  string  $key
+     * @param  mixed  $value
+     * @param  int  $seconds
+     * @return bool
+     */
+    public function put($key, $value, $seconds)
+    {}
+
+    /**
+     * Store multiple items in the cache for a given number of seconds.
+     *
+     * @param  int  $seconds
+     * @return bool
+     */
+    public function putMany(array $values, $seconds)
+    {}
+
+    /**
+     * Store an item in the cache if the key doesn't exist.
+     *
+     * @param  string  $key
+     * @param  mixed  $value
+     * @param  int  $seconds
+     * @return bool
+     */
+    public function add($key, $value, $seconds)
+    {}
+
+    /**
+     * Increment the value of an item in the cache.
+     *
+     * @param  string  $key
+     * @param  mixed  $value
+     * @return int|false
+     */
+    public function increment($key, $value = 1)
+    {}
+
+    /**
+     * Decrement the value of an item in the cache.
+     *
+     * @param  string  $key
+     * @param  mixed  $value
+     * @return int|false
+     */
+    public function decrement($key, $value = 1)
+    {}
+
+    /**
+     * Store an item in the cache indefinitely.
+     *
+     * @param  string  $key
+     * @param  mixed  $value
+     * @return bool
+     */
+    public function forever($key, $value)
+    {}
+
+    /**
+     * Get a lock instance.
+     *
+     * @param  string  $name
+     * @param  int  $seconds
+     * @param  string|null  $owner
+     * @return \Illuminate\Contracts\Cache\Lock
+     */
+    public function lock($name, $seconds = 0, $owner = null)
+    {}
+
+    /**
+     * Restore a lock instance using the owner identifier.
+     *
+     * @param  string  $name
+     * @param  string  $owner
+     * @return \Illuminate\Contracts\Cache\Lock
+     */
+    public function restoreLock($name, $owner)
+    {}
+
+    /**
+     * Adjust the expiration time of a cached item.
+     *
+     * @param  string  $key
+     * @param  int  $seconds
+     * @return bool
+     */
+    public function touch($key, $seconds)
+    {}
+
+    /**
+     * Remove an item from the cache.
+     *
+     * @param  string  $key
+     * @return bool
+     */
+    public function forget($key)
+    {}
+
+    /**
+     * Remove all items from the cache.
+     *
+     * @return bool
+     */
+    public function flush()
+    {}
+
+    /**
+     * Remove all expired tag set entries.
+     *
+     * @return void
+     */
+    public function flushStaleTags()
+    {}
+
+    /**
+     * Flush all of the stale locks from every backing store.
+     *
+     * @return bool
+     */
+    public function flushLocks(): bool
+    {}
+
+    /**
+     * Determine if the lock store is separate from the cache store.
+     *
+     * @return bool
+     */
+    public function hasSeparateLockStore(): bool
+    {}
+
+    /**
+     * Get the cache key prefix.
+     *
+     * @return string
+     */
+    public function getPrefix()
+    {}
+
+    /**
+     * Attempt the given method on all stores.
+     *
+     * @return mixed
+     *
+     * @throws \Throwable
+     */
+    protected function attemptOnAllStores(string $method, array $arguments)
+    {}
+
+    /**
+     * Get the cache store for the given store name.
+     *
+     * @return \Illuminate\Contracts\Cache\Repository
+     */
+    protected function store(string $store)
+    {}
+}

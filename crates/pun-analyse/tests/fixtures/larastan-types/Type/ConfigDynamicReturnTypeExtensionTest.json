@@ -1,0 +1,85 @@
+{
+    "test": "Type/ConfigDynamicReturnTypeExtensionTest",
+    "configs": [
+        "tests/Type/data/config-with-config-paths.neon"
+    ],
+    "cases": [
+        {
+            "file": "tests/Type/data/config-helper-function.php",
+            "declares": [
+                "confighelperfunction\\test"
+            ],
+            "asserts": [
+                9,
+                10,
+                12,
+                13,
+                14
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/config-repository-method.php",
+            "declares": [
+                "configrepositorymethod\\test"
+            ],
+            "asserts": [
+                10,
+                11,
+                13,
+                14
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/config-reproduction.php",
+            "declares": [
+                "configreproduction\\test"
+            ],
+            "asserts": [
+                9,
+                10
+            ],
+            "errors": []
+        },
+        {
+            "file": "tests/Type/data/config-facade-collection-method.php",
+            "declares": [
+                "configfacadecollectionmethod\\test"
+            ],
+            "asserts": [
+                11,
+                12,
+                14,
+                15
+            ],
+            "errors": [
+                {
+                    "line": 11,
+                    "identifier": "larastan.configCollection",
+                    "message": "Config key 'foo' is not an array.",
+                    "tip": null
+                },
+                {
+                    "line": 15,
+                    "identifier": "larastan.configCollection",
+                    "message": "Config key 'test.foo' is not an array.",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "file": "tests/Type/data/config-repository-method-l12-20.php",
+            "declares": [
+                "configrepositorymethod\\test"
+            ],
+            "asserts": [
+                10,
+                11,
+                13,
+                14
+            ],
+            "errors": []
+        }
+    ]
+}

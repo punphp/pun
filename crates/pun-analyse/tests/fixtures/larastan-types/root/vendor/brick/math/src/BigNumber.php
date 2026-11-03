@@ -1,0 +1,574 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Brick\Math;
+
+use Brick\Math\Exception\IntegerOverflowException;
+use Brick\Math\Exception\InvalidArgumentException;
+use Brick\Math\Exception\MathException;
+use Brick\Math\Exception\NumberFormatException;
+use Brick\Math\Exception\PlatformException;
+use Brick\Math\Exception\RoundingNecessaryException;
+use Brick\Math\Internal\Safe;
+use JsonSerializable;
+use Override;
+use Stringable;
+
+use function array_is_list;
+use function assert;
+use function filter_var;
+use function in_array;
+use function is_int;
+use function ltrim;
+use function max;
+use function preg_match;
+use function str_contains;
+use function str_repeat;
+use function strlen;
+
+use const FILTER_VALIDATE_INT;
+use const PHP_INT_MAX;
+use const PREG_UNMATCHED_AS_NULL;
+
+/**
+ * Base class for arbitrary-precision numbers.
+ *
+ * This class is sealed: it is part of the public API but should not be subclassed in userland.
+ * Protected methods may change in any version.
+ *
+ * @phpstan-sealed BigInteger|BigDecimal|BigRational
+ */
+abstract readonly class BigNumber implements JsonSerializable, Stringable
+{
+    /**
+     * The regular expression used to parse integer or decimal numbers.
+     *
+     * The end anchor must be \z, not $: the latter would also match before a trailing newline.
+     * The digit quantifiers must be possessive (++): backtracking on malformed input could exhaust
+     * pcre.backtrack_limit, surfacing as PlatformException instead of NumberFormatException.
+     */
+    private const PARSE_REGEXP_NUMERICAL =
+        '/^' .
+        '(?<sign>[\-\+])?' .
+        '(?<integral>[0-9]++)?' .
+        '(?<point>\.)?' .
+        '(?<fractional>[0-9]++)?' .
+        '(?:[eE](?<exponent>[\-\+]?[0-9]++))?' .
+        '\z/';
+
+    /**
+     * The regular expression used to parse rational numbers.
+     *
+     * The end anchor must be \z, not $: the latter would also match before a trailing newline.
+     * The digit quantifiers must be possessive (++): backtracking on malformed input could exhaust
+     * pcre.backtrack_limit, surfacing as PlatformException instead of NumberFormatException.
+     */
+    private const PARSE_REGEXP_RATIONAL =
+        '/^' .
+        '(?<sign>[\-\+])?' .
+        '(?<numerator>[0-9]++)' .
+        '\/' .
+        '(?<denominator>[0-9]++)' .
+        '\z/';
+
+    /**
+     * Creates a BigNumber of the given value.
+     *
+     * When of() is called on BigNumber, the concrete return type is dependent on the given value, with the following
+     * rules:
+     *
+     * - BigNumber instances are returned as is
+     * - integer numbers are returned as BigInteger
+     * - strings containing a `/` character are returned as BigRational
+     * - strings containing a `.` character or using an exponential notation are returned as BigDecimal
+     * - strings containing only digits with an optional leading `+` or `-` sign are returned as BigInteger
+     *
+     * When of() is called on BigInteger, BigDecimal, or BigRational, the resulting number is converted to an instance
+     * of the subclass when possible; otherwise a RoundingNecessaryException is thrown.
+     *
+     * When parsing untrusted input, use {@see parse()} instead.
+     *
+     * @throws NumberFormatException      If the input is a string, and the format of the number is not valid.
+     * @throws RoundingNecessaryException If the method is called on a subclass of BigNumber, and the value cannot be
+     *                                    converted to an instance of the subclass without rounding.
+     *
+     * @pure
+     */
+    final public static function of(BigNumber|int|string $value): static
+    {}
+
+    /**
+     * Creates a BigNumber of the given value, or returns null if the input is null.
+     *
+     * Behaves like {@see of()} for non-null values.
+     *
+     * When parsing untrusted input, use {@see parseNullable()} instead.
+     *
+     * @throws NumberFormatException      If the input is a string, and the format of the number is not valid.
+     * @throws RoundingNecessaryException If the method is called on a subclass of BigNumber, and the value cannot be
+     *                                    converted to an instance of the subclass without rounding.
+     *
+     * @pure
+     */
+    final public static function ofNullable(BigNumber|int|string|null $value): ?static
+    {}
+
+    /**
+     * Creates a BigNumber of the given string, limiting the allowed syntax and the number of digits.
+     *
+     * This method is designed to safely parse untrusted input: huge strings, and exponential notation that allows a
+     * short string such as `1e1000000000` to expand to gigabytes of memory.
+     *
+     * The $allowedSyntax parameter restricts the accepted notations: plain integers such as `123` are always accepted,
+     * then each NumberSyntax case allows one additional feature: DecimalPoint, Exponent, Fraction. A value is accepted
+     * only if every feature it uses is allowed. The NumberSyntax enum also provides constants for the most common
+     * combinations, from NumberSyntax::INTEGER to NumberSyntax::ALL.
+     *
+     * The $maxDigits parameter limits the number of digits, counted in each of these forms:
+     *
+     * - as written, where every digit of the input counts, including leading zeros and exponent digits: `005` counts
+     *   3 digits, `01e-3` counts 3, and `010/012` counts 6;
+     * - in its expanded form, with exponents materialized and leading zeros trimmed: `01e-3` counts 4 (`0.001`);
+     * - in its converted form, when called on a subclass, as written by toString(): `BigDecimal::parse('1/8', ...)`
+     *   counts 4 digits (`0.125`), although `1/8` counts only 2.
+     *
+     * When parse() is called on BigNumber, the concrete return type is determined by the format of the string,
+     * following the same rules as {@see of()}. When called on a subclass, the value is converted to an instance of
+     * that subclass when possible.
+     *
+     * @param string             $value         The untrusted value to parse.
+     * @param list<NumberSyntax> $allowedSyntax The allowed syntax features; plain integers are always accepted.
+     * @param positive-int       $maxDigits     The maximum number of digits, as written and in the resulting number.
+     *
+     * @throws NumberFormatException      If the format of $value is invalid, if it uses a syntax that is not allowed
+     *                                    by $allowedSyntax, or if it has more than $maxDigits digits.
+     * @throws RoundingNecessaryException If the method is called on a subclass of BigNumber, and the value cannot be
+     *                                    converted to an instance of the subclass without rounding.
+     * @throws InvalidArgumentException   If $allowedSyntax is not a list of NumberSyntax cases, or if $maxDigits is
+     *                                    less than 1.
+     *
+     * @pure
+     */
+    final public static function parse(
+        string $value,
+        array $allowedSyntax,
+        int $maxDigits,
+    ): static {}
+
+    /**
+     * Creates a BigNumber of the given string, limiting the allowed syntax and the number of digits, or returns null
+     * if the input is null.
+     *
+     * Behaves like {@see parse()} for non-null values.
+     *
+     * @param string|null        $value         The untrusted value to parse, or null.
+     * @param list<NumberSyntax> $allowedSyntax The allowed syntax features; plain integers are always accepted.
+     * @param positive-int       $maxDigits     The maximum number of digits, as written and in the resulting number.
+     *
+     * @throws NumberFormatException      If the format of $value is invalid, if it uses a syntax that is not allowed
+     *                                    by $allowedSyntax, or if it has more than $maxDigits digits.
+     * @throws RoundingNecessaryException If the method is called on a subclass of BigNumber, and the value cannot be
+     *                                    converted to an instance of the subclass without rounding.
+     * @throws InvalidArgumentException   If $allowedSyntax is not a list of NumberSyntax cases, or if $maxDigits is
+     *                                    less than 1.
+     *
+     * @pure
+     */
+    final public static function parseNullable(
+        ?string $value,
+        array $allowedSyntax,
+        int $maxDigits,
+    ): ?static {}
+
+    /**
+     * Returns the minimum of the given values.
+     *
+     * If several values are equal and minimal, the first one is returned.
+     * This can affect the concrete return type when calling this method on BigNumber.
+     *
+     * @param BigNumber|int|string $a    The first number. Must be convertible to an instance of the class this method
+     *                                   is called on.
+     * @param BigNumber|int|string ...$n The additional numbers. Each number must be convertible to an instance of the
+     *                                   class this method is called on.
+     *
+     * @throws MathException If a number is not valid, or is not convertible to an instance of the class this method is
+     *                       called on.
+     *
+     * @pure
+     */
+    final public static function min(BigNumber|int|string $a, BigNumber|int|string ...$n): static
+    {}
+
+    /**
+     * Returns the maximum of the given values.
+     *
+     * If several values are equal and maximal, the first one is returned.
+     * This can affect the concrete return type when calling this method on BigNumber.
+     *
+     * @param BigNumber|int|string $a    The first number. Must be convertible to an instance of the class this method
+     *                                   is called on.
+     * @param BigNumber|int|string ...$n The additional numbers. Each number must be convertible to an instance of the
+     *                                   class this method is called on.
+     *
+     * @throws MathException If a number is not valid, or is not convertible to an instance of the class this method is
+     *                       called on.
+     *
+     * @pure
+     */
+    final public static function max(BigNumber|int|string $a, BigNumber|int|string ...$n): static
+    {}
+
+    /**
+     * Returns the sum of the given values.
+     *
+     * When called on BigNumber, sum() accepts any supported type and returns a result whose type is the widest among
+     * the given values (BigInteger < BigDecimal < BigRational).
+     *
+     * When called on BigInteger, BigDecimal, or BigRational, sum() requires that all values can be converted to that
+     * specific subclass, and returns a result of the same type.
+     *
+     * @param BigNumber|int|string $a    The first number. Must be convertible to an instance of the class this method
+     *                                   is called on.
+     * @param BigNumber|int|string ...$n The additional numbers. Each number must be convertible to an instance of the
+     *                                   class this method is called on.
+     *
+     * @throws MathException If a number is not valid, or is not convertible to an instance of the class this method is
+     *                       called on.
+     *
+     * @pure
+     */
+    final public static function sum(BigNumber|int|string $a, BigNumber|int|string ...$n): static
+    {}
+
+    /**
+     * Checks if this number is equal to the given one.
+     *
+     * @throws MathException If the given number is not valid.
+     *
+     * @pure
+     */
+    final public function isEqualTo(BigNumber|int|string $that): bool
+    {}
+
+    /**
+     * Checks if this number is strictly less than the given one.
+     *
+     * @throws MathException If the given number is not valid.
+     *
+     * @pure
+     */
+    final public function isLessThan(BigNumber|int|string $that): bool
+    {}
+
+    /**
+     * Checks if this number is less than or equal to the given one.
+     *
+     * @throws MathException If the given number is not valid.
+     *
+     * @pure
+     */
+    final public function isLessThanOrEqualTo(BigNumber|int|string $that): bool
+    {}
+
+    /**
+     * Checks if this number is strictly greater than the given one.
+     *
+     * @throws MathException If the given number is not valid.
+     *
+     * @pure
+     */
+    final public function isGreaterThan(BigNumber|int|string $that): bool
+    {}
+
+    /**
+     * Checks if this number is greater than or equal to the given one.
+     *
+     * @throws MathException If the given number is not valid.
+     *
+     * @pure
+     */
+    final public function isGreaterThanOrEqualTo(BigNumber|int|string $that): bool
+    {}
+
+    /**
+     * Checks if this number equals zero.
+     *
+     * @pure
+     */
+    final public function isZero(): bool
+    {}
+
+    /**
+     * Checks if this number is strictly negative.
+     *
+     * @pure
+     */
+    final public function isNegative(): bool
+    {}
+
+    /**
+     * Checks if this number is negative or zero.
+     *
+     * @pure
+     */
+    final public function isNegativeOrZero(): bool
+    {}
+
+    /**
+     * Checks if this number is strictly positive.
+     *
+     * @pure
+     */
+    final public function isPositive(): bool
+    {}
+
+    /**
+     * Checks if this number is positive or zero.
+     *
+     * @pure
+     */
+    final public function isPositiveOrZero(): bool
+    {}
+
+    /**
+     * Returns the absolute value of this number.
+     *
+     * @pure
+     */
+    final public function abs(): static
+    {}
+
+    /**
+     * Returns the negated value of this number.
+     *
+     * @pure
+     */
+    abstract public function negated(): static;
+
+    /**
+     * Returns the sign of this number.
+     *
+     * Returns -1 if the number is negative, 0 if zero, 1 if positive.
+     *
+     * @return -1|0|1
+     *
+     * @pure
+     */
+    abstract public function getSign(): int;
+
+    /**
+     * Compares this number to the given one.
+     *
+     * Returns -1 if `$this` is lower than, 0 if equal to, 1 if greater than `$that`.
+     *
+     * @return -1|0|1
+     *
+     * @throws MathException If the number is not valid.
+     *
+     * @pure
+     */
+    abstract public function compareTo(BigNumber|int|string $that): int;
+
+    /**
+     * Limits (clamps) this number between the given minimum and maximum values.
+     *
+     * If the number is lower than $min, returns $min.
+     * If the number is greater than $max, returns $max.
+     * Otherwise, returns this number unchanged.
+     *
+     * @param BigNumber|int|string $min The minimum. Must be convertible to an instance of the class this method is called on.
+     * @param BigNumber|int|string $max The maximum. Must be convertible to an instance of the class this method is called on.
+     *
+     * @throws MathException            If min/max are not convertible to an instance of the class this method is called on.
+     * @throws InvalidArgumentException If min is greater than max.
+     *
+     * @pure
+     */
+    final public function clamp(BigNumber|int|string $min, BigNumber|int|string $max): static
+    {}
+
+    /**
+     * Converts this number to a BigInteger.
+     *
+     * @throws RoundingNecessaryException If this number cannot be converted to a BigInteger without rounding.
+     *
+     * @pure
+     */
+    abstract public function toBigInteger(): BigInteger;
+
+    /**
+     * Converts this number to a BigDecimal.
+     *
+     * @throws RoundingNecessaryException If this number cannot be converted to a BigDecimal without rounding.
+     *
+     * @pure
+     */
+    abstract public function toBigDecimal(): BigDecimal;
+
+    /**
+     * Converts this number to a BigRational.
+     *
+     * @pure
+     */
+    abstract public function toBigRational(): BigRational;
+
+    /**
+     * Converts this number to a BigDecimal with the given scale, using rounding if necessary.
+     *
+     * @param non-negative-int $scale        The scale of the resulting `BigDecimal`. Must be non-negative.
+     * @param RoundingMode     $roundingMode An optional rounding mode, defaults to Unnecessary.
+     *
+     * @throws InvalidArgumentException   If the scale is negative.
+     * @throws RoundingNecessaryException If RoundingMode::Unnecessary is used, and this number cannot be converted to
+     *                                    the given scale without rounding.
+     *
+     * @pure
+     */
+    abstract public function toScale(int $scale, RoundingMode $roundingMode = RoundingMode::Unnecessary): BigDecimal;
+
+    /**
+     * Returns the exact value of this number as a native integer.
+     *
+     * If this number cannot be converted to a native integer without losing precision, an exception is thrown.
+     * Note that the acceptable range for an integer depends on the platform and differs for 32-bit and 64-bit.
+     *
+     * @throws RoundingNecessaryException If this number cannot be converted to an integer without rounding.
+     * @throws IntegerOverflowException   If this number is too large to fit in a native integer.
+     *
+     * @pure
+     */
+    abstract public function toInt(): int;
+
+    /**
+     * Returns an approximation of this number as a floating-point value.
+     *
+     * Note that this method can discard information as the precision of a floating-point value
+     * is inherently limited.
+     *
+     * If the number is greater than the largest representable floating point number, positive infinity is returned.
+     * If the number is less than the smallest representable floating point number, negative infinity is returned.
+     * This method never returns NaN.
+     *
+     * @pure
+     */
+    abstract public function toFloat(): float;
+
+    /**
+     * Returns a string representation of this number.
+     *
+     * The output of this method can be parsed by the `of()` factory method; this will yield an object equal to this
+     * one, but possibly of a different type if instantiated through `BigNumber::of()`.
+     *
+     * @return non-empty-string
+     *
+     * @pure
+     */
+    abstract public function toString(): string;
+
+    /**
+     * @return non-empty-string
+     */
+    #[Override]
+    final public function jsonSerialize(): string
+    {}
+
+    /**
+     * @return non-empty-string
+     *
+     * @pure
+     */
+    #[Override]
+    final public function __toString(): string
+    {}
+
+    /**
+     * Overridden by subclasses to convert a BigNumber to an instance of the subclass.
+     *
+     * @throws RoundingNecessaryException If the value cannot be converted.
+     *
+     * @pure
+     */
+    abstract protected static function from(BigNumber $number): static;
+
+    /**
+     * Returns the number of digits in this number, as written by toString().
+     *
+     * @pure
+     */
+    abstract protected function digitCount(): int;
+
+    /**
+     * Proxy method to access BigInteger's protected constructor from sibling classes.
+     *
+     * @internal
+     *
+     * @pure
+     */
+    final protected function newBigInteger(string $value): BigInteger
+    {}
+
+    /**
+     * Proxy method to access BigDecimal's protected constructor from sibling classes.
+     *
+     * @internal
+     *
+     * @param non-negative-int $scale
+     *
+     * @pure
+     */
+    final protected function newBigDecimal(string $value, int $scale = 0): BigDecimal
+    {}
+
+    /**
+     * Proxy method to access BigRational's protected constructor from sibling classes.
+     *
+     * @internal
+     *
+     * @pure
+     */
+    final protected function newBigRational(BigInteger $numerator, BigInteger $denominator, bool $checkDenominator, bool $simplify): BigRational
+    {}
+
+    /**
+     * @throws NumberFormatException If the format of the number is not valid.
+     *
+     * @pure
+     */
+    private static function _of(BigNumber|int|string $value): BigNumber
+    {}
+
+    /**
+     * Note: $allowedSyntax and $maxDigits are nullable as a performance optimization for of(): null behaves like
+     * `NumberSyntax::ALL` and `PHP_INT_MAX`, but skips the checks, which could never fail against those values.
+     *
+     * @param list<NumberSyntax>|null $allowedSyntax The allowed syntax features; plain integers are always accepted. Null for all.
+     * @param positive-int|null       $maxDigits     The maximum number of digits, as written and in the resulting number. Null for no limit.
+     *
+     * @throws NumberFormatException If the format of $value is invalid, if it uses a syntax that is not allowed
+     *                               by $allowedSyntax, or if it has more than $maxDigits digits.
+     *
+     * @pure
+     */
+    private static function _parse(string $value, ?array $allowedSyntax, ?int $maxDigits): BigNumber
+    {}
+
+    /**
+     * Removes optional leading zeros and applies sign.
+     *
+     * @param '+'|'-'|null     $sign   The sign, optional. Null is allowed for convenience and treated as '+'.
+     * @param non-empty-string $number The number, validated as a string of digits.
+     *
+     * @pure
+     */
+    private static function cleanUp(?string $sign, string $number): string
+    {}
+
+    /**
+     * Adds two BigNumber instances in the correct order to avoid a RoundingNecessaryException.
+     *
+     * @pure
+     */
+    private static function add(BigNumber $a, BigNumber $b): BigNumber
+    {}
+}
