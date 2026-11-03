@@ -257,6 +257,7 @@ fn checker<'a, 'arena>(
     project: &'a Checks,
     files: &'a HashMap<FileId, PathBuf>,
     sources: &'a Sources,
+    trait_class: Option<&str>,
 ) -> Checker<'a, 'arena> {
     let php_version = project.php_version;
     let mut typed = super::larastan::typed_expressions(project.larastan.as_ref(), names, program);
@@ -292,7 +293,7 @@ fn checker<'a, 'arena>(
     };
     let mut variable_writes = HashMap::new();
     let mut property_initializations = HashMap::new();
-    let (mut types, defined, origins, call_terminations, named_call_scopes, keep_void_types, native_types, nullsafe_method_receiver_types) = infer(arena, file, program, names, codebase, php_version, project.level, project.pollute_scope_with_loop_initial_assignments, project.pollute_scope_with_always_iterable_foreach, project.pollute_scope_with_block, typed, calls, &mut variables, &mut variable_writes, &mut property_initializations, project.larastan.as_ref());
+    let (mut types, defined, origins, call_terminations, named_call_scopes, keep_void_types, native_types, nullsafe_method_receiver_types) = infer(arena, file, program, names, codebase, php_version, project.level, project.pollute_scope_with_loop_initial_assignments, project.pollute_scope_with_always_iterable_foreach, project.pollute_scope_with_block, typed, calls, &mut variables, &mut variable_writes, &mut property_initializations, project.larastan.as_ref(), trait_class);
     if project.level >= 4 {
         let (subjects, unknown) = super::dead_code::match_subject_types(file, program, codebase, php_version, project.pollute_scope_with_loop_initial_assignments, project.pollute_scope_with_always_iterable_foreach, project.pollute_scope_with_block);
         types.extend(subjects);
@@ -422,7 +423,7 @@ pub(crate) fn check_file(
         return errors;
     }
     let mut checker = checker(
-        &arena, file, program, &names, codebase, project, files, sources,
+        &arena, file, program, &names, codebase, project, files, sources, None,
     );
     pun_phpstan::resolve::with_type_aliases(&project.type_aliases, || {
         checker.walk_program(program, &mut ())
@@ -507,7 +508,7 @@ fn in_trait_context(
     let arena = LocalArena::new();
     let (program, names) = parse(&arena, &file);
     let mut checker = checker(
-        &arena, &file, program, &names, codebase, project, files, sources,
+        &arena, &file, program, &names, codebase, project, files, sources, Some(class),
     );
     let display = codebase
         .get_class_like(class.as_bytes())

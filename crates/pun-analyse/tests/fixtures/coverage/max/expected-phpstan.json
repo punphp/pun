@@ -70,6 +70,20 @@
    "identifier": "return.type",
    "message": "Method TemplateSelfReference\\Bag::reduce() should return TReduceReturnType but returns TReduceInitial|TReduceReturnType.",
    "tip": null
+  },
+  {
+   "file": "trait-inheritdoc.php (in context of class MaxTraitInheritDoc\\UserFactory)",
+   "line": 29,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: array<string, mixed>|(callable(array<string, mixed>): array<string, mixed>)",
+   "tip": null
+  },
+  {
+   "file": "trait-inheritdoc.php (in context of class MaxTraitInheritDoc\\UserFactory)",
+   "line": 30,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: MaxTraitInheritDoc\\Model|null",
+   "tip": null
   }
  ]
 }

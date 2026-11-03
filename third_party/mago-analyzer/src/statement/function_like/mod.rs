@@ -11,6 +11,7 @@ use mago_word::word;
 
 use mago_codex::context::ScopeContext;
 use mago_codex::identifier::function_like::FunctionLikeIdentifier;
+use mago_codex::identifier::method::MethodIdentifier;
 use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::metadata::function_like::FunctionLikeKind;
 use mago_codex::metadata::function_like::FunctionLikeMetadata;
@@ -45,6 +46,8 @@ use mago_codex::ttype::get_mixed;
 use mago_codex::ttype::get_never;
 use mago_codex::ttype::get_non_accepting_never;
 use mago_codex::ttype::get_void;
+use mago_codex::ttype::template::TemplateResult;
+use mago_codex::ttype::template::inferred_type_replacer;
 use mago_codex::ttype::intersect_union_types;
 use mago_codex::ttype::union::TUnion;
 use mago_codex::ttype::wrap_atomic;
@@ -643,6 +646,9 @@ where
             }
 
             effective_type
+        } else if let Some(inherited) = trait_context_parameter_type(context, block_context, function_like_metadata, i) {
+            add_symbol_references(&inherited, &block_context.scope, artifacts);
+            expand_type_union(context, block_context, function_like_metadata, &inherited, false)
         } else {
             get_mixed()
         };
@@ -830,6 +836,57 @@ fn is_unresolved_template_with_mixed_bound(union: &TUnion) -> bool {
     } else {
         false
     }
+}
+
+/// PhpDocInheritanceResolver::resolvePhpDocForMethod() for a trait method analysed in the context of
+/// `trait_context_class`: an untyped parameter without its own `@param` takes the PHPDoc type of the parameter at the
+/// same position of the method it overrides in the class's parent (resolveMethodPhpDocFromParentClass()), with the
+/// parent's templates as the class's `@extends` gives them.
+fn trait_context_parameter_type<A: Arena>(
+    context: &Context<'_, '_, A>,
+    block_context: &BlockContext<'_>,
+    function_like_metadata: &FunctionLikeMetadata,
+    offset: usize,
+) -> Option<TUnion> {
+    let class_name = context.settings.trait_context_class?;
+    if !function_like_metadata.kind.is_method()
+        || !block_context
+            .scope
+            .get_class_like_name()
+            .and_then(|name| context.codebase.get_class_like(name.as_bytes()))
+            .is_some_and(|declaring| declaring.kind.is_trait())
+    {
+        return None;
+    }
+    let class = context.codebase.get_class_like(class_name.as_bytes())?;
+    let mut parent_name = class.direct_parent_class;
+    while let Some(name) = parent_name {
+        let parent = context.codebase.get_class_like(name.as_bytes())?;
+        let declaring = context
+            .codebase
+            .get_declaring_method_identifier(&MethodIdentifier::new(parent.name, function_like_metadata.name));
+        if let Some(method) = context.codebase.get_method_by_id(&declaring) {
+            let parameter_type = method.parameters.get(offset)?.get_type_metadata().filter(|t| t.from_docblock)?;
+            let Some(parameters) = class
+                .template_extended_parameters
+                .get(&declaring.get_class_name())
+                .filter(|parameters| !parameters.is_empty())
+            else {
+                return Some(parameter_type.type_union.clone());
+            };
+            let mut template_result = TemplateResult::default();
+            for (template_name, concrete) in parameters {
+                template_result.add_lower_bound(
+                    *template_name,
+                    GenericParent::ClassLike(declaring.get_class_name()),
+                    concrete.clone(),
+                );
+            }
+            return Some(inferred_type_replacer::replace(&parameter_type.type_union, &template_result, context.codebase));
+        }
+        parent_name = parent.direct_parent_class;
+    }
+    None
 }
 
 fn expand_type_metadata<'ctx, A>(

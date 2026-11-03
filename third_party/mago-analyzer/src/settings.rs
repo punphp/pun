@@ -53,6 +53,10 @@ pub struct Settings {
     /// PHPStan's standalone block scope pollution, independently of loop settings and reporting.
     pub pollute_scope_with_block: bool,
 
+    /// The class a trait's methods are analysed for (PHPStan analyses a trait only in each using class's
+    /// context): a trait method's untyped parameter takes the PHPDoc type of the method it overrides in that class.
+    pub trait_context_class: Option<Word>,
+
     /// Find and report expressions whose results are not used (e.g., `$a + $b;`). Defaults to `false`.
     pub find_unused_expressions: bool,
 
@@ -443,6 +447,7 @@ impl Settings {
             pollute_scope_with_always_iterable_foreach: true,
             track_variable_flow: false,
             pollute_scope_with_block: true,
+            trait_context_class: None,
             find_unused_expressions: true,
             find_unused_definitions: true,
             find_overly_wide_return_types: false,
