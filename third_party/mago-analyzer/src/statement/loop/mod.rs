@@ -74,6 +74,7 @@ use crate::formula::get_formula;
 use crate::formula::negate_or_synthesize;
 use crate::reconciler::reconcile_keyed_types;
 use crate::statement::r#loop::assignment_map_visitor::get_assignment_map;
+use crate::statement::r#loop::assignment_map_visitor::get_repeated_variables;
 use crate::statement::r#loop::cleaner::clean_nodes;
 
 mod assignment_map_visitor;
@@ -424,6 +425,7 @@ where
     let always_enters_loop = Cell::new(always_enters_loop);
 
     let (mut assignment_map, first_variable_id) = get_assignment_map(pre_conditions, &post_expressions, statements);
+    let repeated_variables = get_repeated_variables(pre_conditions, &post_expressions, statements);
     let assignment_depth_limit = context.settings.loop_assignment_depth_threshold as usize;
     let assignment_depth = if let Some(first_variable_id) = first_variable_id {
         get_assignment_map_depth(first_variable_id, &mut assignment_map, assignment_depth_limit)
@@ -831,7 +833,9 @@ where
                         continue_context.locals.insert(variable_id, Rc::new(combined));
                     }
                 } else {
-                    if !recorded_issues.is_empty() {
+                    // A variable the body defines changes its certainty at the loop start, which PHPStan's
+                    // next pass sees even where no issue was recorded (an `isset()` of it).
+                    if !recorded_issues.is_empty() || repeated_variables.contains(&variable_id) && i == 0 {
                         has_changes = true;
                     }
 

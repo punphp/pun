@@ -1,0 +1,75 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "magic.php",
+   "line": 25,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method Level1Parity\\Magic::missing().",
+   "tip": null
+  },
+  {
+   "file": "magic.php",
+   "line": 26,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property Level1Parity\\Magic::$absent.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "magic.php",
+   "line": 27,
+   "identifier": "staticMethod.notFound",
+   "message": "Call to an undefined static method Level1Parity\\Magic::missingStatic().",
+   "tip": null
+  },
+  {
+   "file": "magic.php",
+   "line": 28,
+   "identifier": "staticMethod.notFound",
+   "message": "Call to an undefined static method Level1Parity\\Magic::missingStatic().",
+   "tip": null
+  },
+  {
+   "file": "magic.php",
+   "line": 59,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method Level1Parity\\Paginator<TKey of (int|string), TValue>::hasMorePages().",
+   "tip": null
+  },
+  {
+   "file": "magic.php",
+   "line": 94,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method Level1Parity\\Target::notOnTarget().",
+   "tip": null
+  },
+  {
+   "file": "magic.php (in context of class Level1Parity\\Owner)",
+   "line": 36,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property Level1Parity\\Owner::$email.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "magic.php (in context of class Level1Parity\\Owner)",
+   "line": 37,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method Level1Parity\\Owner::notify().",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 72,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $cbc on left side of ?? always exists and is always null.",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 72,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $gcm on left side of ?? always exists and is not nullable.",
+   "tip": null
+  }
+ ]
+}

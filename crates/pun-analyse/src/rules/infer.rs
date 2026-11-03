@@ -402,6 +402,24 @@ struct Found {
     allowed: HashSet<Span>,
     arrows: HashMap<Span, variables::Certainty>,
     reference_sources: HashMap<Span, variables::ReferenceSource>,
+    /// The `defined` and variable-read spans with a certainty from a possible branch (see [`merge`]).
+    possible_defined: HashSet<Span>,
+    possible_reads: HashSet<Span>,
+}
+
+/// A loop body is analysed more than once; differing answers are a maybe. An answer from a branch Mago marked impossible
+/// (an `isset()` of a variable absent on the first pass) only counts until a possible branch answers: PHPStan checks the
+/// body once, in the loop's generalized scope.
+fn merge(entry: &mut Tri, now: Tri, span: Span, impossible: bool, possible: &mut HashSet<Span>, inserted: bool) {
+    if impossible {
+        if !inserted && !possible.contains(&span) && *entry != now {
+            *entry = Tri::Maybe;
+        }
+    } else if possible.insert(span) && !inserted {
+        *entry = now;
+    } else if *entry != now {
+        *entry = Tri::Maybe;
+    }
 }
 
 impl Provider for Definedness {
@@ -515,10 +533,11 @@ impl ExpressionHook for Definedness {
             if let Some(t) = local.filter(|_| variable) {
                 found.read.insert(span, (**t).clone());
             }
+            let impossible = block.variable_state.impossible;
+            let found = &mut *found;
+            let inserted = !found.defined.contains_key(&span);
             let entry = found.defined.entry(span).or_insert(now);
-            if *entry != now {
-                *entry = Tri::Maybe;
-            }
+            merge(entry, now, span, impossible, &mut found.possible_defined, inserted);
         }
         Ok(ExpressionHookResult::Continue)
     }
@@ -628,8 +647,10 @@ fn observe_direct(v: &DirectVariable<'_>, context: &HookContext<'_, '_>, found: 
         .filter(|_| v.name != b"$this" && context.get_variable_type(v.name).is_none())
         .and_then(|f| found.arrows.get(&f.span))
         .map_or_else(|| variables::defined(context, &name), |parent| parent.captured(&name[1..]));
+    let inserted = !found.variables.reads.contains_key(&v.span());
     let entry = found.variables.reads.entry(v.span()).or_insert_with(|| (name[1..].to_string(), certainty, variables::is_main(context)));
-    if entry.1 != certainty { entry.1 = Tri::Maybe; }
+    let impossible = context.block_context().variable_state.impossible;
+    merge(&mut entry.1, certainty, v.span(), impossible, &mut found.possible_reads, inserted);
 }
 
 /// A copy of a program's statements without the functions, class-likes and methods that hold none of `wanted`. Every

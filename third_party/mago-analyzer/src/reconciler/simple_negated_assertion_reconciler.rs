@@ -1340,7 +1340,9 @@ where
         return get_undefined_null();
     }
 
+    // (`null` itself, which an earlier `!isset()` of an elseif chain leaves, stays null)
     if !existing_var_type.is_nullable()
+        && !existing_var_type.is_null()
         && let Some(key) = key
         && memchr::memchr(b'[', key).is_none()
         && (!existing_var_type.is_mixed() || existing_var_type.is_always_truthy())

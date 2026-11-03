@@ -97,6 +97,7 @@ impl FunctionReturnTypeProvider for BuiltinFunctions {
             b"filter_var",
             b"count",
             b"sizeof",
+            b"array_replace",
         ])
     }
 
@@ -182,6 +183,9 @@ impl FunctionReturnTypeProvider for BuiltinFunctions {
                 .eq_ignore_ascii_case("random_int")
         {
             return RandomInt::get_return_type(context, invocation);
+        }
+        if invocation.function_name().eq_ignore_ascii_case("array_replace") {
+            return Self::array_replace(context, invocation);
         }
         let array = context.get_expression_type(invocation.get_argument(0, &[b"array"])?)?;
         if invocation
@@ -936,6 +940,54 @@ impl Strlen {
 }
 
 impl BuiltinFunctions {
+    /// ArrayReplaceFunctionReturnTypeExtension once an argument is not a constant array: the arguments' keys and
+    /// values, with each constant array's known keys, whose values a later general argument may replace.
+    /// ponytail: all-constant and unpacked arguments keep the prelude's generic return type
+    fn array_replace(context: &ProviderContext<'_, '_, '_>, invocation: &InvocationInfo<'_, '_, '_>) -> Option<TUnion> {
+        let codebase = context.codebase();
+        let combine = |a: Option<TUnion>, b: &TUnion| match a {
+            Some(a) => combine_union_types(&a, b, codebase, CombinerOptions::default()),
+            None => b.clone(),
+        };
+        let mut items = std::collections::BTreeMap::<ArrayKey, (bool, TUnion)>::new();
+        let (mut keys, mut values, mut general, mut non_empty) = (None, None, false, false);
+        for argument in invocation.arguments() {
+            if argument.is_unpacked() {
+                return None;
+            }
+            let ty = context.get_expression_type(argument.value()?)?;
+            if let [TAtomic::Array(TArray::Keyed(k))] = ty.types.as_ref()
+                && k.parameters.is_none()
+            {
+                for (key, item) in k.known_items.iter().flat_map(|items| items.iter()) {
+                    items.insert(*key, item.clone());
+                }
+                continue;
+            }
+            general = true;
+            let (key, value) = if ty.types.iter().any(TAtomic::is_mixed) {
+                (mago_codex::ttype::get_arraykey(), get_mixed())
+            } else {
+                let [atomic @ TAtomic::Array(array)] = ty.types.as_ref() else { return None };
+                non_empty |= array.is_non_empty();
+                get_iterable_parameters(atomic, codebase)?
+            };
+            for (_, value_type) in items.values_mut() {
+                *value_type = combine(Some(value_type.clone()), &value);
+            }
+            keys = Some(combine(keys, &key));
+            values = Some(combine(values, &value));
+        }
+        if !general {
+            return None;
+        }
+        let mut array = TKeyedArray::new();
+        array.non_empty = non_empty || items.values().any(|(optional, _)| !optional);
+        array.known_items = (!items.is_empty()).then(|| items.into());
+        array.parameters = Some((Arc::new(keys?), Arc::new(values?)));
+        Some(TUnion::from_atomic(TAtomic::Array(TArray::Keyed(array))))
+    }
+
     /// getIterableKeyType and isIterableAtLeastOnce()->no(), before the empty-input fallback. An empty arm
     /// contributes no keys to a union that can be non-empty; applying the fallback per arm would widen it.
     fn iterable_keys(array: &TUnion, codebase: &CodebaseMetadata) -> (TUnion, bool) {

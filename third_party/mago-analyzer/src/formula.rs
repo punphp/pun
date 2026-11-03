@@ -219,6 +219,13 @@ where
                 (_, true) => Some((binary.lhs, right_is_true)),
                 _ => None,
             };
+            // `($x ?? false) === false` narrows `$x` itself (scrape_equality_assertions())
+            let boolean_comparison = boolean_comparison.filter(|(other_side, literal_is_true)| {
+                *literal_is_true
+                    || !matches!(unwrap_expression(other_side), Expression::Binary(coalesce)
+                        if matches!(coalesce.operator, BinaryOperator::NullCoalesce(_))
+                            && matches!(unwrap_expression(coalesce.rhs), Expression::Literal(Literal::False(_))))
+            });
 
             if let Some((other_side, literal_is_true)) = boolean_comparison {
                 let mut formula = get_boolean_literal_comparison_formula(

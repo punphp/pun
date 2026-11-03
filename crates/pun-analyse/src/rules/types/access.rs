@@ -73,7 +73,7 @@ impl<'a> Checker<'a, '_> {
     }
 
     /// `Type::hasInstanceProperty()` (`is_static` false) or `hasStaticProperty()`; `property` has its `$`.
-    fn has_property(&self, t: &Type, property: &[u8], is_static: bool) -> Tri {
+    pub(in super::super) fn has_property(&self, t: &Type, property: &[u8], is_static: bool) -> Tri {
         t.query_members(&|t| match t {
             // (an object shape has no static properties)
             Type::ObjectShape(props) => match props.iter().find(|(n, ..)| !is_static && n.as_bytes() == &property[1..]) {

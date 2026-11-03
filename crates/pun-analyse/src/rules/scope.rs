@@ -33,6 +33,8 @@ pub enum Guard {
     MethodExists(String),
     /// `!($this instanceof Foo)`: in a class that is a Foo, the code here is unreachable.
     ThisNotInstanceOf(String),
+    /// `$this instanceof Foo`: `$this` is also a Foo here, with Foo's methods.
+    ThisInstanceOf(String),
     /// `PHP_VERSION_ID` compared with an integer: its range here, bounds inclusive (`None` unbounded).
     PhpVersion(Option<i64>, Option<i64>),
     /// An expression with a type in the scope (`hasExpressionType()`), by its key (`$this->name`).
@@ -62,6 +64,7 @@ impl PartialEq for Guard {
             | (Self::Constant(a), Self::Constant(b))
             | (Self::MethodExists(a), Self::MethodExists(b))
             | (Self::ThisNotInstanceOf(a), Self::ThisNotInstanceOf(b))
+            | (Self::ThisInstanceOf(a), Self::ThisInstanceOf(b))
             | (Self::Expr(a), Self::Expr(b))
             | (Self::ConstantFetch(a), Self::ConstantFetch(b)) => a == b,
             (Self::ExprStrings(a, av), Self::ExprStrings(b, bv)) => a == b && av == bv,
@@ -138,6 +141,12 @@ fn truthy_of(
             BinaryOperator::Or(_) | BinaryOperator::LowOr(_) => {
                 both(truthy(b.lhs, var, resolve, function), truthy(b.rhs, var, resolve, function))
             }
+            BinaryOperator::Instanceof(_) => match (b.lhs, b.rhs) {
+                (Expression::Variable(Variable::Direct(v)), Expression::Identifier(id)) if v.name == b"$this" => {
+                    vec![Guard::ThisInstanceOf(resolve(id))]
+                }
+                _ => Vec::new(),
+            },
             BinaryOperator::Identical(_) | BinaryOperator::Equal(_) => {
                 match (bool_literal(b.lhs), bool_literal(b.rhs)) {
                     (_, Some(true)) => truthy(b.lhs, var, resolve, function),
@@ -625,7 +634,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                 guards.extend(
                     self.falsy(i.condition)
                         .into_iter()
-                        .filter(|g| !matches!(g, Guard::ThisNotInstanceOf(_) | Guard::File(_)) && !expression_guard(g)),
+                        .filter(|g| !matches!(g, Guard::ThisNotInstanceOf(_) | Guard::ThisInstanceOf(_) | Guard::File(_)) && !expression_guard(g)),
                 );
             }
         }

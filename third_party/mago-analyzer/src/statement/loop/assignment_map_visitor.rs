@@ -5,6 +5,7 @@ use mago_syntax::cst::ArgumentList;
 use mago_syntax::cst::ArrowFunction;
 use mago_syntax::cst::Assignment;
 use mago_syntax::cst::Closure;
+use mago_syntax::cst::DirectVariable;
 use mago_syntax::cst::Expression;
 use mago_syntax::cst::MethodCall;
 use mago_syntax::cst::MethodPartialApplication;
@@ -132,4 +133,31 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for AssignmentMapWalker {
     // Prevent walking into closure and arrow function bodies
     fn walk_closure(&mut self, _closure: &'ast Closure<'arena>, _context: &mut ()) {}
     fn walk_arrow_function(&mut self, _arrow_function: &'ast ArrowFunction<'arena>, _context: &mut ()) {}
+}
+
+/// The variables the loop's conditions and body mention more than once, so read as well as assigned: PHPStan
+/// analyses the body again once one of these becomes defined at its end.
+pub fn get_repeated_variables<'ast, 'arena>(
+    pre_conditions: &[&'ast Expression<'arena>],
+    post_expressions: &[&'ast Expression<'arena>],
+    statements: &'ast [Statement<'arena>],
+) -> BTreeSet<Word> {
+    #[derive(Default)]
+    struct Mentions(BTreeMap<Word, usize>);
+    impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Mentions {
+        fn walk_in_direct_variable(&mut self, variable: &'ast DirectVariable<'arena>, _context: &mut ()) {
+            *self.0.entry(mago_word::word(variable.name)).or_default() += 1;
+        }
+
+        fn walk_closure(&mut self, _closure: &'ast Closure<'arena>, _context: &mut ()) {}
+        fn walk_arrow_function(&mut self, _arrow_function: &'ast ArrowFunction<'arena>, _context: &mut ()) {}
+    }
+    let mut mentions = Mentions::default();
+    for expression in pre_conditions.iter().chain(post_expressions) {
+        mentions.walk_expression(expression, &mut ());
+    }
+    for statement in statements {
+        mentions.walk_statement(statement, &mut ());
+    }
+    mentions.0.into_iter().filter(|(_, n)| *n > 1).map(|(name, _)| name).collect()
 }

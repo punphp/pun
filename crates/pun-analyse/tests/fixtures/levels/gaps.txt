@@ -237,19 +237,16 @@
 5 Methods/CallMethodsRuleTest::testObjectShapes
 5 Methods/CallMethodsRuleTest::testReadOnlyPropertyPassedByReference
 5 Methods/CallMethodsRuleTest::testRecursiveIteratorIterator
-5 Methods/CallMethodsRuleTest::testRequireExtends
 5 Methods/CallStaticMethodsRuleTest::testBug3641
 5 Methods/CallStaticMethodsRuleTest::testBug5259
 5 Methods/CallStaticMethodsRuleTest::testBugWrongMethodNameWithTemplateMixed
 5 Methods/CallStaticMethodsRuleTest::testDynamicCall
-5 Methods/CallStaticMethodsRuleTest::testRequireExtends
 5 Properties/AccessPropertiesRuleTest::testBug12645
 5 Properties/AccessPropertiesRuleTest::testBug13537
 5 Properties/AccessPropertiesRuleTest::testDynamicProperties#0
 5 Properties/AccessPropertiesRuleTest::testDynamicProperties#1
 5 Properties/AccessPropertiesRuleTest::testMixin
 5 Properties/AccessPropertiesRuleTest::testNewIsAlwaysFinalClass
-5 Properties/AccessPropertiesRuleTest::testRequireExtends
 9 Functions/CallToFunctionParametersRuleTest::testBenevolentSuperglobalKeys
 9 Functions/CallToFunctionParametersRuleTest::testBug10974
 9 Functions/CallToFunctionParametersRuleTest::testBug11533
@@ -312,7 +309,6 @@
 9 Methods/CallMethodsRuleTest::testObjectShapes
 9 Methods/CallMethodsRuleTest::testReadOnlyPropertyPassedByReference
 9 Methods/CallMethodsRuleTest::testRecursiveIteratorIterator
-9 Methods/CallMethodsRuleTest::testRequireExtends
 9 Methods/CallStaticMethodsRuleTest::testBug12558
 9 Methods/CallStaticMethodsRuleTest::testBug13267
 9 Methods/CallStaticMethodsRuleTest::testBug2164
@@ -321,7 +317,6 @@
 9 Methods/CallStaticMethodsRuleTest::testBug5259
 9 Methods/CallStaticMethodsRuleTest::testBugWrongMethodNameWithTemplateMixed
 9 Methods/CallStaticMethodsRuleTest::testDynamicCall
-9 Methods/CallStaticMethodsRuleTest::testRequireExtends
 # offsetAccess.invalidOffset: array_rand() is list<int|string> by Mago, array<int, int|string> by PHPStan's dynamic
 # return type extension
 3 Arrays/InvalidKeyInArrayDimFetchRuleTest::testBug12981

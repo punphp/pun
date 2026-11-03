@@ -1473,7 +1473,8 @@ where
             .with_help("Ensure the object implements `ArrayAccess` before attempting to access it as an array."),
         );
 
-        return get_never();
+        // PHPStan's ObjectType::getOffsetValueType() is an ErrorType, which a later read still sees as defined
+        return if assign_value_type.is_none() { get_error() } else { get_never() };
     };
 
     let mut union_comparison_result = ComparisonResult::new();

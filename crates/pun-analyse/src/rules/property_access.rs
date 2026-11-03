@@ -650,6 +650,10 @@ fn check(c: &mut Checker, p: &PropertyAccess, write: bool) {
     if has {
         return; // ponytail: asymmetric visibility (`private(set)`) on a parent's property
     }
+    // the class reflection extensions: a mixin's or a required class's property
+    if c.has_property(&pun_phpstan::types::Type::Object(String::from_utf8_lossy(class.name.as_bytes()).into_owned(), vec![], false), &property, false).yes() {
+        return;
+    }
     // `isFinal()`: the keyword or `@final` (Mago's flag holds both); an anonymous class is final
     let is_final = class.flags.is_final()
         || class
@@ -663,9 +667,11 @@ fn check(c: &mut Checker, p: &PropertyAccess, write: bool) {
     if c.has_expression_type(name) {
         return;
     }
-    // !reportMagicProperties (level 0); ponytail: from level 1 a class with `__get` needs the property extensions
-    // (Larastan's model properties), so it stays unchecked
-    if has_native_method(c, class, "__get") || has_native_method(c, class, "__set") {
+    // !reportMagicProperties (level 0); ponytail: with Larastan a class with `__get` needs its property extensions
+    // (model properties), so it stays unchecked
+    if (c.level == 0 || c.larastan.is_some())
+        && (has_native_method(c, class, "__get") || has_native_method(c, class, "__set"))
+    {
         return;
     }
     // this_name() took the name from an identifier

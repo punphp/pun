@@ -158,18 +158,25 @@ pub(super) fn check_this_method<'arena>(
         members::method(c, class, name.value).or_else(|| members::annotation_method(c, class, name.value))
     };
     let Some(method) = method else {
-        // reportMagicMethods is off at level 0: a native __call() answers every name
+        // reportMagicMethods is off at level 0: a native __call() answers every name. ponytail: with Larastan,
+        // whose method extensions are not all ported, a class with __call stays unchecked
         let key = format!("$this::{method_name}");
         if c.has_method_guard(&key)
-            || (call.is_some() || c.level == 0) && members::method(c, class, b"__call").is_some()
+            || (c.level == 0 || call.is_some() && c.larastan.is_some()) && members::method(c, class, b"__call").is_some()
             || class
                 .pseudo_methods
                 .iter()
                 .any(|m| m.as_bytes().eq_ignore_ascii_case(name.value))
+            // the class reflection extensions: a mixin's or a required class's method
+            || call.is_some() && !matches!(c.method_of(&String::from_utf8_lossy(class.name.as_bytes()), name.value), Ok(None))
+            // `$this instanceof Foo` makes `$this` an intersection with Foo, which has Foo's methods
+            || c.guards.iter().any(|g| matches!(g, super::scope::Guard::ThisInstanceOf(n)
+                if !matches!(c.method_of(n, name.value), Ok(None))))
         {
             return;
         }
-        let display = c.display(class);
+        // ThisType's description keeps the class's template types
+        let display = c.describe_object(class);
         // MethodCallCheck unwraps a top-level ThisType, not the ThisType inside an accessory intersection.
         let display = if refined {
             format!("$this({display})")
@@ -363,7 +370,11 @@ pub(super) fn check_static_method<'arena>(
         };
         let key = format!("{guarded}::{method_name}").to_ascii_lowercase();
         let known = c.has_method_guard(&key);
-        if !known && (call.is_some() || c.level == 0) && members::method(c, class, b"__callStatic").is_some() {
+        // reportMagicMethods is off at level 0; ponytail: with Larastan a class with __callStatic stays unchecked
+        if !known && (c.level == 0 || call.is_some() && c.larastan.is_some())
+            && members::method(c, class, b"__callStatic").is_some()
+            || call.is_some() && !matches!(c.method_of(&String::from_utf8_lossy(class.name.as_bytes()), name.value), Ok(None))
+        {
             return;
         }
         class_names::check_at(c, pair.as_slice(), Some(&class_names::Location::StaticMethodCall(None)), true);

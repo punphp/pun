@@ -80,10 +80,16 @@ impl<'arena> Checker<'_, 'arena> {
                     self.class_like(name).found()
                 }),
         };
-        if let Some(class) = class
-            && let Some(members::Method::User { f, declaring, .. }) =
-                members::method(self, class, name.value)
-        {
+        // MixinMethodsClassReflectionExtension: a method a `@mixin` class has, whose `static` is that class
+        let class = class.and_then(|class| match members::method(self, class, name.value) {
+            Some(method) => Some((class, method)),
+            None => {
+                let display = self.reflected_method(&Type::Object(self.display(class), vec![], false), name.value).ok()??.display;
+                let mixin = self.class_like(display.split('<').next().unwrap_or(&display)).found()?;
+                Some((mixin, members::method(self, mixin, name.value)?))
+            }
+        });
+        if let Some((class, members::Method::User { f, declaring, .. })) = class {
             // Mago's populated `used_traits` includes inherited traits. Their `self` is the class that first
             // imports the method, whereas `static` below is still the receiver at this call site.
             let declaring = class

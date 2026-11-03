@@ -408,6 +408,38 @@ fn record_null_context_assertions<'ctx, 'arena, A>(
     }
 }
 
+/// PHPStan's OpenSslEncryptParameterOutTypeExtension: `openssl_encrypt()`'s `$tag` is a non-empty-string for a
+/// constant gcm/ccm cipher, null for another constant cipher, and either when the cipher is not constant.
+/// ponytail: a constant cipher the runtime OpenSSL does not support is null upstream; any gcm/ccm name counts here
+fn openssl_encrypt_tag(
+    invocation: &Invocation<'_, '_, '_>,
+    parameter: Option<&mago_codex::misc::VariableIdentifier>,
+    artifacts: &AnalysisArtifacts,
+) -> Option<TUnion> {
+    if !matches!(invocation.target.get_function_like_identifier(),
+        Some(FunctionLikeIdentifier::Function(name)) if name.as_bytes().eq_ignore_ascii_case(b"openssl_encrypt"))
+        || parameter?.0.as_bytes() != b"$tag"
+    {
+        return None;
+    }
+    let cipher = invocation.arguments_source.get_argument(1)?.value()?;
+    let ciphers = artifacts.get_expression_type(cipher).map(|t| {
+        t.types.iter().map(TAtomic::get_literal_string_value).collect::<Option<Vec<_>>>().unwrap_or_default()
+    }).unwrap_or_default();
+    if ciphers.is_empty() {
+        return Some(TUnion::from_vec(vec![TAtomic::Scalar(TScalar::non_empty_string()), TAtomic::Null]));
+    }
+    let aead = |c: &[u8]| { let c = c.to_ascii_lowercase(); c.ends_with(b"gcm") || c.ends_with(b"ccm") };
+    let mut types = Vec::new();
+    if ciphers.iter().any(|c| aead(c)) {
+        types.push(TAtomic::Scalar(TScalar::non_empty_string()));
+    }
+    if ciphers.iter().any(|c| !aead(c)) {
+        types.push(TAtomic::Null);
+    }
+    Some(TUnion::from_vec(types))
+}
+
 pub(crate) fn update_by_reference_argument_types<'ctx, 'arena, A>(
     context: &mut Context<'ctx, 'arena, A>,
     block_context: &mut BlockContext<'ctx>,
@@ -476,6 +508,8 @@ where
 
             let mut new_type = if parameter_offset > 0 && is_array_multisort(&invocation.target) {
                 argument_type
+            } else if let Some(tag) = openssl_encrypt_tag(invocation, parameter_ref.get_name(), artifacts) {
+                tag
             } else {
                 parameter_ref
                     .get_out_type()

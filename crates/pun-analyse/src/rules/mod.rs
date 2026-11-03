@@ -2234,8 +2234,15 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         if let ClassLikeMemberSelector::Identifier(m) = &call.method
             && m.value.eq_ignore_ascii_case(b"call")
         {
+            // MutatingScope::enterClosureCall() defines `$this` as the first argument's type
             let class = self.call_class(&call.argument_list);
-            self.rebind(call.object, class, false);
+            let defines_this = !call.argument_list.arguments.is_empty()
+                && match types::flow::unparen(call.object) {
+                    Expression::Closure(f) => f.r#static.is_none(),
+                    Expression::ArrowFunction(f) => f.r#static.is_none(),
+                    _ => false,
+                };
+            self.rebind(call.object, class, defines_this);
         }
         // A static closure has no `$this`, even when its parameter carries a binding annotation. The undefined
         // variable check reports it; there is no receiver on which to check methods.

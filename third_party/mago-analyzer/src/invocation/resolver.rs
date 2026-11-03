@@ -639,7 +639,13 @@ where
             return if negated { then_type } else { otherwise_type };
         }
 
-        if subject_is_contained {
+        // GenericClassStringType::isSuperTypeOf(): a constant string naming no known class is only a maybe
+        let unknown_class_name = target.types.iter().all(|t| matches!(t, TAtomic::Scalar(TScalar::ClassLikeString(_))))
+            && subject.types.iter().any(|t| {
+                t.get_literal_string_value().is_some_and(|name| !context.codebase.class_like_exists(name))
+            });
+
+        if subject_is_contained && !unknown_class_name {
             return if negated { otherwise_type } else { then_type };
         }
     }

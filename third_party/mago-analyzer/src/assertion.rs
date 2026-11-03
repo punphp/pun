@@ -1264,6 +1264,11 @@ where
         OtherValuePosition::Right => left,
     };
 
+    if let Some(var_name) = false_coalesce_id(base_conditional, &assertion_context) {
+        if_types.insert(var_name, vec![vec![Assertion::IsIsset], vec![Assertion::IsNotType(TAtomic::Scalar(TScalar::r#false()))]]);
+        return vec![if_types];
+    }
+
     let var_name = assertion_context.get_expression_id(base_conditional);
 
     if let Some(var_name) = var_name {
@@ -1271,6 +1276,20 @@ where
     }
 
     vec![if_types]
+}
+
+/// The left side of `$x ?? false`.
+fn false_coalesce_id<A>(e: &Expression, assertion_context: &AssertionContext<'_, '_, A>) -> Option<Word>
+where
+    A: Arena,
+{
+    let Expression::Binary(binary) = unwrap_expression(e) else { return None };
+    if !matches!(binary.operator, BinaryOperator::NullCoalesce(_))
+        || !matches!(unwrap_expression(binary.rhs), Expression::Literal(Literal::False(_)))
+    {
+        return None;
+    }
+    assertion_context.get_expression_id(binary.lhs)
 }
 
 fn get_true_inquality_assertions<A>(
@@ -2043,6 +2062,12 @@ where
         OtherValuePosition::Left => right,
         OtherValuePosition::Right => left,
     };
+
+    // TypeSpecifier::create() narrows the left side of `$x ?? false` against a `false` it compares with
+    if is_identity && let Some(var_name) = false_coalesce_id(base_conditional, &assertion_context) {
+        if_types.insert(var_name, vec![vec![Assertion::IsNotIsset, Assertion::IsType(TAtomic::Scalar(TScalar::r#false()))]]);
+        return vec![if_types];
+    }
 
     let var_name = assertion_context.get_expression_id(base_conditional);
 
