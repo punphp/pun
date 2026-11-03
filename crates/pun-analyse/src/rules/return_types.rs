@@ -42,12 +42,20 @@ use pun_phpstan::types::Tri;
 
 /// The registry the rules' inference runs with; `contents` is the analysed file's (`bindTo()` finds its receiver in it).
 /// With Larastan, a model forwards the methods it lacks to its builder.
-pub(super) fn registry(contents: &[u8], larastan: Option<&super::Larastan>) -> PluginRegistry {
+pub(super) fn registry(
+    contents: &[u8],
+    names: &mago_names::ResolvedNames<'_>,
+    larastan: Option<&super::Larastan>,
+) -> PluginRegistry {
     let mut registry = PluginRegistry::new();
     if let Some(larastan) = larastan {
-        registry.register_method_provider(super::larastan::ModelForwards);
+        registry.register_method_provider(super::larastan::ModelForwards(contents.to_vec()));
         registry.register_method_provider(super::larastan::AppMethods(Arc::clone(&larastan.app), contents.to_vec()));
         registry.register_function_provider(super::larastan::AppFunctions(Arc::clone(&larastan.app)));
+        registry.register_function_provider(super::larastan::Tap);
+        registry.register_expression_hook(super::larastan::ScopeStaticCalls(
+            names.iter().map(|(start, _, name, _)| (start, name.to_vec())).collect(),
+        ));
         crate::laravel::register_models(&mut registry, Arc::clone(&larastan.models));
     }
     registry.register_function_provider(Benevolent);

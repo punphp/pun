@@ -223,7 +223,7 @@ fn analyse_observed<'arena>(
     let children = children.spans;
     wanted.extend(children);
     wanted.extend(origins::dependencies(&origins, &wanted));
-    let mut registry = super::return_types::registry(&file.contents, larastan);
+    let mut registry = super::return_types::registry(&file.contents, names, larastan);
     let found = Arc::new(Mutex::new(Found {
         allowed: variables.as_ref().map(|_| variables::allowed_expressions(program)).unwrap_or_default(),
         ..Found::default()

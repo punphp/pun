@@ -10,6 +10,9 @@
 //! Cases that still differ are listed in tests/fixtures/larastan-types/gaps.txt, one per line (`<file>:<line>` for an
 //! assertion line, `<file>` for a file's other errors), and the list must be exact: a fixed case has to leave it.
 //! `PUN_LARASTAN_TYPES_REPORT=1` prints every failing case's difference.
+//!
+//! Type/PunEloquentBuildersTest.json is Pun's own reduced case (root/tests/Type/data/pun-eloquent-builders.php), its
+//! assertions PHPStan's types for it with GeneralTypeTest's config.
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};

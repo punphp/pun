@@ -389,6 +389,13 @@ pub(super) fn check_static_method<'arena>(
         );
         return;
     };
+    // ModelForwardsCallsExtension answers a model's non-public `#[Scope]` method the scope cannot call with a static
+    // builder method. ponytail: its arguments (the scope's, the builder shifted off) are not checked
+    if c.larastan.is_some()
+        && super::larastan::is_hidden_scope(c, class, name.value, scope_class)
+    {
+        return;
+    }
     let errors_before = c.errors.len();
     let location = class_names::Location::StaticMethodCall(Some(super::internal::method_member(c, &method)));
     class_names::check_at(c, pair.as_slice(), Some(&location), true);

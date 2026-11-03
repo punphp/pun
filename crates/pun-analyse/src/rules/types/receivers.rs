@@ -230,14 +230,11 @@ impl<'a> Checker<'a, '_> {
         }
         if let Some(larastan) = self.larastan {
             let original = declared::original_name(k);
-            // ModelForwardsCallsExtension: a model's `Builder<Model>` methods (the builder's mixin included).
-            // ponytail: a custom builder (`newEloquentBuilder()`, `#[UseEloquentBuilder]`) is not read
+            // ModelForwardsCallsExtension: the methods of the model's own builder (`Builder<Model>` unless
+            // `newEloquentBuilder()` or `#[UseEloquentBuilder]` names another), the builder's mixin included.
             if super::super::larastan::is_model(self, k) {
-                let builder = Type::Object(
-                    "Illuminate\\Database\\Eloquent\\Builder".to_string(),
-                    vec![Type::Object(original, vec![], false)],
-                    false,
-                );
+                let builder = super::super::larastan::builder_name(self.codebase, k.name.as_bytes());
+                let builder = Type::Object(String::from_utf8_lossy(builder.as_bytes()).into_owned(), vec![Type::Object(original, vec![], false)], false);
                 return self.extended_method(&builder, name, active);
             }
             let args = match t {

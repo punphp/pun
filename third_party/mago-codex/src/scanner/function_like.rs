@@ -821,6 +821,16 @@ fn parse_assertions_from_tag(
         AssertPattern::Type(asserted_type) => asserted_type,
     };
 
+    // Larastan's `view-string` resolves to `string` here, which every string is; PHPStan's ViewStringType is a
+    // narrower string, so asserting it never makes a plain string's check certain
+    if let Type::Reference(reference) = asserted_type
+        && let mago_phpdoc_syntax::cst::r#type::ReferenceKind::Identifier(identifier) = &reference.kind
+        && identifier.value.eq_ignore_ascii_case(b"view-string")
+        && reference.parameters.is_none()
+    {
+        return assertions;
+    }
+
     if !is_equal && matches!(asserted_type, Type::Empty(_)) {
         assertions.push(if is_negation { Assertion::NonEmpty } else { Assertion::Empty });
 

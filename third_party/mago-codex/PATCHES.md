@@ -1079,6 +1079,9 @@ replaces the class's own. Larastan's stubs rely on it, for example the `Http` fa
 the types of Larastan's TypeNodeResolverExtensions: `view-string` and `model-property<T>` are `string`,
 `collection-of<TModel>` is `Illuminate\Database\Eloquent\Collection<int, TModel>`. A `$this` type argument
 (`HasMany<Link, $this>`) stays `$this`, as PHPStan's ThisType does, instead of becoming `static`.
+`scanner/function_like.rs` `parse_assertions_from_tag()` drops an `@phpstan-assert` of `view-string`: as `string` it
+would make every string argument's check certain, where PHPStan's ViewStringType is a narrower string
+(`View\Factory::exists()` in Larastan's stubs).
 
 `ttype/expander.rs` `resolve_static_type()` follows `CalledOnTypeUnresolvedMethodPrototypeReflection`: on a `$this`
 receiver a `$this` type stays `$this`, also in a final class; on a `static` receiver it is `static` (the object in a

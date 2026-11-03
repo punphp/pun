@@ -36,7 +36,7 @@ pub(crate) use calls::{function_call, method_call, static_method_call};
 pub(crate) use classes::{class, method};
 pub(crate) use collectors::finish;
 pub(super) use extensions::{Functions as AppFunctions, Methods as AppMethods};
-pub(super) use forwards::ModelForwards;
+pub(super) use forwards::{ModelForwards, ScopeStaticCalls, Tap, builder_name};
 
 pub const IDENTIFIERS: &[&str] = &[
     "larastan.uselessConstructs.with",
@@ -288,8 +288,12 @@ pub(crate) fn has_model_property(c: &Checker, k: &ClassLikeMetadata, property: &
 /// BuilderHelper::searchOnEloquentBuilder()'s scopes of `model`: a non-public native method with the `#[Scope]`
 /// attribute, a `@method` tag `scopeName` or a native `scopeName` method.
 pub(crate) fn has_scope(c: &Checker, model: &str, method: &[u8]) -> bool {
-    let codebase = c.codebase;
-    let Some(k) = codebase.get_class_like(model.as_bytes()) else {
+    is_scope(c.codebase, model.as_bytes(), method)
+}
+
+/// [`has_scope`] on the codebase.
+pub(crate) fn is_scope(codebase: &mago_codex::metadata::CodebaseMetadata, model: &[u8], method: &[u8]) -> bool {
+    let Some(k) = codebase.get_class_like(model) else {
         return false;
     };
     let attribute = codebase.get_declaring_method(k.name.as_bytes(), method).is_some_and(|m| {
@@ -300,6 +304,17 @@ pub(crate) fn has_scope(c: &Checker, model: &str, method: &[u8]) -> bool {
     scope.extend(method.iter().take(1).map(u8::to_ascii_uppercase));
     scope.extend(method.iter().skip(1));
     attribute || codebase.get_declaring_method(k.name.as_bytes(), &scope).is_some()
+}
+
+/// A model's non-public `#[Scope]` method that a call from `scope` (outside the model's classes) cannot reach, which
+/// ClassReflection::getMethod() then takes from ModelForwardsCallsExtension.
+pub(crate) fn is_hidden_scope(c: &Checker, k: &ClassLikeMetadata, method: &[u8], scope: Option<&ClassLikeMetadata>) -> bool {
+    is_model(c, k)
+        && is_scope(c.codebase, k.name.as_bytes(), method)
+        && c.codebase.get_declaring_method(k.name.as_bytes(), method).is_some_and(|m| {
+            m.attributes.iter().any(|a| a.name.as_bytes().eq_ignore_ascii_case(b"Illuminate\\Database\\Eloquent\\Attributes\\Scope"))
+        })
+        && !scope.is_some_and(|s| is_a(c, s.name.as_bytes(), &k.name.as_bytes().to_ascii_lowercase()))
 }
 
 /// `ObjectType($parent)->isSuperTypeOf(ObjectType($class))->yes()`, for lowercase `parent`.

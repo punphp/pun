@@ -178,6 +178,7 @@ impl MethodReturnTypeProvider for Methods {
             "filter" | "reject" | "where" if is(ENUMERABLE) => {
                 return self.filter_reject(context, &method_name, invocation);
             }
+            "wherenotnull" if is(ENUMERABLE) => return self.where_not_null(context, invocation),
             "environment"
                 if is("Illuminate\\Foundation\\Application")
                     || is("Illuminate\\Contracts\\Foundation\\Application")
@@ -521,6 +522,42 @@ impl Methods {
         if let Some((name, condition)) = condition {
             value = narrow(context, condition, name, value, method != "reject");
         }
+        Some(generic(codebase, &class, vec![key, value]))
+    }
+
+    /// CollectionWhereNotNullDynamicReturnTypeExtension: the called-on collection class with its `TKey` and its
+    /// `TValue` (or `TModel`) without null, and without the scalar types when a key that is never null is given.
+    fn where_not_null(&self, context: &ProviderContext<'_, '_, '_>, invocation: &InvocationInfo<'_, '_, '_>) -> Option<TUnion> {
+        let codebase = context.codebase();
+        let receiver = self.receiver(invocation, b"whereNotNull")?;
+        let first = context.get_expression_type(&receiver)?.types.iter().find_map(|t| match t {
+            TAtomic::Object(TObject::Named(n)) => Some(n.clone()),
+            _ => None,
+        })?;
+        let declaring = codebase.get_declaring_method_class(first.name.as_bytes(), b"whereNotNull")?;
+        let template = |name: &str| active_template(codebase, &first, declaring.as_bytes(), name);
+        let key = template("TKey")?;
+        let value = template("TValue").or_else(|| template("TModel"))?;
+        // `$scope->getType($key)->isNull()->no()`
+        let keyed = invocation.get_argument(0, &[b"key"]).and_then(|a| context.get_expression_type(a)).is_some_and(|t| {
+            !t.types.is_empty() && t.types.iter().all(|t| !t.is_null() && !t.is_mixed())
+        });
+        let value = TUnion::from_vec(
+            value
+                .types
+                .iter()
+                .filter(|t| !t.is_null())
+                .filter(|t| {
+                    !keyed
+                        || !matches!(
+                            t,
+                            TAtomic::Scalar(TScalar::String(_) | TScalar::Integer(_) | TScalar::Float(_) | TScalar::Bool(_))
+                        )
+                })
+                .cloned()
+                .collect(),
+        );
+        let class = String::from_utf8_lossy(first.name.as_bytes()).into_owned();
         Some(generic(codebase, &class, vec![key, value]))
     }
 

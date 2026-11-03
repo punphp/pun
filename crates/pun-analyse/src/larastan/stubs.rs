@@ -6,7 +6,7 @@ use std::path::{Path, PathBuf};
 
 /// The stub files Larastan installed in `root`'s vendor directory adds, in no particular order.
 pub(crate) fn files(root: &Path) -> Vec<PathBuf> {
-    let stubs = root.join("vendor/larastan/larastan/stubs");
+    let stubs = package(root).join("stubs");
     let laravel = laravel_version(root);
     let mut versions: Vec<String> = std::fs::read_dir(&stubs)
         .into_iter()
@@ -25,6 +25,17 @@ pub(crate) fn files(root: &Path) -> Vec<PathBuf> {
         collect(&dir, &dir, &mut found);
     }
     found.into_values().collect()
+}
+
+/// Larastan's own directory (the extension's `dirname(__DIR__)`): its vendor install, or `root` when the project is
+/// Larastan's checkout.
+fn package(root: &Path) -> PathBuf {
+    let installed = root.join("vendor/larastan/larastan");
+    let own = std::fs::read_to_string(root.join("composer.json"))
+        .ok()
+        .and_then(|c| serde_json::from_str::<serde_json::Value>(&c).ok())
+        .is_some_and(|c| c["name"] == "larastan/larastan");
+    if own && !installed.is_dir() { root.to_path_buf() } else { installed }
 }
 
 /// The `*.stub` files below `dir`, by their path relative to `base`.
