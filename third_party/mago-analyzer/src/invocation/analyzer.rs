@@ -1023,7 +1023,7 @@ where
             *argument_offset,
             &mut analyzed_argument_types,
             parameter.is_some_and(|p| p.1.is_by_reference()),
-            physical_parameter_type.as_ref(),
+            closure_parameter_bounds(context, physical_parameter_type.as_ref(), template_result).as_ref(),
             call_context,
             arguments.reference_context(&argument, *argument_offset),
             arguments.expression_issues.as_mut(),
@@ -2757,4 +2757,40 @@ fn filter_array_filter_callback_type(
             false
         }
     });
+}
+
+/// GenericParametersAcceptorResolver::resolve() maps the callee's templates no argument inferred to an ErrorType,
+/// which TemplateTypeHelper::resolveTemplateTypes() replaces with the template's default, else its bound. A closure
+/// argument's parameters are typed with that resolved acceptor (`whereHas('posts', fn (Builder $q) => ...)` types
+/// `$q` as `Builder<Model>`, not `Builder<TRelatedModel>`).
+fn closure_parameter_bounds<A: Arena>(
+    context: &Context<'_, '_, A>,
+    parameter_type: Option<&TUnion>,
+    template_result: &TemplateResult,
+) -> Option<TUnion> {
+    let parameter_type = parameter_type?;
+    if !parameter_type.has_template_types() {
+        return Some(parameter_type.clone());
+    }
+    let mut bounds = template_result.clone();
+    for (name, templates) in &template_result.template_types {
+        for template in templates {
+            let inferred =
+                template_result.lower_bounds.get(name).is_some_and(|by| by.contains_key(&template.defining_entity));
+            if !inferred {
+                let bound = template.default.clone().unwrap_or_else(|| template.constraint.clone());
+                bounds
+                    .lower_bounds
+                    .entry(*name)
+                    .or_default()
+                    .insert(template.defining_entity, vec![mago_codex::ttype::template::TemplateBound::new(bound, 0, None)]);
+            }
+        }
+    }
+    Some(inferred_type_replacer::replace_with_polarity(
+        parameter_type,
+        &bounds,
+        context.codebase,
+        mago_codex::ttype::template::variance::Variance::Contravariant,
+    ))
 }

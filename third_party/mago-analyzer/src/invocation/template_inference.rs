@@ -210,6 +210,9 @@ fn infer_templates_from_input_and_container_types<A>(
 
     let mut potential_template_violations = HashMap::default();
     let generic_container_parts_len = generic_container_parts.len();
+    let bound_count =
+        |result: &TemplateResult| result.lower_bounds.values().flat_map(|m| m.values()).map(Vec::len).sum::<usize>();
+    let bounds_before = bound_count(template_result);
 
     for container_atomic_part in &generic_container_parts {
         match container_atomic_part {
@@ -945,11 +948,17 @@ fn infer_templates_from_input_and_container_types<A>(
     } else {
         TUnion::from_vec(naked_input_types).with_never_kind(input_type.never_kind().unwrap_or_default())
     };
+    // UnionType::inferTemplateTypes(): the union's naked template members infer only when no other member
+    // inferred anything, so `iterable<array-key, T>|T` receiving `array{1, 2, 3}` binds `T` to `int` alone.
+    let skip_naked = !has_generic_class_string && bound_count(template_result) != bounds_before;
 
     for container_atomic_part in generic_container_parts {
         let TAtomic::GenericParameter(container_generic) = container_atomic_part else {
             continue;
         };
+        if skip_naked {
+            continue;
+        }
 
         let template_parameter_name = &container_generic.parameter_name;
 

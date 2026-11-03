@@ -24,5 +24,7 @@ class Cloud extends Facade
      * @return string
      */
     protected static function getFacadeAccessor()
-    {}
+    {
+        return CloudManager::class;
+    }
 }

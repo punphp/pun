@@ -57,7 +57,9 @@ class Process extends Facade
      * @return string
      */
     protected static function getFacadeAccessor()
-    {}
+    {
+        return Factory::class;
+    }
 
     /**
      * Indicate that the process factory should fake processes.

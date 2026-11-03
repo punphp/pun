@@ -115,5 +115,7 @@ class Route extends Facade
      * @return string
      */
     protected static function getFacadeAccessor()
-    {}
+    {
+        return 'router';
+    }
 }

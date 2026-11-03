@@ -57,5 +57,7 @@ class Blade extends Facade
      * @return string
      */
     protected static function getFacadeAccessor()
-    {}
+    {
+        return 'blade.compiler';
+    }
 }

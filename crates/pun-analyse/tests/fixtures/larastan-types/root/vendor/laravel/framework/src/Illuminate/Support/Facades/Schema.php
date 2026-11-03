@@ -82,5 +82,7 @@ class Schema extends Facade
      * @return string
      */
     protected static function getFacadeAccessor()
-    {}
+    {
+        return 'db.schema';
+    }
 }

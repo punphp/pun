@@ -23,5 +23,7 @@ class MaintenanceMode extends Facade
      * @return string
      */
     protected static function getFacadeAccessor()
-    {}
+    {
+        return MaintenanceModeManager::class;
+    }
 }

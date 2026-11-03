@@ -1,6 +1,8 @@
 use mago_allocator::Arena;
 use mago_codex::identifier::function_like::FunctionLikeIdentifier;
 use mago_codex::ttype::atomic::TAtomic;
+use mago_codex::ttype::atomic::array::TArray;
+use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::get_mixed;
 use mago_codex::ttype::template::TemplateResult;
 use mago_codex::ttype::union::TUnion;
@@ -159,6 +161,8 @@ where
     };
 
     let mut resulting_type = if let Some(return_type) = target_return_type {
+        let generalized = generalize_template_arguments(context, &return_type, template_result);
+        let template_result = generalized.as_ref().unwrap_or(template_result);
         resolve_invocation_type(context, invocation, template_result, parameters, return_type)
     } else {
         get_mixed()
@@ -172,3 +176,141 @@ where
 
     resulting_type
 }
+
+/// PHPStan's ResolvedFunctionVariantWithOriginal::resolveResolvableTemplateTypes(): a function or method template
+/// whose return type references it in a position that is not covariant (an invariant class template's argument, as
+/// in `static<TValue, TCombineValue>`) resolves to TemplateTypeHelper::generalizeInferredTemplateType() of its
+/// inferred type: a constant value generalized unless the template's bound is scalar, any scalar for an `array-key`
+/// bound. `Collection::combine([1])` is `Collection<TValue, int>`; `wrap(1)` returning `list<T>` stays `list<1>`.
+/// ponytail: PHPStan 2.3's template argument frame can decide such an argument from the calling body; without a
+/// decision it is generalized, which is all this follows.
+fn generalize_template_arguments<A: Arena>(
+    context: &Context<'_, '_, A>,
+    return_type: &TUnion,
+    template_result: &TemplateResult,
+) -> Option<TemplateResult> {
+    use mago_codex::misc::GenericParent;
+    use mago_codex::ttype::template::variance::Variance;
+
+    fn walk(
+        codebase: &mago_codex::metadata::CodebaseMetadata,
+        t: &TUnion,
+        covariant: bool,
+        out: &mut Vec<(mago_word::Word, GenericParent)>,
+    ) {
+        for atomic in t.types.iter() {
+            match atomic {
+                TAtomic::GenericParameter(p) => {
+                    if !covariant && matches!(p.defining_entity, GenericParent::FunctionLike(_)) {
+                        out.push((p.parameter_name, p.defining_entity));
+                    }
+                }
+                TAtomic::Object(mago_codex::ttype::atomic::object::TObject::Named(n)) => {
+                    let variances = codebase.get_class_like(n.name.as_bytes()).map(|k| k.template_variance.clone());
+                    for (i, parameter) in n.type_parameters.iter().flat_map(|p| p.iter()).enumerate() {
+                        let variance = variances.as_ref().and_then(|v| v.get(i)).copied().unwrap_or(Variance::Invariant);
+                        walk(codebase, parameter, covariant && matches!(variance, Variance::Covariant), out);
+                    }
+                }
+                TAtomic::Array(array) => {
+                    let (key, value) = mago_codex::ttype::get_array_parameters(array, codebase);
+                    walk(codebase, &key, covariant, out);
+                    walk(codebase, &value, covariant, out);
+                }
+                _ => {}
+            }
+        }
+    }
+
+    /// `isConstantValue()->yes()` of a type: every part a literal scalar, `true`, `false` or `null`.
+    fn constant(t: &TUnion) -> bool {
+        !t.types.is_empty()
+            && t.types.iter().all(|a| match a {
+                TAtomic::Null => true,
+                TAtomic::Scalar(TScalar::Bool(b)) => !b.is_general(),
+                TAtomic::Scalar(TScalar::Integer(i)) => i.is_literal(),
+                TAtomic::Scalar(TScalar::Float(f)) => f.get_literal_value().is_some(),
+                TAtomic::Scalar(TScalar::String(s)) => s.get_known_literal_value().is_some(),
+                TAtomic::Scalar(TScalar::ClassLikeString(c)) => c.literal_value().is_some(),
+                // a ConstantArrayType
+                TAtomic::Array(TArray::List(l)) => l.element_type.is_never() && l.known_elements.is_some(),
+                TAtomic::Array(TArray::Keyed(k)) => k.parameters.is_none() && k.known_items.is_some(),
+                _ => false,
+            })
+    }
+
+    /// `generalize(GeneralizePrecision::templateArgument())`: a constant scalar's general type, a constant array's
+    /// values generalized (ConstantArrayType::traverse()), any other type itself.
+    fn generalized(t: &TUnion) -> TUnion {
+        let mut types = Vec::new();
+        for a in t.types.iter() {
+            let general = match a {
+                TAtomic::Scalar(TScalar::Bool(_)) => TAtomic::Scalar(TScalar::bool()),
+                TAtomic::Scalar(TScalar::Integer(_)) => TAtomic::Scalar(TScalar::int()),
+                TAtomic::Scalar(TScalar::Float(_)) => TAtomic::Scalar(TScalar::float()),
+                TAtomic::Scalar(TScalar::String(_) | TScalar::ClassLikeString(_)) => TAtomic::Scalar(TScalar::string()),
+                TAtomic::Array(TArray::List(l)) if l.element_type.is_never() => {
+                    let mut l = l.clone();
+                    if let Some(known) = &l.known_elements {
+                        l.known_elements = Some(std::sync::Arc::new(
+                            known.iter().map(|(i, (optional, v))| (*i, (*optional, generalized(v)))).collect(),
+                        ));
+                    }
+                    TAtomic::Array(TArray::List(l))
+                }
+                TAtomic::Array(TArray::Keyed(k)) if k.parameters.is_none() => {
+                    let mut k = k.clone();
+                    if let Some(known) = &k.known_items {
+                        k.known_items = Some(std::sync::Arc::new(
+                            known.iter().map(|(key, (optional, v))| (*key, (*optional, generalized(v)))).collect(),
+                        ));
+                    }
+                    TAtomic::Array(TArray::Keyed(k))
+                }
+                a => a.clone(),
+            };
+            if !types.contains(&general) {
+                types.push(general);
+            }
+        }
+        TUnion::from_vec(types)
+    }
+
+    if template_result.lower_bounds.is_empty() || !return_type.has_template_types() {
+        return None;
+    }
+    let mut found = Vec::new();
+    walk(context.codebase, return_type, true, &mut found);
+    if found.is_empty() {
+        return None;
+    }
+    let mut result = template_result.clone();
+    let mut changed = false;
+    for (name, entity) in found {
+        let Some(template) = template_result
+            .template_types
+            .get(&name)
+            .and_then(|templates| templates.iter().find(|t| t.defining_entity == entity))
+        else {
+            continue;
+        };
+        let Some(bounds) = result.lower_bounds.get_mut(&name).and_then(|by| by.get_mut(&entity)) else {
+            continue;
+        };
+        let constraint = &template.constraint;
+        let array_key = constraint.types.len() == 2
+            && constraint.types.iter().any(|a| matches!(a, TAtomic::Scalar(TScalar::Integer(i)) if i.is_unspecified()))
+            && constraint.types.iter().any(|a| matches!(a, TAtomic::Scalar(TScalar::String(s)) if s.get_known_literal_value().is_none()))
+            || matches!(constraint.types.as_ref(), [TAtomic::Scalar(TScalar::ArrayKey)]);
+        let scalar_bound = !constraint.types.is_empty() && constraint.types.iter().all(|a| matches!(a, TAtomic::Scalar(_)));
+        let inferred = mago_codex::ttype::template::bounds::get_most_specific_type_from_bounds(bounds, context.codebase);
+        let scalar = !inferred.types.is_empty() && inferred.types.iter().all(|a| matches!(a, TAtomic::Scalar(_)));
+        let generalize = (scalar && array_key) || (constant(&inferred) && (!scalar_bound || array_key));
+        if generalize {
+            *bounds = vec![mago_codex::ttype::template::TemplateBound::new(generalized(&inferred), 0, None)];
+            changed = true;
+        }
+    }
+    changed.then_some(result)
+}
+

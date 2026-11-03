@@ -49,6 +49,11 @@ pub(super) fn registry(
 ) -> PluginRegistry {
     let mut registry = PluginRegistry::new();
     if let Some(larastan) = larastan {
+        registry.register_method_provider(super::larastan::Macros(Arc::clone(&larastan.app), Arc::clone(&larastan.macros)));
+        if larastan.check_config_types {
+            registry.register_function_provider(super::larastan::ConfigTypes(Arc::clone(&larastan.configs)));
+            registry.register_method_provider(super::larastan::ConfigTypes(Arc::clone(&larastan.configs)));
+        }
         registry.register_method_provider(super::larastan::HelperMethods(Arc::clone(&larastan.app)));
         registry.register_method_provider(super::larastan::ModelForwards(contents.to_vec()));
         registry.register_method_provider(super::larastan::ConsoleTypes(Arc::clone(&larastan.commands)));
@@ -59,6 +64,7 @@ pub(super) fn registry(
             app: Arc::clone(&larastan.app),
             generalize_env: larastan.generalize_env_return_type,
         });
+        registry.register_expression_hook(super::larastan::ContainerOffsets(Arc::clone(&larastan.app)));
         registry.register_expression_hook(super::larastan::ScopeStaticCalls(
             names.iter().map(|(start, _, name, _)| (start, name.to_vec())).collect(),
         ));

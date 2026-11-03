@@ -452,6 +452,19 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
         is_static: bool,
         args: Option<&ArgumentList>,
     ) {
+        // Larastan's Macro::getThrowType(): `validate()` and `validateWithBag()` throw a ValidationException,
+        // other macros have no throw type
+        if let [class] = classes
+            && super::super::larastan::macro_method(self.c, class, name).is_some()
+        {
+            if name.eq_ignore_ascii_case(b"validate") || name.eq_ignore_ascii_case(b"validateWithBag") {
+                let thrown = Type::Object("Illuminate\\Validation\\ValidationException".into(), vec![], false);
+                self.points.push(Point::explicit(at, thrown, true));
+            } else {
+                self.implicit(at);
+            }
+            return;
+        }
         let found: Vec<Member<'a>> = classes
             .iter()
             .filter_map(|k| members::method(self.c, k, name).or_else(|| members::annotation_method(self.c, k, name)))

@@ -115,7 +115,9 @@ class Http extends Facade
      * @return string
      */
     protected static function getFacadeAccessor()
-    {}
+    {
+        return Factory::class;
+    }
 
     /**
      * Register a stub callable that will intercept requests and be able to return stub responses.

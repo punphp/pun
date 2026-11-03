@@ -82,7 +82,9 @@ class Cache extends Facade
      * @return string
      */
     protected static function getFacadeAccessor()
-    {}
+    {
+        return 'cache';
+    }
 
     /**
      * Convert the facade into a Mockery spy.

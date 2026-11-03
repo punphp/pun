@@ -46,5 +46,7 @@ class Vite extends Facade
      * @return string
      */
     protected static function getFacadeAccessor()
-    {}
+    {
+        return \Illuminate\Foundation\Vite::class;
+    }
 }

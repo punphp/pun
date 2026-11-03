@@ -62,5 +62,7 @@ class Exceptions extends Facade
      * @return string
      */
     protected static function getFacadeAccessor()
-    {}
+    {
+        return ExceptionHandler::class;
+    }
 }

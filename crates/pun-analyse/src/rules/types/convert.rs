@@ -408,6 +408,55 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             }
             infer::Origin::Call(call) | infer::Origin::Callback(call, ..) => {
                 let (name, args) = (&call.name, &call.args);
+                // Larastan's LiteralExtension builds its object shape in argument order, which Mago's sorted
+                // properties lose; a single argument's type is its own (an unpacked array's order is its keys')
+                if self.larastan.is_some()
+                    && call.receiver.is_none()
+                    && call.class.is_none()
+                    && matches!(origin, infer::Origin::Call(_))
+                    && name.eq_ignore_ascii_case("literal")
+                {
+                    let std_class = |shape: Type| intersect(vec![shape, Type::Object("stdClass".into(), vec![], false)]);
+                    let shape = |t: &Type| match t {
+                        Type::ConstArray(a) => Some(std_class(Type::ObjectShape(
+                            a.keys
+                                .iter()
+                                .zip(&a.values)
+                                .map(|(k, v)| {
+                                    let key = match k {
+                                        Type::ConstInt(i) => i.to_string(),
+                                        Type::ConstString(s) => String::from_utf8_lossy(s).into_owned(),
+                                        _ => return None,
+                                    };
+                                    Some((key, v.clone(), false))
+                                })
+                                .collect::<Option<Vec<_>>>()?,
+                        ))),
+                        _ => None,
+                    };
+                    match args.as_slice() {
+                        [(None, span)] => return self.source_type(*span, origins, types),
+                        // an unpacked argument (type_origins names it `...`): its arrays' keys are the properties
+                        [(Some(unpacked), span)] if unpacked == "..." => {
+                            return Some(match self.source_type(*span, origins, types)? {
+                                Type::Union(parts) => {
+                                    Type::Union(parts.iter().map(|p| shape(p).unwrap_or_else(|| p.clone())).collect())
+                                }
+                                t => shape(&t).unwrap_or(t),
+                            });
+                        }
+                        _ => {}
+                    }
+                    return Some(Type::ObjectShape(
+                        args.iter()
+                            .enumerate()
+                            .map(|(i, (n, span))| {
+                                let t = self.to_phpstan(types.get(span)?);
+                                Some((n.clone().unwrap_or_else(|| i.to_string()), t, false))
+                            })
+                            .collect::<Option<Vec<_>>>()?,
+                    ));
+                }
                 // These extensions preserve their input key/value types. The provider alone decides keys,
                 // cardinality and listness; this edge restores only information its Mago types cannot store.
                 if call.receiver.is_none()
@@ -1164,6 +1213,7 @@ fn restore_metadata(actual: Type, source: &Type, restore_list: bool) -> Type {
     let matching = |actual: &Type, source: &[Type]| {
         source.iter().position(|s| {
             pun_phpstan::types::is_super_type_of(s, actual).yes()
+                || same_shape_properties(actual, s)
                 || ((matches!(actual, Type::Callable(None))
                     || matches!(actual, Type::Callable(Some(a)) if unspecified_callable(a)))
                     && matches!(s, Type::Callable(Some(_))))
@@ -1238,7 +1288,16 @@ fn restore_metadata(actual: Type, source: &Type, restore_list: bool) -> Type {
                 actual
                     .into_iter()
                     .zip(source)
-                    .map(|(a, s)| restore(a, s))
+                    // a declared benevolent argument (`array-key`) a dynamic return type narrowed is not restored
+                    .map(|(a, s)| {
+                        if matches!(s, Type::Benevolent(_))
+                            && !pun_phpstan::types::is_super_type_of(&a, s).yes()
+                        {
+                            a
+                        } else {
+                            restore(a, s)
+                        }
+                    })
                     .collect(),
                 *exact,
             )
@@ -1320,8 +1379,30 @@ fn restore_metadata(actual: Type, source: &Type, restore_list: bool) -> Type {
             intersect(vec![actual, source.clone()])
         }
         (actual, Type::Intersection(parts)) => parts.iter().fold(actual, |actual, source| restore_metadata(actual, source, restore_list)),
+        // ObjectShapeType keeps its properties' order, which Mago's sorted properties lose
+        (Type::ObjectShape(mut actual), Type::ObjectShape(source)) => {
+            actual.sort_by_key(|(name, ..)| source.iter().position(|(s, ..)| s == name).unwrap_or(usize::MAX));
+            Type::ObjectShape(actual)
+        }
         (actual, _) => actual,
     }
+}
+
+/// Whether two object shapes (alone or intersected) have the same properties: ObjectShapeType is only a maybe super
+/// type of another, so a reordered shape is matched by its property names.
+fn same_shape_properties(a: &Type, b: &Type) -> bool {
+    fn names(t: &Type) -> Option<Vec<&str>> {
+        match t {
+            Type::ObjectShape(props) => {
+                let mut names: Vec<&str> = props.iter().map(|(n, ..)| n.as_str()).collect();
+                names.sort_unstable();
+                Some(names)
+            }
+            Type::Intersection(parts) => parts.iter().find_map(names),
+            _ => None,
+        }
+    }
+    names(a).is_some_and(|a| names(b) == Some(a))
 }
 
 /// The native/common callable fallback, not a concrete closure or a signature with parameter/return information.

@@ -14,6 +14,7 @@ mod extensions;
 mod factories;
 mod forwards;
 mod helpers;
+mod macros;
 mod octane;
 mod relations;
 
@@ -37,8 +38,10 @@ pub(crate) use calls::{function_call, method_call, static_method_call};
 pub(crate) use classes::{class, method};
 pub(crate) use collectors::finish;
 pub(super) use extensions::{Functions as AppFunctions, Methods as AppMethods};
+pub(super) use config::Types as ConfigTypes;
+pub(super) use macros::{Macros, macro_method};
 pub(super) use console::Types as ConsoleTypes;
-pub(super) use helpers::{Functions as HelperFunctions, Methods as HelperMethods};
+pub(super) use helpers::{ContainerOffsets, Functions as HelperFunctions, Methods as HelperMethods};
 pub(super) use forwards::{ModelForwards, ScopeStaticCalls, Tap, builder_name};
 
 pub const IDENTIFIERS: &[&str] = &[
@@ -106,11 +109,15 @@ pub struct Larastan {
     /// `generalizeEnvReturnType` (default false).
     pub generalize_env_return_type: bool,
     /// The app's config files (filled by [`Larastan::load`] when `checkConfigTypes` is on).
-    pub(crate) configs: crate::larastan::config::Configs,
+    pub(crate) configs: std::sync::Arc<crate::larastan::config::Configs>,
     /// The models' database properties and their types, by lowercase class name (filled by [`Larastan::load`]).
     pub(crate) models: std::sync::Arc<crate::laravel::Models>,
     /// What the extensions ask the booted app (filled by [`Larastan::load`]).
     pub(crate) app: std::sync::Arc<crate::larastan::app::App>,
+    /// PHPStan's `bootstrapFiles` (absolute), where the macros the extensions see are registered.
+    pub bootstrap_files: Vec<PathBuf>,
+    /// The macros registered on the app's classes (filled by [`Larastan::load`]).
+    pub(crate) macros: std::sync::Arc<crate::larastan::macros::Macros>,
     /// The app's console commands (filled by [`Larastan::load`]).
     pub(crate) commands: std::sync::Arc<Vec<crate::larastan::console::Command>>,
 }
@@ -139,6 +146,8 @@ impl Larastan {
             no_unnecessary_collection_call: true,
             no_unnecessary_collection_call_methods: collections::should_handle(&[], &[]),
             configs: Default::default(),
+            bootstrap_files: Vec::new(),
+            macros: Default::default(),
             app: Default::default(),
             models: Default::default(),
         }
@@ -158,12 +167,19 @@ impl Larastan {
         self.models = std::sync::Arc::new(crate::laravel::models(app, project, codebase));
         self.commands = std::sync::Arc::new(crate::larastan::console::commands(project, codebase));
         self.app = std::sync::Arc::new(crate::larastan::app::App::load(&self.root));
+        self.macros = std::sync::Arc::new(crate::larastan::macros::Macros::load(
+            &self.bootstrap_files,
+            &self.root,
+            codebase,
+            &self.app,
+        ));
         if self.check_config_types {
-            self.configs = crate::larastan::config::Configs::load(
+            self.configs = std::sync::Arc::new(crate::larastan::config::Configs::load(
                 &self.config_directories,
                 &self.root,
                 codebase,
-            );
+                self.generalize_env_return_type,
+            ));
         }
     }
 
@@ -215,6 +231,7 @@ impl Larastan {
                 })
                 .unwrap_or_default()
         };
+        larastan.bootstrap_files = names("bootstrapFiles").iter().map(|f| root.join(f)).collect();
         larastan.view_directories = names("viewDirectories")
             .iter()
             .map(|d| root.join(d))

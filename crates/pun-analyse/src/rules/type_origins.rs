@@ -207,8 +207,15 @@ impl Sources<'_, '_> {
     }
 
     fn call(&mut self, span: Span, arguments: &ArgumentList, target: Option<Call>) {
+        // Larastan's LiteralExtension reads one unpacked argument's array, marked `...`
+        let literal = |call: &Call| {
+            call.receiver.is_none()
+                && call.class.is_none()
+                && call.name.eq_ignore_ascii_case("literal")
+                && arguments.arguments.len() == 1
+        };
         let origin = target
-            .filter(|_| !arguments.arguments.iter().any(Argument::is_unpacked))
+            .filter(|call| !arguments.arguments.iter().any(Argument::is_unpacked) || literal(call))
             .map(|mut call| {
                 call.args = arguments
                     .arguments
@@ -218,6 +225,7 @@ impl Sources<'_, '_> {
                             Argument::Named(n) => {
                                 Some(String::from_utf8_lossy(n.name.value).into_owned())
                             }
+                            arg if arg.is_unpacked() => Some("...".to_string()),
                             _ => None,
                         };
                         (name, arg.value().span())

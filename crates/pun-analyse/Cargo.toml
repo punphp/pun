@@ -23,6 +23,7 @@ mago-analyzer.workspace = true
 mago-codex.workspace = true
 mago-database.workspace = true
 mago-names.workspace = true
+mago-phpdoc-syntax.workspace = true
 mago-prelude.workspace = true
 mago-php-version.workspace = true
 mago-word.workspace = true

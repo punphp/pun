@@ -1101,3 +1101,17 @@ need it: `TRelatedModel&object{pivot: TPivotModel}` resolves its `TPivotModel`.
   bare `Closure` tag uses `TCallableSignature::mixed(true)`, PHPStan's plain `Closure` object.
 - `scanner/class_like.rs`: a `@method` parameter whose default is `null` gets a `null` default type, so its type
   includes `null`, as `PhpDocNodeResolver::resolveMethodTags()` adds it (`string $default = null` accepts `null`).
+
+## The empty array against a non-empty list
+
+`ttype/comparator/atomic_comparator.rs` `can_be_identical()`: `array{}` and a non-empty list cannot be identical, as
+ConstantArrayType's `isSuperTypeOf()` answers no for an array that has an item. A conditional return type
+`($value is empty ? TDefault : TReturn)` (Laravel's `transform()`) takes the `TReturn` branch for `['filled']`.
+
+## A child method's own templates in inherited types
+
+`populator/docblock.rs` `apply_inheritance_work()`: when a child method declares templates of its own, a parameter or
+return type it inherits from the parent method uses the child's template of the same name in place of the parent
+method's, as PHPStan's TemplateTypeMap resolves templates by name. Laravel's Eloquent `Collection::pad()` declares
+`@template TPadValue` and inherits `@param TPadValue $value`, so `pad(10, 10)` is `Collection<int, TModel|int>`, not
+`Collection<int, mixed>`.

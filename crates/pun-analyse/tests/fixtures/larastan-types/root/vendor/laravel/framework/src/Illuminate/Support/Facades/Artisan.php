@@ -34,5 +34,7 @@ class Artisan extends Facade
      * @return string
      */
     protected static function getFacadeAccessor()
-    {}
+    {
+        return ConsoleKernelContract::class;
+    }
 }

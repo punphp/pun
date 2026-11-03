@@ -216,8 +216,9 @@ foreach ($needed as $path) {
 @unlink($copyRoot.'/vendor/orchestra/testbench-core/laravel/vendor');
 symlink('../../..', $copyRoot.'/vendor/orchestra/testbench-core/laravel/vendor');
 // the vendor classes' and functions' bodies, which Pun never analyses, are cut to `{}` (`{ yield; }` for a generator),
-// except those Pun reads as the booted app: registerCoreContainerAliases() and Facade::defaultAliases()
-const READ_BODIES = ['vendor/laravel/framework/src/Illuminate/Foundation/Application.php', 'vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php'];
+// except those Pun reads as the booted app: registerCoreContainerAliases(), Facade::defaultAliases() and the macros
+// FoundationServiceProvider registers
+const READ_BODIES = ['vendor/laravel/framework/src/Illuminate/Foundation/Application.php', 'vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php', 'vendor/laravel/framework/src/Illuminate/Foundation/Providers/FoundationServiceProvider.php'];
 $parser = (new PhpParser\ParserFactory())->createForHostVersion();
 foreach ($vendor ?? file($out.'/vendor.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $path) {
     if (str_ends_with($path, '.php') && is_file($copyRoot.'/'.$path) && ! in_array($path, READ_BODIES, true)) {
@@ -292,7 +293,9 @@ function strip_bodies(PhpParser\Parser $parser, string $source): string
     }
     $finder = new PhpParser\NodeFinder();
     $bodies = [];
-    $functions = $finder->find($stmts, fn ($n) => ($n instanceof PhpParser\Node\Stmt\ClassMethod || $n instanceof PhpParser\Node\Stmt\Function_) && $n->stmts !== null);
+    // a facade's getFacadeAccessor() is kept: Pun reads it as Facade::getFacadeRoot() (MacroMethodsClassReflectionExtension)
+    $functions = $finder->find($stmts, fn ($n) => ($n instanceof PhpParser\Node\Stmt\ClassMethod || $n instanceof PhpParser\Node\Stmt\Function_) && $n->stmts !== null
+        && ! ($n instanceof PhpParser\Node\Stmt\ClassMethod && $n->name->toLowerString() === 'getfacadeaccessor'));
     foreach ($functions as $fn) {
         $generator = yields($fn->stmts);
         // the body's `{`: the first after the signature (its return type, else its last parameter, else its name)

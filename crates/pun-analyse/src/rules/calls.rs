@@ -354,6 +354,21 @@ pub(super) fn check_static_method<'arena>(
         _ => return,
     };
     let display = c.display(class);
+    // a macro is a static method unless its definition names an instance method (or a callable string)
+    if let Some(found) = super::larastan::macro_method(c, class, name.value) {
+        let in_instance_method =
+            c.functions.last().is_some_and(|f| f.kind == super::FunctionScopeKind::Method { is_static: false });
+        let in_subclass = scope_class.is_some_and(|s| {
+            s.name.as_bytes().eq_ignore_ascii_case(class.name.as_bytes())
+                || c.codebase.is_instance_of(s.name.as_bytes(), class.name.as_bytes())
+        });
+        if let Some((declaring, declared)) = found.instance
+            && (!in_instance_method || !in_subclass)
+        {
+            c.report(name, "method.staticCall", format!("Static call to instance method {declaring}::{declared}()."), None);
+        }
+        return;
+    }
     let method = if call.is_none() {
         match c.method_of(&String::from_utf8_lossy(class.name.as_bytes()), name.value) {
             Ok(method) => method,

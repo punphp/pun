@@ -100,5 +100,7 @@ class Schedule extends Facade
      * @return string
      */
     protected static function getFacadeAccessor()
-    {}
+    {
+        return ConsoleSchedule::class;
+    }
 }

@@ -3610,3 +3610,30 @@ These changes follow PHPStan 2.3.1 where laravel-framework at level max showed M
   `pub(crate)`): as StaticCallHandler, a `Name::method()` / `self::`/`parent::`/`static::` call with side effects to a
   method the scope's class inherits or declares invalidates `$this`, so narrowed `$this->prop` types are forgotten after
   `parent::populate()`. A static method keeps the property fetches.
+
+## Closure parameters of a callee's uninferred templates
+
+`invocation/analyzer.rs` `closure_parameter_bounds()`: a closure argument's parameters are typed with the callee's
+templates that no other argument inferred replaced by their default, else their bound. PHPStan's
+GenericParametersAcceptorResolver::resolve() maps such a template to an ErrorType, which
+TemplateTypeHelper::resolveTemplateTypes() turns into `getDefault() ?? getBound()`. Laravel's
+`$query->has('posts', '>=', 1, 'and', function (Builder $q) {})` types `$q` as `Builder<Model>`, not as
+`Builder<TRelatedModel>`. Only the closure's parameter types change; the call's template inference is unchanged.
+
+## Generalized template arguments of a call's return type
+
+`invocation/return_type_fetcher.rs` `generalize_template_arguments()`: a function or method template that the return
+type references in a position that is not covariant (an invariant class template's argument, as in
+`static<TValue, TCombineValue>`) resolves to its inferred type generalized, as
+ResolvedFunctionVariantWithOriginal::resolveResolvableTemplateTypes() calls
+TemplateTypeHelper::generalizeInferredTemplateType(). A constant value is generalized unless the template's bound is
+scalar, and any scalar is generalized for an `array-key` bound; a constant array keeps its shape with its values
+generalized. `collect([1])->combine([1])` is `Collection<int, int>`, while `wrap(1)` returning `list<T>` (covariant)
+stays `list<1>`.
+
+## Naked templates of a union parameter
+
+`invocation/template_inference.rs` `infer_templates_from_input_and_container_types()`: a union parameter type's bare
+template members (`T` in `iterable<array-key, T>|T`) infer from the argument only when its other generic members
+inferred nothing, as UnionType::inferTemplateTypes() does. `Collection::wrap([1, 2, 3])` binds `TWrapValue` to `int`,
+not to `array{1, 2, 3}|int`. A union with a `class-string<T>` member keeps Mago's inference.

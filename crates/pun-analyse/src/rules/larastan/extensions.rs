@@ -24,6 +24,7 @@ use mago_codex::ttype::atomic::object::named::TNamedObject;
 use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::atomic::scalar::int::TInteger;
 use mago_codex::ttype::combiner::CombinerOptions;
+use mago_codex::ttype::expander::StaticClassType;
 use mago_codex::ttype::union::TUnion;
 use mago_codex::ttype::{add_union_type, get_bool, get_mixed, get_mixed_keyed_array, get_null, get_specialized_template_type, get_string};
 use mago_span::{HasSpan, Span};
@@ -179,6 +180,11 @@ impl MethodReturnTypeProvider for Methods {
                 return self.filter_reject(context, &method_name, invocation);
             }
             "wherenotnull" if is(ENUMERABLE) => return self.where_not_null(context, invocation),
+            "map" | "mapwithkeys" if is(ELOQUENT_COLLECTION) => {
+                if let Some(ty) = eloquent_collection_map(context, &method_name, invocation) {
+                    return Some(ty);
+                }
+            }
             "environment"
                 if is("Illuminate\\Foundation\\Application")
                     || is("Illuminate\\Contracts\\Foundation\\Application")
@@ -220,7 +226,7 @@ fn benevolent_array_key() -> TUnion {
 }
 
 /// `new GenericObjectType($class, $arguments)`.
-fn generic(codebase: &CodebaseMetadata, class: &str, arguments: Vec<TUnion>) -> TUnion {
+pub(super) fn generic(codebase: &CodebaseMetadata, class: &str, arguments: Vec<TUnion>) -> TUnion {
     let TAtomic::Object(TObject::Named(object)) = object(codebase, class) else { unreachable!() };
     TUnion::from_atomic(TAtomic::Object(TObject::Named(TNamedObject::new_with_type_parameters(
         object.name,
@@ -295,6 +301,12 @@ fn collect(context: &ProviderContext<'_, '_, '_>, invocation: &InvocationInfo<'_
             });
         }
     }
+    // not an array: `toArray()`'s key and value types, for scalars `array{0: <value>}` (null is `array{}`)
+    let scalars: Vec<TAtomic> = ty.types.iter().filter(|t| !matches!(t, TAtomic::Null)).cloned().collect();
+    if !scalars.is_empty() && ty.types.iter().all(|t| matches!(t, TAtomic::Null | TAtomic::Scalar(_))) {
+        let key = TUnion::from_atomic(TAtomic::Scalar(TScalar::literal_int(0)));
+        return Some(generic(codebase, COLLECTION, vec![key, TUnion::from_vec(scalars)]));
+    }
     // `$type->isIterableAtLeastOnce()->no()` of an array: the empty array
     let empty = !ty.types.is_empty()
         && ty.types.iter().all(|t| match t {
@@ -339,7 +351,6 @@ fn remove_falsey(ty: &TUnion) -> TUnion {
 
 /// `TypeCombinator::removeTruthy()`: the falsy values of each type.
 fn remove_truthy(ty: &TUnion) -> TUnion {
-    use mago_codex::ttype::atomic::mixed::truthiness::TMixedTruthiness;
     TUnion::from_vec(
         ty.types
             .iter()
@@ -353,7 +364,19 @@ fn remove_truthy(ty: &TUnion) -> TUnion {
                     let zero = TAtomic::Scalar(TScalar::literal_string(mago_word::word("0")));
                     if s.is_non_empty { vec![zero] } else { vec![TAtomic::Scalar(TScalar::literal_string(mago_word::word(""))), zero] }
                 }
-                TAtomic::Mixed(m) => vec![TAtomic::Mixed(m.clone().with_truthiness(TMixedTruthiness::Falsy))],
+                // `intersect(mixed, StaticTypeFactory::falsey())`
+                TAtomic::Mixed(_) => [
+                    TScalar::literal_int(0),
+                    TScalar::literal_float(0.0),
+                    TScalar::literal_string(mago_word::word("")),
+                    TScalar::literal_string(mago_word::word("0")),
+                    TScalar::r#false(),
+                ]
+                .into_iter()
+                .map(TAtomic::Scalar)
+                .chain(mago_codex::ttype::get_empty_keyed_array().types.iter().cloned())
+                .chain([TAtomic::Null])
+                .collect(),
                 t => vec![t.clone()],
             })
             .collect(),
@@ -421,6 +444,44 @@ fn narrow(
                 let either = narrow(context, binary.lhs, name, ty, !and);
                 add_union_type(either, &both, codebase, CombinerOptions::default())
             }
+            // an integer compared with an integer literal: the range on the condition's side
+            BinaryOperator::LessThan(_)
+            | BinaryOperator::LessThanOrEqual(_)
+            | BinaryOperator::GreaterThan(_)
+            | BinaryOperator::GreaterThanOrEqual(_) => {
+                let literal = |e: &Expression<'_>| match context.get_expression_type(e).map(|t| t.types.as_ref()) {
+                    Some([TAtomic::Scalar(TScalar::Integer(TInteger::Literal(n)))]) => Some(*n),
+                    _ => None,
+                };
+                // `$v < n` as (less, inclusive) of `$v`
+                let less = matches!(binary.operator, BinaryOperator::LessThan(_) | BinaryOperator::LessThanOrEqual(_));
+                let inclusive =
+                    matches!(binary.operator, BinaryOperator::LessThanOrEqual(_) | BinaryOperator::GreaterThanOrEqual(_));
+                let (n, less, inclusive) = if is_var(binary.lhs) && let Some(n) = literal(binary.rhs) {
+                    (n, less, inclusive)
+                } else if is_var(binary.rhs) && let Some(n) = literal(binary.lhs) {
+                    (n, !less, inclusive)
+                } else {
+                    return ty;
+                };
+                // the false side of `<` is `>=`
+                let (less, inclusive) = if truthy { (less, inclusive) } else { (!less, !inclusive) };
+                let kept: Vec<TAtomic> = ty
+                    .types
+                    .iter()
+                    .filter_map(|t| match t {
+                        TAtomic::Scalar(TScalar::Integer(i)) => match (less, inclusive) {
+                            (true, true) => i.to_less_than_or_equal(n),
+                            (true, false) => i.to_less_than(n),
+                            (false, true) => i.to_greater_than_or_equal(n),
+                            (false, false) => i.to_greater_than(n),
+                        }
+                        .map(|i| TAtomic::Scalar(TScalar::Integer(i))),
+                        t => Some(t.clone()),
+                    })
+                    .collect();
+                if kept.is_empty() { mago_codex::ttype::get_never() } else { TUnion::from_vec(kept) }
+            }
             BinaryOperator::Identical(_) | BinaryOperator::NotIdentical(_) => {
                 let other = if is_var(binary.lhs) {
                     binary.rhs
@@ -470,6 +531,50 @@ fn narrow(
         e if truthy && is_var(e) => remove_falsey(&ty),
         _ => ty,
     }
+}
+
+/// EloquentCollectionMapDynamicReturnTypeExtension: `map()` and `mapWithKeys()` of an Eloquent collection are an
+/// Eloquent collection of the callback's models, else a base collection of its result.
+fn eloquent_collection_map(
+    context: &ProviderContext<'_, '_, '_>,
+    method: &str,
+    invocation: &InvocationInfo<'_, '_, '_>,
+) -> Option<TUnion> {
+    let codebase = context.codebase();
+    let arguments = invocation.arguments();
+    let [argument] = arguments.as_slice() else { return None };
+    let callable = context.get_expression_type(argument.value()?)?;
+    let [mago_codex::ttype::atomic::TAtomic::Callable(mago_codex::ttype::atomic::callable::TCallable::Signature(signature))] =
+        callable.types.as_ref()
+    else {
+        return None;
+    };
+    let target = invocation.inner().target.get_method_context()?;
+    let StaticClassType::Object(TObject::Named(called_on)) = &target.class_type else { return None };
+    let mut key = active_template(codebase, called_on, ELOQUENT_COLLECTION.as_bytes(), "TKey")?;
+    active_template(codebase, called_on, ELOQUENT_COLLECTION.as_bytes(), "TModel")?;
+    let mut value = signature.get_return_type().cloned().unwrap_or_else(get_mixed);
+    if method == "mapwithkeys" {
+        let parameters: Vec<_> =
+            value.types.iter().map(|a| mago_codex::ttype::get_iterable_parameters(a, codebase)).collect::<Option<_>>()?;
+        let (keys, values): (Vec<_>, Vec<_>) = parameters.into_iter().unzip();
+        key = super::helpers::union(codebase, keys);
+        value = super::helpers::union(codebase, values);
+    }
+    let model = b"Illuminate\\Database\\Eloquent\\Model";
+    let models = !value.types.is_empty()
+        && value.types.iter().all(|a| {
+            matches!(a, TAtomic::Object(TObject::Named(n)) if codebase.is_instance_of(n.name.as_bytes(), model))
+        });
+    if models {
+        let is_generic = codebase.get_class_like(called_on.name.as_bytes()).is_some_and(|k| !k.template_types.is_empty());
+        if !is_generic {
+            return Some(TUnion::from_atomic(TAtomic::Object(TObject::Named(TNamedObject::new(called_on.name)))));
+        }
+        let class = String::from_utf8_lossy(called_on.name.as_bytes()).into_owned();
+        return Some(generic(codebase, &class, vec![key, value]));
+    }
+    Some(generic(codebase, COLLECTION, vec![key, value]))
 }
 
 impl Methods {

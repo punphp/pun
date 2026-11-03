@@ -118,7 +118,9 @@ class Date extends Facade
      * @throws \RuntimeException
      */
     protected static function getFacadeAccessor()
-    {}
+    {
+        return 'date';
+    }
 
     /**
      * Resolve the facade root instance from the container.

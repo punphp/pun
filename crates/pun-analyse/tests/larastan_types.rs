@@ -61,10 +61,13 @@ fn analyse(root: &Path, test: &Value) -> BTreeMap<String, Found> {
     assert_eq!(configs.len(), 1, "{}", test["test"]);
     let config = resolve(&Options {
         config: Some(root.join(configs[0].as_str().unwrap()).to_string_lossy().into_owned()),
+        // `-l 8`, so the level's parameters resolve too (`checkThisOnly` is off from level 2)
+        level: Some("8".to_string()),
         ..Options::for_project(&root.to_string_lossy())
     })
     .unwrap();
     let mut params = config.parameters.clone();
+    // `-l` resolves `level` as a string; Project reads a number
     params.set(Key::from("level"), Parameter::Int(8));
     let mut project = Project::from_config(root, &params);
     // first fit: each file in the first run that declares none of its names

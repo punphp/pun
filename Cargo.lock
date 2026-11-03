@@ -1431,6 +1431,7 @@ dependencies = [
  "mago-extension",
  "mago-names",
  "mago-php-version",
+ "mago-phpdoc-syntax",
  "mago-prelude",
  "mago-reporting",
  "mago-span",

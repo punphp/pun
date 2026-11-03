@@ -720,6 +720,14 @@ pub(crate) fn can_be_identical(
             return false;
         }
 
+        // ConstantArrayType `array{}` is no super type of a non-empty list
+        if list.non_empty
+            && keyed_array.parameters.is_none()
+            && keyed_array.known_items.as_ref().is_none_or(|items| items.is_empty())
+        {
+            return false;
+        }
+
         if let Some(known_items) = &keyed_array.known_items {
             for (key, (optional, _)) in known_items.iter() {
                 if *optional {

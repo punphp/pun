@@ -80,5 +80,7 @@ class Notification extends Facade
      * @return string
      */
     protected static function getFacadeAccessor()
-    {}
+    {
+        return ChannelManager::class;
+    }
 }

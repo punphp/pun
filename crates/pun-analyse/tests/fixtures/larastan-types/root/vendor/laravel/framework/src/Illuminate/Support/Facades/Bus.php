@@ -87,5 +87,7 @@ class Bus extends Facade
      * @return string
      */
     protected static function getFacadeAccessor()
-    {}
+    {
+        return BusDispatcherContract::class;
+    }
 }

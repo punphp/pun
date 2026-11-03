@@ -8,6 +8,7 @@
 //!   (`env()`);
 //! - RequestFileExtension (`$request->file()`), RequestRouteExtension (`$request->route()`) and
 
+use std::collections::BTreeMap;
 use std::sync::Arc;
 
 use mago_analyzer::plugin::context::{InvocationInfo, ProviderContext};
@@ -17,6 +18,8 @@ use mago_analyzer::plugin::provider::{Provider, ProviderMeta};
 use mago_codex::metadata::CodebaseMetadata;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::array::TArray;
+use mago_codex::ttype::atomic::array::key::ArrayKey;
+use mago_codex::ttype::atomic::object::with_properties::TObjectWithProperties;
 use mago_codex::ttype::atomic::callable::TCallable;
 use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::object::named::TNamedObject;
@@ -47,7 +50,7 @@ fn object(codebase: &CodebaseMetadata, class: &str) -> TUnion {
 }
 
 /// `TypeCombinator::union()`.
-fn union(codebase: &CodebaseMetadata, types: impl IntoIterator<Item = TUnion>) -> TUnion {
+pub(super) fn union(codebase: &CodebaseMetadata, types: impl IntoIterator<Item = TUnion>) -> TUnion {
     let mut types = types.into_iter();
     let first = types.next().unwrap_or_else(get_never);
     types.fold(first, |t, u| add_union_type(t, &u, codebase, CombinerOptions::default()))
@@ -73,12 +76,12 @@ fn callable_return(t: &TAtomic) -> Option<TUnion> {
 }
 
 /// `TypeTraverser::map()` replacing each callable part with its return type.
-fn call_callables(codebase: &CodebaseMetadata, t: &TUnion) -> TUnion {
+pub(super) fn call_callables(codebase: &CodebaseMetadata, t: &TUnion) -> TUnion {
     union(codebase, t.types.iter().map(|a| callable_return(a).unwrap_or_else(|| TUnion::from_atomic(a.clone()))))
 }
 
 /// `$type->generalize(GeneralizePrecision::lessSpecific())`.
-fn generalize(codebase: &CodebaseMetadata, t: &TUnion) -> TUnion {
+pub(super) fn generalize(codebase: &CodebaseMetadata, t: &TUnion) -> TUnion {
     union(
         codebase,
         t.types.iter().map(|a| match a {
@@ -126,7 +129,6 @@ fn constant_strings(t: &TUnion) -> Vec<String> {
 /// AppMakeHelper::resolveTypeFromCall(): for each constant string, the class of what the container makes for it, else
 /// the class it names, else an ErrorType; mixed for a type without constant strings.
 fn app_make(app: &App, context: &ProviderContext<'_, '_, '_>, argument: Option<&Expression<'_>>) -> Option<TUnion> {
-    let codebase = context.codebase();
     let Some(argument) = argument else {
         return Some(get_error());
     };
@@ -134,6 +136,12 @@ fn app_make(app: &App, context: &ProviderContext<'_, '_, '_>, argument: Option<&
     if strings.is_empty() {
         return Some(get_mixed());
     }
+    Some(resolve_all(app, context.codebase(), strings))
+}
+
+/// HasContainer::resolve() for each constant string: the class of what the container makes for it, else the class
+/// it names, else an ErrorType.
+fn resolve_all(app: &App, codebase: &CodebaseMetadata, strings: Vec<String>) -> TUnion {
     let mut types = Vec::new();
     for s in strings {
         let class = app
@@ -142,10 +150,52 @@ fn app_make(app: &App, context: &ProviderContext<'_, '_, '_>, argument: Option<&
             .or_else(|| codebase.class_like_exists(s.trim_start_matches('\\').as_bytes()).then_some(s.as_str()));
         match class {
             Some(class) => types.push(object(codebase, class)),
-            None => return Some(get_error()),
+            None => return get_error(),
         }
     }
-    Some(union(codebase, types))
+    union(codebase, types)
+}
+
+/// ContainerArrayAccessDynamicMethodReturnTypeExtension: `$container['key']` (`offsetGet()`) on a container is what
+/// the container makes for each constant string of the key, else an ErrorType. Mago reads an `ArrayAccess` offset
+/// without asking the method providers, so the hook replaces the read's type.
+pub(crate) struct ContainerOffsets(pub(crate) Arc<App>);
+
+impl Provider for ContainerOffsets {
+    fn meta() -> &'static ProviderMeta {
+        &META
+    }
+}
+
+impl mago_analyzer::plugin::ExpressionHook for ContainerOffsets {
+    fn after_expression(
+        &self,
+        expr: &Expression<'_>,
+        context: &mut mago_analyzer::plugin::HookContext<'_, '_>,
+    ) -> mago_analyzer::plugin::HookResult<()> {
+        let Expression::ArrayAccess(access) = expr else { return Ok(()) };
+        let codebase = context.codebase();
+        let container = context.get_expression_type(access.array).is_some_and(|t| {
+            !t.types.is_empty()
+                && t.types.iter().all(|a| match a {
+                    TAtomic::Object(TObject::Named(n)) => {
+                        n.name.as_bytes().eq_ignore_ascii_case(CONTAINER.as_bytes())
+                            || codebase.is_instance_of(n.name.as_bytes(), CONTAINER.as_bytes())
+                    }
+                    _ => false,
+                })
+        });
+        if !container {
+            return Ok(());
+        }
+        let strings = context.get_expression_type(access.index).map(constant_strings).unwrap_or_default();
+        if strings.is_empty() {
+            return Ok(());
+        }
+        let ty = resolve_all(&self.0, codebase, strings);
+        context.set_expression_type(expr, ty);
+        Ok(())
+    }
 }
 
 pub(crate) struct Functions {
@@ -162,7 +212,7 @@ impl Provider for Functions {
 
 impl FunctionReturnTypeProvider for Functions {
     fn targets() -> FunctionTarget {
-        FunctionTarget::ExactMultiple(&[b"app", b"resolve", b"validator", b"value", b"str", b"env"])
+        FunctionTarget::ExactMultiple(&[b"app", b"resolve", b"validator", b"value", b"str", b"env", b"literal"])
     }
 
     fn get_return_type(
@@ -182,6 +232,7 @@ impl FunctionReturnTypeProvider for Functions {
             "validator" => Some(object(codebase, "Illuminate\\Validation\\Validator")),
             "value" if count == 0 => Some(get_never()),
             "value" => Some(call_callables(codebase, &type_of(0)?)),
+            "literal" => literal(context, invocation),
             "str" if count == 1 => Some(object(codebase, "Illuminate\\Support\\Stringable")),
             "str" => Some(get_mixed()),
             "env" if self.generalize_env && count >= 2 => {
@@ -191,6 +242,82 @@ impl FunctionReturnTypeProvider for Functions {
             _ => None,
         }
     }
+}
+
+/// `ObjectShapeType($properties)` intersected with `stdClass`.
+fn std_class_shape(codebase: &CodebaseMetadata, properties: BTreeMap<mago_word::Word, (bool, TUnion)>) -> TAtomic {
+    let TAtomic::Object(TObject::Named(mut std_class)) = object(codebase, "stdClass").types[0].clone() else {
+        unreachable!()
+    };
+    let shape = TObjectWithProperties { known_properties: properties, sealed: false };
+    std_class.intersection_types = Some(Box::new(vec![TAtomic::Object(TObject::WithProperties(shape))]));
+    TAtomic::Object(TObject::Named(std_class))
+}
+
+/// A constant array's items (`getConstantArrays()` of one array), keys as strings.
+fn constant_array(a: &TAtomic) -> Option<Vec<(String, TUnion)>> {
+    match a {
+        TAtomic::Array(TArray::Keyed(k)) if k.parameters.is_none() => Some(
+            k.known_items
+                .iter()
+                .flat_map(|items| items.iter())
+                .map(|(key, (_, t))| {
+                    let key = match key {
+                        ArrayKey::Integer(i) => i.to_string(),
+                        ArrayKey::String(s) => String::from_utf8_lossy(s.as_bytes()).into_owned(),
+                        _ => return None,
+                    };
+                    Some((key, t.clone()))
+                })
+                .collect::<Option<Vec<_>>>()?,
+        ),
+        TAtomic::Array(TArray::List(l)) if l.element_type.is_never() => Some(
+            l.known_elements.iter().flat_map(|e| e.iter()).map(|(i, (_, t))| (i.to_string(), t.clone())).collect(),
+        ),
+        _ => None,
+    }
+}
+
+/// Helpers\LiteralExtension (`literal()`): a single unnamed argument's type (an unpacked constant array's as an
+/// object shape, a `stdClass` with an empty shape), else an object shape of the arguments by name or position.
+fn literal(context: &ProviderContext<'_, '_, '_>, invocation: &InvocationInfo<'_, '_, '_>) -> Option<TUnion> {
+    let codebase = context.codebase();
+    let arguments = invocation.arguments();
+    let shape_of = |items: Vec<(String, TUnion)>| {
+        std_class_shape(codebase, items.into_iter().map(|(k, t)| (mago_word::word(k.as_bytes()), (false, t))).collect())
+    };
+    if let [argument] = arguments.as_slice()
+        && argument.get_parameter_name().is_none()
+    {
+        let ty = context.get_expression_type(argument.value()?)?.clone();
+        if argument.is_unpacked() {
+            if ty.types.len() > 1 {
+                return Some(TUnion::from_vec(
+                    ty.types.iter().map(|a| constant_array(a).map_or_else(|| a.clone(), &shape_of)).collect(),
+                ));
+            }
+            if let Some(items) = ty.types.first().and_then(constant_array) {
+                return Some(TUnion::from_atomic(shape_of(items)));
+            }
+        }
+        let std_class = |a: &TAtomic| {
+            matches!(a, TAtomic::Object(TObject::Named(n)) if n.name.as_bytes().eq_ignore_ascii_case(b"stdClass"))
+        };
+        if ty.types.iter().all(|a| matches!(a, TAtomic::Object(_))) && ty.types.iter().any(std_class) {
+            return Some(TUnion::from_vec(
+                ty.types.iter().map(|a| if std_class(a) { shape_of(Vec::new()) } else { a.clone() }).collect(),
+            ));
+        }
+        return Some(ty);
+    }
+    let mut items = Vec::new();
+    for (index, argument) in arguments.iter().enumerate() {
+        let name = argument
+            .get_parameter_name()
+            .map_or_else(|| index.to_string(), |n| String::from_utf8_lossy(n).into_owned());
+        items.push((name, context.get_expression_type(argument.value()?)?.clone()));
+    }
+    Some(TUnion::from_atomic(shape_of(items)))
 }
 
 pub(crate) struct Methods(pub(crate) Arc<App>);

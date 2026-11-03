@@ -76,7 +76,9 @@ class Auth extends Facade
      * @return string
      */
     protected static function getFacadeAccessor()
-    {}
+    {
+        return 'auth';
+    }
 
     /**
      * Register the typical authentication routes for an application.

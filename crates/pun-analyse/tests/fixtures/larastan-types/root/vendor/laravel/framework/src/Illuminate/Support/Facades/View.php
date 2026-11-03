@@ -93,5 +93,7 @@ class View extends Facade
      * @return string
      */
     protected static function getFacadeAccessor()
-    {}
+    {
+        return 'view';
+    }
 }

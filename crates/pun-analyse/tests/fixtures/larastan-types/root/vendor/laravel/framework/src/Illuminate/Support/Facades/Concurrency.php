@@ -30,5 +30,7 @@ class Concurrency extends Facade
      * @return string
      */
     protected static function getFacadeAccessor()
-    {}
+    {
+        return ConcurrencyManager::class;
+    }
 }

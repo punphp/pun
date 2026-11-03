@@ -1,5 +1,6 @@
 use std::borrow::Cow;
 use std::collections::BTreeMap;
+use std::sync::Arc;
 
 use rayon::prelude::*;
 
@@ -17,6 +18,8 @@ use crate::ttype::comparator::ComparisonResult;
 use crate::ttype::comparator::union_comparator;
 use crate::ttype::template::TemplateResult;
 use crate::ttype::template::inferred_type_replacer;
+use crate::ttype::atomic::TAtomic;
+use crate::ttype::atomic::generic::TGenericParameter;
 use crate::ttype::union::TUnion;
 
 /// Determines whether to inherit a type from the parent based on variance rules.
@@ -391,16 +394,42 @@ fn apply_inheritance_work(codebase: &mut CodebaseMetadata, mut inheritance_work:
             template_result
         });
 
+        // A child method that declares its own templates: an inherited type's parent method template is the child's
+        // template of the same name, as PHPStan's TemplateTypeMap resolves templates by name.
+        let method_templates = codebase.function_likes.get(&child_method_id).and_then(|child_method| {
+            let mut result = TemplateResult::default();
+            for (name, template) in &child_method.template_types {
+                let Some(parent_template) = parent_template_types.get(name) else {
+                    continue;
+                };
+                result.add_lower_bound(
+                    *name,
+                    parent_template.defining_entity,
+                    TUnion::from_atomic(TAtomic::GenericParameter(TGenericParameter {
+                        parameter_name: *name,
+                        constraint: Arc::new(template.constraint.clone()),
+                        defining_entity: template.defining_entity,
+                        intersection_types: None,
+                    })),
+                );
+            }
+            (!result.lower_bounds.is_empty()).then_some(result)
+        });
+
         let substitute_type = |metadata: &TypeMetadata| {
-            if let Some(template_result) = template_result.as_ref() {
+            let type_union = if let Some(template_result) = template_result.as_ref() {
                 inferred_type_replacer::replace(&metadata.type_union, template_result, codebase)
             } else {
                 metadata.type_union.clone()
+            };
+            match method_templates.as_ref() {
+                Some(method_templates) => inferred_type_replacer::replace(&type_union, method_templates, codebase),
+                None => type_union,
             }
         };
 
         let parent_return_type = parent_return_type.map(|metadata| {
-            if template_result.is_some() {
+            if template_result.is_some() || method_templates.is_some() {
                 Cow::Owned(TypeMetadata {
                     type_union: substitute_type(metadata),
                     span: metadata.span,
