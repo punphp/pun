@@ -222,7 +222,7 @@ fn source_value(c: &Checker, at: Span, class: &ClassLikeMetadata) -> Option<Type
     let contents = c.file_contents(at.file_id)?;
     let mut file = mago_database::file::File::ephemeral(
         b"trait-initializer.php".as_slice().into(),
-        contents.into_owned().into(),
+        contents.to_vec().into(),
     );
     file.id = at.file_id;
     file.path = c.files.get(&at.file_id).cloned();

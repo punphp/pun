@@ -291,7 +291,42 @@ fn scan_api(version: PHPVersion) -> CodebaseMetadata {
 const CHUNK: usize = 32;
 
 /// Analysed files and loaded global-constant declaration files, as the scan read them.
-pub(crate) type Sources = HashMap<PathBuf, Arc<File>>;
+/// The analysed files and the scanned ones a rule needs whole (their constants), by path, with the other files' contents
+/// read on demand once per run.
+#[derive(Default)]
+pub(crate) struct Sources {
+    files: HashMap<PathBuf, Arc<File>>,
+    read: std::sync::RwLock<HashMap<PathBuf, Option<Arc<[u8]>>>>,
+}
+
+impl Sources {
+    pub(crate) fn new() -> Self {
+        Self::default()
+    }
+
+    /// The contents of `path`, a file not in the map: read from disk the first time a rule asks this run.
+    pub(crate) fn read(&self, path: &Path) -> Option<Arc<[u8]>> {
+        if let Some(found) = self.read.read().expect("read cache").get(path) {
+            return found.clone();
+        }
+        let contents = std::fs::read(path).ok().map(Arc::from);
+        self.read.write().expect("read cache").entry(path.to_path_buf()).or_insert(contents).clone()
+    }
+}
+
+impl std::ops::Deref for Sources {
+    type Target = HashMap<PathBuf, Arc<File>>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.files
+    }
+}
+
+impl std::ops::DerefMut for Sources {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.files
+    }
+}
 
 /// The codebase, and the analysed files' [`Sources`].
 pub(crate) fn build(
@@ -464,26 +499,38 @@ pub(crate) fn build(
 /// Resolve referenced globals and constants of already-loaded user classes/interfaces. Autoload remains
 /// lazy, and evaluating one initializer never analyzes that file's unrelated executable bodies.
 fn resolve_initializers(metadata: &mut CodebaseMetadata, sources: &Sources, project: &Project) {
-    let mut roots = Vec::new();
-    let mut arena = LocalArena::new();
-    for path in &project.analysed {
-        if let Some(file) = sources.get(path) {
-            let (program, names) = parse(&arena, file);
-            if !crate::parser::errors(file, program, php_version(project.php_version)).is_empty() {
-                arena.reset();
-                continue;
-            }
-            let mut inputs = ConstantInputs {
-                metadata,
-                names: &names,
-                names_found: Vec::new(),
-                class: None,
+    // each analysed file's constant inputs, in file order
+    let version = php_version(project.php_version);
+    let loaded: &CodebaseMetadata = metadata;
+    let mut roots: Vec<Initializer> = project
+        .analysed
+        .par_iter()
+        .map_init(LocalArena::new, |arena, path| {
+            let Some(file) = sources.get(path) else {
+                return Vec::new();
             };
-            inputs.walk_program(program, &mut ());
-            roots.extend(inputs.names_found);
+            let found = {
+                let (program, names) = parse(arena, file);
+                if crate::parser::errors(file, program, version).is_empty() {
+                    let mut inputs = ConstantInputs {
+                        metadata: loaded,
+                        names: &names,
+                        names_found: Vec::new(),
+                        class: None,
+                    };
+                    inputs.walk_program(program, &mut ());
+                    inputs.names_found
+                } else {
+                    Vec::new()
+                }
+            };
             arena.reset();
-        }
-    }
+            found
+        })
+        .collect::<Vec<_>>()
+        .into_iter()
+        .flatten()
+        .collect();
     // BetterReflection selects a non-private inherited constant before an explicitly reused trait.
     // Normalize these copies before evaluating their source, without rebinding the selected owner.
     let inherited: Vec<_> = metadata
@@ -608,6 +655,8 @@ fn resolve_initializers(metadata: &mut CodebaseMetadata, sources: &Sources, proj
         .chain(&project.stubs)
         .chain(project.autoloaded.iter().map(|file| &file.path))
         .filter(|path| missing.contains(&FileId::new(path.to_string_lossy().as_bytes())))
+        .collect::<Vec<_>>()
+        .into_par_iter()
         .filter_map(|path| read(path, FileType::Vendored).ok().flatten())
         .collect();
     initializer_sources.extend(attribute_sources.iter().map(|file| (file.id, file)));
@@ -807,7 +856,7 @@ struct Initializers<'a> {
     sources: HashMap<FileId, &'a File>,
     /// Each source is parsed once into `arena`; a file declares many constants.
     arena: &'a LocalArena,
-    parsed: HashMap<FileId, (&'a Program<'a>, Rc<ResolvedNames<'a>>)>,
+    parsed: HashMap<FileId, ParsedSource<'a>>,
     version: PHPVersion,
     visited: HashSet<(Span, Option<mago_word::Word>)>,
     /// Class constants already requested: a repeat selects the same declaration and owner.
@@ -936,22 +985,18 @@ impl Initializers<'_> {
     ) -> Option<TUnion> {
         let file = *self.sources.get(&at.file_id)?;
         let arena = self.arena;
-        let (program, names) = self
+        let (program, names, index) = self
             .parsed
             .entry(at.file_id)
             .or_insert_with(|| {
                 let (program, names) = parse(arena, file);
-                (program, Rc::new(names))
+                let mut index = InitializerIndex::default();
+                index.walk_program(program, &mut ());
+                (program, Rc::new(names), Rc::new(index))
             })
             .clone();
-        let mut find = FindInitializer {
-            at,
-            argument: require_global,
-            expression: None,
-            namespace: None,
-        };
-        find.walk_program(program, &mut ());
-        let expression = find.expression?;
+        let (expression, namespace) = index.find(at, require_global);
+        let expression = expression?;
         let mut inputs = ConstantInputs {
             metadata: self.metadata,
             names: &names,
@@ -1007,7 +1052,7 @@ impl Initializers<'_> {
                 program,
                 &names,
                 expression,
-                find.namespace.clone(),
+                namespace.clone(),
             );
             for target in initializer_class_names(self.metadata, &holder) {
                 if self
@@ -1025,7 +1070,7 @@ impl Initializers<'_> {
             program,
             &names,
             expression,
-            find.namespace,
+            namespace,
         );
         if inherited_benevolence && value == get_int_or_float() {
             // Keep the numeric union's existing marker across the full evaluator's arithmetic join.
@@ -1046,6 +1091,74 @@ impl Initializers<'_> {
                 .and_then(|k| self.sources.get(&k.span.file_id))
                 .and_then(|f| f.path.clone()),
         }
+    }
+}
+
+/// A source parsed for [`Initializers`]: its program, names and [`InitializerIndex`].
+type ParsedSource<'a> = (&'a Program<'a>, Rc<ResolvedNames<'a>>, Rc<InitializerIndex<'a, 'a>>);
+
+/// What [`FindInitializer`] could select in one file, walked once: each candidate by its span in walk order (a later
+/// one wins), and the namespaces in walk order.
+#[derive(Default)]
+struct InitializerIndex<'ast, 'arena> {
+    at: HashMap<Span, Vec<Candidate<'ast, 'arena>>>,
+    namespaces: Vec<&'ast cst::Namespace<'arena>>,
+}
+
+#[derive(Clone, Copy)]
+enum Candidate<'ast, 'arena> {
+    /// an expression, or a constant item's value
+    Value(&'ast Expression<'arena>),
+    /// a function call's second argument (`define()`'s value), skipped for an argument
+    Call(Option<&'ast Expression<'arena>>),
+}
+
+impl<'ast, 'arena> InitializerIndex<'ast, 'arena> {
+    /// [`FindInitializer`]'s expression and namespace for `at`.
+    fn find(
+        &self,
+        at: Span,
+        argument: bool,
+    ) -> (Option<&'ast Expression<'arena>>, Option<cst::Namespace<'arena>>) {
+        let mut expression = None;
+        for candidate in self.at.get(&at).into_iter().flatten() {
+            match *candidate {
+                Candidate::Value(e) => expression = Some(e),
+                Candidate::Call(value) if !argument => expression = value,
+                Candidate::Call(_) => {}
+            }
+        }
+        let namespace = (self.namespaces.iter().rev())
+            .find(|n| n.span().start.offset <= at.start.offset && at.end.offset <= n.span().end.offset)
+            .map(|n| (*n).clone());
+        (expression, namespace)
+    }
+
+    fn push(&mut self, at: Span, candidate: Candidate<'ast, 'arena>) {
+        self.at.entry(at).or_default().push(candidate);
+    }
+}
+
+impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for InitializerIndex<'ast, 'arena> {
+    fn walk_in_expression(&mut self, expression: &'ast Expression<'arena>, _: &mut ()) {
+        self.push(expression.span(), Candidate::Value(expression));
+    }
+    fn walk_in_namespace(&mut self, namespace: &'ast cst::Namespace<'arena>, _: &mut ()) {
+        self.namespaces.push(namespace);
+    }
+    fn walk_in_constant_item(&mut self, item: &'ast cst::ConstantItem<'arena>, _: &mut ()) {
+        self.push(item.span(), Candidate::Value(item.value));
+    }
+    fn walk_in_class_like_constant_item(
+        &mut self,
+        item: &'ast cst::ClassLikeConstantItem<'arena>,
+        _: &mut (),
+    ) {
+        self.push(item.span(), Candidate::Value(item.value));
+    }
+    fn walk_in_function_call(&mut self, call: &'ast cst::FunctionCall<'arena>, _: &mut ()) {
+        let value = call.argument_list.arguments.get(1).map(|arg| arg.value());
+        self.push(call.span(), Candidate::Call(value));
     }
 }
 

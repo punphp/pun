@@ -78,6 +78,20 @@ impl FunctionLikeTable {
             .chain(self.base.iter().filter(|(key, metadata)| !self.hides(key, metadata)))
     }
 
+    /// [`Self::iter`]'s entries declared in `file`, in the same order: the file id is compared before the
+    /// (costlier) overlay check, so asking once per analysed file stays cheap on a large codebase.
+    pub fn iter_in_file(&self, file: FileId) -> impl Iterator<Item = (&SymbolIdentifier, &Box<FunctionLikeMetadata>)> {
+        self.files
+            .iter()
+            .flat_map(|overlay| overlay.entries.iter())
+            .filter(move |(_, metadata)| metadata.span.file_id == file)
+            .chain(
+                self.base
+                    .iter()
+                    .filter(move |(key, metadata)| metadata.span.file_id == file && !self.hides(key, metadata)),
+            )
+    }
+
     pub fn keys(&self) -> impl Iterator<Item = &SymbolIdentifier> {
         self.iter().map(|(key, _)| key)
     }

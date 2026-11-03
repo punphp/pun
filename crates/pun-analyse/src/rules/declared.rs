@@ -34,10 +34,10 @@ pub fn original_name(k: &ClassLikeMetadata) -> String {
 }
 
 /// A file's contents, PHPStan's API stub's too (no file on disk).
-fn file_contents<'a>(c: &Checker<'a, '_>, id: FileId) -> Option<std::borrow::Cow<'a, [u8]>> {
+fn file_contents<'a>(c: &Checker<'a, '_>, id: FileId) -> Option<super::Contents<'a>> {
     c.file_contents(id).or_else(|| {
         (id == FileId::new(b"phpstan-api.php"))
-            .then_some(std::borrow::Cow::Borrowed(crate::codebase::PHPSTAN_API))
+            .then_some(super::Contents::Borrowed(crate::codebase::PHPSTAN_API))
     })
 }
 
@@ -1525,7 +1525,15 @@ pub struct Classes<'c, 'a, 'arena> {
     cache: RefCell<HashMap<String, Option<Arc<Class>>>>,
     /// classes being built (a cyclic hierarchy finds no class)
     building: RefCell<std::collections::HashSet<String>>,
+    /// how many lookups found a class still being built: a class built meanwhile depends on the order it was asked
+    /// for in, so it stays out of the run's [`ClassCache`]
+    cycles: std::cell::Cell<usize>,
 }
+
+/// The classes built in one run, shared by every file's checks: a class's reflection reads only the codebase and
+/// PHPDocs, the same for every file.
+#[derive(Default)]
+pub(crate) struct ClassCache(std::sync::Mutex<HashMap<String, Option<Arc<Class>>>>);
 
 impl<'c, 'a, 'arena> Classes<'c, 'a, 'arena> {
     pub fn new(checker: &'c Checker<'a, 'arena>) -> Self {
@@ -1533,6 +1541,7 @@ impl<'c, 'a, 'arena> Classes<'c, 'a, 'arena> {
             checker,
             cache: RefCell::new(HashMap::new()),
             building: RefCell::new(std::collections::HashSet::new()),
+            cycles: std::cell::Cell::new(0),
         }
     }
 
@@ -1541,11 +1550,21 @@ impl<'c, 'a, 'arena> Classes<'c, 'a, 'arena> {
         if let Some(found) = self.cache.borrow().get(&key) {
             return found.clone();
         }
+        let shared = &self.checker.class_cache.0;
+        if let Some(found) = shared.lock().expect("class cache").get(&key).cloned() {
+            self.cache.borrow_mut().insert(key, found.clone());
+            return found;
+        }
         if !self.building.borrow_mut().insert(key.clone()) {
+            self.cycles.set(self.cycles.get() + 1);
             return None;
         }
+        let cycles = self.cycles.get();
         let built = self.build(name).map(Arc::new);
         self.building.borrow_mut().remove(&key);
+        if self.cycles.get() == cycles {
+            shared.lock().expect("class cache").insert(key.clone(), built.clone());
+        }
         self.cache.borrow_mut().insert(key, built.clone());
         built
     }
@@ -1585,7 +1604,7 @@ impl<'c, 'a, 'arena> Classes<'c, 'a, 'arena> {
         let own = class_templates(c, k);
         let generics = self.generics(k, &own);
         // (`class_templates()` reads the templates of this PHPDoc, in its order)
-        let variances = doc_at(c, k.span).map(|(doc, _)| Doc::parse(&doc).template_variances).unwrap_or_default();
+        let variances = doc_at(c, k.span).map(|(doc, _)| Doc::parse(&doc).template_variances.clone()).unwrap_or_default();
         let templates = own
             .into_iter()
             .zip(variances)

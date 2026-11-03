@@ -934,7 +934,7 @@ fn initializer_order_with(
         .and_then(|contents| {
             let mut file = mago_database::file::File::ephemeral(
                 b"initializer-order.php".as_slice().into(),
-                contents.into_owned().into(),
+                contents.to_vec().into(),
             );
             file.id = at.file_id;
             file.path = c.files.get(&at.file_id).cloned();
@@ -976,7 +976,7 @@ fn copied_key(c: &Checker, at: Span) -> Option<Type> {
     let contents = c.file_contents(at.file_id)?;
     let mut file = mago_database::file::File::ephemeral(
         "array-constant.php".as_bytes().into(),
-        contents.into_owned().into(),
+        contents.to_vec().into(),
     );
     file.id = at.file_id;
     let arena = LocalArena::new();

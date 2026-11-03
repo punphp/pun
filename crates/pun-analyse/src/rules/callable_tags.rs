@@ -4,7 +4,7 @@
 
 use mago_span::Span;
 use mago_syntax::cst::FunctionLikeParameterList;
-use pun_phpstan::phpdoc::{self, TagValue};
+use pun_phpstan::phpdoc::TagValue;
 use pun_phpstan::types::{Level, mixed};
 
 use super::doc::doc_before;
@@ -24,7 +24,7 @@ pub fn function_like(c: &mut Checker, at: Span, params: &FunctionLikeParameterLi
     let Some(doc) = doc_before(&c.file.contents, at.start.offset as usize) else {
         return;
     };
-    let tags = phpdoc::tags(doc).unwrap_or_default();
+    let tags = super::doc::phpdoc_tags(doc);
     // `resolveParamImmediatelyInvokedCallable()`: by name, a later tag keeping an earlier one's place
     let mut invoked: Vec<(String, bool)> = Vec::new();
     for (names, immediately) in [

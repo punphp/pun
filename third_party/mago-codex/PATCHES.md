@@ -468,6 +468,8 @@ always win, including collisions with an old closure's key and annotation change
 Every old anonymous entry from a replaced file is hidden, even when the replacement is empty. Lookup,
 iteration, equality, and serialization expose the same effective table. Mutable collection operations
 explicitly materialize that table and detach it from shared snapshots.
+`FunctionLikeTable::iter_in_file()` yields the effective entries declared in one file, comparing the file id
+before the overlay check, so a per-file query does not pay that check for every project entry.
 
 The other metadata collections use copy-on-write backing. Creating an analysis snapshot does not copy
 project declarations, symbols, signatures, ancestry maps, or patches. The snapshot owns its anonymous

@@ -30,6 +30,8 @@ use crate::relative_path::RelativePath;
 pub(crate) struct Checks {
     /// The declarations a stub patches, by span, with the stub declaration's span.
     patched_docs: HashMap<Span, Span>,
+    /// The classes the rules built, shared by every file.
+    classes: super::declared::ClassCache,
     php_version: u32,
     report_ignores_without_comments: bool,
     report_unmatched_ignores: bool,
@@ -194,6 +196,7 @@ impl Checks {
             internal_members,
             deprecations: project.deprecation_rules,
             patched_docs: patched_docs(codebase),
+            classes: Default::default(),
             bleeding_edge: project.bleeding_edge,
             unused_label: project.level >= 4 && project.unused_label,
             switch_condition: project.switch_condition,
@@ -345,6 +348,7 @@ fn checker<'a, 'arena>(
         files,
         sources,
         patched_docs: &project.patched_docs,
+        class_cache: &project.classes,
         syntax: syntax::State::default(),
         assign: assign::State::default(),
         signatures: signatures::State::default(),

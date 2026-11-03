@@ -27,7 +27,7 @@ pub(super) fn scope(c: &Checker, at: Span) -> super::doc::NameScope {
         }
         _ => format!("function {}()", function.name),
     };
-    for t in Doc::parse(doc).templates {
+    for t in &Doc::parse(doc).templates {
         let template = Template {
             name: t.name.clone(),
             scope: described.clone(),
@@ -42,7 +42,7 @@ pub(super) fn scope(c: &Checker, at: Span) -> super::doc::NameScope {
         };
         scope
             .templates
-            .insert(t.name, Type::Template(Box::new(template)));
+            .insert(t.name.clone(), Type::Template(Box::new(template)));
     }
     scope
 }

@@ -291,6 +291,37 @@ const TEMPLATE_TAGS: [&str; 4] = [
     "@phpstan-template",
 ];
 
+/// PhpDocParser's tags of a doc comment (none where it throws), parsed once per distinct comment for the whole run.
+pub fn phpdoc_tags(doc: &[u8]) -> Arc<Vec<phpdoc::Tag>> {
+    static CACHE: Memo<Vec<phpdoc::Tag>> = Memo::new();
+    CACHE.get(doc, |doc| phpdoc::tags(doc).unwrap_or_default())
+}
+
+/// A run-wide cache of what a pure function makes of a doc comment, sharded so parallel files rarely wait on
+/// one lock.
+struct Memo<T>(OnceLock<Vec<Mutex<HashMap<Box<[u8]>, Arc<T>, foldhash::fast::RandomState>>>>);
+
+impl<T> Memo<T> {
+    const SHARDS: usize = 64;
+
+    const fn new() -> Self {
+        Memo(OnceLock::new())
+    }
+
+    fn get(&self, doc: &[u8], parse: impl FnOnce(&[u8]) -> T) -> Arc<T> {
+        use std::hash::BuildHasher;
+        let shards = self.0.get_or_init(|| (0..Self::SHARDS).map(|_| Mutex::default()).collect());
+        let hash = foldhash::fast::FixedState::default().hash_one(doc);
+        let shard = &shards[hash as usize % Self::SHARDS];
+        if let Some(found) = shard.lock().expect("doc cache").get(doc) {
+            return found.clone();
+        }
+        // parsed outside the lock; a thread that lost the race keeps the first result
+        let parsed = Arc::new(parse(doc));
+        shard.lock().expect("doc cache").entry(doc.into()).or_insert(parsed).clone()
+    }
+}
+
 /// The tags of one doc comment that PHPStan resolves to types, in PhpDocNodeResolver's order (a later tag of the
 /// same kind wins, except a `@psalm-` one whose type is unresolvable).
 #[derive(Default)]
@@ -329,7 +360,14 @@ pub struct Doc {
 }
 
 impl Doc {
-    pub fn parse(doc: &[u8]) -> Doc {
+    /// The doc comment's tags, parsed once per distinct comment for the whole run: every file's checks ask for the
+    /// same classes' PHPDocs (a facade's `@method` list, a model's `@property` list) again and again.
+    pub fn parse(doc: &[u8]) -> Arc<Doc> {
+        static CACHE: Memo<Doc> = Memo::new();
+        CACHE.get(doc, Doc::parse_uncached)
+    }
+
+    fn parse_uncached(doc: &[u8]) -> Doc {
         let mut out = Doc::default();
         let tags = tags(doc);
         let order = |list: &[&str], tag: &str| list.iter().position(|t| *t == tag);
@@ -789,8 +827,6 @@ pub fn scopes_of(id: FileId, contents: &[u8]) -> Arc<FileScopes> {
 }
 
 fn fingerprint(contents: &[u8]) -> u64 {
-    use std::hash::{Hash, Hasher};
-    let mut h = std::collections::hash_map::DefaultHasher::new();
-    contents.hash(&mut h);
-    h.finish()
+    use std::hash::BuildHasher;
+    foldhash::quality::FixedState::default().hash_one(contents)
 }

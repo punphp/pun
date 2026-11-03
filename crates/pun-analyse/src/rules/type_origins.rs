@@ -75,8 +75,7 @@ pub(super) fn collect(
         codebase,
         functions: codebase
             .function_likes
-            .iter()
-            .filter(|(_, f)| f.span.file_id == file.id)
+            .iter_in_file(file.id)
             .map(|(id, f)| (f.span, *id))
             .collect(),
         stack: Vec::new(),

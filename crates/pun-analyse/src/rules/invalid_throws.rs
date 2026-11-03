@@ -5,7 +5,7 @@
 use mago_codex::symbol::SymbolKind;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::{AnonymousClass, Function, Method, Statement};
-use pun_phpstan::phpdoc::{self, TagValue};
+use pun_phpstan::phpdoc::TagValue;
 use pun_phpstan::resolve::resolve_in;
 use pun_phpstan::types::{Level, Type, intersect, is_super_type_of, union};
 
@@ -123,7 +123,7 @@ fn check(c: &mut Checker, at: Span, scope: impl FnOnce(&Checker, &[u8]) -> NameS
 /// `PhpDocNodeResolver::resolveThrowsTags()`: all valid tags of the first supported name, unioned. A malformed
 /// preferred tag does not hide valid ordinary tags, and unrelated tools' tag names are not aliases.
 pub(super) fn throws_type(raw: &[u8], scope: &NameScope) -> Option<Type> {
-    let tags = phpdoc::tags(raw).unwrap_or_default();
+    let tags = super::doc::phpdoc_tags(raw);
     for name in ["@phpstan-throws", "@throws"] {
         let types: Vec<_> = tags
             .iter()

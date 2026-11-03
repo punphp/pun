@@ -550,6 +550,7 @@ mod tests {
             files: &Default::default(),
             sources: &Default::default(),
             patched_docs: &Default::default(),
+            class_cache: &Default::default(),
             syntax: Default::default(),
             assign: Default::default(),
             signatures: Default::default(),

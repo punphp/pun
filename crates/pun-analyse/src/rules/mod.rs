@@ -926,6 +926,8 @@ pub struct Checker<'a, 'arena> {
     sources: &'a Sources,
     /// [`driver::Checks`]'s stub declarations: a patched declaration's span to its stub's, whose PHPDoc PHPStan reads.
     patched_docs: &'a HashMap<Span, Span>,
+    /// [`driver::Checks`]'s classes, built once per run.
+    class_cache: &'a declared::ClassCache,
     syntax: syntax::State,
     assign: assign::State,
     signatures: signatures::State,
@@ -1008,16 +1010,39 @@ pub struct Checker<'a, 'arena> {
     errors: Vec<Error>,
 }
 
+/// A file's contents, borrowed from the run's sources or shared with its read cache.
+pub(crate) enum Contents<'a> {
+    Borrowed(&'a [u8]),
+    Shared(std::sync::Arc<[u8]>),
+}
+
+impl Default for Contents<'_> {
+    fn default() -> Self {
+        Contents::Borrowed(&[])
+    }
+}
+
+impl std::ops::Deref for Contents<'_> {
+    type Target = [u8];
+
+    fn deref(&self) -> &[u8] {
+        match self {
+            Contents::Borrowed(b) => b,
+            Contents::Shared(b) => b,
+        }
+    }
+}
+
 impl<'a, 'arena> Checker<'a, 'arena> {
     /// A file's contents: this one, an analysed one, or one read from disk.
-    fn file_contents(&self, id: FileId) -> Option<std::borrow::Cow<'a, [u8]>> {
+    fn file_contents(&self, id: FileId) -> Option<Contents<'a>> {
         if id == self.file.id {
-            return Some(std::borrow::Cow::Borrowed(&self.file.contents[..]));
+            return Some(Contents::Borrowed(&self.file.contents[..]));
         }
         let path = self.files.get(&id)?;
         match self.sources.get(path) {
-            Some(f) => Some(std::borrow::Cow::Borrowed(&f.contents[..])),
-            None => std::fs::read(path).ok().map(std::borrow::Cow::Owned),
+            Some(f) => Some(Contents::Borrowed(&f.contents[..])),
+            None => self.sources.read(path).map(Contents::Shared),
         }
     }
 

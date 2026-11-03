@@ -8,7 +8,7 @@ use std::collections::HashSet;
 use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::symbol::SymbolKind;
 use mago_span::Span;
-use pun_phpstan::phpdoc::{self, TagValue};
+use pun_phpstan::phpdoc::TagValue;
 use pun_phpstan::resolve::resolve_in;
 use pun_phpstan::types::{Level, Type};
 
@@ -41,7 +41,7 @@ pub(super) fn tag_types(c: &Checker, k: &ClassLikeMetadata, names: [&str; 2]) ->
     let Some(doc) = c.class_doc(k) else {
         return Vec::new();
     };
-    let tags = phpdoc::tags(&doc).unwrap_or_default();
+    let tags = super::doc::phpdoc_tags(&doc);
     let scope = super::declared::class_scope(c, k.span, k);
     // (the project's classes known, for `self&\stdClass` in a trait to be `never`)
     super::declared::with_classes(c, || {

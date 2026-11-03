@@ -81,7 +81,7 @@ pub(super) fn parameters(doc: &[u8]) -> Vec<String> {
 
 /// `resolveAssertTags()`: the first of the `@phpstan-`, `@psalm-` and `@phan-` prefixes with any assert.
 fn asserts(doc: &[u8]) -> Vec<Assert> {
-    let tags = phpdoc::tags(doc).unwrap_or_default();
+    let tags = super::doc::phpdoc_tags(doc);
     for prefix in ["@phpstan", "@psalm", "@phan"] {
         let mut found = Vec::new();
         for (suffix, name) in [
