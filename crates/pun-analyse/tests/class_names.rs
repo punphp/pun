@@ -88,10 +88,7 @@ fn check_class_case_sensitivity() {
         ..Project::from_config(&root(), &config("phpstan-level2").parameters)
     };
     let got = keys(run(&project).unwrap(), &keep);
-    let mut want = expected("phpstan-level2", &keep);
-    // `Magic::missing()` keeps its case error at level 2 only because reportMagicMethods is on there too
-    want.retain(|k| !k.3.starts_with("Class ClassNames\\Magic "));
-    assert_eq!(got, want);
+    assert_eq!(got, expected("phpstan-level2", &keep));
 }
 
 /// Captured from PHPStan 2.3.1, restricted to ClassNameCheck identifiers. The same inputs exercise attributes,
