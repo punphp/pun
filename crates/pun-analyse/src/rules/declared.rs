@@ -1109,6 +1109,30 @@ pub fn method_phpdoc(c: &Checker, m: &Method, k: &ClassLikeMetadata, context: &C
     resolved.into()
 }
 
+/// `getPhpDocType()` of each parameter by name and `getPhpDocReturnType()` of a method declared in the analysed
+/// file, inherited ones too.
+pub fn method_phpdoc_signature(
+    c: &Checker,
+    m: &Method,
+    k: &ClassLikeMetadata,
+    context: &ClassLikeMetadata,
+) -> (HashMap<String, Type>, Option<Type>) {
+    let resolved = method_resolved(c, m, k, context);
+    (resolved.params, resolved.ret)
+}
+
+/// `getPhpDocType()` of each parameter by name and `getPhpDocReturnType()` of a reflected method `name` declared
+/// by `declaring`, inherited ones too.
+pub(super) fn reflected_phpdoc_signature(
+    c: &Checker,
+    f: &FunctionLikeMetadata,
+    declaring: &ClassLikeMetadata,
+    name: &str,
+) -> (HashMap<String, Type>, Option<Type>) {
+    let resolved = reflected_doc(c, f, Some(declaring), name);
+    (resolved.params, resolved.ret)
+}
+
 /// [`PhpDocTypes`] of a function declared in the analysed file.
 pub fn function_phpdoc(c: &Checker, f: &Function) -> PhpDocTypes {
     function_resolved(c, f).into()

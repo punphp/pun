@@ -485,6 +485,83 @@
    "tip": null
   },
   {
+   "file": "round4.php",
+   "line": 58,
+   "identifier": "return.type",
+   "message": "Method LaravelMax\\Round4\\Models::makeHidden() should return $this(LaravelMax\\Round4\\Models<TModel of LaravelMax\\Round4\\Model>) but returns TModel of LaravelMax\\Round4\\Model.",
+   "tip": null
+  },
+  {
+   "file": "round4.php",
+   "line": 93,
+   "identifier": "method.childReturnType",
+   "message": "Return type (void) of method LaravelMax\\Round4\\SeederCommand::handle() should be compatible with return type (bool|null) of method LaravelMax\\Round4\\Command::handle()",
+   "tip": null
+  },
+  {
+   "file": "round4.php",
+   "line": 98,
+   "identifier": "method.childParameterType",
+   "message": "Parameter #1 $x (string) of method LaravelMax\\Round4\\SeederCommand::take() should be compatible with parameter $x (int) of method LaravelMax\\Round4\\Command::take()",
+   "tip": null
+  },
+  {
+   "file": "round4.php",
+   "line": 103,
+   "identifier": "method.childReturnType",
+   "message": "Return type (void) of method LaravelMax\\Round4\\SeederCommand::fluent() should be compatible with return type ($this(LaravelMax\\Round4\\Command)) of method LaravelMax\\Round4\\Command::fluent()",
+   "tip": null
+  },
+  {
+   "file": "round4.php",
+   "line": 133,
+   "identifier": "method.childReturnType",
+   "message": "Return type (int) of method LaravelMax\\Round4\\StringPage::first() should be compatible with return type (string) of method LaravelMax\\Round4\\Paginator<int,string>::first()",
+   "tip": null
+  },
+  {
+   "file": "round4.php",
+   "line": 156,
+   "identifier": "method.childReturnType",
+   "message": "Return type (string) of method LaravelMax\\Round4\\UsesCounts::total() should be compatible with return type (int) of method LaravelMax\\Round4\\Counts::total()",
+   "tip": null
+  },
+  {
+   "file": "round4.php",
+   "line": 165,
+   "identifier": "method.childReturnType",
+   "message": "Return type (void) of method LaravelMax\\Round4\\ChildOfCounts::chain() should be compatible with return type ($this(LaravelMax\\Round4\\UsesCounts)) of method LaravelMax\\Round4\\UsesCounts::chain()",
+   "tip": null
+  },
+  {
+   "file": "round4.php",
+   "line": 186,
+   "identifier": "assign.propertyType",
+   "message": "Property LaravelMax\\Round4\\Offsets::$columns (array<string>) does not accept array<mixed>.",
+   "tip": null
+  },
+  {
+   "file": "round4.php",
+   "line": 187,
+   "identifier": "assign.propertyType",
+   "message": "Property LaravelMax\\Round4\\Offsets::$listeners (array<string, array<int, string>>) does not accept array<string, array<int, int|string>>.",
+   "tip": null
+  },
+  {
+   "file": "round4.php",
+   "line": 188,
+   "identifier": "offsetAccess.invalidOffset",
+   "message": "Possibly invalid array key type Closure|string.",
+   "tip": null
+  },
+  {
+   "file": "round4.php",
+   "line": 189,
+   "identifier": "assign.propertyType",
+   "message": "Property LaravelMax\\Round4\\Offsets::$columns (array<string>) does not accept array<mixed>.",
+   "tip": null
+  },
+  {
    "file": "strings.php",
    "line": 9,
    "identifier": "offsetAccess.nonOffsetAccessible",

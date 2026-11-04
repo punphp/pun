@@ -455,6 +455,7 @@ where
     parent_artifacts.if_true_assertions.extend(std::mem::take(&mut artifacts.if_true_assertions));
     parent_artifacts.if_false_assertions.extend(std::mem::take(&mut artifacts.if_false_assertions));
     parent_artifacts.nullsafe_method_receiver_types.extend(std::mem::take(&mut artifacts.nullsafe_method_receiver_types));
+    parent_artifacts.property_offset_writes.extend(std::mem::take(&mut artifacts.property_offset_writes));
     parent_artifacts.variable_definedness.extend(std::mem::take(&mut artifacts.variable_definedness));
     parent_artifacts.resolved_method_calls.append(&mut artifacts.resolved_method_calls);
     for (span, observations) in std::mem::take(&mut artifacts.property_initialization_observations) {

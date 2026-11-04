@@ -524,7 +524,7 @@ fn native_unset<A: Arena>(
 fn write_back<'ctx, 'arena, A: Arena>(
     context: &mut Context<'ctx, 'arena, A>,
     block_context: &mut BlockContext<'ctx>,
-    artifacts: &AnalysisArtifacts,
+    artifacts: &mut AnalysisArtifacts,
     mut receiver: &Expression<'arena>,
     mut value: TUnion,
 ) {
@@ -535,6 +535,10 @@ fn write_back<'ctx, 'arena, A: Arena>(
     {
         value = set_existing(context, parent, index, &value);
         receiver = unwrap_expression(access.array);
+    }
+    // UnsetHandler's PropertyAssignNode of `unset($this->p[...])`: the property's new value
+    if matches!(receiver, Expression::Access(Access::Property(_) | Access::StaticProperty(_))) {
+        artifacts.property_offset_writes.insert(receiver.span(), value.clone());
     }
     // A missing stored link cannot be re-evaluated as part of a virtual assignment.
     if !matches!(receiver, Expression::ArrayAccess(_))

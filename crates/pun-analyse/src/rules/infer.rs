@@ -137,7 +137,7 @@ pub(super) fn infer<'arena>(
     property_initializations: &mut HashMap<Span, PropertyInitializationCertainty>,
     larastan: Option<&super::Larastan>,
     trait_class: Option<&str>,
-) -> (HashMap<Span, TUnion>, HashMap<Span, Tri>, Origins, HashMap<(u32, u32), bool>, HashMap<Span, Vec<NamedCallScope>>, HashMap<Span, TUnion>, HashMap<Span, TUnion>, HashMap<Span, TUnion>) {
+) -> (HashMap<Span, TUnion>, HashMap<Span, Tri>, Origins, HashMap<(u32, u32), bool>, HashMap<Span, Vec<NamedCallScope>>, HashMap<Span, TUnion>, HashMap<Span, TUnion>, HashMap<Span, TUnion>, HashMap<Span, TUnion>) {
     let mut wanted = TypedExpressions {
         spans: Vec::new(),
         names,
@@ -173,7 +173,7 @@ pub(super) fn analyse<'arena>(
     pollute_scope_with_block: bool,
     wanted: Vec<Span>,
     watched: Vec<Span>,
-) -> (HashMap<Span, TUnion>, HashMap<Span, Tri>, Origins, HashMap<(u32, u32), bool>, HashMap<Span, Vec<NamedCallScope>>, HashMap<Span, TUnion>, HashMap<Span, TUnion>, HashMap<Span, TUnion>) {
+) -> (HashMap<Span, TUnion>, HashMap<Span, Tri>, Origins, HashMap<(u32, u32), bool>, HashMap<Span, Vec<NamedCallScope>>, HashMap<Span, TUnion>, HashMap<Span, TUnion>, HashMap<Span, TUnion>, HashMap<Span, TUnion>) {
     analyse_observed(arena, file, program, names, codebase, php_version, pollute_scope_with_loop_initial_assignments, pollute_scope_with_always_iterable_foreach, pollute_scope_with_block, wanted, watched, Vec::new(), None, None, Vec::new(), None, Vec::new(), None, None)
 }
 
@@ -198,7 +198,7 @@ fn analyse_observed<'arena>(
     by_ref: Vec<(Span, Vec<Vec<u8>>)>,
     larastan: Option<&super::Larastan>,
     trait_class: Option<&str>,
-) -> (HashMap<Span, TUnion>, HashMap<Span, Tri>, Origins, HashMap<(u32, u32), bool>, HashMap<Span, Vec<NamedCallScope>>, HashMap<Span, TUnion>, HashMap<Span, TUnion>, HashMap<Span, TUnion>) {
+) -> (HashMap<Span, TUnion>, HashMap<Span, Tri>, Origins, HashMap<(u32, u32), bool>, HashMap<Span, Vec<NamedCallScope>>, HashMap<Span, TUnion>, HashMap<Span, TUnion>, HashMap<Span, TUnion>, HashMap<Span, TUnion>) {
     let mut wanted = wanted;
     wanted.extend(calls.iter().flat_map(|call| call.expressions.iter().copied()));
     let (compact_calls, offset_names) = if variables.is_some() {
@@ -267,6 +267,8 @@ fn analyse_observed<'arena>(
     settings.track_variable_flow = variable_writes.is_some();
     settings.call_scope_observations = calls;
     settings.trait_context_class = trait_class.map(|class| mago_word::word(class.as_bytes()));
+    // Without Larastan's forwarding extensions, a named mixin's method is the mixin type's own
+    settings.mixin_receiver_binding = larastan.is_some();
     let retain_methods = !initializations.is_empty();
     settings.property_initialization_observations = initializations.iter().map(|(_, request)| *request).collect();
     let analyzer = Analyzer::new(arena, file, names, codebase, &registry, settings);
@@ -328,7 +330,7 @@ fn analyse_observed<'arena>(
             Some((operand, *artifacts.property_initialization_observations.get(&request.expression)?.get(&request.property)?))
         }));
     }
-    (types, found.defined, origins, artifacts.call_terminations.into_iter().collect(), artifacts.call_scope_observations.into_iter().collect(), keep_void_types, native_types, artifacts.nullsafe_method_receiver_types.into_iter().collect())
+    (types, found.defined, origins, artifacts.call_terminations.into_iter().collect(), artifacts.call_scope_observations.into_iter().collect(), keep_void_types, native_types, artifacts.nullsafe_method_receiver_types.into_iter().collect(), artifacts.property_offset_writes.into_iter().collect())
 }
 
 /// The plain assignments whose target is a variable or its offsets (`$a['x'][0] = ...`).

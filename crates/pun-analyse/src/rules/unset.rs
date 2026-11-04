@@ -512,6 +512,7 @@ mod tests {
             keep_void_types: Default::default(),
             native_types: Default::default(),
             nullsafe_method_receiver_types: Default::default(),
+            property_offset_writes: Default::default(),
             variable_writes: Default::default(),
             property_initializations: Default::default(),
             call_terminations: Default::default(),

@@ -18,7 +18,7 @@ use mago_codex::visibility::Visibility;
 use mago_syntax::cst::*;
 use pun_phpstan::resolve::resolve_str;
 use pun_phpstan::symbols;
-use pun_phpstan::types::{Level, Type, intersect, is_super_type_of, mixed, union};
+use pun_phpstan::types::{Level, Tri, Type, decide_type, infer_template_types, intersect, is_super_type_of, mixed, resolve_template_types, union};
 use serde_json::Value;
 
 use super::declarations::{doc_tags, has_tag};
@@ -469,6 +469,17 @@ impl<'a> Checker<'a, '_> {
             t.clone()
         };
         self.with_ancestor_args(&t, k)
+    }
+
+    /// [`Self::localize()`] with the declaring class's templates replaced by the types class `k`'s ancestry gives
+    /// them, as a parent's method reflection reached from `k` has them.
+    fn instantiate(&self, t: &Type, declaring: &ClassLikeMetadata, k: &ClassLikeMetadata) -> Type {
+        let t = self.localize(t, declaring, k);
+        let name = original_name(declaring);
+        let Some(args) = self.ancestor_args(k, &name) else { return t };
+        let templates = declared::class_templates(self, declaring).into_iter().map(|t| Type::Template(Box::new(t))).collect();
+        let map = infer_template_types(&Type::Object(name.clone(), templates, false), &Type::Object(name, args, false));
+        resolve_template_types(&t, &map)
     }
 
     fn with_ancestor_args(&self, t: &Type, k: &ClassLikeMetadata) -> Type {
@@ -980,8 +991,8 @@ pub fn method<'arena>(c: &mut Checker<'_, 'arena>, m: &Method<'arena>, name: &st
             out = overriding_method(c, m, name, k, &mut collected);
             // OverridingMethodRule::addErrors(): MethodSignatureRule (checkPhpDocMethodSignatures, level 3) when the
             // rule itself found nothing
-            if out.is_empty() && c.level >= 3 && c.method_purity_override {
-                out = purity_override(c, m, name, k);
+            if out.is_empty() && c.level >= 3 {
+                out = method_signature(c, m, name, k);
             }
         }
         if c.method_rules.consistent_constructor {
@@ -1155,20 +1166,18 @@ fn overriding_method<'a>(c: &Checker<'a, '_>, m: &Method, name: &str, k: &'a Cla
     out
 }
 
-/// MethodSignatureRule's purity checks (`featureToggles.reportMethodPurityOverride`) against
-/// ParentMethodHelper::collectParentMethods(): the parent class's method, every interface's, and the abstract
-/// methods the class's traits (and theirs, and its parents') declare. ponytail: the rule's return and parameter type
-/// checks are not ported.
-fn purity_override<'a>(c: &Checker<'a, '_>, m: &Method, name: &str, k: &'a ClassLikeMetadata) -> Vec<Message> {
+/// MethodSignatureRule against ParentMethodHelper::collectParentMethods(): the parent class's method, every
+/// interface's, and the abstract methods the class's traits (and theirs, and its parents') declare. Its purity checks
+/// (`featureToggles.reportMethodPurityOverride`), then the return and parameter types (`reportMaybesInMethodSignatures`
+/// stays off, so only incompatible ones).
+fn method_signature<'a>(c: &Checker<'a, '_>, m: &Method, name: &str, k: &'a ClassLikeMetadata) -> Vec<Message> {
     let lower = name.to_ascii_lowercase();
     // ponytail: `reportStaticMethodSignatures` stays at its default, off
     let is_static = m.modifiers.contains_static();
     if lower == "__construct" || is_static || m.modifiers.contains_private() {
         return Vec::new();
     }
-    if declared::method_purity(c, k, lower.as_bytes()).0 != Some(false) {
-        return Vec::new();
-    }
+    let impure = c.method_purity_override && declared::method_purity(c, k, lower.as_bytes()).0 == Some(false);
     let mut parents: Vec<Found> = Vec::new();
     if let Some(parent) = c.parent_class(Class::User(k))
         && let Some(found) = c.native_method(parent, &lower)
@@ -1191,43 +1200,166 @@ fn purity_override<'a>(c: &Checker<'a, '_>, m: &Method, name: &str, k: &'a Class
         }
     }
     let class = c.display(k);
-    parents
-        .into_iter()
-        .filter_map(|found| {
-            let (pure, unless_callable, unless_passed) = match found {
-                Found::User { declaring, .. } => declared::method_purity(c, declaring, lower.as_bytes()),
-                Found::Builtin { declaring, .. } => {
-                    // NativeMethodReflection::isPure() negates hasSideEffects(); the export already includes
-                    // its non-constructor void override. Native methods have neither conditional-purity tag.
-                    let pure = symbols::class(&declaring.name)
-                        .and_then(|class| class.methods.get(&lower))
-                        .and_then(|method| match method.side_effects.as_str() {
-                            "No" => Some(true),
-                            "Yes" => Some(false),
-                            _ => None,
-                        });
-                    (pure, false, false)
-                }
-            };
-            let parent = format!("{}::{}()", c.declaring_display(k, found), c.facts(found, k).name);
-            let (id, message) = if pure == Some(true) {
-                ("method.impure", format!("Impure method {class}::{name}() overrides pure method {parent}."))
-            } else if unless_callable {
-                (
-                    "method.impureOverridePureUnlessCallable",
-                    format!("Impure method {class}::{name}() overrides method {parent} marked @pure-unless-callable-is-impure."),
-                )
-            } else if unless_passed {
-                (
-                    "method.impureOverridePureUnlessParameterPassed",
-                    format!("Impure method {class}::{name}() overrides method {parent} marked @pure-unless-parameter-passed."),
-                )
-            } else {
-                return None;
-            };
-            Some((id, message, None, true))
+    let method = analysed(c, m, name, k);
+    let (own_docs, own_return) = match super::missing_types::declaring(c, mago_span::HasSpan::span(m)) {
+        Some(declaring) => declared::method_phpdoc_signature(c, m, declaring, k),
+        None => Default::default(),
+    };
+    let own_params: Vec<(Type, Option<Type>)> = m
+        .parameter_list
+        .parameters
+        .iter()
+        .zip(&method.params)
+        .map(|(p, facts)| {
+            let phpdoc = own_docs.get(&facts.name).cloned().map(|t| {
+                if default_is_null(p) && !declared::has_template(&t) { t.add_null() } else { t }
+            });
+            (facts.native.clone(), phpdoc)
         })
-        .collect()
+        .collect();
+    let mut out = Vec::new();
+    for found in parents {
+        let parent = format!("{}::{}()", c.declaring_display(k, found), c.facts(found, k).name);
+        if impure && let Some(message) = purity_message(c, found, &lower, &class, name, &parent) {
+            out.push(message);
+        }
+        let facts = c.facts(found, k);
+        if facts.variants != 1 {
+            continue;
+        }
+        let (parent_docs, parent_return) = match found {
+            Found::User { declaring, implementing, f, .. } => {
+                // a trait method's `$this` is the class using the trait
+                let owner = match implementing {
+                    Class::User(owner) if declaring.kind.is_trait() => owner,
+                    _ => declaring,
+                };
+                let rename = |t: Type| if declaring.kind.is_trait() { self_to(&t, declaring, owner) } else { t };
+                let (docs, ret) = declared::reflected_phpdoc_signature(c, f, declaring, &facts.name);
+                let docs: Vec<Option<Type>> = f
+                    .parameters
+                    .iter()
+                    .map(|p| {
+                        let name = String::from_utf8_lossy(&p.name.0.as_bytes()[1..]).into_owned();
+                        docs.get(&name).map(|t| {
+                            let null_default = p.default_type.as_ref().is_some_and(|d| d.type_union.is_null());
+                            let t = if null_default && !declared::has_template(t) { t.clone().add_null() } else { t.clone() };
+                            c.instantiate(&rename(t), owner, k)
+                        })
+                    })
+                    .collect();
+                (docs, ret.map(|t| c.instantiate(&rename(t), owner, k)))
+            }
+            // ponytail: a built-in method's signature-map PHPDoc types are not exported, only its native ones
+            Found::Builtin { .. } => (Vec::new(), None),
+        };
+        // checkReturnTypeCompatibility()
+        let returned = decide_type(method.ret.clone(), own_return.as_ref().map(Type::resolve_to_bounds));
+        let original_parent = decide_type(facts.ret.clone(), parent_return.as_ref().map(Type::resolve_to_bounds));
+        let parent_returned = transform_static(&original_parent, k);
+        let compatible = if (returned.is_void().yes() && matches!(parent_returned, Type::Mixed { .. }))
+            || parent_returned.is_void().yes()
+        {
+            Tri::Yes
+        } else {
+            is_super_type_of(&parent_returned, &returned)
+        };
+        if compatible.no() {
+            out.push((
+                "method.childReturnType",
+                format!(
+                    "Return type ({}) of method {class}::{name}() should be compatible with return type ({}) of method {parent}",
+                    decide_type(method.ret.clone(), own_return.clone()).describe(Level::Value),
+                    original_parent.describe(Level::Value),
+                ),
+                None,
+                true,
+            ));
+        }
+        // checkParameterTypeCompatibility()
+        for (i, ((native, phpdoc), parent_param)) in own_params.iter().zip(&facts.params).enumerate() {
+            let parent_doc = parent_docs.get(i).cloned().flatten();
+            let own = decide_type(native.clone(), phpdoc.as_ref().map(Type::resolve_to_bounds));
+            let original_parent = decide_type(parent_param.native.clone(), parent_doc.as_ref().map(Type::resolve_to_bounds));
+            if !is_super_type_of(&own, &transform_static(&original_parent, k)).no() {
+                continue;
+            }
+            out.push((
+                "method.childParameterType",
+                format!(
+                    "Parameter #{} ${} ({}) of method {class}::{name}() should be compatible with parameter ${} ({}) of method {parent}",
+                    i + 1,
+                    method.params[i].name,
+                    decide_type(native.clone(), phpdoc.clone()).describe(Level::Value),
+                    parent_param.name,
+                    original_parent.describe(Level::Value),
+                ),
+                None,
+                true,
+            ));
+        }
+    }
+    out
+}
+
+/// A trait's own name in a type, as the class `owner` using the trait.
+fn self_to(t: &Type, trait_: &ClassLikeMetadata, owner: &ClassLikeMetadata) -> Type {
+    let name = declared::original_name(trait_);
+    let to = declared::original_name(owner);
+    match t {
+        Type::This(n) if n.eq_ignore_ascii_case(&name) => Type::This(to),
+        Type::Static(n, args) if n.eq_ignore_ascii_case(&name) => Type::Static(to, args.clone()),
+        Type::Object(n, args, exact) if n.eq_ignore_ascii_case(&name) => Type::Object(to, args.clone(), *exact),
+        _ => t.traverse(&|t| self_to(t, trait_, owner)),
+    }
+}
+
+/// MethodSignatureRule's `transformStaticType()`: a parent's `static` is the analysed class's (its object type when
+/// the class is final).
+fn transform_static(t: &Type, k: &ClassLikeMetadata) -> Type {
+    let name = declared::original_name(k);
+    match t {
+        Type::Static(_, args) if k.flags.is_final() => Type::Object(name, args.clone(), false),
+        Type::Static(_, args) => Type::Static(name, args.iter().map(|a| transform_static(a, k)).collect()),
+        Type::This(_) if k.flags.is_final() => Type::Object(name, Vec::new(), false),
+        Type::This(_) => Type::This(name),
+        _ => t.traverse(&|t| transform_static(t, k)),
+    }
+}
+
+/// MethodSignatureRule's purity messages for an impure method overriding `found`.
+fn purity_message(c: &Checker, found: Found, lower: &str, class: &str, name: &str, parent: &str) -> Option<Message> {
+    let (pure, unless_callable, unless_passed) = match found {
+        Found::User { declaring, .. } => declared::method_purity(c, declaring, lower.as_bytes()),
+        Found::Builtin { declaring, .. } => {
+            // NativeMethodReflection::isPure() negates hasSideEffects(); the export already includes
+            // its non-constructor void override. Native methods have neither conditional-purity tag.
+            let pure = symbols::class(&declaring.name)
+                .and_then(|class| class.methods.get(lower))
+                .and_then(|method| match method.side_effects.as_str() {
+                    "No" => Some(true),
+                    "Yes" => Some(false),
+                    _ => None,
+                });
+            (pure, false, false)
+        }
+    };
+    let (id, message) = if pure == Some(true) {
+        ("method.impure", format!("Impure method {class}::{name}() overrides pure method {parent}."))
+    } else if unless_callable {
+        (
+            "method.impureOverridePureUnlessCallable",
+            format!("Impure method {class}::{name}() overrides method {parent} marked @pure-unless-callable-is-impure."),
+        )
+    } else if unless_passed {
+        (
+            "method.impureOverridePureUnlessParameterPassed",
+            format!("Impure method {class}::{name}() overrides method {parent} marked @pure-unless-parameter-passed."),
+        )
+    } else {
+        return None;
+    };
+    Some((id, message, None, true))
 }
 
 /// ConsistentConstructorRule.

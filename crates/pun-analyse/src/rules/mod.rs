@@ -861,6 +861,8 @@ pub struct Checker<'a, 'arena> {
     native_types: HashMap<Span, TUnion>,
     /// The processed nullsafe receiver before its non-null plain twin, not the ensured operand view.
     nullsafe_method_receiver_types: HashMap<Span, TUnion>,
+    /// A property's new value after an offset write, by the root fetch's span (AssignHandler's PropertyAssignNode).
+    property_offset_writes: HashMap<Span, TUnion>,
     /// PHPStan VariableWritesNode results for completed closure bodies.
     variable_writes: HashMap<Span, mago_analyzer::variable_flow::VariableWritesNode>,
     /// Requested PropertyInitializationExpr certainties immediately before real IssetCheck operands.

@@ -208,6 +208,9 @@ where
         }
     }
 
+    if matches!(root_array_expression, Expression::Access(Access::Property(_) | Access::StaticProperty(_))) {
+        artifacts.property_offset_writes.insert(root_array_expression.span(), (*root_array_type).clone());
+    }
     artifacts.set_rc_expression_type(&root_array_expression, root_array_type);
 
     Ok(())

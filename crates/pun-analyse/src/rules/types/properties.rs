@@ -40,6 +40,8 @@ struct Fetch<'e, 'arena> {
     name: Vec<u8>,
     at: Span,
     instance: bool,
+    /// The whole fetch expression.
+    span: Span,
 }
 
 fn fetch<'e, 'arena>(e: &'e Expression<'arena>) -> Option<Fetch<'e, 'arena>> {
@@ -52,11 +54,12 @@ fn fetch<'e, 'arena>(e: &'e Expression<'arena>) -> Option<Fetch<'e, 'arena>> {
                 name: [b"$", id.value].concat(),
                 at: id.span(),
                 instance: true,
+                span: p.span(),
             })
         }
         Expression::Access(Access::StaticProperty(p)) => {
             let Variable::Direct(v) = &p.property else { return None };
-            Some(Fetch { holder: None, class: Some(p.class), name: v.name.to_vec(), at: v.span(), instance: false })
+            Some(Fetch { holder: None, class: Some(p.class), name: v.name.to_vec(), at: v.span(), instance: false, span: p.span() })
         }
         _ => None,
     }
@@ -584,6 +587,9 @@ pub(in super::super) fn assignment(c: &mut Checker, a: &Assignment) {
                 None => c.types.get(&a.span()).map(|t| c.to_phpstan(t)),
             };
             assigned(c, f, &p, ty, value.unwrap_or(a.rhs).span());
+        } else if *offset {
+            // AssignHandler's PropertyAssignNode of `$this->p[...] = ...`: the property's new value
+            assigned(c, f, &p, offset_write(c, f), f.span);
         }
     }
     let Some(f) = by_ref.and_then(fetch).filter(|f| f.instance && c.level >= 3) else { return };
@@ -593,6 +599,15 @@ pub(in super::super) fn assignment(c: &mut Checker, a: &Assignment) {
         let message = format!("{kind} property {}::${} is assigned by reference.", c.display(p.declaring), p.name);
         c.report(a, &format!("property.{id}AssignByRef"), message, None);
     }
+}
+
+/// A property's new value after an offset write. PHPStan's arrays only have int and string keys: writing another
+/// key (a Closure) makes the value an ErrorType, which every property accepts.
+fn offset_write(c: &Checker, f: &Fetch) -> Option<Type> {
+    let written = c.property_offset_writes.get(&f.span)?;
+    let t = declared::with_classes(c, || c.to_phpstan(written));
+    let keys = pun_phpstan::types::union(vec![Type::Int, Type::String]);
+    (!t.is_array().yes() || is_super_type_of(&keys, &t.iterable_key_type()).yes()).then_some(t)
 }
 
 /// `++`/`--` writes a virtual prefix expression's value, not a postfix expression's old value.
@@ -624,6 +639,7 @@ fn writes(c: &mut Checker, e: &Expression, offsets_only: bool, virtual_write: Op
             name: [b"$", name.as_slice()].concat(),
             at: p.property.span(),
             instance: false,
+            span: p.span(),
         }, false)));
     }
     for (f, offset) in writes.iter().filter(|(_, offset)| *offset || !offsets_only) {
@@ -640,6 +656,9 @@ fn writes(c: &mut Checker, e: &Expression, offsets_only: bool, virtual_write: Op
                     }
                 }).map(|t| c.to_phpstan(t));
                 assigned(c, f, &p, value, at);
+            } else if *offset && offsets_only {
+                // UnsetHandler's PropertyAssignNode: the property's value without the offset
+                assigned(c, f, &p, offset_write(c, f), f.span);
             }
         }
     }

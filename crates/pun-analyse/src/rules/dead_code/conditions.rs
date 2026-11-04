@@ -1217,22 +1217,25 @@ impl Checker<'_, '_> {
                 (!strings.is_empty() && strings.iter().all(wrong_kind)).then_some(false)
             }
             _ => {
-                let query: fn(&Type) -> Tri = match name {
-                    "is_int" | "is_integer" | "is_long" => Type::is_integer,
-                    "is_string" => Type::is_string,
-                    "is_bool" => Type::is_boolean,
-                    "is_float" | "is_double" | "is_real" => Type::is_float,
-                    "is_null" => Type::is_null,
-                    "is_array" => Type::is_array,
-                    "is_object" => Type::is_object,
-                    "is_iterable" => Type::is_iterable,
+                // The Is*FunctionTypeSpecifyingExtension sure type, then `$resultType->isSuperTypeOf($argumentType)`:
+                // a benevolent `(int|string)` is maybe an int, though its isInteger() is yes.
+                let mixed = || Box::new(pun_phpstan::types::mixed());
+                let sure = match name {
+                    "is_int" | "is_integer" | "is_long" => Type::Int,
+                    "is_string" => Type::String,
+                    "is_bool" => Type::Bool,
+                    "is_float" | "is_double" | "is_real" => Type::Float,
+                    "is_null" => Type::Null,
+                    "is_array" => Type::Array(mixed(), mixed()),
+                    "is_object" => Type::ObjectWithoutClass,
+                    "is_iterable" => Type::Iterable(mixed(), mixed()),
                     _ => return match types {
                         CheckTypes::Full => Some(self.exact(call)),
                         CheckTypes::Native => None,
                     },
                 };
                 let argument = arg(0)?;
-                super::super::declared::with_classes(self, || decided(query(&argument)))
+                super::super::declared::with_classes(self, || decided(is_super_type_of(&sure, &argument)))
             }
         })
     }

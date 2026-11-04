@@ -3757,3 +3757,23 @@ parameter is an array in the body: `@param mixed ...$tags` on a plain `$tags` le
   `AccountCollection<int|string, ...>` key infers from the argument.
 - `invocation/return_type_fetcher.rs` `generalize_template_arguments()`: the walk also enters a conditional return
   type's branches, as they are in the return's position. Laravel 12.20's `Collection::pluck()` generalizes its key.
+
+## Template mixins
+
+`resolver/method.rs` `collect_mixin_types_into()` and `resolve_method_targets()`: a `@mixin TValue` whose carrier
+argument is itself a template (`@property-read Proxy<TModel> $each`) resolves to that template's bound, and the
+method's `$this`/`static` bind to the template (`StaticClassType::Generic`), as MixinMethodsClassReflectionExtension
+returns `TemplateObjectType::getMethod()`. `$this->each->makeHidden()` on a `Collection<TModel>` returns
+`TModel of Model`, not mixed. A named mixin's method binds to the mixin object too, unless
+`Settings::mixin_receiver_binding` (Pun sets it with Larastan, whose forwarding extensions answer for the receiver)
+keeps Mago's receiver binding. `static_to_receiver()` then replaces `static` in the mixin's type arguments with the
+calling object (`@mixin Foo<static>` on `ChildUsages` is `Foo<ChildUsages>`), as `getMethodCallType()` maps each
+StaticType in the result to the called-on type.
+
+## Property values after an offset write
+
+`artifacts.rs` `property_offset_writes`, `expression/assignment/array_assignment.rs` `analyze()`,
+`statement/unset.rs` `write_back()` and `statement/function_like/mod.rs`: the root property fetch of an offset
+write (`$this->p[] = $v`, `static::$p[$k] = $v`) or of `unset($this->p[$k])` records the property's whole new value
+by the fetch's span, and nested function-likes pass it up. TypesAssignedToPropertiesRule checks it, as AssignHandler
+and UnsetHandler emit a PropertyAssignNode for these writes.

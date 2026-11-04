@@ -127,6 +127,9 @@ pub struct MethodCandidate<'ctx> {
     /// The receiver object when the method was reached through `@mixin`, so
     /// `$this`/`static` bind to the calling object instead of the mixin class.
     pub receiver_object: Option<TObject>,
+    /// The template a `@mixin T` resolved to, when the carrier's argument for `T` is itself a template
+    /// (`Proxy<TModel>`): `$this`/`static` bind to it, as `TemplateObjectType::getMethod()` does.
+    pub static_generic: Option<TGenericParameter>,
 }
 
 /// Holds the results of resolving a method call, including valid targets and summary flags.
@@ -547,6 +550,7 @@ where
             classname,
             mixin_without_magic_method,
             receiver_object,
+            static_generic,
         } = candidate;
         let declaring_class_metadata =
             context.codebase.get_class_like_by_name(declaring_method_id.get_class_name()).unwrap_or(metadata);
@@ -578,8 +582,11 @@ where
                 .push(GenericTemplate::new(GenericParent::ClassLike(metadata.name), parameter.clone()));
         }
 
-        let (static_class_type, declaring_object) = match receiver_object {
-            Some(receiver) => {
+        let (static_class_type, declaring_object) = match (static_generic, receiver_object) {
+            // MixinMethodsClassReflectionExtension returns the method of the resolved mixin type: a template
+            // mixin's `$this`/`static` is the template (`TemplateObjectType::getMethod()`).
+            (Some(generic), _) => (StaticClassType::Generic(generic), None),
+            (None, Some(receiver)) if context.settings.mixin_receiver_binding => {
                 let declaring_object = match object {
                     TObject::Named(named) => Some(named),
                     // A non-named mixin object (an enum) carries no type parameters;
@@ -589,7 +596,10 @@ where
                 };
                 (StaticClassType::Object(receiver), declaring_object)
             }
-            None => (StaticClassType::Object(object), None),
+            // MutatingScope::getMethodCallType maps every StaticType in the result to the called-on type,
+            // so `@mixin Foo<static>` is `Foo<receiver>`.
+            (None, Some(receiver)) => (StaticClassType::Object(static_to_receiver(&object, &receiver)), None),
+            (None, None) => (StaticClassType::Object(object), None),
         };
 
         resolved_methods.push(ResolvedMethod {
@@ -739,6 +749,7 @@ where
             classname: name,
             mixin_without_magic_method: None,
             receiver_object: None,
+            static_generic: None,
         });
     } else if !class_metadata.require_extends.is_empty() || !class_metadata.require_implements.is_empty() {
         for required_class in class_metadata.require_extends.iter().chain(class_metadata.require_implements.iter()) {
@@ -760,6 +771,7 @@ where
                     classname: *required_class,
                     mixin_without_magic_method: None,
                     receiver_object: None,
+                    static_generic: None,
                 });
                 break;
             }
@@ -769,7 +781,7 @@ where
         // the method was found in a mixin without the required magic method.
         let mixin_types = collect_mixin_types(context.codebase, class_metadata, outer_object, &class_metadata.mixins);
 
-        for (mixin_class_name, mixin_object) in mixin_types {
+        for (mixin_class_name, mixin_object, mixin_generic) in mixin_types {
             let Some(mixin_metadata) = context.codebase.get_class_like_by_name(mixin_class_name) else {
                 continue;
             };
@@ -815,6 +827,7 @@ where
                     classname: mixin_class_name,
                     mixin_without_magic_method: mixin_info,
                     receiver_object: Some(outer_object.clone()),
+                    static_generic: mixin_generic,
                 });
             }
         }
@@ -1272,7 +1285,7 @@ fn collect_mixin_types(
     class_metadata: &ClassLikeMetadata,
     outer_object: &TObject,
     mixins: &[TypeMetadata],
-) -> Vec<(Word, TObject)> {
+) -> Vec<(Word, TObject, Option<TGenericParameter>)> {
     let mut results = Vec::new();
     let mut visited = HashSet::default();
     collect_mixin_types_into(codebase, class_metadata, outer_object, mixins, &mut results, &mut visited);
@@ -1285,19 +1298,19 @@ fn collect_mixin_types_into(
     class_metadata: &ClassLikeMetadata,
     outer_object: &TObject,
     mixins: &[TypeMetadata],
-    results: &mut Vec<(Word, TObject)>,
+    results: &mut Vec<(Word, TObject, Option<TGenericParameter>)>,
     visited: &mut HashSet<Word>,
 ) {
-    let mut direct: Vec<(Word, &TObject)> = Vec::new();
+    let mut direct: Vec<(Word, &TObject, Option<&TGenericParameter>)> = Vec::new();
 
     for mixin_type in mixins {
         for mixin_atomic in mixin_type.type_union.types.as_ref() {
             match mixin_atomic {
                 TAtomic::Object(obj @ TObject::Named(named)) => {
-                    direct.push((named.name.to_ascii_lowercase(), obj));
+                    direct.push((named.name.to_ascii_lowercase(), obj, None));
                 }
                 TAtomic::Object(obj @ TObject::Enum(enum_type)) => {
-                    direct.push((enum_type.name.to_ascii_lowercase(), obj));
+                    direct.push((enum_type.name.to_ascii_lowercase(), obj, None));
                 }
                 TAtomic::GenericParameter(TGenericParameter {
                     parameter_name, constraint, defining_entity, ..
@@ -1314,12 +1327,21 @@ fn collect_mixin_types_into(
                         for atomic in concrete_type.types.as_ref() {
                             match atomic {
                                 TAtomic::Object(obj @ TObject::Named(named)) => {
-                                    direct.push((named.name.to_ascii_lowercase(), obj));
+                                    direct.push((named.name.to_ascii_lowercase(), obj, None));
                                     resolved = true;
                                 }
                                 TAtomic::Object(obj @ TObject::Enum(enum_type)) => {
-                                    direct.push((enum_type.name.to_ascii_lowercase(), obj));
+                                    direct.push((enum_type.name.to_ascii_lowercase(), obj, None));
                                     resolved = true;
+                                }
+                                // `Proxy<TModel>`: the mixin is the template, its methods its bound's
+                                TAtomic::GenericParameter(generic) => {
+                                    for bound in generic.constraint.types.as_ref() {
+                                        if let TAtomic::Object(obj @ TObject::Named(named)) = bound {
+                                            direct.push((named.name.to_ascii_lowercase(), obj, Some(generic)));
+                                            resolved = true;
+                                        }
+                                    }
                                 }
                                 _ => {}
                             }
@@ -1330,10 +1352,10 @@ fn collect_mixin_types_into(
                         for constraint_atomic in constraint.types.as_ref() {
                             match constraint_atomic {
                                 TAtomic::Object(obj @ TObject::Named(named)) => {
-                                    direct.push((named.name.to_ascii_lowercase(), obj));
+                                    direct.push((named.name.to_ascii_lowercase(), obj, None));
                                 }
                                 TAtomic::Object(obj @ TObject::Enum(enum_type)) => {
-                                    direct.push((enum_type.name.to_ascii_lowercase(), obj));
+                                    direct.push((enum_type.name.to_ascii_lowercase(), obj, None));
                                 }
                                 _ => {}
                             }
@@ -1345,7 +1367,7 @@ fn collect_mixin_types_into(
         }
     }
 
-    for (name, obj) in direct {
+    for (name, obj, generic) in direct {
         if !visited.insert(name) {
             continue;
         }
@@ -1353,7 +1375,7 @@ fn collect_mixin_types_into(
         let specialized_obj = specialize_mixin_object(codebase, class_metadata, outer_object, obj);
         let obj = specialized_obj.as_ref().unwrap_or(obj);
 
-        results.push((name, obj.clone()));
+        results.push((name, obj.clone(), generic.cloned()));
 
         if let Some(mixin_metadata) = codebase.get_class_like_by_name(name)
             && !mixin_metadata.mixins.is_empty()
@@ -1361,6 +1383,37 @@ fn collect_mixin_types_into(
             collect_mixin_types_into(codebase, mixin_metadata, obj, &mixin_metadata.mixins, results, visited);
         }
     }
+}
+
+/// Replaces `static`/`$this` in a mixin object's type arguments with the calling object.
+fn static_to_receiver(object: &TObject, receiver: &TObject) -> TObject {
+    let TObject::Named(named) = object else {
+        return object.clone();
+    };
+    let Some(parameters) = named.type_parameters.as_deref() else {
+        return object.clone();
+    };
+    let mut named = named.clone();
+    named.type_parameters = Some(
+        parameters
+            .iter()
+            .map(|parameter| {
+                TUnion::from_vec(
+                    parameter
+                        .types
+                        .iter()
+                        .map(|atomic| match atomic {
+                            TAtomic::Object(TObject::Named(inner)) if inner.is_static => TAtomic::Object(receiver.clone()),
+                            TAtomic::Object(inner @ TObject::Named(_)) => TAtomic::Object(static_to_receiver(inner, receiver)),
+                            other => other.clone(),
+                        })
+                        .collect(),
+                )
+            })
+            .collect(),
+    );
+
+    TObject::Named(named)
 }
 
 /// Substitutes the carrier class's template parameters inside a mixin tag's type

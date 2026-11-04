@@ -298,7 +298,7 @@ fn checker<'a, 'arena>(
     };
     let mut variable_writes = HashMap::new();
     let mut property_initializations = HashMap::new();
-    let (mut types, defined, origins, call_terminations, named_call_scopes, keep_void_types, native_types, nullsafe_method_receiver_types) = infer(arena, file, program, names, codebase, php_version, project.level, project.pollute_scope_with_loop_initial_assignments, project.pollute_scope_with_always_iterable_foreach, project.pollute_scope_with_block, typed, calls, &mut variables, &mut variable_writes, &mut property_initializations, project.larastan.as_ref(), trait_class);
+    let (mut types, defined, origins, call_terminations, named_call_scopes, keep_void_types, native_types, nullsafe_method_receiver_types, property_offset_writes) = infer(arena, file, program, names, codebase, php_version, project.level, project.pollute_scope_with_loop_initial_assignments, project.pollute_scope_with_always_iterable_foreach, project.pollute_scope_with_block, typed, calls, &mut variables, &mut variable_writes, &mut property_initializations, project.larastan.as_ref(), trait_class);
     if project.level >= 4 {
         let (subjects, unknown) = super::dead_code::match_subject_types(file, program, codebase, php_version, project.pollute_scope_with_loop_initial_assignments, project.pollute_scope_with_always_iterable_foreach, project.pollute_scope_with_block);
         types.extend(subjects);
@@ -316,6 +316,7 @@ fn checker<'a, 'arena>(
         keep_void_types,
         native_types,
         nullsafe_method_receiver_types,
+        property_offset_writes,
         variable_writes,
         property_initializations,
         call_terminations,

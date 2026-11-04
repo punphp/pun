@@ -57,6 +57,11 @@ pub struct Settings {
     /// context): a trait method's untyped parameter takes the PHPDoc type of the method it overrides in that class.
     pub trait_context_class: Option<Word>,
 
+    /// Bind `$this`/`static` of a method found on a named `@mixin` to the receiver carrying the tag (Larastan's
+    /// forwarding extensions), not to the mixin object as MixinMethodsClassReflectionExtension does. Defaults to
+    /// `true`.
+    pub mixin_receiver_binding: bool,
+
     /// Find and report expressions whose results are not used (e.g., `$a + $b;`). Defaults to `false`.
     pub find_unused_expressions: bool,
 
@@ -448,6 +453,7 @@ impl Settings {
             track_variable_flow: false,
             pollute_scope_with_block: true,
             trait_context_class: None,
+            mixin_receiver_binding: true,
             find_unused_expressions: true,
             find_unused_definitions: true,
             find_overly_wide_return_types: false,

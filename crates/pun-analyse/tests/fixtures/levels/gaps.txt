@@ -21,7 +21,6 @@
 3 Functions/ReturnTypeRuleTest::testBug5594
 3 Functions/ReturnTypeRuleTest::testBug10732
 3 Functions/ReturnTypeRuleTest::testBug13190
-3 Methods/ReturnTypeRuleTest::testMergeInheritedPhpDocs
 3 Methods/ReturnTypeRuleTest::testBug3997
 3 Methods/ReturnTypeRuleTest::testBug3118
 # Mago's inference differs from PHPStan's: `static`/`$this` lost on fluent and `new $class` returns, array shapes

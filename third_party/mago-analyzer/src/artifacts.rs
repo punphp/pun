@@ -167,6 +167,8 @@ pub struct AnalysisArtifacts {
     pub(crate) property_abrupt_scopes: HashMap<Span, crate::property_initialization::Markers>,
     /// NullsafeMethodCallExpressionNode's processed receiver, before shallow non-null specification.
     pub nullsafe_method_receiver_types: HashMap<Span, TUnion>,
+    /// A property's whole new value after an offset write (`$this->p[] = $v`), by the root fetch's span.
+    pub property_offset_writes: HashMap<Span, TUnion>,
     /// Body-boundary value-read/write answers, separate from type and definedness observations.
     pub variable_writes: HashMap<Span, crate::variable_flow::VariableWritesNode>,
     pub(crate) editor: Option<EditorArtifacts>,
@@ -222,6 +224,7 @@ impl AnalysisArtifacts {
             property_statement_ends: HashMap::default(),
             property_abrupt_scopes: HashMap::default(),
             nullsafe_method_receiver_types: HashMap::default(),
+            property_offset_writes: HashMap::default(),
             variable_writes: HashMap::default(),
             editor: None,
             variable_definedness: HashMap::default(),
