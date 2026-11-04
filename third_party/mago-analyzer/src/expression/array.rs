@@ -287,6 +287,7 @@ where
         return Ok(());
     }
 
+    let passed_to_type = artifacts.array_passed_to_type.take();
     let mut array_creation_info = ArrayCreationInfo {
         item_key_atomic_types: Vec::new(),
         item_value_atomic_types: Vec::new(),
@@ -458,10 +459,27 @@ where
             block_context.variable_state.non_creating_references.insert(operand.span());
         }
 
+        // ArrayHandler passes a closure or array item the expected value type: a closure's parameters take its
+        // callables' parameter types
+        if let Some(passed_to_type) = &passed_to_type {
+            match unwrap_expression(value) {
+                Expression::Closure(_) | Expression::ArrowFunction(_) => {
+                    artifacts.inferred_parameter_types =
+                        Some(crate::invocation::arguments::callable_parameter_types(context, passed_to_type));
+                }
+                Expression::Array(_) | Expression::LegacyArray(_) => {
+                    artifacts.array_passed_to_type =
+                        crate::invocation::arguments::expected_value_type(context, passed_to_type);
+                }
+                _ => {}
+            }
+        }
+
         let was_inside_general_use = block_context.flags.inside_general_use();
         block_context.flags.set_inside_general_use(true);
         value.analyze(context, block_context, artifacts)?;
         block_context.flags.set_inside_general_use(was_inside_general_use);
+        artifacts.array_passed_to_type = None;
 
         array_creation_info.can_be_empty = false;
         array_creation_info.is_list &= item_is_list_item;

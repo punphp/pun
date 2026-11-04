@@ -75,8 +75,8 @@ pub(in super::super) fn is_late(t: &Type) -> bool {
 fn parameter_type(resolved: &[Option<Type>], p: usize, constructor: bool) -> Option<Type> {
     fn late(t: &Type, constructor: bool) -> bool {
         let found = std::cell::Cell::new(match t {
-            // an enclosing function's template (TemplateTypeArgumentStrategy) is checked in place
-            Type::Template(tt) => !(tt.argument && is_callees(tt)) && (!constructor || is_callees(tt)),
+            // an enclosing function's or `$this`'s template (TemplateTypeArgumentStrategy) is checked in place
+            Type::Template(tt) => !tt.argument && (!constructor || is_callees(tt)),
             Type::Static(..) | Type::This(_) | Type::Conditional(_) => true,
             _ => false,
         });
@@ -372,8 +372,11 @@ pub(in super::super) fn arguments(
         super::super::params::check_named(c, acceptor, e, call);
         let by_ref = acceptor.by_ref[p];
         let value = e.value_type(c).map(|t| if e.unpack { t.iterable_value_type() } else { t });
-        // a built-in's by-reference parameter that creates the variable takes anything
-        if c.check_argument_types && (by_ref != ByRef::CreatesNewVariable || !acceptor.builtin)
+        // a by-reference parameter that creates the variable takes anything from a built-in's caller, and an
+        // undefined variable (ErrorType) from any caller
+        if c.check_argument_types
+            && (by_ref != ByRef::CreatesNewVariable
+                || (!acceptor.builtin && !c.variables.undefined_allowed.contains(&e.value)))
             && let (Some(param), Some(value)) = (parameter_type(&resolved, p, matches!(call.kind, CallKind::New | CallKind::Attribute)), value)
         {
             let strict = strict && (!acceptor.builtin || !param.is_callable().yes());

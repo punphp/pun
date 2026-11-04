@@ -36,6 +36,7 @@ use crate::context::block::BlockContext;
 use crate::error::AnalysisError;
 use crate::invocation::InvocationTarget;
 use crate::utils::get_type_diff;
+use crate::utils::misc::unwrap_expression;
 
 /// Checks if an argument can be passed by reference.
 pub(super) fn is_argument_referenceable(argument_expression: &Expression, argument_type: &TUnion) -> bool {
@@ -85,6 +86,53 @@ fn is_empty_container_construction(expression: &Expression) -> bool {
     }
 }
 
+/// The parameter types of a callable parameter type's signatures, joined by position: a closure argument's inferred
+/// parameter types.
+pub(crate) fn callable_parameter_types<A: Arena>(
+    context: &Context<'_, '_, A>,
+    callable_type: &TUnion,
+) -> HashMap<usize, TUnion> {
+    let mut inferred_parameters = HashMap::default();
+
+    callable_type
+        .types
+        .as_ref()
+        .iter()
+        .filter_map(|atomic| match atomic {
+            TAtomic::Callable(TCallable::Signature(callable)) => Some(callable),
+            _ => None,
+        })
+        .flat_map(|callable| callable.parameters.iter().enumerate())
+        .filter_map(|(parameter_index, parameter)| {
+            parameter.get_type_signature().map(|param_type| (parameter_index, param_type.clone()))
+        })
+        .for_each(|(parameter_index, parameter_type)| match inferred_parameters.entry(parameter_index) {
+            Entry::Occupied(occupied_entry) => {
+                let existing_type: TUnion = occupied_entry.remove();
+                let updated_type =
+                    add_union_type(existing_type, &parameter_type, context.codebase, CombinerOptions::default());
+
+                inferred_parameters.insert(parameter_index, updated_type);
+            }
+            Entry::Vacant(vacant_entry) => {
+                vacant_entry.insert(parameter_type);
+            }
+        });
+
+    inferred_parameters
+}
+
+/// ArrayHandler::getExpectedArrayType() and getExpectedValueType(): the value type the array members of a passed-to
+/// type expect of an array literal's items, `None` without an array member.
+pub(crate) fn expected_value_type<A: Arena>(context: &Context<'_, '_, A>, passed_to_type: &TUnion) -> Option<TUnion> {
+    passed_to_type
+        .types
+        .iter()
+        .filter(|atomic| matches!(atomic, TAtomic::Array(_) | TAtomic::Iterable(_)))
+        .filter_map(|atomic| get_iterable_value_parameter(atomic, context.codebase))
+        .reduce(|left, right| add_union_type(left, &right, context.codebase, CombinerOptions::default()))
+}
+
 /// Analyzes an argument expression and stores its inferred type.
 pub fn analyze_and_store_argument_type<'ctx, 'arena, A>(
     context: &mut Context<'ctx, 'arena, A>,
@@ -117,36 +165,16 @@ where
         return Ok(());
     }
 
-    let inferred_parameter_types = closure_parameter_type.map(|closure_parameter_type| {
-        let mut inferred_parameters = HashMap::default();
-
-        closure_parameter_type
-            .types
-            .as_ref()
-            .iter()
-            .filter_map(|atomic| match atomic {
-                TAtomic::Callable(TCallable::Signature(callable)) => Some(callable),
-                _ => None,
-            })
-            .flat_map(|callable| callable.parameters.iter().enumerate())
-            .filter_map(|(parameter_index, parameter)| {
-                parameter.get_type_signature().map(|param_type| (parameter_index, param_type.clone()))
-            })
-            .for_each(|(parameter_index, parameter_type)| match inferred_parameters.entry(parameter_index) {
-                Entry::Occupied(occupied_entry) => {
-                    let existing_type: TUnion = occupied_entry.remove();
-                    let updated_type =
-                        add_union_type(existing_type, &parameter_type, context.codebase, CombinerOptions::default());
-
-                    inferred_parameters.insert(parameter_index, updated_type);
-                }
-                Entry::Vacant(vacant_entry) => {
-                    vacant_entry.insert(parameter_type);
-                }
-            });
-
-        inferred_parameters
-    });
+    let is_array_literal =
+        matches!(unwrap_expression(argument_expression), Expression::Array(_) | Expression::LegacyArray(_));
+    let inferred_parameter_types = closure_parameter_type
+        .filter(|_| !is_array_literal)
+        .map(|closure_parameter_type| callable_parameter_types(context, closure_parameter_type));
+    // ArgumentsHandler passes an array literal its parameter's type (enterPassedToType())
+    let passed_to_type = closure_parameter_type
+        .filter(|_| is_array_literal)
+        .and_then(|parameter_type| expected_value_type(context, parameter_type));
+    let passed_to_type = std::mem::replace(&mut artifacts.array_passed_to_type, passed_to_type);
 
     let inferred_parameter_types = std::mem::replace(&mut artifacts.inferred_parameter_types, inferred_parameter_types);
 
@@ -185,6 +213,7 @@ where
     block_context.flags.set_inside_call(was_inside_call);
     block_context.flags.set_inside_variable_reference(was_inside_variable_reference);
     artifacts.inferred_parameter_types = inferred_parameter_types;
+    artifacts.array_passed_to_type = passed_to_type;
 
     let argument_type =
         artifacts.get_rc_expression_type(argument_expression).cloned().unwrap_or_else(|| Rc::new(get_mixed()));

@@ -23,7 +23,7 @@ mod dim_fetch;
 mod yields;
 mod void_match;
 mod constant_value;
-mod properties;
+pub(super) mod properties;
 mod offsets;
 mod binary_op;
 mod too_wide;

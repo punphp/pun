@@ -655,7 +655,22 @@ where
             false
         };
 
+        // ConditionalTypeForParameter: `null` is no supertype of `mixed~null` (a mixed excluding the whole target)
+        let excluded_by_mixed = subject.types.iter().all(|atomic| {
+            matches!(atomic, TAtomic::Mixed(mixed) if mixed.effective_subtracted_type().is_some_and(|excluded| {
+                union_comparator::is_contained_by(
+                    context.codebase,
+                    &target,
+                    &excluded,
+                    false,
+                    false,
+                    false,
+                    &mut ComparisonResult::new(),
+                )
+            }))
+        });
         let are_disjoint = are_int_float_disjoint
+            || excluded_by_mixed
             || !union_comparator::can_expression_types_be_identical(context.codebase, &subject, &target, false, false);
 
         if are_disjoint {

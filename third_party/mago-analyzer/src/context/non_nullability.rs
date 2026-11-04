@@ -167,6 +167,7 @@ fn specify<'ctx, 'arena, A: Arena>(
         let mut link = unwrap_expression(expression);
         while let Expression::ArrayAccess(access) = link {
             if let Some(parent) = tracked_id(access.array, context, &specified)
+                && specified.locals.get(&parent).is_none_or(|parent| !parent.is_mixed())
                 && let Some(key) =
                     scope_type(access.index, context, &specified, artifacts).get_single_array_key()
             {

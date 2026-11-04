@@ -260,6 +260,9 @@ where
     for (variable, assertions) in resolved_if_true_assertions {
         artifacts.if_true_assertions.entry(range).or_default().entry(variable).or_default().extend(assertions);
     }
+    for (variable, assertions) in coalesce_argument_assertions(context, block_context, artifacts, invoication, if_true_assertions) {
+        artifacts.if_true_assertions.entry(range).or_default().entry(variable).or_insert(assertions);
+    }
 
     let resolved_if_false_assertions = resolve_invocation_assertion(
         context,
@@ -1446,6 +1449,49 @@ fn derived_assertion_loses_template_precision(assertion: &TAtomic) -> bool {
     };
 
     derived.get_target_type().is_some_and(TUnion::has_template_types)
+}
+
+/// TypeSpecifier::create() in a true context: a `$left ?? $right` argument whose right side the asserted type can never
+/// be specifies `$left` instead (`isArray($a['k'] ?? null)` of an `@phpstan-assert-if-true array` narrows `$a['k']`).
+fn coalesce_argument_assertions<'ctx, 'arena, A>(
+    context: &Context<'ctx, 'arena, A>,
+    block_context: &BlockContext<'ctx>,
+    artifacts: &AnalysisArtifacts,
+    invocation: &Invocation<'ctx, '_, 'arena>,
+    assertions: &BTreeMap<Word, Conjunction<Assertion>>,
+) -> Vec<(Word, AssertionSet)>
+where
+    A: Arena,
+{
+    let mut specified = Vec::new();
+    for (parameter, parameter_assertions) in assertions {
+        let (Some(argument), None) = get_argument_for_parameter(context, block_context, invocation, None, Some(*parameter))
+        else {
+            continue;
+        };
+        let Expression::Binary(binary) = crate::utils::misc::unwrap_expression(argument) else { continue };
+        if !matches!(binary.operator, BinaryOperator::NullCoalesce(_)) {
+            continue;
+        }
+        let (Some(left), Some(right_type)) = (
+            crate::utils::expression::get_block_expression_id(binary.lhs, context, block_context),
+            artifacts.get_expression_type(binary.rhs),
+        ) else {
+            continue;
+        };
+        let disjoint = parameter_assertions.iter().all(|assertion| match assertion {
+            Assertion::IsType(atomic) => {
+                let asserted = TUnion::from_atomic(atomic.clone());
+                !asserted.has_template_types()
+                    && !can_expression_types_be_identical(context.codebase, right_type, &asserted, false, false)
+            }
+            _ => false,
+        });
+        if disjoint && !parameter_assertions.is_empty() {
+            specified.push((left, parameter_assertions.iter().map(|assertion| vec![assertion.clone()]).collect()));
+        }
+    }
+    specified
 }
 
 /// Resolves an argument or a special assertion target from an invocation.

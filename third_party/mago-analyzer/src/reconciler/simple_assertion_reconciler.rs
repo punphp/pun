@@ -90,6 +90,14 @@ where
             if existing_var_type.types.iter().any(|atomic| matches!(atomic, TAtomic::Mixed(mixed) if mixed.get_subtracted_type().is_some())) {
                 return Some(intersect_union_types(existing_var_type, &wrap_atomic(assertion_type.clone()), context.codebase).unwrap_or_else(get_never));
             }
+            // MethodExistsTypeSpecifyingExtension: method_exists() of a value that is not a string specifies
+            // `(object&hasMethod(m))|class-string`
+            if matches!(assertion_type, TAtomic::Object(TObject::HasMethod(_))) {
+                return Some(TUnion::from_vec(vec![
+                    assertion_type.clone(),
+                    TAtomic::Scalar(TScalar::ClassLikeString(TClassLikeString::Any { kind: TClassLikeStringKind::Class })),
+                ]));
+            }
             return Some(wrap_atomic(assertion_type.clone()));
         }
 
@@ -2065,8 +2073,14 @@ where
                 acceptable_types.push(atomic);
             }
             TAtomic::Mixed(_) => {
+                // ArrayKeyExistsFunctionTypeSpecifyingExtension: a constant key specifies the array as
+                // `array<mixed, mixed>&hasOffset(key)` (isset()'s parents never reach here as mixed)
                 did_remove_type = true;
-                acceptable_types.push(atomic);
+                let mixed = Arc::new(get_mixed());
+                let mut array = TKeyedArray::new_with_parameters(mixed.clone(), mixed);
+                array.known_items = Some(BTreeMap::from([(*key_name, (false, get_mixed()))]).into());
+                array.non_empty = true;
+                acceptable_types.push(TAtomic::Array(TArray::Keyed(array)));
             }
             TAtomic::Object(TObject::Named(_)) => {
                 did_remove_type = true;

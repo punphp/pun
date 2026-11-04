@@ -233,7 +233,10 @@ pub(crate) fn record_boolean_scopes<'ctx, A: Arena>(
         }
     };
     let truthy = branch(context, true);
-    let falsey = branch(context, false);
+    let mut falsey = branch(context, false);
+    if is_and {
+        conjunction_holders(context, artifacts, binary, left, &mut falsey.variable_state);
+    }
     let post = BooleanExpressionScope {
         locals: post.locals,
         variable_state: post.variable_state,
@@ -251,6 +254,95 @@ pub(crate) fn record_boolean_scopes<'ctx, A: Arena>(
         },
     );
     post
+}
+
+/// BooleanNarrowingHelper::specifyConjunction()'s holders in the falsey context of `A && B`: while A's specified
+/// expression keeps its A-true type, B's specified expressions keep their B-false types, and the other way round
+/// (`if ($n >= 10 && !$u->v) return;` then `$n >= 20` proves `$u->v`). A side that is itself a conjunction cannot be
+/// split (isUnsplittableCompoundHolderSide()); a condition of several expressions is not built.
+fn conjunction_holders<'ctx, A: Arena>(
+    context: &mut Context<'ctx, '_, A>,
+    artifacts: &AnalysisArtifacts,
+    binary: &mago_syntax::cst::Binary<'_>,
+    left: &BlockContext<'ctx>,
+    state: &mut crate::context::block::VariableState,
+) {
+    let is_and = |e: &Expression| {
+        matches!(crate::utils::misc::unwrap_expression(e), Expression::Binary(b) if matches!(b.operator, BinaryOperator::And(_) | BinaryOperator::LowAnd(_)))
+    };
+    // isTrackableExpression(): a variable, a property fetch or an offset fetch
+    let trackable = |key: &Word| {
+        let key = key.as_bytes();
+        key.starts_with(b"$") && !key.ends_with(b")")
+    };
+    let specify = |context: &mut Context<'ctx, '_, A>, scope: &BlockContext<'ctx>, subject: &Expression, truthy: bool| {
+        let mut scope = scope.clone();
+        let mut clauses = crate::formula::get_formula(
+            subject.span(),
+            subject.span(),
+            subject,
+            context.get_assertion_context_from_block(&scope),
+            artifacts,
+            &context.settings.algebra_thresholds(),
+            context.settings.formula_size_threshold,
+        )?;
+        if !truthy {
+            clauses = crate::formula::negate_or_synthesize(
+                clauses,
+                subject,
+                context.get_assertion_context_from_block(&scope),
+                artifacts,
+                &context.settings.algebra_thresholds(),
+                context.settings.formula_size_threshold,
+            );
+        }
+        let (assertions, _) = mago_algebra::find_satisfying_assignments(&clauses, None, &mut WordSet::default());
+        reconcile_keyed_types(
+            context,
+            &assertions,
+            AssertionMap::default(),
+            &mut scope,
+            &mut WordSet::default(),
+            &WordSet::default(),
+            &subject.span(),
+            false,
+            false,
+        );
+        let keys: Vec<Word> = assertions.keys().copied().filter(|key| trackable(key)).collect();
+        Some((scope, keys))
+    };
+    let mut add = |guard: Option<(BlockContext<'ctx>, Vec<Word>)>,
+                   condition: Option<(BlockContext<'ctx>, Vec<Word>)>,
+                   target: Option<(BlockContext<'ctx>, Vec<Word>)>| {
+        let (Some((guard_scope, _)), Some((_, conditions)), Some((target_scope, targets))) = (guard, condition, target)
+        else {
+            return;
+        };
+        // buildConditionalHolderRecipe() takes its condition entries from the side's falsey narrowing (the recipe
+        // inverts them back): a disjunction side whose falsey narrowing names several expressions is one condition
+        // of several entries, which is not built here.
+        let [guard] = conditions.as_slice() else { return };
+        let Some(guard_type) = guard_scope.locals.get(guard) else { return };
+        for target in targets.iter().filter(|target| *target != guard) {
+            if let Some(target_type) = target_scope.locals.get(target) {
+                state.add_expression_condition(*guard, Rc::clone(guard_type), *target, Rc::clone(target_type));
+            }
+        }
+    };
+    // Both sides are specified on the scope before the conjunction's narrowing, as SpecifiedTypes are: a side's
+    // types must not carry what the other side being true implied.
+    if !is_and(binary.rhs) {
+        let guard = specify(context, left, binary.lhs, true);
+        let condition = specify(context, left, binary.lhs, false);
+        let target = specify(context, left, binary.rhs, false);
+        add(guard, condition, target);
+    }
+    if !is_and(binary.lhs) {
+        let guard = specify(context, left, binary.rhs, true);
+        let condition = specify(context, left, binary.rhs, false);
+        let target = specify(context, left, binary.lhs, false);
+        add(guard, condition, target);
+    }
 }
 
 pub(crate) fn analyze<'ctx, 'arena, A>(

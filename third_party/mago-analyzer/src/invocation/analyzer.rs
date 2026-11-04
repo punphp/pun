@@ -775,6 +775,27 @@ where
             observation_type.as_ref(),
             argument_expression.span(),
         );
+        // ArgumentsHandler passes an array literal argument its parameter type (enterPassedToType()), whose
+        // callables type the closures among the array's items
+        let passed_to_type = if matches!(
+            crate::utils::misc::unwrap_expression(argument_expression),
+            Expression::Array(_) | Expression::LegacyArray(_)
+        ) {
+            parameter
+                .map(|(_, parameter)| {
+                    get_parameter_type(
+                        context,
+                        Some(parameter),
+                        base_class_metadata,
+                        calling_class_like_metadata,
+                        calling_instance_type,
+                        method_class_type,
+                    )
+                })
+                .and_then(|parameter_type| closure_parameter_bounds(context, Some(&parameter_type), template_result))
+        } else {
+            None
+        };
         analyze_and_store_argument_type(
             context,
             block_context,
@@ -784,7 +805,7 @@ where
             *argument_offset,
             &mut analyzed_argument_types,
             parameter.is_some_and(|p| p.1.is_by_reference()),
-            None,
+            passed_to_type.as_ref(),
             call_context,
             arguments.reference_context(&argument, *argument_offset),
             arguments.expression_issues.as_mut(),

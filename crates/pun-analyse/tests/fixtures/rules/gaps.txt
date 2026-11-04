@@ -28,8 +28,6 @@ Methods/OverridingMethodRuleTest::testBug9615
 # still differs from PHPStan's (subtracted types, array accessories, mixin and template resolution, closures)
 Classes/AllowedSubTypesRuleTest::testSealedOnConcreteClass
 Functions/CallToFunctionParametersRuleTest::testVaryingAcceptor
-Functions/CallToFunctionParametersRuleTest::testDiscussion7450WithoutCheckExplicitMixed
-Functions/CallToFunctionParametersRuleTest::testDiscussion7450WithCheckExplicitMixed
 Functions/CallToFunctionParametersRuleTest::testBug7156
 Functions/CallToFunctionParametersRuleTest::testBug7823
 Functions/CallToFunctionParametersRuleTest::testBug8389

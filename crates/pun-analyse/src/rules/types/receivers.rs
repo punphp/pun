@@ -161,9 +161,22 @@ impl<'a> Checker<'a, '_> {
             // Keep the declaring class's supplied arguments in semantic parameter types too, not just their
             // descriptions. Re-reading a User parameter later would otherwise restore its unbound template and
             // its `static` (bound to an object receiver).
+            // `$this` is the scope's class reflection, whose own templates are TemplateTypeArgumentStrategy
+            // arguments (TemplateTypeHelper::toArgument()): `$this->add($value)` checks `TValue` in place.
+            let own;
+            let receiver_args = match t {
+                Type::Object(receiver, actual, _) | Type::Static(receiver, actual) => Some((receiver, actual)),
+                Type::This(receiver) => {
+                    own = declared::class_templates(self, k).into_iter().map(|tt| Type::Template(Box::new(
+                        pun_phpstan::types::Template { argument: true, ..tt },
+                    ))).collect::<Vec<_>>();
+                    Some((receiver, &own))
+                }
+                _ => None,
+            };
             if let members::Method::User { declaring, .. } = &method.declaring
-                && let Type::Object(receiver, actual, _) | Type::Static(receiver, actual) = t
-                && (!actual.is_empty() || matches!(t, Type::Object(..)))
+                && let Some((receiver, actual)) = receiver_args
+                && (!actual.is_empty() || matches!(t, Type::Object(..) | Type::This(_)))
             {
                 let class = declared::original_name(declaring);
                 let args = declared::with_classes(self, || {

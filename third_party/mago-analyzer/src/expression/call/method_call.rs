@@ -457,6 +457,7 @@ where
     }
 
     let has_resolved_methods = !invocation_targets.is_empty();
+    let has_method_reflection = has_resolved_methods || !method_resolution.undocumented_methods.is_empty();
 
     record_external_method_call(context, artifacts, &invocation_targets, span);
     if !method_resolution.undocumented_methods.is_empty() {
@@ -510,6 +511,16 @@ where
             MethodInvocationKind::Instance,
             !has_resolved_methods,
         )?;
+    }
+
+    // MethodCallHandler: a call without a method reflection (an unknown method, a dynamic name, a mixed receiver) is
+    // an implicit throw point on the post-argument scope, so a surrounding catch is reachable
+    if !has_method_reflection && block_context.flags.inside_try() {
+        artifacts
+            .variable_throw_scopes
+            .entry((span, crate::artifacts::VariableThrowKind::Implicit))
+            .or_default()
+            .insert(mago_word::word(b"Throwable"), block_context.variable_scope());
     }
 
     // MethodCallHandler::resolveReturnType(): no reflected method is ErrorType, not an absent result.

@@ -289,6 +289,202 @@
    "tip": null
   },
   {
+   "file": "round3.php",
+   "line": 16,
+   "identifier": "return.type",
+   "message": "Function LaravelMax\\Round3\\offsetHolder() should return int but returns array<int>.",
+   "tip": null
+  },
+  {
+   "file": "round3.php",
+   "line": 21,
+   "identifier": "offsetAccess.nonOffsetAccessible",
+   "message": "Cannot access offset string on mixed.",
+   "tip": null
+  },
+  {
+   "file": "round3.php",
+   "line": 22,
+   "identifier": "offsetAccess.nonOffsetAccessible",
+   "message": "Cannot access offset string on mixed.",
+   "tip": null
+  },
+  {
+   "file": "round3.php",
+   "line": 25,
+   "identifier": "return.type",
+   "message": "Function LaravelMax\\Round3\\mixedOffsetHolder() should return string but returns array<mixed>.",
+   "tip": null
+  },
+  {
+   "file": "round3.php",
+   "line": 49,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $value of method LaravelMax\\Round3\\Items<TKey of (int|string),TValue>::push() expects TValue, int given.",
+   "tip": "Type int is not always the same as TValue. It breaks the contract for some argument types, typically subtypes."
+  },
+  {
+   "file": "round3.php",
+   "line": 50,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $value of method LaravelMax\\Round3\\Items<TKey of (int|string),TValue>::push() expects TValue, array<int> given.",
+   "tip": "Type array<int|string, int> is not always the same as TValue. It breaks the contract for some argument types, typically subtypes."
+  },
+  {
+   "file": "round3.php",
+   "line": 51,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $items of static method LaravelMax\\Round3\\Items<TKey of (int|string),TValue>::make() expects iterable<TKey of (int|string), TValue>, array<int> given.",
+   "tip": "\u2022 Type int is not always the same as TValue. It breaks the contract for some argument types, typically subtypes.\n\u2022 Type string is not always the same as TKey. It breaks the contract for some argument types, typically subtypes.\n\u2022 Type int is not always the same as TKey. It breaks the contract for some argument types, typically subtypes."
+  },
+  {
+   "file": "round3.php",
+   "line": 52,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $items of static method LaravelMax\\Round3\\Items<TKey of (int|string),TValue>::make() expects iterable<TKey of (int|string), TValue>, array<int, int> given.",
+   "tip": "\u2022 Type int is not always the same as TValue. It breaks the contract for some argument types, typically subtypes.\n\u2022 Type int is not always the same as TKey. It breaks the contract for some argument types, typically subtypes."
+  },
+  {
+   "file": "round3.php",
+   "line": 61,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $value of method LaravelMax\\Round3\\Items<int,string>::push() expects string, int given.",
+   "tip": null
+  },
+  {
+   "file": "round3.php",
+   "line": 62,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $value of method LaravelMax\\Round3\\Items<int,string>::push() expects string, int given.",
+   "tip": null
+  },
+  {
+   "file": "round3.php",
+   "line": 74,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $value of method LaravelMax\\Round3\\Items<int,T>::push() expects T, int given.",
+   "tip": "Type int is not always the same as T. It breaks the contract for some argument types, typically subtypes."
+  },
+  {
+   "file": "round3.php",
+   "line": 92,
+   "identifier": "return.type",
+   "message": "Method LaravelMax\\Round3\\Filters::ints() should return array<string, string> but returns array<string, int>.",
+   "tip": null
+  },
+  {
+   "file": "round3.php",
+   "line": 110,
+   "identifier": "return.type",
+   "message": "Method LaravelMax\\Round3\\Filters::strings() should return array<string, int> but returns array<string, string>.",
+   "tip": null
+  },
+  {
+   "file": "round3.php",
+   "line": 156,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $object_or_class of function method_exists expects object|string, mixed given.",
+   "tip": null
+  },
+  {
+   "file": "round3.php",
+   "line": 157,
+   "identifier": "method.nonObject",
+   "message": "Cannot call method broadcastAs() on class-string|object.",
+   "tip": null
+  },
+  {
+   "file": "round3.php",
+   "line": 218,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $string of function LaravelMax\\Round3\\pick expects string|null, mixed given.",
+   "tip": null
+  },
+  {
+   "file": "round3.php",
+   "line": 227,
+   "identifier": "binaryOp.invalid",
+   "message": "Binary operation \"+\" between int and mixed results in an error.",
+   "tip": null
+  },
+  {
+   "file": "round3.php",
+   "line": 227,
+   "identifier": "return.type",
+   "message": "Function LaravelMax\\Round3\\sum() should return string but returns (float|int).",
+   "tip": null
+  },
+  {
+   "file": "round3.php",
+   "line": 287,
+   "identifier": "argument.type",
+   "message": "Parameter #2 $array of function array_key_exists expects array, mixed given.",
+   "tip": null
+  },
+  {
+   "file": "round3.php",
+   "line": 297,
+   "identifier": "missingType.generics",
+   "message": "Method LaravelMax\\Round3\\Declaring::find() has parameter $declaring with generic class ReflectionClass but does not specify its types: T",
+   "tip": null
+  },
+  {
+   "file": "round3.php",
+   "line": 333,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $generated of function LaravelMax\\Round3\\takesGenerated expects LaravelMax\\Round3\\Generated<int, string>, LaravelMax\\Round3\\Generated<string, int> given.",
+   "tip": null
+  },
+  {
+   "file": "round3.php",
+   "line": 370,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method LaravelMax\\Round3\\Relation::missing().",
+   "tip": null
+  },
+  {
+   "file": "round3.php",
+   "line": 381,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $object of function get_class expects object, mixed given.",
+   "tip": null
+  },
+  {
+   "file": "round3.php",
+   "line": 388,
+   "identifier": "argument.type",
+   "message": "Parameter #3 $subject of function str_replace expects array<string>|string, mixed given.",
+   "tip": null
+  },
+  {
+   "file": "round3.php",
+   "line": 398,
+   "identifier": "binaryOp.invalid",
+   "message": "Binary operation \"+\" between array<int, string> and mixed results in an error.",
+   "tip": null
+  },
+  {
+   "file": "round3.php",
+   "line": 398,
+   "identifier": "return.type",
+   "message": "Function LaravelMax\\Round3\\merged() should return int but returns array.",
+   "tip": null
+  },
+  {
+   "file": "round3.php",
+   "line": 408,
+   "identifier": "return.type",
+   "message": "Function LaravelMax\\Round3\\tags() should return string but returns mixed.",
+   "tip": null
+  },
+  {
+   "file": "round3.php",
+   "line": 463,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $array of static method LaravelMax\\Round3\\Keys::stringify() expects array<string, mixed>, array<mixed> given.",
+   "tip": null
+  },
+  {
    "file": "strings.php",
    "line": 9,
    "identifier": "offsetAccess.nonOffsetAccessible",

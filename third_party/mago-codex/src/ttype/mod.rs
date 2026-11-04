@@ -1659,6 +1659,19 @@ pub fn get_iterable_parameters(atomic: &TAtomic, codebase: &CodebaseMetadata) ->
     get_iterable_parameters_impl(atomic, codebase, &[])
 }
 
+std::thread_local! {
+    static KEEP_ITERABLE_TEMPLATES: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
+}
+
+/// [`get_iterable_parameters`] of an object whose type arguments are templates in scope (`$this`'s own), which stay
+/// templates instead of resolving to their bounds.
+pub fn get_iterable_parameters_keeping_templates(atomic: &TAtomic, codebase: &CodebaseMetadata) -> Option<(TUnion, TUnion)> {
+    let previous = KEEP_ITERABLE_TEMPLATES.with(|keep| keep.replace(true));
+    let parameters = get_iterable_parameters_impl(atomic, codebase, &[]);
+    KEEP_ITERABLE_TEMPLATES.with(|keep| keep.set(previous));
+    parameters
+}
+
 fn get_iterable_parameters_impl(
     atomic: &TAtomic,
     codebase: &CodebaseMetadata,
@@ -2036,7 +2049,7 @@ pub fn get_specialized_template_type(
 }
 
 fn resolve_unbound_generic_parameters(codebase: &CodebaseMetadata, union: &mut TUnion) {
-    if !union.has_template_types() {
+    if !union.has_template_types() || KEEP_ITERABLE_TEMPLATES.with(std::cell::Cell::get) {
         return;
     }
 

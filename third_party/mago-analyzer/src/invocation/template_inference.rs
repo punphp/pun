@@ -573,8 +573,11 @@ fn infer_templates_from_input_and_container_types<A>(
             }
             TAtomic::Iterable(container_iterable) => {
                 for input_atomic in residual_input_type.types.as_ref() {
+                    // IterableType::inferTemplateTypes() infers nothing from a type that is not iterable (a
+                    // `Closure` beside `iterable<TKey, TValue>|(Closure(): Generator<TKey, TValue>)`), and the
+                    // union's other members still infer from it
                     let Some(input_params) = get_iterable_parameters(input_atomic, context.codebase) else {
-                        return;
+                        continue;
                     };
 
                     infer_templates_from_input_and_container_types(

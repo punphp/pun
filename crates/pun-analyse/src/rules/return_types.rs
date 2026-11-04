@@ -71,6 +71,7 @@ pub(super) fn registry(
         crate::laravel::register_models(&mut registry, Arc::clone(&larastan.models));
     }
     registry.register_function_provider(Benevolent);
+    registry.register_function_provider(ReplaceOfMixed);
     registry.register_function_provider(GetClass);
     registry.register_function_provider(ClassRelations);
     registry.register_function_provider(
@@ -1652,6 +1653,43 @@ impl FunctionReturnTypeProvider for Benevolent {
         Some(benevolent(
             function.return_type_metadata.as_ref()?.type_union.clone(),
         ))
+    }
+}
+
+/// ReplaceFunctionsDynamicReturnTypeExtension of a mixed subject: the functionMap return type as a benevolent union
+/// (`str_replace('a', '', $mixed)` is `(array<string>|string)`). The functions whose return type is not a plain union
+/// (`preg_replace()`'s conditional, `strtr()`'s `string`) keep their stub's type.
+struct ReplaceOfMixed;
+
+impl Provider for ReplaceOfMixed {
+    fn meta() -> &'static ProviderMeta {
+        &META
+    }
+}
+
+impl FunctionReturnTypeProvider for ReplaceOfMixed {
+    fn targets() -> FunctionTarget {
+        FunctionTarget::ExactMultiple(&[b"str_replace", b"str_ireplace", b"substr_replace"])
+    }
+
+    fn get_return_type(
+        &self,
+        context: &ProviderContext<'_, '_, '_>,
+        invocation: &InvocationInfo<'_, '_, '_>,
+    ) -> Option<TUnion> {
+        let name = invocation.function_name().to_ascii_lowercase();
+        let subject = if name == "substr_replace" {
+            invocation.get_argument(0, &[b"string"])
+        } else {
+            invocation.get_argument(2, &[b"subject"])
+        }?;
+        if !context.get_expression_type(subject)?.is_mixed() {
+            return None;
+        }
+        let [variant] = super::reflection::builtins(80400).functions.get(&name)?.variants.as_slice() else {
+            return None;
+        };
+        Some(benevolent(crate::larastan::config::type_from_text(variant.ret.as_bytes())?))
     }
 }
 

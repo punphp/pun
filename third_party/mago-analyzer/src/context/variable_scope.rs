@@ -69,6 +69,23 @@ pub struct VariableState {
     conditional: Vec<ConditionalVariable>,
 }
 
+impl VariableState {
+    /// A ConditionalExpressionHolder of one condition expression: `target` is `target_type` while `guard`'s type is
+    /// a subtype of `guard_type` (BooleanNarrowingHelper's conjunction and disjunction holders).
+    pub(crate) fn add_expression_condition(&mut self, guard: Word, guard_type: Rc<TUnion>, target: Word, target_type: Rc<TUnion>) {
+        let holder = ConditionalVariable {
+            guard,
+            guard_type,
+            target,
+            certainty: VariableCertainty::Defined,
+            target_type: Some(target_type),
+        };
+        if !self.conditional.contains(&holder) {
+            self.conditional.push(holder);
+        }
+    }
+}
+
 /// An actual incoming edge, not a reconstruction of the statements on that edge.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct VariableScope {

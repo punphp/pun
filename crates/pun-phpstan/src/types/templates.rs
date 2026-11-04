@@ -186,7 +186,8 @@ fn template(t: &Template, received: &Type) -> TemplateMap {
     let bound = resolve_template_types(&t.bound, &map);
     match is_super_type_of(&bound, received) {
         Tri::Yes => TemplateMap::of(t, received.clone()).union(map),
-        Tri::Maybe if let Type::Union(rs) = received => {
+        // BenevolentUnionType extends UnionType
+        Tri::Maybe if let Type::Union(rs) | Type::Benevolent(rs) = received => {
             let matching: Vec<Type> = rs.iter().filter(|r| is_super_type_of(&bound, r).yes()).cloned().collect();
             if matching.is_empty() {
                 return map;

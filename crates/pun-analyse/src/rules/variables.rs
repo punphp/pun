@@ -37,6 +37,9 @@ pub(super) struct Observations {
     /// `isUndefinedExpressionAllowed()` as the inference saw it: the targets of `isset()`, `??` and the like, and
     /// the arguments of by-reference parameters that create a variable.
     pub allowed: HashSet<Span>,
+    /// The allowed direct variables (by span) that are certainly undefined there: their ErrorType skips the
+    /// argument check of a by-reference parameter that creates the variable.
+    pub undefined_allowed: HashSet<Span>,
 }
 
 pub(super) struct Certainty {

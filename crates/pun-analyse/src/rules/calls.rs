@@ -239,13 +239,15 @@ fn arguments<'arena>(
     name: &LocalIdentifier<'arena>,
     method: &members::Method,
 ) {
-    let declaring = declaring_display(c, method);
+    let declaring = declaring_display(c, method, true);
     let subject = format!("{declaring}::{}()", method.name());
     let first_level = c.is_top_level(call.span());
     let counts = params::count(&call.argument_list);
+    let mut variants = method.variants();
+    with_scope_arguments(c, method, &mut variants);
     params::check(
         c,
-        &params::select(c, method.variants(), &counts),
+        &params::select(c, variants, &counts),
         &counts,
         name,
         params::Call {
@@ -258,8 +260,69 @@ fn arguments<'arena>(
     );
 }
 
-/// `ClassReflection::getDisplayName()` retains the declaring class's templates within its own scope.
-fn declaring_display(c: &Checker, method: &members::Method) -> String {
+/// The declaring class's template names and their arguments on a call through the scope class (`$this->`, `self::`,
+/// `static::`, `parent::`): the scope's ClassReflection carries its own templates as TemplateTypeArgumentStrategy
+/// arguments (TemplateTypeHelper::toArgument()), resolved through the ancestors (`@extends C<int, T>`).
+fn scope_arguments(c: &Checker, method: &members::Method) -> Option<(String, Vec<String>, Vec<pun_phpstan::types::Type>)> {
+    use pun_phpstan::types::{Template, Type};
+    let (Some(scope), members::Method::User { declaring, .. }) = (c.class_scope(), method) else {
+        return None;
+    };
+    let names: Vec<String> = super::declared::class_templates(c, declaring).into_iter().map(|t| t.name).collect();
+    if names.is_empty() {
+        return None;
+    }
+    let own: Vec<Type> = super::declared::class_templates(c, scope)
+        .into_iter()
+        .map(|t| Type::Template(Box::new(Template { argument: true, ..t })))
+        .collect();
+    let class = super::declared::original_name(declaring);
+    let args = if scope.name.as_bytes().eq_ignore_ascii_case(declaring.name.as_bytes()) {
+        own
+    } else {
+        let name = super::declared::original_name(scope);
+        super::declared::with_classes(c, || {
+            pun_phpstan::symbols::lookup(&name).and_then(|k| pun_phpstan::types::ancestor_args(&k, &class, &own))
+        })?
+    };
+    Some((format!("class {class}"), names, args))
+}
+
+/// The variants' parameter types with [`scope_arguments()`] substituted.
+fn with_scope_arguments(c: &Checker, method: &members::Method, variants: &mut params::Variants) {
+    let Some((scope, names, args)) = scope_arguments(c, method) else {
+        return;
+    };
+    super::declared::with_classes(c, || {
+        for v in &mut variants.all {
+            for i in 0..v.names.len() {
+                let Some(declared) = super::types::declared_type(c, v, i) else { continue };
+                // Template equality ignores the argument strategy, so look for the scope's templates instead
+                fn mentions(t: &pun_phpstan::types::Type, scope: &str) -> bool {
+                    let found = std::cell::Cell::new(matches!(t, pun_phpstan::types::Type::Template(tt) if tt.scope == scope));
+                    t.traverse(&|i| {
+                        found.set(found.get() || mentions(i, scope));
+                        i.clone()
+                    });
+                    found.get()
+                }
+                if mentions(&declared, &scope) {
+                    v.param_types[i] = params::ParamType::Typed(super::types::properties::with_args(&declared, &scope, &names, &args));
+                }
+            }
+        }
+    });
+}
+
+/// `ClassReflection::getDisplayName()` retains the declaring class's templates within its own scope, and a call
+/// through the scope class (`through_scope`) the declaring ancestor's [`scope_arguments()`].
+fn declaring_display(c: &Checker, method: &members::Method, through_scope: bool) -> String {
+    if through_scope && let Some((_, _, args)) = scope_arguments(c, method) {
+        let args: Vec<String> = super::declared::with_classes(c, || {
+            args.iter().map(|t| t.describe(pun_phpstan::types::Level::TypeOnly)).collect()
+        });
+        return format!("{}<{}>", method.declaring_display(c), args.join(","));
+    }
     if let Some(k) = c.class_scope()
         && !k.template_types.is_empty()
         && k.name
@@ -482,11 +545,15 @@ pub(super) fn check_static_method<'arena>(
         }
         return;
     };
-    let subject = format!("{}::{declared}()", declaring_display(c, &method));
+    let through_scope = matches!(call.class, Expression::Self_(_) | Expression::Static(_) | Expression::Parent(_));
+    let subject = format!("{}::{declared}()", declaring_display(c, &method, through_scope));
     let display_kind = if is_static { "Static method" } else { "Method" };
     let first_level = c.is_top_level(call.span());
     let counts = params::count(&call.argument_list);
     let mut variants = method.variants();
+    if through_scope {
+        with_scope_arguments(c, &method, &mut variants);
+    }
     // CalledOnTypeUnresolvedMethodPrototypeReflection: a call on a class name resolves the parameters' `static` and
     // `$this` to that class
     if matches!(call.class, Expression::Identifier(_)) && matches!(method, members::Method::User { .. }) {

@@ -1115,3 +1115,9 @@ return type it inherits from the parent method uses the child's template of the 
 method's, as PHPStan's TemplateTypeMap resolves templates by name. Laravel's Eloquent `Collection::pad()` declares
 `@template TPadValue` and inherits `@param TPadValue $value`, so `pad(10, 10)` is `Collection<int, TModel|int>`, not
 `Collection<int, mixed>`.
+
+## Iterable parameters keeping templates
+
+`ttype/mod.rs` `get_iterable_parameters_keeping_templates()`: `get_iterable_parameters()` with a thread-local flag that
+stops `resolve_unbound_generic_parameters()` from replacing templates with their bounds. mago-analyzer's foreach over
+`$this` uses it so the loop variables are the class's own templates.

@@ -367,10 +367,27 @@ std::thread_local! {
     });
 }
 
+/// MutatingScope::SUPERGLOBAL_VARIABLES, which getVariableType() types `array<(int|string), mixed>` (a benevolent
+/// key and an explicit mixed value), not Mago's shapes.
+const PHPSTAN_SUPERGLOBALS: [&str; 9] =
+    ["$GLOBALS", "$_SERVER", "$_GET", "$_POST", "$_FILES", "$_COOKIE", "$_SESSION", "$_REQUEST", "$_ENV"];
+
+fn phpstan_superglobal() -> Rc<TUnion> {
+    // `array-key`, which Pun reads as PHPStan's benevolent `(int|string)`
+    Rc::new(mago_codex::ttype::get_keyed_array(mago_codex::ttype::get_arraykey(), mago_codex::ttype::get_explicit_mixed()))
+}
+
 pub fn get_super_globals() -> WordMap<Rc<TUnion>> {
-    SUPERGLOBALS_MAP.with(|map| WordMap::clone(map))
+    let mut map = SUPERGLOBALS_MAP.with(|map| WordMap::clone(map));
+    for name in PHPSTAN_SUPERGLOBALS {
+        map.insert(word(name), phpstan_superglobal());
+    }
+    map
 }
 
 pub fn get_global_variable_type(variable_name: Word) -> Option<Rc<TUnion>> {
+    if PHPSTAN_SUPERGLOBALS.iter().any(|name| name.as_bytes() == variable_name.as_bytes()) {
+        return Some(phpstan_superglobal());
+    }
     SUPERGLOBALS_MAP.with(|map| map.get(&variable_name).cloned())
 }

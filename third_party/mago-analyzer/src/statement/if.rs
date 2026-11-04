@@ -1227,6 +1227,7 @@ where
 
                 if is_derived_access_path(*variable_id, *changed_variable_id)
                     && !changed_variable_ids.contains(variable_id)
+                    && !else_types.contains_key(variable_id)
                 {
                     variables_to_remove.push(*variable_id);
                 }

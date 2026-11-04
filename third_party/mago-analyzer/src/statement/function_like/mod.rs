@@ -40,7 +40,6 @@ use mago_codex::ttype::expander::StaticClassType;
 use mago_codex::ttype::expander::TypeExpansionOptions;
 use mago_codex::ttype::expander::contains_parameter_variable;
 use mago_codex::ttype::expander::get_signature_of_function_like_metadata;
-use mago_codex::ttype::get_arraykey;
 use mago_codex::ttype::get_keyed_array;
 use mago_codex::ttype::get_list;
 use mago_codex::ttype::get_mixed;
@@ -451,6 +450,10 @@ where
         parent_artifacts.transfer_native_expression_types(&mut artifacts);
         parent_artifacts.transfer_call_terminations(&mut artifacts);
     }
+    // The body's call assertions stay readable by span: array_filter's callback narrowing builds the formula of an
+    // arrow function's or closure's returned expression from the caller (invocation/array_filter.rs).
+    parent_artifacts.if_true_assertions.extend(std::mem::take(&mut artifacts.if_true_assertions));
+    parent_artifacts.if_false_assertions.extend(std::mem::take(&mut artifacts.if_false_assertions));
     parent_artifacts.nullsafe_method_receiver_types.extend(std::mem::take(&mut artifacts.nullsafe_method_receiver_types));
     parent_artifacts.variable_definedness.extend(std::mem::take(&mut artifacts.variable_definedness));
     parent_artifacts.resolved_method_calls.append(&mut artifacts.resolved_method_calls);
@@ -756,11 +759,20 @@ where
             }
         }
 
-        let final_parameter_type = if parameter_metadata.flags.is_variadic() {
+        // the body's variable is an array only for a natively variadic parameter, not for a PHPDoc `...$name`
+        let final_parameter_type = if parameter_node.is_variadic() {
             if function_like_metadata.flags.forbids_named_arguments() {
                 get_list(final_parameter_type)
             } else {
-                get_keyed_array(get_arraykey(), final_parameter_type)
+                // MutatingScope::enterFunctionLike(): a variadic that named arguments can fill is
+                // `array<int<0, max>|string, T>`
+                get_keyed_array(
+                    TUnion::from_vec(vec![
+                        TAtomic::Scalar(TScalar::Integer(mago_codex::ttype::atomic::scalar::int::TInteger::non_negative())),
+                        TAtomic::Scalar(TScalar::String(mago_codex::ttype::atomic::scalar::string::TString::general())),
+                    ]),
+                    final_parameter_type,
+                )
             }
         } else {
             final_parameter_type

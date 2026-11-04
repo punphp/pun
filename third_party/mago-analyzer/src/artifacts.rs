@@ -144,6 +144,9 @@ pub struct AnalysisArtifacts {
     pub case_scopes: Vec<CaseScope>,
     pub fully_matched_switch_offsets: HashSet<u32>,
     pub inferred_parameter_types: Option<HashMap<usize, TUnion>>,
+    /// ArrayHandler's passed-to type: the value type an argument's parameter expects of the array literal analysed
+    /// next, whose closure items take their parameter types from its callables.
+    pub(crate) array_passed_to_type: Option<TUnion>,
     /// Results of providers' typed callback invocations, local to the asking call.
     pub(crate) callback_returns: Vec<(Span, Vec<TUnion>, TUnion)>,
     pub method_initialized_properties: HashMap<(Word, Word), WordSet>,
@@ -205,6 +208,7 @@ impl AnalysisArtifacts {
             loop_scope: None,
             fully_matched_switch_offsets: HashSet::default(),
             inferred_parameter_types: None,
+            array_passed_to_type: None,
             callback_returns: Vec::new(),
             method_initialized_properties: HashMap::default(),
             method_calls_this_methods: HashMap::default(),

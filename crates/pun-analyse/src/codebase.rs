@@ -271,6 +271,67 @@ fn build_prelude(php_version: u32) -> (CodebaseMetadata, SymbolReferences) {
             method.return_type_metadata = Some(TypeMetadata::new(TUnion::from_vec(reflected), span));
         }
     }
+    // PHPStan's stubs return a bare class template where the prelude adds null (`Iterator::current()`'s `null|V`), and
+    // its functionMap marks some method returns a BenevolentUnionType (`PDO::prepare()`'s `PDOStatement|false`).
+    for ((class, name), method) in &mut metadata.function_likes {
+        let Some([variant]) = builtins
+            .classes
+            .get(&String::from_utf8_lossy(class.as_bytes()).to_ascii_lowercase())
+            .and_then(|class| class.methods.get(&String::from_utf8_lossy(name.as_bytes()).to_ascii_lowercase()))
+            .map(|method| method.variants.as_slice())
+        else {
+            continue;
+        };
+        if method.return_type_metadata.is_none() && variant.ret.starts_with("__benevolent<") {
+            method.return_type_metadata = method.return_type_declaration_metadata.clone();
+        }
+        let Some(ret) = method.return_type_metadata.as_mut() else { continue };
+        if variant.ret.starts_with("__template<") && !variant.ret.contains(" | ") {
+            if let [TAtomic::Null, template @ TAtomic::GenericParameter(_)]
+            | [template @ TAtomic::GenericParameter(_), TAtomic::Null] = ret.type_union.types.as_ref()
+            {
+                ret.type_union = TUnion::from_vec(vec![template.clone()]);
+            }
+        } else if variant.ret.starts_with("__benevolent<") {
+            ret.type_union.set_ignore_nullable_issues(true);
+            ret.type_union.set_ignore_falsable_issues(true);
+        }
+    }
+    // A built-in function the prelude types as a plain `array` returns its functionMap array type
+    // (`debug_backtrace()`'s `list<array{function: string, ...}>`).
+    for ((scope, name), function) in &mut metadata.function_likes {
+        if !scope.is_empty() || !function.flags.is_built_in() {
+            continue;
+        }
+        let Some(declared) =
+            function.return_type_metadata.as_ref().or(function.return_type_declaration_metadata.as_ref())
+        else {
+            continue;
+        };
+        let [TAtomic::Array(mago_codex::ttype::atomic::array::TArray::Keyed(array))] = declared.type_union.types.as_ref()
+        else {
+            continue;
+        };
+        if array.known_items.is_some()
+            || array.non_empty
+            || !array.parameters.as_ref().is_some_and(|(k, v)| k.is_array_key() && v.is_mixed())
+        {
+            continue;
+        }
+        let Some([variant]) = builtins
+            .functions
+            .get(&String::from_utf8_lossy(name.as_bytes()).to_ascii_lowercase())
+            .map(|function| function.variants.as_slice())
+        else {
+            continue;
+        };
+        if let Some(reflected) = crate::larastan::config::type_from_text(variant.ret.as_bytes())
+            .filter(|t| t.types.iter().all(TAtomic::is_array))
+        {
+            let span = declared.span;
+            function.return_type_metadata = Some(TypeMetadata::new(reflected, span));
+        }
+    }
     // Runtime reflection supplies empty-array constructor defaults even when an API stub
     // writes null (ArrayObject and ArrayIterator). Generic inference must see the real value.
     for ((class, name), constructor) in &mut metadata.function_likes {

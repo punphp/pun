@@ -1609,8 +1609,11 @@ where
                 did_remove_type = true;
             }
             TAtomic::Mixed(_) => {
+                // ArrayKeyExistsFunctionTypeSpecifyingExtension: a falsey array_key_exists() still proves an array,
+                // since PHP 8 throws for any other value
                 did_remove_type = true;
-                acceptable_types.push(atomic);
+                let mixed = Arc::new(get_mixed());
+                acceptable_types.push(TAtomic::Array(TArray::Keyed(TKeyedArray::new_with_parameters(mixed.clone(), mixed))));
             }
             TAtomic::Object(TObject::Named(_)) => {
                 did_remove_type = true;

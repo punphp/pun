@@ -671,8 +671,13 @@ fn observe_variable(v: &Variable<'_>, context: &HookContext<'_, '_>, found: &mut
 }
 
 fn observe_direct(v: &DirectVariable<'_>, context: &HookContext<'_, '_>, found: &mut Found) {
-    if found.allowed.contains(&v.span()) { return; }
     let name = String::from_utf8_lossy(v.name);
+    if found.allowed.contains(&v.span()) {
+        if v.name != b"$this" && variables::defined(context, &name).no() {
+            found.variables.undefined_allowed.insert(v.span());
+        }
+        return;
+    }
     // Mago places every implicit arrow capture in possibly_in_scope, even one absent in its parent. Read the
     // parent's real block observation for those names, not a syntactically reconstructed parent scope.
     let certainty = context.scope().get_function_like()

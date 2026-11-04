@@ -156,10 +156,26 @@ fn check(c: &mut Checker, ret: &Type, value: Option<&Expression>, at: Span, of: 
     }
 }
 
+/// `NodeScanner::nodeIsOrContainsYield()`: a yield anywhere in the body, nested closures and classes included, which
+/// is what the function or method reflection's `isGenerator()` reads.
+struct ContainsYield(bool);
+
+impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for ContainsYield {
+    fn walk_in_yield(&mut self, _: &'ast Yield<'arena>, _: &mut ()) {
+        self.0 = true;
+    }
+}
+
 fn body(c: &mut Checker, b: &Block, ret: &Type, of: &str) {
     let r = returns(b);
+    let mut contains_yield = ContainsYield(r.generator);
+    if !contains_yield.0 {
+        for s in b.statements.iter() {
+            contains_yield.walk_statement(s, &mut ());
+        }
+    }
     for ret_stmt in &r.returns {
-        check(c, ret, ret_stmt.value, ret_stmt.span(), of, r.generator);
+        check(c, ret, ret_stmt.value, ret_stmt.span(), of, contains_yield.0);
     }
     let strict = strict_types(c);
     super::yields::check(c, &r.yields, &r.statements, ret, strict);

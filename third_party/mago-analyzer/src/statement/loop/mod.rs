@@ -1825,7 +1825,37 @@ where
                     TObject::Named(atomic_object) => {
                         always_enters_loop = false;
 
-                        if let Some((k, v)) = get_iterable_parameters(iterator_atomic, context.codebase) {
+                        // ThisType's class reflection keeps its own templates (PHPStan's `foreach ($this as $k => $v)`
+                        // is `TKey`/`TValue`), not their bounds.
+                        let own = atomic_object
+                            .is_this
+                            .then(|| context.codebase.get_class_like(atomic_object.name.as_bytes()))
+                            .flatten()
+                            .filter(|class| !class.template_types.is_empty())
+                            .map(|class| {
+                                let mut this = atomic_object.clone();
+                                this.type_parameters = atomic_object.type_parameters.clone().or_else(|| Some(
+                                    class
+                                        .template_types
+                                        .iter()
+                                        .map(|(name, template)| {
+                                            TUnion::from_atomic(TAtomic::GenericParameter(
+                                                mago_codex::ttype::atomic::generic::TGenericParameter::new(
+                                                    *name,
+                                                    std::sync::Arc::new(template.constraint.clone()),
+                                                    template.defining_entity,
+                                                ),
+                                            ))
+                                        })
+                                        .collect(),
+                                ));
+                                TAtomic::Object(TObject::Named(this))
+                            });
+                        let parameters = match &own {
+                            Some(this) => mago_codex::ttype::get_iterable_parameters_keeping_templates(this, context.codebase),
+                            None => get_iterable_parameters(iterator_atomic, context.codebase),
+                        };
+                        if let Some((k, v)) = parameters {
                             (k, v)
                         } else {
                             let class_name = atomic_object.name;

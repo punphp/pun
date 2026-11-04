@@ -17,7 +17,6 @@ const GAPS: &[(&str, &str, i64, &str)] = &[
     // $x is undefined at the loop start; Pun merges the end-of-body scope back in
     ("var_names", "vars.php", 84, "varTag.variableNotFound"),
     // Mago types an int mixed after an invalid `$i += 'x'`, so NullCoalesceRule cannot tell it is not nullable
-    ("types", "offsets.php", 216, "nullCoalesce.variable"),
     // The conservative declaration-effects producer does not follow labels/goto or general branches.
     ("level4-unused", "src/labels.php", 5, "void.pure"),
     // `||` conditions and branch joins remain unknown, not proven empty.

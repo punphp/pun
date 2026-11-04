@@ -83,6 +83,9 @@ where
     A: Arena,
 {
     let identifier = invocation.target.get_function_like_identifier()?;
+    if let Some(filtered) = super::array_filter::return_type(context, block_context, artifacts, invocation) {
+        return Some(filtered);
+    }
 
     fetch_function_like_provider_return_type(context, block_context, artifacts, identifier, invocation)
 }

@@ -3637,3 +3637,99 @@ stays `list<1>`.
 template members (`T` in `iterable<array-key, T>|T`) infer from the argument only when its other generic members
 inferred nothing, as UnionType::inferTemplateTypes() does. `Collection::wrap([1, 2, 3])` binds `TWrapValue` to `int`,
 not to `array{1, 2, 3}|int`. A union with a `class-string<T>` member keeps Mago's inference.
+
+## Else assertions keep derived offsets
+
+`statement/if.rs`: after `if (! isset($a[$k]) || ! is_array($a[$k])) { return; }`, a derived access path (`$a[$k]`)
+that the else branch's assertions specify is no longer dropped when its parent changes, so it stays an array.
+
+## array_filter() narrowed by its callback
+
+`invocation/array_filter.rs` (new), called from `invocation/return_type_fetcher.rs`
+`fetch_invocation_provider_return_type()`: a port of PHPStan's ArrayFilterFunctionReturnTypeHelper for an arrow
+function, a closure whose only statement is `return <expr>;`, or a constant-string function name, with the
+ARRAY_FILTER_USE_KEY and ARRAY_FILTER_USE_BOTH modes. Each key and value is assigned to the callback's parameters and
+narrowed by the expression's truthy specification. `statement/function_like/mod.rs` passes the body's
+`if_true_assertions`/`if_false_assertions` to the parent artifacts so the helper reads them by span.
+
+## Conditional expression holders of a falsey conjunction
+
+`utils/conditional.rs` `conjunction_holders()` and `context/variable_scope.rs`
+`VariableState::add_expression_condition()`: BooleanNarrowingHelper::specifyConjunction()'s holders in the falsey
+scope of `A && B`. While A's single specified expression keeps its A-true type, B's specified expressions keep their
+B-false types, and the other way round. After `if ($n >= 10 && ! $u->v) { return; }`, `$n >= 20` proves `$u->v`.
+As buildConditionalHolderRecipe(), the condition is the side's falsey narrowing: a side whose falsey narrowing names
+several expressions (a disjunction such as `($a && $b) || $c`) builds no holder.
+
+## method_exists() of mixed
+
+`reconciler/simple_assertion_reconciler.rs` `reconcile()`: MethodExistsTypeSpecifyingExtension specifies a mixed value
+as `(object&hasMethod(m))|class-string`.
+
+## array_key_exists() of mixed
+
+`reconciler/simple_assertion_reconciler.rs` `reconcile_has_array_key()` and
+`reconciler/simple_negated_assertion_reconciler.rs` `reconcile_no_array_key()`: as
+ArrayKeyExistsFunctionTypeSpecifyingExtension, a constant key specifies a mixed array as
+`array<mixed, mixed>&hasOffset(key)` when true, and as `array<mixed, mixed>` when false (PHP 8 throws for any other
+value). `context/non_nullability.rs` no longer asserts a key on a mixed parent of an `isset()` or `??` offset, so those
+parents stay mixed as in PHPStan.
+
+## Superglobals
+
+`common/global.rs`: `$GLOBALS`, `$_SERVER`, `$_GET`, `$_POST`, `$_FILES`, `$_COOKIE`, `$_SESSION`, `$_REQUEST` and
+`$_ENV` are `array<array-key, mixed>` with an explicit mixed value (Pun reads `array-key` as the benevolent
+`(int|string)`), as MutatingScope types them, not Mago's shapes.
+
+## Conditional return types of a mixed excluding the target
+
+`invocation/resolver.rs` `resolve_conditional()`: a subject that is a mixed excluding the whole target (`mixed~null`
+against `null`) is disjoint from it, so `str($_SERVER['X'])` after `isset()` takes the non-null branch.
+
+## Arithmetic with a mixed operand
+
+`expression/binary/arithmetic.rs` `common_math_with_mixed()`: as InitializerExprTypeResolver::resolveCommonMath(),
+`+`, `-`, `*` and `/` with a mixed operand give the benevolent `(float|int)`, or `float` beside a float. As
+getPlusType(), `+` of an array and a mixed is `array<mixed, mixed>`, of two mixed the benevolent `(array|float|int)`,
+and of a mixed and a type that may be an array but is otherwise only scalars that type.
+
+## An asserting call of a coalesce
+
+`invocation/post_process.rs` `coalesce_argument_assertions()`: as TypeSpecifier::create() in a true context, a
+`$left ?? $right` argument of a function with `@phpstan-assert-if-true` whose right side the asserted type can never be
+specifies `$left`. `isArray($options['multipart'] ?? null)` narrows `$options['multipart']` to an array.
+
+## foreach over $this
+
+`statement/loop/mod.rs`: `foreach ($this as $k => $v)` in a generic class keeps the class's own templates (`TKey`,
+`TValue`) as ThisType's class reflection does, through mago-codex's `get_iterable_parameters_keeping_templates()`.
+
+## Iterable templates of a non-iterable argument
+
+`invocation/template_inference.rs` `infer_templates_from_input_and_container_types()`: an argument member that is not
+iterable infers nothing from an `iterable<K, V>` container member and moves on to the next argument member, as
+IterableType::inferTemplateTypes() returns an empty map, instead of ending the whole union's inference. LazyCollection's
+`new static(function () { yield 1; })` against `iterable<TKey, TValue>|(Closure(): Generator<TKey, TValue, mixed,
+void>)` infers `static<int, int>`, not `static<mixed, mixed>`.
+
+## Closures in an array argument
+
+`invocation/analyzer.rs` `analyze_invocation_with_arguments()`, `invocation/arguments.rs`
+`analyze_and_store_argument_type()` and `expression/array.rs` `analyze_array_elements()`:
+as ArgumentsHandler passes an array literal argument its parameter type (`enterPassedToType()`) and ArrayHandler passes
+each closure or array item the expected value type, a closure item of an array argument takes its parameter types
+from the callables of the parameter's array value type. Laravel's `->with(['posts' => fn ($query) => ...])` types
+`$query` as `Relation<*, *, *>` from `array<array|(Closure(Relation<*, *, *>): mixed)|string>`. The shared
+`callable_parameter_types()` and `expected_value_type()` helpers live in `invocation/arguments.rs`.
+
+## Implicit throw point of a method call without reflection
+
+`expression/call/method_call.rs` `analyze_method_call()`: as MethodCallHandler, an instance method call that resolves
+no method (an unknown method, a dynamic name, a mixed receiver) is an implicit `Throwable` throw point on the
+post-argument scope, so the catch of `try { $object->{$method}(); } catch (Error $e) {}` is reachable and analysed.
+
+## Variadic parameter keys
+
+`statement/function_like/mod.rs`: a variadic parameter that named arguments can fill is `array<int<0, max>|string, T>`
+inside the body, as MutatingScope::enterFunctionLike() types it, not `array<array-key, T>`. Only a natively variadic
+parameter is an array in the body: `@param mixed ...$tags` on a plain `$tags` leaves it `mixed`.

@@ -613,9 +613,76 @@ where
                 }
             });
 
+    let final_type = common_math_with_mixed(binary, &left_type, &right_type).unwrap_or(final_type);
+
     assign_arithmetic_type(artifacts, final_type, binary);
 
     Ok(())
+}
+
+/// InitializerExprTypeResolver::resolveCommonMath(): an operand that is `mixed` makes the operands' union a MixedType,
+/// so `+`, `-`, `*` and `/` give the benevolent union of both number types (`(float|int)`), or `float` beside a float.
+fn common_math_with_mixed(binary: &Binary<'_>, left_type: &TUnion, right_type: &TUnion) -> Option<TUnion> {
+    if !matches!(
+        binary.operator,
+        BinaryOperator::Addition(_)
+            | BinaryOperator::Subtraction(_)
+            | BinaryOperator::Multiplication(_)
+            | BinaryOperator::Division(_)
+    ) {
+        return None;
+    }
+    let plain_mixed = |t: &TUnion| t.is_mixed() && !t.types.iter().any(|a| matches!(a, TAtomic::Mixed(m) if m.is_error()));
+    let other = if plain_mixed(left_type) {
+        right_type
+    } else if plain_mixed(right_type) {
+        left_type
+    } else {
+        return None;
+    };
+    let is_addition = matches!(binary.operator, BinaryOperator::Addition(_));
+    if !other.is_mixed() && other.types.iter().all(TAtomic::is_array) {
+        // getPlusType(): an array plus a value that may be an array is `array<mixed, mixed>`
+        if !is_addition {
+            return None;
+        }
+        let mixed = std::sync::Arc::new(get_mixed());
+        let mut array = TKeyedArray::new_with_parameters(mixed.clone(), mixed);
+        array.non_empty = other.types.iter().all(|a| a.is_non_empty_array());
+        return Some(TUnion::from_atomic(TAtomic::Array(TArray::Keyed(array))));
+    }
+    // getPlusType(): a mixed plus a type that may be an array and is otherwise string, float, int or bool is that type
+    if is_addition
+        && other.types.iter().any(TAtomic::is_array)
+        && other.types.iter().all(|a| {
+            a.is_array()
+                || matches!(
+                    a,
+                    TAtomic::Scalar(TScalar::String(_) | TScalar::Float(_) | TScalar::Integer(_) | TScalar::Bool(_))
+                )
+        })
+    {
+        return Some(other.clone());
+    }
+    if is_addition && other.is_mixed() {
+        // getPlusType(): two mixed operands may both be arrays, `(array|float|int)`
+        let mixed = std::sync::Arc::new(get_mixed());
+        let mut number = TUnion::from_vec(vec![
+            TAtomic::Array(TArray::Keyed(TKeyedArray::new_with_parameters(mixed.clone(), mixed))),
+            TAtomic::Scalar(TScalar::Float(TFloat::general())),
+            TAtomic::Scalar(TScalar::Integer(TInteger::Unspecified)),
+        ]);
+        number.set_ignore_nullable_issues(true);
+        number.set_ignore_falsable_issues(true);
+        return Some(number);
+    }
+    if !other.is_mixed() && other.types.iter().all(|a| matches!(a, TAtomic::Scalar(TScalar::Float(_)))) {
+        return Some(TUnion::from_atomic(TAtomic::Scalar(TScalar::Float(TFloat::general()))));
+    }
+    let mut number = TUnion::from_vec(vec![TAtomic::Scalar(TScalar::Integer(TInteger::Unspecified)), TAtomic::Scalar(TScalar::Float(TFloat::general()))]);
+    number.set_ignore_nullable_issues(true);
+    number.set_ignore_falsable_issues(true);
+    Some(number)
 }
 
 #[inline]
