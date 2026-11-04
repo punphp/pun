@@ -28,7 +28,7 @@ class ArrayRule implements Stringable
      * @param  \Illuminate\Contracts\Support\Arrayable|array|null  $keys
      */
     public function __construct($keys = null)
-    {}
+    { func_get_args(); }
 
     /**
      * The field under validation must have between the given min and max number of items (inclusive).

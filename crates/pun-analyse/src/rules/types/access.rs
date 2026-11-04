@@ -97,6 +97,17 @@ impl<'a> Checker<'a, '_> {
                 None => Tri::No,
             },
             Type::ObjectWithoutClass | Type::Iterable(..) | Type::Callable(_) => Tri::Maybe,
+            // HigherOrderCollectionProxyPropertyExtension (HigherOrderCollectionProxyHelper::hasPropertyOrMethod())
+            Type::Object(n, args, _)
+                if !is_static
+                    && self.larastan.is_some()
+                    && n.eq_ignore_ascii_case("Illuminate\\Support\\HigherOrderCollectionProxy")
+                    && matches!(args.as_slice(), [proxied, value, _] if proxied.constant_strings().len() == 1
+                        && self.can_call_methods(value).yes()
+                        && self.has_property(value, property, false).yes()) =>
+            {
+                Tri::Yes
+            }
             t => class_of(t).map_or(Tri::No, |n| self.class_has_property(n, property, is_static)),
         })
     }

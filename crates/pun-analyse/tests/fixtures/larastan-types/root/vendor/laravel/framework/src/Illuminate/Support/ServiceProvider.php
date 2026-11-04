@@ -327,7 +327,7 @@ abstract class ServiceProvider
      * @return void
      */
     public function commands($commands)
-    {}
+    { func_get_args(); }
 
     /**
      * Register commands that should run on "optimize" or "optimize:clear".

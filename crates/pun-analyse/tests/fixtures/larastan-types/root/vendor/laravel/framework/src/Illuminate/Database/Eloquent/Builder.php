@@ -288,7 +288,7 @@ class Builder implements BuilderContract
      * @return $this
      */
     public function where($column, $operator = null, $value = null, $boolean = 'and')
-    {}
+    { func_get_args(); }
 
     /**
      * Add a basic where clause to the query, and return the first result.
@@ -300,7 +300,7 @@ class Builder implements BuilderContract
      * @return TModel|null
      */
     public function firstWhere($column, $operator = null, $value = null, $boolean = 'and')
-    {}
+    { func_get_args(); }
 
     /**
      * Add an "or where" clause to the query.
@@ -311,7 +311,7 @@ class Builder implements BuilderContract
      * @return $this
      */
     public function orWhere($column, $operator = null, $value = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Add a basic "where not" clause to the query.
@@ -1023,7 +1023,7 @@ class Builder implements BuilderContract
      * @return $this
      */
     public function with($relations, $callback = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Prevent the specified relations from being eager loaded.
@@ -1032,7 +1032,7 @@ class Builder implements BuilderContract
      * @return $this
      */
     public function without($relations)
-    {}
+    { func_get_args(); }
 
     /**
      * Set the relationships that should be eager loaded while removing any previously added eager loading specifications.

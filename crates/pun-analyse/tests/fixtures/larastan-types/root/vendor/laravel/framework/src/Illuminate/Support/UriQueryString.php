@@ -24,7 +24,7 @@ class UriQueryString implements Arrayable, Stringable
      * @return array
      */
     public function all($keys = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Retrieve data from the instance.

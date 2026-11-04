@@ -526,7 +526,7 @@ trait QueriesRelationships
      * @return $this
      */
     public function withCount($relations)
-    {}
+    { func_get_args(); }
 
     /**
      * Add subselect queries to include the max of the relation's column.

@@ -62,7 +62,7 @@ class PendingResourceRegistration
      * @return \Illuminate\Routing\PendingResourceRegistration
      */
     public function only($methods)
-    {}
+    { func_get_args(); }
 
     /**
      * Set the methods the controller should exclude.
@@ -71,7 +71,7 @@ class PendingResourceRegistration
      * @return \Illuminate\Routing\PendingResourceRegistration
      */
     public function except($methods)
-    {}
+    { func_get_args(); }
 
     /**
      * Set the route names for controller actions.

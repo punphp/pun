@@ -68,7 +68,7 @@ class RedirectResponse extends BaseRedirectResponse implements Responsable
      * @return $this
      */
     public function onlyInput()
-    {}
+    { func_get_args(); }
 
     /**
      * Flash an array of input to the session.
@@ -76,7 +76,7 @@ class RedirectResponse extends BaseRedirectResponse implements Responsable
      * @return $this
      */
     public function exceptInput()
-    {}
+    { func_get_args(); }
 
     /**
      * Flash a container of errors to the session.

@@ -351,7 +351,7 @@ trait InteractsWithPivotTable
      * @return $this
      */
     public function withPivot($columns)
-    {}
+    { func_get_args(); }
 
     /**
      * Get all of the IDs from the given mixed value.

@@ -21,7 +21,7 @@ use Symfony\Component\VarDumper\Cloner\Stub;
 class ConstStub extends Stub
 {
     public function __construct(string $name, string|int|float|null $value = null)
-    {}
+    { func_get_args(); }
 
     public function __toString(): string
     {}

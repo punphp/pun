@@ -234,6 +234,17 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for StaticMethodCall<'arena> {
             artifacts.set_resolved_expression_type(&self.span(), return_type);
         }
 
+        // StaticCallHandler: a call it reflects no method for (an instance method called statically, an unknown
+        // method) is an implicit throw point
+        if !has_resolved_methods && block_context.flags.inside_try() {
+            artifacts
+                .variable_throw_scopes
+                .entry((self.span(), crate::artifacts::VariableThrowKind::Implicit))
+                .or_default()
+                .entry(mago_word::word(b"Throwable"))
+                .or_insert_with(|| block_context.variable_scope());
+        }
+
         if let Some(before) = short_circuit {
             crate::context::non_nullability::merge_short_circuit(block_context, &before, context);
         }

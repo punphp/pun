@@ -114,7 +114,7 @@ class MemoizedStore implements CanFlushLocks, LockProvider, Store
      * @throws \BadMethodCallException
      */
     public function lock($name, $seconds = 0, $owner = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Restore a lock instance using the owner identifier.
@@ -126,7 +126,7 @@ class MemoizedStore implements CanFlushLocks, LockProvider, Store
      * @throws \BadMethodCallException
      */
     public function restoreLock($name, $owner)
-    {}
+    { func_get_args(); }
 
     /**
      * Flush all locks managed by the store.
@@ -161,7 +161,7 @@ class MemoizedStore implements CanFlushLocks, LockProvider, Store
      * @throws \BadMethodCallException
      */
     public function tags($names)
-    {}
+    { func_get_args(); }
 
     /**
      * Remove an item from the cache.

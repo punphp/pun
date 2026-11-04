@@ -742,7 +742,7 @@ class CarbonPeriod extends DatePeriodBase implements Countable, JsonSerializable
      * @SuppressWarnings(UnusedFormalParameter)
      */
     public function addFilter(callable|string $callback, ?string $name = null): static
-    {}
+    { func_get_args(); }
 
     /**
      * Prepend a filter to the stack.
@@ -750,7 +750,7 @@ class CarbonPeriod extends DatePeriodBase implements Countable, JsonSerializable
      * @SuppressWarnings(UnusedFormalParameter)
      */
     public function prependFilter(callable|string $callback, ?string $name = null): static
-    {}
+    { func_get_args(); }
 
     /**
      * Remove a filter by instance or name.

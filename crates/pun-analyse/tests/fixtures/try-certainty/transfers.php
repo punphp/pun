@@ -219,3 +219,28 @@ function nestedReachableCatchFinally(): int
     echo $finished;
     return $value;
 }
+
+class InstanceOnly
+{
+    public function instance(): void {}
+}
+
+function staticCallToInstanceMethod(): void
+{
+    try {
+        InstanceOnly::instance();
+    } catch (\Exception $exception) {
+        $caught = true;
+    }
+    echo $caught;
+}
+
+function staticCallToUnknownMethod(): void
+{
+    try {
+        InstanceOnly::unknown();
+    } catch (\Exception $exception) {
+        $caught = true;
+    }
+    echo $caught;
+}

@@ -64,7 +64,7 @@ class Data implements DataInterface, ArrayAccess
      * @psalm-mutation-free
      */
     public function get(string $key, $default = null)
-    {}
+    { func_get_args(); }
 
     /**
      * {@inheritdoc}

@@ -196,7 +196,7 @@ class EventFake implements Dispatcher, Fake
      * @return array|null
      */
     public function dispatch($event, $payload = [], $halt = false)
-    {}
+    { func_get_args(); }
 
     /**
      * Determine if an event should be faked or actually dispatched.

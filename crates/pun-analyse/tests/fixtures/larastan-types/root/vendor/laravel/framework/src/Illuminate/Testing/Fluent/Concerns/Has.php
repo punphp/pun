@@ -46,7 +46,7 @@ trait Has
      * @return $this
      */
     public function hasAll($key): static
-    {}
+    { func_get_args(); }
 
     /**
      * Assert that at least one of the given props exists.
@@ -55,7 +55,7 @@ trait Has
      * @return $this
      */
     public function hasAny($key): static
-    {}
+    { func_get_args(); }
 
     /**
      * Assert that none of the given props exist.
@@ -64,7 +64,7 @@ trait Has
      * @return $this
      */
     public function missingAll($key): static
-    {}
+    { func_get_args(); }
 
     /**
      * Assert that the given prop does not exist.

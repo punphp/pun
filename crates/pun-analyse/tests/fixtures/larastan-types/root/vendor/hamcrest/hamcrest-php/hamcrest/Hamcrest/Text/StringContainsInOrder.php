@@ -38,5 +38,5 @@ class StringContainsInOrder extends TypeSafeMatcher
      * @factory ...
      */
     public static function stringContainsInOrder(/* args... */): self
-    {}
+    { func_get_args(); }
 }

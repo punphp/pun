@@ -19,7 +19,7 @@ trait Conditionable
      * @return $this|TWhenReturnType
      */
     public function when($value = null, ?callable $callback = null, ?callable $default = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Apply the callback if the given "value" is (or resolves to) falsy.
@@ -33,5 +33,5 @@ trait Conditionable
      * @return $this|TUnlessReturnType
      */
     public function unless($value = null, ?callable $callback = null, ?callable $default = null)
-    {}
+    { func_get_args(); }
 }

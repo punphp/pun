@@ -36,7 +36,7 @@ class MatcherAssert
      * </pre>
      */
     public static function assertThat(/* $args ... */): void
-    {}
+    { func_get_args(); }
 
     /**
      * Returns the number of assertions performed.

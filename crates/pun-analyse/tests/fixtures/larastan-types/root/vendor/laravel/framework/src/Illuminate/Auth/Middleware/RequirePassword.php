@@ -50,7 +50,7 @@ class RequirePassword
      * @named-arguments-supported
      */
     public static function using($redirectToRoute = null, $passwordTimeoutSeconds = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Handle an incoming request.

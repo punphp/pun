@@ -492,7 +492,7 @@ class Factory
      * @param DateTimeInterface|Closure|static|string|false|null $testNow real or mock Carbon instance
      */
     public function setTestNowAndTimezone(mixed $testNow = null, $timezone = null): void
-    {}
+    { func_get_args(); }
 
     /**
      * Temporarily sets a static date to be used within the callback.

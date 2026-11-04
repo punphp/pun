@@ -113,7 +113,7 @@ class Gate implements GateContract
      * @return bool
      */
     public function has($ability)
-    {}
+    { func_get_args(); }
 
     /**
      * Perform an on-demand authorization check. Throw an authorization exception if the condition or callback is false.

@@ -126,7 +126,7 @@ fn model_of(codebase: &CodebaseMetadata, factory: &TNamedObject) -> Option<TUnio
 }
 
 /// ModelFactoryMethodsClassReflectionExtension::hasMethod().
-fn has_magic_method(codebase: &CodebaseMetadata, factory: &TNamedObject, method: &str) -> bool {
+pub(crate) fn has_magic_method(codebase: &CodebaseMetadata, factory: &TNamedObject, method: &str) -> bool {
     let Some(model) = model_of(codebase, factory) else { return false };
     let model = model.types.iter().find_map(|t| match t {
         TAtomic::Object(TObject::Named(n)) => Some(n.name),

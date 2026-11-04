@@ -192,7 +192,7 @@ class Store implements Session
      * @return bool
      */
     public function exists($key)
-    {}
+    { func_get_args(); }
 
     /**
      * Determine if the given key is missing from the session data.
@@ -210,7 +210,7 @@ class Store implements Session
      * @return bool
      */
     public function has($key)
-    {}
+    { func_get_args(); }
 
     /**
      * Determine if any of the given keys are present and not null.
@@ -219,7 +219,7 @@ class Store implements Session
      * @return bool
      */
     public function hasAny($key)
-    {}
+    { func_get_args(); }
 
     /**
      * Get an item from the session.
@@ -354,7 +354,7 @@ class Store implements Session
      * @return void
      */
     public function keep($keys = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Merge new flash keys into the new flash array.

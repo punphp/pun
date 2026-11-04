@@ -32,7 +32,7 @@ class PhpRedisClusterConnection extends PhpRedisConnection
      * @return void
      */
     public function flushdb()
-    {}
+    { func_get_args(); }
 
     /**
      * Determine if the connection is a cluster connection.

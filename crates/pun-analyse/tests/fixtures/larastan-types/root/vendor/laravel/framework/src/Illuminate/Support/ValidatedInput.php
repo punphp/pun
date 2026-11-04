@@ -43,7 +43,7 @@ class ValidatedInput implements ValidatedData
      * @return array
      */
     public function all($keys = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Retrieve data from the instance.

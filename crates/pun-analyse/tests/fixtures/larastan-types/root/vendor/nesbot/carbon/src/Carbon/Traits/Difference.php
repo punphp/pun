@@ -510,7 +510,7 @@ trait Difference
      * @return string
      */
     public function fromNow($syntax = null, $short = false, $parts = 1, $options = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Get the difference in a human readable format in the current locale from an other
@@ -572,7 +572,7 @@ trait Difference
      * @return string
      */
     public function ago($syntax = null, $short = false, $parts = 1, $options = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Get the difference in a human-readable format in the current locale from current instance to another

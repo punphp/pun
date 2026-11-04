@@ -67,7 +67,7 @@ trait InteractsWithContainer
      * @return ($abstract is class-string<TInstance> ? TInstance&\Mockery\MockInterface : \Mockery\MockInterface)
      */
     protected function mock($abstract, ?Closure $mock = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Mock a partial instance of an object in the container.
@@ -79,7 +79,7 @@ trait InteractsWithContainer
      * @return ($abstract is class-string<TInstance> ? TInstance&\Mockery\MockInterface : \Mockery\MockInterface)
      */
     protected function partialMock($abstract, ?Closure $mock = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Spy an instance of an object in the container.
@@ -91,7 +91,7 @@ trait InteractsWithContainer
      * @return ($abstract is class-string<TInstance> ? TInstance&\Mockery\MockInterface : \Mockery\MockInterface)
      */
     protected function spy($abstract, ?Closure $mock = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Instruct the container to forget a previously mocked / spied instance of an object.

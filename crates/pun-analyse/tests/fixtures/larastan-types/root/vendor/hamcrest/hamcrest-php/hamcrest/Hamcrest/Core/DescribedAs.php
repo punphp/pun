@@ -41,5 +41,5 @@ class DescribedAs extends BaseMatcher
      * @factory ...
      */
     public static function describedAs(/* $description, Hamcrest\Matcher $matcher, $values... */): self
-    {}
+    { func_get_args(); }
 }

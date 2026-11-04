@@ -200,7 +200,7 @@ trait EnumeratesValues
      * @return bool
      */
     public function some($key, $operator = null, $value = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Dump the given arguments and terminate execution.
@@ -247,7 +247,7 @@ trait EnumeratesValues
      * @return bool
      */
     public function every($key, $operator = null, $value = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Get the first item by the given key value pair.
@@ -258,7 +258,7 @@ trait EnumeratesValues
      * @return TValue|null
      */
     public function firstWhere($key, $operator = null, $value = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Determine if the collection contains multiple items, optionally matching the given criteria.
@@ -269,7 +269,7 @@ trait EnumeratesValues
      * @return bool
      */
     public function hasMany($key = null, $operator = null, $value = null): bool
-    {}
+    { func_get_args(); }
 
     /**
      * Get a single key's value from the first matching item in the collection.
@@ -399,7 +399,7 @@ trait EnumeratesValues
      * @return static<int<0, 1>, static<TKey, TValue>>
      */
     public function partition($key, $operator = null, $value = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Calculate the percentage of items that pass a given truth test.
@@ -479,7 +479,7 @@ trait EnumeratesValues
      * @return static
      */
     public function where($key, $operator = null, $value = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Filter items where the value for the given key is null.
@@ -815,7 +815,7 @@ trait EnumeratesValues
      * @return \Closure
      */
     protected function operatorForWhere($key, $operator = null, $value = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Determine if the given value is callable, but not a string.

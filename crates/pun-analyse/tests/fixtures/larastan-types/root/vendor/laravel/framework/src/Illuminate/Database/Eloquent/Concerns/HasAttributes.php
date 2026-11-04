@@ -1142,7 +1142,7 @@ trait HasAttributes
      * @return array<string, mixed>
      */
     public function only($attributes)
-    {}
+    { func_get_args(); }
 
     /**
      * Get all attributes except the given ones.
@@ -1151,7 +1151,7 @@ trait HasAttributes
      * @return array
      */
     public function except($attributes)
-    {}
+    { func_get_args(); }
 
     /**
      * Sync the original attributes with the current.
@@ -1177,7 +1177,7 @@ trait HasAttributes
      * @return $this
      */
     public function syncOriginalAttributes($attributes)
-    {}
+    { func_get_args(); }
 
     /**
      * Sync the changed attributes.
@@ -1194,7 +1194,7 @@ trait HasAttributes
      * @return bool
      */
     public function isDirty($attributes = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Determine if the model or all the given attribute(s) have remained the same.
@@ -1203,7 +1203,7 @@ trait HasAttributes
      * @return bool
      */
     public function isClean($attributes = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Discard attribute changes and reset the attributes to their original state.
@@ -1220,7 +1220,7 @@ trait HasAttributes
      * @return bool
      */
     public function wasChanged($attributes = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Determine if any of the given attributes were changed when the model was last saved.
@@ -1290,7 +1290,7 @@ trait HasAttributes
      * @return $this
      */
     public function append($attributes)
-    {}
+    { func_get_args(); }
 
     /**
      * Get the accessors that are being appended to model arrays.

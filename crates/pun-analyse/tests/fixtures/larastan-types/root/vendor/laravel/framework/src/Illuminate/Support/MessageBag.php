@@ -88,7 +88,7 @@ class MessageBag implements Jsonable, JsonSerializable, MessageBagContract, Mess
      * @return bool
      */
     public function has($key)
-    {}
+    { func_get_args(); }
 
     /**
      * Determine if messages exist for any of the given keys.
@@ -97,7 +97,7 @@ class MessageBag implements Jsonable, JsonSerializable, MessageBagContract, Mess
      * @return bool
      */
     public function hasAny($keys = [])
-    {}
+    { func_get_args(); }
 
     /**
      * Determine if messages don't exist for all of the given keys.
@@ -106,7 +106,7 @@ class MessageBag implements Jsonable, JsonSerializable, MessageBagContract, Mess
      * @return bool
      */
     public function missing($key)
-    {}
+    { func_get_args(); }
 
     /**
      * Get the first message from the message bag for a given key.

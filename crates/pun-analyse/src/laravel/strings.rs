@@ -7,7 +7,7 @@ pub(super) fn class_basename(class: &str) -> &str {
 
 /// `Str::snake($value)` on a class name (no whitespace, so `ucwords` and the whitespace removal change nothing): `_`
 /// before every capital that follows a character, lowercase.
-pub(super) fn snake(value: &str) -> String {
+pub(crate) fn snake(value: &str) -> String {
     let mut out = String::new();
     for c in value.chars() {
         if c.is_ascii_uppercase() && !out.is_empty() {
@@ -66,5 +66,20 @@ fn plural(word: &str) -> String {
         format!("{}ies", &word[..word.len() - 1])
     } else {
         format!("{word}s")
+    }
+}
+
+/// `Str::singular($value)` for regular English nouns.
+// ponytail: Doctrine's English inflector's irregular and uncountable words and its other suffix rules are not read
+pub(super) fn singular(word: &str) -> String {
+    let lower = word.to_ascii_lowercase();
+    if lower.ends_with("ies") && word.len() > 3 {
+        format!("{}y", &word[..word.len() - 3])
+    } else if ["xes", "ches", "sses", "shes"].iter().any(|s| lower.ends_with(s)) {
+        word[..word.len() - 2].to_string()
+    } else if lower.ends_with('s') && !lower.ends_with("ss") {
+        word[..word.len() - 1].to_string()
+    } else {
+        word.to_string()
     }
 }

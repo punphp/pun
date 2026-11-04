@@ -221,7 +221,7 @@ class RedisStore extends TaggableStore implements CanFlushLocks, LockProvider
      * @return \Illuminate\Cache\RedisTaggedCache
      */
     public function tags($names)
-    {}
+    { func_get_args(); }
 
     /**
      * Get a collection of all of the cache tags currently being used.

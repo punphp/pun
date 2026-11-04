@@ -446,7 +446,7 @@ class Repository implements ArrayAccess, CacheContract
      * @throws \BadMethodCallException
      */
     public function tags($names)
-    {}
+    { func_get_args(); }
 
     /**
      * Format the key for a cache item.

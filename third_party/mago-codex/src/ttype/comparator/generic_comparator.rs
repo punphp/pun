@@ -3,6 +3,7 @@ use mago_word::Word;
 use crate::metadata::CodebaseMetadata;
 use crate::ttype::atomic::TAtomic;
 use crate::ttype::atomic::object::TObject;
+use crate::ttype::atomic::scalar::TScalar;
 use crate::ttype::atomic::object::named::TNamedObject;
 use crate::ttype::comparator::ComparisonResult;
 use crate::ttype::comparator::union_comparator;
@@ -131,7 +132,13 @@ pub(crate) fn is_contained_by(
         }
 
         atomic_comparison_result.is_only_accepted |= parameter_comparison_result.is_only_accepted;
+        // TemplateTypeVariance::isValidVariance(): a non-template mixed container argument, or a benevolent one
+        // (`array-key`) that the input's is in, is valid whatever the variance
+        let lenient_container = container_type_parameter.is_mixed() && !container_type_parameter.has_template_types()
+            || container_type_parameter.types.iter().all(|t| matches!(t, TAtomic::Scalar(TScalar::ArrayKey)))
+            || container_type_parameter.ignore_nullable_issues() && container_type_parameter.ignore_falsable_issues();
         if matches!(variance, Variance::Invariant)
+            && !lenient_container
             && (!inside_assertion || !container_type_parameter.has_template_types())
             && !specialized_template_type.from_template_fallback()
             && !container_type_parameter.from_template_fallback()

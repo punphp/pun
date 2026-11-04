@@ -434,7 +434,7 @@ class PostgresGrammar extends Grammar
      * @return array
      */
     protected function wrapJsonPathAttributes($path)
-    {}
+    { func_get_args(); }
 
     /**
      * Parse the given JSON path attribute for array keys.

@@ -23,6 +23,36 @@ pub fn with_type_aliases<R>(aliases: &[(String, String)], f: impl FnOnce() -> R)
     out
 }
 
+type TypeNodes = dyn Fn(&str, &[Type]) -> Option<Type>;
+
+thread_local! {
+    static TYPE_NODES: std::cell::Cell<Option<*const TypeNodes>> = const { std::cell::Cell::new(None) };
+}
+
+/// Runs `f` with `extensions` (TypeNodeResolverExtension) answering an identifier (no arguments) or a generic type
+/// node (its resolved arguments) before the built-in types, on this thread.
+pub fn with_type_nodes<R>(extensions: &dyn Fn(&str, &[Type]) -> Option<Type>, f: impl FnOnce() -> R) -> R {
+    struct Restore(Option<*const TypeNodes>);
+    impl Drop for Restore {
+        fn drop(&mut self) {
+            TYPE_NODES.with(|p| p.set(self.0));
+        }
+    }
+    let ptr: *const (dyn Fn(&str, &[Type]) -> Option<Type> + '_) = extensions;
+    // SAFETY: as in `symbols::with_classes()`: only the lifetime is erased, and `Restore` puts the previous
+    // extensions back before this function returns, also on unwinding.
+    let ptr: *const TypeNodes = unsafe { std::mem::transmute(ptr) };
+    let _restore = Restore(TYPE_NODES.with(|p| p.replace(Some(ptr))));
+    f()
+}
+
+fn type_node(name: &str, args: &[Type]) -> Option<Type> {
+    let extensions = TYPE_NODES.with(std::cell::Cell::get)?;
+    // SAFETY: set by `with_type_nodes()`, whose borrow outlives every call made while it is set.
+    let extensions = unsafe { &*extensions };
+    extensions(name, args)
+}
+
 /// `UsefulTypeAliasResolver::hasTypeAlias()` of a global type alias.
 pub fn has_global_alias(name: &str) -> bool {
     GLOBAL_ALIASES.with(|g| g.borrow().0.iter().any(|(n, _)| n == name))
@@ -455,6 +485,9 @@ fn pseudo_type_class(name: &str, scope: &dyn Scope) -> Option<Type> {
 
 fn identifier(name: &str, scope: &dyn Scope) -> Type {
     use Accessory as A;
+    if let Some(t) = type_node(name, &[]) {
+        return t;
+    }
     let string = || Type::String;
     let lower = name.to_ascii_lowercase();
     if matches!(
@@ -651,6 +684,9 @@ fn generic(base: &str, args: &[Node], scope: &dyn Scope) -> Type {
             t => t.clone(),
         })
         .collect();
+    if let Some(t) = type_node(base, &types) {
+        return t;
+    }
     match lower.as_str() {
         "array" | "non-empty-array" => {
             let array = match types.as_slice() {

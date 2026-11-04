@@ -56,7 +56,7 @@ class Queue implements QueueContract, ClearableQueue
      * @return int
      */
     public function size($queue = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Get the number of pending jobs.
@@ -65,7 +65,7 @@ class Queue implements QueueContract, ClearableQueue
      * @return int
      */
     public function pendingSize($queue = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Get the number of delayed jobs.
@@ -74,7 +74,7 @@ class Queue implements QueueContract, ClearableQueue
      * @return int
      */
     public function delayedSize($queue = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Get the number of reserved jobs.
@@ -83,7 +83,7 @@ class Queue implements QueueContract, ClearableQueue
      * @return int
      */
     public function reservedSize($queue = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Get the number of jobs across every managed queue.
@@ -124,7 +124,7 @@ class Queue implements QueueContract, ClearableQueue
      * @return int|null
      */
     public function creationTimeOfOldestPendingJob($queue = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Push a new job onto the queue.
@@ -135,7 +135,7 @@ class Queue implements QueueContract, ClearableQueue
      * @return mixed
      */
     public function push($job, $data = '', $queue = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Push a new job onto the queue.
@@ -146,7 +146,7 @@ class Queue implements QueueContract, ClearableQueue
      * @return mixed
      */
     public function pushOn($queue, $job, $data = '')
-    {}
+    { func_get_args(); }
 
     /**
      * Push a raw payload onto the queue.
@@ -156,7 +156,7 @@ class Queue implements QueueContract, ClearableQueue
      * @return mixed
      */
     public function pushRaw($payload, $queue = null, array $options = [])
-    {}
+    { func_get_args(); }
 
     /**
      * Push a new job onto the queue after (n) seconds.
@@ -168,7 +168,7 @@ class Queue implements QueueContract, ClearableQueue
      * @return mixed
      */
     public function later($delay, $job, $data = '', $queue = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Push a new job onto a specific queue after (n) seconds.
@@ -180,7 +180,7 @@ class Queue implements QueueContract, ClearableQueue
      * @return mixed
      */
     public function laterOn($queue, $delay, $job, $data = '')
-    {}
+    { func_get_args(); }
 
     /**
      * Push an array of jobs onto the queue.
@@ -191,7 +191,7 @@ class Queue implements QueueContract, ClearableQueue
      * @return mixed
      */
     public function bulk($jobs, $data = '', $queue = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Pop the next job off of the queue.
@@ -204,7 +204,7 @@ class Queue implements QueueContract, ClearableQueue
      * @return \Illuminate\Contracts\Queue\Job|null
      */
     public function pop($queue = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Long-poll the cloud-agent's runtime socket and wrap the next message in a CloudJob.
@@ -246,7 +246,7 @@ class Queue implements QueueContract, ClearableQueue
      * @return int
      */
     public function clear($queue)
-    {}
+    { func_get_args(); }
 
     /**
      * Determine whether the next job should be received from the in-container cloud-agent.
@@ -279,7 +279,7 @@ class Queue implements QueueContract, ClearableQueue
      * @return $this
      */
     public function setConnectionName($name)
-    {}
+    { func_get_args(); }
 
     /**
      * Set the queue configuration array.
@@ -300,7 +300,7 @@ class Queue implements QueueContract, ClearableQueue
      * @return array{DelaySeconds?: int, MessageGroupId?: string, MessageDeduplicationId?: string}
      */
     public function getQueueableOptions($job, $queue, $payload, $delay = null): array
-    {}
+    { func_get_args(); }
 
     /**
      * Finish processing the current job and emit a queue event.

@@ -22,7 +22,7 @@ class ArrayKeys implements Stringable
      * @param  \Illuminate\Contracts\Support\Arrayable|array  $keys
      */
     public function __construct($keys)
-    {}
+    { func_get_args(); }
 
     /**
      * Convert the rule to a validation string.

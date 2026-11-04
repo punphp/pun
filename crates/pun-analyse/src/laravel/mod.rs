@@ -22,6 +22,8 @@ use mago_analyzer::plugin::{
 use mago_codex::metadata::CodebaseMetadata;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::TObject;
+use mago_codex::ttype::atomic::object::named::TNamedObject;
+use mago_codex::ttype::expander::{StaticClassType, TypeExpansionOptions, expand_union};
 use mago_codex::ttype::union::TUnion;
 use mago_codex::ttype::*;
 use mago_database::file::FileType;
@@ -36,13 +38,14 @@ use mago_word::Word;
 use crate::codebase::read;
 use crate::{Project, php_files};
 use schema::{Column, SchemaAggregator};
-pub(crate) use collections::{collection_class, references_collection, replace_collections};
-pub(crate) use strings::camel;
-use strings::{class_basename, plural_studly, snake, studly};
+pub(crate) use collections::{collection_class, proxy_result, references_collection, replace_collections};
+pub(crate) use strings::{camel, snake};
+use strings::{class_basename, plural_studly, singular, studly};
 
 const MODEL: &str = "Illuminate\\Database\\Eloquent\\Model";
 const ATTRIBUTE: &str = "Illuminate\\Database\\Eloquent\\Casts\\Attribute";
 const CARBON_IMMUTABLE: &str = "Carbon\\CarbonImmutable";
+const PROXY: &str = "Illuminate\\Support\\HigherOrderCollectionProxy";
 
 /// A Laravel app: its root (for `database/migrations`) and Larastan's options.
 #[derive(Clone, Copy, Debug)]
@@ -83,6 +86,8 @@ struct ModelSource {
 struct Scan {
     models: HashMap<String, (String, ModelSource)>,
     date_class: Option<String>,
+    /// `parseModelCastsMethod`: else the casts the declared return type of `casts()` names.
+    parse_casts_method: bool,
 }
 
 struct Collector<'s, 'n, 'arena> {
@@ -107,6 +112,11 @@ fn constant_string(names: &ResolvedNames, e: &Expression) -> Option<String> {
         Expression::Literal(Literal::String(s)) => s
             .value
             .map(|v| String::from_utf8_lossy(v).replace("\\\\", "\\")),
+        // a constant concatenation (`AsStringable::class.':argument'`)
+        Expression::Binary(b) if b.operator.is_concatenation() => {
+            Some(constant_string(names, b.lhs)? + &constant_string(names, b.rhs)?)
+        }
+        Expression::Parenthesized(p) => constant_string(names, p.expression),
         Expression::Access(Access::ClassConstant(c)) if matches!(&c.constant, ClassLikeConstantSelector::Identifier(i) if i.value.eq_ignore_ascii_case(b"class")) => {
             resolved(names, c.class)
         }
@@ -232,25 +242,38 @@ fn model<'a>(scan: &'a Scan, codebase: &CodebaseMetadata, class: &str) -> Option
     fn first<T>(chain: &[&ModelSource], f: impl Fn(&ModelSource) -> Option<T>) -> Option<T> {
         chain.iter().find_map(|s| f(s))
     }
-    let table = first(&chain, |s| s.table.clone())
-        .unwrap_or_else(|| snake(&plural_studly(class_basename(name))));
+    // a pivot's (AsPivot::getTable()) is its singular basename
+    let pivot = codebase.class_uses_trait(name.as_bytes(), b"Illuminate\\Database\\Eloquent\\Relations\\Concerns\\AsPivot");
+    let table = first(&chain, |s| s.table.clone()).unwrap_or_else(|| {
+        let basename = class_basename(name);
+        if pivot { snake(&singular(basename)) } else { snake(&plural_studly(basename)) }
+    });
     let key = first(&chain, |s| s.primary_key.clone()).unwrap_or_else(|| "id".into());
     // Model::getCasts(): the key cast to its type when incrementing, then `$casts`; then `casts()` (Larastan)
-    let key_type = first(&chain, |s| s.key_type.clone()).unwrap_or_else(|| "int".into());
+    // ModelCastHelper sets `usesUniqueIds` for HasUniqueStringIds, HasUuids and HasUlids: the key (in the default
+    // `uniqueIds()`) is a non-incrementing string
+    let unique = ["HasUniqueStringIds", "HasUuids", "HasUlids"].iter().any(|t| {
+        codebase.class_uses_trait(name.as_bytes(), format!("Illuminate\\Database\\Eloquent\\Concerns\\{t}").as_bytes())
+    });
+    let key_type = if unique { "string".into() } else { first(&chain, |s| s.key_type.clone()).unwrap_or_else(|| "int".into()) };
     let mut casts = HashMap::new();
-    if first(&chain, |s| s.incrementing).unwrap_or(true) {
+    if !unique && first(&chain, |s| s.incrementing).unwrap_or(true) {
         casts.insert(key.clone(), key_type.clone());
     }
     casts.extend(
         first(&chain, |s| (!s.casts.is_empty()).then(|| s.casts.clone())).unwrap_or_default(),
     );
-    // the nearest `casts()` declaration
-    casts.extend(
-        first(&chain, |s| {
-            (!s.casts_method.is_empty()).then(|| s.casts_method.clone())
-        })
-        .unwrap_or_default(),
-    );
+    // the nearest `casts()` declaration: its first returned array, else its return type when a constant array
+    if scan.parse_casts_method {
+        casts.extend(
+            first(&chain, |s| {
+                (!s.casts_method.is_empty()).then(|| s.casts_method.clone())
+            })
+            .unwrap_or_default(),
+        );
+    } else {
+        casts.extend(declared_casts(codebase, name));
+    }
     let mut dates = Vec::new();
     if first(&chain, |s| s.timestamps).unwrap_or(true) {
         dates.extend(["created_at", "updated_at"]);
@@ -271,13 +294,38 @@ fn model<'a>(scan: &'a Scan, codebase: &CodebaseMetadata, class: &str) -> Option
     })
 }
 
+/// The casts of the return type of a model's `casts()`, when a constant array of constant strings (Larastan describes
+/// other values; ponytail: those are not read).
+fn declared_casts(codebase: &CodebaseMetadata, model: &str) -> Vec<(String, String)> {
+    use mago_codex::ttype::atomic::array::TArray;
+    use mago_codex::ttype::atomic::array::key::ArrayKey;
+    use mago_codex::ttype::atomic::scalar::TScalar;
+    let Some(returned) = codebase
+        .get_declaring_method(model.as_bytes(), b"casts")
+        .and_then(|m| m.return_type_metadata.as_ref())
+    else {
+        return Vec::new();
+    };
+    let [TAtomic::Array(TArray::Keyed(k))] = returned.type_union.types.as_ref() else { return Vec::new() };
+    let Some(items) = k.known_items.as_deref().filter(|_| k.parameters.is_none()) else { return Vec::new() };
+    items
+        .iter()
+        .filter_map(|(key, (_, value))| {
+            let ArrayKey::String(key) = key else { return None };
+            let [TAtomic::Scalar(TScalar::String(v))] = value.types.as_ref() else { return None };
+            let v = String::from_utf8_lossy(v.get_known_literal_value()?).replace("\\\\", "\\");
+            Some((key.as_str_lossy().into_owned(), v))
+        })
+        .collect()
+}
+
 /// The analysed files' models, and the migrations' tables.
 fn scan_tables(
     app: Laravel,
     project: &Project,
     codebase: &CodebaseMetadata,
 ) -> (Scan, HashMap<String, schema::Table>) {
-    let mut scan = Scan::default();
+    let mut scan = Scan { parse_casts_method: app.parse_casts_method, ..Scan::default() };
     // ModelPropertyHelper reflects any model: the files of the scanned and autoloaded models too
     let id = |p: &std::path::PathBuf| mago_database::file::FileId::new(p.to_string_lossy().as_bytes());
     let elsewhere: HashMap<_, _> = project
@@ -333,14 +381,15 @@ fn scan_tables(
 }
 
 /// `ModelPropertyHelper::hasDatabaseProperty()` without its `@property` check: each concrete model's key name and
-/// its table's columns, by lowercase class name.
+/// its table's columns, by lowercase class name; and each table's columns, by table name.
 pub(crate) fn database_properties(
     app: Laravel,
     project: &Project,
     codebase: &CodebaseMetadata,
-) -> HashMap<String, std::collections::HashSet<String>> {
+) -> (HashMap<String, std::collections::HashSet<String>>, HashMap<String, std::collections::HashSet<String>>) {
     let (scan, tables) = scan_tables(app, project, codebase);
-    scan.models
+    let columns = tables.iter().map(|(name, t)| (name.clone(), t.columns.keys().cloned().collect())).collect();
+    let properties = scan.models
         .keys()
         .filter_map(|key| model(&scan, codebase, key))
         .filter(|m| {
@@ -357,7 +406,8 @@ pub(crate) fn database_properties(
             properties.insert(m.key);
             (m.name.to_ascii_lowercase(), properties)
         })
-        .collect()
+        .collect();
+    (properties, columns)
 }
 
 /// The models' column types, by lowercase class name and column.
@@ -476,6 +526,25 @@ fn cast_type(cast: &str, original: TUnion, date: &TUnion, codebase: &CodebaseMet
         "collection" => return named("Illuminate\\Support\\Collection"),
         "date" | "datetime" => return date.clone(),
         "immutable_date" | "immutable_datetime" => return named(CARBON_IMMUTABLE),
+        "Illuminate\\Database\\Eloquent\\Casts\\AsArrayObject"
+        | "Illuminate\\Database\\Eloquent\\Casts\\AsEncryptedArrayObject" => {
+            return named("Illuminate\\Database\\Eloquent\\Casts\\ArrayObject");
+        }
+        "Illuminate\\Database\\Eloquent\\Casts\\AsCollection"
+        | "Illuminate\\Database\\Eloquent\\Casts\\AsEncryptedCollection" => {
+            let mut key = get_arraykey();
+            key.set_ignore_nullable_issues(true);
+            key.set_ignore_falsable_issues(true);
+            let collection = TUnion::from_atomic(TAtomic::Object(TObject::Named(TNamedObject::new_with_type_parameters(
+                Word::new(b"Illuminate\\Support\\Collection"),
+                Some(vec![key, get_mixed()]),
+            ))));
+            let mut ty = collection.as_nullable();
+            ty.set_ignore_nullable_issues(true);
+            ty.set_ignore_falsable_issues(true);
+            return ty;
+        }
+        "Illuminate\\Database\\Eloquent\\Casts\\AsStringable" => return named("Illuminate\\Support\\Stringable"),
         _ => {}
     }
     let Some(class) = codebase.get_class_like(cast.as_bytes()) else {
@@ -484,7 +553,16 @@ fn cast_type(cast: &str, original: TUnion, date: &TUnion, codebase: &CodebaseMet
     if class.kind.is_enum() {
         return named(class.original_name.as_str_lossy().as_ref());
     }
-    // ponytail: AsArrayObject, AsCollection, AsStringable and `Castable::castUsing()` are not special-cased
+    // `Castable::castUsing()`'s returned class
+    let mut cast = class.name.as_str_lossy().into_owned();
+    if codebase.is_instance_of(cast.as_bytes(), b"Illuminate\\Contracts\\Database\\Eloquent\\Castable")
+        && let Some(TAtomic::Object(TObject::Named(n))) = codebase
+            .get_declaring_method(cast.as_bytes(), b"castUsing")
+            .and_then(|m| m.return_type_metadata.as_ref())
+            .and_then(|t| t.type_union.types.first())
+    {
+        cast = n.name.as_str_lossy().into_owned();
+    }
     if codebase.is_instance_of(
         cast.as_bytes(),
         b"Illuminate\\Contracts\\Database\\Eloquent\\CastsAttributes",
@@ -522,6 +600,28 @@ pub(crate) fn has_accessor(codebase: &CodebaseMetadata, class: &str, property: &
         .is_some_and(|t| t.type_union.types.iter().all(|a| is_named(a, ATTRIBUTE)))
 }
 
+/// ModelAccessorExtension: `hasAccessor(strictGenerics: true)`'s readable type, `getAccessor()`: a non-public,
+/// non-private `{camel}()` returning a generic `Attribute<TGet, TSet>` reads `TGet`, else a `get{Studly}Attribute()`
+/// method its return type.
+pub(crate) fn accessor_type(codebase: &CodebaseMetadata, class: &str, property: &str) -> Option<TUnion> {
+    let Some(method) = codebase.get_declaring_method(class.as_bytes(), camel(property).as_bytes()) else {
+        let getter = format!("get{}Attribute", studly(property));
+        let method = codebase.get_declaring_method(class.as_bytes(), getter.as_bytes())?;
+        return Some(method.return_type_metadata.as_ref().map_or_else(get_mixed, |t| t.type_union.clone()));
+    };
+    let visibility = method.method_metadata.as_ref().map(|m| m.visibility);
+    if visibility.is_none_or(|v| v.is_public() || v.is_private()) {
+        return None;
+    }
+    let returned = &method.return_type_metadata.as_ref()?.type_union;
+    match returned.types.as_ref() {
+        [TAtomic::Object(TObject::Named(n))] if is_named(&TAtomic::Object(TObject::Named(n.clone())), ATTRIBUTE) => {
+            n.type_parameters.as_deref().and_then(|p| p.first()).cloned()
+        }
+        _ => None,
+    }
+}
+
 /// ModelRelationsExtension::hasProperty() of a model's `{relation}_count`: a native relation method.
 fn relation_count(codebase: &CodebaseMetadata, class: &[u8], property: &str) -> bool {
     let Some(relation) = property.strip_suffix("_count") else { return false };
@@ -555,12 +655,144 @@ impl Provider for ModelAttributes {
     }
 }
 
+impl ModelAttributes {
+    /// The readable type of the instance property `name` of `object` (PHPStan's own reflection before Larastan's
+    /// columns and relations), when it has one.
+    fn property(&self, codebase: &CodebaseMetadata, object: &TNamedObject, name: &str) -> Option<TUnion> {
+        let class = object.name.as_bytes();
+        let dollar = format!("${name}");
+        if let Some(ty) = codebase.get_property_type(class, dollar.as_bytes()) {
+            let mut ty = ty.clone();
+            let options = TypeExpansionOptions {
+                self_class: Some(codebase.get_class_like(class)?.name),
+                static_class_type: StaticClassType::Object(TObject::Named(object.clone())),
+                ..Default::default()
+            };
+            expand_union(codebase, &mut ty, &options);
+            return Some(ty);
+        }
+        if codebase.is_instance_of(class, MODEL.as_bytes())
+            && let Some(ty) = accessor_type(codebase, &object.name.as_str_lossy(), name)
+        {
+            return Some(ty);
+        }
+        if let Some(ty) = self.models.get(&object.name.as_str_lossy().to_ascii_lowercase()).and_then(|m| m.get(name)) {
+            return Some(ty.clone());
+        }
+        if relation_count(codebase, class, name) {
+            return Some(get_int_range(Some(0), None));
+        }
+        if codebase.is_instance_of(class, MODEL.as_bytes()) {
+            return collections::relation_property(codebase, object, name);
+        }
+        None
+    }
+
+    /// ModelOnlyDynamicMethodReturnTypeExtension: `$model->only(...)` is the array shape of the constant strings the
+    /// arguments name (or their arrays' items), each the model's property type, else `null`.
+    fn only(&self, context: &HookContext<'_, '_>, call: &MethodCall<'_>) -> Option<TUnion> {
+        use mago_codex::ttype::atomic::array::TArray;
+        use mago_codex::ttype::atomic::array::key::ArrayKey;
+        use mago_codex::ttype::atomic::array::keyed::TKeyedArray;
+        use mago_codex::ttype::atomic::scalar::TScalar;
+        let ClassLikeMemberSelector::Identifier(method) = &call.method else { return None };
+        if !method.value.eq_ignore_ascii_case(b"only") || call.argument_list.arguments.is_empty() {
+            return None;
+        }
+        let codebase = context.codebase();
+        let model = context.get_expression_type(call.object)?;
+        let [TAtomic::Object(TObject::Named(object))] = model.types.as_ref() else { return None };
+        if !codebase.is_instance_of(object.name.as_bytes(), MODEL.as_bytes()) {
+            return None;
+        }
+        // `getConstantStrings()`: every part a literal string
+        let strings = |t: &TUnion| -> Vec<Vec<u8>> {
+            let found: Vec<Vec<u8>> = t
+                .types
+                .iter()
+                .map_while(|a| match a {
+                    TAtomic::Scalar(TScalar::String(s)) => s.get_known_literal_value().map(<[u8]>::to_vec),
+                    _ => None,
+                })
+                .collect();
+            if found.len() == t.types.len() { found } else { Vec::new() }
+        };
+        let mut keys: Vec<Vec<u8>> = Vec::new();
+        for argument in call.argument_list.arguments.iter() {
+            let value = match argument {
+                Argument::Positional(a) => a.value,
+                Argument::Named(a) => a.value,
+            };
+            let ty = context.get_expression_type(value)?;
+            let mut candidates = vec![strings(ty)];
+            // `getArrays()`' item types
+            for a in ty.types.iter() {
+                let item = match a {
+                    TAtomic::Array(TArray::List(l)) => TUnion::from_vec(
+                        l.known_elements
+                            .iter()
+                            .flat_map(|k| k.values())
+                            .flat_map(|(_, v)| v.types.iter().cloned())
+                            .chain((!l.element_type.is_never()).then(|| l.element_type.types.iter().cloned()).into_iter().flatten())
+                            .collect(),
+                    ),
+                    TAtomic::Array(TArray::Keyed(k)) => TUnion::from_vec(
+                        k.known_items
+                            .iter()
+                            .flat_map(|k| k.values())
+                            .flat_map(|(_, v)| v.types.iter().cloned())
+                            .chain(k.parameters.iter().flat_map(|(_, v)| v.types.iter().cloned()))
+                            .collect(),
+                    ),
+                    _ => continue,
+                };
+                candidates.push(strings(&item));
+            }
+            // an argument that names no constant string
+            let Some(found) = candidates.into_iter().find(|c| !c.is_empty()) else {
+                return Some(TUnion::from_atomic(TAtomic::Array(TArray::Keyed(TKeyedArray::new_with_parameters(
+                    std::sync::Arc::new(get_string()),
+                    std::sync::Arc::new(get_mixed()),
+                )))));
+            };
+            keys.extend(found);
+        }
+        let items = keys
+            .into_iter()
+            .map(|k| {
+                let name = String::from_utf8_lossy(&k).into_owned();
+                let ty = self.property(codebase, object, &name).unwrap_or_else(get_null);
+                (ArrayKey::String(Word::new(&k)), (false, ty))
+            })
+            .collect();
+        Some(TUnion::from_atomic(TAtomic::Array(TArray::Keyed(TKeyedArray::new().with_known_items(items).with_non_empty(true)))))
+    }
+
+    /// HigherOrderCollectionProxyHelper: a property of `HigherOrderCollectionProxy<'method', TValue, TCollection>`
+    /// is the value's, its result per the collection method proxied.
+    fn proxy_property(&self, codebase: &CodebaseMetadata, proxy: &TNamedObject, name: &str) -> Option<TUnion> {
+        use mago_codex::ttype::atomic::scalar::TScalar;
+        let [method, value, collection] = proxy.type_parameters.as_deref()? else { return None };
+        let [TAtomic::Scalar(TScalar::String(method))] = method.types.as_ref() else { return None };
+        let method = String::from_utf8_lossy(method.get_known_literal_value()?).into_owned();
+        let [TAtomic::Object(TObject::Named(object))] = value.types.as_ref() else { return None };
+        let returned = self.property(codebase, object, name)?;
+        collections::proxy_result(codebase, &method, value, || Some(returned), collection)
+    }
+}
+
 impl ExpressionHook for ModelAttributes {
     fn after_expression(
         &self,
         expr: &Expression<'_>,
         context: &mut HookContext<'_, '_>,
     ) -> HookResult<()> {
+        if let Expression::Call(Call::Method(call)) = expr {
+            if let Some(ty) = self.only(context, call) {
+                context.set_expression_type(expr, ty);
+            }
+            return Ok(());
+        }
         let (object, property, nullsafe) = match expr {
             Expression::Access(Access::Property(p)) => (p.object, &p.property, false),
             Expression::Access(Access::NullSafeProperty(p)) => (p.object, &p.property, true),
@@ -578,6 +810,13 @@ impl ExpressionHook for ModelAttributes {
         for atomic in object_type.types.iter() {
             let ty = match atomic {
                 TAtomic::Null if nullsafe => get_null(),
+                // HigherOrderCollectionProxyPropertyExtension: `$collection->map->name` reads the value's property
+                TAtomic::Object(TObject::Named(n)) if n.name.as_bytes().eq_ignore_ascii_case(PROXY.as_bytes()) => {
+                    match self.proxy_property(context.codebase(), n, &name) {
+                        Some(ty) => ty,
+                        None => return Ok(()),
+                    }
+                }
                 TAtomic::Object(TObject::Named(n)) => {
                     let class = n.name.as_bytes();
                     let declared = context
@@ -592,7 +831,13 @@ impl ExpressionHook for ModelAttributes {
                         .models
                         .get(&n.name.as_str_lossy().to_ascii_lowercase())
                         .and_then(|m| m.get(name.as_ref()));
+                    let accessor = || {
+                        context.codebase().is_instance_of(class, MODEL.as_bytes())
+                            .then(|| accessor_type(context.codebase(), &n.name.as_str_lossy(), &name))
+                            .flatten()
+                    };
                     match column {
+                        _ if !declared && let Some(ty) = accessor() => ty,
                         Some(ty) if !declared => ty.clone(),
                         // ModelRelationsExtension: a relation's `_count`
                         None if !declared && relation_count(context.codebase(), class, &name) => {
@@ -602,6 +847,26 @@ impl ExpressionHook for ModelAttributes {
                         None if !declared && context.codebase().is_instance_of(class, MODEL.as_bytes()) => {
                             match collections::relation_property(context.codebase(), n, &name) {
                                 Some(ty) => ty,
+                                // no extension has it: PHPStan's undefined property reads an ErrorType, where Mago
+                                // reads `Model::__get()`
+                                // (an assigned undefined property keeps the scope's type)
+                                None if n.intersection_types.is_none()
+                                    && context.get_expression_type(expr).is_some_and(|t| t.is_mixed())
+                                    && !context.block_context().flags.inside_assignment()
+                                    && context.codebase().get_class_like(class).is_some_and(|k| {
+                                        k.mixins.iter().flat_map(|m| m.type_union.types.iter()).all(|m| {
+                                            matches!(m, TAtomic::Object(TObject::Named(m)) if {
+                                                let c = context.codebase();
+                                                c.get_declaring_property(m.name.as_bytes(), dollar.as_bytes()).is_none()
+                                                    && c.get_class_like(m.name.as_bytes()).is_none_or(|k| {
+                                                        !k.magic_property_ids.contains_key(&Word::new(dollar.as_bytes()))
+                                                    })
+                                            })
+                                        })
+                                    }) =>
+                                {
+                                    get_error()
+                                }
                                 None => return Ok(()),
                             }
                         }
@@ -610,11 +875,15 @@ impl ExpressionHook for ModelAttributes {
                 }
                 _ => return Ok(()),
             };
-            types.extend(ty.types.into_owned());
+            types.push(ty);
         }
-        if !types.is_empty() {
-            context.set_expression_type(expr, TUnion::from_vec(types));
-        }
+        // one receiver's type keeps its benevolence
+        let ty = match types.len() {
+            0 => return Ok(()),
+            1 => types.pop().unwrap_or_else(get_mixed),
+            _ => TUnion::from_vec(types.into_iter().flat_map(|t| t.types.into_owned()).collect()),
+        };
+        context.set_expression_type(expr, ty);
         Ok(())
     }
 }

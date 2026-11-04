@@ -1231,7 +1231,7 @@ fn codex_promoted_var(c: &Checker, span: Span, name: &str, class: Option<&ClassL
     }
 }
 
-fn has_template(t: &Type) -> bool {
+pub(crate) fn has_template(t: &Type) -> bool {
     let found = std::cell::Cell::new(false);
     fn walk(t: &Type, found: &std::cell::Cell<bool>) {
         if matches!(t, Type::Template(_)) {
@@ -1809,5 +1809,20 @@ fn serialize(t: &Type) -> String {
 pub fn with_classes<R>(c: &Checker, f: impl FnOnce() -> R) -> R {
     let classes = Classes::new(c);
     let functions = |name: &str| c.codebase.get_function(name.as_bytes()).is_some();
-    symbols::with_classes(&|name| classes.get(name), || symbols::with_functions(&functions, f))
+    let Some(larastan) = c.larastan else {
+        return symbols::with_classes(&|name| classes.get(name), || symbols::with_functions(&functions, f));
+    };
+    // what Larastan's string types ask the app
+    let strings = |query: pun_phpstan::types::StringQuery<'_>| match query {
+        pun_phpstan::types::StringQuery::Property(t, name) => c.has_property(t, format!("${name}").as_bytes(), false),
+        pun_phpstan::types::StringQuery::Column(table, column) => {
+            pun_phpstan::types::Tri::from(larastan.table_columns.get(table).is_some_and(|columns| columns.contains(column)))
+        }
+        pun_phpstan::types::StringQuery::View(name) => {
+            pun_phpstan::types::Tri::from(crate::larastan::views::Finder::new(&larastan.root).find(name).is_some())
+        }
+    };
+    symbols::with_classes(&|name| classes.get(name), || {
+        symbols::with_functions(&functions, || pun_phpstan::types::with_larastan_strings(&strings, f))
+    })
 }

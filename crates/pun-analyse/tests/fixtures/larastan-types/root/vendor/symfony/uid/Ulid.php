@@ -42,7 +42,7 @@ class Ulid extends AbstractUid implements TimeBasedUidInterface
      * @param int-mask-of<Ulid::FORMAT_*> $format
      */
     public static function isValid(string $ulid/* , int $format = self::FORMAT_BASE_32 */): bool
-    {}
+    { func_get_args(); }
 
     public static function fromString(string $ulid): static
     {}

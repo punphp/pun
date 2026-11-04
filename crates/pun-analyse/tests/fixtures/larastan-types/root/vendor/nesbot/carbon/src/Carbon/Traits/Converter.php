@@ -46,7 +46,7 @@ trait Converter
      * @see https://php.net/manual/en/datetime.format.php
      */
     public function format(string $format): string
-    {}
+    { func_get_args(); }
 
     /**
      * @see https://php.net/manual/en/datetime.format.php

@@ -300,7 +300,7 @@ class Kernel implements KernelContract
      * @return \Illuminate\Foundation\Bus\PendingDispatch
      */
     public function queue($command, array $parameters = [])
-    {}
+    { func_get_args(); }
 
     /**
      * Get the registered command instance with the given name, if any.

@@ -425,9 +425,7 @@ pub(crate) fn check_file(
     let mut checker = checker(
         &arena, file, program, &names, codebase, project, files, sources, None,
     );
-    pun_phpstan::resolve::with_type_aliases(&project.type_aliases, || {
-        checker.walk_program(program, &mut ())
-    });
+    walk(&mut checker, program, project);
     let name = checker.file_name();
     let (mut lines, parse) = lines_to_ignore(&file.contents);
     let mut unmatched = lines.clone();
@@ -527,9 +525,7 @@ fn in_trait_context(
         trait_name: String::from_utf8_lossy(t.name.as_bytes()).into_owned(),
         renames: u.renames.clone(),
     });
-    pun_phpstan::resolve::with_type_aliases(&project.type_aliases, || {
-        checker.walk_program(program, &mut ())
-    });
+    walk(&mut checker, program, project);
     let label = checker.label.clone();
     let (mut lines, _) = lines_to_ignore(&file.contents);
     lines.retain(|line, _| {
@@ -543,4 +539,15 @@ fn in_trait_context(
     project.keep_reported(&mut errors);
     let (kept, _) = local_ignores(&label, errors, &mut lines, &mut unmatched);
     (kept, checker.trait_uses)
+}
+
+/// Walk a file with the `typeAliases` parameter and Larastan's type node extensions in effect.
+fn walk<'a, 'arena>(checker: &mut super::Checker<'a, 'arena>, program: &'arena Program<'arena>, project: &Checks) {
+    let (codebase, larastan) = (checker.codebase, checker.larastan);
+    let nodes = |name: &str, args: &[pun_phpstan::types::Type]| {
+        larastan.and_then(|l| super::larastan::type_node(codebase, l, name, args))
+    };
+    pun_phpstan::resolve::with_type_aliases(&project.type_aliases, || {
+        pun_phpstan::resolve::with_type_nodes(&nodes, || checker.walk_program(program, &mut ()))
+    });
 }

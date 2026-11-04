@@ -165,7 +165,7 @@ class FailoverQueue extends Queue implements QueueContract
      * @return mixed
      */
     public function push($job, $data = '', $queue = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Push a raw payload onto the queue.
@@ -175,7 +175,7 @@ class FailoverQueue extends Queue implements QueueContract
      * @return mixed
      */
     public function pushRaw($payload, $queue = null, array $options = [])
-    {}
+    { func_get_args(); }
 
     /**
      * Push a new job onto the queue after (n) seconds.
@@ -187,7 +187,7 @@ class FailoverQueue extends Queue implements QueueContract
      * @return mixed
      */
     public function later($delay, $job, $data = '', $queue = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Push an array of jobs onto the queue.

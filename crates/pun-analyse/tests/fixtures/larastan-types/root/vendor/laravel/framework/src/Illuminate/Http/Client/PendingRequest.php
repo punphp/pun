@@ -600,7 +600,7 @@ class PendingRequest
      * @return $this
      */
     public function throwIf($condition)
-    {}
+    { func_get_args(); }
 
     /**
      * Throw an exception if a server or client error occurred and the given condition evaluates to false.
@@ -617,7 +617,7 @@ class PendingRequest
      * @return $this
      */
     public function dump()
-    {}
+    { func_get_args(); }
 
     /**
      * Dump the request before sending and end the script.
@@ -625,7 +625,7 @@ class PendingRequest
      * @return $this
      */
     public function dd()
-    {}
+    { func_get_args(); }
 
     /**
      * Issue a GET request to the given URL.
@@ -639,7 +639,7 @@ class PendingRequest
      * @throws \Illuminate\Http\Client\ConnectionException
      */
     public function get(string $url, $query = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Issue a HEAD request to the given URL.
@@ -653,7 +653,7 @@ class PendingRequest
      * @throws \Illuminate\Http\Client\ConnectionException
      */
     public function head(string $url, $query = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Issue a QUERY request to the given URL.

@@ -207,12 +207,14 @@ impl Sources<'_, '_> {
     }
 
     fn call(&mut self, span: Span, arguments: &ArgumentList, target: Option<Call>) {
-        // Larastan's LiteralExtension reads one unpacked argument's array, marked `...`
+        // Larastan's LiteralExtension reads one unpacked argument's array, marked `...`, and
+        // ModelOnlyDynamicMethodReturnTypeExtension each argument's array, unpacked or not
         let literal = |call: &Call| {
             call.receiver.is_none()
                 && call.class.is_none()
                 && call.name.eq_ignore_ascii_case("literal")
                 && arguments.arguments.len() == 1
+                || call.receiver.is_some() && call.name.eq_ignore_ascii_case("only")
         };
         let origin = target
             .filter(|call| !arguments.arguments.iter().any(Argument::is_unpacked) || literal(call))

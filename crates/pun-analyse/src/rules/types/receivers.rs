@@ -196,6 +196,15 @@ impl<'a> Checker<'a, '_> {
             }
             return Ok(Some(method));
         }
+        // ModelForwardsCallsExtension answers before MixinMethodsClassReflectionExtension (a model's `@mixin
+        // \Eloquent` would forward to `Builder<Model>`)
+        if self.larastan.is_some() && super::super::larastan::is_model(self, k) {
+            let builder = super::super::larastan::builder_name(self.codebase, k.name.as_bytes());
+            let builder = Type::Object(String::from_utf8_lossy(builder.as_bytes()).into_owned(), vec![Type::Object(declared::original_name(k), vec![], false)], false);
+            if let Some(method) = self.extended_method(&builder, name, active)? {
+                return Ok(Some(method));
+            }
+        }
         // MixinMethodsClassReflectionExtension guards each resolved mixin description and method name while
         // asking the type for its extended method, not just a native method on a plain ObjectType.
         for mixin in self.method_mixins(k, t) {
@@ -243,6 +252,14 @@ impl<'a> Checker<'a, '_> {
         }
         if let Some(larastan) = self.larastan {
             let original = declared::original_name(k);
+            // MacroMethodsClassReflectionExtension: a macro registered on a Macroable class (`Collection::macro()`)
+            // ponytail: a macro's parameters are not reflected
+            if !super::super::larastan::is_model(self, k)
+                && !super::super::larastan::is_a(self, k.name.as_bytes(), b"illuminate\\database\\eloquent\\builder")
+                && super::super::larastan::macro_method(self, k, name).is_some()
+            {
+                return Err(());
+            }
             // ModelForwardsCallsExtension: the methods of the model's own builder (`Builder<Model>` unless
             // `newEloquentBuilder()` or `#[UseEloquentBuilder]` names another), the builder's mixin included.
             if super::super::larastan::is_model(self, k) {
@@ -265,10 +282,14 @@ impl<'a> Checker<'a, '_> {
                         .unwrap_or_default()
                 })
             };
-            // EloquentBuilderForwardsCallsExtension (BuilderHelper::searchOnEloquentBuilder()): the model's scopes,
-            // then the query builder's native methods.
-            // ponytail: macros, dynamic wheres and the SoftDeletes methods are not seen
+            // EloquentBuilderForwardsCallsExtension (BuilderHelper::searchOnEloquentBuilder()): the builder's macros,
+            // the model's scopes, the query builder's native methods and macros, a dynamic where, then the SoftDeletes
+            // methods.
             if super::super::larastan::is_a(self, k.name.as_bytes(), b"illuminate\\database\\eloquent\\builder") {
+                // ponytail: a macro's, dynamic where's or SoftDeletes method's parameters are not reflected
+                if super::super::larastan::macro_method(self, k, name).is_some() {
+                    return Err(());
+                }
                 let model = ancestor_args("Illuminate\\Database\\Eloquent\\Builder")
                     .into_iter()
                     .next()
@@ -281,12 +302,54 @@ impl<'a> Checker<'a, '_> {
                     }
                 }
                 let query = "Illuminate\\Database\\Query\\Builder";
-                if let Lookup::Found(q) = self.class_like(query)
-                    && members::method(self, q, name).is_some()
+                if let Lookup::Found(q) = self.class_like(query) {
+                    if members::method(self, q, name).is_some() {
+                        return self.extended_method(&Type::Object(query.into(), vec![], false), name, active);
+                    }
+                    if super::super::larastan::macro_method(self, q, name).is_some() {
+                        return Err(());
+                    }
+                }
+                // BuilderHelper::dynamicWhere(): `whereFoo`, with `checkModelProperties` each `And`/`Or` segment a
+                // property of the model
+                if let Some(finder) = name.strip_prefix(b"where") {
+                    let finder = String::from_utf8_lossy(finder);
+                    let segments = super::super::larastan::where_segments(&finder);
+                    if !larastan.check_model_properties
+                        || segments.iter().all(|s| {
+                            let property = format!("${}", super::super::larastan::snake(s));
+                            self.has_property(&model, property.as_bytes(), false).yes()
+                        })
+                    {
+                        return Err(());
+                    }
+                }
+                let soft_deletes = model.object_class_names().iter().any(|m| {
+                    self.codebase.class_uses_trait(m.as_bytes(), b"Illuminate\\Database\\Eloquent\\SoftDeletes")
+                });
+                if soft_deletes
+                    && [&b"withTrashed"[..], b"onlyTrashed", b"withoutTrashed", b"restore", b"createOrRestore", b"restoreOrCreate"]
+                        .contains(&name)
                 {
-                    return self.extended_method(&Type::Object(query.into(), vec![], false), name, active);
+                    return Err(());
                 }
                 return Ok(None);
+            }
+            // ModelFactoryMethodsClassReflectionExtension: `trashed()`, `for*()` and `has*()` of a factory
+            // ponytail: their variants' parameters are not reflected
+            if super::super::larastan::is_a(self, k.name.as_bytes(), b"illuminate\\database\\eloquent\\factories\\factory")
+                && super::super::larastan::factory_magic_method(
+                    self.codebase,
+                    &mago_codex::ttype::atomic::object::named::TNamedObject::new(k.name),
+                    &String::from_utf8_lossy(name),
+                )
+            {
+                return Err(());
+            }
+            // RedirectResponseMethodsClassReflectionExtension, ViewWithMethodsClassReflectionExtension: `with*`
+            // ponytail: its one mixed parameter is not reflected
+            if super::super::larastan::with_method_class(self.codebase, k.name.as_bytes(), name).is_some() {
+                return Err(());
             }
             // HigherOrderCollectionProxyExtension: `$collection->each->method()` calls the value's method
             if original.eq_ignore_ascii_case("Illuminate\\Support\\HigherOrderCollectionProxy") {
@@ -311,7 +374,12 @@ impl<'a> Checker<'a, '_> {
                     .next()
                     .filter(|r| !r.object_class_names().is_empty())
                     .unwrap_or_else(|| Type::Object("Illuminate\\Database\\Eloquent\\Model".into(), vec![], false));
-                let builder = Type::Object("Illuminate\\Database\\Eloquent\\Builder".into(), vec![related], false);
+                // the related model's own builder (`newEloquentBuilder()`, `#[UseEloquentBuilder]`)
+                let builder = match related.object_class_names().as_slice() {
+                    [model] => String::from_utf8_lossy(super::super::larastan::builder_name(self.codebase, model.as_bytes()).as_bytes()).into_owned(),
+                    _ => "Illuminate\\Database\\Eloquent\\Builder".into(),
+                };
+                let builder = Type::Object(builder, vec![related], false);
                 return self.extended_method(&builder, name, active);
             }
             // ContractsMethodsExtension: an `Illuminate\Contracts` interface's method is its concrete's
@@ -330,7 +398,7 @@ impl<'a> Checker<'a, '_> {
     /// ClassReflection::getResolvedMixinTypes(), then traits and the parent in extension order. Read each
     /// declaration's own tags: Mago's populated mixins have already flattened parents before traits and lost
     /// the active ancestor template map. Keep property reflection on its existing, separate path.
-    fn method_mixins(&self, class: &'a mago_codex::metadata::class_like::ClassLikeMetadata, receiver: &Type) -> Vec<Type> {
+    pub(in super::super) fn method_mixins(&self, class: &'a mago_codex::metadata::class_like::ClassLikeMetadata, receiver: &Type) -> Vec<Type> {
         let args = match receiver {
             Type::Object(_, args, _) | Type::Static(_, args) => args.clone(),
             _ => Vec::new(),
@@ -707,7 +775,22 @@ pub(in super::super) fn check_static<'arena>(
     let Some(method) = method else { return };
     let declaring = method.declaring_display(c);
     let declared = method.name();
-    if !method.is_static() {
+    // ModelForwardsCallsExtension's EloquentBuilderMethodReflection is always static
+    let forwarded = c.larastan.is_some()
+        && t.object_class_names().iter().all(|n| {
+            c.class_like(n).found().is_some_and(|k| {
+                super::super::larastan::is_model(c, k) && !c.codebase.is_instance_of(k.name.as_bytes(), method.declaring_name().as_bytes())
+            })
+        });
+    if forwarded
+        && let Some(call) = call
+        && let [model] = t.object_class_names().as_slice()
+        && let Some(k) = c.class_like(model).found()
+    {
+        forwarded_static_call(c, k, name, call);
+        return;
+    }
+    if !method.is_static() && !forwarded {
         let in_instance_method = c
             .functions
             .last()
@@ -758,6 +841,42 @@ pub(in super::super) fn check_static<'arena>(
         },
         first_level,
     );
+}
+
+/// ModelForwardsCallsExtension: `Model::builderMethod(...)`'s arguments, checked against the builder's static method.
+/// Returns whether the model forwards the method.
+pub(in super::super) fn forwarded_static_call<'arena>(
+    c: &mut Checker<'_, 'arena>,
+    model: &mago_codex::metadata::class_like::ClassLikeMetadata,
+    name: &LocalIdentifier,
+    call: &StaticMethodCall<'arena>,
+) -> bool {
+    let own = Type::Object(declared::original_name(model), vec![], false);
+    if !matches!(c.method_of_type(&own, name.value), Ok(Some(m)) if !c.codebase.is_instance_of(model.name.as_bytes(), m.declaring_name().as_bytes())) {
+        return false;
+    }
+    let builder = super::super::larastan::builder_name(c.codebase, model.name.as_bytes());
+    let t = Type::Object(String::from_utf8_lossy(builder.as_bytes()).into_owned(), vec![own], false);
+    let Some(method) = c.reflected_method(&t, name.value).ok().flatten() else {
+        return false;
+    };
+    // EloquentBuilderMethodReflection's declaring class is the model's builder
+    let subject = format!("{}::{}()", describe(c, &t), method.name);
+    let first_level = c.is_top_level(call.span());
+    let counts = params::count(&call.argument_list);
+    let selected_scope = c.named_call_scopes.get(&call.span())
+        .and_then(|scopes| scopes.iter().find(|scope| !scope.filtered)).cloned();
+    let acceptor = method.select(c, &counts, selected_scope.as_ref());
+    let void_message = Some(format!("Result of static method {subject} (void) is used."));
+    let subject = format!("Static method {subject}");
+    let check = params::Call {
+        kind: params::CallKind::StaticMethod,
+        subject: &subject,
+        scope: Some(call.span()),
+        void_message,
+    };
+    params::check_bound_in(c, &acceptor, &counts, name, check, first_level, selected_scope.as_ref(), !method.compound);
+    true
 }
 
 /// RuleLevelHelper retains unknown-class errors, and only the null introduced by a nullsafe chain disappears.

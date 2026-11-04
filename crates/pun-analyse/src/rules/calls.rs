@@ -448,6 +448,13 @@ pub(super) fn check_static_method<'arena>(
         };
         let key = format!("{guarded}::{method_name}").to_ascii_lowercase();
         let known = c.has_method_guard(&key);
+        if let Some(call) = call
+            && c.larastan.is_some()
+            && super::larastan::is_model(c, class)
+            && super::types::forwarded_static_call(c, class, name, call)
+        {
+            return;
+        }
         // reportMagicMethods is off at level 0; ponytail: with Larastan a class with __callStatic stays unchecked
         if !known && (c.level == 0 || call.is_some() && c.larastan.is_some())
             && members::method(c, class, b"__callStatic").is_some()

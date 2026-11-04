@@ -1121,3 +1121,17 @@ method's, as PHPStan's TemplateTypeMap resolves templates by name. Laravel's Elo
 `ttype/mod.rs` `get_iterable_parameters_keeping_templates()`: `get_iterable_parameters()` with a thread-local flag that
 stops `resolve_unbound_generic_parameters()` from replacing templates with their bounds. mago-analyzer's foreach over
 `$this` uses it so the loop variables are the class's own templates.
+## Invariant generic arguments that accept anything
+
+`ttype/comparator/generic_comparator.rs` `is_contained_by()`: an invariant template argument is not checked for
+variance when the container's argument is a non-template `mixed`, `array-key`, or a union that ignores its
+nullable and falsable members (Pun's benevolent union), as TemplateTypeVariance::isValidVariance() answers yes for a
+mixed or benevolent container argument. A `Collection<int, mixed>` parameter accepts `Collection<int, User>`, and
+`Collection<array-key, T>` accepts `Collection<int, T>`.
+
+## Truthy and falsy mixed
+
+`ttype/comparator/atomic_comparator.rs` `is_contained_by()`: a truthy mixed container (`non-empty-mixed`) contains
+only an input that is always truthy, and a falsy one only an input that is always falsy, as MixedType with a
+subtracted falsy (or truthy) type answers isSuperTypeOf(). `bool` is a maybe, not contained, so Laravel's
+`throw_if(bool $condition)` does not narrow the code after it to never.

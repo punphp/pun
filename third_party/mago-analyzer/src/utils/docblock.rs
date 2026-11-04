@@ -340,6 +340,11 @@ pub fn insert_variable_from_docblock<'ctx, A>(
         variable_type.set_possibly_undefined(true, None);
     }
 
+    // MutatingScope::assignVariable(): the annotated variable's earlier specifications no longer hold
+    let mut changed = mago_word::WordSet::default();
+    changed.insert(variable_name);
+    crate::context::block::BlockContext::retain_unreconciled_clauses(&mut block_context.clauses, &changed);
+
     if let Some(previous_type) = block_context.locals.remove(&variable_name) {
         let is_super = is_contained_by(
             context.codebase,

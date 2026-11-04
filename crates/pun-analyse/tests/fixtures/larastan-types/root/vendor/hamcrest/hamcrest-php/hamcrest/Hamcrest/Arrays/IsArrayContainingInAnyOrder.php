@@ -38,5 +38,5 @@ class IsArrayContainingInAnyOrder extends TypeSafeDiagnosingMatcher
      * @factory containsInAnyOrder ...
      */
     public static function arrayContainingInAnyOrder(/* args... */): self
-    {}
+    { func_get_args(); }
 }

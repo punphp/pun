@@ -21,7 +21,7 @@ if (!function_exists('assertThat')) {
      * </pre>
      */
     function assertThat(): void
-    {}
+    { func_get_args(); }
 }
 
 if (!function_exists('anArray')) {
@@ -29,7 +29,7 @@ if (!function_exists('anArray')) {
      * Evaluates to true only if each $matcher[$i] is satisfied by $array[$i].
      */
     function anArray(/* args... */): \Hamcrest\Arrays\IsArray
-    {}
+    { func_get_args(); }
 }
 
 if (!function_exists('hasItemInArray')) {
@@ -61,7 +61,7 @@ if (!function_exists('arrayContainingInAnyOrder')) {
      * An array with elements that match the given matchers.
      */
     function arrayContainingInAnyOrder(/* args... */): \Hamcrest\Arrays\IsArrayContainingInAnyOrder
-    {}
+    { func_get_args(); }
 }
 
 if (!function_exists('containsInAnyOrder')) {
@@ -69,7 +69,7 @@ if (!function_exists('containsInAnyOrder')) {
      * An array with elements that match the given matchers.
      */
     function containsInAnyOrder(/* args... */): \Hamcrest\Arrays\IsArrayContainingInAnyOrder
-    {}
+    { func_get_args(); }
 }
 
 if (!function_exists('arrayContaining')) {
@@ -77,7 +77,7 @@ if (!function_exists('arrayContaining')) {
      * An array with elements that match the given matchers in the same order.
      */
     function arrayContaining(/* args... */): \Hamcrest\Arrays\IsArrayContainingInOrder
-    {}
+    { func_get_args(); }
 }
 
 if (!function_exists('contains')) {
@@ -85,7 +85,7 @@ if (!function_exists('contains')) {
      * An array with elements that match the given matchers in the same order.
      */
     function contains(/* args... */): \Hamcrest\Arrays\IsArrayContainingInOrder
-    {}
+    { func_get_args(); }
 }
 
 if (!function_exists('hasKeyInArray')) {
@@ -193,7 +193,7 @@ if (!function_exists('allOf')) {
      * Evaluates to true only if ALL of the passed in matchers evaluate to true.
      */
     function allOf(/* args... */): \Hamcrest\Core\AllOf
-    {}
+    { func_get_args(); }
 }
 
 if (!function_exists('anyOf')) {
@@ -201,7 +201,7 @@ if (!function_exists('anyOf')) {
      * Evaluates to true if ANY of the passed in matchers evaluate to true.
      */
     function anyOf(/* args... */): \Hamcrest\Core\AnyOf
-    {}
+    { func_get_args(); }
 }
 
 if (!function_exists('noneOf')) {
@@ -209,7 +209,7 @@ if (!function_exists('noneOf')) {
      * Evaluates to false if ANY of the passed in matchers evaluate to true.
      */
     function noneOf(/* args... */): \Hamcrest\Core\IsNot
-    {}
+    { func_get_args(); }
 }
 
 if (!function_exists('both')) {
@@ -241,7 +241,7 @@ if (!function_exists('describedAs')) {
      * Wraps an existing matcher and overrides the description when it fails.
      */
     function describedAs(/* args... */): \Hamcrest\Core\DescribedAs
-    {}
+    { func_get_args(); }
 }
 
 if (!function_exists('everyItem')) {
@@ -303,7 +303,7 @@ if (!function_exists('hasItem')) {
      * </pre>
      */
     function hasItem(/* args... */): \Hamcrest\Core\IsCollectionContaining
-    {}
+    { func_get_args(); }
 }
 
 if (!function_exists('hasItems')) {
@@ -317,7 +317,7 @@ if (!function_exists('hasItems')) {
      * </pre>
      */
     function hasItems(/* args... */): \Hamcrest\Core\AllOf
-    {}
+    { func_get_args(); }
 }
 
 if (!function_exists('equalTo')) {
@@ -618,7 +618,7 @@ if (!function_exists('stringContainsInOrder')) {
      * Matches if value contains $substrings in a constrained order.
      */
     function stringContainsInOrder(/* args... */): \Hamcrest\Text\StringContainsInOrder
-    {}
+    { func_get_args(); }
 }
 
 if (!function_exists('endsWith')) {

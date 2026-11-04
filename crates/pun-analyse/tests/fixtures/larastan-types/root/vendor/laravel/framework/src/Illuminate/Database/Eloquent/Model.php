@@ -593,7 +593,7 @@ abstract class Model implements Arrayable, ArrayAccess, CanBeEscapedWhenCastToSt
      * @return \Illuminate\Database\Eloquent\Collection<int, static>
      */
     public static function all($columns = ['*'])
-    {}
+    { func_get_args(); }
 
     /**
      * Begin querying a model with eager loading.
@@ -602,7 +602,7 @@ abstract class Model implements Arrayable, ArrayAccess, CanBeEscapedWhenCastToSt
      * @return \Illuminate\Database\Eloquent\Builder<static>
      */
     public static function with($relations)
-    {}
+    { func_get_args(); }
 
     /**
      * Eager load relations on the model.
@@ -611,7 +611,7 @@ abstract class Model implements Arrayable, ArrayAccess, CanBeEscapedWhenCastToSt
      * @return $this
      */
     public function load($relations)
-    {}
+    { func_get_args(); }
 
     /**
      * Eager load relationships on the polymorphic relation of a model.
@@ -630,7 +630,7 @@ abstract class Model implements Arrayable, ArrayAccess, CanBeEscapedWhenCastToSt
      * @return $this
      */
     public function loadMissing($relations)
-    {}
+    { func_get_args(); }
 
     /**
      * Eager load relation's column aggregations on the model.
@@ -650,7 +650,7 @@ abstract class Model implements Arrayable, ArrayAccess, CanBeEscapedWhenCastToSt
      * @return $this
      */
     public function loadCount($relations)
-    {}
+    { func_get_args(); }
 
     /**
      * Eager load relation max column values on the model.
@@ -1057,7 +1057,7 @@ abstract class Model implements Arrayable, ArrayAccess, CanBeEscapedWhenCastToSt
      * @return int
      */
     public static function destroy($ids)
-    {}
+    { func_get_args(); }
 
     /**
      * Delete the model from the database.
@@ -1294,7 +1294,7 @@ abstract class Model implements Arrayable, ArrayAccess, CanBeEscapedWhenCastToSt
      * @return static|null
      */
     public function fresh($with = [])
-    {}
+    { func_get_args(); }
 
     /**
      * Reload the current model instance with fresh attributes from the database.

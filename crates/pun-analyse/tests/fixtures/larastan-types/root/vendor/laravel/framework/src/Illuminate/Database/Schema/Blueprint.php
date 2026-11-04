@@ -254,7 +254,7 @@ class Blueprint
      * @return \Illuminate\Support\Fluent
      */
     public function dropColumn($columns)
-    {}
+    { func_get_args(); }
 
     /**
      * Indicate that the given columns should be renamed.

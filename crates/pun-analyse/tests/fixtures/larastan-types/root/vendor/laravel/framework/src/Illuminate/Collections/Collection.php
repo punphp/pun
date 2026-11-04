@@ -122,7 +122,7 @@ class Collection implements ArrayAccess, CanBeEscapedWhenCastToString, Enumerabl
      * @return bool
      */
     public function contains($key, $operator = null, $value = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Determine if an item exists, using strict comparison.
@@ -132,7 +132,7 @@ class Collection implements ArrayAccess, CanBeEscapedWhenCastToString, Enumerabl
      * @return bool
      */
     public function containsStrict($key, $value = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Determine if an item is not contained in the collection.
@@ -143,7 +143,7 @@ class Collection implements ArrayAccess, CanBeEscapedWhenCastToString, Enumerabl
      * @return bool
      */
     public function doesntContain($key, $operator = null, $value = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Determine if an item is not contained in the enumerable, using strict comparison.
@@ -154,7 +154,7 @@ class Collection implements ArrayAccess, CanBeEscapedWhenCastToString, Enumerabl
      * @return bool
      */
     public function doesntContainStrict($key, $operator = null, $value = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Cross join with the given lists, returning all possible permutations.
@@ -264,7 +264,7 @@ class Collection implements ArrayAccess, CanBeEscapedWhenCastToString, Enumerabl
      * @return static
      */
     public function except($keys)
-    {}
+    { func_get_args(); }
 
     /**
      * Run a filter over each of the items.
@@ -360,7 +360,7 @@ class Collection implements ArrayAccess, CanBeEscapedWhenCastToString, Enumerabl
      * @return bool
      */
     public function has($key)
-    {}
+    { func_get_args(); }
 
     /**
      * Determine if any of the keys exist in the collection.
@@ -369,7 +369,7 @@ class Collection implements ArrayAccess, CanBeEscapedWhenCastToString, Enumerabl
      * @return bool
      */
     public function hasAny($key)
-    {}
+    { func_get_args(); }
 
     /**
      * Concatenate values of a given key as a string.
@@ -613,7 +613,7 @@ class Collection implements ArrayAccess, CanBeEscapedWhenCastToString, Enumerabl
      * @return static
      */
     public function only($keys)
-    {}
+    { func_get_args(); }
 
     /**
      * Select specific values from the items within the collection.
@@ -622,7 +622,7 @@ class Collection implements ArrayAccess, CanBeEscapedWhenCastToString, Enumerabl
      * @return static
      */
     public function select($keys)
-    {}
+    { func_get_args(); }
 
     /**
      * Get and remove the last N items from the collection.
@@ -643,7 +643,7 @@ class Collection implements ArrayAccess, CanBeEscapedWhenCastToString, Enumerabl
      * @phpstan-this-out ($key is null ? static<TKey|int, TValue> : $this)
      */
     public function prepend($value, $key = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Push one or more items onto the end of the collection.
@@ -875,7 +875,7 @@ class Collection implements ArrayAccess, CanBeEscapedWhenCastToString, Enumerabl
      * @throws \Illuminate\Support\MultipleItemsFoundException
      */
     public function sole($key = null, $operator = null, $value = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Determine if the collection contains a single item, optionally matching the given criteria.
@@ -886,7 +886,7 @@ class Collection implements ArrayAccess, CanBeEscapedWhenCastToString, Enumerabl
      * @return bool
      */
     public function hasSole($key = null, $operator = null, $value = null): bool
-    {}
+    { func_get_args(); }
 
     /**
      * Get the first item in the collection but throw an exception if no matching items exist.
@@ -899,7 +899,7 @@ class Collection implements ArrayAccess, CanBeEscapedWhenCastToString, Enumerabl
      * @throws \Illuminate\Support\ItemNotFoundException
      */
     public function firstOrFail($key = null, $operator = null, $value = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Chunk the collection into chunks of the given size.
@@ -1006,7 +1006,7 @@ class Collection implements ArrayAccess, CanBeEscapedWhenCastToString, Enumerabl
      * @return static
      */
     public function splice($offset, $length = null, $replacement = [])
-    {}
+    { func_get_args(); }
 
     /**
      * Take the first or last {$limit} items.
@@ -1095,7 +1095,7 @@ class Collection implements ArrayAccess, CanBeEscapedWhenCastToString, Enumerabl
      * @return static<int, static<int, TValue|TZipValue>>
      */
     public function zip($items)
-    {}
+    { func_get_args(); }
 
     /**
      * Pad collection to the specified length with a value.

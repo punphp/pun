@@ -8,6 +8,9 @@ use mago_codex::ttype::atomic::object::named::TNamedObject;
 use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::atomic::scalar::class_like_string::TClassLikeString;
 use mago_codex::ttype::expander::{StaticClassType, TypeExpansionOptions, expand_union};
+use mago_codex::misc::GenericParent;
+use mago_codex::ttype::{TType, TypeRef};
+use mago_codex::ttype::template::{TemplateResult, inferred_type_replacer};
 use mago_codex::ttype::union::TUnion;
 use mago_codex::ttype::{get_int, get_specialized_template_type};
 use mago_word::{Word, word};
@@ -155,9 +158,81 @@ pub(crate) fn relation_property(codebase: &CodebaseMetadata, object: &TNamedObje
             continue;
         };
         let k = codebase.get_class_like(n.name.as_bytes())?;
-        let result =
+        let mut result =
             get_specialized_template_type(codebase, word("TResult"), relation, k, n.type_parameters.as_deref())?;
+        // `getTemplateType()` through every ancestor: an intermediate class's templates (BelongsToMany's, under
+        // MorphToMany) are the relation's own once more
+        for _ in 0..4 {
+            let pending: Vec<_> = result
+                .get_all_child_nodes()
+                .into_iter()
+                .filter_map(|node| match node {
+                    TypeRef::Atomic(TAtomic::GenericParameter(p)) => match p.defining_entity {
+                        GenericParent::ClassLike(class) if class != k.name && class != relation => Some((p.parameter_name, class)),
+                        _ => None,
+                    },
+                    _ => None,
+                })
+                .collect();
+            if pending.is_empty() {
+                break;
+            }
+            let mut templates = TemplateResult::default();
+            for (name, class) in pending {
+                if let Some(t) = get_specialized_template_type(codebase, name, class, k, n.type_parameters.as_deref()) {
+                    templates.add_lower_bound(name, GenericParent::ClassLike(class), t);
+                }
+            }
+            result = inferred_type_replacer::replace(&result, &templates, codebase);
+        }
         types.extend(result.types.iter().cloned());
     }
     Some(replace_collections(codebase, &TUnion::from_vec(types)))
+}
+
+/// HigherOrderCollectionProxyHelper::determineReturnType(): the result of the collection method `name` proxied over
+/// `value`, whose method or property gives `returned`; `None` for its ErrorType.
+pub(crate) fn proxy_result(
+    codebase: &CodebaseMetadata,
+    name: &str,
+    value: &TUnion,
+    returned: impl FnOnce() -> Option<TUnion>,
+    collection: &TUnion,
+) -> Option<TUnion> {
+    use mago_codex::ttype::comparator::{ComparisonResult, union_comparator};
+    let collection_class = match collection.types.as_ref() {
+        [TAtomic::Object(TObject::Named(c))] => c.name,
+        _ => word(ELOQUENT_COLLECTION),
+    };
+    let generic = |class: Word, key: TUnion, value: TUnion| -> Option<TUnion> {
+        let k = codebase.get_class_like(class.as_bytes())?;
+        let parameters = match k.template_types.len() {
+            2 => Some(vec![key, value]),
+            1 if k.template_types.contains_key(&word("TModel")) => Some(vec![value]),
+            _ => None,
+        };
+        Some(TUnion::from_atomic(named(k.original_name, parameters)))
+    };
+    let benevolent = || {
+        let mut t = mago_codex::ttype::get_int_or_string();
+        t.set_ignore_nullable_issues(true);
+        t.set_ignore_falsable_issues(true);
+        t
+    };
+    let support = word("Illuminate\\Support\\Collection");
+    match name {
+        "average" | "avg" => Some(mago_codex::ttype::get_float()),
+        "contains" | "every" | "some" => Some(mago_codex::ttype::get_bool()),
+        "each" | "filter" | "reject" | "skipUntil" | "skipWhile" | "sortBy" | "sortByDesc" | "takeUntil"
+        | "takeWhile" | "unique" => generic(collection_class, get_int(), value.clone()),
+        "keyBy" => generic(collection_class, benevolent(), value.clone()),
+        "first" => Some(TUnion::from_vec(value.types.iter().cloned().chain([TAtomic::Null]).collect())),
+        "flatMap" => generic(support, get_int(), mago_codex::ttype::get_mixed()),
+        "groupBy" | "partition" => generic(collection_class, get_int(), generic(collection_class, get_int(), value.clone())?),
+        "map" => generic(support, benevolent(), returned()?),
+        "max" | "min" => returned(),
+        "sum" => union_comparator::is_contained_by(codebase, &get_int(), &returned()?, false, false, true, &mut ComparisonResult::new())
+            .then(get_int),
+        _ => None,
+    }
 }

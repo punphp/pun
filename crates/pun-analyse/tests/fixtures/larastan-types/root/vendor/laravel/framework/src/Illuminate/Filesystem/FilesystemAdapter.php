@@ -377,7 +377,7 @@ class FilesystemAdapter implements CloudFilesystemContract
      * @return bool
      */
     public function delete($paths)
-    {}
+    { func_get_args(); }
 
     /**
      * Copy a file to a new location.

@@ -81,7 +81,7 @@ class Pipeline implements PipelineContract
      * @return $this
      */
     public function through($pipes)
-    {}
+    { func_get_args(); }
 
     /**
      * Push additional pipes onto the pipeline.
@@ -90,7 +90,7 @@ class Pipeline implements PipelineContract
      * @return $this
      */
     public function pipe($pipes)
-    {}
+    { func_get_args(); }
 
     /**
      * Set the method to call on the pipes.

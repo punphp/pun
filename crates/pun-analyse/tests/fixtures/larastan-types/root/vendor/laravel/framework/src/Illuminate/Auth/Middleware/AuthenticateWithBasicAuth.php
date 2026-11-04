@@ -32,7 +32,7 @@ class AuthenticateWithBasicAuth
      * @named-arguments-supported
      */
     public static function using($guard = null, $field = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Handle an incoming request.

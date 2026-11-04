@@ -31,5 +31,5 @@ class PendingChainFake extends PendingChain
      * @return \Illuminate\Foundation\Bus\PendingDispatch
      */
     public function dispatch()
-    {}
+    { func_get_args(); }
 }

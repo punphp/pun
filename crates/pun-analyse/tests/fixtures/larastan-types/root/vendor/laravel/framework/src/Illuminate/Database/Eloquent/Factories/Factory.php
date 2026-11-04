@@ -497,7 +497,7 @@ abstract class Factory
      * @return static
      */
     public function recycle($model)
-    {}
+    { func_get_args(); }
 
     /**
      * Retrieve a random model of a given type from previously provided models to recycle.

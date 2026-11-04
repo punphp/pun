@@ -694,8 +694,6 @@
 3 Arrays/NonexistentOffsetInArrayDimFetchRuleTest::testBug3747
 3 Arrays/NonexistentOffsetInArrayDimFetchRuleTest::testArrayDimFetchAfterArrayKeyFirstOrLast
 3 Arrays/NonexistentOffsetInArrayDimFetchRuleTest::testOffsetAccessLegal
-3 Arrays/NonexistentOffsetInArrayDimFetchRuleTest::testInternalClassesWithOverloadedOffsetAccessInvalid
-3 Arrays/NonexistentOffsetInArrayDimFetchRuleTest::testInternalClassesWithOverloadedOffsetAccessInvalid84
 3 Arrays/NonexistentOffsetInArrayDimFetchRuleTest::testBug12981
 # class.notFound (NonexistentOffsetInArrayDimFetchRule): Mago types a property by its `@psalm-var Params` where PHPStan
 # takes the `@phpstan-var array<string, mixed>` beside it, so the offset write's holder is an unknown class

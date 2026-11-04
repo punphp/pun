@@ -387,3 +387,37 @@ impl MethodReturnTypeProvider for Methods {
         }
     }
 }
+
+/// AbortIfFunctionTypeSpecifyingExtension (`abort_if()`, `abort_unless()`, `throw_if()`, `throw_unless()`): after the
+/// call the condition is falsy (`*_if`) or truthy (`*_unless`); `abort_*` needs its code argument.
+pub(crate) struct AbortIf;
+
+impl Provider for AbortIf {
+    fn meta() -> &'static ProviderMeta {
+        &META
+    }
+}
+
+impl mago_analyzer::plugin::provider::assertion::FunctionAssertionProvider for AbortIf {
+    fn targets() -> FunctionTarget {
+        FunctionTarget::ExactMultiple(&[b"abort_if", b"abort_unless", b"throw_if", b"throw_unless"])
+    }
+
+    fn get_assertions(
+        &self,
+        _context: &ProviderContext<'_, '_, '_>,
+        invocation: &InvocationInfo<'_, '_, '_>,
+    ) -> Option<mago_analyzer::plugin::provider::assertion::InvocationAssertions> {
+        use mago_codex::assertion::Assertion;
+        let name = invocation.function_name().to_ascii_lowercase();
+        let abort = name.starts_with("abort");
+        if abort && invocation.argument_count() < 2 {
+            return None;
+        }
+        let parameter = if abort { "$boolean" } else { "$condition" };
+        let assertion = if name.ends_with("_if") { Assertion::Falsy } else { Assertion::Truthy };
+        let mut assertions = mago_analyzer::plugin::provider::assertion::InvocationAssertions::new();
+        assertions.add_immediate(mago_word::word(parameter), vec![assertion]);
+        Some(assertions)
+    }
+}

@@ -69,6 +69,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Try<'arena> {
         let existing_thrown_exceptions = std::mem::take(&mut block_context.possibly_thrown_exceptions);
         let existing_throw_scopes = std::mem::take(&mut artifacts.variable_throw_scopes);
         let old_block_context_locals = block_context.locals.clone();
+        let entry_clauses = block_context.clauses.clone();
         let mut try_block_context = block_context.clone();
 
         if self.finally_clause.is_some() {
@@ -506,6 +507,12 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Try<'arena> {
         artifacts.variable_throw_scopes.extend(throw_scopes.into_iter().filter(|(_, scopes)| !scopes.is_empty()));
 
         block_context.flags.set_has_returned(finally_has_returned || continuing_scopes.is_empty());
+
+        // PHPStan merges the try body's end scope with each catch's: what the body asserted (`throw_if()`) is not
+        // known after a catch that continues, so its clauses do not narrow the code after the statement
+        if !all_catches_leave {
+            block_context.clauses.retain(|clause| entry_clauses.iter().any(|entry| Rc::ptr_eq(entry, clause) || entry == clause));
+        }
 
         Ok(())
     }

@@ -15,7 +15,7 @@ class InArrayKeys implements ParameterizedRule
      * Create a new in_array_keys rule instance.
      */
     public function __construct(array|string $keys)
-    {}
+    { func_get_args(); }
 
     /**
      * Get the rule name followed by its parameters.

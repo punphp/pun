@@ -50,7 +50,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @return $this
      */
     public function load($relations)
-    {}
+    { func_get_args(); }
 
     /**
      * Load a set of aggregations over relationship's column onto the collection.
@@ -128,7 +128,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @return $this
      */
     public function loadMissing($relations)
-    {}
+    { func_get_args(); }
 
     /**
      * Load a relationship path for models of the given type if it is not already eager loaded.
@@ -178,7 +178,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @return bool
      */
     public function contains($key, $operator = null, $value = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Determine if a key does not exist in the collection.
@@ -189,7 +189,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @return bool
      */
     public function doesntContain($key, $operator = null, $value = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Get the array of primary keys.
@@ -240,7 +240,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @return static
      */
     public function fresh($with = [])
-    {}
+    { func_get_args(); }
 
     /**
      * Diff the collection with the given items.
@@ -444,7 +444,7 @@ class Collection extends BaseCollection implements QueueableCollection
      */
     #[\Override]
     public function partition($key, $operator = null, $value = null)
-    {}
+    { func_get_args(); }
 
     /**
      * {@inheritDoc}
@@ -464,7 +464,7 @@ class Collection extends BaseCollection implements QueueableCollection
      */
     #[\Override]
     public function zip($items)
-    {}
+    { func_get_args(); }
 
     /**
      * Retrieve duplicate items from the collection.

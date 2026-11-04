@@ -15,7 +15,7 @@ class MissingWithAll implements ParameterizedRule
      * Create a new missing_with_all rule instance.
      */
     public function __construct(array|string $fields)
-    {}
+    { func_get_args(); }
 
     /**
      * Get the rule name followed by its parameters.

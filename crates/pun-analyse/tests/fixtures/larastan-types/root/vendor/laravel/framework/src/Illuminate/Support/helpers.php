@@ -206,7 +206,7 @@ if (! function_exists('str')) {
      * @return ($string is null ? object : \Illuminate\Support\Stringable)
      */
     function str($string = null)
-    {}
+    { func_get_args(); }
 }
 
 if (! function_exists('tap')) {

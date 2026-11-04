@@ -60,7 +60,7 @@ trait SoftDeletes
      * @return int
      */
     public static function forceDestroy($ids)
-    {}
+    { func_get_args(); }
 
     /**
      * Perform the actual delete query on this model instance.

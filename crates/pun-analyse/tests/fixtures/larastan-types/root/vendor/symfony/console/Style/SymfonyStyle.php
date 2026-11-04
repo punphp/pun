@@ -168,7 +168,7 @@ class SymfonyStyle extends OutputStyle
      * @param string|null $format
      */
     public function progressStart(int $max = 0 /* , ?string $format = null */): void
-    {}
+    { func_get_args(); }
 
     public function progressAdvance(int $step = 1): void
     {}
@@ -180,7 +180,7 @@ class SymfonyStyle extends OutputStyle
      * @param string|null $format
      */
     public function createProgressBar(int $max = 0 /* , ?string $format = null */): ProgressBar
-    {}
+    { func_get_args(); }
 
     /**
      * @see ProgressBar::iterate()
@@ -195,7 +195,7 @@ class SymfonyStyle extends OutputStyle
      * @return iterable<TKey, TValue>
      */
     public function progressIterate(iterable $iterable, ?int $max = null /* , ?string $format = null */): iterable
-    { yield; }
+    { yield; func_get_args(); }
 
     public function askQuestion(Question $question): mixed
     {}

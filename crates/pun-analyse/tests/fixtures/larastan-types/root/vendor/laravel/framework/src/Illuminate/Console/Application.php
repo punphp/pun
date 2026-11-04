@@ -193,7 +193,7 @@ class Application extends SymfonyApplication implements ApplicationContract
      * @return $this
      */
     public function resolveCommands($commands)
-    {}
+    { func_get_args(); }
 
     /**
      * Set the container command loader for lazy resolution.

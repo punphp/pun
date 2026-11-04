@@ -3733,3 +3733,21 @@ post-argument scope, so the catch of `try { $object->{$method}(); } catch (Error
 `statement/function_like/mod.rs`: a variadic parameter that named arguments can fill is `array<int<0, max>|string, T>`
 inside the body, as MutatingScope::enterFunctionLike() types it, not `array<array-key, T>`. Only a natively variadic
 parameter is an array in the body: `@param mixed ...$tags` on a plain `$tags` leaves it `mixed`.
+## Larastan type-test parity (inline `@var`, `offsetGet()`, `__call()`, try clauses)
+
+- `utils/docblock.rs` `insert_variable_from_docblock()`: an inline `@var` drops the clauses that mention the
+  variable, as MutatingScope::assignVariable() forgets the variable's earlier specifications. A narrowing made before
+  `/** @var User $user */` no longer applies to the annotated type.
+- `utils/expression/array.rs` `get_array_access_method_value_type()`: reading `$object[...]` on an `ArrayAccess`
+  object uses `offsetGet()`'s return type (assignment keeps `offsetSet()`'s value parameter), as
+  ObjectType::getOffsetValueType() does. A paginator's `$users[0]` is `User|null` from its `offsetGet()`.
+- `expression/call/method_call.rs`: a call that only an undocumented `__call()` handles, with no method type provider,
+  returns an ErrorType (`*ERROR*`), as MethodCallHandler resolves no method reflection for it.
+- `statement/try.rs`: when a catch does not leave, the clauses after the try statement are those that held before it.
+  PHPStan merges the try body's end scope with each catch's scope, so what the body asserted (`throw_if()`) does not
+  narrow the code after the statement.
+- `expression/call/static_method_call.rs` and `expression/call/method_call.rs`
+  `analyze_undocumented_method_return_type()`: inside a try, a call that reflects no method (an instance method
+  called statically, an unknown method, a call only `__call()` or `__callStatic()` handles) is an implicit throw
+  point, as MethodCallHandler and StaticCallHandler add one when they find no method reflection. A variable assigned
+  in the catch after `Request::validate([])` might be defined, not undefined.

@@ -85,7 +85,7 @@ impl Provider for Functions {
 
 impl FunctionReturnTypeProvider for Functions {
     fn targets() -> FunctionTarget {
-        FunctionTarget::ExactMultiple(&[b"auth", b"now", b"today", b"__", b"collect"])
+        FunctionTarget::ExactMultiple(&[b"auth", b"now", b"today", b"__", b"trans", b"collect"])
     }
 
     fn get_return_type(
@@ -105,17 +105,23 @@ impl FunctionReturnTypeProvider for Functions {
             "now" | "today" => Some(TUnion::from_atomic(object(codebase, &self.0.date_class))),
             "collect" => collect(context, invocation),
             "__" if invocation.has_no_arguments() => Some(get_null()),
-            "__" => {
-                let mut ty = TUnion::from_vec(
-                    get_mixed_keyed_array().types.iter().chain(get_string().types.iter()).cloned().collect(),
-                );
-                ty.set_ignore_nullable_issues(true);
-                ty.set_ignore_falsable_issues(true);
-                Some(ty)
+            // TransHelperReturnTypeExtension
+            "trans" if invocation.has_no_arguments() => {
+                Some(TUnion::from_atomic(object(codebase, "Illuminate\\Contracts\\Translation\\Translator")))
             }
+            "__" | "trans" => Some(translation()),
             _ => None,
         }
     }
+}
+
+/// DoubleUnderscoreHelperReturnTypeExtension's, TransHelperReturnTypeExtension's and
+/// TranslatorGetReturnTypeExtension's `array|string`, benevolent.
+fn translation() -> TUnion {
+    let mut ty = TUnion::from_vec(get_mixed_keyed_array().types.iter().chain(get_string().types.iter()).cloned().collect());
+    ty.set_ignore_nullable_issues(true);
+    ty.set_ignore_falsable_issues(true);
+    ty
 }
 
 /// The method extensions; the file's contents locate a call's receiver (see [`Methods::receiver_argument`]).
@@ -172,6 +178,22 @@ impl MethodReturnTypeProvider for Methods {
             "user" if is(GUARD) => {
                 let guard = self.receiver_argument(invocation).and_then(|a| constant_string(context, a));
                 return auth_models(codebase, self.0.auth_models(guard.as_deref()));
+            }
+            "get" if is("Illuminate\\Contracts\\Translation\\Translator") => return Some(translation()),
+            // GuardDynamicStaticMethodReturnTypeExtension: the default guard's driver's class without an argument,
+            // else the class of the driver its constant string names (the argument is matched as a driver)
+            "guard"
+                if receiver.eq_ignore_ascii_case(b"Illuminate\\Support\\Facades\\Auth")
+                    || class.eq_ignore_ascii_case(b"Illuminate\\Support\\Facades\\Auth") =>
+            {
+                let class = match invocation.arguments().as_slice() {
+                    [] => self.0.guard_class(None),
+                    [argument, ..] => constant_string(context, argument.value()?.span()).and_then(|d| crate::larastan::app::driver_class(&d)),
+                };
+                return Some(match class {
+                    Some(class) => TUnion::from_atomic(object(codebase, class)),
+                    None => stateful_guard(codebase),
+                });
             }
             "disk" | "drive" | "cloud" if is("Illuminate\\Support\\Facades\\Storage") => {
                 return Some(TUnion::from_atomic(object(codebase, "Illuminate\\Filesystem\\FilesystemAdapter")));

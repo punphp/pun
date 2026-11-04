@@ -42,7 +42,7 @@ class IsCollectionContaining extends TypeSafeMatcher
      * @factory ...
      */
     public static function hasItem(): self
-    {}
+    { func_get_args(); }
 
     /**
      * Test if the value is an array containing elements that match all of these
@@ -56,5 +56,5 @@ class IsCollectionContaining extends TypeSafeMatcher
      * @factory ...
      */
     public static function hasItems(/* args... */): AllOf
-    {}
+    { func_get_args(); }
 }

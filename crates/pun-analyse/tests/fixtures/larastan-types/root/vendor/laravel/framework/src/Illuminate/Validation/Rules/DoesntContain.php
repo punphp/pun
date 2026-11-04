@@ -22,7 +22,7 @@ class DoesntContain implements Stringable
      * @param  \Illuminate\Contracts\Support\Arrayable|\UnitEnum|array|string  $values
      */
     public function __construct($values)
-    {}
+    { func_get_args(); }
 
     /**
      * Convert the rule to a validation string.

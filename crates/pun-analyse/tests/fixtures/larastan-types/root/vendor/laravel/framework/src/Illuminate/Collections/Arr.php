@@ -466,7 +466,7 @@ class Arr
      * @return array
      */
     public static function prepend($array, $value, $key = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Get a value from the array, and remove it.

@@ -52,7 +52,7 @@ class Finder implements \IteratorAggregate
 	 * @param  string|list<string>  $masks
 	 */
 	public static function find(string|array $masks = ['*']): static
-	{}
+	{ func_get_args(); }
 
 
 	/**
@@ -60,7 +60,7 @@ class Finder implements \IteratorAggregate
 	 * @param  string|list<string>  $masks
 	 */
 	public static function findFiles(string|array $masks = ['*']): static
-	{}
+	{ func_get_args(); }
 
 
 	/**
@@ -68,7 +68,7 @@ class Finder implements \IteratorAggregate
 	 * @param  string|list<string>  $masks
 	 */
 	public static function findDirectories(string|array $masks = ['*']): static
-	{}
+	{ func_get_args(); }
 
 
 	/**
@@ -106,7 +106,7 @@ class Finder implements \IteratorAggregate
 	 * @param  string|list<string>  $paths
 	 */
 	public function in(string|array $paths): static
-	{}
+	{ func_get_args(); }
 
 
 	/**
@@ -114,7 +114,7 @@ class Finder implements \IteratorAggregate
 	 * @param  string|list<string>  $paths
 	 */
 	public function from(string|array $paths): static
-	{}
+	{ func_get_args(); }
 
 
 	/** @param  list<string>  $paths */
@@ -168,7 +168,7 @@ class Finder implements \IteratorAggregate
 	 * @param  string|list<string>  $masks
 	 */
 	public function exclude(string|array $masks): static
-	{}
+	{ func_get_args(); }
 
 
 	/**
@@ -199,7 +199,7 @@ class Finder implements \IteratorAggregate
 	 * @param  '>'|'>='|'<'|'<='|'='|'=='|'==='|'!='|'!=='|'<>'  $operator  or predicate string
 	 */
 	public function size(string $operator, ?int $size = null): static
-	{}
+	{ func_get_args(); }
 
 
 	/**
@@ -207,7 +207,7 @@ class Finder implements \IteratorAggregate
 	 * @param  '>'|'>='|'<'|'<='|'='|'=='|'==='|'!='|'!=='|'<>'  $operator  or predicate string
 	 */
 	public function date(string $operator, string|int|\DateTimeInterface|null $date = null): static
-	{}
+	{ func_get_args(); }
 
 
 	/********************* iterator generator ****************d*g**/

@@ -62,7 +62,7 @@ class PendingSingletonResourceRegistration
      * @return \Illuminate\Routing\PendingSingletonResourceRegistration
      */
     public function only($methods)
-    {}
+    { func_get_args(); }
 
     /**
      * Set the methods the controller should exclude.
@@ -71,7 +71,7 @@ class PendingSingletonResourceRegistration
      * @return \Illuminate\Routing\PendingSingletonResourceRegistration
      */
     public function except($methods)
-    {}
+    { func_get_args(); }
 
     /**
      * Indicate that the resource should have creation and storage routes.

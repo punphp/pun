@@ -135,7 +135,7 @@ class PendingChain
      * @return \Illuminate\Foundation\Bus\PendingDispatch
      */
     public function dispatch()
-    {}
+    { func_get_args(); }
 
     /**
      * Dispatch the job chain if the given truth test passes.

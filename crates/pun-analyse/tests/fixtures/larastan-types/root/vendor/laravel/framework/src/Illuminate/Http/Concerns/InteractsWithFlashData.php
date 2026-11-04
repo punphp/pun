@@ -31,7 +31,7 @@ trait InteractsWithFlashData
      * @return void
      */
     public function flashOnly($keys)
-    {}
+    { func_get_args(); }
 
     /**
      * Flash only some of the input to the session.
@@ -40,7 +40,7 @@ trait InteractsWithFlashData
      * @return void
      */
     public function flashExcept($keys)
-    {}
+    { func_get_args(); }
 
     /**
      * Flush all of the old input from the session.

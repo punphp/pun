@@ -149,7 +149,7 @@ class LazyCollection implements CanBeEscapedWhenCastToString, Enumerable
      * @return bool
      */
     public function contains($key, $operator = null, $value = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Determine if an item exists, using strict comparison.
@@ -159,7 +159,7 @@ class LazyCollection implements CanBeEscapedWhenCastToString, Enumerable
      * @return bool
      */
     public function containsStrict($key, $value = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Determine if an item is not contained in the enumerable.
@@ -170,7 +170,7 @@ class LazyCollection implements CanBeEscapedWhenCastToString, Enumerable
      * @return bool
      */
     public function doesntContain($key, $operator = null, $value = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Determine if an item is not contained in the enumerable, using strict comparison.
@@ -181,14 +181,14 @@ class LazyCollection implements CanBeEscapedWhenCastToString, Enumerable
      * @return bool
      */
     public function doesntContainStrict($key, $operator = null, $value = null)
-    {}
+    { func_get_args(); }
 
     /**
      * {@inheritDoc}
      */
     #[\Override]
     public function crossJoin(...$arrays)
-    {}
+    { func_get_args(); }
 
     /**
      * {@inheritDoc}
@@ -202,63 +202,63 @@ class LazyCollection implements CanBeEscapedWhenCastToString, Enumerable
      */
     #[\Override]
     public function diff($items)
-    {}
+    { func_get_args(); }
 
     /**
      * {@inheritDoc}
      */
     #[\Override]
     public function diffUsing($items, callable $callback)
-    {}
+    { func_get_args(); }
 
     /**
      * {@inheritDoc}
      */
     #[\Override]
     public function diffAssoc($items)
-    {}
+    { func_get_args(); }
 
     /**
      * {@inheritDoc}
      */
     #[\Override]
     public function diffAssocUsing($items, callable $callback)
-    {}
+    { func_get_args(); }
 
     /**
      * {@inheritDoc}
      */
     #[\Override]
     public function diffKeys($items)
-    {}
+    { func_get_args(); }
 
     /**
      * {@inheritDoc}
      */
     #[\Override]
     public function diffKeysUsing($items, callable $callback)
-    {}
+    { func_get_args(); }
 
     /**
      * {@inheritDoc}
      */
     #[\Override]
     public function duplicates($callback = null, $strict = false)
-    {}
+    { func_get_args(); }
 
     /**
      * {@inheritDoc}
      */
     #[\Override]
     public function duplicatesStrict($callback = null)
-    {}
+    { func_get_args(); }
 
     /**
      * {@inheritDoc}
      */
     #[\Override]
     public function except($keys)
-    {}
+    { func_get_args(); }
 
     /**
      * Run a filter over each of the items.
@@ -315,7 +315,7 @@ class LazyCollection implements CanBeEscapedWhenCastToString, Enumerable
      */
     #[\Override]
     public function groupBy($groupBy, $preserveKeys = false)
-    {}
+    { func_get_args(); }
 
     /**
      * {@inheritDoc}
@@ -331,7 +331,7 @@ class LazyCollection implements CanBeEscapedWhenCastToString, Enumerable
      * @return bool
      */
     public function has($key)
-    {}
+    { func_get_args(); }
 
     /**
      * Determine if any of the keys exist in the collection.
@@ -340,7 +340,7 @@ class LazyCollection implements CanBeEscapedWhenCastToString, Enumerable
      * @return bool
      */
     public function hasAny($key)
-    {}
+    { func_get_args(); }
 
     /**
      * Concatenate values of a given key as a string.
@@ -350,42 +350,42 @@ class LazyCollection implements CanBeEscapedWhenCastToString, Enumerable
      * @return string
      */
     public function implode($value, $glue = null)
-    {}
+    { func_get_args(); }
 
     /**
      * {@inheritDoc}
      */
     #[\Override]
     public function intersect($items)
-    {}
+    { func_get_args(); }
 
     /**
      * {@inheritDoc}
      */
     #[\Override]
     public function intersectUsing($items, callable $callback)
-    {}
+    { func_get_args(); }
 
     /**
      * {@inheritDoc}
      */
     #[\Override]
     public function intersectAssoc($items)
-    {}
+    { func_get_args(); }
 
     /**
      * {@inheritDoc}
      */
     #[\Override]
     public function intersectAssocUsing($items, callable $callback)
-    {}
+    { func_get_args(); }
 
     /**
      * {@inheritDoc}
      */
     #[\Override]
     public function intersectByKeys($items)
-    {}
+    { func_get_args(); }
 
     /**
      * Determine if the items are empty or not.
@@ -424,7 +424,7 @@ class LazyCollection implements CanBeEscapedWhenCastToString, Enumerable
      * @return string
      */
     public function join($glue, $finalGlue = '')
-    {}
+    { func_get_args(); }
 
     /**
      * Get the keys of the collection items.
@@ -472,7 +472,7 @@ class LazyCollection implements CanBeEscapedWhenCastToString, Enumerable
      */
     #[\Override]
     public function mapToDictionary(callable $callback)
-    {}
+    { func_get_args(); }
 
     /**
      * Run an associative map over each of the items.
@@ -493,14 +493,14 @@ class LazyCollection implements CanBeEscapedWhenCastToString, Enumerable
      */
     #[\Override]
     public function merge($items)
-    {}
+    { func_get_args(); }
 
     /**
      * {@inheritDoc}
      */
     #[\Override]
     public function mergeRecursive($items)
-    {}
+    { func_get_args(); }
 
     /**
      * Multiply the items in the collection by the multiplier.
@@ -509,7 +509,7 @@ class LazyCollection implements CanBeEscapedWhenCastToString, Enumerable
      * @return static
      */
     public function multiply(int $multiplier)
-    {}
+    { func_get_args(); }
 
     /**
      * Create a collection by using this collection for keys and another for its values.
@@ -527,7 +527,7 @@ class LazyCollection implements CanBeEscapedWhenCastToString, Enumerable
      */
     #[\Override]
     public function union($items)
-    {}
+    { func_get_args(); }
 
     /**
      * Create a new collection consisting of every n-th element.
@@ -548,7 +548,7 @@ class LazyCollection implements CanBeEscapedWhenCastToString, Enumerable
      * @return static
      */
     public function only($keys)
-    {}
+    { func_get_args(); }
 
     /**
      * Select specific values from the items within the collection.
@@ -557,7 +557,7 @@ class LazyCollection implements CanBeEscapedWhenCastToString, Enumerable
      * @return static
      */
     public function select($keys)
-    {}
+    { func_get_args(); }
 
     /**
      * Push all of the given items onto the collection.
@@ -581,7 +581,7 @@ class LazyCollection implements CanBeEscapedWhenCastToString, Enumerable
      * @throws \InvalidArgumentException
      */
     public function random($number = null, $preserveKeys = false)
-    {}
+    { func_get_args(); }
 
     /**
      * Replace the collection items with the given items.
@@ -597,14 +597,14 @@ class LazyCollection implements CanBeEscapedWhenCastToString, Enumerable
      */
     #[\Override]
     public function replaceRecursive($items)
-    {}
+    { func_get_args(); }
 
     /**
      * {@inheritDoc}
      */
     #[\Override]
     public function reverse()
-    {}
+    { func_get_args(); }
 
     /**
      * Search the collection for a given value and return the corresponding key if successful.
@@ -687,7 +687,7 @@ class LazyCollection implements CanBeEscapedWhenCastToString, Enumerable
      */
     #[\Override]
     public function slice($offset, $length = null)
-    {}
+    { func_get_args(); }
 
     /**
      * {@inheritDoc}
@@ -696,7 +696,7 @@ class LazyCollection implements CanBeEscapedWhenCastToString, Enumerable
      */
     #[\Override]
     public function split($numberOfGroups)
-    {}
+    { func_get_args(); }
 
     /**
      * Get the first item in the collection, but only if exactly one item exists. Otherwise, throw an exception.
@@ -710,7 +710,7 @@ class LazyCollection implements CanBeEscapedWhenCastToString, Enumerable
      * @throws \Illuminate\Support\MultipleItemsFoundException
      */
     public function sole($key = null, $operator = null, $value = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Determine if the collection contains a single item or a single item matching the given criteria.
@@ -721,7 +721,7 @@ class LazyCollection implements CanBeEscapedWhenCastToString, Enumerable
      * @return bool
      */
     public function hasSole($key = null, $operator = null, $value = null): bool
-    {}
+    { func_get_args(); }
 
     /**
      * Get the first item in the collection but throw an exception if no matching items exist.
@@ -734,7 +734,7 @@ class LazyCollection implements CanBeEscapedWhenCastToString, Enumerable
      * @throws \Illuminate\Support\ItemNotFoundException
      */
     public function firstOrFail($key = null, $operator = null, $value = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Chunk the collection into chunks of the given size.
@@ -771,49 +771,49 @@ class LazyCollection implements CanBeEscapedWhenCastToString, Enumerable
      */
     #[\Override]
     public function sort($callback = null)
-    {}
+    { func_get_args(); }
 
     /**
      * {@inheritDoc}
      */
     #[\Override]
     public function sortDesc($options = SORT_REGULAR)
-    {}
+    { func_get_args(); }
 
     /**
      * {@inheritDoc}
      */
     #[\Override]
     public function sortBy($callback, $options = SORT_REGULAR, $descending = false)
-    {}
+    { func_get_args(); }
 
     /**
      * {@inheritDoc}
      */
     #[\Override]
     public function sortByDesc($callback, $options = SORT_REGULAR)
-    {}
+    { func_get_args(); }
 
     /**
      * {@inheritDoc}
      */
     #[\Override]
     public function sortKeys($options = SORT_REGULAR, $descending = false)
-    {}
+    { func_get_args(); }
 
     /**
      * {@inheritDoc}
      */
     #[\Override]
     public function sortKeysDesc($options = SORT_REGULAR)
-    {}
+    { func_get_args(); }
 
     /**
      * {@inheritDoc}
      */
     #[\Override]
     public function sortKeysUsing(callable $callback)
-    {}
+    { func_get_args(); }
 
     /**
      * Take the first or last {$limit} items.
@@ -929,14 +929,14 @@ class LazyCollection implements CanBeEscapedWhenCastToString, Enumerable
      * @return static<int, static<int, TValue|TZipValue>>
      */
     public function zip($items)
-    {}
+    { func_get_args(); }
 
     /**
      * {@inheritDoc}
      */
     #[\Override]
     public function pad($size, $value)
-    {}
+    { func_get_args(); }
 
     /**
      * Get the values iterator.

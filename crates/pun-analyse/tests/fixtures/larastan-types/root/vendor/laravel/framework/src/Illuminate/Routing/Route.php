@@ -742,7 +742,7 @@ class Route
      * @return ($middleware is null ? array : $this)
      */
     public function middleware($middleware = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Specify that the "Authorize" / "can" middleware should be applied to the route with the given options.

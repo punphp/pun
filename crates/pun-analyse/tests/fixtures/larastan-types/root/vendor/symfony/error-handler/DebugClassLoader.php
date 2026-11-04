@@ -184,7 +184,7 @@ class DebugClassLoader
      *                                                                  Pass null (default) to use the first namespace segment as vendor name.
      */
     public static function enable(/* ?array $deprecationsNamespacesMapping = null */): void
-    {}
+    { func_get_args(); }
 
     /**
      * Disables the wrapping.

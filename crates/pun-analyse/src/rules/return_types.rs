@@ -60,6 +60,7 @@ pub(super) fn registry(
         registry.register_method_provider(super::larastan::AppMethods(Arc::clone(&larastan.app), contents.to_vec()));
         registry.register_function_provider(super::larastan::AppFunctions(Arc::clone(&larastan.app)));
         registry.register_function_provider(super::larastan::Tap);
+        registry.register_function_assertion_provider(super::larastan::AbortIf);
         registry.register_function_provider(super::larastan::HelperFunctions {
             app: Arc::clone(&larastan.app),
             generalize_env: larastan.generalize_env_return_type,

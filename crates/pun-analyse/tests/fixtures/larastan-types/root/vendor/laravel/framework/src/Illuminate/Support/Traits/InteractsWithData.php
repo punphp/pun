@@ -48,7 +48,7 @@ trait InteractsWithData
      * @return bool
      */
     public function has($key)
-    {}
+    { func_get_args(); }
 
     /**
      * Determine if the instance contains any of the given keys.
@@ -57,7 +57,7 @@ trait InteractsWithData
      * @return bool
      */
     public function hasAny($keys)
-    {}
+    { func_get_args(); }
 
     /**
      * Apply the callback if the instance contains the given key.
@@ -80,7 +80,7 @@ trait InteractsWithData
      * @return bool
      */
     public function filled($key)
-    {}
+    { func_get_args(); }
 
     /**
      * Determine if the instance contains an empty value for the given key.
@@ -89,7 +89,7 @@ trait InteractsWithData
      * @return bool
      */
     public function isNotFilled($key)
-    {}
+    { func_get_args(); }
 
     /**
      * Determine if the instance contains a non-empty value for any of the given keys.
@@ -98,7 +98,7 @@ trait InteractsWithData
      * @return bool
      */
     public function anyFilled($keys)
-    {}
+    { func_get_args(); }
 
     /**
      * Apply the callback if the instance contains a non-empty value for the given key.
@@ -137,7 +137,7 @@ trait InteractsWithData
      * @return bool
      */
     public function missing($key)
-    {}
+    { func_get_args(); }
 
     /**
      * Apply the callback if the instance is missing the given key.
@@ -309,7 +309,7 @@ trait InteractsWithData
      * @return array
      */
     public function only($keys)
-    {}
+    { func_get_args(); }
 
     /**
      * Get all of the data except for a specified array of items.
@@ -318,5 +318,5 @@ trait InteractsWithData
      * @return array
      */
     public function except($keys)
-    {}
+    { func_get_args(); }
 }

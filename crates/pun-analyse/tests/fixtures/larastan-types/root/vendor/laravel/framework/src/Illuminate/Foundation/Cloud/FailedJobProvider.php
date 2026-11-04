@@ -54,7 +54,7 @@ class FailedJobProvider implements FailedJobProviderInterface, CountableFailedJo
      * @return string|null
      */
     public function log($connection, $queue, $payload, $exception)
-    {}
+    { func_get_args(); }
 
     /**
      * Get the IDs of all of the failed jobs.
@@ -63,7 +63,7 @@ class FailedJobProvider implements FailedJobProviderInterface, CountableFailedJo
      * @return array
      */
     public function ids($queue = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Get a list of all of the failed jobs.
@@ -71,7 +71,7 @@ class FailedJobProvider implements FailedJobProviderInterface, CountableFailedJo
      * @return array
      */
     public function all()
-    {}
+    { func_get_args(); }
 
     /**
      * Get a single failed job.
@@ -119,7 +119,7 @@ class FailedJobProvider implements FailedJobProviderInterface, CountableFailedJo
      * @return void
      */
     public function flush($hours = null, $queue = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Count the failed jobs.
@@ -129,7 +129,7 @@ class FailedJobProvider implements FailedJobProviderInterface, CountableFailedJo
      * @return int
      */
     public function count($connection = null, $queue = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Prune all of the entries older than the given date.
@@ -138,7 +138,7 @@ class FailedJobProvider implements FailedJobProviderInterface, CountableFailedJo
      * @return int
      */
     public function prune(DateTimeInterface $before)
-    {}
+    { func_get_args(); }
 
     /**
      * Set the connected queue instance.

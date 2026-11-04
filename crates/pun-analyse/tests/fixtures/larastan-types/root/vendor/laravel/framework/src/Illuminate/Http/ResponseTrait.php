@@ -90,7 +90,7 @@ trait ResponseTrait
      * @return $this
      */
     public function cookie($cookie)
-    {}
+    { func_get_args(); }
 
     /**
      * Add a cookie to the response.
@@ -99,7 +99,7 @@ trait ResponseTrait
      * @return $this
      */
     public function withCookie($cookie)
-    {}
+    { func_get_args(); }
 
     /**
      * Add multiple cookies to the response.

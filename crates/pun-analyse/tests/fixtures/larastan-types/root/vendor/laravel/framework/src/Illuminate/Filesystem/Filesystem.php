@@ -186,7 +186,7 @@ class Filesystem
      * @return bool
      */
     public function delete($paths)
-    {}
+    { func_get_args(); }
 
     /**
      * Move a file to a new location.

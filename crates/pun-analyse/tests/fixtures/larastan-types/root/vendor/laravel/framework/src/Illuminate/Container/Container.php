@@ -445,7 +445,7 @@ class Container implements ArrayAccess, ContainerContract
      * @return void
      */
     public function tag($abstracts, $tags)
-    {}
+    { func_get_args(); }
 
     /**
      * Resolve all of the bindings for a given tag.

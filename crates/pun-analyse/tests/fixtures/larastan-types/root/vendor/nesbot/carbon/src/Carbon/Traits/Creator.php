@@ -111,7 +111,7 @@ trait Creator
     public static function parse(
         DateTimeInterface|WeekDay|Month|string|int|float|null $time,
         DateTimeZone|string|int|null $timezone = null,
-    ): static {}
+    ): static { func_get_args(); }
 
     /**
      * Create a carbon instance from a localized string (in French, Japanese, Arabic, etc.).
@@ -325,7 +325,7 @@ trait Creator
      */
     #[ReturnTypeWillChange]
     public static function createFromFormat($format, $time, $timezone = null): ?static
-    {}
+    { func_get_args(); }
 
     /**
      * Create a Carbon instance from a specific ISO format (same replacements as ->isoFormat()).

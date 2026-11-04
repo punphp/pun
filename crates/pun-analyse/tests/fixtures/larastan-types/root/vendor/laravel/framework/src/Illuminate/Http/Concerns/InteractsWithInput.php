@@ -67,7 +67,7 @@ trait InteractsWithInput
      * @return array
      */
     public function all($keys = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Retrieve an input item from the request.
@@ -207,5 +207,5 @@ trait InteractsWithInput
      * @return $this
      */
     public function dump($keys = [])
-    {}
+    { func_get_args(); }
 }

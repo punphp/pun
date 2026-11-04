@@ -90,7 +90,7 @@ trait HidesAttributes
      * @return $this
      */
     public function makeVisible($attributes)
-    {}
+    { func_get_args(); }
 
     /**
      * Make the given, typically hidden, attributes visible if the given truth test passes.
@@ -109,7 +109,7 @@ trait HidesAttributes
      * @return $this
      */
     public function makeHidden($attributes)
-    {}
+    { func_get_args(); }
 
     /**
      * Make the given, typically visible, attributes hidden if the given truth test passes.

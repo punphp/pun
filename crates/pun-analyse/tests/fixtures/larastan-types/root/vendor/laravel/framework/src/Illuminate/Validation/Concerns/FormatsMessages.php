@@ -224,7 +224,7 @@ trait FormatsMessages
      * @return string|null
      */
     protected function callReplacer($message, $attribute, $rule, $parameters, $validator)
-    {}
+    { func_get_args(); }
 
     /**
      * Call a class based validator message replacer.
@@ -238,5 +238,5 @@ trait FormatsMessages
      * @return string
      */
     protected function callClassBasedReplacer($callback, $message, $attribute, $rule, $parameters, $validator)
-    {}
+    { func_get_args(); }
 }

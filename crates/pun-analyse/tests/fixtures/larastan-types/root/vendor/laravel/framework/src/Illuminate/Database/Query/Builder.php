@@ -294,7 +294,7 @@ class Builder implements BuilderContract
      * @return $this
      */
     public function select($columns = ['*'])
-    {}
+    { func_get_args(); }
 
     /**
      * Add a subselect expression to the query.
@@ -385,7 +385,7 @@ class Builder implements BuilderContract
      * @return $this
      */
     public function addSelect($column)
-    {}
+    { func_get_args(); }
 
     /**
      * Add a vector-similarity selection to the query.
@@ -406,7 +406,7 @@ class Builder implements BuilderContract
      * @return $this
      */
     public function distinct()
-    {}
+    { func_get_args(); }
 
     /**
      * Set the table which the query is targeting.
@@ -680,7 +680,7 @@ class Builder implements BuilderContract
      * @return $this
      */
     public function where($column, $operator = null, $value = null, $boolean = 'and')
-    {}
+    { func_get_args(); }
 
     /**
      * Add an array of "where" clauses to the query.
@@ -745,7 +745,7 @@ class Builder implements BuilderContract
      * @return $this
      */
     public function orWhere($column, $operator = null, $value = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Add a basic "where not" clause to the query.
@@ -1220,7 +1220,7 @@ class Builder implements BuilderContract
      * @return $this
      */
     public function whereDate($column, $operator, $value = null, $boolean = 'and')
-    {}
+    { func_get_args(); }
 
     /**
      * Add an "or where date" statement to the query.
@@ -1231,7 +1231,7 @@ class Builder implements BuilderContract
      * @return $this
      */
     public function orWhereDate($column, $operator, $value = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Add a "where time" statement to the query.
@@ -1243,7 +1243,7 @@ class Builder implements BuilderContract
      * @return $this
      */
     public function whereTime($column, $operator, $value = null, $boolean = 'and')
-    {}
+    { func_get_args(); }
 
     /**
      * Add an "or where time" statement to the query.
@@ -1254,7 +1254,7 @@ class Builder implements BuilderContract
      * @return $this
      */
     public function orWhereTime($column, $operator, $value = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Add a "where day" statement to the query.
@@ -1266,7 +1266,7 @@ class Builder implements BuilderContract
      * @return $this
      */
     public function whereDay($column, $operator, $value = null, $boolean = 'and')
-    {}
+    { func_get_args(); }
 
     /**
      * Add an "or where day" statement to the query.
@@ -1277,7 +1277,7 @@ class Builder implements BuilderContract
      * @return $this
      */
     public function orWhereDay($column, $operator, $value = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Add a "where month" statement to the query.
@@ -1289,7 +1289,7 @@ class Builder implements BuilderContract
      * @return $this
      */
     public function whereMonth($column, $operator, $value = null, $boolean = 'and')
-    {}
+    { func_get_args(); }
 
     /**
      * Add an "or where month" statement to the query.
@@ -1300,7 +1300,7 @@ class Builder implements BuilderContract
      * @return $this
      */
     public function orWhereMonth($column, $operator, $value = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Add a "where year" statement to the query.
@@ -1312,7 +1312,7 @@ class Builder implements BuilderContract
      * @return $this
      */
     public function whereYear($column, $operator, $value = null, $boolean = 'and')
-    {}
+    { func_get_args(); }
 
     /**
      * Add an "or where year" statement to the query.
@@ -1323,7 +1323,7 @@ class Builder implements BuilderContract
      * @return $this
      */
     public function orWhereYear($column, $operator, $value = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Add a date based (year, month, day, time) statement to the query.
@@ -1587,7 +1587,7 @@ class Builder implements BuilderContract
      * @return $this
      */
     public function whereJsonLength($column, $operator, $value = null, $boolean = 'and')
-    {}
+    { func_get_args(); }
 
     /**
      * Add an "or where JSON length" clause to the query.
@@ -1598,7 +1598,7 @@ class Builder implements BuilderContract
      * @return $this
      */
     public function orWhereJsonLength($column, $operator, $value = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Handles dynamic "where" clauses to the query.
@@ -1653,7 +1653,7 @@ class Builder implements BuilderContract
      * @return $this
      */
     public function whereAll($columns, $operator = null, $value = null, $boolean = 'and')
-    {}
+    { func_get_args(); }
 
     /**
      * Add an "or where" clause to the query for multiple columns with "and" conditions between them.
@@ -1676,7 +1676,7 @@ class Builder implements BuilderContract
      * @return $this
      */
     public function whereAny($columns, $operator = null, $value = null, $boolean = 'and')
-    {}
+    { func_get_args(); }
 
     /**
      * Add an "or where" clause to the query for multiple columns with "or" conditions between them.
@@ -1740,7 +1740,7 @@ class Builder implements BuilderContract
      * @return $this
      */
     public function having($column, $operator = null, $value = null, $boolean = 'and')
-    {}
+    { func_get_args(); }
 
     /**
      * Add an "or having" clause to the query.
@@ -1751,7 +1751,7 @@ class Builder implements BuilderContract
      * @return $this
      */
     public function orHaving($column, $operator = null, $value = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Add a nested "having" statement to the query.

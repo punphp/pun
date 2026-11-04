@@ -715,12 +715,18 @@ where
                     );
                 }
 
-                fetch_declared_invocation_return_type(
-                    context,
-                    &invocation,
-                    &invocation_template_result,
-                    &parameter_types,
-                )
+                if signature_handled {
+                    fetch_declared_invocation_return_type(
+                        context,
+                        &invocation,
+                        &invocation_template_result,
+                        &parameter_types,
+                    )
+                } else {
+                    // MethodCallHandler::resolveReturnType(): PHPStan reflects no method that `__call()` or
+                    // `__callStatic()` alone would handle, so the call is an ErrorType
+                    get_error()
+                }
             }
         };
 
@@ -733,6 +739,16 @@ where
     }
 
     artifacts.set_resolved_expression_type(&span, resulting_type);
+
+    // MethodCallHandler/StaticCallHandler: a call PHPStan reflects no method for is an implicit throw point
+    if block_context.flags.inside_try() {
+        artifacts
+            .variable_throw_scopes
+            .entry((span, crate::artifacts::VariableThrowKind::Implicit))
+            .or_default()
+            .entry(mago_word::word(b"Throwable"))
+            .or_insert_with(|| block_context.variable_scope());
+    }
 
     Ok(())
 }

@@ -215,7 +215,8 @@ foreach ($needed as $path) {
 // the skeleton's vendor, as Testbench's CreateVendorSymlink links it
 @unlink($copyRoot.'/vendor/orchestra/testbench-core/laravel/vendor');
 symlink('../../..', $copyRoot.'/vendor/orchestra/testbench-core/laravel/vendor');
-// the vendor classes' and functions' bodies, which Pun never analyses, are cut to `{}` (`{ yield; }` for a generator),
+// the vendor classes' and functions' bodies, which Pun never analyses, are cut to `{}` (`{ yield; }` for a generator,
+// `{ func_get_args(); }` for a function that reads its arguments so),
 // except those Pun reads as the booted app: registerCoreContainerAliases(), Facade::defaultAliases() and the macros
 // FoundationServiceProvider registers
 const READ_BODIES = ['vendor/laravel/framework/src/Illuminate/Foundation/Application.php', 'vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php', 'vendor/laravel/framework/src/Illuminate/Foundation/Providers/FoundationServiceProvider.php'];
@@ -298,20 +299,22 @@ function strip_bodies(PhpParser\Parser $parser, string $source): string
         && ! ($n instanceof PhpParser\Node\Stmt\ClassMethod && $n->name->toLowerString() === 'getfacadeaccessor'));
     foreach ($functions as $fn) {
         $generator = yields($fn->stmts);
+        // PHPStan's isVariadic() reads a func_get_args(), func_get_arg() or func_num_args() call in the body
+        $variadic = calls_func_get_args($fn->stmts);
         // the body's `{`: the first after the signature (its return type, else its last parameter, else its name)
         $params = $fn->getParams();
         $signature = $fn->returnType ?? ($params === [] ? $fn->name : end($params));
-        $bodies[] = [strpos($source, '{', $signature->getEndFilePos() + 1), $fn->getEndFilePos(), $generator];
+        $bodies[] = [strpos($source, '{', $signature->getEndFilePos() + 1), $fn->getEndFilePos(), $generator, $variadic];
     }
     usort($bodies, fn ($a, $b) => $a[0] <=> $b[0]);
     $out = '';
     $at = 0;
-    foreach ($bodies as [$start, $end, $generator]) {
+    foreach ($bodies as [$start, $end, $generator, $variadic]) {
         // a function declared inside a stripped body
         if ($start < $at) {
             continue;
         }
-        $out .= substr($source, $at, $start - $at).($generator ? '{ yield; }' : '{}');
+        $out .= substr($source, $at, $start - $at).'{'.($generator ? ' yield;' : '').($variadic ? ' func_get_args();' : '').($generator || $variadic ? ' }' : '}');
         $at = $end + 1;
     }
 
@@ -331,6 +334,28 @@ function yields(array $nodes): bool
         foreach ($node->getSubNodeNames() as $name) {
             $sub = $node->$name;
             if (yields(is_array($sub) ? $sub : [$sub])) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+/** Whether `$nodes` call func_get_args(), func_get_arg() or func_num_args(), outside the closures and classes they declare. */
+function calls_func_get_args(array $nodes): bool
+{
+    foreach ($nodes as $node) {
+        if ($node instanceof PhpParser\Node\Expr\FuncCall && $node->name instanceof PhpParser\Node\Name
+            && in_array($node->name->toLowerString(), ['func_get_args', 'func_get_arg', 'func_num_args'], true)) {
+            return true;
+        }
+        if (! $node instanceof PhpParser\Node || $node instanceof PhpParser\Node\FunctionLike || $node instanceof PhpParser\Node\Stmt\ClassLike) {
+            continue;
+        }
+        foreach ($node->getSubNodeNames() as $name) {
+            $sub = $node->$name;
+            if (calls_func_get_args(is_array($sub) ? $sub : [$sub])) {
                 return true;
             }
         }

@@ -55,7 +55,7 @@ trait ConditionallyLoadsAttributes
      * @return \Illuminate\Http\Resources\MissingValue|mixed
      */
     protected function when($condition, $value, $default = new MissingValue)
-    {}
+    { func_get_args(); }
 
     /**
      * Retrieve a value if the given "condition" is falsy.
@@ -66,7 +66,7 @@ trait ConditionallyLoadsAttributes
      * @return \Illuminate\Http\Resources\MissingValue|mixed
      */
     public function unless($condition, $value, $default = new MissingValue)
-    {}
+    { func_get_args(); }
 
     /**
      * Merge a value into the array.
@@ -86,7 +86,7 @@ trait ConditionallyLoadsAttributes
      * @return \Illuminate\Http\Resources\MergeValue|mixed
      */
     protected function mergeWhen($condition, $value, $default = new MissingValue)
-    {}
+    { func_get_args(); }
 
     /**
      * Merge a value unless the given condition is truthy.
@@ -97,7 +97,7 @@ trait ConditionallyLoadsAttributes
      * @return \Illuminate\Http\Resources\MergeValue|mixed
      */
     protected function mergeUnless($condition, $value, $default = new MissingValue)
-    {}
+    { func_get_args(); }
 
     /**
      * Merge the given attributes.
@@ -117,7 +117,7 @@ trait ConditionallyLoadsAttributes
      * @return \Illuminate\Http\Resources\MissingValue|mixed
      */
     public function whenHas($attribute, $value = null, $default = new MissingValue)
-    {}
+    { func_get_args(); }
 
     /**
      * Retrieve a model attribute if it is null.
@@ -127,7 +127,7 @@ trait ConditionallyLoadsAttributes
      * @return \Illuminate\Http\Resources\MissingValue|mixed
      */
     protected function whenNull($value, $default = new MissingValue)
-    {}
+    { func_get_args(); }
 
     /**
      * Retrieve a model attribute if it is not null.
@@ -137,7 +137,7 @@ trait ConditionallyLoadsAttributes
      * @return \Illuminate\Http\Resources\MissingValue|mixed
      */
     protected function whenNotNull($value, $default = new MissingValue)
-    {}
+    { func_get_args(); }
 
     /**
      * Retrieve an accessor when it has been appended.
@@ -148,7 +148,7 @@ trait ConditionallyLoadsAttributes
      * @return \Illuminate\Http\Resources\MissingValue|mixed
      */
     protected function whenAppended($attribute, $value = null, $default = new MissingValue)
-    {}
+    { func_get_args(); }
 
     /**
      * Retrieve a relationship if it has been loaded.
@@ -159,7 +159,7 @@ trait ConditionallyLoadsAttributes
      * @return \Illuminate\Http\Resources\MissingValue|mixed
      */
     protected function whenLoaded($relationship, $value = null, $default = new MissingValue)
-    {}
+    { func_get_args(); }
 
     /**
      * Retrieve a relationship count if it exists.
@@ -170,7 +170,7 @@ trait ConditionallyLoadsAttributes
      * @return \Illuminate\Http\Resources\MissingValue|mixed
      */
     public function whenCounted($relationship, $value = null, $default = new MissingValue)
-    {}
+    { func_get_args(); }
 
     /**
      * Retrieve a relationship aggregated value if it exists.
@@ -183,7 +183,7 @@ trait ConditionallyLoadsAttributes
      * @return \Illuminate\Http\Resources\MissingValue|mixed
      */
     public function whenAggregated($relationship, $column, $aggregate, $value = null, $default = new MissingValue)
-    {}
+    { func_get_args(); }
 
     /**
      * Retrieve a relationship existence check if it exists.
@@ -194,7 +194,7 @@ trait ConditionallyLoadsAttributes
      * @return \Illuminate\Http\Resources\MissingValue|mixed
      */
     public function whenExistsLoaded($relationship, $value = null, $default = new MissingValue)
-    {}
+    { func_get_args(); }
 
     /**
      * Execute a callback if the given pivot table has been loaded.
@@ -205,7 +205,7 @@ trait ConditionallyLoadsAttributes
      * @return \Illuminate\Http\Resources\MissingValue|mixed
      */
     protected function whenPivotLoaded($table, $value, $default = new MissingValue)
-    {}
+    { func_get_args(); }
 
     /**
      * Execute a callback if the given pivot table with a custom accessor has been loaded.

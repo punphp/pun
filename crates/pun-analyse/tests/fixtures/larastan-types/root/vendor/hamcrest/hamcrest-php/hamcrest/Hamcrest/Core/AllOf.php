@@ -40,5 +40,5 @@ class AllOf extends DiagnosingMatcher
      * @factory ...
      */
     public static function allOf(/* args... */): self
-    {}
+    { func_get_args(); }
 }

@@ -13,5 +13,5 @@ abstract class TaggableStore implements Store
      * @return \Illuminate\Cache\TaggedCache
      */
     public function tags($names)
-    {}
+    { func_get_args(); }
 }

@@ -874,7 +874,7 @@ class Router implements BindingRegistrar, RegistrarContract
      * @return bool
      */
     public function has($name)
-    {}
+    { func_get_args(); }
 
     /**
      * Get the current route name.

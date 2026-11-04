@@ -299,7 +299,7 @@ trait Localization
      * If no local translator is in use, current global translator is used.
      */
     protected function getTranslatorLocale($translator = null): ?string
-    {}
+    { func_get_args(); }
 
     /**
      * Throw an error if passed object is not LocaleAwareInterface.
@@ -309,7 +309,7 @@ trait Localization
      * @return LocaleAwareInterface|null
      */
     protected static function getLocaleAwareTranslator($translator = null)
-    {}
+    { func_get_args(); }
 
     /**
      * @param mixed                                                    $translator

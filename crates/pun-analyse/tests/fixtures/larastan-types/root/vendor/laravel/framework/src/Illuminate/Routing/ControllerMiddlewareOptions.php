@@ -26,7 +26,7 @@ class ControllerMiddlewareOptions
      * @return $this
      */
     public function only($methods)
-    {}
+    { func_get_args(); }
 
     /**
      * Set the controller methods the middleware should exclude.
@@ -35,5 +35,5 @@ class ControllerMiddlewareOptions
      * @return $this
      */
     public function except($methods)
-    {}
+    { func_get_args(); }
 }

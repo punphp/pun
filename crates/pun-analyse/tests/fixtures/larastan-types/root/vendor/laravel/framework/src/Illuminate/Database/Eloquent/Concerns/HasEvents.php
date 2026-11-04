@@ -104,7 +104,7 @@ trait HasEvents
      * @return void
      */
     public function addObservableEvents($observables)
-    {}
+    { func_get_args(); }
 
     /**
      * Remove an observable event name.
@@ -113,7 +113,7 @@ trait HasEvents
      * @return void
      */
     public function removeObservableEvents($observables)
-    {}
+    { func_get_args(); }
 
     /**
      * Register a model event with the dispatcher.

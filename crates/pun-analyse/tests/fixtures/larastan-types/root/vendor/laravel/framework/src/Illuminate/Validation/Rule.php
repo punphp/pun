@@ -103,7 +103,7 @@ class Rule
      * @return \Illuminate\Validation\Rules\ArrayRule
      */
     public static function array($keys = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Get an array keys rule builder instance.
@@ -112,7 +112,7 @@ class Rule
      * @return \Illuminate\Validation\Rules\ArrayKeys
      */
     public static function arrayKeys($keys)
-    {}
+    { func_get_args(); }
 
     /**
      * Create a new nested rule set.
@@ -150,7 +150,7 @@ class Rule
      * @return \Illuminate\Validation\Rules\In
      */
     public static function in($values)
-    {}
+    { func_get_args(); }
 
     /**
      * Get a not_in rule builder instance.
@@ -159,7 +159,7 @@ class Rule
      * @return \Illuminate\Validation\Rules\NotIn
      */
     public static function notIn($values)
-    {}
+    { func_get_args(); }
 
     /**
      * Get an accepted validation rule.
@@ -322,7 +322,7 @@ class Rule
      * @return \Illuminate\Validation\Rules\AcceptedIf
      */
     public static function acceptedIf($anotherField, $value)
-    {}
+    { func_get_args(); }
 
     /**
      * Get a declined_if rule builder instance.
@@ -332,7 +332,7 @@ class Rule
      * @return \Illuminate\Validation\Rules\DeclinedIf
      */
     public static function declinedIf($anotherField, $value)
-    {}
+    { func_get_args(); }
 
     /**
      * Get a missing_if rule builder instance.
@@ -342,7 +342,7 @@ class Rule
      * @return \Illuminate\Validation\Rules\MissingIf
      */
     public static function missingIf($anotherField, $value)
-    {}
+    { func_get_args(); }
 
     /**
      * Get a missing_unless rule builder instance.
@@ -352,7 +352,7 @@ class Rule
      * @return \Illuminate\Validation\Rules\MissingUnless
      */
     public static function missingUnless($anotherField, $value)
-    {}
+    { func_get_args(); }
 
     /**
      * Get a present_if rule builder instance.
@@ -362,7 +362,7 @@ class Rule
      * @return \Illuminate\Validation\Rules\PresentIf
      */
     public static function presentIf($anotherField, $value)
-    {}
+    { func_get_args(); }
 
     /**
      * Get a present_unless rule builder instance.
@@ -372,7 +372,7 @@ class Rule
      * @return \Illuminate\Validation\Rules\PresentUnless
      */
     public static function presentUnless($anotherField, $value)
-    {}
+    { func_get_args(); }
 
     /**
      * Get a confirmed rule builder instance.
@@ -414,7 +414,7 @@ class Rule
      * @return \Illuminate\Validation\Rules\ExcludeWithout
      */
     public static function excludeWithout($anotherField)
-    {}
+    { func_get_args(); }
 
     /**
      * Get an in_array rule builder instance.
@@ -432,7 +432,7 @@ class Rule
      * @return \Illuminate\Validation\Rules\InArrayKeys
      */
     public static function inArrayKeys($keys)
-    {}
+    { func_get_args(); }
 
     /**
      * Get an IP address rule builder instance.
@@ -449,7 +449,7 @@ class Rule
      * @return \Illuminate\Validation\Rules\MissingWith
      */
     public static function missingWith($fields)
-    {}
+    { func_get_args(); }
 
     /**
      * Get a missing_with_all rule builder instance.
@@ -458,7 +458,7 @@ class Rule
      * @return \Illuminate\Validation\Rules\MissingWithAll
      */
     public static function missingWithAll($fields)
-    {}
+    { func_get_args(); }
 
     /**
      * Get a present_with rule builder instance.
@@ -467,7 +467,7 @@ class Rule
      * @return \Illuminate\Validation\Rules\PresentWith
      */
     public static function presentWith($fields)
-    {}
+    { func_get_args(); }
 
     /**
      * Get a present_with_all rule builder instance.
@@ -476,7 +476,7 @@ class Rule
      * @return \Illuminate\Validation\Rules\PresentWithAll
      */
     public static function presentWithAll($fields)
-    {}
+    { func_get_args(); }
 
     /**
      * Get a prohibited_if_accepted rule builder instance.
@@ -503,7 +503,7 @@ class Rule
      * @return \Illuminate\Validation\Rules\Prohibits
      */
     public static function prohibits($fields)
-    {}
+    { func_get_args(); }
 
     /**
      * Get a regex rule builder instance.
@@ -530,7 +530,7 @@ class Rule
      * @return \Illuminate\Validation\Rules\RequiredArrayKeys
      */
     public static function requiredArrayKeys($keys)
-    {}
+    { func_get_args(); }
 
     /**
      * Get a required_if_accepted rule builder instance.
@@ -557,7 +557,7 @@ class Rule
      * @return \Illuminate\Validation\Rules\RequiredWith
      */
     public static function requiredWith($fields)
-    {}
+    { func_get_args(); }
 
     /**
      * Get a required_with_all rule builder instance.
@@ -566,7 +566,7 @@ class Rule
      * @return \Illuminate\Validation\Rules\RequiredWithAll
      */
     public static function requiredWithAll($fields)
-    {}
+    { func_get_args(); }
 
     /**
      * Get a required_without rule builder instance.
@@ -575,7 +575,7 @@ class Rule
      * @return \Illuminate\Validation\Rules\RequiredWithout
      */
     public static function requiredWithout($fields)
-    {}
+    { func_get_args(); }
 
     /**
      * Get a required_without_all rule builder instance.
@@ -584,7 +584,7 @@ class Rule
      * @return \Illuminate\Validation\Rules\RequiredWithoutAll
      */
     public static function requiredWithoutAll($fields)
-    {}
+    { func_get_args(); }
 
     /**
      * Get a timezone rule builder instance.
@@ -756,7 +756,7 @@ class Rule
      * @return \Illuminate\Validation\Rules\Contains
      */
     public static function contains($values)
-    {}
+    { func_get_args(); }
 
     /**
      * Get a "does not contain" rule builder instance.
@@ -765,7 +765,7 @@ class Rule
      * @return \Illuminate\Validation\Rules\DoesntContain
      */
     public static function doesntContain($values)
-    {}
+    { func_get_args(); }
 
     /**
      * Compile a set of rules for an attribute.

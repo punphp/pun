@@ -30,7 +30,7 @@ class Arrays
 	 * @throws Nette\InvalidArgumentException if item does not exist and default value is not provided
 	 */
 	public static function get(array $array, string|int|array $key, mixed $default = null): mixed
-	{}
+	{ func_get_args(); }
 
 
 	/**
@@ -223,7 +223,7 @@ class Arrays
 	 * @throws Nette\InvalidArgumentException if item does not exist and default value is not provided
 	 */
 	public static function pick(array &$array, string|int $key, mixed $default = null): mixed
-	{}
+	{ func_get_args(); }
 
 
 	/**

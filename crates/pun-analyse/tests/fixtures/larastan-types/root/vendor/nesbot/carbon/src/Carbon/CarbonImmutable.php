@@ -891,7 +891,7 @@ class CarbonImmutable extends DateTimeImmutable implements CarbonInterface
     #[NoDiscard]
     #[ReturnTypeWillChange]
     public function add($unit, $value = 1, OverflowMode|bool|null $overflow = null, ?int $anchorDay = null): static
-    {}
+    { func_get_args(); }
 
     /**
      * @see Date::sub()
@@ -902,7 +902,7 @@ class CarbonImmutable extends DateTimeImmutable implements CarbonInterface
     #[NoDiscard]
     #[ReturnTypeWillChange]
     public function sub($unit, $value = 1, OverflowMode|bool|null $overflow = null, ?int $anchorDay = null): static
-    {}
+    { func_get_args(); }
 
     /**
      * @see Date::setDate()

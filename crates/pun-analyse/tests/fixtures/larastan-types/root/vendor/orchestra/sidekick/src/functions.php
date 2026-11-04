@@ -141,7 +141,7 @@ if (! \function_exists('Orchestra\Sidekick\package_path')) {
      * @param  array<int, string|null>|string  ...$path
      */
     function package_path(array|string $path = ''): string
-    {}
+    { func_get_args(); }
 }
 
 if (! \function_exists('Orchestra\Sidekick\working_path')) {
@@ -155,7 +155,7 @@ if (! \function_exists('Orchestra\Sidekick\working_path')) {
      * @param  array<int, string|null>|string  ...$path
      */
     function working_path(array|string $path = ''): string
-    {}
+    { func_get_args(); }
 }
 
 if (! \function_exists('Orchestra\Sidekick\laravel_normalize_version')) {

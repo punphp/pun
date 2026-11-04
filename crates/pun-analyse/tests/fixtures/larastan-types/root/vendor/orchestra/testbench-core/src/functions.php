@@ -165,7 +165,7 @@ function transform_realpath_to_relative(string $path, ?string $workingPath = nul
  * @return ($path is '' ? string : string|false)
  */
 function default_skeleton_path(array|string $path = ''): string|false
-{}
+{ func_get_args(); }
 
 /**
  * Determine if application is bootstrapped using Testbench's default skeleton.
@@ -200,7 +200,7 @@ function default_migration_path(?string $type = null): string
  * @return string
  */
 function package_path(array|string $path = ''): string
-{}
+{ func_get_args(); }
 
 /**
  * Get the workbench configuration.
@@ -223,7 +223,7 @@ function workbench(): array
  * @return string
  */
 function workbench_path(array|string $path = ''): string
-{}
+{ func_get_args(); }
 
 /**
  * Determine if vendor symlink exists on the laravel application.

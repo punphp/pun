@@ -22,5 +22,5 @@ abstract class BaseMatcher implements Matcher
     {}
 
     public function __invoke(): bool
-    {}
+    { func_get_args(); }
 }

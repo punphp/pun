@@ -31,7 +31,7 @@ class SerializableClosure
      * @return mixed
      */
     public function __invoke()
-    {}
+    { func_get_args(); }
 
     /**
      * Gets the closure.

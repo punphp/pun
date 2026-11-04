@@ -77,6 +77,12 @@ impl Macros {
             // `Facade::macro()` forwards to the facade's root
             let Some(home) = home(codebase, &class).or_else(|| {
                 let root = macros.facade_root(app, &class)?;
+                // CacheManager::__call() forwards `macro()` to its default store, a Repository
+                let root = if root.eq_ignore_ascii_case("Illuminate\\Cache\\CacheManager") {
+                    "Illuminate\\Cache\\Repository".to_string()
+                } else {
+                    root
+                };
                 home(codebase, &root)
             }) else {
                 continue;
@@ -147,7 +153,8 @@ impl Macros {
             }
         } else if let Some(h) = home(codebase, &name) {
             homes.push(h);
-            if is(BUILDER) {
+            // RelationForwardsCallsExtension: a relation's own macros, then its related model's builder's
+            if is(BUILDER) || is(RELATION) {
                 homes.extend(home(codebase, &builder));
                 homes.extend(home(codebase, &query_builder));
             }

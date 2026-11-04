@@ -47,7 +47,7 @@ class IsArray extends TypeSafeMatcher
      * @factory ...
      */
     public static function anArray(/* args... */): self
-    {}
+    { func_get_args(); }
 
     // -- Protected Methods
 

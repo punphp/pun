@@ -455,7 +455,7 @@ if (! function_exists('mix')) {
      * @throws \Exception
      */
     function mix($path, $manifestDirectory = ''): HtmlString|string
-    {}
+    { func_get_args(); }
 }
 
 if (! function_exists('now')) {
@@ -620,7 +620,7 @@ if (! function_exists('response')) {
      * @return ($content is null ? \Illuminate\Contracts\Routing\ResponseFactory : \Illuminate\Http\Response)
      */
     function response($content = null, $status = 200, array $headers = []): ResponseFactory|IlluminateResponse
-    {}
+    { func_get_args(); }
 }
 
 if (! function_exists('route')) {
@@ -786,7 +786,7 @@ if (! function_exists('validator')) {
      * @return ($data is null ? \Illuminate\Contracts\Validation\Factory : \Illuminate\Contracts\Validation\Validator)
      */
     function validator(?array $data = null, array $rules = [], array $messages = [], array $attributes = []): ValidatorContract|ValidationFactory
-    {}
+    { func_get_args(); }
 }
 
 if (! function_exists('view')) {
@@ -799,5 +799,5 @@ if (! function_exists('view')) {
      * @return ($view is null ? \Illuminate\Contracts\View\Factory : \Illuminate\Contracts\View\View)
      */
     function view($view = null, $data = [], $mergeData = []): ViewFactory|ViewContract
-    {}
+    { func_get_args(); }
 }

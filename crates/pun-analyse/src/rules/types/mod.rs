@@ -54,7 +54,7 @@ pub(super) use access::{property_fetch, static_property_fetch};
 pub(super) use offsets::accessible as offset_accessible;
 pub(super) use offsets::offset_set as offset_types;
 pub(super) use properties::{native_unset_property, with_args};
-pub(super) use receivers::{check_method, check_static, method_call, static_call};
+pub(super) use receivers::{check_method, check_static, forwarded_static_call, method_call, static_call};
 pub(super) use regex::function_call;
 pub(super) use callables::{call as callable_call, call_user_func, pipe as callable_pipe, pipe_by_ref};
 pub(super) use returns::{

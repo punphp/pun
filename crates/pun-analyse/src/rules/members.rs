@@ -225,6 +225,20 @@ fn declared<'a>(
         {
             return Some(user(c, k, f, *lower));
         }
+        // a stub's method over one the class inherits from a trait (or a parent): PHPStan's stub PHPDoc applies to
+        // the class's method, which the patch materialised in the class's slot
+        if k.methods.contains(lower)
+            && let Some(f) = codebase.get_method(k.name.as_bytes(), lower.as_bytes())
+            && f.flags.contains(mago_codex::metadata::flags::MetadataFlags::PATCH)
+            && codebase
+                .get_declaring_method_class(k.name.as_bytes(), lower.as_bytes())
+                .is_some_and(|d| d.as_bytes().eq_ignore_ascii_case(k.name.as_bytes()))
+            && k.direct_trait_names().any(|t| {
+                codebase.get_class_like(t.as_bytes()).is_some_and(|t| t.methods.contains(lower))
+            })
+        {
+            return Some(user(c, k, f, *lower));
+        }
         // `use T { foo as bar; }`
         if k.trait_alias_map.contains_key(lower)
             && let Some(f) = codebase.get_declaring_method(k.name.as_bytes(), lower.as_bytes())

@@ -183,10 +183,23 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         // An inline @var annotation does not: its source restores that distinct template strategy.
         let ty = inferred_argument(&actual);
         source.map_or(ty.clone(), |source| {
+            // a closure parameter without a type is the callable's parameter
+            if matches!(ty, Type::Mixed { explicit: false }) && self.callback_parameter(at) {
+                return source.clone();
+            }
             let restored = restore_metadata(ty, source, !self.source_is_mutated(at, &self.origins));
             // a closure's parameter takes the type of the callable parameter it is passed to
-            if self.closure_parameter(at) { restored } else { self.unfilled(restored, source) }
+            if self.closure_parameter(at) { callable_arguments(restored, source) } else { self.unfilled(restored, source) }
         })
+    }
+
+    /// The expression is (a copy of) the parameter of a closure passed as an argument.
+    fn callback_parameter(&self, at: Span) -> bool {
+        let mut origin = self.origins.get(&at);
+        while let Some(infer::Origin::Copy(from)) = origin {
+            origin = self.origins.get(from);
+        }
+        matches!(origin, Some(infer::Origin::Callback(..)))
     }
 
     /// The expression is (a copy of) a closure's or an arrow function's parameter.
@@ -457,6 +470,30 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                             .collect::<Option<Vec<_>>>()?,
                     ));
                 }
+                // Larastan's ModelOnlyDynamicMethodReturnTypeExtension builds its shape in argument order, which
+                // Mago's sorted keys lose: each argument's constant strings, else its arrays' items'
+                if self.larastan.is_some() && matches!(origin, infer::Origin::Call(_)) && name.eq_ignore_ascii_case("only")
+                    && let Some(receiver) = call.receiver
+                    && self.to_phpstan(types.get(&receiver)?).object_class_names().iter().any(|n| {
+                        super::super::larastan::is_a(self, n.as_bytes(), b"illuminate\\database\\eloquent\\model")
+                    })
+                {
+                    let mut builder = ShapeBuilder::new();
+                    for (_, span) in args {
+                        let actual = self.to_phpstan(types.get(span)?);
+                        let t = self.source_type(*span, origins, types).map_or(actual.clone(), |source| restore(actual, &source));
+                        let mut strings = t.constant_strings();
+                        if strings.is_empty()
+                            && let Type::ConstArray(a) = &t
+                        {
+                            strings = a.values.iter().flat_map(Type::constant_strings).collect();
+                        }
+                        for key in strings {
+                            builder.set(Some(Type::ConstString(key)), Type::Mixed { explicit: false }, false);
+                        }
+                    }
+                    return Some(builder.get());
+                }
                 // These extensions preserve their input key/value types. The provider alone decides keys,
                 // cardinality and listness; this edge restores only information its Mago types cannot store.
                 if call.receiver.is_none()
@@ -478,7 +515,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                         source
                     });
                 }
-                let (f, declaring, receiver_map) =
+                let (f, declaring, receiver_map, called) =
                     if call.receiver.is_some() || call.class.is_some() {
                         let (mut receiver, class) = if let Some(span) = call.receiver {
                             let actual = self.to_phpstan(types.get(&span)?);
@@ -529,6 +566,55 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                                 false,
                             );
                         }
+                        // ModelForwardsCallsExtension: a model's static call the model lacks is its builder's method
+                        let (receiver, class) = if call.receiver.is_none()
+                            && matches!(origin, infer::Origin::Callback(..))
+                            && self.larastan.is_some()
+                            && super::super::larastan::is_model(self, class)
+                            && super::super::members::method(self, class, name.as_bytes()).is_none()
+                        {
+                            let builder = super::super::larastan::builder_name(self.codebase, class.name.as_bytes());
+                            let model = Type::Object(declared::original_name(class), vec![], false);
+                            let builder_class = self.codebase.get_class_like(builder.as_bytes())?;
+                            (Type::Object(declared::original_name(builder_class), vec![model], false), builder_class)
+                        } else {
+                            (receiver, class)
+                        };
+                        // RelationForwardsCallsExtension: a relation's method it lacks is its related model's builder's
+                        let (receiver, class) = if matches!(origin, infer::Origin::Callback(..))
+                            && self.larastan.is_some()
+                            && let Type::Object(relation, args, _) = &receiver
+                            && super::super::larastan::is_a(self, class.name.as_bytes(), b"illuminate\\database\\eloquent\\relations\\relation")
+                            && super::super::members::method(self, class, name.as_bytes()).is_none()
+                            && let Some(Type::Object(related, ..)) = declared::with_classes(self, || {
+                                pun_phpstan::symbols::lookup(relation).and_then(|k| {
+                                    pun_phpstan::types::ancestor_args(&k, "Illuminate\\Database\\Eloquent\\Relations\\Relation", args)
+                                })
+                            }).and_then(|a| a.into_iter().next())
+                        {
+                            let builder = super::super::larastan::builder_name(self.codebase, related.as_bytes());
+                            let builder_class = self.codebase.get_class_like(builder.as_bytes())?;
+                            let model = Type::Object(related.clone(), vec![], false);
+                            (Type::Object(declared::original_name(builder_class), vec![model], false), builder_class)
+                        } else {
+                            (receiver, class)
+                        };
+                        // MixinMethodsClassReflectionExtension: a method the class lacks is its `@mixin`'s
+                        // (`Relation<TRelatedModel>`'s `Builder<TRelatedModel>`)
+                        let (receiver, class) = if matches!(origin, infer::Origin::Callback(..))
+                            && super::super::members::method(self, class, name.as_bytes()).is_none()
+                        {
+                            self.method_mixins(class, &receiver)
+                                .into_iter()
+                                .find_map(|mixin| {
+                                    let Type::Object(n, ..) = &mixin else { return None };
+                                    let k = self.codebase.get_class_like(n.as_bytes())?;
+                                    super::super::members::method(self, k, name.as_bytes()).is_some().then_some((mixin, k))
+                                })
+                                .unwrap_or((receiver, class))
+                        } else {
+                            (receiver, class)
+                        };
                         let super::super::members::Method::User { declaring, f, .. } =
                             super::super::members::method(self, class, name.as_bytes())?
                         else {
@@ -542,13 +628,28 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                                 .collect(),
                             false,
                         );
-                        let map = pun_phpstan::types::infer_template_types(&pattern, &receiver);
-                        (f, Some(declaring), map)
+                        let mut map = pun_phpstan::types::infer_template_types(&pattern, &receiver);
+                        // a trait's or an ancestor's templates, as the receiver's class passes them on
+                        if let Type::Object(receiver_name, actual, _) = &receiver
+                            && !receiver_name.eq_ignore_ascii_case(&declared::original_name(declaring))
+                        {
+                            let ancestor = declared::with_classes(self, || {
+                                pun_phpstan::symbols::lookup(receiver_name).and_then(|k| {
+                                    pun_phpstan::types::ancestor_args(&k, &declared::original_name(declaring), actual)
+                                })
+                            });
+                            if let Some(args) = ancestor {
+                                let ancestor = Type::Object(declared::original_name(declaring), args, false);
+                                map = map.union(pun_phpstan::types::infer_template_types(&pattern, &ancestor));
+                            }
+                        }
+                        (f, Some(declaring), map, Some(receiver))
                     } else {
                         (
                             self.codebase.get_function(name.as_bytes())?,
                             None,
                             pun_phpstan::types::TemplateMap::default(),
+                            None,
                         )
                     };
                 let infer::Origin::Callback(_, argument, parameter) = origin else {
@@ -590,23 +691,42 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                     }));
                 }
                 // the callable part of the parameter type, as `(\Closure(Builder<T>): mixed)|null` passes it on
-                fn signature(t: &Type) -> Option<&Signature> {
+                // ContextualClosureParameterResolver keeps a union's certainly callable members and unions their
+                // acceptors' parameters
+                fn signatures(t: &Type) -> Option<Vec<&Signature>> {
                     match t {
-                        Type::Callable(Some(s)) | Type::Closure(s) => Some(s),
+                        Type::Callable(Some(s)) | Type::Closure(s) => Some(vec![s]),
                         Type::Union(ts) => {
-                            let mut callables = ts.iter().filter(|t| !matches!(t, Type::Null));
-                            let only = callables.next()?;
-                            if callables.next().is_some() { None } else { signature(only) }
+                            let callables: Vec<_> = ts.iter().filter(|t| t.is_callable().yes()).collect();
+                            if callables.is_empty() {
+                                return None;
+                            }
+                            callables.into_iter().map(signatures).collect::<Option<Vec<_>>>().map(|s| s.concat())
                         }
                         _ => None,
                     }
                 }
                 let resolved = pun_phpstan::types::resolve_template_types(callable, &map);
-                let Some(signature) = signature(&resolved) else {
+                // a `static` in the callable is the called-on object
+                let resolved = match &called {
+                    Some(receiver) => super::super::method_reflection::called_on(&resolved, receiver),
+                    None => resolved,
+                };
+                let Some(signatures) = signatures(&resolved) else {
                     WITHOUT_SIGNATURE.set(true);
                     return None;
                 };
-                signature.params.get(*parameter).map(|p| p.ty.clone())
+                // the callee's own templates no other argument infers are their bounds
+                fn bounds(t: &Type) -> Type {
+                    match t {
+                        Type::Template(t) if t.scope.starts_with("method ") || t.scope.starts_with("function ") => {
+                            bounds(&t.bound)
+                        }
+                        t => t.traverse(&bounds),
+                    }
+                }
+                let types: Vec<_> = signatures.iter().filter_map(|s| s.params.get(*parameter)).map(|p| bounds(&p.ty)).collect();
+                (!types.is_empty()).then(|| union(types))
             }
         }
     }
@@ -1209,6 +1329,26 @@ fn restore(actual: Type, source: &Type) -> Type {
     restore_metadata(actual, source, true)
 }
 
+/// A closure parameter's native class intersected with the callable's `Builder<User>` or `Builder<*>` is the
+/// callable's (PHPStan's intersectButNotNever), where Mago keeps the template's bound.
+fn callable_arguments(actual: Type, source: &Type) -> Type {
+    match (actual, source) {
+        (actual, Type::Union(source)) => {
+            let Type::Object(name, ..) = &actual else { return actual };
+            match source.iter().find(|s| matches!(s, Type::Object(n, ..) if n.eq_ignore_ascii_case(name))) {
+                Some(s) => callable_arguments(actual, s),
+                None => actual,
+            }
+        }
+        (Type::Object(name, args, exact), Type::Object(source_name, source, _))
+            if name.eq_ignore_ascii_case(source_name) && args.len() == source.len() =>
+        {
+            Type::Object(name, source.clone(), exact)
+        }
+        (actual, _) => actual,
+    }
+}
+
 fn restore_metadata(actual: Type, source: &Type, restore_list: bool) -> Type {
     let matching = |actual: &Type, source: &[Type]| {
         source.iter().position(|s| {
@@ -1220,6 +1360,12 @@ fn restore_metadata(actual: Type, source: &Type, restore_list: bool) -> Type {
         })
     };
     match (actual, source) {
+        // Mago reads Larastan's `model-property<T>` and `view-string` as `string`
+        (Type::String, Type::Intersection(parts))
+            if parts.iter().any(|p| matches!(p, Type::Accessory(Accessory::ModelProperty(_) | Accessory::ViewString))) =>
+        {
+            source.clone()
+        }
         (Type::Template(mut actual), Type::Template(source))
             if actual.name == source.name && actual.scope == source.scope =>
         {

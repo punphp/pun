@@ -364,7 +364,7 @@ class CarbonInterval extends DateInterval implements CarbonConverterInterface, U
      * @throws Exception when the interval_spec (passed as $years) cannot be parsed as an interval.
      */
     public function __construct($years = null, $months = null, $weeks = null, $days = null, $hours = null, $minutes = null, $seconds = null, $microseconds = null, $inverted = false)
-    {}
+    { func_get_args(); }
 
     /**
      * Returns the factor for a given source-to-target couple.
@@ -1047,7 +1047,7 @@ class CarbonInterval extends DateInterval implements CarbonConverterInterface, U
      * @return $this
      */
     public function invert($inverted = null): static
-    {}
+    { func_get_args(); }
 
     protected function solveNegativeInterval(): static
     {}

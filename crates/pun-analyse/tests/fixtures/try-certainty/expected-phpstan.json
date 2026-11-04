@@ -67,6 +67,18 @@
       "line": 182,
       "ignorable": true,
       "identifier": "variable.undefined"
+    },
+    {
+      "message": "Variable $caught might not be defined.",
+      "line": 235,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Variable $caught might not be defined.",
+      "line": 245,
+      "ignorable": true,
+      "identifier": "variable.undefined"
     }
   ]
 }

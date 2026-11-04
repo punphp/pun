@@ -41,7 +41,7 @@ class SQLParser{
 	function parse_create_table($tokens, $i, $num){}
 
 
-	function next_tokens($tokens, $i){}
+	function next_tokens($tokens, $i){ func_get_args(); }
 
 	function parse_create_definition($tokens, &$i){}
 

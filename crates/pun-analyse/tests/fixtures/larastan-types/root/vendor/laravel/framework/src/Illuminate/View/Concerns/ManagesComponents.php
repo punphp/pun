@@ -99,7 +99,7 @@ trait ManagesComponents
      * @return void
      */
     public function slot($name, $content = null, $attributes = [])
-    {}
+    { func_get_args(); }
 
     /**
      * Save the slot content for rendering.

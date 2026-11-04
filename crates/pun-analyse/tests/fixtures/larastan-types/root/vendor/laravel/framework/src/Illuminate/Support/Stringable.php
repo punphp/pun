@@ -883,7 +883,7 @@ class Stringable implements JsonSerializable, ArrayAccess, BaseStringable
      * @return static
      */
     public function trim($characters = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Left trim the string of the given characters.
@@ -892,7 +892,7 @@ class Stringable implements JsonSerializable, ArrayAccess, BaseStringable
      * @return static
      */
     public function ltrim($characters = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Right trim the string of the given characters.
@@ -901,7 +901,7 @@ class Stringable implements JsonSerializable, ArrayAccess, BaseStringable
      * @return static
      */
     public function rtrim($characters = null)
-    {}
+    { func_get_args(); }
 
     /**
      * Make a string's first character lowercase.

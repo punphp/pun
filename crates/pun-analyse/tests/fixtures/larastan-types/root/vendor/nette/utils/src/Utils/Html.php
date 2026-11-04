@@ -430,7 +430,7 @@ class Html implements \ArrayAccess, \Countable, \IteratorAggregate, HtmlStringab
 	 * Setter for data-* attributes. Booleans are converted to 'true' resp. 'false'.
 	 */
 	public function data(string $name, mixed $value = null): static
-	{}
+	{ func_get_args(); }
 
 
 	/**

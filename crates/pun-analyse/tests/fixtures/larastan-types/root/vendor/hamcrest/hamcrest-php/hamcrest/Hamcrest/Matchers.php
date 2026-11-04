@@ -18,7 +18,7 @@ class Matchers
      * Evaluates to true only if each $matcher[$i] is satisfied by $array[$i].
      */
     public static function anArray(/* args... */): \Hamcrest\Arrays\IsArray
-    {}
+    { func_get_args(); }
 
     /**
      * Evaluates to true if any item in an array satisfies the given matcher.
@@ -44,25 +44,25 @@ class Matchers
      * An array with elements that match the given matchers.
      */
     public static function arrayContainingInAnyOrder(/* args... */): \Hamcrest\Arrays\IsArrayContainingInAnyOrder
-    {}
+    { func_get_args(); }
 
     /**
      * An array with elements that match the given matchers.
      */
     public static function containsInAnyOrder(/* args... */): \Hamcrest\Arrays\IsArrayContainingInAnyOrder
-    {}
+    { func_get_args(); }
 
     /**
      * An array with elements that match the given matchers in the same order.
      */
     public static function arrayContaining(/* args... */): \Hamcrest\Arrays\IsArrayContainingInOrder
-    {}
+    { func_get_args(); }
 
     /**
      * An array with elements that match the given matchers in the same order.
      */
     public static function contains(/* args... */): \Hamcrest\Arrays\IsArrayContainingInOrder
-    {}
+    { func_get_args(); }
 
     /**
      * Evaluates to true if any key in an array matches the given matcher.
@@ -148,19 +148,19 @@ class Matchers
      * Evaluates to true only if ALL of the passed in matchers evaluate to true.
      */
     public static function allOf(/* args... */): \Hamcrest\Core\AllOf
-    {}
+    { func_get_args(); }
 
     /**
      * Evaluates to true if ANY of the passed in matchers evaluate to true.
      */
     public static function anyOf(/* args... */): \Hamcrest\Core\AnyOf
-    {}
+    { func_get_args(); }
 
     /**
      * Evaluates to false if ANY of the passed in matchers evaluate to true.
      */
     public static function noneOf(/* args... */): \Hamcrest\Core\IsNot
-    {}
+    { func_get_args(); }
 
     /**
      * This is useful for fluently combining matchers that must both pass.
@@ -186,7 +186,7 @@ class Matchers
      * Wraps an existing matcher and overrides the description when it fails.
      */
     public static function describedAs(/* args... */): \Hamcrest\Core\DescribedAs
-    {}
+    { func_get_args(); }
 
     /**
      * @param \Hamcrest\Matcher $itemMatcher
@@ -238,7 +238,7 @@ class Matchers
      * </pre>
      */
     public static function hasItem(/* args... */): \Hamcrest\Core\IsCollectionContaining
-    {}
+    { func_get_args(); }
 
     /**
      * Test if the value is an array containing elements that match all of these
@@ -250,7 +250,7 @@ class Matchers
      * </pre>
      */
     public static function hasItems(/* args... */): \Hamcrest\Core\AllOf
-    {}
+    { func_get_args(); }
 
     /**
      * Is the value equal to another value, as tested by the use of the "=="
@@ -489,7 +489,7 @@ class Matchers
      * Matches if value contains $substrings in a constrained order.
      */
     public static function stringContainsInOrder(/* args... */): \Hamcrest\Text\StringContainsInOrder
-    {}
+    { func_get_args(); }
 
     /**
      * Matches if value is a string that ends with $substring.

@@ -34,7 +34,7 @@ class AnyOf extends ShortcutCombination
      * @factory ...
      */
     public static function anyOf(/* args... */): self
-    {}
+    { func_get_args(); }
 
     /**
      * Evaluates to false if ANY of the passed in matchers evaluate to true.
@@ -42,5 +42,5 @@ class AnyOf extends ShortcutCombination
      * @factory ...
      */
     public static function noneOf(/* args... */): IsNot
-    {}
+    { func_get_args(); }
 }

@@ -176,12 +176,17 @@ impl App {
             Some(g) => g,
             None => auth.get("defaults")?.get("guard")?.as_str()?,
         };
-        match auth.get("guards")?.get(guard)?.get("driver")?.as_str()? {
-            "session" => Some("Illuminate\\Auth\\SessionGuard"),
-            "token" => Some("Illuminate\\Auth\\TokenGuard"),
-            "passport" => Some("Illuminate\\Auth\\RequestGuard"),
-            _ => None,
-        }
+        driver_class(auth.get("guards")?.get(guard)?.get("driver")?.as_str()?)
+    }
+}
+
+/// GuardDynamicStaticMethodReturnTypeExtension::findTypeFromGuardDriver().
+pub(crate) fn driver_class(driver: &str) -> Option<&'static str> {
+    match driver {
+        "session" => Some("Illuminate\\Auth\\SessionGuard"),
+        "token" => Some("Illuminate\\Auth\\TokenGuard"),
+        "passport" => Some("Illuminate\\Auth\\RequestGuard"),
+        _ => None,
     }
 }
 

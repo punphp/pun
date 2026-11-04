@@ -79,7 +79,7 @@ class Bus extends Facade
      * @return \Illuminate\Foundation\Bus\PendingDispatch
      */
     public static function dispatchChain($jobs)
-    {}
+    { func_get_args(); }
 
     /**
      * Get the registered name of the component.

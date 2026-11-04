@@ -479,7 +479,7 @@ trait ManagesFrequencies
      * @return $this
      */
     public function days($days)
-    {}
+    { func_get_args(); }
 
     /**
      * Set the timezone the date should be evaluated on.

@@ -15,7 +15,7 @@ class ExcludeWithout implements ParameterizedRule
      * Create a new exclude_without rule instance.
      */
     public function __construct(array|string $fields)
-    {}
+    { func_get_args(); }
 
     /**
      * Get the rule name followed by its parameters.

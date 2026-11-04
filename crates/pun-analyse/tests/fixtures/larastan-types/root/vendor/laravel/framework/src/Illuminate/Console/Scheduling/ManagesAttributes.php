@@ -136,7 +136,7 @@ trait ManagesAttributes
      * @return $this
      */
     public function environments($environments)
-    {}
+    { func_get_args(); }
 
     /**
      * State that the command should run even in maintenance mode.

@@ -46,6 +46,8 @@ impl Flags {
                 self.more.set(true);
                 self.very.set(true);
             }
+            // Larastan's GenericModelPropertyType and ViewStringType are StringType subclasses, no accessories
+            Type::Accessory(Accessory::ModelProperty(_) | Accessory::ViewString) => children(),
             Type::Accessory(_) | Type::IntRange(..) => self.more.set(true),
             _ => children(),
         }

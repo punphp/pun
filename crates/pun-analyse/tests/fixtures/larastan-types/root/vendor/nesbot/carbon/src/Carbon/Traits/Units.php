@@ -124,7 +124,7 @@ trait Units
      */
     #[ReturnTypeWillChange]
     public function add($unit, $value = 1, OverflowMode|bool|null $overflow = null, ?int $anchorDay = null): static
-    {}
+    { func_get_args(); }
 
     /**
      * Add given units to the current instance.
@@ -134,7 +134,7 @@ trait Units
         $value = 1,
         OverflowMode|bool|null $overflow = null,
         ?int $anchorDay = null,
-    ): static {}
+    ): static { func_get_args(); }
 
     /**
      * Subtract given units to the current instance.
@@ -168,7 +168,7 @@ trait Units
      */
     #[ReturnTypeWillChange]
     public function sub($unit, $value = 1, OverflowMode|bool|null $overflow = null, ?int $anchorDay = null): static
-    {}
+    { func_get_args(); }
 
     /**
      * Subtract given units or interval to the current instance.
@@ -183,7 +183,7 @@ trait Units
      * @return static
      */
     public function subtract($unit, $value = 1, OverflowMode|bool|null $overflow = null, ?int $anchorDay = null): static
-    {}
+    { func_get_args(); }
 
     /**
      * Add given amount of time to the current date.

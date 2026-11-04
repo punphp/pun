@@ -277,7 +277,7 @@ class BelongsToMany extends Relation
      * @return $this
      */
     public function wherePivot($column, $operator = null, $value = null, $boolean = 'and')
-    {}
+    { func_get_args(); }
 
     /**
      * Set a "where between" clause for a pivot table column.
@@ -289,7 +289,7 @@ class BelongsToMany extends Relation
      * @return $this
      */
     public function wherePivotBetween($column, array $values, $boolean = 'and', $not = false)
-    {}
+    { func_get_args(); }
 
     /**
      * Set a "or where between" clause for a pivot table column.
@@ -332,7 +332,7 @@ class BelongsToMany extends Relation
      * @return $this
      */
     public function wherePivotIn($column, $values, $boolean = 'and', $not = false)
-    {}
+    { func_get_args(); }
 
     /**
      * Set an "or where" clause for a pivot table column.
@@ -399,7 +399,7 @@ class BelongsToMany extends Relation
      * @return $this
      */
     public function wherePivotNull($column, $boolean = 'and', $not = false)
-    {}
+    { func_get_args(); }
 
     /**
      * Set a "where not null" clause for a pivot table column.

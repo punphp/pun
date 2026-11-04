@@ -213,6 +213,14 @@ pub fn is_contained_by(
         };
     }
 
+    // MixedType(subtracted: falsy)::isSuperTypeOf() (`non-empty-mixed`): only yes for an input that is always truthy
+    // (always falsy for the falsy one); `bool` is a maybe, not contained
+    if let TAtomic::Mixed(container) = container_type_part
+        && (container.is_truthy() && !input_type_part.is_truthy() || container.is_falsy() && !input_type_part.is_falsy())
+    {
+        return false;
+    }
+
     if container_type_part.is_vanilla_mixed() || container_type_part.is_templated_as_vanilla_mixed() {
         return true;
     }

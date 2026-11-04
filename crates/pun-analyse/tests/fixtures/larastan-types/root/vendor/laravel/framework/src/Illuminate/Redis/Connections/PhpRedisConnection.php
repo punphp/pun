@@ -215,7 +215,7 @@ class PhpRedisConnection extends Connection implements ConnectionContract
      * @return mixed|false
      */
     public function spop($key, $count = 1)
-    {}
+    { func_get_args(); }
 
     /**
      * Add one or more members to a sorted set or update its score if it already exists.
@@ -393,7 +393,7 @@ class PhpRedisConnection extends Connection implements ConnectionContract
      * @return mixed
      */
     public function flushdb()
-    {}
+    { func_get_args(); }
 
     /**
      * Execute a raw command.

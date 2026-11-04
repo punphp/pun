@@ -480,7 +480,7 @@ class Expectation implements ExpectationInterface
      * @return self
      */
     public function set($name, $value)
-    {}
+    { func_get_args(); }
 
     /**
      * Indicates the number of times this expectation should occur

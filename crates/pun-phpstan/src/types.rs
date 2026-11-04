@@ -20,6 +20,7 @@ macro_rules! description {
 mod accepts;
 mod casts;
 mod extraction;
+mod larastan;
 mod late_shape;
 mod mixed;
 mod reasons;
@@ -29,6 +30,7 @@ mod unresolvable;
 mod verbosity;
 pub use accepts::{StrictMixed, accepts, accepts_with};
 pub use casts::{Cast, cast_is_error};
+pub use larastan::{StringQuery, with_larastan_strings};
 pub use late_shape::LateArrayShape;
 pub use reasons::accepts_reasons;
 pub use templates::{TemplateMap, infer_template_types, remove_final_by_keyword_overrides, resolve_template_types};
@@ -145,6 +147,10 @@ pub enum Accessory {
     HasMethod(String),
     /// `HasOffsetValueType`: a required literal offset and its independently narrowed value.
     HasOffsetValue(Box<Type>, Box<Type>),
+    /// Larastan's `GenericModelPropertyType` (`model-property<T>` with `checkModelProperties`): a property name of T.
+    ModelProperty(Box<Type>),
+    /// Larastan's `ViewStringType` (`view-string`): the name of a view that exists.
+    ViewString,
 }
 
 impl PartialEq for Accessory {
@@ -152,6 +158,7 @@ impl PartialEq for Accessory {
         match (self, other) {
             (Self::HasMethod(a), Self::HasMethod(b)) => a.eq_ignore_ascii_case(b),
             (Self::HasOffsetValue(ak, av), Self::HasOffsetValue(bk, bv)) => ak == bk && av == bv,
+            (Self::ModelProperty(a), Self::ModelProperty(b)) => a == b,
             (Self::DecimalIntString { inverse: a }, Self::DecimalIntString { inverse: b }) => {
                 a == b
             }
@@ -526,6 +533,8 @@ impl Type {
                             | Accessory::LowercaseString
                             | Accessory::UppercaseString
                             | Accessory::DecimalIntString { .. }
+                            | Accessory::ModelProperty(_)
+                            | Accessory::ViewString
                     )
             ))
         })
@@ -572,9 +581,13 @@ impl Type {
             Type::String
             | Type::StringAcceptingStringable
             | Type::StringNotAcceptingStringable
-            | Type::Accessory(Accessory::NonEmptyString | Accessory::NonFalsyString | Accessory::LiteralString) => {
-                Tri::Maybe
-            }
+            | Type::Accessory(
+                Accessory::NonEmptyString
+                | Accessory::NonFalsyString
+                | Accessory::LiteralString
+                | Accessory::ModelProperty(_)
+                | Accessory::ViewString,
+            ) => Tri::Maybe,
             Type::ConstString(s) => Tri::from(
                 std::str::from_utf8(s)
                     .ok()
@@ -821,7 +834,9 @@ impl Type {
                 | Accessory::LiteralString
                 | Accessory::LowercaseString
                 | Accessory::UppercaseString
-                | Accessory::HasMethod(_),
+                | Accessory::HasMethod(_)
+                | Accessory::ModelProperty(_)
+                | Accessory::ViewString,
             ) => Tri::Maybe,
             _ => Tri::No,
         })
@@ -1375,6 +1390,7 @@ impl Type {
             Type::Accessory(Accessory::HasOffsetValue(k, v)) => {
                 Type::Accessory(Accessory::HasOffsetValue(k.clone(), Box::new(f(v))))
             }
+            Type::Accessory(Accessory::ModelProperty(t)) => Type::Accessory(Accessory::ModelProperty(Box::new(f(t)))),
             Type::Iterable(k, v) => Type::Iterable(Box::new(f(k)), Box::new(f(v))),
             Type::Union(types) => union(types.iter().map(f).collect()),
             Type::Benevolent(types) => to_benevolent(union(types.iter().map(f).collect())),
@@ -1449,6 +1465,8 @@ impl Accessory {
             Accessory::List => "list",
             Accessory::NonEmptyArray => "non-empty-array",
             Accessory::HasMethod(name) => return format!("hasMethod({name})").into_bytes(),
+            Accessory::ModelProperty(t) => return description!("model property of ", t.describe_bytes(level)),
+            Accessory::ViewString => "view-string",
             Accessory::HasOffsetValue(key, value) => {
                 return description!(
                     "hasOffsetValue(",
@@ -1882,7 +1900,18 @@ fn describe_union(types: &[Type], level: Level) -> Vec<u8> {
     }
 }
 
+/// Larastan's string types are StringType subclasses with their own description.
+fn larastan_string(types: &[Type]) -> Option<&Accessory> {
+    types.iter().find_map(|t| match t {
+        Type::Accessory(a @ (Accessory::ModelProperty(_) | Accessory::ViewString)) => Some(a),
+        _ => None,
+    })
+}
+
 fn describe_intersection_type(this: &Type, types: &[Type], level: Level) -> Vec<u8> {
+    if let Some(a) = larastan_string(types) {
+        return a.describe(level);
+    }
     let is_list = this.is_list().yes();
     let mut names = Vec::new();
     let mut value_type = None;
@@ -1915,6 +1944,9 @@ fn describe_intersection_type(this: &Type, types: &[Type], level: Level) -> Vec<
 }
 
 fn describe_intersection_itself(this: &Type, types: &[Type], level: Level) -> Vec<u8> {
+    if let Some(a) = larastan_string(types) {
+        return a.describe(level);
+    }
     let mut base: Vec<(usize, &Type)> = Vec::new();
     let mut to_describe: Vec<(usize, Type)> = Vec::new();
     let mut skip_names: Vec<&[u8]> = Vec::new();
@@ -3371,6 +3403,8 @@ fn accessory_super(acc: &Accessory, b: &Type) -> Tri {
         Accessory::NonEmptyArray => b.is_array().and(b.is_iterable_at_least_once()),
         Accessory::HasMethod(name) => b.has_method(name),
         Accessory::HasOffsetValue(key, value) => offset_value_relation(key, value, b, false),
+        Accessory::ModelProperty(t) => larastan::model_property_super(t, b),
+        Accessory::ViewString => larastan::view_string_super(b),
     }
 }
 
@@ -3671,6 +3705,13 @@ fn is_sub_type_of(a: &Type, b: &Type) -> Tri {
                         Accessory::List => b.is_list(),
                         Accessory::HasMethod(name) => b.has_method(name),
                         Accessory::HasOffsetValue(key, value) => return offset_value_relation(key, value, b, true),
+                        Accessory::ModelProperty(t) => {
+                            return match b {
+                                T::Accessory(Accessory::ModelProperty(other)) => is_super_type_of(other, t),
+                                _ => b.is_string().and(Tri::Maybe),
+                            };
+                        }
+                        Accessory::ViewString => b.is_string(),
                     };
                     q.and(if same { Tri::Yes } else { Tri::Maybe })
                 }

@@ -135,7 +135,13 @@ impl MethodReturnTypeProvider for ModelForwards {
         invocation: &InvocationInfo<'_, '_, '_>,
     ) -> Option<TUnion> {
         let codebase = context.codebase();
-        if class.eq_ignore_ascii_case(QUERY_BUILDER) {
+        // RedirectResponseMethodsClassReflectionExtension and ViewWithMethodsClassReflectionExtension: a `with*`
+        // method the class lacks returns the class
+        if let Some(receiver) = with_method_class(codebase, class, method) {
+            return Some(TUnion::from_atomic(TAtomic::Object(TObject::Named(TNamedObject::new(receiver)))));
+        }
+        // (a query builder method its trait declares, `macro()`)
+        if class.eq_ignore_ascii_case(QUERY_BUILDER) || codebase.class_uses_trait(QUERY_BUILDER, class) {
             let target = invocation.inner().target.get_method_context()?;
             let receiver = match &target.class_type {
                 StaticClassType::Object(TObject::Named(receiver))
@@ -636,44 +642,18 @@ fn higher_order_proxy(
     let [TAtomic::Object(TObject::Named(value_object))] = value.types.as_ref() else {
         return None;
     };
-    if !codebase.method_exists(value_object.name.as_bytes(), method) {
+    let class = value_object.name.as_bytes();
+    // the value's native method, else a model's forwarded one (ModelForwardsCallsExtension)
+    let forwarded = if codebase.method_exists(class, method) {
+        None
+    } else if codebase.is_instance_of(class, MODEL) {
+        Some(model_forward(context, class, method, invocation)?)
+    } else {
         return None;
-    }
-    let returned = || method_type(codebase, value_object.name.as_bytes(), value_object, method, Some((context, invocation)));
-    let collection_class = match collection.types.as_ref() {
-        [TAtomic::Object(TObject::Named(c))] => c.name,
-        _ => mago_word::word("Illuminate\\Support\\Collection"),
     };
-    let generic = |class: mago_word::Word, key: TUnion, value: TUnion| -> Option<TUnion> {
-        let k = codebase.get_class_like(class.as_bytes())?;
-        let parameters = match k.template_types.len() {
-            2 => vec![key, value],
-            1 if k.template_types.contains_key(&mago_word::word("TModel")) => vec![value],
-            _ => return Some(TUnion::from_atomic(TAtomic::Object(TObject::Named(TNamedObject::new(k.original_name))))),
-        };
-        Some(TUnion::from_atomic(TAtomic::Object(TObject::Named(TNamedObject::new_with_type_parameters(
-            k.original_name,
-            Some(parameters),
-        )))))
-    };
-    let int = mago_codex::ttype::get_int;
-    let support = mago_word::word("Illuminate\\Support\\Collection");
-    match name.as_str() {
-        "average" | "avg" => Some(mago_codex::ttype::get_float()),
-        "contains" | "every" | "some" => Some(mago_codex::ttype::get_bool()),
-        "each" | "filter" | "reject" | "skipUntil" | "skipWhile" | "sortBy" | "sortByDesc" | "takeUntil"
-        | "takeWhile" | "unique" => generic(collection_class, int(), value.clone()),
-        "keyBy" => generic(collection_class, super::super::return_types::benevolent(mago_codex::ttype::get_int_or_string()), value.clone()),
-        "first" => Some(TUnion::from_vec(value.types.iter().cloned().chain([TAtomic::Null]).collect())),
-        "flatMap" => generic(support, int(), mago_codex::ttype::get_mixed()),
-        "groupBy" | "partition" => generic(collection_class, int(), generic(collection_class, int(), value.clone())?),
-        "map" => generic(support, super::super::return_types::benevolent(mago_codex::ttype::get_int_or_string()), returned()?),
-        "max" | "min" => returned(),
-        "sum" => union_comparator::is_contained_by(codebase, &int(), &returned()?, false, false, true, &mut ComparisonResult::new())
-            .then(int),
-        // ponytail: the ErrorType of `sum` and other methods is left to the declared return type
-        _ => None,
-    }
+    let returned = || forwarded.or_else(|| method_type(codebase, class, value_object, method, Some((context, invocation))));
+    // ponytail: the ErrorType of `sum` and other methods is left to the declared return type
+    crate::laravel::proxy_result(codebase, &name, value, returned, collection)
 }
 
 /// MixinMethodsClassReflectionExtension on a facade's static call: the method of a class its (stub's) `@mixin` tags
@@ -802,10 +782,10 @@ pub(super) fn method_type(
             templates.add_lower_bound(*name, GenericParent::ClassLike(owner.name), bound);
         }
     }
+    if let Some(call) = call {
+        infer_method_templates(codebase, function, call, &mut templates);
+    }
     if ty.types.iter().any(TAtomic::is_conditional) {
-        if let Some(call) = call {
-            infer_method_templates(codebase, function, call, &mut templates);
-        }
         ty = inferred_type_replacer::replace(&ty, &templates, codebase);
         ty = resolve_conditionals(codebase, &ty, function, call?, &options);
     }
@@ -817,8 +797,8 @@ pub(super) fn method_type(
 }
 
 /// `GenericParametersAcceptorResolver::resolve()` for the forwarded method's own templates, as far as the forwarded
-/// return types need it: a parameter typed `T` (or `?T`) takes the argument's type, a `callable(...): T` one the
-/// passed callable's return type.
+/// return types need it: a parameter typed `T` (or `?T`) takes the argument's type (an omitted one its default
+/// value's), a `callable(...): T` one the passed callable's return type.
 fn infer_method_templates(
     codebase: &CodebaseMetadata,
     function: &mago_codex::metadata::function_like::FunctionLikeMetadata,
@@ -838,7 +818,12 @@ fn infer_method_templates(
         let Some(declared) = parameter.get_type_metadata().map(|t| &t.type_union) else { continue };
         let name = parameter.get_name().0;
         let name = name.as_bytes().strip_prefix(b"$").unwrap_or(name.as_bytes());
-        let Some(argument) = invocation.get_argument(i, &[name]).and_then(|a| context.get_expression_type(a)) else {
+        // an omitted argument is its parameter's default value
+        let argument = match invocation.get_argument(i, &[name]) {
+            Some(a) => context.get_expression_type(a).cloned(),
+            None => parameter.get_default_type().map(|d| d.type_union.clone()),
+        };
+        let Some(argument) = argument.as_ref() else {
             continue;
         };
         for atomic in declared.types.iter() {
@@ -928,4 +913,17 @@ impl mago_analyzer::plugin::ExpressionHook for ScopeStaticCalls {
         context.set_expression_type(expr, TUnion::from_atomic(TAtomic::Object(TObject::Named(builder))));
         Ok(())
     }
+}
+
+/// RedirectResponseMethodsClassReflectionExtension and ViewWithMethodsClassReflectionExtension: the class of a
+/// `with*` method of `Illuminate\Http\RedirectResponse`, `Illuminate\View\View` or `Illuminate\Contracts\View\View`
+/// that it does not declare.
+pub(crate) fn with_method_class(codebase: &CodebaseMetadata, class: &[u8], method: &[u8]) -> Option<mago_word::Word> {
+    const CLASSES: [&[u8]; 3] =
+        [b"Illuminate\\Http\\RedirectResponse", b"Illuminate\\View\\View", b"Illuminate\\Contracts\\View\\View"];
+    if !method.starts_with(b"with") || codebase.method_exists(class, method) {
+        return None;
+    }
+    let k = codebase.get_class_like(class)?;
+    CLASSES.iter().any(|c| k.original_name.as_bytes() == *c).then_some(k.original_name)
 }

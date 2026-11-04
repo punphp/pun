@@ -211,7 +211,7 @@ class Dispatcher implements DispatcherContract
      * @return array|null
      */
     public function dispatch($event, $payload = [], $halt = false)
-    {}
+    { func_get_args(); }
 
     /**
      * Broadcast an event and call its listeners.

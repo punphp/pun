@@ -61,7 +61,7 @@ class ThrottleRequests
      * @named-arguments-supported
      */
     public static function with($maxAttempts = 60, $decayMinutes = 1, $prefix = '')
-    {}
+    { func_get_args(); }
 
     /**
      * Handle an incoming request.
@@ -77,7 +77,7 @@ class ThrottleRequests
      * @throws \Illuminate\Routing\Exceptions\MissingRateLimiterException
      */
     public function handle($request, Closure $next, $maxAttempts = 60, $decayMinutes = 1, $prefix = '')
-    {}
+    { func_get_args(); }
 
     /**
      * Handle an incoming request.
