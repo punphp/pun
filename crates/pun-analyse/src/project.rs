@@ -68,6 +68,10 @@ pub struct Project {
     pub check_this_only: Option<bool>,
     /// `checkAdvancedIsset`: independently overridable; `None` follows the current level (on from 4).
     pub check_advanced_isset: Option<bool>,
+    /// `checkExplicitMixed`: RuleLevelHelper's explicit `mixed` checks; `None` follows the level (on from 9).
+    pub check_explicit_mixed: Option<bool>,
+    /// `checkImplicitMixed`: RuleLevelHelper's implicit `mixed` checks; `None` follows the level (on at 10).
+    pub check_implicit_mixed: Option<bool>,
     /// `treatPhpDocTypesAsCertain`: independently overridable; `None` defaults to true. Used by IssetCheck only.
     pub treat_php_doc_types_as_certain: Option<bool>,
     /// `featureToggles.checkGenericIterableClasses` (on with bleedingEdge).
@@ -433,6 +437,8 @@ impl Project {
             check_arguments_passed_by_reference: optional_flag("checkArgumentsPassedByReference"),
             check_this_only: optional_flag("checkThisOnly"),
             check_advanced_isset: optional_flag("checkAdvancedIsset"),
+            check_explicit_mixed: optional_flag("checkExplicitMixed"),
+            check_implicit_mixed: optional_flag("checkImplicitMixed"),
             treat_php_doc_types_as_certain: optional_flag("treatPhpDocTypesAsCertain"),
             check_generic_iterable_classes: toggle("checkGenericIterableClasses"),
             internal_tag: toggle("internalTag"),
@@ -531,6 +537,8 @@ impl Project {
             check_arguments_passed_by_reference: None,
             check_this_only: None,
             check_advanced_isset: None,
+            check_explicit_mixed: None,
+            check_implicit_mixed: None,
             treat_php_doc_types_as_certain: None,
             check_generic_iterable_classes: false,
             internal_tag: false,

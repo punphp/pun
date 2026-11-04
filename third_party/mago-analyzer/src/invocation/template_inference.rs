@@ -159,7 +159,7 @@ fn infer_templates_from_input_and_container_types<A>(
         return;
     }
 
-    let (generic_container_parts, concrete_container_parts) =
+    let (generic_container_parts, _) =
         container_type.types.iter().partition::<Vec<_>, _>(|t| match t {
             TAtomic::GenericParameter(_)
             | TAtomic::Array(_)
@@ -178,11 +178,18 @@ fn infer_templates_from_input_and_container_types<A>(
         .iter()
         .any(|t| matches!(t, TAtomic::Scalar(TScalar::ClassLikeString(TClassLikeString::Generic { .. }))));
 
+    // UnionType::inferTemplateTypes(): what a member without templates definitely accepts is absorbed by it (a
+    // template-bearing member is at most a maybe supertype), and only the rest is inferred
+    let absorbing_parts: Vec<&TAtomic> = container_type
+        .types
+        .iter()
+        .filter(|t| !TUnion::from_atomic((*t).clone()).has_template_types())
+        .collect();
     let residual_input_types = input_type
         .types
         .iter()
         .filter(|argument_atomic| {
-            !concrete_container_parts.iter().any(|container_atomic| {
+            !absorbing_parts.iter().any(|container_atomic| {
                 if has_generic_class_string
                     && matches!(argument_atomic, TAtomic::Scalar(TScalar::ClassLikeString(_)))
                     && matches!(container_atomic, TAtomic::Scalar(TScalar::String(_)))

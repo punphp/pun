@@ -441,6 +441,30 @@ pub(super) fn check_static_method<'arena>(
         members::method(c, class, name.value).or_else(|| members::annotation_method(c, class, name.value))
     };
     let Some(method) = method else {
+        // FacadesMethodsExtension leaves a facade's method to MixinMethodsClassReflectionExtension: the `@mixin`
+        // class's method as a StaticMethodReflection, whose arguments and result are checked
+        if let Some(call) = call
+            && c.larastan.is_some()
+            && let Some(mixin) = super::larastan::facade_mixin_method(c, class, name.value, 0)
+        {
+            let subject = format!("{}::{}()", mixin.declaring_display(c), mixin.name());
+            let counts = params::count(&call.argument_list);
+            let first_level = c.is_top_level(call.span());
+            params::check(
+                c,
+                &params::select(c, mixin.variants(), &counts),
+                &counts,
+                name,
+                params::Call {
+                    kind: params::CallKind::StaticMethod,
+                    subject: &format!("Static method {subject}"),
+                    scope: Some(call.span()),
+                    void_message: Some(format!("Result of static method {subject} (void) is used.")),
+                },
+                first_level,
+            );
+            return;
+        }
         let guarded = match class_expr {
             Expression::Static(_) => "static".to_string(),
             Expression::Self_(_) => "self".to_string(),

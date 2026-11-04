@@ -3751,3 +3751,9 @@ parameter is an array in the body: `@param mixed ...$tags` on a plain `$tags` le
   called statically, an unknown method, a call only `__call()` or `__callStatic()` handles) is an implicit throw
   point, as MethodCallHandler and StaticCallHandler add one when they find no method reflection. A variable assigned
   in the catch after `Request::validate([])` might be defined, not undefined.
+- `invocation/template_inference.rs` `infer_templates_from_input_and_container_types()`: only a container member with
+  no template absorbs the input members it accepts, as UnionType::inferTemplateTypes() infers from the rest. A
+  template-bearing member (`array<TKey, TValue>` beside `TValue`) no longer absorbs the input, so an
+  `AccountCollection<int|string, ...>` key infers from the argument.
+- `invocation/return_type_fetcher.rs` `generalize_template_arguments()`: the walk also enters a conditional return
+  type's branches, as they are in the return's position. Laravel 12.20's `Collection::pluck()` generalizes its key.

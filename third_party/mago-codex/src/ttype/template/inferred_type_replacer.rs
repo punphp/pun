@@ -74,6 +74,15 @@ pub fn replace_with_polarity(
         let mut atomic_type = atomic_type.clone();
         atomic_type = replace_atomic(atomic_type, template_result, codebase, polarity);
 
+        // a `collection-of<TModel>` whose template is now resolved
+        if let TAtomic::Object(TObject::Named(named)) = &mut atomic_type
+            && named.name.as_bytes() == crate::ttype::expander::COLLECTION_OF
+            && let Some(resolved) = crate::ttype::expander::collection_of(codebase, named, &Default::default())
+        {
+            new_types.extend(resolved.types.into_owned());
+            continue;
+        }
+
         match &atomic_type {
             TAtomic::GenericParameter(TGenericParameter {
                 parameter_name,
@@ -251,6 +260,31 @@ fn replace_template_parameter(
     template_type
 }
 
+/// TypeNodeResolver's `array<TKey, V>` key is `intersect(TKey->toArrayKey(), int|string)->toArrayKey()`: once the
+/// template is replaced, a scalar, bool, float or null key is the array key PHP casts it to.
+fn to_array_key(key: &TUnion) -> TUnion {
+    use crate::ttype::atomic::scalar::TScalar;
+    if !key.types.iter().any(|t| matches!(t, TAtomic::Null | TAtomic::Scalar(TScalar::Generic | TScalar::Bool(_) | TScalar::Float(_)))) {
+        return key.clone();
+    }
+    let types: Vec<TAtomic> = key
+        .types
+        .iter()
+        .flat_map(|t| match t {
+            TAtomic::Scalar(TScalar::Generic) => vec![TAtomic::Scalar(TScalar::int()), TAtomic::Scalar(TScalar::string())],
+            TAtomic::Scalar(TScalar::Bool(b)) if b.is_true() => vec![TAtomic::Scalar(TScalar::literal_int(1))],
+            TAtomic::Scalar(TScalar::Bool(b)) if b.is_false() => vec![TAtomic::Scalar(TScalar::literal_int(0))],
+            TAtomic::Scalar(TScalar::Bool(_)) => {
+                vec![TAtomic::Scalar(TScalar::literal_int(0)), TAtomic::Scalar(TScalar::literal_int(1))]
+            }
+            TAtomic::Scalar(TScalar::Float(_)) => vec![TAtomic::Scalar(TScalar::int())],
+            TAtomic::Null => vec![TAtomic::Scalar(TScalar::literal_string(mago_word::word("")))],
+            t => vec![t.clone()],
+        })
+        .collect();
+    key.clone_with_types(types)
+}
+
 fn replace_atomic(
     mut atomic: TAtomic,
     template_result: &TemplateResult,
@@ -286,8 +320,12 @@ fn replace_atomic(
             }
             TArray::Keyed(keyed_data) => {
                 if let Some((key_parameter, value_parameter)) = &mut keyed_data.parameters {
+                    let templated = key_parameter.has_template_types();
                     *Arc::make_mut(key_parameter) =
                         replace_with_polarity(key_parameter, template_result, codebase, polarity);
+                    if templated {
+                        *Arc::make_mut(key_parameter) = to_array_key(key_parameter);
+                    }
                     *Arc::make_mut(value_parameter) =
                         replace_with_polarity(value_parameter, template_result, codebase, polarity);
                 }

@@ -654,10 +654,13 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                     };
                 let infer::Origin::Callback(_, argument, parameter) = origin else {
                     return declared::codex_return(self, f, declaring).map(|t| {
-                        inferred_argument(&pun_phpstan::types::resolve_template_types(
-                            &t,
-                            &receiver_map,
-                        ))
+                        let t = pun_phpstan::types::resolve_template_types(&t, &receiver_map);
+                        // a returned `static` or `$this` is the called-on object (`Builder<*>`)
+                        let t = match &called {
+                            Some(receiver) => super::super::method_reflection::called_on(&t, receiver),
+                            None => t,
+                        };
+                        inferred_argument(&t)
                     });
                 };
                 let params: Vec<_> = declared::codex_params(self, f, declaring)

@@ -102,7 +102,11 @@ pub struct Found {
 
 impl<'a, 'arena> Checker<'a, 'arena> {
     pub(in super::super) fn levels(&self) -> Levels {
-        Levels::of(self.level)
+        Levels {
+            check_explicit_mixed: self.check_explicit_mixed,
+            check_implicit_mixed: self.check_implicit_mixed,
+            ..Levels::of(self.level)
+        }
     }
 
     /// RuleLevelHelper::isThis(): php-parser discards parentheses before testing expression eligibility.

@@ -955,6 +955,9 @@ pub struct Checker<'a, 'arena> {
     check_this_only: bool,
     /// IssetCheck's independent advanced offset, property and leaf checks.
     check_advanced_isset: bool,
+    /// RuleLevelHelper's `checkExplicitMixed` and `checkImplicitMixed`.
+    check_explicit_mixed: bool,
+    check_implicit_mixed: bool,
     /// IssetCheck's independent PHPDoc certainty; other rules keep their existing type selection.
     treat_php_doc_types_as_certain: bool,
     generic_iterable_classes: bool,

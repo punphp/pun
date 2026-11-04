@@ -29,8 +29,9 @@ thread_local! {
     static TYPE_NODES: std::cell::Cell<Option<*const TypeNodes>> = const { std::cell::Cell::new(None) };
 }
 
-/// Runs `f` with `extensions` (TypeNodeResolverExtension) answering an identifier (no arguments) or a generic type
-/// node (its resolved arguments) before the built-in types, on this thread.
+/// Runs `f` with `extensions` (TypeNodeResolverExtension) answering an identifier (no arguments), a generic type
+/// node (its resolved arguments) or a union of two identifiers (`|`, the two resolved) before the built-in types, on
+/// this thread.
 pub fn with_type_nodes<R>(extensions: &dyn Fn(&str, &[Type]) -> Option<Type>, f: impl FnOnce() -> R) -> R {
     struct Restore(Option<*const TypeNodes>);
     impl Drop for Restore {
@@ -196,6 +197,12 @@ pub fn resolve_in(node: &Node, scope: &dyn Scope) -> Type {
         },
         Node::Nullable(inner) => union(vec![r(inner), Type::Null]),
         Node::Union(members) => {
+            // a union of two identifiers is offered to the extensions first, as `|` with the two resolved
+            if let [a @ Node::Ident(_), b @ Node::Ident(_)] = members.as_slice()
+                && let Some(t) = type_node("|", &[r(a), r(b)])
+            {
+                return t;
+            }
             let mut iterable = Vec::new();
             let mut others = Vec::new();
             for m in members {

@@ -54,7 +54,7 @@ fn collect(base: &Path, dir: &Path, found: &mut BTreeMap<PathBuf, PathBuf>) {
 
 /// LARAVEL_VERSION, which Larastan's bootstrap defines as the booted app's `version()`: the framework's
 /// `Application::VERSION`.
-fn laravel_version(root: &Path) -> Option<String> {
+pub(crate) fn laravel_version(root: &Path) -> Option<String> {
     let source = std::fs::read_to_string(
         root.join("vendor/laravel/framework/src/Illuminate/Foundation/Application.php"),
     )
@@ -66,7 +66,7 @@ fn laravel_version(root: &Path) -> Option<String> {
 }
 
 /// `version_compare()` of two dotted numeric versions.
-fn compare(a: &str, b: &str) -> std::cmp::Ordering {
+pub(crate) fn compare(a: &str, b: &str) -> std::cmp::Ordering {
     let parts = |v: &str| -> Vec<u64> { v.split('.').map(|p| p.parse().unwrap_or(0)).collect() };
     parts(a).cmp(&parts(b))
 }

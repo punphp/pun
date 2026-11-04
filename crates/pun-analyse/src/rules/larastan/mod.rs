@@ -42,7 +42,7 @@ pub(super) use config::Types as ConfigTypes;
 pub(super) use macros::{Macros, macro_method};
 pub(super) use console::Types as ConsoleTypes;
 pub(super) use helpers::{AbortIf, ContainerOffsets, Functions as HelperFunctions, Methods as HelperMethods};
-pub(super) use forwards::{ModelForwards, ScopeStaticCalls, Tap, builder_name, with_method_class};
+pub(super) use forwards::{ModelForwards, ScopeStaticCalls, Tap, builder_name, facade_mixin_method, with_method_class};
 pub(super) use crate::laravel::snake;
 pub(super) use factories::has_magic_method as factory_magic_method;
 
@@ -552,8 +552,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_, '_, 'arena> {
 }
 
 /// Larastan's TypeNodeResolverExtensions: `view-string` (ViewStringType), `model-property<TModel>`
-/// (ModelPropertyTypeNodeResolverExtension: GenericModelPropertyType with `checkModelProperties`, else a string) and
-/// `collection-of<TModel>` (CollectionOfType, the model's own collection).
+/// (ModelPropertyTypeNodeResolverExtension: GenericModelPropertyType with `checkModelProperties`, else a string),
+/// `collection-of<TModel>` (CollectionOfType, the model's own collection) and GenericEloquentBuilderTypeNodeResolverExtension's
+/// `Builder|Model` (`Builder<Model>`, of the Eloquent builder or a subclass).
 pub(crate) fn type_node(
     codebase: &mago_codex::metadata::CodebaseMetadata,
     larastan: &Larastan,
@@ -563,6 +564,21 @@ pub(crate) fn type_node(
     use pun_phpstan::types::{Accessory, Type, is_super_type_of};
     let model = || Type::Object("Illuminate\\Database\\Eloquent\\Model".into(), vec![], false);
     match (name, args) {
+        ("|", [a, b]) => {
+            const BUILDER: &[u8] = b"Illuminate\\Database\\Eloquent\\Builder";
+            let class = |t: &Type| match t {
+                Type::Object(n, args, _) if args.is_empty() => codebase.get_class_like(n.as_bytes()),
+                _ => None,
+            };
+            let is_model = |t: &Type| class(t).is_some() && is_super_type_of(&model(), t).yes();
+            let is_builder = |t: &Type| {
+                class(t).is_some_and(|k| k.name.as_bytes().eq_ignore_ascii_case(BUILDER) || codebase.is_instance_of(k.name.as_bytes(), BUILDER))
+            };
+            let model = [a, b].into_iter().rfind(|t| is_model(t))?;
+            let builder = [a, b].into_iter().rfind(|t| is_builder(t))?;
+            let Type::Object(builder, ..) = builder else { return None };
+            Some(Type::Object(builder.clone(), vec![model.clone()], false))
+        }
         ("view-string", []) => Some(Type::Intersection(vec![Type::String, Type::Accessory(Accessory::ViewString)])),
         ("model-property", _) if !larastan.check_model_properties => Some(Type::String),
         ("model-property", [t]) if !is_super_type_of(&model(), t).no() && !matches!(t, Type::Never(_)) => {

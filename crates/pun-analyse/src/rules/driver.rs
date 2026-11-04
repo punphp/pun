@@ -53,6 +53,9 @@ pub(crate) struct Checks {
     check_this_only: bool,
     /// [`Project::check_advanced_isset`], otherwise config.level4.neon's default.
     check_advanced_isset: bool,
+    /// [`Project::check_explicit_mixed`] and [`Project::check_implicit_mixed`], otherwise the level's defaults.
+    check_explicit_mixed: bool,
+    check_implicit_mixed: bool,
     /// [`Project::treat_php_doc_types_as_certain`], otherwise config.neon's true default (IssetCheck only).
     treat_php_doc_types_as_certain: bool,
     generic_iterable_classes: bool,
@@ -178,6 +181,8 @@ impl Checks {
             check_arguments_passed_by_reference: project.check_arguments_passed_by_reference.unwrap_or(project.level >= 5),
             check_this_only: project.check_this_only.unwrap_or(project.level < 2),
             check_advanced_isset: project.check_advanced_isset.unwrap_or(project.level >= 4),
+            check_explicit_mixed: project.check_explicit_mixed.unwrap_or(project.level >= 9),
+            check_implicit_mixed: project.check_implicit_mixed.unwrap_or(project.level >= 10),
             treat_php_doc_types_as_certain: project.treat_php_doc_types_as_certain.unwrap_or(true),
             generic_iterable_classes: project.check_generic_iterable_classes,
             new_static_in_abstract_class_static_method: project.new_static_in_abstract_class_static_method,
@@ -365,6 +370,8 @@ fn checker<'a, 'arena>(
         check_arguments_passed_by_reference: project.check_arguments_passed_by_reference,
         check_this_only: project.check_this_only,
         check_advanced_isset: project.check_advanced_isset,
+        check_explicit_mixed: project.check_explicit_mixed,
+        check_implicit_mixed: project.check_implicit_mixed,
         treat_php_doc_types_as_certain: project.treat_php_doc_types_as_certain,
         generic_iterable_classes: project.generic_iterable_classes,
         new_static_in_abstract_class_static_method: project.new_static_in_abstract_class_static_method,

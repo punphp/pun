@@ -1871,7 +1871,8 @@ pub fn get_array_parameters(array_type: &TArray, codebase: &CodebaseMetadata) ->
                 }
             }
 
-            if key_types.is_empty() || !value_type.is_never() {
+            // the known elements' keys, and every other index only when the list has more elements
+            if key_types.is_empty() || !list_data.element_type.is_never() {
                 if value_type.is_never() {
                     key_types.push(TAtomic::Never);
                 } else {

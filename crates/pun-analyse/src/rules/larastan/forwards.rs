@@ -31,40 +31,31 @@ const SCOPE: &[u8] = b"Illuminate\\Database\\Eloquent\\Attributes\\Scope";
 const USE_ELOQUENT_BUILDER: &[u8] = b"Illuminate\\Database\\Eloquent\\Attributes\\UseEloquentBuilder";
 const SOFT_DELETES: &[u8] = b"Illuminate\\Database\\Eloquent\\SoftDeletes";
 
-/// `BuilderHelper::$passthru` (with `getCountForPagination`, Laravel 12.15 and later): the query builder's results.
+/// `BuilderHelper::$passthru`: the query builder's results. Its constructor adds `getCountForPagination` from Laravel
+/// 12.15 only when LARAVEL_VERSION is defined by then; PHPStan's CLI run (even on Laravel 13) leaves the call a builder.
 const PASSTHRU: &[&str] = &[
-    "aggregate",
     "average",
     "avg",
     "count",
     "dd",
     "dump",
     "doesntexist",
-    "doesntexistor",
     "exists",
-    "existsor",
-    "explain",
     "getbindings",
     "getconnection",
     "getgrammar",
-    "getrawbindings",
-    "implode",
     "insert",
     "insertgetid",
     "insertorignore",
-    "insertorignoreusing",
     "insertusing",
     "max",
     "min",
-    "numericaggregate",
     "raw",
-    "rawvalue",
     "sum",
     "tosql",
     "torawsql",
     "dumprawsql",
     "ddrawsql",
-    "getcountforpagination",
 ];
 
 static META: ProviderMeta =
@@ -684,6 +675,24 @@ fn facade_mixin(
         }
     }
     None
+}
+
+/// [`facade_mixin`] for the rules: the method of a class a facade's `@mixin` tags name (or of their mixins), which
+/// MixinMethodsClassReflectionExtension answers for the facade's static call.
+pub(crate) fn facade_mixin_method<'a>(
+    c: &super::super::Checker<'a, '_>,
+    class: &'a mago_codex::metadata::class_like::ClassLikeMetadata,
+    method: &[u8],
+    depth: usize,
+) -> Option<super::super::members::Method<'a>> {
+    if depth == 0 && !c.codebase.is_instance_of(class.name.as_bytes(), FACADE) || depth > 3 {
+        return None;
+    }
+    class.mixins.iter().flat_map(|m| m.type_union.types.iter()).find_map(|t| {
+        let TAtomic::Object(TObject::Named(named)) = t else { return None };
+        let k = c.codebase.get_class_like(named.name.as_bytes())?;
+        super::super::members::method(c, k, method).or_else(|| facade_mixin_method(c, k, method, depth + 1))
+    })
 }
 
 /// A call's conditional return types (`($id is array ? collection-of<TModel> : TModel)`) resolved on the type of the

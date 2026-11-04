@@ -79,6 +79,8 @@ pub(crate) struct App {
     auth: Option<Value>,
     /// `get_class(now())`.
     pub(crate) date_class: String,
+    /// `version_compare(LARAVEL_VERSION, '12.0.0', '>=')`.
+    pub(crate) laravel_12: bool,
 }
 
 impl App {
@@ -90,6 +92,7 @@ impl App {
             container: HashMap::new(),
             auth,
             date_class: date_class(root).unwrap_or_else(|| "Illuminate\\Support\\Carbon".to_string()),
+            laravel_12: super::stubs::laravel_version(root).is_some_and(|v| super::stubs::compare(&v, "12.0.0").is_ge()),
         };
         let aliases = core_aliases(&framework.join("src/Illuminate/Foundation/Application.php"));
         for (key, classes) in aliases {

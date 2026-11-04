@@ -1135,3 +1135,29 @@ mixed or benevolent container argument. A `Collection<int, mixed>` parameter acc
 only an input that is always truthy, and a falsy one only an input that is always falsy, as MixedType with a
 subtracted falsy (or truthy) type answers isSuperTypeOf(). `bool` is a maybe, not contained, so Laravel's
 `throw_if(bool $condition)` does not narrow the code after it to never.
+
+## Closures never identical to scalars or arrays
+
+`ttype/comparator/atomic_comparator.rs` `can_be_identical()`: a Closure callable does not overlap a scalar or an
+array, as ClosureType is an object and no supertype of a callable string or array. Larastan's
+`Benchmark::measure(Closure|array $benchmarkables)` conditional return picks its Closure branch.
+
+## A list's other keys
+
+`ttype/mod.rs` `get_array_parameters()`: a list adds the `int<0, max>` key of its other elements only when its own
+element type is not never, as ConstantArrayType::getKeyType() has only the known keys. A key-only list stays a union
+of its literal keys.
+
+## Larastan's `collection-of<TModel>`
+
+`ttype/builder.rs`, `ttype/expander.rs` `COLLECTION_OF`, `COLLECTION_OF_RESULT`, `collection_of()`, and
+`ttype/template/inferred_type_replacer.rs` `replace_with_polarity()`: `collection-of<TModel>` is a placeholder
+object named `collection-of` that expansion and template replacement resolve once its model has no template, as
+Larastan's CollectionOfType is a LateResolvableType. The embedder sets `COLLECTION_OF_RESULT` to read the model's
+own collection (`newCollection()`, `#[CollectedBy]`); without it the result is the Eloquent collection.
+
+## Template array keys cast to array keys
+
+`ttype/template/inferred_type_replacer.rs` `to_array_key()`: once a keyed array's templated key is replaced, a
+`scalar`, bool, float or null key becomes the key PHP casts it to, as TypeNodeResolver intersects `array<TKey, V>`'s
+key with `toArrayKey()`. Laravel's `Str::replace()` with a `scalar` search keeps `array<int|string, ...>`.

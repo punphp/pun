@@ -38,7 +38,7 @@ use mago_word::Word;
 use crate::codebase::read;
 use crate::{Project, php_files};
 use schema::{Column, SchemaAggregator};
-pub(crate) use collections::{collection_class, proxy_result, references_collection, replace_collections};
+pub(crate) use collections::{collection_class, collection_of, proxy_result, references_collection, replace_collections};
 pub(crate) use strings::{camel, snake};
 use strings::{class_basename, plural_studly, singular, studly};
 

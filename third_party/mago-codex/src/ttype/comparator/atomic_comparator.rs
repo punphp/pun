@@ -678,6 +678,10 @@ pub(crate) fn can_be_identical(
     }
 
     if matches!(first_part, TAtomic::Callable(_)) != matches!(second_part, TAtomic::Callable(_))
+        // a Closure is an object: ClosureType is no supertype of a callable string or array
+        && ![(first_part, second_part), (second_part, first_part)].iter().any(|(c, other)| {
+            matches!(c, TAtomic::Callable(c) if c.is_closure()) && matches!(other, TAtomic::Scalar(_) | TAtomic::Array(_))
+        })
         && can_atomic_be_callable(first_part, codebase)
         && can_atomic_be_callable(second_part, codebase)
     {

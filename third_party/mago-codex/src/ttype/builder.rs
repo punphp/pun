@@ -417,8 +417,7 @@ pub fn get_union_from_type(
                 }
                 // PHPStan's `__benevolent<T>` (TypeNodeResolver): T as a benevolent union, which Pun marks with both
                 // ignore flags. Larastan's TypeNodeResolverExtensions: `view-string` and `model-property<T>` (without
-                // `checkModelProperties`) are strings, `collection-of<TModel>` is the model's Eloquent collection.
-                // ponytail: a model's own collection class (`newCollection()`, `#[CollectedBy]`) is not read
+                // `checkModelProperties`) are strings, `collection-of<TModel>` is a placeholder for the model's own collection.
                 let single = reference_type.parameters.as_ref().filter(|p| p.entries.len() == 1).map(|p| &p.entries[0].inner);
                 match (identifier.value, single) {
                     (b"view-string", None) | (b"model-property", Some(_)) => return Ok(get_string()),
@@ -428,11 +427,12 @@ pub fn get_union_from_type(
                         union.set_ignore_falsable_issues(true);
                         return Ok(union);
                     }
+                    // a placeholder the expander resolves (see `expander::COLLECTION_OF`)
                     (b"collection-of", Some(inner)) => {
                         let model = get_union_from_type(inner, scope, type_context, classname)?;
                         return Ok(wrap_atomic(TAtomic::Object(TObject::Named(TNamedObject::new_with_type_parameters(
-                            word("Illuminate\\Database\\Eloquent\\Collection"),
-                            Some(vec![get_int(), model]),
+                            word("collection-of"),
+                            Some(vec![model]),
                         )))));
                     }
                     _ => {}

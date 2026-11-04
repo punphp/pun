@@ -216,6 +216,29 @@ fn expand_shared_union(codebase: &CodebaseMetadata, return_type: &mut Arc<TUnion
     }
 }
 
+/// Larastan's `collection-of<TModel>` (CollectionOfType, a LateResolvableType): the type builder's placeholder object
+/// of this name, which expansion resolves once its model has no template left.
+pub const COLLECTION_OF: &[u8] = b"collection-of";
+
+/// CollectionOfType::getResult(): the models' own collections, set by the embedder (`None`: the Eloquent collection).
+pub static COLLECTION_OF_RESULT: std::sync::OnceLock<fn(&CodebaseMetadata, &TUnion) -> Option<TUnion>> =
+    std::sync::OnceLock::new();
+
+/// `collection-of<TModel>` resolved, else `None` while the model has a template (`isResolvable()`).
+pub fn collection_of(codebase: &CodebaseMetadata, named: &mut TNamedObject, options: &TypeExpansionOptions) -> Option<TUnion> {
+    let [model] = named.type_parameters.as_deref_mut()? else { return None };
+    expand_union(codebase, model, options);
+    if model.has_template_types() {
+        return None;
+    }
+    COLLECTION_OF_RESULT.get().and_then(|result| result(codebase, model)).or_else(|| {
+        Some(TUnion::from_atomic(TAtomic::Object(TObject::Named(TNamedObject::new_with_type_parameters(
+            mago_word::word("Illuminate\\Database\\Eloquent\\Collection"),
+            Some(vec![crate::ttype::get_int(), model.clone()]),
+        )))))
+    })
+}
+
 fn expand_union_inner(codebase: &CodebaseMetadata, return_type: &mut TUnion, options: &TypeExpansionOptions) {
     let mut never_kind = return_type.never_kind().unwrap_or_default();
     let mut types = std::mem::take(&mut return_type.types).into_owned();
@@ -327,6 +350,12 @@ pub(crate) fn expand_atomic(
                 }
             }
         },
+        TAtomic::Object(TObject::Named(named)) if named.name.as_bytes() == COLLECTION_OF => {
+            if let Some(resolved) = collection_of(codebase, named, options) {
+                *skip_key = true;
+                new_return_type_parts.extend(resolved.types.into_owned());
+            }
+        }
         TAtomic::Object(object) => {
             if options.preserve_initializer_object_identity
                 && matches!(object, TObject::Named(named) if named.type_parameters.is_none())

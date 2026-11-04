@@ -220,6 +220,11 @@ fn generalize_template_arguments<A: Arena>(
                     walk(codebase, &key, covariant, out);
                     walk(codebase, &value, covariant, out);
                 }
+                // a conditional return type's branches are in the return's position
+                TAtomic::Conditional(conditional) => {
+                    walk(codebase, &conditional.then, covariant, out);
+                    walk(codebase, &conditional.otherwise, covariant, out);
+                }
                 _ => {}
             }
         }

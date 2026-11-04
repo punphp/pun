@@ -7,6 +7,7 @@
 //! - StorageDynamicStaticMethodReturnTypeExtension (`Storage::disk()`), AppEnvironmentReturnTypeExtension and
 //!   AppFacadeEnvironmentReturnTypeExtension (`environment()`);
 //! - ContractsMethodsExtension's methods: a method an `Illuminate\Contracts` interface lacks is its concrete's;
+//! - DateExtension (the `Date` facade's creating methods);
 //! - Helpers\CollectExtension (`collect()`) and CollectionFilterRejectDynamicReturnTypeExtension (`filter()`,
 //!   `reject()` and `where()` of an `Enumerable`);
 //! - the model factory extensions (`Model::factory()` and a factory's methods), in [`super::factories`].
@@ -195,6 +196,22 @@ impl MethodReturnTypeProvider for Methods {
                     None => stateful_guard(codebase),
                 });
             }
+            // DateExtension: `get_class(now())`, nullable or falsable where Carbon's method returns null or false
+            "create" | "createfromdate" | "createfromtime" | "createfromtimestring" | "createfromtimestamp"
+            | "createfromtimestampms" | "createfromtimestamputc" | "createmidnightdate" | "fromserialized"
+            | "gettestnow" | "instance" | "maxvalue" | "minvalue" | "now" | "parse" | "today" | "tomorrow"
+            | "yesterday" | "createfromformat" | "createsafe" | "make"
+                if is("Illuminate\\Support\\Facades\\Date") =>
+            {
+                let date = object(codebase, &self.0.date_class);
+                return Some(TUnion::from_vec(match method_name.as_str() {
+                    "gettestnow" | "make" => vec![date, TAtomic::Null],
+                    "createfromformat" | "createsafe" if self.0.laravel_12 => vec![date, TAtomic::Null],
+                    "createfromformat" | "createsafe" => vec![date, TAtomic::Scalar(TScalar::r#false())],
+                    _ => vec![date],
+                }));
+            }
+            "safe" if is("Illuminate\\Foundation\\Http\\FormRequest") => return form_request_safe(context, invocation),
             "disk" | "drive" | "cloud" if is("Illuminate\\Support\\Facades\\Storage") => {
                 return Some(TUnion::from_atomic(object(codebase, "Illuminate\\Filesystem\\FilesystemAdapter")));
             }
@@ -239,6 +256,36 @@ impl MethodReturnTypeProvider for Methods {
     }
 }
 
+/// FormRequestSafeDynamicMethodReturnTypeExtension: `safe()` with a constant array is the shape of the array's
+/// constant string values, each `mixed`.
+fn form_request_safe(context: &ProviderContext<'_, '_, '_>, invocation: &InvocationInfo<'_, '_, '_>) -> Option<TUnion> {
+    use mago_codex::ttype::atomic::array::TArray;
+    use mago_codex::ttype::atomic::array::key::ArrayKey;
+    use mago_codex::ttype::atomic::array::keyed::TKeyedArray;
+    let argument = invocation.arguments().into_iter().next()?.value()?;
+    let ty = context.get_expression_type(argument)?;
+    let values: Vec<&TUnion> = match ty.types.as_ref() {
+        [TAtomic::Array(TArray::List(list))] if list.element_type.is_never() => {
+            list.known_elements.iter().flat_map(|k| k.values()).map(|(_, v)| v).collect()
+        }
+        [TAtomic::Array(TArray::Keyed(keyed))] if keyed.parameters.is_none() => {
+            keyed.known_items.iter().flat_map(|k| k.values()).map(|(_, v)| v).collect()
+        }
+        _ => return None,
+    };
+    let items: std::collections::BTreeMap<_, _> = values
+        .iter()
+        .flat_map(|v| v.types.iter())
+        .filter_map(|a| match a {
+            TAtomic::Scalar(TScalar::String(s)) => s.get_known_literal_value(),
+            _ => None,
+        })
+        .map(|key| (ArrayKey::String(mago_word::Word::new(key)), (false, get_mixed())))
+        .collect();
+    let non_empty = !items.is_empty();
+    Some(TUnion::from_atomic(TAtomic::Array(TArray::Keyed(TKeyedArray::new().with_known_items(items).with_non_empty(non_empty)))))
+}
+
 /// `new BenevolentUnionType([new IntegerType(), new StringType()])`.
 fn benevolent_array_key() -> TUnion {
     let mut ty = TUnion::from_vec(vec![TAtomic::Scalar(TScalar::int()), TAtomic::Scalar(TScalar::string())]);
@@ -263,6 +310,12 @@ fn active_template(codebase: &CodebaseMetadata, object: &TNamedObject, defining:
     let defining = codebase.get_class_like(defining)?;
     defining.get_template_type(mago_word::word(name))?;
     get_specialized_template_type(codebase, mago_word::word(name), defining.name, metadata, object.type_parameters.as_deref())
+}
+
+/// A method reflection's `getDeclaringClass()`: the class that declares the method or uses the trait that does.
+fn reflection_declaring_class(codebase: &CodebaseMetadata, class: &[u8], method: &[u8]) -> Option<mago_word::Word> {
+    let k = codebase.get_class_like(class)?;
+    k.appearing_method_ids.get(&mago_word::word(&method.to_ascii_lowercase())).map(|id| id.get_class_name())
 }
 
 /// The bound of a template type (`$type->getBound()` of a TemplateType), else the type.
@@ -619,7 +672,7 @@ impl Methods {
         if codebase.get_class_like(first.name.as_bytes())?.template_types.is_empty() {
             return None;
         }
-        let declaring = codebase.get_declaring_method_class(first.name.as_bytes(), method.as_bytes())?;
+        let declaring = reflection_declaring_class(codebase, first.name.as_bytes(), method.as_bytes())?;
         let key = bound(active_template(codebase, first, declaring.as_bytes(), "TKey")?);
         let mut value = bound(active_template(codebase, first, declaring.as_bytes(), "TValue")?);
         let class = String::from_utf8_lossy(first.name.as_bytes()).into_owned();
@@ -661,7 +714,7 @@ impl Methods {
             TAtomic::Object(TObject::Named(n)) => Some(n.clone()),
             _ => None,
         })?;
-        let declaring = codebase.get_declaring_method_class(first.name.as_bytes(), b"whereNotNull")?;
+        let declaring = reflection_declaring_class(codebase, first.name.as_bytes(), b"whereNotNull")?;
         let template = |name: &str| active_template(codebase, &first, declaring.as_bytes(), name);
         let key = template("TKey")?;
         let value = template("TValue").or_else(|| template("TModel"))?;

@@ -447,6 +447,8 @@ pub(crate) fn build(
     project: &Project,
     laravel_root: Option<&Path>,
 ) -> Result<(CodebaseMetadata, Sources), CouldNotReadFile> {
+    // Larastan's `collection-of<TModel>`, which the type builder leaves to expansion
+    let _ = mago_codex::ttype::expander::COLLECTION_OF_RESULT.set(crate::laravel::collection_of);
     let version = php_version(project.php_version);
     let aliases = laravel_root
         .or_else(|| project.larastan.as_ref().map(|l| l.root.as_path()))
@@ -606,8 +608,81 @@ pub(crate) fn build(
         Default::default(),
         Default::default(),
     );
+    ancestor_stub_docs(&mut metadata);
     resolve_initializers(&mut metadata, &sources, project);
     Ok((metadata, sources))
+}
+
+/// PhpClassReflectionExtension::findMethodPhpDocIncludingAncestors() for Mago: a method a stub-known vendor class
+/// declares without a stub PHPDoc of its own takes the stub PHPDoc of the first ancestor (interfaces, traits, then
+/// the parent) that has one for it, in place of its own (`Model::toArray()` takes `Arrayable::toArray()`'s, the
+/// Support collection's `pluck()` the Enumerable stub's): its return and parameter types, the ancestor's class
+/// templates as the class gives them, and its method templates. The rules read the same (`declared::method_doc()`).
+fn ancestor_stub_docs(metadata: &mut CodebaseMetadata) {
+    use mago_codex::misc::GenericParent;
+    use mago_codex::ttype::template::{TemplateResult, inferred_type_replacer};
+    // ClassReflection::getAncestors() after the class: interfaces, traits, then the parent, depth first
+    fn visit(metadata: &CodebaseMetadata, name: mago_word::Word, order: &mut Vec<mago_word::Word>) {
+        let Some(k) = metadata.class_likes.get(&name) else { return };
+        for n in k.direct_parent_interfaces.iter().chain(k.used_traits.iter()).chain(k.direct_parent_class.iter()) {
+            let Some(a) = metadata.get_class_like(n.as_bytes()) else { continue };
+            if order.len() < 256 && !order.contains(&a.name) {
+                order.push(a.name);
+                visit(metadata, a.name, order);
+            }
+        }
+    }
+    let mut updates = Vec::new();
+    for class_key in metadata.patch_class_likes.keys() {
+        let Some(class) = metadata.class_likes.get(class_key) else { continue };
+        if class.flags.is_user_defined() {
+            continue;
+        }
+        let mut order = vec![class.name];
+        visit(metadata, class.name, &mut order);
+        for method in class.methods.iter() {
+            if metadata.patch_function_likes.get(&(class.name, *method)).is_some_and(|p| p.has_docblock) {
+                continue;
+            }
+            let Some(ancestor) = order.iter().skip(1).find(|a| {
+                metadata.patch_function_likes.get(&(**a, *method)).is_some_and(|p| p.has_docblock)
+                    && metadata.function_likes.contains_key(&(**a, *method))
+            }) else {
+                continue;
+            };
+            let parent = &metadata.function_likes[&(*ancestor, *method)];
+            let mut templates = TemplateResult::default();
+            for (name, ty) in class.template_extended_parameters.get(ancestor).into_iter().flatten() {
+                templates.add_lower_bound(*name, GenericParent::ClassLike(*ancestor), ty.clone());
+            }
+            let substitute = |t: &mago_codex::metadata::ttype::TypeMetadata| {
+                let mut t = t.clone();
+                t.type_union = inferred_type_replacer::replace(&t.type_union, &templates, metadata);
+                t
+            };
+            let returned = parent.return_type_metadata.as_ref().filter(|t| t.from_docblock).map(substitute);
+            let params: Vec<_> = parent
+                .parameters
+                .iter()
+                .map(|p| p.type_metadata.as_ref().filter(|t| t.from_docblock).map(substitute))
+                .collect();
+            updates.push(((class.name, *method), returned, params, parent.template_types.clone()));
+        }
+    }
+    for (key, returned, params, templates) in updates {
+        let Some(f) = metadata.function_likes.get_mut(&key) else { continue };
+        if returned.is_some() {
+            f.return_type_metadata = returned;
+        }
+        for (p, ty) in f.parameters.iter_mut().zip(params) {
+            if ty.is_some() {
+                p.type_metadata = ty;
+            }
+        }
+        if !templates.is_empty() {
+            f.template_types = templates;
+        }
+    }
 }
 
 /// Resolve referenced globals and constants of already-loaded user classes/interfaces. Autoload remains

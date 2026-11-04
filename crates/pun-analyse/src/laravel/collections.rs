@@ -58,6 +58,15 @@ pub(crate) fn collection_class(codebase: &CodebaseMetadata, model: &[u8]) -> TAt
     named(k.original_name, parameters)
 }
 
+/// CollectionOfType::getResult() for Mago's expander (`collection-of<TModel>` without a template): each object
+/// class's own collection; `None` when no part is a model (CollectionOfTypeNodeResolverExtension declines it).
+pub(crate) fn collection_of(codebase: &CodebaseMetadata, model: &TUnion) -> Option<TUnion> {
+    const MODEL: &[u8] = b"Illuminate\\Database\\Eloquent\\Model";
+    let classes = object_class_names(model);
+    let models = classes.iter().any(|c| c.as_bytes().eq_ignore_ascii_case(MODEL) || codebase.is_instance_of(c.as_bytes(), MODEL));
+    models.then(|| TUnion::from_vec(classes.iter().map(|c| collection_class(codebase, c.as_bytes())).collect()))
+}
+
 /// `getObjectClassNames()` of a type whose parts are objects.
 fn object_class_names(ty: &TUnion) -> Vec<Word> {
     ty.types

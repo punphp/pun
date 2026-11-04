@@ -675,7 +675,9 @@ fn method_doc(
             source.as_bytes() == name && class.declaring_method_ids.get(alias)
                 == class.declaring_method_ids.get(&mago_word::word(name))
         });
-    let own = if (m.has_docblock || c.patched_docs.contains_key(&m.span)) && !aliased_source {
+    let own = if let Some(stub) = (!c.patched_docs.contains_key(&m.span)).then(|| ancestor_stub_doc(c, class, storage, name)).flatten() {
+        Some(stub)
+    } else if (m.has_docblock || c.patched_docs.contains_key(&m.span)) && !aliased_source {
         resolved_own(c, m, storage, class)
     } else {
         None
@@ -686,6 +688,52 @@ fn method_doc(
         .map(|p| text(&p.name.0.as_bytes()[1..]))
         .collect();
     inherit(c, class, name, own, &names, depth)
+}
+
+/// PhpClassReflectionExtension::findMethodPhpDocIncludingAncestors(): a method of a class the stubs know (its
+/// declaring class, a trait's user for a trait method) without a stub PHPDoc of its own takes the stub PHPDoc of
+/// the first ancestor (interfaces, traits, then the parent) that declares the method natively, in that ancestor's
+/// terms.
+fn ancestor_stub_doc(c: &Checker, class: &ClassLikeMetadata, storage: &ClassLikeMetadata, name: &[u8]) -> Option<Resolved> {
+    let lower = mago_word::word(&name.to_ascii_lowercase());
+    let parent = |k: &ClassLikeMetadata| k.direct_parent_class.and_then(|p| c.codebase.get_class_like(p.as_bytes()));
+    let declaring = if storage.kind.is_trait() {
+        std::iter::successors(Some(class), |k| parent(k))
+            .take(super::overriding::ANCESTRY)
+            .find(|k| k.used_traits.contains(&storage.name))?
+    } else {
+        storage
+    };
+    if declaring.flags.contains(MetadataFlags::BUILTIN) || !c.codebase.patch_class_likes.contains_key(&declaring.name) {
+        return None;
+    }
+    // ClassReflection::getAncestors() after the class itself: interfaces, traits, then the parent, each depth first
+    fn collect<'a>(c: &Checker<'a, '_>, k: &'a ClassLikeMetadata, out: &mut Vec<&'a ClassLikeMetadata>) {
+        let next = k.direct_parent_interfaces.iter().chain(k.used_traits.iter()).chain(k.direct_parent_class.iter());
+        for n in next {
+            if out.len() < 256
+                && let Some(a) = c.codebase.get_class_like(n.as_bytes())
+                && !out.iter().any(|o| o.name == a.name)
+            {
+                out.push(a);
+                collect(c, a, out);
+            }
+        }
+    }
+    let mut ancestors = vec![declaring];
+    collect(c, declaring, &mut ancestors);
+    ancestors.into_iter().skip(1).find_map(|ancestor| {
+        ancestor.declaring_method_ids.get(&lower)?;
+        let stub = c.codebase.patch_function_likes.get(&(ancestor.name, lower)).filter(|p| p.has_docblock)?;
+        let doc = resolved_own(c, stub, ancestor, ancestor)?;
+        let map = |t: Type| ancestor_types(class, ancestor, &t);
+        Some(Resolved {
+            params: doc.params.into_iter().map(|(k, t)| (k, map(t))).collect(),
+            ret: doc.ret.map(map),
+            outs: doc.outs.into_iter().map(|(k, t)| (k, map(t))).collect(),
+            ..doc
+        })
+    })
 }
 
 /// A built-in method's resolved PHPDoc, from PHPStan's reflection (its stubs), keyed by Mago's parameter names.
@@ -1342,6 +1390,23 @@ fn inherited_property_doc(
                 .property_docs
                 .get(&text(name))
                 .map(|t| pun_phpstan::resolve::resolve_str(t, Some(&class.name)));
+        }
+        // StubPhpDocProvider::findPropertyPhpDoc() of the reflection's declaring class: a trait's property is
+        // declared by the class that uses the trait, whose stub Mago does not patch
+        let reflected = if declaring.kind.is_trait() {
+            std::iter::successors(Some(parent), |k| k.direct_parent_class.and_then(|p| c.codebase.get_class_like(p.as_bytes())))
+                .take(super::overriding::ANCESTRY)
+                .find(|k| k.used_traits.contains(&declaring.name))
+                .unwrap_or(parent)
+        } else {
+            declaring
+        };
+        let stub = c.codebase.patch_class_likes.get(&reflected.name).and_then(|patch| {
+            let p = patch.properties.get(&mago_word::word(&var))?;
+            own_property_doc(c, patch, p, name)
+        });
+        if let Some(t) = stub {
+            return Some(ancestor_types(class, reflected, &t));
         }
         let own = own_property_doc(c, declaring, p, name);
         return own
