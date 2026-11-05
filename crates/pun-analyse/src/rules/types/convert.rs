@@ -24,7 +24,7 @@ use pun_phpstan::types::{
     Accessory, ConstArray, NeverKind, Param, ShapeBuilder, Signature, Template, Tri, Type, intersect, mixed, union,
 };
 
-use super::super::{Checker, arrays, declared, doc, infer};
+use super::super::{Checker, arrays, declared, infer};
 use crate::text;
 
 thread_local! {
@@ -350,12 +350,13 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                     .map(|t| inferred_argument(&t))
             }
             infer::Origin::Annotation(at, name, key) => {
-                let (raw, _) = declared::doc_at(self, *at)?;
+                let (_, entry, _) = declared::doc_at(self, *at)?;
                 let scope = key.and_then(|key| function(&key)).map_or_else(
                     || declared::scope_at(self, *at, self.class_scope()),
                     |(f, k)| declared::value_scope(self, f, k),
                 );
-                doc::Doc::parse(&raw)
+                entry
+                    .doc
                     .var_types(&scope)
                     .into_iter()
                     .find(|(n, _)| n.is_empty() || n == name)

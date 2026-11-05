@@ -5,7 +5,7 @@ use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 use std::rc::Rc;
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::{Arc, LazyLock, OnceLock};
+use std::sync::{Arc, LazyLock};
 
 use mago_allocator::{Arena, LocalArena};
 use mago_analyzer::Analyzer;
@@ -48,6 +48,7 @@ use mago_syntax::settings::{LexerSettings, ParserSettings};
 use mago_syntax::walker::MutWalker;
 use rayon::prelude::*;
 
+use crate::rules::Facts;
 use crate::{Project, autoload};
 
 /// PHPStan's unprefixed classes and functions (scripts/export-phpstan-api-stub.php): PHPStan always has them loaded.
@@ -123,28 +124,31 @@ pub(crate) fn parse<'arena>(
     (program, NameResolver::new(arena).resolve(program))
 }
 
-/// Scans `file`, then resets `arena`, so one arena serves many files.
+/// Scans `file`, with the facts the rules read of its syntax, then resets `arena`, so one arena serves many files.
 fn scan(
     arena: &mut LocalArena,
     file: &File,
     version: PHPVersion,
     reachable: Option<(&autoload::Index, &mut Vec<usize>, &mut Vec<usize>)>,
     trusted_aliases: bool,
-) -> CodebaseMetadata {
-    let mut scanned = 'scan: {
+) -> (CodebaseMetadata, Facts) {
+    let (mut scanned, facts) = {
         let arena = &*arena;
         let (program, names) = parse(arena, file);
+        let facts = Facts::of(&file.contents, program);
         // FileNodesFetcher rejects the whole file before exporting any reflection or autoload roots.
-        if !crate::parser::errors(file, program, version).is_empty() {
-            break 'scan CodebaseMetadata::default();
-        }
-        if let Some((index, wanted, declarations)) = reachable {
-            index.wanted(&file.contents, program, &names, wanted, declarations);
-        }
-        std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-            scan_program(arena, file, program, &names, version)
-        }))
-        .unwrap_or_default()
+        let scanned = if !crate::parser::errors(file, program, version).is_empty() {
+            CodebaseMetadata::default()
+        } else {
+            if let Some((index, wanted, declarations)) = reachable {
+                index.wanted(&file.contents, program, &names, wanted, declarations);
+            }
+            std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                scan_program(arena, file, program, &names, version)
+            }))
+            .unwrap_or_default()
+        };
+        (scanned, facts)
     };
     arena.reset();
     // PHPStan's source locators do not execute class_alias(). Admit only registrations already established by
@@ -162,7 +166,7 @@ fn scan(
     if file.file_type == FileType::Patch {
         scanned.convert_partial_to_patch();
     }
-    scanned
+    (scanned, facts)
 }
 
 /// The prelude for one build at `php_version`: the first build of the process owns a fresh one (a single run keeps
@@ -390,41 +394,41 @@ fn build_prelude(php_version: u32) -> (CodebaseMetadata, SymbolReferences) {
     (metadata, symbol_references)
 }
 
-/// PHPStan's API stub's symbols.
-fn scan_api(version: PHPVersion) -> CodebaseMetadata {
+/// PHPStan's API stub's symbols, and the stub.
+fn scan_api(version: PHPVersion) -> (CodebaseMetadata, Scanned) {
     let stub = File::new(
         Cow::Borrowed(b"phpstan-api.php"),
         FileType::Vendored,
         None,
         Cow::Borrowed(PHPSTAN_API),
     );
-    scan(&mut LocalArena::new(), &stub, version, None, false)
+    let (metadata, facts) = scan(&mut LocalArena::new(), &stub, version, None, false);
+    (metadata, Scanned { file: Arc::new(stub), facts })
 }
 
 /// Files scanned by one task: small enough that the threads finish together.
 const CHUNK: usize = 32;
 
-/// Analysed files and loaded global-constant declaration files, as the scan read them.
-/// The analysed files and the scanned ones a rule needs whole (their constants), by path, with the other files' contents
-/// read on demand once per run.
+/// A file the scan read, with the facts the rules read of its syntax.
+pub(crate) struct Scanned {
+    pub(crate) file: Arc<File>,
+    pub(crate) facts: Facts,
+}
+
+/// The files the scan read: by path, the analysed ones and the scanned ones with global constant declarations
+/// (whose code a rule reads whole); by id, every one with its facts.
 #[derive(Default)]
 pub(crate) struct Sources {
     files: HashMap<PathBuf, Arc<File>>,
-    read: std::sync::RwLock<HashMap<PathBuf, Option<Arc<[u8]>>>>,
+    scanned: HashMap<FileId, Scanned>,
+    /// PHPStan's API stub, when an analysed file names PHPStan.
+    api: Option<Scanned>,
 }
 
 impl Sources {
-    pub(crate) fn new() -> Self {
-        Self::default()
-    }
-
-    /// The contents of `path`, a file not in the map: read from disk the first time a rule asks this run.
-    pub(crate) fn read(&self, path: &Path) -> Option<Arc<[u8]>> {
-        if let Some(found) = self.read.read().expect("read cache").get(path) {
-            return found.clone();
-        }
-        let contents = std::fs::read(path).ok().map(Arc::from);
-        self.read.write().expect("read cache").entry(path.to_path_buf()).or_insert(contents).clone()
+    /// A file the scan read, PHPStan's API stub included.
+    pub(crate) fn scanned(&self, id: FileId) -> Option<&Scanned> {
+        self.scanned.get(&id).or_else(|| self.api.as_ref().filter(|api| api.file.id == id))
     }
 }
 
@@ -491,7 +495,8 @@ pub(crate) fn build(
     // PHPStan's API stub (one large file, about a quarter of the run on larastan and pest when scanned after the
     // rounds) is scanned on its own thread as soon as an analysed file names PHPStan, beside the rounds; it is merged
     // after them, as before
-    let api = OnceLock::new();
+    let (names_phpstan_tx, names_phpstan_rx) = std::sync::mpsc::channel::<()>();
+    let api = std::thread::spawn(move || names_phpstan_rx.recv().ok().map(|()| scan_api(version)));
     let (((mut metadata, mut references), _), scanned) = rayon::join(
         || rayon::join(move || prelude(php_version), builtins),
         || {
@@ -499,7 +504,7 @@ pub(crate) fn build(
             loaded[..eager].fill(true);
             let mut round: Vec<usize> = (0..eager).collect();
             let mut scanned = Vec::new();
-            let mut sources = Sources::new();
+            let mut sources = Sources::default();
             let mut used_aliases = Vec::new();
             while !round.is_empty() {
                 let size = (round.len() / (rayon::current_num_threads() * 4)).clamp(1, CHUNK);
@@ -515,7 +520,7 @@ pub(crate) fn build(
                             let Some(file) = read(path, file_type)? else {
                                 continue;
                             };
-                            let symbols = scan(
+                            let (symbols, facts) = scan(
                                 arena,
                                 &file,
                                 version,
@@ -525,16 +530,12 @@ pub(crate) fn build(
                             let has_constants = !symbols.constants.is_empty();
                             metadata.extend(symbols);
                             wanted.retain(|&w| !loaded[w]);
-                            if file_type == FileType::Host {
-                                if names_phpstan(&file.contents) {
-                                    api.get_or_init(|| {
-                                        std::thread::spawn(move || scan_api(version))
-                                    });
-                                }
+                            if file_type == FileType::Host && names_phpstan(&file.contents) {
+                                // (the receiver is alive until the rounds end)
+                                let _ = names_phpstan_tx.send(());
                             }
-                            if file_type == FileType::Host || has_constants {
-                                sources.push((path.clone(), Arc::new(file)));
-                            }
+                            let by_path = file_type == FileType::Host || has_constants;
+                            sources.push((path.clone(), Scanned { file: Arc::new(file), facts }, by_path));
                         }
                         Ok((metadata, sources, wanted, declarations))
                     })
@@ -542,7 +543,12 @@ pub(crate) fn build(
                 round.clear();
                 for (chunk, files, wanted, declarations) in chunks {
                     scanned.push(chunk);
-                    sources.extend(files);
+                    for (path, file, by_path) in files {
+                        if by_path {
+                            sources.files.insert(path, file.file.clone());
+                        }
+                        sources.scanned.insert(file.file.id, file);
+                    }
                     round.extend(wanted);
                     used_aliases.extend(declarations);
                 }
@@ -552,10 +558,11 @@ pub(crate) fn build(
                     loaded[i] = true;
                 }
             }
+            drop(names_phpstan_tx);
             Ok((scanned, sources, used_aliases))
         },
     );
-    let (scanned, sources, mut used_aliases) = scanned?;
+    let (scanned, mut sources, mut used_aliases) = scanned?;
     for chunk in scanned {
         metadata.extend(chunk);
     }
@@ -580,10 +587,11 @@ pub(crate) fn build(
             None,
             Cow::Owned(declarations.into_bytes()),
         );
-        metadata.extend(scan(&mut LocalArena::new(), &file, version, None, true));
+        metadata.extend(scan(&mut LocalArena::new(), &file, version, None, true).0);
     }
-    if let Some(api) = api.into_inner() {
-        metadata.extend(api.join().expect("the API stub scan never panics"));
+    if let Some((api, stub)) = api.join().expect("the API stub scan never panics") {
+        metadata.extend(api);
+        sources.api = Some(stub);
     }
     // ponytail: Mago leaves a user-defined (analysed) class unpatched, where PHPStan's stub wins; stubs of vendor
     // classes, the usual kind, apply alike
@@ -814,41 +822,12 @@ fn resolve_initializers(metadata: &mut CodebaseMetadata, sources: &Sources, proj
                 })
         })
         .collect();
-    let mut initializer_sources: HashMap<_, _> = sources
-        .values()
-        .map(|file| (file.id, file.as_ref()))
-        .collect();
-    // Symbol-only files without global declarations are not retained in Sources. Reopen only files
-    // of already-loaded declarations, never arbitrary autoload files or their executable bodies.
-    let missing: HashSet<_> = arguments
-        .iter()
-        .map(|(_, _, _, at)| at.file_id)
-        .chain(
-            metadata
-                .class_likes
-                .values()
-                .filter(|class| !class.flags.is_built_in())
-                .flat_map(|class| {
-                    class
-                        .constants
-                        .values()
-                        .map(|constant| constant.span.file_id)
-                        .chain(std::iter::once(class.span.file_id))
-                }),
-        )
-        .filter(|id| !initializer_sources.contains_key(id))
-        .collect();
-    let attribute_sources: Vec<_> = project
+    // every project file the scan read (not PHPStan's API stub, whose initializers keep their scanned values)
+    let initializer_sources: HashMap<_, _> = sources
         .scanned
-        .iter()
-        .chain(&project.stubs)
-        .chain(project.autoloaded.iter().map(|file| &file.path))
-        .filter(|path| missing.contains(&FileId::new(path.to_string_lossy().as_bytes())))
-        .collect::<Vec<_>>()
-        .into_par_iter()
-        .filter_map(|path| read(path, FileType::Vendored).ok().flatten())
+        .values()
+        .map(|scanned| (scanned.file.id, scanned.file.as_ref()))
         .collect();
-    initializer_sources.extend(attribute_sources.iter().map(|file| (file.id, file)));
     let mut copies: HashMap<_, Vec<_>> = HashMap::new();
     let mut classes: HashMap<_, Vec<_>> = HashMap::new();
     for (class, k) in &metadata.class_likes {

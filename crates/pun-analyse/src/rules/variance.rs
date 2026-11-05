@@ -8,7 +8,7 @@ use pun_phpstan::types::{Subject, Template, Type};
 
 use super::Checker;
 use super::declared;
-use super::doc::{Doc, doc_before};
+
 use super::properties::PropertyNode;
 
 pub const IDENTIFIERS: &[&str] = &["generics.variance", "function.variance", "method.variance"];
@@ -163,8 +163,8 @@ fn parameters_acceptor(
     skip: bool,
 ) {
     let mut errors: Vec<(&'static str, String)> = Vec::new();
-    if let Some(doc) = doc_before(&c.file.contents, at.start.offset as usize) {
-        let doc = Doc::parse(doc);
+    if let Some((_, entry)) = c.doc_before(c.file.id, at.start.offset) {
+        let doc = &entry.doc;
         for (t, v) in doc.templates.iter().zip(&doc.template_variances) {
             if *v != "invariant" {
                 errors.push((
@@ -265,8 +265,8 @@ pub fn promoted(c: &mut Checker, m: &Method) {
     // `@readonly` tag
     let by_phpdoc = c.decls.last().is_some_and(|d| d.immutable_doc)
         || c.decls.last().and_then(|d| d.parent.clone()).is_some_and(|p| c.class_immutable(&p, 0))
-        || declared::doc_at(c, m.span()).is_some_and(|(doc, _)| {
-            super::declarations::has_tag(&super::declarations::doc_tags(&doc), super::declarations::READONLY_TAGS)
+        || declared::doc_at(c, m.span()).is_some_and(|(_, entry, _)| {
+            super::declarations::has_tag(&entry.names, super::declarations::READONLY_TAGS)
         });
     let (k, _) = c.member_scope();
     let declaring = super::missing_types::declaring(c, m.span()).expect("a method is declared by its class or a used trait");

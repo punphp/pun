@@ -308,9 +308,11 @@ impl Reader<'_> {
         let mut first = FirstReturn(None);
         first.walk_program(program, &mut ());
         let r = first.0?;
-        if let Some(doc) = crate::rules::doc_before(&file.contents, r.span().start.offset as usize)
-            && let Some((_, ty)) = crate::rules::doc_tags(doc)
-                .into_iter()
+        let comments = crate::rules::Comments::of(&file.contents);
+        if let Some((_, entry)) = comments.doc_before(&file.contents, r.span().start.offset as usize)
+            && let Some((_, ty)) = entry
+                .tags
+                .iter()
                 .find(|(tag, _)| tag == "@return" || tag == "@phpstan-return")
             && let Ok((node, end)) = phpdoc::parse_prefix(&ty)
         {

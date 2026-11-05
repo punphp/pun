@@ -20,7 +20,7 @@ use pun_phpstan::symbols;
 use pun_phpstan::types::{Level, NeverKind, Type};
 
 use super::declared::{class_scope, original_name, with_classes};
-use super::doc::{NameScope, doc_before, tags};
+use super::doc::NameScope;
 use super::{Checker, DISCOVERING_SYMBOLS_TIP, missing_types};
 
 /// A `@phpstan-type` tag: the alias and its type (`None`: an InvalidTypeNode, which resolves to `mixed`).
@@ -131,9 +131,8 @@ fn upsert<T>(list: &mut Vec<T>, key: impl Fn(&T) -> &str, item: T) {
 /// The type alias tags of class-like `k`'s PHPDoc (`resolveTypeAliasTags()` and `resolveTypeAliasImportTags()`), in
 /// `scope`.
 fn alias_doc(c: &Checker, k: &ClassLikeMetadata, scope: NameScope) -> Option<AliasDoc> {
-    let contents = c.file_contents(k.span.file_id)?;
-    let doc = doc_before(&contents, k.span.start.offset as usize)?;
-    let tags = tags(doc);
+    let (_, entry) = c.doc_before(k.span.file_id, k.span.start.offset)?;
+    let tags = &entry.tags;
     let mut aliases = Vec::new();
     for kind in ["@phan-type", "@psalm-type", "@phpstan-type"] {
         for (_, value) in tags.iter().filter(|(t, _)| t == kind) {

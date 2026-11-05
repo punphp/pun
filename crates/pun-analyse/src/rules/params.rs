@@ -64,9 +64,8 @@ pub enum ParamType {
 pub(super) fn accepts_named(c: &Checker, f: &FunctionLikeMetadata, class: Option<&ClassLikeMetadata>) -> Tri {
     let yes = match class {
         Some(class) => super::named_argument::accepts(c, class, f),
-        None => !super::declared::doc_at(c, f.span).is_some_and(|(doc, _)| {
-            super::declarations::has_tag(&super::declarations::doc_tags(&doc), &["@no-named-arguments"])
-        }),
+        None => !super::declared::doc_at(c, f.span)
+            .is_some_and(|(_, entry, _)| super::declarations::has_tag(&entry.names, &["@no-named-arguments"])),
     };
     Tri::from(yes)
 }

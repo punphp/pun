@@ -24,7 +24,7 @@ use pun_phpstan::ignore::Error;
 use pun_phpstan::types::Tri;
 
 use super::Checker;
-use super::declarations::{READONLY_TAGS, doc_before, doc_tags, has_tag};
+use super::declarations::{READONLY_TAGS, doc_tags, has_tag};
 use super::types::flow::is_this;
 use crate::codebase::parse;
 use crate::text;
@@ -999,7 +999,7 @@ pub fn class<'arena>(c: &mut Checker<'_, 'arena>, k: &ClassLikeMetadata, members
             continue;
         }
         let readonly = class_readonly || modifiers.contains_readonly();
-        let tags = doc_before(&file.contents, p.span().start.offset as usize).map(doc_tags).unwrap_or_default();
+        let tags = c.php_doc_comment(file.id, p.span().start.offset).map(doc_tags).unwrap_or_default();
         let by_phpdoc = immutable || has_tag(&tags, READONLY_TAGS);
         let items: Vec<&PropertyItem> = match p {
             Property::Plain(plain) => plain.items.iter().collect(),
@@ -1039,7 +1039,7 @@ pub fn class<'arena>(c: &mut Checker<'_, 'arena>, k: &ClassLikeMetadata, members
     constructors.sort_by_key(|m| m.order);
     for m in constructors {
         let file = sources[m.source].file;
-        let tags = doc_before(&file.contents, m.method.span().start.offset as usize)
+        let tags = c.php_doc_comment(file.id, m.method.span().start.offset)
             .map(doc_tags)
             .unwrap_or_default();
         let by_phpdoc = immutable || has_tag(&tags, READONLY_TAGS);

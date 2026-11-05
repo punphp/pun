@@ -1007,6 +1007,8 @@ fn copied_key(c: &Checker, at: Span) -> Option<Type> {
         c.pollute_scope_with_block,
         vec![expression.span()],
         Vec::new(),
+        &c.file_facts(at.file_id)?.comments,
+        c.function_likes.get(&at.file_id).map_or(&[][..], Vec::as_slice),
     )
     .0
     .get(&expression.span())

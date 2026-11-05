@@ -423,9 +423,9 @@ impl<'a> Checker<'a, '_> {
             }).collect();
             let scope = format!("class {}", declared::original_name(class));
             let replace = |t: &Type| super::properties::with_args(t, &scope, &names, &args);
-            if let Some((doc, _)) = declared::doc_at(self, class.span) {
+            if let Some((_, entry, _)) = declared::doc_at(self, class.span) {
                 let scope = declared::scope_at(self, class.span, Some(class));
-                out.extend(super::super::doc::Doc::parse(&doc).mixins.iter()
+                out.extend(entry.doc.mixins.iter()
                     .map(|node| replace(&pun_phpstan::resolve::resolve_in(node, &scope))));
             }
             if let Some(parent) = class.direct_parent_class.and_then(|n| self.codebase.get_class_like(n.as_bytes())) {

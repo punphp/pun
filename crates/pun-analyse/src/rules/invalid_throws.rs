@@ -5,11 +5,12 @@
 use mago_codex::symbol::SymbolKind;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::{AnonymousClass, Function, Method, Statement};
-use pun_phpstan::phpdoc::TagValue;
+use pun_phpstan::phpdoc::{self, TagValue};
 use pun_phpstan::resolve::resolve_in;
 use pun_phpstan::types::{Level, Type, intersect, is_super_type_of, union};
 
-use super::doc::{Doc, NameScope, doc_before};
+use super::doc::NameScope;
+use super::facts::DocEntry;
 use super::{Checker, declared, require_tags, var_tags};
 
 pub const IDENTIFIERS: &[&str] = &["throws.notThrowable"];
@@ -35,18 +36,16 @@ pub fn statement(c: &mut Checker, statement: &Statement) {
 
 /// `InFunctionNode`: not an inherited reflection throw type, and not the surrounding function's templates.
 pub fn function(c: &mut Checker, function: &Function) {
-    check(c, function.span(), |c, raw| {
-        declared::function_scope(c, function, &Doc::parse(raw))
-    });
+    check(c, function.span(), |c, entry| declared::function_scope(c, function, &entry.doc));
 }
 
 /// `InClassMethodNode`: the method's own tags, resolved in the declaring trait's/using class's context.
 pub fn method(c: &mut Checker, method: &Method) {
-    check(c, method.span(), |c, raw| {
+    check(c, method.span(), |c, entry| {
         let context = c.class_scope().expect("a method has a class scope");
         let declaring =
             super::missing_types::declaring(c, method.span()).expect("a method has a declaration");
-        declared::method_scope(c, method, &Doc::parse(raw), declaring, context)
+        declared::method_scope(c, method, &entry.doc, declaring, context)
     });
 }
 
@@ -83,31 +82,27 @@ fn statement_scope(c: &Checker, at: Span) -> NameScope {
                 && hook.span.start.offset <= at.start.offset
                 && at.end.offset <= hook.span.end.offset
             {
-                let raw = doc_before(&c.file.contents, hook.span.start.offset as usize)
-                    .unwrap_or_default();
+                let templates = c
+                    .doc_before(c.file.id, hook.span.start.offset)
+                    .map_or(&[][..], |(_, entry)| &entry.doc.templates);
                 let name = format!("{}::{}", property.name.0, hook.name);
-                return declared::with_method_templates(
-                    &scope,
-                    context,
-                    &name,
-                    &Doc::parse(raw).templates,
-                );
+                return declared::with_method_templates(&scope, context, &name, templates);
             }
         }
     }
     scope
 }
 
-fn check(c: &mut Checker, at: Span, scope: impl FnOnce(&Checker, &[u8]) -> NameScope) {
+fn check(c: &mut Checker, at: Span, scope: impl FnOnce(&Checker, &DocEntry) -> NameScope) {
     if c.level < 2 {
         return;
     }
-    let Some(raw) = doc_before(&c.file.contents, at.start.offset as usize) else {
+    let Some((_, entry)) = c.doc_before(c.file.id, at.start.offset) else {
         return;
     };
     let message = declared::with_classes(c, || {
-        let scope = scope(c, raw);
-        let ty = throws_type(raw, &scope)?;
+        let scope = scope(c, entry);
+        let ty = throws_type(&entry.phpdoc, &scope)?;
         (!is_throws_valid(c, &ty)).then(|| {
             format!(
                 "PHPDoc tag @throws with type {} is not subtype of Throwable",
@@ -122,8 +117,7 @@ fn check(c: &mut Checker, at: Span, scope: impl FnOnce(&Checker, &[u8]) -> NameS
 
 /// `PhpDocNodeResolver::resolveThrowsTags()`: all valid tags of the first supported name, unioned. A malformed
 /// preferred tag does not hide valid ordinary tags, and unrelated tools' tag names are not aliases.
-pub(super) fn throws_type(raw: &[u8], scope: &NameScope) -> Option<Type> {
-    let tags = super::doc::phpdoc_tags(raw);
+pub(super) fn throws_type(tags: &[phpdoc::Tag], scope: &NameScope) -> Option<Type> {
     for name in ["@phpstan-throws", "@throws"] {
         let types: Vec<_> = tags
             .iter()

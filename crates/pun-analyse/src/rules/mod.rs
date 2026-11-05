@@ -25,6 +25,7 @@ mod deprecations;
 mod dynamic_fetch;
 mod doc;
 mod driver;
+mod facts;
 mod enums;
 mod function_callable;
 mod function_checks;
@@ -103,7 +104,8 @@ use crate::codebase::Sources;
 use scope::{Guard, Saved};
 use statements::{Frame, FrameKind};
 
-pub(crate) use doc::{doc_before, tags as doc_tags};
+pub(crate) use facts::Comments;
+pub(crate) use facts::Facts;
 pub(crate) use driver::{Checks, check_file};
 pub use larastan::Larastan;
 pub(crate) use dead_code::conditions_in_traits;
@@ -929,9 +931,13 @@ pub struct Checker<'a, 'arena> {
     decls: Vec<declarations::Decl>,
     /// `isImmutable()` of the codebase's classes, by lowercase name.
     immutable: HashMap<String, bool>,
-    /// A symbol's file, and the analysed files' sources (other files are read when a rule needs them).
+    /// A symbol's file, and the files the scan read.
     files: &'a HashMap<FileId, PathBuf>,
     sources: &'a Sources,
+    /// This file's facts.
+    facts: &'a facts::Facts,
+    /// [`driver::Checks`]'s function-likes of each file.
+    function_likes: &'a HashMap<FileId, Vec<(Span, mago_codex::symbol::SymbolIdentifier)>>,
     /// [`driver::Checks`]'s stub declarations: a patched declaration's span to its stub's, whose PHPDoc PHPStan reads.
     patched_docs: &'a HashMap<Span, Span>,
     /// [`driver::Checks`]'s classes, built once per run.
@@ -1021,40 +1027,41 @@ pub struct Checker<'a, 'arena> {
     errors: Vec<Error>,
 }
 
-/// A file's contents, borrowed from the run's sources or shared with its read cache.
-pub(crate) enum Contents<'a> {
-    Borrowed(&'a [u8]),
-    Shared(std::sync::Arc<[u8]>),
-}
-
-impl Default for Contents<'_> {
-    fn default() -> Self {
-        Contents::Borrowed(&[])
-    }
-}
-
-impl std::ops::Deref for Contents<'_> {
-    type Target = [u8];
-
-    fn deref(&self) -> &[u8] {
-        match self {
-            Contents::Borrowed(b) => b,
-            Contents::Shared(b) => b,
-        }
-    }
-}
 
 impl<'a, 'arena> Checker<'a, 'arena> {
-    /// A file's contents: this one, an analysed one, or one read from disk.
-    fn file_contents(&self, id: FileId) -> Option<Contents<'a>> {
+    /// A file's contents: this one, or one the scan read.
+    fn file_contents(&self, id: FileId) -> Option<&'a [u8]> {
         if id == self.file.id {
-            return Some(Contents::Borrowed(&self.file.contents[..]));
+            return Some(&self.file.contents[..]);
         }
-        let path = self.files.get(&id)?;
-        match self.sources.get(path) {
-            Some(f) => Some(Contents::Borrowed(&f.contents[..])),
-            None => self.sources.read(path).map(Contents::Shared),
+        self.sources.scanned(id).map(|s| &s.file.contents[..])
+    }
+
+    /// A file's facts: this one's, or those of one the scan read.
+    fn file_facts(&self, id: FileId) -> Option<&'a facts::Facts> {
+        if id == self.file.id {
+            return Some(self.facts);
         }
+        self.sources.scanned(id).map(|s| &s.facts)
+    }
+
+    /// php-parser's doc comment of the node at `offset` in file `id` ([`facts::Comments::php_doc_comment()`]).
+    fn php_doc_comment(&self, id: FileId, offset: u32) -> Option<&'a [u8]> {
+        self.file_facts(id)?.comments.php_doc_comment(self.file_contents(id)?, offset as usize)
+    }
+
+    /// [`Self::php_doc_comment()`] with its parsed form: the scan's, else parsed now (a comment [`Self::doc_before()`]
+    /// would not find: one with a stray `*/` in it).
+    fn php_doc(&self, id: FileId, offset: u32) -> Option<(&'a [u8], std::borrow::Cow<'a, facts::DocEntry>)> {
+        let raw = self.php_doc_comment(id, offset)?;
+        let start = raw.as_ptr() as usize - self.file_contents(id)?.as_ptr() as usize;
+        let entry = self.file_facts(id)?.comments.entry(start as u32, (start + raw.len()) as u32);
+        Some((raw, entry.map_or_else(|| std::borrow::Cow::Owned(facts::DocEntry::parse(raw)), std::borrow::Cow::Borrowed)))
+    }
+
+    /// The doc comment right before `offset` in file `id` ([`facts::Comments::doc_before()`]).
+    fn doc_before(&self, id: FileId, offset: u32) -> Option<(&'a [u8], &'a facts::DocEntry)> {
+        self.file_facts(id)?.comments.doc_before(self.file_contents(id)?, offset as usize)
     }
 
     /// `class.noParent`: `{action} but C does not extend any class.`, for a parent:: or `new parent` in class `scope`.

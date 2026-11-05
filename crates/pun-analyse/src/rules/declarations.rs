@@ -50,29 +50,6 @@ pub fn doc_tags(doc: &[u8]) -> Vec<String> {
     tags
 }
 
-/// php-parser's `getDocComment()`: the last `/** */` comment before `offset` with only whitespace and other block
-/// comments between.
-pub fn doc_before(contents: &[u8], offset: usize) -> Option<&[u8]> {
-    let mut end = offset.min(contents.len());
-    loop {
-        end -= contents[..end]
-            .iter()
-            .rev()
-            .take_while(|b| b.is_ascii_whitespace())
-            .count();
-        if !contents[..end].ends_with(b"*/") {
-            return None;
-        }
-        let start = contents[..end - 2].windows(2).rposition(|w| w == b"/*")?;
-        let comment = &contents[start..end];
-        // PHP's T_DOC_COMMENT: `/**` and whitespace
-        if comment.starts_with(b"/**") && comment.get(3).is_some_and(u8::is_ascii_whitespace) {
-            return Some(comment);
-        }
-        end = start;
-    }
-}
-
 /// Whether a PHPDoc has one of `names`.
 pub fn has_tag(tags: &[String], names: &[&str]) -> bool {
     tags.iter().any(|t| names.contains(&t.as_str()))
@@ -101,7 +78,7 @@ pub fn immutable_tags(tags: &[String]) -> bool {
 impl<'arena> Checker<'_, 'arena> {
     /// The tags of the PHPDoc right before `node` in this file.
     pub(super) fn tags_before(&self, node: impl HasSpan) -> Vec<String> {
-        doc_before(&self.file.contents, node.span().start.offset as usize)
+        self.php_doc_comment(self.file.id, node.span().start.offset)
             .map(doc_tags)
             .unwrap_or_default()
     }
@@ -153,11 +130,8 @@ impl<'arena> Checker<'_, 'arena> {
             return false;
         };
         let own = self
-            .file_contents(meta.span.file_id)
-            .is_some_and(|contents| {
-                doc_before(&contents, meta.span.start.offset as usize)
-                    .is_some_and(|d| immutable_tags(&doc_tags(d)))
-            });
+            .php_doc_comment(meta.span.file_id, meta.span.start.offset)
+            .is_some_and(|d| immutable_tags(&doc_tags(d)));
         // a cyclic hierarchy is another rule's error
         let parent = meta
             .direct_parent_class

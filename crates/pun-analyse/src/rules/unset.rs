@@ -148,9 +148,7 @@ fn property_final(c: &Checker, p: &PropertyMetadata) -> bool {
         || (p.write_visibility == Visibility::Private && p.read_visibility != Visibility::Private)
         || c.declaration(p)
             .and_then(|(span, _)| declared::doc_at(c, span))
-            .is_some_and(|(doc, _)| {
-                super::declarations::has_tag(&super::declarations::doc_tags(&doc), &["@final"])
-            })
+            .is_some_and(|(_, entry, _)| super::declarations::has_tag(&entry.names, &["@final"]))
 }
 
 fn can_be_unset(c: &mut Checker, node: &Expression, entry: Option<Span>) {
@@ -500,10 +498,15 @@ mod tests {
             magic_dir: false,
             path_constants: false,
         };
-        let (_, include_state) = include_file::prepare(&arena, &file, program, &names, &codebase, 80400, true, true, true, &settings);
+        let facts = super::super::Facts::of(&file.contents, program);
+        let function_likes = std::collections::HashMap::new();
+        let (_, include_state) =
+            include_file::prepare(&arena, &file, program, &names, &codebase, 80400, true, true, true, &settings, &facts.comments, &[]);
         let exceptions = crate::Exceptions::default();
         let c = Checker {
             file: &file,
+            facts: &facts,
+            function_likes: &function_likes,
             has_compiler_halt: false,
             anonymous: Default::default(),
             property_access: Default::default(),

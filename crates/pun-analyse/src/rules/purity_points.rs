@@ -1556,9 +1556,9 @@ impl<'c, 'a, 'b> Producer<'c, 'a, 'b> {
     }
 
     /// A user declaration's PHPDoc.
-    fn doc(&self, f: &FunctionLikeMetadata) -> Vec<u8> {
+    fn doc(&self, f: &FunctionLikeMetadata) -> &'a [u8] {
         declared::doc_at(self.c, f.span)
-            .map(|(raw, _)| raw)
+            .map(|(raw, _, _)| raw)
             .unwrap_or_default()
     }
 

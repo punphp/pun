@@ -38,10 +38,10 @@ pub const IDENTIFIERS: &[&str] = &[
 
 /// The resolved types of a class-like's tags named `names` (PhpDocNodeResolver: the tags of the first name first).
 pub(super) fn tag_types(c: &Checker, k: &ClassLikeMetadata, names: [&str; 2]) -> Vec<Type> {
-    let Some(doc) = c.class_doc(k) else {
+    let Some((_, entry)) = c.class_doc(k) else {
         return Vec::new();
     };
-    let tags = super::doc::phpdoc_tags(&doc);
+    let tags = &entry.phpdoc;
     let scope = super::declared::class_scope(c, k.span, k);
     // (the project's classes known, for `self&\stdClass` in a trait to be `never`)
     super::declared::with_classes(c, || {

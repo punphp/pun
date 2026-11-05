@@ -137,6 +137,8 @@ pub(super) fn infer<'arena>(
     property_initializations: &mut HashMap<Span, PropertyInitializationCertainty>,
     larastan: Option<&super::Larastan>,
     trait_class: Option<&str>,
+    comments: &super::Comments,
+    functions: &[(Span, origins::Function)],
 ) -> (HashMap<Span, TUnion>, HashMap<Span, Tri>, Origins, HashMap<(u32, u32), bool>, HashMap<Span, Vec<NamedCallScope>>, HashMap<Span, TUnion>, HashMap<Span, TUnion>, HashMap<Span, TUnion>, HashMap<Span, TUnion>) {
     let mut wanted = TypedExpressions {
         spans: Vec::new(),
@@ -157,7 +159,7 @@ pub(super) fn infer<'arena>(
     }
     let by_ref = if level >= 3 { super::types::param_out::watched(program) } else { Vec::new() };
     wanted.extend(by_ref.iter().map(|(body, _)| *body));
-    analyse_observed(arena, file, program, names, codebase, php_version, pollute_scope_with_loop_initial_assignments, pollute_scope_with_always_iterable_foreach, pollute_scope_with_block, wanted, watched, calls, Some(variables), Some(variable_writes), initializations, Some(property_initializations), by_ref, larastan, trait_class)
+    analyse_observed(arena, file, program, names, codebase, php_version, pollute_scope_with_loop_initial_assignments, pollute_scope_with_always_iterable_foreach, pollute_scope_with_block, wanted, watched, calls, Some(variables), Some(variable_writes), initializations, Some(property_initializations), by_ref, larastan, trait_class, comments, functions)
 }
 
 /// Mago's types of the `wanted` expressions, analysing only the declarations that hold them.
@@ -173,8 +175,10 @@ pub(super) fn analyse<'arena>(
     pollute_scope_with_block: bool,
     wanted: Vec<Span>,
     watched: Vec<Span>,
+    comments: &super::Comments,
+    functions: &[(Span, origins::Function)],
 ) -> (HashMap<Span, TUnion>, HashMap<Span, Tri>, Origins, HashMap<(u32, u32), bool>, HashMap<Span, Vec<NamedCallScope>>, HashMap<Span, TUnion>, HashMap<Span, TUnion>, HashMap<Span, TUnion>, HashMap<Span, TUnion>) {
-    analyse_observed(arena, file, program, names, codebase, php_version, pollute_scope_with_loop_initial_assignments, pollute_scope_with_always_iterable_foreach, pollute_scope_with_block, wanted, watched, Vec::new(), None, None, Vec::new(), None, Vec::new(), None, None)
+    analyse_observed(arena, file, program, names, codebase, php_version, pollute_scope_with_loop_initial_assignments, pollute_scope_with_always_iterable_foreach, pollute_scope_with_block, wanted, watched, Vec::new(), None, None, Vec::new(), None, Vec::new(), None, None, comments, functions)
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -198,6 +202,8 @@ fn analyse_observed<'arena>(
     by_ref: Vec<(Span, Vec<Vec<u8>>)>,
     larastan: Option<&super::Larastan>,
     trait_class: Option<&str>,
+    comments: &super::Comments,
+    functions: &[(Span, origins::Function)],
 ) -> (HashMap<Span, TUnion>, HashMap<Span, Tri>, Origins, HashMap<(u32, u32), bool>, HashMap<Span, Vec<NamedCallScope>>, HashMap<Span, TUnion>, HashMap<Span, TUnion>, HashMap<Span, TUnion>, HashMap<Span, TUnion>) {
     let mut wanted = wanted;
     wanted.extend(calls.iter().flat_map(|call| call.expressions.iter().copied()));
@@ -211,7 +217,7 @@ fn analyse_observed<'arena>(
     if wanted.is_empty() {
         return Default::default();
     }
-    let origins = origins::collect(file, program, names, codebase);
+    let origins = origins::collect(file, comments, functions, program, names, codebase);
     for call in &mut calls {
         call.expressions.extend(origins::dependencies(&origins, &call.expressions));
     }

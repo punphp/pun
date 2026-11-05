@@ -8,7 +8,7 @@ use mago_span::{Position, Span};
 use mago_syntax::cst::{Expression, Statement};
 use pun_phpstan::phpdoc::TagValue;
 
-use super::{Checker, doc_before};
+use super::Checker;
 
 pub const IDENTIFIERS: &[&str] = &["phpDoc.parseError", "phpDoc.phpstanTag"];
 
@@ -88,7 +88,7 @@ pub fn statement(c: &mut Checker, s: &Statement) {
 /// (a closing brace or the end of the file): a statement at the doc's last line.
 pub fn nop(c: &mut Checker, end: Span) {
     let contents = &c.file.contents;
-    let Some(doc) = doc_before(contents, end.start.offset as usize) else {
+    let Some((doc, _)) = c.doc_before(c.file.id, end.start.offset) else {
         return;
     };
     let start = doc.as_ptr() as usize - contents.as_ptr() as usize;
@@ -121,12 +121,12 @@ pub fn node(c: &mut Checker, at: Span) {
         return;
     }
     let file = c.file;
-    let Some(doc) = doc_before(&file.contents, at.start.offset as usize) else {
+    let Some((doc, entry)) = c.doc_before(file.id, at.start.offset) else {
         return;
     };
     let start = doc.as_ptr() as usize - file.contents.as_ptr() as usize;
     // (no tags where PHPStan's parser throws)
-    for tag in super::doc::phpdoc_tags(doc).iter() {
+    for tag in entry.phpdoc.iter() {
         let offset = start
             + doc
                 .split_inclusive(|b| *b == b'\n')

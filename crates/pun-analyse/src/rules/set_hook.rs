@@ -7,7 +7,6 @@ use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use pun_phpstan::types::{Level, NeverKind, Type, decide_type, is_super_type_of, mixed};
 
-use super::doc::{Doc, doc_before};
 use super::{Checker, declared, missing_types, signatures};
 
 /// The hooks `list` of property `name` (with its `$`) declared with the native type `hint`.
@@ -102,9 +101,9 @@ pub fn missing_types<'arena>(
                 return Vec::new();
             }
             // the hook's own `@param`, else the property's `@var`
-            let own = doc_before(&c.file.contents, hook.span().start.offset as usize).and_then(|doc| {
+            let own = c.doc_before(c.file.id, hook.span().start.offset).and_then(|(_, entry)| {
                 let scope = declared::scope_at(c, hook.span(), Some(k));
-                Doc::parse(doc).param_types(&scope).remove(&param).map(|(t, _)| t)
+                entry.doc.param_types(&scope).remove(&param).map(|(t, _)| t)
             });
             let phpdoc = own.or_else(|| {
                 Some(declared::property(c, None, decl, &name[1..], k)).filter(|t| !t.is_implicit_mixed())

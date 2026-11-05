@@ -157,9 +157,9 @@ const PATTERNS: &[(Tok, &str)] = &[
     (Tok::Other, r"(?:(?!\*/)[^\s])++"),
 ];
 
-/// `Lexer::tokenize()`: (value, type, line). Like `preg_match_all` with the `A` modifier, lexing stops at the first
+/// `Lexer::tokenize()`: (type, start, end, line). Like `preg_match_all` with the `A` modifier, lexing stops at the first
 /// byte no alternative matches (a lone `\r`, a vertical tab).
-fn tokenize(input: &[u8]) -> Vec<(Tok, Vec<u8>, usize)> {
+fn tokenize(input: &[u8]) -> Vec<(Tok, usize, usize, usize)> {
     use std::sync::OnceLock;
     static RE: OnceLock<pcre2::bytes::Regex> = OnceLock::new();
     let re = RE.get_or_init(|| {
@@ -167,6 +167,7 @@ fn tokenize(input: &[u8]) -> Vec<(Tok, Vec<u8>, usize)> {
         pcre2::bytes::RegexBuilder::new()
             .caseless(true)
             .dotall(true)
+            .jit_if_available(true)
             .build(&format!(r"\G(?:{})", alternatives.join("|")))
             .expect("phpdoc lexer regex")
     });
@@ -186,13 +187,14 @@ fn tokenize(input: &[u8]) -> Vec<(Tok, Vec<u8>, usize)> {
             .find(|&g| locs.get(g).is_some())
             .expect("one alternative");
         let kind = PATTERNS[group - 1].0;
-        tokens.push((kind, input[start..end].to_vec(), line));
+        tokens.push((kind, start, end, line));
         if kind == Tok::Eol {
             line += 1;
         }
         offset = end;
     }
-    tokens.push((Tok::End, Vec::new(), line));
+    // where the lexing stopped: the end of input, or the first byte no alternative matches
+    tokens.push((Tok::End, offset, offset, line));
     tokens
 }
 
@@ -318,10 +320,9 @@ fn json_string(s: &str) -> String {
 type R<T> = Result<T, ParseError>;
 
 /// `TokenIterator`
-struct Tokens {
-    tokens: Vec<(Tok, Vec<u8>, usize)>,
-    /// the byte offset of each token
-    offsets: Vec<usize>,
+struct Tokens<'a> {
+    input: &'a [u8],
+    tokens: Vec<(Tok, usize, usize, usize)>,
     index: usize,
     saves: Vec<usize>,
     /// `addEndOfLineToSkippedTokens()` is in effect
@@ -329,20 +330,11 @@ struct Tokens {
     newline: Option<&'static str>,
 }
 
-impl Tokens {
-    fn new(input: &[u8]) -> Self {
-        let tokens = tokenize(input);
-        let offsets = tokens
-            .iter()
-            .scan(0, |sum, (_, v, _)| {
-                let at = *sum;
-                *sum += v.len();
-                Some(at)
-            })
-            .collect();
+impl<'a> Tokens<'a> {
+    fn new(input: &'a [u8]) -> Self {
         let mut t = Tokens {
-            tokens,
-            offsets,
+            input,
+            tokens: tokenize(input),
             index: 0,
             saves: Vec::new(),
             skip_eol: false,
@@ -362,15 +354,16 @@ impl Tokens {
     fn kind(&self) -> Tok {
         self.tokens[self.index].0
     }
-    fn bytes(&self) -> &[u8] {
-        &self.tokens[self.index].1
+    fn bytes(&self) -> &'a [u8] {
+        let (_, start, end, _) = self.tokens[self.index];
+        &self.input[start..end]
     }
     /// Identifiers and diagnostic presentation remain textual; literal identity uses `bytes()`.
     fn value(&self) -> std::borrow::Cow<'_, str> {
         String::from_utf8_lossy(self.bytes())
     }
     fn line(&self) -> usize {
-        self.tokens[self.index].2
+        self.tokens[self.index].3
     }
     fn is(&self, kind: Tok) -> bool {
         self.kind() == kind
@@ -387,7 +380,8 @@ impl Tokens {
     /// `getSkippedHorizontalWhiteSpaceIfAny()`
     fn skipped_ws(&self) -> &str {
         if self.preceded_by_ws() {
-            std::str::from_utf8(&self.tokens[self.index - 1].1).expect("horizontal whitespace")
+            let (_, start, end, _) = self.tokens[self.index - 1];
+            std::str::from_utf8(&self.input[start..end]).expect("horizontal whitespace")
         } else {
             ""
         }
@@ -400,7 +394,7 @@ impl Tokens {
     fn error(&self, expected: Tok, expected_value: Option<&str>) -> ParseError {
         ParseError {
             value: self.value().to_string(),
-            offset: self.offsets[self.index],
+            offset: self.offset(),
             expected,
             expected_value: expected_value.map(str::to_string),
             line: self.line(),
@@ -475,7 +469,7 @@ impl Tokens {
     }
     /// The byte offset of the current token.
     fn offset(&self) -> usize {
-        self.offsets[self.index]
+        self.tokens[self.index].1
     }
 }
 
@@ -702,16 +696,16 @@ fn is_html(t: &mut Tokens) -> bool {
     if !t.is(Tok::Ident) {
         return false;
     }
-    let tag = t.value().to_string();
+    let tag = t.bytes();
     t.next();
     if !t.try_consume(Tok::CloseAngle) {
         return false;
     }
-    let end_tag = format!("</{tag}>");
-    let closing = format!("/{tag}>");
+    let end_tag = [b"</", tag, b">"].concat();
+    let closing = &end_tag[1..];
     while !t.is(Tok::End) {
-        if (t.try_consume(Tok::OpenAngle) && t.value().contains(&closing))
-            || t.value().ends_with(&end_tag)
+        if (t.try_consume(Tok::OpenAngle) && t.bytes().windows(closing.len()).any(|w| w == closing))
+            || t.bytes().ends_with(&end_tag)
         {
             return true;
         }

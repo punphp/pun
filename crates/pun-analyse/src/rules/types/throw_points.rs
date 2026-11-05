@@ -18,7 +18,6 @@ use pun_phpstan::resolve::resolve_str;
 use pun_phpstan::types::{NeverKind, Type, accepts, is_super_type_of, remove_object, union};
 use serde_json::Value;
 
-use super::super::doc::doc_before;
 use super::super::members::{self, Method as Member};
 use super::super::{Checker, declared, invalid_throws, var_tags};
 use super::flow::unparen;
@@ -615,9 +614,9 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
                 self.implicit(at);
             }
             Some(h) => {
-                let ty = declared::doc_at(self.c, h.span).and_then(|(raw, _)| {
+                let ty = declared::doc_at(self.c, h.span).and_then(|(_, entry, _)| {
                     let scope = declared::scope_at(self.c, h.span, Some(declaring));
-                    self.with_classes(|| invalid_throws::throws_type(&raw, &scope))
+                    self.with_classes(|| invalid_throws::throws_type(&entry.phpdoc, &scope))
                 });
                 match ty {
                     Some(t) if has_conditional(&t) => self.points.push(Point::unknown(at)),
@@ -733,7 +732,7 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
     fn immediate_params(&self, callee: &Callee) -> Vec<(String, bool)> {
         match callee {
             Callee::User { f, declaring, name } => {
-                let raw = declared::doc_at(self.c, f.span).map(|(raw, _)| raw).unwrap_or_default();
+                let raw = declared::doc_at(self.c, f.span).map(|(raw, _, _)| raw).unwrap_or_default();
                 let tagged = |tags: &[&str], p: &str| {
                     String::from_utf8_lossy(&raw).lines().any(|l| {
                         let mut w = l.trim_start().trim_start_matches('*').split_whitespace();
@@ -792,9 +791,9 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
         ) {
             return None;
         }
-        let raw = doc_before(&self.c.file.contents, s.span().start.offset as usize)?;
+        let (_, entry) = self.c.doc_before(self.c.file.id, s.span().start.offset)?;
         let scope = var_tags::scope(self.c, s.span());
-        let ty = self.with_classes(|| invalid_throws::throws_type(raw, &scope))?;
+        let ty = self.with_classes(|| invalid_throws::throws_type(&entry.phpdoc, &scope))?;
         if ty.is_void().yes() {
             return Some(Vec::new());
         }

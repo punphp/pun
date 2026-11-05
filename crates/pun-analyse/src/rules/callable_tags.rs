@@ -7,7 +7,6 @@ use mago_syntax::cst::FunctionLikeParameterList;
 use pun_phpstan::phpdoc::TagValue;
 use pun_phpstan::types::{Level, mixed};
 
-use super::doc::doc_before;
 use super::{Checker, declared};
 
 pub const IDENTIFIERS: &[&str] = &[
@@ -21,10 +20,10 @@ pub fn function_like(c: &mut Checker, at: Span, params: &FunctionLikeParameterLi
     if c.level < 2 {
         return;
     }
-    let Some(doc) = doc_before(&c.file.contents, at.start.offset as usize) else {
+    let Some((_, entry)) = c.doc_before(c.file.id, at.start.offset) else {
         return;
     };
-    let tags = super::doc::phpdoc_tags(doc);
+    let tags = &entry.phpdoc;
     // `resolveParamImmediatelyInvokedCallable()`: by name, a later tag keeping an earlier one's place
     let mut invoked: Vec<(String, bool)> = Vec::new();
     for (names, immediately) in [

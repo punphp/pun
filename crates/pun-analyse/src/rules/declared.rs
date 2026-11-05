@@ -13,7 +13,7 @@ use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::metadata::flags::MetadataFlags;
 use mago_codex::metadata::function_like::FunctionLikeMetadata;
 use mago_codex::symbol::SymbolKind;
-use mago_database::file::{File, FileId};
+use mago_database::file::File;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use mago_syntax::parser::parse_file;
@@ -24,8 +24,8 @@ use pun_phpstan::types::{
 };
 
 use super::Checker;
-use super::doc::doc_before;
-use super::doc::{Doc, FileScopes, NameScope, scopes_of};
+use super::doc::{Doc, FileScopes, NameScope};
+use super::facts::DocEntry;
 use crate::text;
 
 /// A class-like's name as declared.
@@ -33,27 +33,20 @@ pub fn original_name(k: &ClassLikeMetadata) -> String {
     text(k.original_name.as_bytes())
 }
 
-/// A file's contents, PHPStan's API stub's too (no file on disk).
-fn file_contents<'a>(c: &Checker<'a, '_>, id: FileId) -> Option<super::Contents<'a>> {
-    c.file_contents(id).or_else(|| {
-        (id == FileId::new(b"phpstan-api.php"))
-            .then_some(super::Contents::Borrowed(crate::codebase::PHPSTAN_API))
-    })
-}
-
-/// The doc comment before `offset` in the file `span` is in, with that file's contents.
-pub fn doc_at(c: &Checker, span: Span) -> Option<(Vec<u8>, Arc<FileScopes>)> {
+/// The doc comment before the declaration at `span` (a stub's, for a declaration a stub patches), with its file's
+/// namespace scopes.
+pub fn doc_at<'a>(c: &Checker<'a, '_>, span: Span) -> Option<(&'a [u8], &'a DocEntry, &'a FileScopes)> {
     let span = c.patched_docs.get(&span).copied().unwrap_or(span);
-    let contents = file_contents(c, span.file_id)?;
-    let doc = doc_before(&contents, span.start.offset as usize)?.to_vec();
-    Some((doc, scopes_of(span.file_id, &contents)))
+    let (raw, entry) = c.doc_before(span.file_id, span.start.offset)?;
+    Some((raw, entry, &c.file_facts(span.file_id)?.scopes))
 }
 
 /// The `NameScope` of a PHPDoc at `span` in class-like `class` (`None` outside one), with `templates` in scope.
 pub fn scope_at(c: &Checker, span: Span, class: Option<&ClassLikeMetadata>) -> NameScope {
     let span = c.patched_docs.get(&span).copied().unwrap_or(span);
-    let names = file_contents(c, span.file_id)
-        .map(|contents| scopes_of(span.file_id, &contents).at(span.start.offset))
+    let names = c
+        .file_facts(span.file_id)
+        .map(|facts| facts.scopes.at(span.start.offset).clone())
         .unwrap_or_default();
     let mut scope = NameScope {
         names,
@@ -144,20 +137,20 @@ fn templates(doc: &Doc, scope: &NameScope, describe: &str) -> Vec<TemplateType> 
 
 /// A class-like's own `@template` types.
 pub(super) fn class_templates(c: &Checker, k: &ClassLikeMetadata) -> Vec<TemplateType> {
-    let Some((doc, scopes)) = doc_at(c, k.span) else {
+    let Some((_, entry, scopes)) = doc_at(c, k.span) else {
         return Vec::new();
     };
-    let doc = Doc::parse(&doc);
+    let doc = &entry.doc;
     if doc.templates.is_empty() {
         return Vec::new();
     }
     let scope = NameScope {
-        names: scopes.at(k.span.start.offset),
+        names: scopes.at(k.span.start.offset).clone(),
         class: Some(original_name(k)),
         parent: parent_name(c.codebase, k),
         templates: HashMap::new(),
     };
-    templates(&doc, &scope, &format!("class {}", original_name(k)))
+    templates(doc, &scope, &format!("class {}", original_name(k)))
 }
 
 /// FileTypeMapper's template types of trait `t` used by `context`: the `@use T<...>` arguments of the `use`
@@ -174,23 +167,24 @@ fn trait_templates(
     let trait_name = original_name(t);
     let mut args: Option<Vec<Type>> = None;
     // (the class's file is an analysed one)
-    let contents = file_contents(c, context.span.file_id).unwrap_or_default();
-    let scopes = scopes_of(context.span.file_id, &contents);
+    let Some(facts) = c.file_facts(context.span.file_id) else {
+        return Vec::new();
+    };
     let scope = scope_at(c, context.span, Some(context));
-    for (offset, names) in scopes.trait_uses(context.span.start.offset, context.span.end.offset) {
-        let names_here = scopes.at(*offset);
+    for (offset, names) in facts.scopes.trait_uses(context.span.start.offset, context.span.end.offset) {
+        let names_here = facts.scopes.at(*offset);
         let uses_it = names.iter().any(|n| {
             let (resolved, _) =
                 names_here.resolve(mago_names::kind::NameKind::Default, n.as_bytes());
             resolved.eq_ignore_ascii_case(trait_name.as_bytes())
         });
-        let Some(doc) = uses_it
-            .then(|| doc_before(&contents, *offset as usize))
+        let Some((_, entry)) = uses_it
+            .then(|| c.doc_before(context.span.file_id, *offset))
             .flatten()
         else {
             continue;
         };
-        for node in &Doc::parse(doc).uses {
+        for node in &entry.doc.uses {
             if let Type::Object(name, found, _) = resolve_in(node, &scope)
                 && !found.is_empty()
                 && name.eq_ignore_ascii_case(&trait_name)
@@ -294,7 +288,7 @@ fn native_declaration(
 ) -> Type {
     // Even a single `self` atom has already become the storage trait's name in the codex. Resolve the written
     // contextual keyword instead, against the class consuming the method.
-    let contextual = class.is_some() && file_contents(c, t.span.file_id).is_some_and(|contents| {
+    let contextual = class.is_some() && c.file_contents(t.span.file_id).is_some_and(|contents| {
         contents.get(t.span.start.offset as usize..t.span.end.offset as usize).is_some_and(|hint| {
             [b"self".as_slice(), b"parent", b"static"].iter().any(|name| hint.eq_ignore_ascii_case(name))
         })
@@ -303,7 +297,7 @@ fn native_declaration(
         return from_tunion_in(c, &t.type_union, class);
     }
     let written = (|| {
-        let contents = file_contents(c, t.span.file_id)?;
+        let contents = c.file_contents(t.span.file_id)?;
         let hint = contents.get(t.span.start.offset as usize..t.span.end.offset as usize)?;
         let arena = LocalArena::new();
         let file = File::ephemeral(
@@ -317,7 +311,7 @@ fn native_declaration(
             Statement::Function(f) => f.parameter_list.parameters.first()?.hint.as_ref(),
             _ => None,
         })?;
-        let scope = scopes_of(t.span.file_id, &contents).at(t.span.start.offset);
+        let scope = c.file_facts(t.span.file_id)?.scopes.at(t.span.start.offset);
         Some(native_with(c, hint, class, &|id| {
             text(
                 &scope
@@ -423,10 +417,10 @@ fn reflected_doc(c: &Checker, f: &FunctionLikeMetadata, declaring: Option<&Class
 /// The declaration's PHPDoc name/template scope, also when an inline value annotation is read from a closure.
 pub(super) fn value_scope(c: &Checker, f: &FunctionLikeMetadata, class: Option<&ClassLikeMetadata>) -> NameScope {
     let mut scope = scope_at(c, f.span, class);
-    if let Some((raw, _)) = doc_at(c, f.span) {
+    if let Some((_, entry, _)) = doc_at(c, f.span) {
         let name = text(f.original_name.as_bytes());
         let describe = class.map_or_else(|| format!("function {name}()"), |k| format!("method {}::{name}()", original_name(k)));
-        for t in templates(&Doc::parse(&raw), &scope, &describe) {
+        for t in templates(&entry.doc, &scope, &describe) {
             scope.templates.insert(t.name.clone(), Type::Template(Box::new(t)));
         }
     }
@@ -436,18 +430,18 @@ pub(super) fn value_scope(c: &Checker, f: &FunctionLikeMetadata, class: Option<&
 fn codex_doc(c: &Checker, f: &FunctionLikeMetadata, declaring: Option<&ClassLikeMetadata>) -> Resolved {
     match declaring {
         Some(k) => method_doc(c, k, &f.name.as_bytes().to_ascii_lowercase(), 0),
-        None => doc_at(c, f.span).map(|(raw, _)| {
-            let doc = Doc::parse(&raw);
+        None => doc_at(c, f.span).map(|(_, entry, _)| {
+            let doc = &entry.doc;
             let mut scope = scope_at(c, f.span, None);
             let name = text(f.original_name.as_bytes());
-            for t in templates(&doc, &scope, &format!("function {name}()")) {
+            for t in templates(doc, &scope, &format!("function {name}()")) {
                 scope.templates.insert(t.name.clone(), Type::Template(Box::new(t)));
             }
             Resolved {
                 params: doc.param_types(&scope).into_iter().map(|(k, (t, _))| (k, t)).collect(),
                 ret: doc.return_type(&scope),
                 closure_this: Doc::named_types(&doc.closure_this, &scope),
-                throws: super::invalid_throws::throws_type(&raw, &scope),
+                throws: super::invalid_throws::throws_type(&entry.phpdoc, &scope),
                 ..Resolved::default()
             }
         }),
@@ -575,7 +569,7 @@ pub(super) fn method_purity(c: &Checker, class: &ClassLikeMetadata, name: &[u8])
     let doc = method_doc(c, class, &lower, 0).unwrap_or_default();
     let mut pure = doc.pure;
     if pure.is_none() {
-        let tags = doc_at(c, class.span).map(|(raw, _)| super::declarations::doc_tags(&raw)).unwrap_or_default();
+        let tags = doc_at(c, class.span).map_or(&[][..], |(_, entry, _)| &entry.names);
         let void = |t: Option<&Type>| t.is_some_and(|t| t.is_void().yes());
         let native = c
             .codebase
@@ -608,15 +602,15 @@ fn resolved_own(
     class: &ClassLikeMetadata,
     context: &ClassLikeMetadata,
 ) -> Option<Resolved> {
-    let (raw, _) = doc_at(c, m.span)?;
-    let doc = Doc::parse(&raw);
+    let (raw, entry, _) = doc_at(c, m.span)?;
+    let doc = &entry.doc;
     let mut scope = scope_at(c, m.span, Some(context));
     if class.kind == SymbolKind::Trait && !std::ptr::eq(class, context) {
         scope.templates.extend(trait_templates(c, class, context));
     }
     let method = text(m.original_name.as_bytes());
     for t in templates(
-        &doc,
+        doc,
         &scope,
         &format!("method {}::{method}()", original_name(class)),
     ) {
@@ -631,26 +625,24 @@ fn resolved_own(
             .map(|(k, (t, _))| (k, t))
             .collect(),
         ret: doc.return_type(&scope),
-        accepts_named: Some(!super::declarations::has_tag(
-            &super::declarations::doc_tags(&raw), &["@no-named-arguments"],
-        )),
+        accepts_named: Some(!super::declarations::has_tag(&entry.names, &["@no-named-arguments"])),
         outs: Doc::named_types(&doc.outs, &scope),
         closure_this: Doc::named_types(&doc.closure_this, &scope),
         self_out: doc.self_out.as_ref().map(|n| resolve_in(n, &scope)),
-        asserts: super::assert_tags::parameters(&raw),
+        asserts: super::assert_tags::parameters(&entry.phpdoc),
         pure: {
-            let tags = super::declarations::doc_tags(&raw);
-            if super::declarations::has_tag(&tags, &["@pure", "@phan-pure", "@phan-side-effect-free", "@psalm-pure", "@phpstan-pure"]) {
+            let tags = &entry.names;
+            if super::declarations::has_tag(tags, &["@pure", "@phan-pure", "@phan-side-effect-free", "@psalm-pure", "@phpstan-pure"]) {
                 Some(true)
-            } else if super::declarations::has_tag(&tags, &["@impure", "@phpstan-impure"]) {
+            } else if super::declarations::has_tag(tags, &["@impure", "@phpstan-impure"]) {
                 Some(false)
             } else {
                 None
             }
         },
-        pure_unless_callable: tagged_params(&raw, &["@pure-unless-callable-is-impure", "@phpstan-pure-unless-callable-is-impure"]),
-        pure_unless_passed: tagged_params(&raw, &["@pure-unless-parameter-passed", "@phpstan-pure-unless-parameter-passed"]),
-        throws: super::invalid_throws::throws_type(&raw, &scope),
+        pure_unless_callable: tagged_params(raw, &["@pure-unless-callable-is-impure", "@phpstan-pure-unless-callable-is-impure"]),
+        pure_unless_passed: tagged_params(raw, &["@pure-unless-parameter-passed", "@phpstan-pure-unless-parameter-passed"]),
+        throws: super::invalid_throws::throws_type(&entry.phpdoc, &scope),
     })
 }
 
@@ -1030,7 +1022,7 @@ fn enclosing_templates(c: &Checker, at: Span, scope: &mut NameScope) {
         return;
     };
     let (span, function) = (c.var_tag_functions[i], &c.functions[i]);
-    let Some(doc) = doc_before(&c.file.contents, span.start.offset as usize) else {
+    let Some((_, entry)) = c.doc_before(c.file.id, span.start.offset) else {
         return;
     };
     let described = match function.kind {
@@ -1042,7 +1034,7 @@ fn enclosing_templates(c: &Checker, at: Span, scope: &mut NameScope) {
         }
         super::FunctionScopeKind::Function => format!("function {}()", function.name),
     };
-    for t in templates(&Doc::parse(doc), scope, &described) {
+    for t in templates(&entry.doc, scope, &described) {
         scope.templates.insert(t.name.clone(), Type::Template(Box::new(t)));
     }
 }
@@ -1139,9 +1131,9 @@ pub fn function_phpdoc(c: &Checker, f: &Function) -> PhpDocTypes {
 }
 
 fn method_resolved(c: &Checker, m: &Method, k: &ClassLikeMetadata, context: &ClassLikeMetadata) -> Resolved {
-    let own = doc_before(&c.file.contents, m.span().start.offset as usize).map(|raw| {
-        let doc = Doc::parse(raw);
-        let scope = method_scope(c, m, &doc, k, context);
+    let own = c.doc_before(c.file.id, m.span().start.offset).map(|(_, entry)| {
+        let doc = &entry.doc;
+        let scope = method_scope(c, m, doc, k, context);
         Resolved {
             params: doc
                 .param_types(&scope)
@@ -1152,7 +1144,7 @@ fn method_resolved(c: &Checker, m: &Method, k: &ClassLikeMetadata, context: &Cla
             outs: Doc::named_types(&doc.outs, &scope),
             closure_this: Doc::named_types(&doc.closure_this, &scope),
             self_out: doc.self_out.as_ref().map(|n| resolve_in(n, &scope)),
-            asserts: super::assert_tags::parameters(raw),
+            asserts: super::assert_tags::parameters(&entry.phpdoc),
             ..Resolved::default()
         }
     });
@@ -1179,10 +1171,10 @@ pub fn function(c: &Checker, f: &Function) -> Signature {
 }
 
 fn function_resolved(c: &Checker, f: &Function) -> Resolved {
-    doc_before(&c.file.contents, f.span().start.offset as usize)
-        .map(|raw| {
-            let doc = Doc::parse(raw);
-            let scope = function_scope(c, f, &doc);
+    c.doc_before(c.file.id, f.span().start.offset)
+        .map(|(_, entry)| {
+            let doc = &entry.doc;
+            let scope = function_scope(c, f, doc);
             Resolved {
                 params: doc
                     .param_types(&scope)
@@ -1193,7 +1185,7 @@ fn function_resolved(c: &Checker, f: &Function) -> Resolved {
                 outs: Doc::named_types(&doc.outs, &scope),
                 closure_this: Doc::named_types(&doc.closure_this, &scope),
                 self_out: doc.self_out.as_ref().map(|n| resolve_in(n, &scope)),
-                asserts: super::assert_tags::parameters(raw),
+                asserts: super::assert_tags::parameters(&entry.phpdoc),
                 ..Resolved::default()
             }
         })
@@ -1280,9 +1272,9 @@ fn promoted_var(
     if !p.is_promoted_property() {
         return None;
     }
-    let doc = doc_before(&c.file.contents, p.span().start.offset as usize)?;
     // the doc comment must be the parameter's own (after the previous parameter)
-    let doc = Doc::parse(doc);
+    let (_, entry) = c.doc_before(c.file.id, p.span().start.offset)?;
+    let doc = &entry.doc;
     let scope = scope_at(c, p.span(), class);
     let vars = doc.var_types(&scope);
     let name = text(&p.variable.name[1..]);
@@ -1294,9 +1286,8 @@ fn promoted_var(
 
 /// [`promoted_var()`] of a promoted parameter the codex holds, declared at `span` in any file.
 fn codex_promoted_var(c: &Checker, span: Span, name: &str, class: Option<&ClassLikeMetadata>) -> Option<Type> {
-    let (raw, _) = doc_at(c, span)?;
-    let doc = Doc::parse(&raw);
-    let vars = doc.var_types(&scope_at(c, span, class));
+    let (_, entry, _) = doc_at(c, span)?;
+    let vars = entry.doc.var_types(&scope_at(c, span, class));
     match vars.as_slice() {
         [(n, t)] if n.is_empty() => Some(t.clone()),
         _ => vars.into_iter().find(|(n, _)| n == name).map(|(_, t)| t),
@@ -1348,8 +1339,8 @@ pub fn property(
     context: &ClassLikeMetadata,
 ) -> Type {
     let native = hint.map(|h| native(c, h, Some(context)));
-    let mut phpdoc = doc_before(&c.file.contents, at.start.offset as usize).and_then(|doc| {
-        let doc = Doc::parse(doc);
+    let mut phpdoc = c.doc_before(c.file.id, at.start.offset).and_then(|(_, entry)| {
+        let doc = &entry.doc;
         // in a trait, its templates as the class's `@use` tag gives them (else their bounds)
         let mut scope = scope_at(c, at, Some(context));
         if let Some(t) = c
@@ -1446,7 +1437,7 @@ fn inherited_property_doc(
 pub fn property_span(c: &Checker, p: &mago_codex::metadata::property::PropertyMetadata) -> Option<Span> {
     p.span.or_else(|| {
         let mut span = p.name_span?;
-        let contents = file_contents(c, span.file_id)?;
+        let contents = c.file_contents(span.file_id)?;
         let before = contents[..span.start.offset as usize]
             .iter()
             .rev()
@@ -1465,10 +1456,9 @@ fn own_property_doc(
     name: &[u8],
 ) -> Option<Type> {
     property_span(c, p).and_then(|span| {
-        let (doc, _) = doc_at(c, span)?;
-        let doc = Doc::parse(&doc);
+        let (_, entry, _) = doc_at(c, span)?;
         let scope = scope_at(c, span, Some(declaring));
-        doc.var_types(&scope).into_iter().find(|(n, _)| n.is_empty() || n.as_bytes() == name).map(|(_, t)| t)
+        entry.doc.var_types(&scope).into_iter().find(|(n, _)| n.is_empty() || n.as_bytes() == name).map(|(_, t)| t)
     })
 }
 
@@ -1519,9 +1509,10 @@ pub fn with_method_templates(
     scope
 }
 
-/// The doc comment of the class constant declaration whose item starts at `offset`: the one before its modifiers.
-fn constant_doc(contents: &[u8], offset: usize) -> Option<&[u8]> {
-    let before = &contents[..offset.min(contents.len())];
+/// The doc comment of the class constant declaration whose item starts at `at`: the one before its modifiers.
+fn constant_doc<'a>(c: &Checker<'a, '_>, at: Span) -> Option<&'a DocEntry> {
+    let contents = c.file_contents(at.file_id)?;
+    let before = &contents[..(at.start.offset as usize).min(contents.len())];
     let stop = before
         .iter()
         .rposition(|b| matches!(b, b';' | b'{' | b'}'))?;
@@ -1529,17 +1520,16 @@ fn constant_doc(contents: &[u8], offset: usize) -> Option<&[u8]> {
     if end < stop {
         return None;
     }
-    doc_before(contents, end + 2)
+    c.doc_before(at.file_id, end as u32 + 2).map(|(_, entry)| entry)
 }
 
 /// The single unnamed `@var` of a constant's PHPDoc (`resolveConstantVarPhpDocType()`).
 fn constant_var(
     c: &Checker,
-    doc: &[u8],
+    doc: &Doc,
     at: Span,
     class: &ClassLikeMetadata,
 ) -> Option<Option<Type>> {
-    let doc = Doc::parse(doc);
     let scope = scope_at(c, at, Some(class));
     let vars = doc.var_types(&scope);
     Some(match vars.as_slice() {
@@ -1551,11 +1541,10 @@ fn constant_var(
 /// A class constant's `getPhpDocType()`: its own `@var`, else the parent class's or an interface's. `at` is the
 /// declaration's span or a codex item's span, in any file.
 pub fn constant(c: &Checker, at: Span, name: &[u8], context: &ClassLikeMetadata) -> Option<Type> {
-    let contents = file_contents(c, at.file_id)?;
-    let starts = super::overriding_property::declaration_starts(at.file_id, &contents);
-    let start = starts.get(&at.start.offset).copied().unwrap_or(at.start.offset);
-    match doc_before(&contents, start as usize) {
-        Some(doc) => constant_var(c, doc, at, context)?,
+    let facts = c.file_facts(at.file_id)?;
+    let start = facts.declarations.starts.get(&at.start.offset).copied().unwrap_or(at.start.offset);
+    match c.doc_before(at.file_id, start) {
+        Some((_, entry)) => constant_var(c, &entry.doc, at, context)?,
         None => inherited_constant_doc(c, context, name, 0)?,
     }
 }
@@ -1592,10 +1581,8 @@ fn inherited_constant_doc(
         if constant.visibility == mago_codex::visibility::Visibility::Private {
             continue;
         }
-        let own = file_contents(c, constant.span.file_id).and_then(|contents| {
-            let doc = constant_doc(&contents, constant.span.start.offset as usize)?.to_vec();
-            constant_var(c, &doc, constant.span, declaring)
-        });
+        let own = constant_doc(c, constant.span)
+            .and_then(|entry| constant_var(c, &entry.doc, constant.span, declaring));
         match own {
             Some(found) => return Some(found),
             None => match inherited_constant_doc(c, declaring, name, depth + 1) {
@@ -1693,7 +1680,7 @@ impl<'c, 'a, 'arena> Classes<'c, 'a, 'arena> {
         let own = class_templates(c, k);
         let generics = self.generics(k, &own);
         // (`class_templates()` reads the templates of this PHPDoc, in its order)
-        let variances = doc_at(c, k.span).map(|(doc, _)| Doc::parse(&doc).template_variances.clone()).unwrap_or_default();
+        let variances = doc_at(c, k.span).map(|(_, entry, _)| entry.doc.template_variances.clone()).unwrap_or_default();
         let templates = own
             .into_iter()
             .zip(variances)
@@ -1798,10 +1785,10 @@ impl<'c, 'a, 'arena> Classes<'c, 'a, 'arena> {
                 .map_or_else(|| text(w.as_bytes()), original_name)
         };
         let mut direct: HashMap<String, Vec<Type>> = HashMap::new();
-        if let Some((doc, scopes)) = doc_at(c, k.span) {
-            let doc = Doc::parse(&doc);
+        if let Some((_, entry, scopes)) = doc_at(c, k.span) {
+            let doc = &entry.doc;
             let mut scope = NameScope {
-                names: scopes.at(k.span.start.offset),
+                names: scopes.at(k.span.start.offset).clone(),
                 class: Some(original_name(k)),
                 parent: parent_name(c.codebase, k),
                 templates: HashMap::new(),

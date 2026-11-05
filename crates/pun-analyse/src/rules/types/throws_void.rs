@@ -11,7 +11,6 @@ use mago_syntax::cst::*;
 use mago_syntax::walker::MutWalker;
 use pun_phpstan::types::{Level, Type, is_super_type_of};
 
-use super::super::doc::{doc_before, tags};
 use super::super::members::{self, Method as Member};
 use super::super::{Checker, declared};
 use super::flow::unparen;
@@ -21,9 +20,10 @@ pub const IDENTIFIERS: &[&str] = &["throws.void", "catch.alreadyCaught"];
 
 /// `getThrowType()->isVoid()->yes()` of the function-like at `at`.
 fn throws_void(c: &Checker, at: Span) -> bool {
-    let Some(doc) = doc_before(&c.file.contents, at.start.offset as usize) else { return false };
-    let throws: Vec<Vec<u8>> = tags(doc)
-        .into_iter()
+    let Some((_, entry)) = c.doc_before(c.file.id, at.start.offset) else { return false };
+    let throws: Vec<Vec<u8>> = entry
+        .tags
+        .iter()
         .filter(|(t, _)| t == "@throws" || t == "@phpstan-throws")
         .map(|(_, v)| v.split(u8::is_ascii_whitespace).find(|s| !s.is_empty()).unwrap_or_default().to_ascii_lowercase())
         .collect();

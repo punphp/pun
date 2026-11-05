@@ -16,7 +16,6 @@ use pun_phpstan::types::{Tri, Type, is_super_type_of};
 
 use super::Checker;
 use super::class_names::{self, Pair};
-use super::declarations::doc_before;
 use super::names::FunctionKind;
 use super::reflection::{Known, known};
 
@@ -304,7 +303,7 @@ fn leading_type(text: &[u8]) -> Option<(Node, &[u8])> {
 
 fn read_doc(c: &Checker, at: Span) -> Doc {
     let mut doc = Doc::default();
-    let Some(comment) = doc_before(&c.file.contents, at.start.offset as usize) else {
+    let Some(comment) = c.php_doc_comment(c.file.id, at.start.offset) else {
         return doc;
     };
     let tags = tag_values(comment);
@@ -986,10 +985,10 @@ pub fn hook_phpdoc_classes(c: &mut Checker, name: &[u8], list: &PropertyHookList
                 .map_or(("value".to_string(), hook.span()), |p| {
                     (String::from_utf8_lossy(&p.variable.name[1..]).into_owned(), p.span())
                 });
-            let own = doc_before(&c.file.contents, hook.span().start.offset as usize).and_then(|doc| {
+            let own = c.php_doc(c.file.id, hook.span().start.offset).and_then(|(_, entry)| {
                 let scope = super::declared::scope_at(c, hook.span(), Some(context));
                 super::declared::with_classes(c, || {
-                    super::doc::Doc::parse(doc).param_types(&scope).remove(&param).map(|(t, _)| t)
+                    entry.doc.param_types(&scope).remove(&param).map(|(t, _)| t)
                 })
             });
             types.params.insert(param.clone(), vec![own.unwrap_or_else(|| var.clone())]);

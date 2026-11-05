@@ -9,7 +9,7 @@ use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 
 use super::class_names::{self, Pair};
-use super::declarations::{doc_before, doc_tags, has_tag};
+use super::declarations::has_tag;
 use super::members;
 use super::reflection::{Known, known};
 use super::{Checker, DISCOVERING_SYMBOLS_TIP};
@@ -21,15 +21,14 @@ pub fn implements_serializable(k: &ClassLikeMetadata) -> bool {
         .any(|i| i.as_bytes().eq_ignore_ascii_case(b"serializable"))
 }
 
-impl Checker<'_, '_> {
+impl<'a> Checker<'a, '_> {
     /// The PHPDoc right before a class-like's declaration (`getResolvedPhpDoc()` of its own comment).
-    pub(super) fn class_doc(&self, k: &ClassLikeMetadata) -> Option<Vec<u8>> {
-        let contents = self.file_contents(k.span.file_id)?;
-        doc_before(&contents, k.span.start.offset as usize).map(<[u8]>::to_vec)
+    pub(super) fn class_doc(&self, k: &ClassLikeMetadata) -> Option<(&'a [u8], std::borrow::Cow<'a, super::facts::DocEntry>)> {
+        self.php_doc(k.span.file_id, k.span.start.offset)
     }
 
     pub(super) fn class_tags(&self, k: &ClassLikeMetadata) -> Vec<String> {
-        self.class_doc(k).map(|d| doc_tags(&d)).unwrap_or_default()
+        self.class_doc(k).map(|(_, entry)| entry.names.clone()).unwrap_or_default()
     }
 
     /// `isFinalByKeyword()` of a declared class: Mago's FINAL flag also holds an `@final` tag (even one between the
@@ -431,7 +430,7 @@ pub fn sealed_trait<'arena>(c: &mut Checker<'_, 'arena>, t: &Trait<'arena>) {
     else {
         return;
     };
-    if sealed_tag(&doc) {
+    if sealed_tag(doc.0) {
         c.report(
             t,
             "sealed.onTrait",
@@ -561,9 +560,8 @@ fn allowed_sub_types(c: &Checker, k: &ClassLikeMetadata) -> Option<Vec<pun_phpst
         // EnumAllowedSubTypesClassReflectionExtension: only the enum's cases
         return Some(Vec::new());
     }
-    let contents = c.file_contents(k.span.file_id)?;
-    let doc = doc_before(&contents, k.span.start.offset as usize)?;
-    let tags = super::doc::tags(doc);
+    let (_, entry) = c.php_doc(k.span.file_id, k.span.start.offset)?;
+    let tags = &entry.tags;
     // getSealedTagValues() skips a tag whose type does not parse
     let last = ["@psalm-inheritors", "@phpstan-sealed"]
         .iter()

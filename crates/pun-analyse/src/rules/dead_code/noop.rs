@@ -15,7 +15,7 @@ use mago_syntax::walker::MutWalker;
 
 use super::super::Checker;
 use super::super::declaration_effects::TESTING_FUNCTIONS;
-use super::super::declarations::{doc_before, doc_tags, has_tag};
+use super::super::declarations::{doc_tags, has_tag};
 use super::super::members::{self, Method};
 use super::super::types::flow::unparen;
 use pun_phpstan::symbols;
@@ -135,8 +135,8 @@ fn user_effects(c: &Checker, f: &FunctionLikeMetadata) -> Effects {
             matches!(r.type_union.types.as_ref(), [TAtomic::Object(TObject::Named(n))] if n.is_this)
         });
     let tags = c
-        .file_contents(f.span.file_id)
-        .and_then(|contents| doc_before(&contents, f.span.start.offset as usize).map(doc_tags))
+        .php_doc_comment(f.span.file_id, f.span.start.offset)
+        .map(doc_tags)
         .unwrap_or_default();
     if has_tag(&tags, PURE_TAGS) || f.flags.is_pure() {
         Effects::No

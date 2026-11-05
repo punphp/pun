@@ -539,7 +539,7 @@ impl Producer<'_, '_, '_> {
             };
             self.c.file_contents(f.span.file_id)?;
             let raw = declared::doc_at(self.c, f.span)
-                .map(|(raw, _)| raw)
+                .map(|(raw, _, _)| raw)
                 .unwrap_or_default();
             let (pure, unless_callable, unless_passed) =
                 declared::method_purity(self.c, declaring, b"__construct");
@@ -724,7 +724,7 @@ impl Producer<'_, '_, '_> {
         // Source availability, not an absent PURE bit, establishes an unannotated user declaration.
         self.c.file_contents(f.span.file_id)?;
         let raw = declared::doc_at(self.c, f.span)
-            .map(|(raw, _)| raw)
+            .map(|(raw, _, _)| raw)
             .unwrap_or_default();
         // Parameterized calls additionally need reference writes and immediately-invoked callable policies,
         // including a callable passed through a local variable rather than a closure literal.

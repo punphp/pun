@@ -135,8 +135,8 @@ pub(super) fn function(c: &mut Checker, f: &Function) {
     if c.level < 2 {
         return;
     }
-    let raw = declarations::doc_before(&c.file.contents, f.span().start.offset as usize)
-        .unwrap_or_default();
+    let doc = c.php_doc(c.file.id, f.span().start.offset);
+    let (raw, phpdoc) = doc.as_ref().map_or((&b""[..], &[][..]), |(raw, entry)| (*raw, &entry.phpdoc[..]));
     let pure = effects::purity(raw);
     let unless_callable = declared::tagged_params(
         raw,
@@ -153,7 +153,7 @@ pub(super) fn function(c: &mut Checker, f: &Function) {
         ],
     );
     if pure.is_none() && unless_callable.is_empty() && unless_passed.is_empty() {
-        void_pure_function(c, f, raw);
+        void_pure_function(c, f, phpdoc);
         return;
     }
     let signature = declared::with_classes(c, || declared::function(c, f));
@@ -173,7 +173,7 @@ pub(super) fn function(c: &mut Checker, f: &Function) {
         unless_passed,
         void: signature.ret.is_void().yes(),
         throws_void: !throws_non_void(raw),
-        asserts: !assert_tags::parameters(raw).is_empty(),
+        asserts: !assert_tags::parameters(phpdoc).is_empty(),
         constructor: false,
         method: None,
         raw,
@@ -203,15 +203,14 @@ pub(super) fn method(c: &mut Checker, m: &Method) {
     if declaring.kind == SymbolKind::Trait || c.trait_context.is_some() {
         return;
     }
-    let raw = declarations::doc_before(&c.file.contents, m.span().start.offset as usize)
-        .unwrap_or_default();
+    let raw = c.php_doc_comment(c.file.id, m.span().start.offset).unwrap_or_default();
     let (unless_callable, unless_passed, throws) =
         declared::method_conditional_purity(c, context, m.name.value);
     let signature = declared::with_classes(c, || declared::method(c, m, declaring, context));
     let name = String::from_utf8_lossy(m.name.value);
     let constructor = m.name.value.eq_ignore_ascii_case(b"__construct");
     let class_raw = declared::doc_at(c, context.span)
-        .map(|(raw, _)| raw)
+        .map(|(raw, _, _)| raw)
         .unwrap_or_default();
     let d = Declaration {
         span: m.span(),
@@ -251,14 +250,13 @@ pub(super) fn hooks(c: &mut Checker, property: &[u8], list: &PropertyHookList) {
         return;
     };
     let class_raw = declared::doc_at(c, context.span)
-        .map(|(raw, _)| raw)
+        .map(|(raw, _, _)| raw)
         .unwrap_or_default();
     for h in list.hooks.iter() {
         let PropertyHookBody::Concrete(body) = &h.body else {
             continue;
         };
-        let raw = declarations::doc_before(&c.file.contents, h.span().start.offset as usize)
-            .unwrap_or_default();
+        let raw = c.php_doc_comment(c.file.id, h.span().start.offset).unwrap_or_default();
         let pure = effects::purity(raw);
         let unless_callable = declared::tagged_params(
             raw,
@@ -465,14 +463,14 @@ fn lcfirst(s: &str) -> String {
 }
 
 /// The unspecified-function `void.pure` branch.
-fn void_pure_function(c: &mut Checker, f: &Function, raw: &[u8]) {
-    if !assert_tags::parameters(raw).is_empty() {
+fn void_pure_function(c: &mut Checker, f: &Function, phpdoc: &[pun_phpstan::phpdoc::Tag]) {
+    if !assert_tags::parameters(phpdoc).is_empty() {
         return;
     }
     // PhpDocsResolver also applies the enclosing class's policy to a named function declared in a method.
     if let Some(class) = c.class_scope() {
         let raw = declared::doc_at(c, class.span)
-            .map(|(raw, _)| raw)
+            .map(|(raw, _, _)| raw)
             .unwrap_or_default();
         if declarations::doc_tags(&raw)
             .iter()

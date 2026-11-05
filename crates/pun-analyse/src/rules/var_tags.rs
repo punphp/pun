@@ -5,7 +5,7 @@
 use mago_span::{Position, Span};
 use pun_phpstan::types::{Template, Type};
 
-use super::doc::{Doc, doc_before};
+
 use super::{Checker, DISCOVERING_SYMBOLS_TIP, FunctionScopeKind, declared, generics};
 
 pub const IDENTIFIERS: &[&str] = &["varTag.unresolvableType", "varTag.trait"];
@@ -18,7 +18,7 @@ pub(super) fn scope(c: &Checker, at: Span) -> super::doc::NameScope {
     let (Some(function), Some(span)) = (c.functions.last(), c.var_tag_functions.last()) else {
         return scope;
     };
-    let Some(doc) = doc_before(&c.file.contents, span.start.offset as usize) else {
+    let Some((_, entry)) = c.doc_before(c.file.id, span.start.offset) else {
         return scope;
     };
     let described = match (function.kind, k) {
@@ -27,7 +27,7 @@ pub(super) fn scope(c: &Checker, at: Span) -> super::doc::NameScope {
         }
         _ => format!("function {}()", function.name),
     };
-    for t in &Doc::parse(doc).templates {
+    for t in &entry.doc.templates {
         let template = Template {
             name: t.name.clone(),
             scope: described.clone(),
@@ -59,10 +59,10 @@ pub fn check(c: &mut Checker, at: Span, names: Span) {
         return;
     }
     let file = c.file;
-    let Some(doc) = doc_before(&file.contents, at.start.offset as usize) else {
+    let Some((raw, entry)) = c.doc_before(file.id, at.start.offset) else {
         return;
     };
-    let start = doc.as_ptr() as usize - file.contents.as_ptr() as usize;
+    let start = raw.as_ptr() as usize - file.contents.as_ptr() as usize;
     let doc_line = Span {
         file_id: at.file_id,
         start: Position {
@@ -76,7 +76,7 @@ pub fn check(c: &mut Checker, at: Span, names: Span) {
     let mut errors: Vec<(Span, &'static str, String, Option<&'static str>)> = Vec::new();
     let mut classes = Vec::new();
     declared::with_classes(c, || {
-        for (name, ty) in Doc::parse(doc).var_types(&scope) {
+        for (name, ty) in entry.doc.var_types(&scope) {
             let what = if name.is_empty() {
                 "PHPDoc tag @var".to_string()
             } else {

@@ -507,8 +507,7 @@ fn class_level(
         .expect("a declared class-like is in the codebase");
     let display = declared::original_name(k);
     let iterables = Opts::of(c);
-    let doc =
-        super::doc::doc_before(&c.file.contents, span.start.offset as usize).map(<[u8]>::to_vec);
+    let doc = c.doc_before(c.file.id, span.start.offset).map(|(_, entry)| entry);
     let found = declared::with_classes(c, || {
         let mut out: Found = Vec::new();
         let generics_of = |ty: &Type, out: &mut Found, text: &dyn Fn(&str, &str) -> String| {
@@ -527,8 +526,8 @@ fn class_level(
             }
         };
         let mut described: Vec<String> = Vec::new();
-        if let Some(doc) = &doc {
-            let parsed = super::doc::Doc::parse(doc);
+        if let Some(entry) = doc {
+            let parsed = &entry.doc;
             let scope = declared::class_scope(c, span, k);
             for m in &parsed.methods {
                 let scope = declared::with_method_templates(&scope, k, &m.name, &m.templates);

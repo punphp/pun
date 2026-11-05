@@ -19,7 +19,8 @@ use pun_phpstan::types::{Level, Template, Type, ancestor_args, is_super_type_of}
 use super::Checker;
 use super::class_names::{self, Pair};
 use super::declared;
-use super::doc::{Doc, NameScope, TemplateTag, doc_before};
+use super::doc::{Doc, NameScope, TemplateTag};
+use super::facts::DocEntry;
 
 pub const IDENTIFIERS: &[&str] = &[
     "generics.existingClass",
@@ -697,10 +698,10 @@ fn type_aliases(c: &Checker, class: &str, depth: usize) -> Vec<String> {
     let Some(k) = c.codebase.get_class_like(class.as_bytes()) else {
         return Vec::new();
     };
-    let Some((doc, scopes)) = declared::doc_at(c, k.span) else {
+    let Some((_, entry, scopes)) = declared::doc_at(c, k.span) else {
         return Vec::new();
     };
-    aliases_of(c, &Doc::parse(&doc), &scopes.at(k.span.start.offset), depth)
+    aliases_of(c, &entry.doc, scopes.at(k.span.start.offset), depth)
 }
 
 fn aliases_of(c: &Checker, doc: &Doc, names: &NamespaceScope, depth: usize) -> Vec<String> {
@@ -742,17 +743,17 @@ struct ClassLike<'s> {
     display: &'s str,
     /// `class Foo`, `interface Foo`, `anonymous class`; `None` for an enum
     subject: Option<String>,
-    doc: Option<Vec<u8>>,
+    doc: Option<&'s DocEntry>,
     /// the namespace scope of the PHPDoc
-    names: NamespaceScope,
+    names: &'s NamespaceScope,
 }
 
 fn class_like(c: &Checker, l: &ClassLike) -> Found {
     let mut found = Found::default();
-    let Some(doc) = &l.doc else {
+    let Some(entry) = l.doc else {
         return found;
     };
-    let parsed = Doc::parse(doc);
+    let parsed = &entry.doc;
     let k = c.codebase.get_class_like(l.name.as_bytes());
     let parent = k.and_then(|k| k.direct_parent_class.as_ref()).map(|p| {
         c.codebase.get_class_like(p.as_bytes()).map_or_else(
@@ -1011,18 +1012,17 @@ pub(super) fn resolved_names<'a>(
 }
 
 /// The PHPDoc before `offset` in the walked file and the namespace scope there.
-fn doc_and_names(c: &Checker, span: Span) -> (Option<Vec<u8>>, NamespaceScope) {
-    let doc = doc_before(&c.file.contents, span.start.offset as usize).map(<[u8]>::to_vec);
-    let names = super::doc::scopes_of(span.file_id, &c.file.contents).at(span.start.offset);
-    (doc, names)
+fn doc_and_names<'a>(c: &Checker<'a, '_>, span: Span) -> (Option<&'a DocEntry>, &'a NamespaceScope) {
+    let doc = c.doc_before(c.file.id, span.start.offset).map(|(_, entry)| entry);
+    (doc, c.facts.scopes.at(span.start.offset))
 }
 
 /// The class-like's own `@extends` and `@implements` tag types (`getExtendsTags()`, `getImplementsTags()`).
 fn class_ancestor_tags(c: &Checker, l: &ClassLike) -> (Vec<Type>, Vec<Type>) {
-    let Some(doc) = &l.doc else {
+    let Some(entry) = l.doc else {
         return (Vec::new(), Vec::new());
     };
-    let parsed = Doc::parse(doc);
+    let parsed = &entry.doc;
     // (a declared class-like is in the codebase)
     let scope = c
         .codebase
@@ -1279,13 +1279,13 @@ pub fn trait_(c: &mut Checker, t: &Trait) {
     }
     let name = c.resolved_span(t.name.span);
     let (doc, names) = doc_and_names(c, t.span());
-    let (Some(doc), Some(k)) = (doc, c.codebase.get_class_like(name.as_bytes())) else {
+    let (Some(entry), Some(k)) = (doc, c.codebase.get_class_like(name.as_bytes())) else {
         return;
     };
-    let parsed = Doc::parse(&doc);
+    let parsed = &entry.doc;
     let display = c.display(k);
     let scope = declared::class_scope(c, t.span(), k);
-    let aliases = aliases_of(c, &parsed, &names, 0);
+    let aliases = aliases_of(c, parsed, names, 0);
     let has_alias = |n: &str| has_global_alias(n) || aliases.iter().any(|a| a == n);
     // not in a class: names resolve as written
     let resolve_name = |n: &str| n.to_string();
@@ -1321,11 +1321,11 @@ pub fn function(c: &mut Checker, f: &Function) {
     if c.level < 2 {
         return;
     }
-    let (Some(doc), _) = doc_and_names(c, f.span()) else {
+    let (Some(entry), _) = doc_and_names(c, f.span()) else {
         return;
     };
     let name = c.resolved_span(f.name.span);
-    let parsed = Doc::parse(&doc);
+    let parsed = &entry.doc;
     let mut scope = declared::scope_at(c, f.span(), None);
     add_templates(&mut scope, &parsed.templates, &format!("function {name}()"));
     let mut found = Found::default();
@@ -1375,7 +1375,7 @@ pub fn method(c: &mut Checker, m: &Method, method: &str) {
         return;
     };
     let class = declared::original_name(k);
-    let parsed = Doc::parse(&doc);
+    let parsed = &doc.doc;
     let mut scope = declared::scope_at(c, m.span(), Some(k));
     add_templates(
         &mut scope,
@@ -1449,8 +1449,8 @@ pub fn trait_use(c: &mut Checker, u: &TraitUse) {
     let names = resolved_names(c, u.trait_names.iter());
     let (doc, _) = doc_and_names(c, u.span());
     let mut types = Vec::new();
-    if let Some(doc) = doc {
-        let parsed = Doc::parse(&doc);
+    if let Some(entry) = doc {
+        let parsed = &entry.doc;
         let scope = declared::scope_at(c, u.span(), Some(k));
         types = declared::with_classes(c, || ancestor_types(&parsed.uses, &scope));
     }

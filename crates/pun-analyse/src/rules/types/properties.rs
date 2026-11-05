@@ -15,7 +15,6 @@ use mago_word::{Word, word};
 use pun_phpstan::types::{NeverKind, Type, ancestor_args, decide_type, is_super_type_of, mixed, recommended_level};
 
 use super::super::declarations::immutable_tags;
-use super::super::doc::tags;
 use super::super::overriding_property::{declaration_readonly, hook_names};
 use super::super::property_access::{has_instance_property, has_static_property};
 use super::super::{Checker, declared};
@@ -168,7 +167,7 @@ fn holder_type(c: &Checker, f: &Fetch) -> Option<Type> {
 /// Native modifiers only: Mago also marks PHPDoc-readonly properties readonly.
 fn says_readonly(c: &Checker, at: Option<Span>) -> bool {
     let Some(at) = at else { return false };
-    c.file_contents(at.file_id).is_some_and(|contents| declaration_readonly(at, &contents))
+    declaration_readonly(c, at)
 }
 
 /// A class template `T` of `scope` as the holder's argument.
@@ -353,7 +352,7 @@ fn find_on<'a>(c: &Checker<'a, '_>, f: &Fetch, holder: Type, native_only: bool, 
     let readonly = meta.flags.is_readonly() && !magic && !enum_;
     let native_readonly = readonly && (says_readonly(c, meta.name_span) || says_readonly(c, Some(declaring.span)));
     // `ClassReflection::isImmutable()` (up the parents) or the property's own readonly tag
-    let doc = |span: Option<Span>| span.and_then(|s| declared::doc_at(c, s)).map(|(d, _)| tags(&d)).unwrap_or_default();
+    let doc = |span: Option<Span>| span.and_then(|s| declared::doc_at(c, s)).map_or(&[][..], |(_, entry, _)| &entry.tags);
     let tagged = |span, names: &[&str]| doc(span).iter().any(|(t, _)| names.contains(&t.as_str()));
     let immutable = std::iter::once(&declaring.name)
         .chain(&declaring.all_parent_classes)

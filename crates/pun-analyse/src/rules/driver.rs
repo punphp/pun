@@ -6,7 +6,7 @@ use std::path::{Path, PathBuf};
 
 use mago_allocator::LocalArena;
 use mago_codex::metadata::CodebaseMetadata;
-use mago_codex::symbol::SymbolKind;
+use mago_codex::symbol::{SymbolIdentifier, SymbolKind};
 use mago_database::file::{File, FileId};
 use mago_names::ResolvedNames;
 use mago_span::Span;
@@ -111,6 +111,8 @@ pub(crate) struct Checks {
     include_file: super::include_file::Settings,
     /// The rules registered by a feature toggle at their level.
     toggled: Toggled,
+    /// Each file's function-likes (in the codex's iteration order), by span.
+    pub(super) function_likes: HashMap<FileId, Vec<(Span, SymbolIdentifier)>>,
 }
 
 /// Rules that config.levelN.neon registers with a feature toggle (all on with bleedingEdge).
@@ -167,6 +169,10 @@ impl Checks {
 impl Checks {
     pub(crate) fn of(project: &Project, codebase: &CodebaseMetadata) -> Checks {
         let internal_members = project.level >= 2 && project.internal_tag;
+        let mut function_likes: HashMap<FileId, Vec<(Span, SymbolIdentifier)>> = HashMap::new();
+        for (id, f) in codebase.function_likes.iter() {
+            function_likes.entry(f.span.file_id).or_default().push((f.span, *id));
+        }
         let mut larastan = project.larastan.clone();
         if let Some(l) = &mut larastan {
             l.load(project, codebase);
@@ -238,6 +244,7 @@ impl Checks {
                 unused_flow: project.unused_parameters,
                 new_on_non_object: project.new_on_non_object,
             },
+            function_likes,
         }
     }
 }
@@ -265,6 +272,8 @@ fn checker<'a, 'arena>(
     trait_class: Option<&str>,
 ) -> Checker<'a, 'arena> {
     let php_version = project.php_version;
+    let facts = &sources.scanned(file.id).expect("the scan read every walked file").facts;
+    let functions = project.function_likes.get(&file.id).map_or(&[][..], Vec::as_slice);
     let mut typed = super::larastan::typed_expressions(project.larastan.as_ref(), names, program);
     typed.extend(super::internal::typed_expressions(
         project.internal.as_ref(),
@@ -279,7 +288,7 @@ fn checker<'a, 'arena>(
     typed.extend(super::scope::typed_method_receivers(program));
     typed.extend(super::function_callable::typed_expressions(program, project.level));
     typed.extend(super::method_callable::typed_expressions(program, project.level));
-    typed.extend(super::types::typed_expressions(program, &file.contents, project.level,
+    typed.extend(super::types::typed_expressions(program, &file.contents, &facts.comments, project.level,
         project.check_argument_types || project.check_arguments_passed_by_reference, project.check_this_only));
     typed.extend(super::strict::typed_expressions(project, codebase, program));
     typed.extend(super::dead_code::bodies(program, project.level, project.toggled.unused_parameters || project.toggled.unused_variable));
@@ -288,7 +297,7 @@ fn checker<'a, 'arena>(
         program,
         project.level >= 4 || project.exceptions.missing_checked_exception_in_throws,
     ));
-    let (include_typed, include_state) = super::include_file::prepare(arena, file, program, names, codebase, php_version, project.pollute_scope_with_loop_initial_assignments, project.pollute_scope_with_always_iterable_foreach, project.pollute_scope_with_block, &project.include_file);
+    let (include_typed, include_state) = super::include_file::prepare(arena, file, program, names, codebase, php_version, project.pollute_scope_with_loop_initial_assignments, project.pollute_scope_with_always_iterable_foreach, project.pollute_scope_with_block, &project.include_file, &facts.comments, functions);
     typed.extend(include_typed);
     let mut variables = super::variables::Observations::default();
     let calls = if project.method_rules.call_methods {
@@ -298,9 +307,9 @@ fn checker<'a, 'arena>(
     };
     let mut variable_writes = HashMap::new();
     let mut property_initializations = HashMap::new();
-    let (mut types, defined, origins, call_terminations, named_call_scopes, keep_void_types, native_types, nullsafe_method_receiver_types, property_offset_writes) = infer(arena, file, program, names, codebase, php_version, project.level, project.pollute_scope_with_loop_initial_assignments, project.pollute_scope_with_always_iterable_foreach, project.pollute_scope_with_block, typed, calls, &mut variables, &mut variable_writes, &mut property_initializations, project.larastan.as_ref(), trait_class);
+    let (mut types, defined, origins, call_terminations, named_call_scopes, keep_void_types, native_types, nullsafe_method_receiver_types, property_offset_writes) = infer(arena, file, program, names, codebase, php_version, project.level, project.pollute_scope_with_loop_initial_assignments, project.pollute_scope_with_always_iterable_foreach, project.pollute_scope_with_block, typed, calls, &mut variables, &mut variable_writes, &mut property_initializations, project.larastan.as_ref(), trait_class, &facts.comments, functions);
     if project.level >= 4 {
-        let (subjects, unknown) = super::dead_code::match_subject_types(file, program, codebase, php_version, project.pollute_scope_with_loop_initial_assignments, project.pollute_scope_with_always_iterable_foreach, project.pollute_scope_with_block);
+        let (subjects, unknown) = super::dead_code::match_subject_types(file, program, codebase, php_version, project.pollute_scope_with_loop_initial_assignments, project.pollute_scope_with_always_iterable_foreach, project.pollute_scope_with_block, functions);
         types.extend(subjects);
         for span in unknown {
             types.remove(&span);
@@ -354,6 +363,8 @@ fn checker<'a, 'arena>(
         immutable: HashMap::new(),
         files,
         sources,
+        facts,
+        function_likes: &project.function_likes,
         patched_docs: &project.patched_docs,
         class_cache: &project.classes,
         syntax: syntax::State::default(),

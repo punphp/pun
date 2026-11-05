@@ -126,9 +126,9 @@ impl<'arena> Checker<'_, 'arena> {
                 && !(f.span.file_id == class.span.file_id
                     && class.span.start.offset <= f.span.start.offset
                     && f.span.end.offset <= class.span.end.offset)
-                && let Some((raw, _)) = declared::doc_at(self, f.span)
+                && let Some((_, entry, _)) = declared::doc_at(self, f.span)
             {
-                let doc = super::doc::Doc::parse(&raw);
+                let doc = &entry.doc;
                 let scope = declared::scope_at(self, f.span, Some(class));
                 let scope = declared::with_method_templates(
                     &scope,

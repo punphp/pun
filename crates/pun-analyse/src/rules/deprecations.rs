@@ -13,7 +13,6 @@ use mago_syntax::cst::*;
 use mago_word::word;
 
 use super::Checker;
-use super::declarations::doc_before;
 use super::members::Method;
 
 /// A `@deprecated` tag: `Some(description)` (phpdoc-parser's DeprecatedTagValueNode, `None` when empty).
@@ -70,16 +69,14 @@ fn resolve(doc: &[u8]) -> Resolved {
 impl Checker<'_, '_> {
     /// The PHPDoc right before `span` in its file.
     fn doc_of(&self, span: Span) -> Option<Resolved> {
-        let contents = self.file_contents(span.file_id)?;
-        doc_before(&contents, span.start.offset as usize).map(resolve)
+        self.php_doc_comment(span.file_id, span.start.offset).map(resolve)
     }
 
     /// The PHPDoc of the constant declared at `span` (an item of a `const` statement, or a `define()` call).
     fn constant_doc(&self, span: Span) -> Option<Resolved> {
-        let contents = self.file_contents(span.file_id)?;
-        let starts = super::overriding_property::declaration_starts(span.file_id, &contents);
+        let starts = &self.file_facts(span.file_id)?.declarations.starts;
         let start = starts.get(&span.start.offset).copied().unwrap_or(span.start.offset);
-        doc_before(&contents, start as usize).map(resolve)
+        self.php_doc_comment(span.file_id, start).map(resolve)
     }
 
     /// `ClassReflection::isDeprecated()` and `getDeprecatedDescription()` (the class's own PHPDoc).
@@ -417,9 +414,9 @@ pub(super) fn constant_fetch(c: &mut Checker, at: Span, id: &Identifier) {
     .filter(|(k, _)| k.flags.is_user_defined());
     let message = if let Some((k, name)) = user {
         // a `const` statement's PHPDoc (a define()d constant has none)
-        let statement = c.file_contents(k.span.file_id).is_some_and(|contents| {
-            super::overriding_property::declaration_starts(k.span.file_id, &contents).contains_key(&k.span.start.offset)
-        });
+        let statement = c
+            .file_facts(k.span.file_id)
+            .is_some_and(|facts| facts.declarations.starts.contains_key(&k.span.start.offset));
         if !statement {
             return;
         }

@@ -8,7 +8,6 @@ use mago_span::Span;
 use pun_phpstan::types::{Level, Type};
 
 use super::Checker;
-use super::declarations::doc_before;
 
 /// Both rules on class-like `k` (a class, an enum or an anonymous class) declared at `at`.
 pub fn check(c: &mut Checker, at: Span, k: &ClassLikeMetadata) {
@@ -66,13 +65,10 @@ pub fn check(c: &mut Checker, at: Span, k: &ClassLikeMetadata) {
 /// `getRequireExtendsTags()` / `getRequireImplementsTags()`: the `@psalm-` then the `@phpstan-` tags of `k`'s own
 /// PHPDoc whose type parses, resolved in its name scope.
 fn tags(c: &Checker, k: &ClassLikeMetadata, kind: &str) -> Vec<Type> {
-    let Some(contents) = c.file_contents(k.span.file_id) else {
+    let Some((_, entry)) = c.php_doc(k.span.file_id, k.span.start.offset) else {
         return Vec::new();
     };
-    let Some(doc) = doc_before(&contents, k.span.start.offset as usize) else {
-        return Vec::new();
-    };
-    let tags = super::doc::tags(doc);
+    let tags = &entry.tags;
     let scope = super::declared::class_scope(c, k.span, k);
     ["@psalm-", "@phpstan-"]
         .iter()

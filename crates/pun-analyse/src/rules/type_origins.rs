@@ -15,7 +15,7 @@ use mago_syntax::cst::*;
 use mago_syntax::walker::MutWalker;
 use mago_word::Word;
 
-use super::super::{doc, function_checks};
+use super::super::function_checks;
 
 pub(in super::super) type Function = (Word, Word);
 
@@ -63,21 +63,21 @@ fn branching(e: &Expression) -> bool {
     )
 }
 
+/// `functions` are the file's function-likes ([`super::super::driver::Checks`]'s table).
 pub(super) fn collect(
     file: &File,
+    comments: &super::super::Comments,
+    functions: &[(Span, Function)],
     program: &Program,
     names: &ResolvedNames,
     codebase: &CodebaseMetadata,
 ) -> Origins {
     let mut walker = Sources {
         file,
+        comments,
         names,
         codebase,
-        functions: codebase
-            .function_likes
-            .iter_in_file(file.id)
-            .map(|(id, f)| (f.span, *id))
-            .collect(),
+        functions: functions.iter().copied().collect(),
         stack: Vec::new(),
         locals: HashMap::new(),
         current: None,
@@ -130,6 +130,7 @@ pub(super) fn dependencies(found: &Origins, wanted: &[Span]) -> Vec<Span> {
 
 struct Sources<'a, 'arena> {
     file: &'a File,
+    comments: &'a super::super::Comments,
     names: &'a ResolvedNames<'arena>,
     codebase: &'a CodebaseMetadata,
     functions: HashMap<Span, Function>,
@@ -537,8 +538,10 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Sources<'_, 'arena> {
             self.locals.clear();
             return;
         };
-        let raw = doc::doc_before(&self.file.contents, a.span().start.offset as usize);
-        let has_doc = raw.is_some_and(|raw| !doc::Doc::parse(raw).vars.is_empty());
+        let has_doc = self
+            .comments
+            .doc_before(&self.file.contents, a.span().start.offset as usize)
+            .is_some_and(|(_, entry)| !entry.doc.vars.is_empty());
         let origin = if has_doc {
             Origin::Annotation(
                 a.span(),

@@ -10,7 +10,6 @@ use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use mago_syntax::walker::MutWalker;
 
-use super::doc::{Doc, doc_before};
 use super::statements::FrameKind;
 use super::{Checker, assign};
 
@@ -195,10 +194,10 @@ fn has(c: &Checker, name: &str, at: u32) -> bool {
 fn tags(c: &Checker, at: Span) -> (Vec<String>, usize) {
     let contents = &c.file.contents;
     let mut docs = Vec::new();
-    let mut offset = at.start.offset as usize;
-    while let Some(doc) = doc_before(contents, offset) {
-        offset = doc.as_ptr() as usize - contents.as_ptr() as usize;
-        docs.push(doc);
+    let mut offset = at.start.offset;
+    while let Some((raw, entry)) = c.doc_before(c.file.id, offset) {
+        offset = (raw.as_ptr() as usize - contents.as_ptr() as usize) as u32;
+        docs.push(entry);
     }
     let (mut named, mut unnamed) = (Vec::<String>::new(), 0);
     if docs.is_empty() {
@@ -206,7 +205,7 @@ fn tags(c: &Checker, at: Span) -> (Vec<String>, usize) {
     }
     let scope = super::var_tags::scope(c, at);
     for doc in docs.into_iter().rev() {
-        let vars = super::declared::with_classes(c, || Doc::parse(doc).var_types(&scope));
+        let vars = super::declared::with_classes(c, || doc.doc.var_types(&scope));
         let count = vars.iter().filter(|(n, _)| n.is_empty()).count();
         unnamed = unnamed.max(count);
         for (n, _) in vars {

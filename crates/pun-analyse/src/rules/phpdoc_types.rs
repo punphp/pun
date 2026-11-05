@@ -11,7 +11,7 @@ use mago_syntax::cst::*;
 use pun_phpstan::resolve::resolve_late;
 use pun_phpstan::types::{Level, NeverKind, Type, is_super_type_of, mixed};
 
-use super::doc::{Doc, NameScope, doc_before};
+use super::doc::{Doc, NameScope};
 use super::{Checker, declared, generics};
 
 pub const IDENTIFIERS: &[&str] = &[
@@ -220,12 +220,12 @@ pub fn function(c: &mut Checker, f: &Function) {
     if c.level < 2 {
         return;
     }
-    let Some(raw) = doc_before(&c.file.contents, f.span().start.offset as usize) else {
+    let Some((raw, entry)) = c.doc_before(c.file.id, f.span().start.offset) else {
         return;
     };
-    let doc = Doc::parse(raw);
+    let doc = &entry.doc;
     let errors = declared::with_classes(c, || {
-        let scope = declared::function_scope(c, f, &doc);
+        let scope = declared::function_scope(c, f, doc);
         let templates = doc.templates.iter().map(|t| t.name.clone()).collect();
         let native = Native {
             params: native_params(c, &f.parameter_list, None),
@@ -235,7 +235,7 @@ pub fn function(c: &mut Checker, f: &Function) {
                 class: None,
             },
         };
-        check(raw, &doc, &scope, &native)
+        check(raw, doc, &scope, &native)
     });
     report(c, f.span(), errors);
 }
@@ -244,15 +244,15 @@ pub fn method(c: &mut Checker, m: &Method) {
     if c.level < 2 {
         return;
     }
-    let Some(raw) = doc_before(&c.file.contents, m.span().start.offset as usize) else {
+    let Some((raw, entry)) = c.doc_before(c.file.id, m.span().start.offset) else {
         return;
     };
-    let doc = Doc::parse(raw);
+    let doc = &entry.doc;
     let Some(context) = c.class_scope() else { return };
     let declaring = super::missing_types::declaring(c, m.span()).expect("a method is declared by its class or a used trait");
     let display = c.member_scope().1;
     let errors = declared::with_classes(c, || {
-        let scope = declared::method_scope(c, m, &doc, declaring, context);
+        let scope = declared::method_scope(c, m, doc, declaring, context);
         let templates = doc.templates.iter().map(|t| t.name.clone()).collect();
         let native = Native {
             params: native_params(c, &m.parameter_list, Some(context)),
@@ -262,7 +262,7 @@ pub fn method(c: &mut Checker, m: &Method) {
                 class: Some(class_context(c, context, display.clone())),
             },
         };
-        check(raw, &doc, &scope, &native)
+        check(raw, doc, &scope, &native)
     });
     report(c, m.span(), errors);
 }
@@ -273,10 +273,10 @@ pub fn hook(c: &mut Checker, h: &PropertyHook, hooked: &[u8], hint: Option<&Hint
     if c.level < 2 {
         return;
     }
-    let Some(raw) = doc_before(&c.file.contents, h.span().start.offset as usize) else {
+    let Some((raw, entry)) = c.doc_before(c.file.id, h.span().start.offset) else {
         return;
     };
-    let doc = Doc::parse(raw);
+    let doc = &entry.doc;
     let Some(context) = c.class_scope() else { return };
     let display = c.member_scope().1;
     let errors = declared::with_classes(c, || {
@@ -302,7 +302,7 @@ pub fn hook(c: &mut Checker, h: &PropertyHook, hooked: &[u8], hint: Option<&Hint
                 class: Some(class_context(c, context, display.clone())),
             },
         };
-        check(raw, &doc, &scope, &native)
+        check(raw, doc, &scope, &native)
     });
     report(c, h.span(), errors);
 }
@@ -313,10 +313,10 @@ pub fn property(c: &mut Checker, p: &Property) {
     if c.level < 2 {
         return;
     }
-    let Some(doc) = doc_before(&c.file.contents, p.span().start.offset as usize) else {
+    let Some((_, entry)) = c.doc_before(c.file.id, p.span().start.offset) else {
         return;
     };
-    let doc = Doc::parse(doc);
+    let doc = &entry.doc;
     let (context, display) = c.member_scope();
     let hint = p.hint();
     for v in p.variables() {
@@ -351,17 +351,16 @@ pub fn promoted(c: &mut Checker, m: &Method) {
     for p in m.parameter_list.parameters.iter().filter(|p| p.is_promoted_property()) {
         let name = String::from_utf8_lossy(&p.variable.name[1..]).into_owned();
         let errors = declared::with_classes(c, || {
-            let own = doc_before(&c.file.contents, p.span().start.offset as usize).and_then(|doc| {
-                let doc = Doc::parse(doc);
-                let vars = doc.var_types(&declared::scope_at(c, p.span(), Some(context)));
+            let own = c.doc_before(c.file.id, p.span().start.offset).and_then(|(_, entry)| {
+                let vars = entry.doc.var_types(&declared::scope_at(c, p.span(), Some(context)));
                 match vars.as_slice() {
                     [(n, t)] if n.is_empty() => Some(Some(t.clone())),
                     _ => vars.into_iter().find(|(n, _)| *n == name).map(|(_, t)| Some(t)),
                 }
             });
             let phpdoc = own.unwrap_or_else(|| {
-                let doc = Doc::parse(doc_before(&c.file.contents, m.span().start.offset as usize)?);
-                let scope = declared::method_scope(c, m, &doc, declaring, context);
+                let doc = &c.doc_before(c.file.id, m.span().start.offset)?.1.doc;
+                let scope = declared::method_scope(c, m, doc, declaring, context);
                 doc.param_types(&scope).remove(&name).map(|(t, _)| t)
             });
             let native = p.hint.as_ref().map(|h| declared::native(c, h, Some(context)));
@@ -397,7 +396,7 @@ pub fn class_constant(c: &mut Checker, k: &ClassLikeConstant) {
             let phpdoc = declared::constant(c, k.span(), item.name.value, context)?;
             let native = k.hint.as_ref().map(|h| declared::native(c, h, Some(context)));
             // resolveConstantVarPhpDocType(): an inherited `@var` the native type does not certainly accept is dropped
-            let own = doc_before(&c.file.contents, k.span().start.offset as usize).is_some();
+            let own = c.doc_before(c.file.id, k.span().start.offset).is_some();
             if !own && native.as_ref().is_some_and(|n| !is_super_type_of(n, &phpdoc).yes()) {
                 return None;
             }

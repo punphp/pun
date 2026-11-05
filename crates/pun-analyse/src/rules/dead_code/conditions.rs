@@ -25,7 +25,6 @@ use mago_syntax::walker::MutWalker;
 
 use super::super::Checker;
 use crate::codebase::parse;
-use super::super::declarations::doc_before;
 use super::super::members;
 use mago_codex::symbol::SymbolKind;
 use pun_phpstan::ignore::Error;
@@ -142,6 +141,7 @@ pub(in super::super) struct Facts {
 pub(in super::super) fn facts(c: &Checker, program: &Program) -> Facts {
     let mut pass = Pass {
         contents: &c.file.contents,
+        comments: &c.facts.comments,
         functions: Vec::new(),
         tries: Vec::new(),
         facts: Facts::default(),
@@ -155,6 +155,7 @@ pub(in super::super) fn facts(c: &Checker, program: &Program) -> Facts {
 
 struct Pass<'c> {
     contents: &'c [u8],
+    comments: &'c super::super::Comments,
     /// (named, returns never, `@throws` an UnhandledMatchError) of the enclosing function-likes.
     functions: Vec<(bool, bool, bool)>,
     /// TryCatchTypeVisitor: the enclosing `try` statements' depth in `functions` and caught class names.
@@ -192,7 +193,7 @@ impl Pass<'_> {
 
     fn enter(&mut self, named: bool, start: Span, hint: Option<&FunctionLikeReturnTypeHint>) {
         let native = hint.is_some_and(|h| matches!(h.hint, Hint::Never(_)));
-        let doc = doc_before(self.contents, start.start.offset as usize).is_some_and(|doc| {
+        let doc = self.comments.php_doc_comment(self.contents, start.start.offset as usize).is_some_and(|doc| {
             String::from_utf8_lossy(doc).lines().any(|line| {
                 let mut words = line
                     .trim_start_matches([' ', '\t', '*', '/'])
@@ -206,7 +207,7 @@ impl Pass<'_> {
             })
         });
         // hasUnhandledMatchErrorThrowsTag(); ponytail: the tag's class names by their last segment
-        let throws = doc_before(self.contents, start.start.offset as usize).is_some_and(|doc| {
+        let throws = self.comments.php_doc_comment(self.contents, start.start.offset as usize).is_some_and(|doc| {
             String::from_utf8_lossy(doc).lines().any(|line| {
                 let mut words = line.trim_start_matches([' ', '\t', '*', '/']).split_whitespace();
                 matches!(words.next(), Some("@throws" | "@phpstan-throws"))
@@ -1916,6 +1917,7 @@ pub(in super::super) fn match_subject_types(
     pollute_scope_with_loop_initial_assignments: bool,
     pollute_scope_with_always_iterable_foreach: bool,
     pollute_scope_with_block: bool,
+    functions: &[(Span, mago_codex::symbol::SymbolIdentifier)],
 ) -> (HashMap<Span, TUnion>, Vec<Span>) {
     /// The matches with arms: subject, the start and end between their braces, nesting depth.
     struct Matches(Vec<(Span, usize, usize, usize)>, usize);
@@ -1968,7 +1970,9 @@ pub(in super::super) fn match_subject_types(
         let copy = File::new(file.name.clone(), file.file_type, file.path.clone(), Cow::Owned(contents));
         let arena = LocalArena::new();
         let (program, names) = parse(&arena, &copy);
-        types.extend(super::super::infer::analyse(&arena, &copy, program, &names, codebase, php_version, pollute_scope_with_loop_initial_assignments, pollute_scope_with_always_iterable_foreach, pollute_scope_with_block, subjects, Vec::new()).0);
+        // (the copy's own comments: its arms are rewritten)
+        let comments = super::super::Comments::of(&copy.contents);
+        types.extend(super::super::infer::analyse(&arena, &copy, program, &names, codebase, php_version, pollute_scope_with_loop_initial_assignments, pollute_scope_with_always_iterable_foreach, pollute_scope_with_block, subjects, Vec::new(), &comments, functions).0);
     }
     (types, unknown)
 }

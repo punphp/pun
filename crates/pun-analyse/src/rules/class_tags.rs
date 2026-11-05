@@ -44,10 +44,10 @@ fn set<K: PartialEq, V>(list: &mut Vec<(K, V)>, key: K, value: V) {
 }
 
 fn tags(c: &Checker, k: &ClassLikeMetadata, scope: &NameScope) -> Tags {
-    let Some(doc) = c.class_doc(k) else {
+    let Some((_, entry)) = c.class_doc(k) else {
         return Tags::default();
     };
-    let tags = super::doc::phpdoc_tags(&doc);
+    let tags = &entry.phpdoc;
     let named = |names: &[&str]| -> Vec<&TagValue> {
         names
             .iter()

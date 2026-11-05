@@ -8,7 +8,7 @@ use pun_phpstan::phpdoc::{self, TagValue};
 use pun_phpstan::resolve::resolve_in;
 use pun_phpstan::types::{Level, NeverKind, Type, is_super_type_of};
 
-use super::doc::{Doc, NameScope, doc_before};
+use super::doc::NameScope;
 use super::{Checker, declared, generics, missing_types};
 
 pub const IDENTIFIERS: &[&str] = &[
@@ -24,11 +24,11 @@ pub fn function(c: &mut Checker, f: &Function) {
     if c.level < 2 {
         return;
     }
-    let Some(doc) = doc_before(&c.file.contents, f.span().start.offset as usize) else {
+    let Some((_, entry)) = c.doc_before(c.file.id, f.span().start.offset) else {
         return;
     };
-    let scope = declared::function_scope(c, f, &Doc::parse(doc));
-    let errors = declared::with_classes(c, || check(c, doc, &scope, &declared::function(c, f), None));
+    let scope = declared::function_scope(c, f, &entry.doc);
+    let errors = declared::with_classes(c, || check(c, &entry.phpdoc, &scope, &declared::function(c, f), None));
     report(c, f.span(), errors);
 }
 
@@ -40,11 +40,11 @@ pub fn method(c: &mut Checker, m: &Method) {
     let declaring = missing_types::declaring(c, m.span()).expect("a method is declared by its class or a used trait");
     let this = (!m.modifiers.contains_static())
         .then(|| Type::Object(declared::original_name(context), vec![], false));
-    let own = doc_before(&c.file.contents, m.span().start.offset as usize).filter(|doc| !asserts(doc).is_empty());
+    let own = c.doc_before(c.file.id, m.span().start.offset).map(|(_, entry)| entry).filter(|entry| !asserts(&entry.phpdoc).is_empty());
     let errors = declared::with_classes(c, || {
         let sig = declared::method(c, m, declaring, context);
         match own {
-            Some(doc) => check(c, doc, &declared::method_scope(c, m, &Doc::parse(doc), declaring, context), &sig, this),
+            Some(entry) => check(c, &entry.phpdoc, &declared::method_scope(c, m, &entry.doc, declaring, context), &sig, this),
             // the inherited (implicit) asserts: only their parameter is checked
             None => sig
                 .asserts
@@ -74,14 +74,13 @@ fn report(c: &mut Checker, at: Span, errors: Errors) {
 /// An assert tag: its tag name, type, parameter, `->member` (a method with `()`) and negation.
 type Assert = (&'static str, phpdoc::Node, String, Option<(String, bool)>, bool);
 
-/// The parameters (without `$`) the asserts of PHPDoc `doc` name.
-pub(super) fn parameters(doc: &[u8]) -> Vec<String> {
-    asserts(doc).into_iter().map(|a| a.2[1..].to_string()).collect()
+/// The parameters (without `$`) the asserts of a PHPDoc's `tags` name.
+pub(super) fn parameters(tags: &[phpdoc::Tag]) -> Vec<String> {
+    asserts(tags).into_iter().map(|a| a.2[1..].to_string()).collect()
 }
 
 /// `resolveAssertTags()`: the first of the `@phpstan-`, `@psalm-` and `@phan-` prefixes with any assert.
-fn asserts(doc: &[u8]) -> Vec<Assert> {
-    let tags = super::doc::phpdoc_tags(doc);
+fn asserts(tags: &[phpdoc::Tag]) -> Vec<Assert> {
     for prefix in ["@phpstan", "@psalm", "@phan"] {
         let mut found = Vec::new();
         for (suffix, name) in [
@@ -143,11 +142,11 @@ fn member_type(c: &Checker, on: &Type, member: &(String, bool)) -> Type {
 }
 
 /// AssertRuleHelper::check(); the class names to check for their case come last, as `(.., Some(class))`.
-fn check(c: &Checker, doc: &[u8], scope: &NameScope, sig: &declared::Signature, this: Option<Type>) -> Errors {
+fn check(c: &Checker, tags: &[phpdoc::Tag], scope: &NameScope, sig: &declared::Signature, this: Option<Type>) -> Errors {
     let mut errors: Errors = Vec::new();
     let mut by_name: Vec<(String, Type)> = sig.params.iter().map(|p| (p.0.clone(), p.1.clone())).collect();
     by_name.extend(this.map(|t| ("this".to_string(), t)));
-    for (tag, ty, parameter, member, negated) in asserts(doc) {
+    for (tag, ty, parameter, member, negated) in asserts(tags) {
         let name = &parameter[1..];
         let Some((_, param_type)) = by_name.iter().find(|(n, _)| n == name) else {
             errors.push(("parameter.notFound", format!("Assert references unknown parameter ${name}."), None, None));

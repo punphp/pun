@@ -91,9 +91,10 @@ pub const IDENTIFIERS: &[&[&str]] = &[callables::IDENTIFIERS, regex::IDENTIFIERS
 /// The expressions whose type the statement results read, in the function-likes whose missing return could be
 /// reported: those with a non-void return type whose body, by syntax alone, does not always terminate (types only
 /// ever make a body terminate: a `never` call, a condition always true, a non-empty array iterated).
-pub(super) fn typed_expressions(program: &Program, contents: &[u8], level: u8, check_arguments: bool, check_this_only: bool) -> Vec<Span> {
+pub(super) fn typed_expressions(program: &Program, contents: &[u8], comments: &super::Comments, level: u8, check_arguments: bool, check_this_only: bool) -> Vec<Span> {
     let mut w = Wanted {
         contents,
+        comments,
         level,
         check_arguments,
         check_this_only,
@@ -105,6 +106,7 @@ pub(super) fn typed_expressions(program: &Program, contents: &[u8], level: u8, c
 
 struct Wanted<'c> {
     contents: &'c [u8],
+    comments: &'c super::Comments,
     level: u8,
     check_arguments: bool,
     check_this_only: bool,
@@ -116,8 +118,8 @@ impl Wanted<'_> {
         let stmts = b.statements.as_slice();
         let returns = match ret {
             Some(r) => !matches!(r.hint, Hint::Void(_)),
-            None => super::doc_before(self.contents, span.start.offset as usize)
-                .is_some_and(|d| d.windows(7).any(|w| w == b"return ")),
+            None => self.comments.doc_before(self.contents, span.start.offset as usize)
+                .is_some_and(|(d, _)| d.windows(7).any(|w| w == b"return ")),
         };
         if !returns {
             return;

@@ -72,6 +72,8 @@ pub(super) fn prepare<'arena>(
     pollute_scope_with_always_iterable_foreach: bool,
     pollute_scope_with_block: bool,
     settings: &Settings,
+    comments: &super::Comments,
+    functions: &[(Span, mago_codex::symbol::SymbolIdentifier)],
 ) -> (Vec<Span>, State) {
     let mut wanted = Wanted {
         spans: Vec::new(),
@@ -104,6 +106,8 @@ pub(super) fn prepare<'arena>(
         pollute_scope_with_block,
         wanted.spans,
         Vec::new(),
+        comments,
+        functions,
     );
     (Vec::new(), State { types })
 }

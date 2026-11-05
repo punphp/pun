@@ -42,12 +42,8 @@ fn method_doc(
     if !seen.insert(f.span) {
         return None;
     }
-    let own = declared::doc_at(c, f.span).map(|(doc, _)| {
-        !super::declarations::has_tag(
-            &super::declarations::doc_tags(&doc),
-            &["@no-named-arguments"],
-        )
-    });
+    let own = declared::doc_at(c, f.span)
+        .map(|(_, entry, _)| !super::declarations::has_tag(&entry.names, &["@no-named-arguments"]));
     let name = f.name.as_bytes();
     let parents = class
         .direct_parent_class
@@ -71,14 +67,10 @@ fn method_doc(
     {
         if let Some(f) = c.codebase.get_method(trait_.name.as_bytes(), name)
             && f.method_metadata.as_ref().is_some_and(|m| m.is_abstract)
-            && let Some(parent) = declared::doc_at(c, f.span)
+            && let Some((_, parent, _)) = declared::doc_at(c, f.span)
         {
             return Some(
-                own.unwrap_or(true)
-                    && !super::declarations::has_tag(
-                        &super::declarations::doc_tags(&parent.0),
-                        &["@no-named-arguments"],
-                    ),
+                own.unwrap_or(true) && !super::declarations::has_tag(&parent.names, &["@no-named-arguments"]),
             );
         }
     }

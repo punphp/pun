@@ -76,10 +76,8 @@ pub(super) fn typed_arrow(e: &Expression, spans: &mut Vec<Span>) {
 }
 
 /// `declare(strict_types=1)` in the file.
-// ponytail: found in the file's text, not its first statement
 pub(super) fn strict_types(c: &Checker) -> bool {
-    let text: Vec<u8> = c.file.contents.iter().filter(|b| !b.is_ascii_whitespace()).map(u8::to_ascii_lowercase).collect();
-    text.windows(23).any(|w| w == b"declare(strict_types=1)")
+    c.facts.strict_types
 }
 
 /// `TemplateTypeHelper::toArgument()`: MutatingScope gives a function body its PHPDoc return type with every template

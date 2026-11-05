@@ -2,15 +2,11 @@
 //! resolves), the `NameScope` a PHPDoc is resolved in (FileTypeMapper) and the resolved tags (PhpDocNodeResolver).
 
 use std::collections::HashMap;
-use std::sync::{Arc, Mutex, OnceLock};
 
-use mago_allocator::LocalArena;
-use mago_database::file::{File, FileId};
 use mago_names::kind::NameKind;
 use mago_names::scope::NamespaceScope;
 use mago_span::HasSpan;
 use mago_syntax::cst::*;
-use mago_syntax::parser::parse_file;
 use pun_phpstan::phpdoc::{self, Node};
 use pun_phpstan::resolve::{Scope, resolve_in};
 use pun_phpstan::types::Type;
@@ -43,33 +39,6 @@ pub fn tags(doc: &[u8]) -> Vec<(String, Vec<u8>)> {
         }
     }
     tags
-}
-
-/// The doc comment (`/** ...`) that ends right before `offset`, skipping other comments in between: the one PHP's
-/// tokenizer reads (the start is the last `/**` before its `*/`, so `/*` inside the text is no start).
-pub fn doc_before(contents: &[u8], offset: usize) -> Option<&[u8]> {
-    let mut end = offset.min(contents.len());
-    loop {
-        end -= contents[..end]
-            .iter()
-            .rev()
-            .take_while(|b| b.is_ascii_whitespace())
-            .count();
-        if !contents[..end].ends_with(b"*/") || end < 4 {
-            return None;
-        }
-        let start = contents[..end - 2].windows(3).rposition(|w| w == b"/**");
-        let plain = contents[..end - 2].windows(2).rposition(|w| w == b"/*");
-        match start {
-            Some(start)
-                if contents.get(start + 3).is_some_and(u8::is_ascii_whitespace)
-                    && !contents[start + 3..end - 2].windows(2).any(|w| w == b"*/") =>
-            {
-                return Some(&contents[start..end]);
-            }
-            _ => end = plain?,
-        }
-    }
 }
 
 /// A `@param` value: the type, `...`, and the parameter's name without `$` (`parseParamTagValue()`; a typeless one
@@ -107,6 +76,7 @@ fn type_value(value: &[u8]) -> Option<(Node, &[u8])> {
 }
 
 /// A `@method` tag as written (`parseMethodTagValue()`).
+#[derive(Clone)]
 pub struct MethodTag {
     pub name: String,
     pub ret: Option<Node>,
@@ -237,6 +207,7 @@ fn method_value(value: &[u8]) -> Option<MethodTag> {
 }
 
 /// `@template` (with its variants) as written.
+#[derive(Clone)]
 pub struct TemplateTag {
     pub name: String,
     pub bound: Option<Node>,
@@ -291,40 +262,9 @@ const TEMPLATE_TAGS: [&str; 4] = [
     "@phpstan-template",
 ];
 
-/// PhpDocParser's tags of a doc comment (none where it throws), parsed once per distinct comment for the whole run.
-pub fn phpdoc_tags(doc: &[u8]) -> Arc<Vec<phpdoc::Tag>> {
-    static CACHE: Memo<Vec<phpdoc::Tag>> = Memo::new();
-    CACHE.get(doc, |doc| phpdoc::tags(doc).unwrap_or_default())
-}
-
-/// A run-wide cache of what a pure function makes of a doc comment, sharded so parallel files rarely wait on
-/// one lock.
-struct Memo<T>(OnceLock<Vec<Mutex<HashMap<Box<[u8]>, Arc<T>, foldhash::fast::RandomState>>>>);
-
-impl<T> Memo<T> {
-    const SHARDS: usize = 64;
-
-    const fn new() -> Self {
-        Memo(OnceLock::new())
-    }
-
-    fn get(&self, doc: &[u8], parse: impl FnOnce(&[u8]) -> T) -> Arc<T> {
-        use std::hash::BuildHasher;
-        let shards = self.0.get_or_init(|| (0..Self::SHARDS).map(|_| Mutex::default()).collect());
-        let hash = foldhash::fast::FixedState::default().hash_one(doc);
-        let shard = &shards[hash as usize % Self::SHARDS];
-        if let Some(found) = shard.lock().expect("doc cache").get(doc) {
-            return found.clone();
-        }
-        // parsed outside the lock; a thread that lost the race keeps the first result
-        let parsed = Arc::new(parse(doc));
-        shard.lock().expect("doc cache").entry(doc.into()).or_insert(parsed).clone()
-    }
-}
-
 /// The tags of one doc comment that PHPStan resolves to types, in PhpDocNodeResolver's order (a later tag of the
 /// same kind wins, except a `@psalm-` one whose type is unresolvable).
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct Doc {
     /// (tag, parameter name, type, variadic)
     pub params: Vec<(String, String, Node, bool)>,
@@ -360,14 +300,7 @@ pub struct Doc {
 }
 
 impl Doc {
-    /// The doc comment's tags, parsed once per distinct comment for the whole run: every file's checks ask for the
-    /// same classes' PHPDocs (a facade's `@method` list, a model's `@property` list) again and again.
-    pub fn parse(doc: &[u8]) -> Arc<Doc> {
-        static CACHE: Memo<Doc> = Memo::new();
-        CACHE.get(doc, Doc::parse_uncached)
-    }
-
-    fn parse_uncached(doc: &[u8]) -> Doc {
+    pub fn parse(doc: &[u8]) -> Doc {
         let mut out = Doc::default();
         let tags = tags(doc);
         let order = |list: &[&str], tag: &str| list.iter().position(|t| *t == tag);
@@ -736,6 +669,8 @@ impl Scope for NameScope {
 /// The namespaces of a file with their imports (FileTypeMapper's walk), by byte range.
 pub struct FileScopes {
     namespaces: Vec<(u32, u32, NamespaceScope)>,
+    /// The empty scope of an offset outside every namespace.
+    outside: NamespaceScope,
     /// each `use Trait, ...;` in a class body: its offset and the trait names as written
     trait_uses: Vec<(u32, Vec<String>)>,
 }
@@ -783,6 +718,7 @@ impl FileScopes {
         walk(mago_syntax::cst::Node::Program(program), &mut trait_uses);
         FileScopes {
             namespaces,
+            outside: NamespaceScope::default(),
             trait_uses,
         }
     }
@@ -795,38 +731,10 @@ impl FileScopes {
     }
 
     /// The namespace scope at `offset`.
-    pub fn at(&self, offset: u32) -> NamespaceScope {
+    pub fn at(&self, offset: u32) -> &NamespaceScope {
         self.namespaces
             .iter()
             .find(|(start, end, _)| *start <= offset && offset <= *end)
-            .map(|(_, _, s)| s.clone())
-            .unwrap_or_default()
+            .map_or(&self.outside, |(_, _, s)| s)
     }
-}
-
-/// [`FileScopes`] of files other than the analysed one, parsed once per content.
-pub fn scopes_of(id: FileId, contents: &[u8]) -> Arc<FileScopes> {
-    static CACHE: OnceLock<Mutex<HashMap<(FileId, u64), Arc<FileScopes>>>> = OnceLock::new();
-    let key = (id, fingerprint(contents));
-    let cache = CACHE.get_or_init(Default::default);
-    if let Some(found) = cache.lock().expect("scopes cache").get(&key) {
-        return found.clone();
-    }
-    let arena = LocalArena::new();
-    let file = File::ephemeral(
-        std::borrow::Cow::Borrowed(b"scopes.php".as_slice()),
-        std::borrow::Cow::Owned(contents.to_vec()),
-    );
-    let program = parse_file(&arena, &file);
-    let scopes = Arc::new(FileScopes::of(program));
-    cache
-        .lock()
-        .expect("scopes cache")
-        .insert(key, scopes.clone());
-    scopes
-}
-
-fn fingerprint(contents: &[u8]) -> u64 {
-    use std::hash::BuildHasher;
-    foldhash::quality::FixedState::default().hash_one(contents)
 }

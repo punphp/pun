@@ -10,7 +10,6 @@ use mago_syntax::cst::*;
 use mago_syntax::walker::MutWalker;
 use pun_phpstan::types::{Level, Type, is_super_type_of, union};
 
-use super::super::doc::doc_before;
 use super::super::{Checker, declared, invalid_throws, var_tags};
 use super::missing_return::method_name;
 use super::throw_points::{Point, Points, flatten, throwable};
@@ -164,9 +163,9 @@ pub(in super::super) fn method(c: &mut Checker, m: &Method) {
     if unused.is_empty() {
         return;
     }
-    let explicit = doc_before(&c.file.contents, m.span().start.offset as usize).is_some_and(|raw| {
+    let explicit = c.doc_before(c.file.id, m.span().start.offset).is_some_and(|(_, entry)| {
         let scope = var_tags::scope(c, m.span());
-        declared::with_classes(c, || invalid_throws::throws_type(raw, &scope)).is_some()
+        declared::with_classes(c, || invalid_throws::throws_type(&entry.phpdoc, &scope)).is_some()
     });
     if !explicit && !c.exceptions.too_wide_implicit_throw_type {
         return;
@@ -210,9 +209,9 @@ pub(in super::super) fn hooks(c: &mut Checker, name: &[u8], list: &PropertyHookL
         let mut chars = hook.chars();
         let hook: String = chars.next().map(|f| f.to_ascii_uppercase()).into_iter().chain(chars).collect();
         let of = format!("{hook} hook for property {display}::${}", String::from_utf8_lossy(name));
-        let declared = doc_before(&c.file.contents, h.span().start.offset as usize).and_then(|raw| {
+        let declared = c.doc_before(c.file.id, h.span().start.offset).and_then(|(_, entry)| {
             let scope = var_tags::scope(c, h.span());
-            declared::with_classes(c, || invalid_throws::throws_type(raw, &scope))
+            declared::with_classes(c, || invalid_throws::throws_type(&entry.phpdoc, &scope))
         });
         let mut inner = Points::new(c).in_hook(name);
         match body {

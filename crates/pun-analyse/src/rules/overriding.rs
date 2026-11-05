@@ -21,7 +21,7 @@ use pun_phpstan::symbols;
 use pun_phpstan::types::{Level, Tri, Type, decide_type, infer_template_types, intersect, is_super_type_of, mixed, resolve_template_types, union};
 use serde_json::Value;
 
-use super::declarations::{doc_tags, has_tag};
+use super::declarations::has_tag;
 use super::declared::{self, default_is_null, original_name};
 
 /// How many ancestors the walks up a class hierarchy visit: a circular one (which PHP refuses) ends there.
@@ -326,33 +326,13 @@ impl<'a> Checker<'a, '_> {
                 names.sort();
                 // The populated codex uses a set. Recover only its ordering from the declaration's CST, resolving
                 // imported names in that file rather than sorting either the aliases or resolved names.
-                if names.len() > 1 && let Some(contents) = self.file_contents(k.span.file_id) {
-                    let arena = mago_allocator::LocalArena::new();
-                    let file = mago_database::file::File::ephemeral(
-                        std::borrow::Cow::Borrowed(b"interfaces.php".as_slice()),
-                        std::borrow::Cow::Owned([b"<?php ".as_slice(), &contents[k.span.to_range_usize()], b";"].concat()),
-                    );
-                    let program = mago_syntax::parser::parse_file(&arena, &file);
-                    let scope = super::doc::scopes_of(k.span.file_id, &contents).at(k.span.start.offset);
-                    let mut pending = vec![Node::Program(program)];
-                    let mut order = Vec::new();
-                    while let Some(node) = pending.pop() {
-                        let types = match node {
-                            Node::Class(k) => k.implements.as_ref().map(|i| &i.types),
-                            Node::Interface(k) => k.extends.as_ref().map(|i| &i.types),
-                            Node::Enum(k) => k.implements.as_ref().map(|i| &i.types),
-                            Node::AnonymousClass(k) => k.implements.as_ref().map(|i| &i.types),
-                            _ => {
-                                pending.extend(node.children().into_iter().rev());
-                                continue;
-                            }
-                        };
-                        for id in types.into_iter().flatten() {
-                            let resolved = scope.resolve(mago_names::kind::NameKind::Default, id.value()).0;
-                            order.push(String::from_utf8_lossy(&resolved).to_ascii_lowercase());
-                        }
-                        break;
-                    }
+                if names.len() > 1
+                    && let Some((_, order)) = self
+                        .file_facts(k.span.file_id)
+                        .and_then(|facts| facts.declarations.parents.get(&k.span.start.offset))
+                {
+                    let order: Vec<String> =
+                        order.iter().map(|n| String::from_utf8_lossy(n).to_ascii_lowercase()).collect();
                     names.sort_by_key(|n| order.iter().position(|written| written == n).unwrap_or(usize::MAX));
                 }
                 if is_enum {
@@ -544,7 +524,7 @@ impl<'a> Checker<'a, '_> {
                         .and_then(|name| self.has_modifier(f.span, name, b"final"))
                         .unwrap_or(true);
                 let doc_final = declared::doc_at(self, f.span)
-                    .is_some_and(|(doc, _)| has_tag(&doc_tags(&doc), &["@final"]));
+                    .is_some_and(|(_, entry, _)| has_tag(&entry.names, &["@final"]));
                 let optional = optional_flags(
                     f.parameters
                         .iter()
