@@ -6,7 +6,6 @@ use std::fmt;
 
 use pun_phpstan::phpdoc::{ConstExpr, Node, ShapeKey};
 
-/// A type node.
 #[derive(Clone, Debug, PartialEq)]
 pub enum TypeNode {
     /// `IdentifierTypeNode`: a name as written (`int`, `\Foo\Bar`, `Bar`).

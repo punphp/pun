@@ -125,7 +125,6 @@ pub(crate) fn uint(value: &serde_json::Value, max: u64) -> Option<usize> {
     value.as_u64().filter(|&n| n <= max).map(|n| n as usize)
 }
 
-/// A boolean.
 pub(crate) fn boolean(value: &serde_json::Value) -> Option<bool> {
     value.as_bool()
 }

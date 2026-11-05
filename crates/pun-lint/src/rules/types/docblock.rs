@@ -18,7 +18,6 @@ use crate::syntax::node_span;
 
 /// A `ClassMethod` or `Function_`.
 pub(crate) struct FunctionLike<'ast, 'arena> {
-    /// The name.
     pub name: Span,
     pub name_text: &'arena [u8],
     /// php-parser's start of the node (its first attribute or modifier).

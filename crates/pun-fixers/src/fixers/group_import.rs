@@ -172,7 +172,6 @@ fn namespace_name_with_slash(declaration: &NamespaceUseAnalysis) -> &[u8] {
     }
 }
 
-/// Insert use with alias to the group.
 fn insert_to_group_use_with_alias(
     tokens: &mut Tokens,
     insert_index: usize,
@@ -192,7 +191,6 @@ fn insert_to_group_use_with_alias(
     n
 }
 
-/// Creates new use statement group.
 fn create_new_group(
     tokens: &mut Tokens,
     mut insert_index: usize,
@@ -228,7 +226,6 @@ fn create_new_group(
     inserted + 1
 }
 
-/// Check if namespace use analyses are different.
 fn are_declarations_different(
     a: Option<&NamespaceUseAnalysis>,
     b: Option<&NamespaceUseAnalysis>,

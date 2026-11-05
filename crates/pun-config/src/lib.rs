@@ -72,7 +72,6 @@ pub struct Finder {
 #[derive(Debug, Clone)]
 pub struct Config {
     pub root: PathBuf,
-    /// The format preset.
     pub preset: FormatPreset,
     /// Target PHP version: `[php] version`, else the lowest composer.json admits, else 8.4. [`Config::php_version`]
     /// is the same as a [`PhpVersion`]; this string goes once pun-cli reads that.

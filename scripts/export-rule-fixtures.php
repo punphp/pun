@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * PHPStan's own rule tests as level-0 oracle fixtures for `pun analyse` (Phase 2 M2.3).
+ * PHPStan's own rule tests as level-0 oracle fixtures for `pun analyse`.
  *
  * For every RuleTestCase in .oracle/phpstan-src/tests/PHPStan/Rules whose rule is registered at level 0
  * (#[RegisteredRule(level: 0)] in src/Rules), each test method's `analyse([...files], ...)` call (data providers

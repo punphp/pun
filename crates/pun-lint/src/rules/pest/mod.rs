@@ -282,7 +282,6 @@ pub(crate) fn expect_argument<'a>(call: &'a MethodCall<'a>) -> Option<&'a Expres
     expect_call(call).and_then(|e| first_value(&e.argument_list))
 }
 
-/// The value of the first argument of a list.
 pub(crate) fn first_value<'a>(list: &'a ArgumentList<'a>) -> Option<&'a Expression<'a>> {
     list.arguments.first().map(Argument::value)
 }

@@ -397,7 +397,6 @@ impl<'a> AnyCall<'a> {
         }
     }
 
-    /// The span of the method name.
     pub(crate) fn name_span(&self) -> Span {
         node_span(self.method)
     }
@@ -562,7 +561,6 @@ pub(crate) fn class_body<'a>(
     }
 }
 
-/// The class-like node kinds.
 pub(crate) const CLASS_LIKES: &[mago_syntax::cst::NodeKind] = &[
     mago_syntax::cst::NodeKind::Class,
     mago_syntax::cst::NodeKind::AnonymousClass,

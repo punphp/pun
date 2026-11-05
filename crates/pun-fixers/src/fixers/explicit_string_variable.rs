@@ -114,7 +114,6 @@ fn fix_variables(tokens: &mut Tokens, index: usize) {
     }
 }
 
-/// Check if token is a part of a string.
 fn is_string_part_token(token: &Token) -> bool {
     token.is_kind(T_ENCAPSED_AND_WHITESPACE)
         || token.is_kind(T_START_HEREDOC)

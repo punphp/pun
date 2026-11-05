@@ -212,7 +212,6 @@ fn declared_property_type<'f>(
     ancestors: &[Node<'_, '_>],
     expr: &Expression<'_>,
 ) -> Option<&'f TUnion> {
-    // the class of an object
     let class_of = |object: &Expression<'_>| {
         let [TAtomic::Object(TObject::Named(owner))] = type_of(facts, object)?.types.as_ref() else { return None };
         Some(String::from_utf8_lossy(owner.name.as_bytes()).into_owned())

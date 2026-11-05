@@ -1,4 +1,4 @@
-//! php-parser's view of Mago's tree for the dead-code and early-return rules ported from Rector (lint 7 batch 3):
+//! php-parser's view of Mago's tree for the dead-code and early-return rules ported from Rector:
 //! statement lists as php-parser keeps them (`stmts`, with the `Nop` it adds for comments at the end of a list), the
 //! parts of an `if`, what Rector's format-preserving printer writes when a rule removes, moves or replaces statements,
 //! and the checks several of these rules share (`TerminatedNodeAnalyzer`'s last-statement checks, `NodeComparator`

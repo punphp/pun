@@ -358,7 +358,7 @@ pub enum GitSelect {
     /// `--diff=<branch>`: changed since the merge-base with `<branch>`, plus staged, unstaged and untracked files.
     Diff(String),
     /// `--staged` (Pun): files with staged changes.
-    /// ponytail: selects staged files and formats the working tree; index-only formatting comes with M1.3 polish.
+    /// ponytail: selects staged files and formats the working tree.
     Staged,
     /// `--since=<ref>` (Pun): like `--diff`, but against `<ref>` itself instead of the merge-base.
     Since(String),
