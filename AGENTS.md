@@ -41,7 +41,7 @@ scripts/coverage.sh punphp-tokens
 
 ## Benchmark Pun against Pint and Mago
 
-`scripts/bench.py [project...]` measures wall-clock time and peak memory for every run of four tools on each corpus project. It prints a per-run table, then a table of medians with Pun's speedup over each tool. Every tool is check-only, nothing writes to the corpus, and Pun never reads its cache.
+`scripts/bench.py [project...]` measures wall-clock time and peak memory for every run of four tools on each corpus project. It prints a per-run table, then a table of medians with Pun's speedup over each tool. Every tool is check-only and nothing writes to the corpus. Pun has no cache, so every run checks every file.
 
 1. `scripts/oracle.sh` installs Pint into `.oracle/pint`. `scripts/corpus.sh` checks out the projects in `corpus/`.
 2. `cargo build --profile profiling -p punphp` builds `target/profiling/pun`. `PUN_BIN=path` selects another binary.
@@ -52,7 +52,7 @@ The four tools:
 
 - `pint-parallel`: `pint --test --parallel` inside `corpus/<name>`, with the project's own `pint.json`.
 - `pint`: `pint --test`, one process, in the same place.
-- `pun`: `pun check --test --no-cache` in a scratch copy of the project (no `.git`, `node_modules` symlinked), after `pun migrate --yes` has written its `pun.toml`.
+- `pun`: `pun check --test` in a scratch copy of the project (no `.git`, `node_modules` symlinked), after `pun migrate --yes` has written its `pun.toml`.
 - `mago`: `mago fmt --check .` in the same scratch copy, with Mago's default config. Mago's style is not Pint's, so its numbers are a speed and memory reference, not a parity check. Without the `.` and without a `mago.toml`, Mago checks no files.
 
 Memory is the peak summed RSS of the whole process tree, sampled every 20 ms and never below the command's own maxrss, so Pint's parallel PHP workers and Pun's Prettier workers count. The script sets `PUN_AGENT=0` and `PUN_IGNORE_PHP_CONSTRAINT=1`, and ignores exit codes.

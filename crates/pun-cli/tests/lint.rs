@@ -31,7 +31,6 @@ fn agent(dir: &Path, args: &[&str]) -> (Vec<String>, String, Option<i32>) {
         .current_dir(dir)
         .env("PUN_AGENT", "1")
         .args(args)
-        .args(["--no-cache"])
         .output()
         .unwrap();
     let stdout = String::from_utf8(out.stdout).unwrap();
@@ -410,13 +409,13 @@ fn overrides_set_levels_and_name_only_ported_rules() {
     );
 }
 
-/// (stdout, exit code) of `pun lint --no-cache args` in `dir`, outside agent mode, with `env`.
+/// (stdout, exit code) of `pun lint args` in `dir`, outside agent mode, with `env`.
 fn plain(dir: &Path, args: &[&str], env: &[(&str, &str)]) -> (String, Option<i32>) {
     let out = clean_env(&mut Command::new(PUN), &["PATH", "HOME"])
         .current_dir(dir)
         .env("PUN_AGENT", "0")
         .envs(env.iter().copied())
-        .args(["lint", "--no-cache"])
+        .arg("lint")
         .args(args)
         .output()
         .unwrap();
@@ -649,7 +648,7 @@ preset = "empty"
     let out = clean_env(&mut Command::new(PUN), &["PATH", "HOME"])
         .current_dir(&d)
         .env("PUN_AGENT", "0")
-        .args(["lint", "--fix", "--no-cache", "Child.php"])
+        .args(["lint", "--fix", "Child.php"])
         .output()
         .unwrap();
     assert!(out.status.success(), "{out:?}");

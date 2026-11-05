@@ -7,10 +7,10 @@ use crate::{FormatArgs, root};
 use anyhow::Result;
 use notify::{EventKind, RecursiveMode, Watcher};
 use std::collections::{HashMap, HashSet};
+use std::hash::{BuildHasher, RandomState};
 use std::path::PathBuf;
 use std::sync::mpsc;
 use std::time::Duration;
-use xxhash_rust::xxh3::xxh3_64;
 
 /// Editors save in bursts (truncate + write, temp file + rename): wait for this much quiet before running.
 const DEBOUNCE: Duration = Duration::from_millis(100);
@@ -34,9 +34,10 @@ pub(crate) fn run(mut a: FormatArgs) -> Result<u8> {
         },
         ..a.clone()
     };
-    // The content each file had when Pun last finished with it: events that leave it so (Pun's own writes, which
-    // FSEvents may report after the first run) are no change.
-    let hash = |p: &PathBuf| std::fs::read(p).ok().map(|c| xxh3_64(&c));
+    // A hash of the content each file had when Pun last finished with it, in memory for this watch only: events
+    // that leave it so (Pun's own writes, which FSEvents may report after the first run) are no change.
+    let hasher = RandomState::new();
+    let hash = |p: &PathBuf| std::fs::read(p).ok().map(|c| hasher.hash_one(&c));
     let mut done: HashMap<PathBuf, u64> = load_config(&a, &root)
         .and_then(|cfg| pun_workspace::discover(&cfg, &a.paths))
         .unwrap_or_default()

@@ -156,7 +156,6 @@ fn blade_probe_is_reused_for_stdin_and_files() {
         &[
             "--max-processes=2",
             "--format=json",
-            "--no-cache",
             "a.blade.php",
         ],
     )
@@ -236,7 +235,7 @@ fn unused_probe_stops_before_reading_stdin() {
 }
 
 #[test]
-fn unused_probe_stops_for_cached_or_unselected_blade() {
+fn unused_probe_stops_for_unselected_blade() {
     let Some(dir) = project("watch") else { return };
     common::write_files(
         &dir,
@@ -245,48 +244,28 @@ fn unused_probe_stops_for_cached_or_unselected_blade() {
             ("resources/v.blade.php", "<div>\n    <p>x</p>\n</div>\n"),
         ],
     );
-    let seeded = start(&dir, &["--cache-file=cache.json", "--format=json"]).finish(b"");
+    let finished = start(&dir, &["--format=json", "app"]).finish(b"");
+    assert!(finished.status.success());
+    let result: serde_json::Value = serde_json::from_slice(&finished.stdout).unwrap();
+    assert_eq!(result["files"], serde_json::json!([]));
+    assert_eq!(pids(&dir).len(), 1);
+    wait_until(|| pids(&dir).iter().all(|&pid| !alive(pid)));
+    std::fs::remove_file(dir.join("node-pids")).unwrap();
+    let mut running = start(&dir, &["--watch", "--format=json", "app"]);
+    let stdout = running.0.stdout.take().unwrap();
+    let result = serde_json::Deserializer::from_reader(stdout)
+        .into_iter::<serde_json::Value>()
+        .next()
+        .unwrap()
+        .unwrap();
+    assert_eq!(result["files"], serde_json::json!([]));
+    wait_until(|| !pids(&dir).is_empty());
+    wait_until(|| pids(&dir).iter().all(|&pid| !alive(pid)));
     assert!(
-        seeded.status.success(),
-        "{}",
-        String::from_utf8_lossy(&seeded.stderr)
+        running.0.try_wait().unwrap().is_none(),
+        "watch should stay alive"
     );
-    for selected in ["app", "resources"] {
-        std::fs::remove_file(dir.join("node-pids")).unwrap();
-        let finished = start(
-            &dir,
-            &["--cache-file=cache.json", "--format=json", selected],
-        )
-        .finish(b"");
-        assert!(finished.status.success());
-        let result: serde_json::Value = serde_json::from_slice(&finished.stdout).unwrap();
-        assert_eq!(result["files"], serde_json::json!([]));
-        assert_eq!(pids(&dir).len(), 1);
-        wait_until(|| pids(&dir).iter().all(|&pid| !alive(pid)));
-        std::fs::remove_file(dir.join("node-pids")).unwrap();
-        let mut running = start(
-            &dir,
-            &[
-                "--watch",
-                "--cache-file=cache.json",
-                "--format=json",
-                selected,
-            ],
-        );
-        let stdout = running.0.stdout.take().unwrap();
-        let result = serde_json::Deserializer::from_reader(stdout)
-            .into_iter::<serde_json::Value>()
-            .next()
-            .unwrap()
-            .unwrap();
-        assert_eq!(result["files"], serde_json::json!([]));
-        wait_until(|| !pids(&dir).is_empty());
-        wait_until(|| pids(&dir).iter().all(|&pid| !alive(pid)));
-        assert!(
-            running.0.try_wait().unwrap().is_none(),
-            "watch should stay alive"
-        );
-        assert_eq!(pids(&dir).len(), 1);
-    }
+    assert_eq!(pids(&dir).len(), 1);
+    drop(running);
     std::fs::remove_dir_all(dir).unwrap();
 }

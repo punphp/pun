@@ -84,7 +84,7 @@ def compare(name: str, pun: str, env: dict) -> bool:
     (work / "pun-rector-lint.toml").write_text(
         '[php]\nversion = "8.4"\n\n[lint.rules]\n' + "".join(f'"{i.removeprefix("lint/")}" = "error"\n' for i in ids))
     ours = subprocess.run([pun, "lint", "--config", "pun-rector-lint.toml", "--fix", "--test", "--format=json", "-v",
-                           "--no-cache", *bench.LINT[name]], cwd=work, env=env, capture_output=True, text=True)
+                           *bench.LINT[name]], cwd=work, env=env, capture_output=True, text=True)
     if ours.returncode not in (0, 1):
         sys.exit(f"pun lint exited {ours.returncode}: {ours.stderr.strip()[-500:]}")
     theirs, mine = pairs_of_rector(rector, pun_id), pairs_of_pun(ours.stdout)

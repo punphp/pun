@@ -95,7 +95,7 @@ These groups still follow the old intent-style list. With topic groups (decided)
 | `--generate-baseline` | `pun analyse --generate-baseline` (writes pun-baseline.toml) |
 | `--error-format=json/table/github/gitlab/checkstyle/junit/raw/teamcity` | `--format`, the same formats |
 | `--memory-limit`, `--xdebug`, `--debug` | not needed |
-| `clear-result-cache` | `--no-cache` / `pun cache clear` |
+| `clear-result-cache` | not needed: Pun has no result cache |
 | `--pro`, `--watch` | `--watch` like `pun format` |
 
 ## 6. Build
@@ -130,7 +130,7 @@ descriptions; 54 level-0 identifiers; parallel scanning. The steps, after config
    container, helpers, macros), its 20 rules, then the seven improvements.
 7. **Pest built in** (§9), with the PHPUnit typing it needs. **After 1.0** (Pushpak, 2026-10-18): until then test
    files are analysed as plain PHP; `[analyse] exclude` globs leave them out entirely.
-8. **Result cache:** a warm run re-checks only changed files and the files that depend on them.
+8. **No result cache** (Pushpak, 2026-11-05): every run checks every file; speed comes from the design.
 9. **`pun migrate` for phpstan.neon** (migrate.md Build 5). Coverage back to 100% throughout.
 
 ## 7. How PHPStan and Mago analyse, and what Pun builds on (2026-10-17)
@@ -213,7 +213,7 @@ None of this needs PHP to run: Pun reads the files.
 - **Env:** `env('STRIPE_KEY')` keys checked against `.env.example`.
 - **Inertia:** `Inertia::render('Posts/Show')` with no such page component is an error.
 - **No stale model data:** Larastan needs ide-helper or a fresh schema dump to stay right. Pun re-reads migrations on
-  every run, and the cache makes that free.
+  every run.
 
 **Testing:** Larastan's own test suite (its `tests/Type` and `tests/Rules` fixtures) becomes the parity test, as
 PHPStan's fixtures do for core. The corpus adds pinkary and larastan's own source.
@@ -264,8 +264,7 @@ Answered 2026-10-17 (Pushpak):
   A rule is either on or off: `[analyse.rules] "types/missing-iterable-value-type" = "off"`, or `true` with options
   in a table. `off` stays because PHPStan users already turn rules off (by level or `ignoreErrors`), and migrate needs
   it to keep a project's current rule set.
-- **Result cache before 1.0**, so a warm run re-checks only changed files and their dependents (assistant's
-  default).
+- **No result cache** (Pushpak, 2026-11-05): every run checks every file from scratch.
 - **A project's own PHPStan PHP code:** named as unsupported by migrate; `stubFiles` keep working.
 - **Larastan's model knowledge** comes from migrations and the schema dump, read without running PHP (§8).
 

@@ -298,7 +298,7 @@ fn lint_and_check() {
         SELF,
         "remaining fixes are not written"
     );
-    // Again (the cache must not hide them): nothing left to fix, the same rule remains.
+    // Again: nothing left to fix, the same rule remains.
     assert_eq!(
         agent(&d, &["lint", "--fix"]),
         (

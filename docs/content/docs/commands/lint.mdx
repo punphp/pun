@@ -59,7 +59,7 @@ Native lint rules report code frames and fixability. Token-based PHP-CS-Fixer po
 
 `--format` selects `json`, `txt`, `checkstyle`, `junit`, `xml`, `gitlab`, `github`, or `agent`. Non-GitHub machine reports use Pint's per-file shape.
 
-## Files and cache
+## Files
 
 Lint applies shared and lint-specific paths and exclusions. It skips Blade templates, `vendor/`, `bootstrap/cache`, `build`, `node_modules`, and `storage`. [`pun list-files --command lint`](/docs/commands/list-files) shows the selection.
 
@@ -76,8 +76,6 @@ Object-type comparison preserves intersection constraints and removes a constrai
 
 Fix rounds refresh closure and arrow-function signatures after source edits.
 Moving a closure preserves its parameters, return type, and captured variables.
-
-Clean-file cache entries are separate from format entries. `--no-cache` disables cache reads and writes.
 
 ## Ignore comments
 

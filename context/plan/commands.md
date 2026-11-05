@@ -63,8 +63,8 @@ parsing each file once.
 1. **Find files** from `[files]` plus each command's own `exclude` (config.md §3), and read the versions from
    composer.json and composer.lock.
 2. **Index pass (parallel).** Parse every file once into Mago's syntax tree and collect its classes, functions and
-   constants into one project index. Analyse needs this before it can check any file. Cached, so a warm run only
-   re-parses changed files.
+   constants into one project index. Analyse needs this before it can check any file. Not cached: every run parses
+   every file.
 3. **Check pass (parallel, per file).** On the same parse: run the lint rules, run the format rules on the tokens (no
    writes), and run analyse against the index.
 4. **Report, grouped by step** (output.md Decisions): one status line each for format, lint and analyse, with the

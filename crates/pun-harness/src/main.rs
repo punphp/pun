@@ -146,7 +146,7 @@ fn main() -> Result<ExitCode> {
                 pun_cmd(&["migrate", "--from", "pint"]).args(&migrate_args),
                 "pun migrate",
             )?;
-            run(&mut pun_cmd(&["check", "--fix", "--no-cache"]), "pun")?;
+            run(&mut pun_cmd(&["check", "--fix"]), "pun")?;
         }
 
         let o = compare(&p.name, &src, &oracle_dir, &pun_dir)?;

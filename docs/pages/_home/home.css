@@ -113,7 +113,6 @@
 .pun-home .fill { height: 100%; width: 40px; min-width: 40px; border: var(--pun-stroke) solid var(--pun-outline); border-radius: 999px; transition: width 1.4s cubic-bezier(.2, .8, .2, 1); }
 .pun-home .fill.other { background: var(--pun-stripe); }
 .pun-home .fill.pun { background: var(--pun-zap); }
-.pun-home .fill.pun-warm { background: var(--pun-gum); }
 .pun-home .val { margin-left: 12px; font: 700 15px/1 var(--blume-font-mono); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .pun-home .val.in { position: absolute; right: 18px; margin: 0; color: var(--pun-on-fill); }
 

@@ -62,8 +62,7 @@ struct Run {
     files: BTreeMap<String, Vec<u8>>,
 }
 
-/// Builds `BASE + script` in a fresh dir and runs `program` from `sub` with an isolated HOME/TMPDIR (no Pint result
-/// cache, no Pun cache), after `pun migrate <migrate>` there when given. Repo paths in the output become `ROOT`.
+/// Builds `BASE + script` in a fresh dir and runs `program` from `sub` with an isolated HOME/TMPDIR, after `pun migrate <migrate>` there when given. Repo paths in the output become `ROOT`.
 fn run(
     program: &[&str],
     script: &str,
@@ -346,6 +345,20 @@ fn parallel_matches_pint() {
     ] {
         cx.same("", "", args);
     }
+}
+
+/// Pint's `--cache-file` (its presets never cache, so nothing is written) and Pun's old `--no-cache` are accepted
+/// and change nothing.
+#[test]
+fn cache_flags_are_ignored_like_pint() {
+    let Some(cx) = Cx::new() else { return };
+    for args in [
+        &["--cache-file=c/pint.cache", "--test"][..],
+        &["--cache-file", "c/pint.cache"],
+    ] {
+        cx.same("", "", args);
+    }
+    cx.same_as("", "", &["--no-cache", "--test"], &["--test"], b"");
 }
 
 /// `--config` (relative to the cwd, from a subdirectory too), `--no-config` (beats `--config` and the cwd's

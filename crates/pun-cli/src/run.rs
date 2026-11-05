@@ -7,7 +7,7 @@
 use crate::lint_plan::{self, CliLevel, Engine, On, Plan};
 use crate::render::{Look, RunError, Spinner};
 use crate::report::{self, Abort, FileResult, Status};
-use crate::{FormatArgs, cache, root};
+use crate::{FormatArgs, root};
 use anyhow::Result;
 use pun_config::{Config, Options, Rule};
 use pun_format::{LintError, Pipeline};
@@ -36,14 +36,6 @@ pub(crate) enum Stage {
 impl Stage {
     fn fix(self) -> bool {
         matches!(self, Stage::Lint { fix: true } | Stage::Check { fix: true })
-    }
-
-    fn name(self) -> &'static str {
-        match self {
-            Stage::Format => "format",
-            Stage::Lint { .. } => "lint",
-            Stage::Check { .. } => "check",
-        }
     }
 }
 
@@ -156,12 +148,9 @@ struct Engines<'a> {
     root: &'a Path,
 }
 
-/// A file's run: its result, its content hash when it came out clean (for the cache), whether the cache said so,
-/// and under `--fix` the fixes of the token lint rules it doesn't apply.
+/// A file's run: its result and, under `--fix`, the fixes of the token lint rules it doesn't apply.
 struct Processed {
     result: FileResult,
-    clean: Option<String>,
-    cached: bool,
     remaining: Option<FileResult>,
 }
 
@@ -289,37 +278,8 @@ pub(crate) fn format(a: FormatArgs, stage: Stage, lint: LintOpts) -> Result<u8> 
         root: &root,
     };
 
-    let cache = if a.pun.no_cache {
-        None
-    } else {
-        a.cache_file
-            .as_ref()
-            .map(|f| root.join(f))
-            .or_else(|| cache::default_path(&root, stage.name()))
-            .map(|p| {
-                let mut sig = cache::signature(&cfg);
-                if lints {
-                    sig["command"] = stage.name().into();
-                    sig["fix"] = stage.fix().into();
-                    sig["lint"] = serde_json::to_value(&cfg.lint).unwrap_or_default();
-                    sig["levels"] = (lint.levels.iter())
-                        .map(|(l, n)| format!("{l:?} {n}"))
-                        .collect();
-                }
-                cache::Cache::load(p, sig)
-            })
-    };
-    // The probe's worker is already loading Prettier. Stop it before the PHP pass if no selected Blade file is
-    // pending (none selected, or every selected template is clean in the cache).
-    if blade_on
-        && !files.iter().any(|f| {
-            is_blade(f)
-                && !cache.as_ref().is_some_and(|c| {
-                    let rel = f.strip_prefix(&root).unwrap_or(f).to_string_lossy();
-                    std::fs::read(f).is_ok_and(|code| c.is_clean(&rel, &cache::hash(&code)))
-                })
-        })
-    {
+    // The probe's worker is already loading Prettier. Stop it before the PHP pass if no Blade file is selected.
+    if blade_on && !files.iter().any(|f| is_blade(f)) {
         pun_fixers::prettier::stop();
     }
     let look = Look::stdout(a.color());
@@ -329,7 +289,7 @@ pub(crate) fn format(a: FormatArgs, stage: Stage, lint: LintOpts) -> Result<u8> 
         .then(|| Spinner::stderr(files.len(), &look, std::io::stderr().is_terminal()))
         .flatten();
     let process = |path: &PathBuf, code: std::io::Result<Vec<u8>>| -> Result<Processed> {
-        let r = process_file(&a, &engines, cache.as_ref(), dry_run, path, code);
+        let r = process_file(&a, &engines, dry_run, path, code);
         if let Some(s) = &spinner {
             s.tick();
         }
@@ -356,24 +316,11 @@ pub(crate) fn format(a: FormatArgs, stage: Stage, lint: LintOpts) -> Result<u8> 
     drop(spinner);
     let processed: Vec<Processed> = all.into_iter().collect::<Result<_>>()?;
 
-    let hits = processed.iter().filter(|p| p.cached).count();
     let mut remaining = vec![];
     let mut results = vec![];
-    let mut clean = vec![];
     for p in processed {
         remaining.extend(p.remaining);
-        clean.push((p.result.rel.clone(), p.clean));
         results.push(p.result);
-    }
-    if let Some(c) = cache {
-        if a.pun.explain {
-            eprintln!(
-                "cache: {hits} of {} files unchanged since a clean run, skipped ({})",
-                files.len(),
-                c.path().display()
-            );
-        }
-        c.save(clean);
     }
 
     let mut unmatched_baseline = 0;
@@ -674,7 +621,6 @@ fn filter_problems(
 fn process_file(
     a: &FormatArgs,
     e: &Engines,
-    cache: Option<&cache::Cache>,
     dry_run: bool,
     path: &PathBuf,
     code: std::io::Result<Vec<u8>>,
@@ -687,8 +633,6 @@ fn process_file(
     let mut r = FileResult::new(path.clone(), rel.clone());
     let done = |result: FileResult| Processed {
         result,
-        clean: None,
-        cached: false,
         remaining: None,
     };
     // Runner FileFilterIterator: symlinks are dropped silently, empty files are "skipped".
@@ -700,17 +644,6 @@ fn process_file(
     if code.is_empty() {
         r.status = Status::Skipped;
         return Ok(done(r));
-    }
-    let hash = cache.map(|_| cache::hash(&code));
-    if let (Some(c), Some(h)) = (cache, &hash)
-        && c.is_clean(&rel, h)
-    {
-        return Ok(Processed {
-            result: r,
-            clean: hash,
-            cached: true,
-            remaining: None,
-        });
     }
     let in_format = match &e.format_files {
         Some(f) => f.contains(path),
@@ -839,7 +772,6 @@ fn process_file(
             },
         )
     };
-    let mut clean = None;
     if now != code {
         r.diff = diff(&code, &now);
         r.line = crate::github::first_changed_line(&code, &now);
@@ -849,8 +781,6 @@ fn process_file(
             std::fs::write(path, &now)
                 .map_err(|_| crate::pint_error::PintError::Write(path.clone()))?;
         }
-    } else if problems.is_empty() {
-        clean = hash;
     }
     if !problems.is_empty() {
         r.source = String::from_utf8_lossy(&now).into_owned();
@@ -883,13 +813,8 @@ fn process_file(
         f.warned = warned;
         f
     });
-    if remaining.is_some() {
-        clean = None;
-    }
     Ok(Processed {
         result: r,
-        clean,
-        cached: false,
         remaining,
     })
 }

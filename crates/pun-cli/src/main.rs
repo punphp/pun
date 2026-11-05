@@ -10,7 +10,6 @@ mod agent;
 mod analyse;
 mod analyse_report;
 mod baseline;
-mod cache;
 mod console;
 mod fix_report;
 mod github;
@@ -172,9 +171,9 @@ pub(crate) struct FormatArgs {
     /// File path context for stdin input.
     #[arg(long)]
     stdin_filename: Option<PathBuf>,
-    /// The path to the cache file (default: a per-project file under ~/.cache/pun).
-    #[arg(long)]
-    cache_file: Option<String>,
+    /// Pint's `--cache-file`, accepted and ignored: Pun has no cache (Pint's presets don't cache either).
+    #[arg(long = "cache-file", hide = true)]
+    _cache_file: Option<String>,
     /// Accepted for Pint compatibility; Pun always runs in parallel.
     #[arg(short, long)]
     parallel: bool,
@@ -245,9 +244,9 @@ pub(crate) struct PunArgs {
     /// Print the fixers the run applies, in priority order (to stderr).
     #[arg(long)]
     explain: bool,
-    /// Check every file, ignoring and not writing the cache (Pun).
-    #[arg(long)]
-    no_cache: bool,
+    /// Accepted and ignored, for scripts written when Pun had a cache: every run checks every file.
+    #[arg(long = "no-cache", hide = true)]
+    _no_cache: bool,
     /// Keep running and re-format files as they change (Pun).
     #[arg(long, conflicts_with_all = ["stdin", "stdin_filename"])]
     watch: bool,

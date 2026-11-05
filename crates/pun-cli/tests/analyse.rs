@@ -614,7 +614,7 @@ fn check_reports_analyse_findings() {
             .current_dir(&d)
             .env("PUN_AGENT", "0")
             .envs(env.iter().copied())
-            .args(["check", "--no-cache", "--color=never"])
+            .args(["check", "--color=never"])
             .output()
             .unwrap();
         (String::from_utf8(out.stdout).unwrap(), out.status.code())

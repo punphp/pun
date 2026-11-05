@@ -1234,7 +1234,7 @@ All from Pushpak unless marked "assistant's call"; dated 2026-10-17 unless given
 - **1.0 ships everything at once.** Nothing is published or tagged until `pun format`, `pun analyse`, `pun lint` and
   `pun migrate` all exist and meet the 1.0 bar below. The site presents that release as 1.0. Publishing needs Pushpak's go.
 - **The 1.0 bar:** every lint rule (all 703) native; every PHPStan core rule (327 Rule classes) native; Larastan built in with seven
-  improvements (typed config, routes, views, translations, env keys, Inertia pages, fresh model data); deprecation-rules and strict-rules as plain rules; a result cache. Speed and memory
+  improvements (typed config, routes, views, translations, env keys, Inertia pages, fresh model data); deprecation-rules and strict-rules as plain rules. Speed and memory
   come first in every command.
 - **Brand:** "Sticker Pop", the sprinting elephant in sneakers; Fredoka for text, Martian Mono for code (design/).
 
@@ -1263,6 +1263,9 @@ All from Pushpak unless marked "assistant's call"; dated 2026-10-17 unless given
   (`pun-init`, `pun-migrate`) will do that later.
 - **`pun config`** prints the resolved config; **`pun explain <rule>`** a rule's docs and upstream names;
   **`pun list-files [--command format|lint|analyse] [-0]`** the files a command checks, like Mago's.
+- **No caches** (Pushpak, 2026-11-05). Every `pun format`, `lint`, `check` and `analyse` run checks every file from
+  scratch; a slow run is fixed by redesigning for speed, not by caching. The result cache is gone; Pint's
+  `--cache-file` and Pun's old `--no-cache` are accepted and ignored.
 - **No LSP** until after 1.0's commands; `pun lsp`, pun-lsp and PHPantom were removed (in git history).
 
 ### Config and rules (plan/config.md, plan/rules.md)
@@ -1330,8 +1333,7 @@ All from Pushpak unless marked "assistant's call"; dated 2026-10-17 unless given
   each rule is a Pun check that reads Mago's inferred types, with PHPStan's semantics for that rule and preset; a Mago
   issue is used directly only where the analyse spike showed exactly the same check (`yes`, no extras), Laravel as a built-in Mago plugin (Pest after 1.0). Built-in symbols come from PHPStan's
   reflection (crates/pun-phpstan/data/symbols.json). Baselines are Pun's own (`pun analyse --generate-baseline`,
-  pun-baseline.toml); migrate never copies a PHPStan baseline. A result cache re-checks only changed files and their
-  dependents.
+  pun-baseline.toml); migrate never copies a PHPStan baseline.
 - **No extension system before 1.0.** Framework support is compiled in, as Mago's plugins are. Mockery, Livewire,
   Filament and the like come later as extensions.
 - **Mago** from crates.io, pinned `=1.57.0`, bumped together.
@@ -1447,7 +1449,6 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | coverage: context/reports/COVERAGE.md has 75 exclusions (about 55 from the pun-lint coverage pass: non-target node guards, no-Program-ancestor and impossible-scope lines); AGENTS.md wants them rare: turn each guard into a `let ... else { unreachable }`-free shape (match on the target node in the rule's visitor, or delete the guard) so the line disappears instead of being excluded | todo |
 | lint 7: all 703 lint rules native, in usage order. 703 of 703 mapping.toml lint rules ported (count: `python3 -c` over `[rules.lint]` `ported`). Ported rules retain the corpus residuals above | done |
 | lint Laravel attributes batch 8 (needs Pushpak): authorize integration of the independently produced 32-rule mailbox; keep strict upstream parity as the default | needs Pushpak (read-only audit complete; both mailbox digests match; all 154 upstream fixtures and 67 Illuminate stubs are byte-identical, with 23 Oracle and six Pun controls; source changes must replace the tab-indentation and `new static` skips with upstream output; malformed-array parser outcomes need a separate check; batch 8 remains unapplied and excluded from counts) |
-| lint Pest cache dependency: invalidate no-redundant-uses results when the applicable tests/Pest.php changes | todo |
 | lint 7 types: `add-return-type-from-ternary`, `add-nullable-return-type`, `add-union-return-type` (src/rules/types, out of `all()`) pass Rector's fixtures but differ on laravel-framework; port Rector's `TypeFactory::uniquateTypes` and PHPStan's arithmetic result types, then add them to `types::all()`; then typed-call, native-call, new-array, private-method-array, try-catch, from-parent, then the param, property and phpdoc rules. Corpus residuals come from Rector's cross-file effects, vendor classes, declared-only `mixed`, docblock shapes and Mago's truthy narrowing | todo |
 | lint 7 next small rules: classes/add-dynamic-properties (property types and docblocks), phpdoc/no-useless-{param,return,var} (TypeComparator), functions/no-extra-arguments and require-strict-in-array (types), arrays/no-implicit-array-creation (needs PHPStan's maybe-defined scope through loops), functions/require-array-filter-callback and the six style/no-dynamic-* strict rules (messages print PHPStan type descriptions), dead-code/no-unused-private-method and no-empty-method (CallCollectionAnalyzer and ArrayCallableMethodMatcher are type-based), laravel/prefer-latest-oldest (QueryBuilderAnalyzer needs Laravel types). Type-led ones (ExplicitReturnNull, SimplifyIfReturnBool, InlineArrayReturnAssign, SimplifyIfNullableReturn, VariableConstFetchToClassConstFetch, ThrowWithPreviousException, SafeDeclareStrictTypes) wait for Build 8 | todo |
 | lint 7 follow-up (from next small rules): no-for-init-overwrite and no-loop-variable-overwrite read definedness from the syntax: a by-reference argument (`preg_match($p, $s, $m)`) and a `try` whose body cannot throw do not define a variable in Pun, as PHPStan's signatures and throw points make them | todo |
@@ -1574,7 +1575,6 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | analyse 6: Larastan with the seven improvements | todo |
 | analyse 6 follow-up: aliases from dynamic config, provider/bootstrap code, programmatic AliasLoader changes, custom application paths and real-time facades; preserve cold case-sensitive lookup order and unloaded real-class collisions instead of graph-wide alias activation and real-declaration precedence | todo |
 | analyse 6 follow-up: Larastan knowledge Pinkary needs first: auth() return types (53 Mago issues), Http/facade responses (7), container/Storage (6), plus model accessors and relations | todo |
-| analyse 8: result cache | todo |
 | lint (from config, migrate 4-5 follow-ups): `pun migrate` writes Rector configurations as rule options; the lint rules should read them once ported (analyse reads its [phpstan-parameters] options through `Analyse::parameters`) | todo |
 | analyse follow-up (from config): a stub of an analysed (Host) class: Mago leaves a user-defined class unpatched (`apply_patches_pass`), PHPStan's stub wins; stubs of vendor classes apply alike | todo |
 | analyse follow-up (from config): `pun check` (run.rs) drops `Analysed.general` (unmatched `[[analyse.ignore]]` entries without a file path) and doesn't stop on "No rules detected"; `pun analyse` reports both | todo |

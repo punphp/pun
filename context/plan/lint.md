@@ -88,7 +88,8 @@ names each one as unsupported and skips it (migrate.md §3).
 | `--config rector.php` | `--config pun.toml`; rector.php is read only by `pun migrate` |
 | `--only=SomeRector` | `--only <rule>` (to build) |
 | `--output-format console/json/github/gitlab/junit` | `--format`, same formats as `pun format` (format.md §9) |
-| `--no-diffs`, `--clear-cache`, `--no-progress-bar` | the same flags `pun format` already has |
+| `--no-diffs`, `--no-progress-bar` | the same flags `pun format` already has |
+| `--clear-cache` | not needed: Pun has no cache |
 | `rector list-rules` | `pun explain <rule>` (config.md Build 8) |
 
 ## 6. How lint edits code (decided: text edits)
@@ -115,7 +116,7 @@ Done: the rule catalogue (703 rules with names, groups, safety and upstream mapp
 
 1. **The engine on Mago's syntax tree**, starting as a spike alongside PLAN.md Step 1 (Pushpak, 2026-10-17). A rule visits the tree and returns problems (span, message, help) and text
    edits on byte ranges. Fixes apply in a loop until no rule has more, with overlapping edits deferred to the next
-   round. One parse per file, files in parallel, a cache keyed like format's.
+   round. One parse per file, files in parallel, no cache.
    *Done when* two sample rules (one safe, one unsafe) pass Rector's fixtures through `format(pun lint --fix)`.
 2. **Levels, sets and overrides at run time:** `off`/`warn`/`error`, group levels, `[[lint.overrides]]`,
    `--deny-warnings`, `--max-warnings`, `-A`/`-W`/`-D`, `fix = "off"`, and the exit code (1 only for `error`).

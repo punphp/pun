@@ -35,8 +35,8 @@ For each file:
    repeat-until-stable loop, because upstream has none. Each fixer is a function-by-function port of the upstream PHP.
 5. **Print** the tokens back. Unchanged tokens keep their original bytes.
 
-Around that: file discovery copies Pint's finder rules (pun-workspace), files run in parallel, and a content-hash cache
-skips files already formatted (keyed on Pun's version, PHP version, rules and Blade lockfiles).
+Around that: file discovery copies Pint's finder rules (pun-workspace), and files run in parallel. There is no
+result cache: every run checks every file (Pushpak, 2026-11-05).
 
 **Delegate mode (today, being removed).** Today, if a config turns on a rule Pun hasn't ported, the whole run goes
 through real PHP-CS-Fixer in long-lived `php` workers. Decided: Pun runs no upstream PHP (config.md Build 6). An
@@ -47,7 +47,7 @@ exactly as Pint does it (one long-lived Node worker per thread). It needs Node. 
 cold run.
 
 The dependency probe starts a formatting worker and transfers it to the first formatting thread. Pun stops an
-unused probe worker on early exits, non-Blade stdin, PHP-only selections and fully cached Blade selections.
+unused probe worker on early exits, non-Blade stdin, and PHP-only selections.
 The worker extraction and preload script were recovered from `salvage/stash-0b0ef5b`, including its untracked-file
 parent. The port preserves the newer marker parser, resource repair, timeouts and PHP preset forwarding.
 Formatting stays parallel: serializing the workers and setting a fixed 4 MiB Node semi-space both slowed the
@@ -90,15 +90,15 @@ ported, `pun migrate` names it and skips it.
 ## 6. The CLI
 
 Today `pun format` takes every Pint flag (`--test`, `--bail`, `--repair`, `--dirty`, `--diff=<branch>`, `--config`,
-`--preset`, `--format`, `--output-to-file`, `--stdin-filename`, `--cache-file`, `-v`, `-q`, `--parallel`) plus
-`--staged`, `--since=<ref>`, `--watch`, `--stdin`, `--no-cache` and `--explain`. The flags stay. Decided changes:
+`--preset`, `--format`, `--output-to-file`, `--stdin-filename`, `--cache-file` (ignored), `-v`, `-q`, `--parallel`)
+plus `--staged`, `--since=<ref>`, `--watch`, `--stdin` and `--explain`, and ignores the old `--no-cache`. The flags stay. Decided changes:
 `--native-only` goes with delegate mode, the human output becomes Pun's own (§9), and exit codes and the machine
 formats (`--format=json|txt|checkstyle|junit|xml|gitlab|github`) stay Pint-compatible. Under a coding agent it prints
 compact lines (output.md §3).
 
 ## 7. Build
 
-Done for the old design: lexer, transformers, every laravel and psr12 fixer, CLI flags, cache, watch, migrate from
+Done for the old design: lexer, transformers, every laravel and psr12 fixer, CLI flags, watch, migrate from
 pint.json, harness and fuzzer. Speed and memory come first (decided). The steps after config.md Build 1-6 (new names, the
 40 rules moved to lint, TOML options, no delegate mode):
 

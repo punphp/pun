@@ -29,10 +29,9 @@ The 2026-10-16 benchmark used a profiling build on a shared 2-core, 7 GB machine
 | | Time |
 | --- | --- |
 | Pint | 190 s |
-| Pun, cold | 3.7 s |
-| Pun, warm cache | 0.07 s |
+| Pun | 3.7 s |
 
-Cold runs disable Pun's cache. Warm runs use a clean tree with cached results. Pint does not cache in this comparison. These timings are not measurements of the current checkout.
+Pun has no result cache: every run checks every file. These timings are not measurements of the current checkout.
 
 ## Byte-for-byte output
 

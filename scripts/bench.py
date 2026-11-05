@@ -13,8 +13,8 @@ Pun's mago crates pin) under .oracle/mago/ or MAGO_BIN. Every tool is check-only
 
 - pint-parallel: `pint --test --parallel` in corpus/<name>, with the project's pint.json.
 - pint: `pint --test` (one process), same place.
-- pun: `pun check --test --no-cache` in a scratch copy (no .git, node_modules symlinked) after `pun migrate --yes`.
-- pun-format: `pun format --test --no-cache`, same scratch copy (`pun` also runs lint and the analyser).
+- pun: `pun check --test` in a scratch copy (no .git, node_modules symlinked) after `pun migrate --yes`.
+- pun-format: `pun format --test`, same scratch copy (`pun` also runs lint and the analyser).
 - mago: `mago fmt --check .` in the same scratch copy, default config. Mago's style is not Pint's: a speed and memory
   reference, not a parity check. Without a path and without mago.toml it checks nothing.
 
@@ -115,8 +115,8 @@ def bench_format() -> None:
             commands = {
                 "pint-parallel": (["php", str(pint), "--test", "--parallel"], src),
                 "pint": (["php", str(pint), "--test"], src),
-                "pun": ([pun, "check", "--test", "--no-cache"], work),
-                "pun-format": ([pun, "format", "--test", "--no-cache"], work),
+                "pun": ([pun, "check", "--test"], work),
+                "pun-format": ([pun, "format", "--test"], work),
                 "mago": ([mago or "mago", "fmt", "--check", "."], work),
             }
             for tool in tools:
@@ -441,7 +441,7 @@ def bench_mode(mode: str) -> None:
             # The project's own Rector install: its rector.php loads sets (Pest's, for one) from its vendor/.
             "rector-full": ["php", "vendor/bin/rector"] + rector + ["rector.php"],
             "pun": [pun, "analyse", "--config", "pun-bench-analyse.toml", "--format=json"] if mode == "analyse"
-                   else [pun, "lint", "--config", "pun-bench-lint.toml", "--format=json", "--no-cache", *paths],
+                   else [pun, "lint", "--config", "pun-bench-lint.toml", "--format=json", *paths],
             "mago": [mago or "mago", "--config", str(work / "pun-bench-mago.toml"), "analyze",
                      "--reporting-format", "json"] if mode == "analyse"
                     else [mago or "mago", "lint", "--reporting-format", "json", *paths],

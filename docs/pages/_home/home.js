@@ -9,8 +9,7 @@ export const BENCHMARKS = [
     caption: "laravel/framework, whole repo, Pint 1.29.3",
     rows: [
       { name: "Pint", sub: "PHP", seconds: 190, kind: "other" },
-      { name: "pun", sub: "cold", seconds: 3.7, kind: "pun" },
-      { name: "pun", sub: "warm cache", seconds: 0.07, kind: "pun-warm" },
+      { name: "pun", sub: "Rust", seconds: 3.7, kind: "pun" },
     ],
   },
   // Next, as measured: { id: "lint", label: "Lint", title: "pun lint vs Rector", ... },
@@ -149,12 +148,10 @@ function bench(root) {
     const puns = group.rows.filter((r) => r.kind !== "other");
     if (others.length && puns.length) {
       const slowest = Math.min(...others.map((r) => r.seconds));
-      const cold = puns[0].seconds;
-      const x = Math.round(slowest / cold);
+      const x = Math.round(slowest / puns[0].seconds);
       const go = () => countUp(mega, x);
       seen ? go() : onView(sec, go);
-      if (group.id === "format") megaNote.textContent = "faster than Pint, cold. Over 2,700× with a warm cache.";
-      else megaNote.textContent = `faster than ${others.map((r) => r.name).join(" and ")}.`;
+      megaNote.textContent = `faster than ${others.map((r) => r.name).join(" and ")}.`;
     }
   };
 
