@@ -1,0 +1,26 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "branches.php",
+   "line": 52,
+   "identifier": "regexp.pattern",
+   "message": "Regex pattern is invalid: No ending delimiter '/' found in pattern: /abc",
+   "tip": null
+  },
+  {
+   "file": "branches.php",
+   "line": 55,
+   "identifier": "regexp.pattern",
+   "message": "Regex pattern is invalid: Delimiter must not be alphanumeric, backslash, or NUL byte in pattern: abc",
+   "tip": null
+  },
+  {
+   "file": "shapes.php",
+   "line": 96,
+   "identifier": "regexp.pattern",
+   "message": "Regex pattern is invalid: Compilation failed: missing closing parenthesis at offset 2 in pattern: /(a/",
+   "tip": null
+  }
+ ]
+}

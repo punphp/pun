@@ -224,6 +224,7 @@ fn analyse_observed<'arena>(
     wanted.extend(children);
     wanted.extend(origins::dependencies(&origins, &wanted));
     let mut registry = super::return_types::registry(&file.contents, names, larastan);
+    super::regex_shapes::register(&mut registry, php_version);
     let found = Arc::new(Mutex::new(Found {
         allowed: variables.as_ref().map(|_| variables::allowed_expressions(program)).unwrap_or_default(),
         ..Found::default()

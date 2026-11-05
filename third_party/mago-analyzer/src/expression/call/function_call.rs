@@ -77,9 +77,10 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for FunctionCall<'arena> {
             matches!(target.get_function_like_identifier(), Some(FunctionLikeIdentifier::Function(name)) if name.as_bytes().eq_ignore_ascii_case(b"extract"))
         });
 
+        let asserted = |identifier| context.plugin_registry.has_function_assertion_providers_for(context.resolved_names.get(identifier));
         let native_function = if block_context.native_locals.is_some()
-            && !context.plugin_registry.has_function_assertion_providers()
-            && matches!(self.function, Expression::Identifier(_))
+            && let Expression::Identifier(identifier) = self.function
+            && !asserted(identifier)
             && let [target] = invocation_targets.as_slice()
         {
             target.get_function_like_metadata()
@@ -87,8 +88,8 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for FunctionCall<'arena> {
             None
         };
         let native_return = if block_context.native_locals.is_some()
-            && !context.plugin_registry.has_function_assertion_providers()
             && let Expression::Identifier(identifier) = self.function
+            && !asserted(identifier)
         {
             let name = context.resolved_names.get(identifier);
             // PHPStan supplies these diagnostic-only functions even without project declarations.

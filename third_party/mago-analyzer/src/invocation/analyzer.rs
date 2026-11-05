@@ -952,6 +952,20 @@ where
         } else {
             None
         };
+        let parameter_type = parameter
+            .and_then(|(_, parameter)| parameter.get_name())
+            .and_then(|name| {
+                context.plugin_registry.get_function_parameter_type(
+                    context.codebase,
+                    context.source_file,
+                    block_context,
+                    artifacts,
+                    invocation,
+                    name.0.as_bytes(),
+                    true,
+                )
+            })
+            .or(parameter_type);
 
         // A `@param-closure-this T` parameter binds `$this` to `T` inside the closure literal.
         // It takes precedence over any global `Closure::bind` scope for this argument.

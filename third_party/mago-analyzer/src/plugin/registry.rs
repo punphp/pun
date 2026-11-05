@@ -834,10 +834,11 @@ impl PluginRegistry {
         !self.issue_filter_hooks.is_empty() || self.has_external_capability(|capabilities| capabilities.issue_filters)
     }
 
+    /// Whether an assertion provider targets the function `name`.
     #[inline]
     #[must_use]
-    pub fn has_function_assertion_providers(&self) -> bool {
-        !self.function_assertion_providers.is_empty()
+    pub fn has_function_assertion_providers_for(&self, name: &[u8]) -> bool {
+        !self.get_function_assertion_provider_indices(name).is_empty()
     }
 
     #[inline]
@@ -1487,6 +1488,35 @@ impl PluginRegistry {
                 .collect(),
             _ => Vec::new(),
         }
+    }
+
+    /// The first function provider's out type of the by-reference `parameter` (`$name`), or with `closure` the
+    /// callable type it expects.
+    pub(crate) fn get_function_parameter_type<'ctx>(
+        &self,
+        codebase: &'ctx CodebaseMetadata,
+        source_file: &'ctx File,
+        block_context: &BlockContext<'ctx>,
+        artifacts: &AnalysisArtifacts,
+        invocation: &Invocation<'ctx, '_, '_>,
+        parameter: &[u8],
+        closure: bool,
+    ) -> Option<TUnion> {
+        let Some(FunctionLikeIdentifier::Function(name)) = invocation.target.get_function_like_identifier() else {
+            return None;
+        };
+        let context = ProviderContext::new(codebase, source_file, block_context, artifacts);
+        let invocation = InvocationInfo::new(invocation);
+        self.get_function_provider_indices(name.as_bytes())
+            .into_iter()
+            .find_map(|index| {
+                let provider = &self.function_providers[index];
+                if closure {
+                    provider.get_parameter_closure_type(&context, &invocation, parameter)
+                } else {
+                    provider.get_parameter_out_type(&context, &invocation, parameter)
+                }
+            })
     }
 
     /// Returns a provider result for a function or method invocation.

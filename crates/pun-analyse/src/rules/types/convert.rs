@@ -1214,7 +1214,9 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                         shape.values.push(self.to_phpstan(v));
                     }
                     shape.is_list = Tri::Yes;
-                    return finish_shape(shape);
+                    // a Mago list is a list: `TypeCombinator::intersect($shape, new AccessoryArrayListType())`, as
+                    // the builder alone leaves `array{0: a, 1?: b, 2?: c}` maybe a list
+                    return intersect(vec![finish_shape(shape), Type::Accessory(Accessory::List)]);
                 }
                 let mut item = self.to_phpstan(&l.element_type);
                 if let Some(known) = &l.known_elements {

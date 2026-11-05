@@ -3809,3 +3809,39 @@ ArgumentsHandler does for the method reflection Larastan's ModelForwardsCallsExt
   template's bound only maybe accepts infers the members the bound accepts (TemplateTypeTrait::inferTemplateTypes()):
   a closure returning `class-string|false` for `callable(): TKey` with `TKey of array-key` infers `class-string`,
   not the bound.
+
+## Regex array shapes (preg_match)
+
+Pun's `rules/regex_shapes` ports PHPStan 2.3.1's RegexArrayShapeMatcher and its extensions as Mago providers. The
+analyzer gains the extension points and the comparison forms PHPStan narrows through.
+
+- `plugin/provider/function.rs`: `FunctionReturnTypeProvider::get_parameter_out_type()` (PHPStan's
+  FunctionParameterOutTypeExtension) and `get_parameter_closure_type()` (FunctionParameterClosureTypeExtension),
+  both defaulting to `None`. `plugin/registry.rs` `get_function_parameter_type()` asks the call's function providers
+  for either.
+- `invocation/post_process.rs`: a by-reference argument's write-back takes a provider's out type before the declared
+  one (after the `openssl_encrypt()` tag case). PregMatchParameterOutTypeExtension types `$matches`.
+- `invocation/analyzer.rs`: a closure argument's parameter type is a provider's closure type when it has one.
+  PregReplaceCallbackClosureTypeExtension types the callback's `$matches`.
+- `plugin/registry.rs` `has_function_assertion_providers_for()` and `expression/call/function_call.rs`: a registered
+  function assertion provider invalidates native call tracking only for the functions it targets, not every call.
+  Previously the preg_match() provider turned off `assertNativeType()` checks across the whole file.
+- `formula.rs` `get_preg_match_comparison_formula()`: IdenticalNarrowingHelper reads `preg_match() === 1` and `== 1`
+  in the truthy context as the call itself. BinaryOpHandler rewrites `0 < preg_match()`, `1 <= preg_match()` and
+  their mirrors the same way (with at least 3 arguments). A synthetic clause on the comparison keeps its negation a
+  disjunction, so the other branch is not narrowed.
+- `formula.rs` `get_preg_match_comparison_formula()` and `collect_conditional_assertions_inner()`:
+  `preg_match() === false` is PregMatchTypeSpecifyingExtension's falsey context (`$matches` is `array{}`). Its other
+  branch, `!== false`, is the maybe-matched context, which keeps the declared `$matches`. So the comparison takes the
+  call's falsy narrowing with the synthetic clause, and the conditional assertions skip the `!== false` side. Mago
+  would otherwise read that side as the call's truthiness and narrow `$matches` to the matched shape.
+- `formula.rs` `preg_match_bool_cast()`: CastHandler narrows `(bool) preg_match(...)` as the call's truthiness, in
+  `get_formula()` and `collect_conditional_assertions_inner()`. Also, a loose comparison of a preg call with a bool
+  literal (`preg_match() == true`, `!= false`) compares the call's truthiness.
+- `formula.rs` `get_coalesce_literal_comparison_formula()`: CoalesceHandler's `createTypesCallback()` for
+  `($a ?? V) !== V` with a constant string or integer `V`. The left side is narrowed `!== V` in the branch where the
+  type rules the right side out, and the other branch is not narrowed (synthetic clause); `=== V` is the negation.
+  For an offset fetch with a literal key, the array also gets `HasNonnullEntryForKey`, as narrowing an offset's type
+  sets the offset (`setExistingOffsetValueType()`). That clause goes before the offset's clause, so `array{}` drops
+  out before the offset's narrowing writes into it. `negate_formula()` takes clauses from the end, so for `=== V` it
+  goes last. `($matches[2] ?? '') !== '' ? (int) $matches[2] : null` reads an existing offset.

@@ -8,6 +8,7 @@ use mago_algebra::clause::Clause;
 use mago_algebra::disjoin_clauses;
 use mago_algebra::negate_formula;
 use mago_codex::assertion::Assertion;
+use mago_codex::ttype::atomic::array::key::ArrayKey;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_span::HasSpan;
@@ -116,6 +117,171 @@ where
     if should_negate { negate_formula(formula, algebra_thresholds) } else { Some(formula) }
 }
 
+/// The argument count of a call to `preg_match()` (or `preg_match_all()` with `all`), by its written name as
+/// PHPStan's narrowing helpers compare it.
+fn preg_match_arguments(expression: &Expression, all: bool) -> Option<usize> {
+    let Expression::Call(Call::Function(call)) = unwrap_expression(expression) else { return None };
+    let Expression::Identifier(name) = call.function else { return None };
+    let name = name.value().strip_prefix(b"\\").unwrap_or(name.value());
+    (name.eq_ignore_ascii_case(b"preg_match") || all && name.eq_ignore_ascii_case(b"preg_match_all"))
+        .then_some(call.argument_list.arguments.len())
+}
+
+/// `($a ?? V) !== V` for a constant string or integer `V`: CoalesceHandler's `createTypesCallback()` narrows the left
+/// side only where the type rules the right side out, so `$a !== V` there (with `isset()` of an offset fetch) and
+/// nothing in the other branch (a synthetic clause on the comparison keeps the negation a disjunction); `=== V` is
+/// its negation.
+fn get_coalesce_literal_comparison_formula<A>(
+    conditional_object_id: Span,
+    creating_object_id: Span,
+    binary: &Binary,
+    assertion_context: AssertionContext<'_, '_, A>,
+    artifacts: &AnalysisArtifacts,
+    algebra_thresholds: &AlgebraThresholds,
+    formula_size_threshold: u16,
+) -> Option<Vec<Clause>>
+where
+    A: Arena,
+{
+    let (BinaryOperator::Identical(span) | BinaryOperator::NotIdentical(span)) = binary.operator else { return None };
+    let literal = |expression: &Expression| {
+        let t = artifacts.get_expression_type(expression)?;
+        let value = t.get_single_literal_string_value().map(<[u8]>::to_vec);
+        value.or_else(|| t.get_single_literal_int_value().map(|i| i.to_string().into_bytes().into_iter().chain([0]).collect()))
+    };
+    let (coalesce, value) = [(binary.lhs, binary.rhs), (binary.rhs, binary.lhs)].into_iter().find_map(|(coalesce, value)| {
+        let Expression::Binary(coalesce) = unwrap_expression(coalesce) else { return None };
+        (matches!(coalesce.operator, BinaryOperator::NullCoalesce(_))
+            && literal(value).is_some_and(|v| literal(coalesce.rhs) == Some(v)))
+        .then_some((coalesce, value))
+    })?;
+    let not_identical = Expression::Binary(Binary { lhs: coalesce.lhs, operator: BinaryOperator::NotIdentical(span), rhs: value });
+    let mut formula = get_base_formula(
+        conditional_object_id,
+        creating_object_id,
+        &not_identical,
+        assertion_context,
+        artifacts,
+        algebra_thresholds,
+        formula_size_threshold,
+    )?;
+    let identical = matches!(binary.operator, BinaryOperator::Identical(_));
+    // narrowing an offset fetch's type sets the offset (`setExistingOffsetValueType()`): the array has the key. Its
+    // clause comes before the offset's, so the array loses its members without the key before the offset's narrowing
+    // writes into them; `negate_formula()` takes the clauses from the end, so for `=== V` it goes last.
+    if let Expression::ArrayAccess(access) = unwrap_expression(coalesce.lhs)
+        && let Some(index) = artifacts.get_expression_type(access.index)
+        && let Some(key) = index
+            .get_single_literal_int_value()
+            .map(ArrayKey::Integer)
+            .or_else(|| index.get_single_literal_string_value().map(|key| ArrayKey::String(mago_word::word(key))))
+        && let Some(array_id) = assertion_context.get_expression_id(access.array)
+    {
+        let has_key = Assertion::HasNonnullEntryForKey(key);
+        let mut map = AssertionMap::default();
+        map.insert(array_id, AssertionMap::from_iter([(has_key.to_hash(), has_key)]));
+        let at = if identical { formula.len() } else { 0 };
+        formula.insert(at, Clause::new(map, conditional_object_id, creating_object_id, None, None, None));
+    }
+    let span = binary.span();
+    let synthetic = Word::from(format!("*{}-{}", span.start.offset, span.end.offset).as_str());
+    let mut map = AssertionMap::default();
+    map.insert(synthetic, AssertionMap::from_iter([(Assertion::Truthy.to_hash(), Assertion::Truthy)]));
+    formula.push(Clause::new(map, conditional_object_id, creating_object_id, None, None, None));
+    if identical { negate_formula(formula, algebra_thresholds) } else { Some(formula) }
+}
+
+/// `(bool) preg_match(...)`: PHPStan's CastHandler narrows a bool cast as `$expr == true`, the call's truthiness.
+fn preg_match_bool_cast<'ast, 'arena>(expression: &'ast Expression<'arena>) -> Option<&'ast Expression<'arena>> {
+    let Expression::UnaryPrefix(unary) = expression else { return None };
+    (matches!(unary.operator, UnaryPrefixOperator::BoolCast(..) | UnaryPrefixOperator::BooleanCast(..))
+        && preg_match_arguments(unary.operand, true).is_some())
+    .then_some(unary.operand)
+}
+
+/// The `preg_match()` comparisons PHPStan 2.3.1 narrows through the call's own context:
+/// `IdenticalNarrowingHelper` reads `preg_match() === 1` (and `== 1`) in the truthy context as the call itself,
+/// `BinaryOpHandler` rewrites `0 < preg_match()` and `1 <= preg_match()` into it, and a loose comparison with a
+/// bool literal compares the call's truthiness (`collect_conditional_assertions_inner()`). The integer forms narrow one side only: a synthetic clause on the
+/// comparison keeps the negation a disjunction, so the other branch is not narrowed.
+fn get_preg_match_comparison_formula<A>(
+    conditional_object_id: Span,
+    creating_object_id: Span,
+    binary: &Binary,
+    assertion_context: AssertionContext<'_, '_, A>,
+    artifacts: &AnalysisArtifacts,
+    algebra_thresholds: &AlgebraThresholds,
+    formula_size_threshold: u16,
+) -> Option<Vec<Clause>>
+where
+    A: Arena,
+{
+    let int_value = |expression: &Expression| {
+        artifacts.get_expression_type(expression).and_then(|t| t.get_single_literal_int_value())
+    };
+    let call_formula = |call: &Expression| {
+        get_base_formula(
+            conditional_object_id,
+            creating_object_id,
+            call,
+            assertion_context,
+            artifacts,
+            algebra_thresholds,
+            formula_size_threshold,
+        )
+    };
+
+    // `preg_match() === false` is the falsey context, its other branch the maybe-matched one, which a truthy
+    // narrowing would overstate: the call's falsy narrowing with the synthetic clause
+    let compared_with_false = [(binary.lhs, binary.rhs), (binary.rhs, binary.lhs)]
+        .into_iter()
+        .find_map(|(call, other)| (other.is_false() && preg_match_arguments(call, true).is_some()).then_some(call))
+        .filter(|_| matches!(binary.operator, BinaryOperator::Identical(_) | BinaryOperator::NotIdentical(_)));
+    let falsy = compared_with_false.is_some();
+    let (call, negated) = if let Some(call) = compared_with_false {
+        (call, matches!(binary.operator, BinaryOperator::NotIdentical(_)))
+    } else {
+        match binary.operator {
+            BinaryOperator::Identical(_)
+            | BinaryOperator::NotIdentical(_)
+            | BinaryOperator::Equal(_)
+            | BinaryOperator::NotEqual(_)
+            | BinaryOperator::AngledNotEqual(_) => {
+                let call = [(binary.lhs, binary.rhs), (binary.rhs, binary.lhs)].into_iter().find_map(|(call, other)| {
+                    (preg_match_arguments(call, false).is_some_and(|arguments| arguments >= 1) && int_value(other) == Some(1)).then_some(call)
+                })?;
+                (call, !matches!(binary.operator, BinaryOperator::Identical(_) | BinaryOperator::Equal(_)))
+            }
+            // `$a < $call`, `$a <= $call` and their mirrors `$call > $a`, `$call >= $a`
+            BinaryOperator::LessThan(_) | BinaryOperator::LessThanOrEqual(_) | BinaryOperator::GreaterThan(_)
+            | BinaryOperator::GreaterThanOrEqual(_) => {
+                let (bound, call) = match binary.operator {
+                    BinaryOperator::LessThan(_) | BinaryOperator::LessThanOrEqual(_) => (binary.lhs, binary.rhs),
+                    _ => (binary.rhs, binary.lhs),
+                };
+                let strict = matches!(binary.operator, BinaryOperator::LessThan(_) | BinaryOperator::GreaterThan(_));
+                let bound = int_value(bound)?;
+                if preg_match_arguments(call, false)? < 3 || bound < if strict { 0 } else { 1 } {
+                    return None;
+                }
+                (call, false)
+            }
+            _ => return None,
+        }
+    };
+
+    let mut formula = call_formula(call)?;
+    if falsy {
+        formula = negate_formula(formula, algebra_thresholds)?;
+    }
+    let span = binary.span();
+    let synthetic = Word::from(format!("*{}-{}", span.start.offset, span.end.offset).as_str());
+    let mut map = AssertionMap::default();
+    map.insert(synthetic, AssertionMap::from_iter([(Assertion::Truthy.to_hash(), Assertion::Truthy)]));
+    formula.push(Clause::new(map, conditional_object_id, creating_object_id, None, None, None));
+    if negated { negate_formula(formula, algebra_thresholds) } else { Some(formula) }
+}
+
 pub fn get_formula<A>(
     conditional_object_id: Span,
     creating_object_id: Span,
@@ -165,6 +331,18 @@ where
 {
     let expression = unwrap_expression(conditional);
 
+    if let Some(call) = preg_match_bool_cast(expression) {
+        return get_base_formula(
+            conditional_object_id,
+            creating_object_id,
+            call,
+            assertion_context,
+            artifacts,
+            algebra_thresholds,
+            formula_size_threshold,
+        );
+    }
+
     if let Expression::Binary(binary) = expression {
         if matches!(binary.operator, BinaryOperator::And(_) | BinaryOperator::LowAnd(_)) {
             return handle_binary_and_operation(
@@ -188,6 +366,30 @@ where
                 algebra_thresholds,
                 formula_size_threshold,
             );
+        }
+
+        if let Some(formula) = get_coalesce_literal_comparison_formula(
+            conditional_object_id,
+            creating_object_id,
+            binary,
+            assertion_context,
+            artifacts,
+            algebra_thresholds,
+            formula_size_threshold,
+        ) {
+            return Some(formula);
+        }
+
+        if let Some(formula) = get_preg_match_comparison_formula(
+            conditional_object_id,
+            creating_object_id,
+            binary,
+            assertion_context,
+            artifacts,
+            algebra_thresholds,
+            formula_size_threshold,
+        ) {
+            return Some(formula);
         }
 
         if let BinaryOperator::Identical(_) | BinaryOperator::NotIdentical(_) = binary.operator {
@@ -527,6 +729,9 @@ fn collect_conditional_assertions_inner(
     formula_size_threshold: u16,
 ) -> WordMap<AssertionSet> {
     let expression = unwrap_expression(expression);
+    if let Some(call) = preg_match_bool_cast(expression) {
+        return collect_conditional_assertions_inner(call, when_true, artifacts, include_non_equality, formula_size_threshold);
+    }
     match expression {
         Expression::Call(call) => {
             let range = (call.span().start.offset, call.span().end.offset);
@@ -628,12 +833,19 @@ fn collect_conditional_assertions_inner(
 
             let is_equality = matches!(binary.operator, BinaryOperator::Equal(_) | BinaryOperator::Identical(_));
             let is_strict = matches!(binary.operator, BinaryOperator::Identical(_) | BinaryOperator::NotIdentical(_));
-            let other_is_bool = artifacts.get_expression_type(other).is_some_and(|ty| ty.is_bool());
+            // `preg_match() != false`: PHPStan compares a call's truthiness with a loose bool literal
+            let other_is_bool = artifacts.get_expression_type(other).is_some_and(|ty| ty.is_bool())
+                || preg_match_arguments(other, true).is_some();
             if !is_strict && !other_is_bool {
                 return WordMap::default();
             }
 
             let other_when_true = if is_equality { when_true == literal } else { when_true != literal };
+            // `preg_match() !== false` is PregMatchTypeSpecifyingExtension's maybe-matched context, which keeps the
+            // declared `$matches`
+            if is_strict && !literal && other_when_true && preg_match_arguments(other, true).is_some() {
+                return WordMap::default();
+            }
 
             let include_non_equality = is_equality == when_true || other_is_bool;
 

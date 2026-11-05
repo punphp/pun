@@ -111,4 +111,26 @@ pub trait FunctionReturnTypeProvider: Provider {
         context: &ProviderContext<'_, '_, '_>,
         invocation: &InvocationInfo<'_, '_, '_>,
     ) -> Option<TUnion>;
+
+    /// PHPStan's `FunctionParameterOutTypeExtension`: the type the by-reference `parameter` (`$name`) has after the
+    /// call, instead of its declared out type.
+    fn get_parameter_out_type(
+        &self,
+        _context: &ProviderContext<'_, '_, '_>,
+        _invocation: &InvocationInfo<'_, '_, '_>,
+        _parameter: &[u8],
+    ) -> Option<TUnion> {
+        None
+    }
+
+    /// PHPStan's `FunctionParameterClosureTypeExtension`: the callable type the `parameter` (`$name`) expects, which
+    /// types an inline closure argument's parameters, instead of the declared one.
+    fn get_parameter_closure_type(
+        &self,
+        _context: &ProviderContext<'_, '_, '_>,
+        _invocation: &InvocationInfo<'_, '_, '_>,
+        _parameter: &[u8],
+    ) -> Option<TUnion> {
+        None
+    }
 }

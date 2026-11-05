@@ -513,6 +513,18 @@ where
                 argument_type
             } else if let Some(tag) = openssl_encrypt_tag(invocation, parameter_ref.get_name(), artifacts) {
                 tag
+            } else if let Some(out) = parameter_ref.get_name().and_then(|name| {
+                context.plugin_registry.get_function_parameter_type(
+                    context.codebase,
+                    context.source_file,
+                    block_context,
+                    artifacts,
+                    invocation,
+                    name.0.as_bytes(),
+                    false,
+                )
+            }) {
+                out
             } else {
                 parameter_ref
                     .get_out_type()

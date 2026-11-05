@@ -82,6 +82,7 @@ mod var_names;
 mod variance;
 mod bind_scope;
 mod return_types;
+mod regex_shapes;
 
 use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
