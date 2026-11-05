@@ -453,12 +453,29 @@ where
         // 2. Add empty string literal to represent the coerced value
         let key_type = if key_type.is_mixed() {
             Rc::new(get_arraykey())
-        } else if key_type.has_null() {
-            // Filter out null types
-            let mut types: Vec<TAtomic> = key_type.types.iter().filter(|t| !t.is_null()).cloned().collect();
+        } else if key_type.has_null()
+            || key_type.types.iter().any(|t| matches!(t, TAtomic::Scalar(TScalar::Bool(_) | TScalar::Float(_))))
+        {
+            // Filter out null types; `toArrayKey()` casts a bool key to 0/1 and a float key to int
+            let mut types: Vec<TAtomic> = key_type
+                .types
+                .iter()
+                .filter(|t| !t.is_null())
+                .flat_map(|t| match t {
+                    TAtomic::Scalar(TScalar::Bool(b)) if b.is_true() => vec![TAtomic::Scalar(TScalar::literal_int(1))],
+                    TAtomic::Scalar(TScalar::Bool(b)) if b.is_false() => vec![TAtomic::Scalar(TScalar::literal_int(0))],
+                    TAtomic::Scalar(TScalar::Bool(_)) => {
+                        vec![TAtomic::Scalar(TScalar::literal_int(0)), TAtomic::Scalar(TScalar::literal_int(1))]
+                    }
+                    TAtomic::Scalar(TScalar::Float(_)) => vec![TAtomic::Scalar(TScalar::int())],
+                    t => vec![t.clone()],
+                })
+                .collect();
 
             // Add empty string literal since null coerces to ''
-            types.push(TAtomic::Scalar(TScalar::String(TString::known_literal(empty_word()))));
+            if key_type.has_null() {
+                types.push(TAtomic::Scalar(TScalar::String(TString::known_literal(empty_word()))));
+            }
 
             Rc::new(TUnion::from_vec(types))
         } else {

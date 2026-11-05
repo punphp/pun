@@ -1661,7 +1661,8 @@ impl FunctionReturnTypeProvider for Benevolent {
 }
 
 /// ReplaceFunctionsDynamicReturnTypeExtension of a mixed subject: the functionMap return type as a benevolent union
-/// (`str_replace('a', '', $mixed)` is `(array<string>|string)`). The functions whose return type is not a plain union
+/// (`str_replace('a', '', $mixed)` is `(array<string>|string)`), and of a subject that is no array but not only
+/// strings (`class-string|false`) its string result. The functions whose return type is not a plain union
 /// (`preg_replace()`'s conditional, `strtr()`'s `string`) keep their stub's type.
 struct ReplaceOfMixed;
 
@@ -1687,8 +1688,15 @@ impl FunctionReturnTypeProvider for ReplaceOfMixed {
         } else {
             invocation.get_argument(2, &[b"subject"])
         }?;
-        if !context.get_expression_type(subject)?.is_mixed() {
-            return None;
+        let subject = context.get_expression_type(subject)?;
+        if !subject.is_mixed() {
+            // A subject that is no array (`class-string|false`) has only the string result, as the stub gives a
+            // string subject (`TypeCombinator::intersect(new StringType(), $subject)`; `false` adds no array)
+            let string = |t: &TAtomic| matches!(t, TAtomic::Scalar(s) if s.is_any_string());
+            let no_array = name != "substr_replace"
+                && subject.types.iter().all(|t| matches!(t, TAtomic::Scalar(_) | TAtomic::Null))
+                && subject.types.iter().any(string);
+            return (no_array && !subject.types.iter().all(string)).then(mago_codex::ttype::get_string);
         }
         let [variant] = super::reflection::builtins(80400).functions.get(&name)?.variants.as_slice() else {
             return None;

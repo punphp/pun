@@ -38,6 +38,7 @@ use crate::reconciler::assertion_reconciler;
 use crate::reconciler::reconcile_keyed_types;
 use crate::utils::conditional;
 use crate::utils::expression::is_derived_access_path;
+use crate::utils::expression::is_offset_access_path;
 use crate::utils::symbol_existence::extract_function_constant_existence;
 
 impl<'ast, 'arena> Analyzable<'ast, 'arena> for Conditional<'arena> {
@@ -119,7 +120,7 @@ where
 
         'outer: for key in keys {
             for mixed_var_id in &mixed_variables {
-                if is_derived_access_path(key, *mixed_var_id) {
+                if is_derived_access_path(key, *mixed_var_id) && !is_offset_access_path(key, *mixed_var_id) {
                     let has_explicit_type_assertion = clause
                         .possibilities
                         .get(&key)

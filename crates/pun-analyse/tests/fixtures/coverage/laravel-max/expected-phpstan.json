@@ -562,6 +562,195 @@
    "tip": null
   },
   {
+   "file": "round5.php",
+   "line": 14,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $object of function get_class expects object, mixed given.",
+   "tip": null
+  },
+  {
+   "file": "round5.php",
+   "line": 16,
+   "identifier": "method.nonObject",
+   "message": "Cannot call method loadMissing() on mixed.",
+   "tip": null
+  },
+  {
+   "file": "round5.php",
+   "line": 28,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $object of function get_class expects object, mixed given.",
+   "tip": null
+  },
+  {
+   "file": "round5.php",
+   "line": 36,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $object of function get_class expects object, mixed given.",
+   "tip": null
+  },
+  {
+   "file": "round5.php",
+   "line": 36,
+   "identifier": "argument.type",
+   "message": "Parameter #3 $subject of function str_replace expects array<string>|string, class-string|false given.",
+   "tip": null
+  },
+  {
+   "file": "round5.php",
+   "line": 55,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $key of function LaravelMax\\Round5\\group expects callable(): class-string, Closure(): (class-string|false) given.",
+   "tip": null
+  },
+  {
+   "file": "round5.php",
+   "line": 55,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $object of function get_class expects object, mixed given.",
+   "tip": null
+  },
+  {
+   "file": "round5.php",
+   "line": 75,
+   "identifier": "binaryOp.invalid",
+   "message": "Binary operation \".\" between mixed and ' / ' results in an error.",
+   "tip": null
+  },
+  {
+   "file": "round5.php",
+   "line": 75,
+   "identifier": "binaryOp.invalid",
+   "message": "Binary operation \".\" between string and mixed results in an error.",
+   "tip": null
+  },
+  {
+   "file": "round5.php",
+   "line": 75,
+   "identifier": "offsetAccess.nonOffsetAccessible",
+   "message": "Cannot access offset 'schema' on mixed.",
+   "tip": null
+  },
+  {
+   "file": "round5.php",
+   "line": 75,
+   "identifier": "offsetAccess.nonOffsetAccessible",
+   "message": "Cannot access offset 'table' on mixed.",
+   "tip": null
+  },
+  {
+   "file": "round5.php",
+   "line": 80,
+   "identifier": "offsetAccess.nonOffsetAccessible",
+   "message": "Cannot access offset 'e' on mixed.",
+   "tip": null
+  },
+  {
+   "file": "round5.php",
+   "line": 81,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $a of function LaravelMax\\Round5\\out expects string, mixed given.",
+   "tip": null
+  },
+  {
+   "file": "round5.php",
+   "line": 83,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $a of function LaravelMax\\Round5\\out expects string, array|float|int|string|false|null given.",
+   "tip": null
+  },
+  {
+   "file": "round5.php",
+   "line": 89,
+   "identifier": "offsetAccess.nonOffsetAccessible",
+   "message": "Cannot access offset 'f' on mixed.",
+   "tip": null
+  },
+  {
+   "file": "round5.php",
+   "line": 92,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $a of function LaravelMax\\Round5\\out expects string, mixed given.",
+   "tip": null
+  },
+  {
+   "file": "round5.php",
+   "line": 93,
+   "identifier": "offsetAccess.nonOffsetAccessible",
+   "message": "Cannot access offset 'g' on mixed.",
+   "tip": null
+  },
+  {
+   "file": "round5.php",
+   "line": 93,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $a of function LaravelMax\\Round5\\out expects string, mixed given.",
+   "tip": null
+  },
+  {
+   "file": "round5.php",
+   "line": 98,
+   "identifier": "offsetAccess.nonOffsetAccessible",
+   "message": "Cannot access offset 'g' on mixed.",
+   "tip": null
+  },
+  {
+   "file": "round5.php",
+   "line": 98,
+   "identifier": "offsetAccess.nonOffsetAccessible",
+   "message": "Cannot access offset 0 on mixed.",
+   "tip": null
+  },
+  {
+   "file": "round5.php",
+   "line": 99,
+   "identifier": "offsetAccess.nonOffsetAccessible",
+   "message": "Cannot access offset 'g' on mixed.",
+   "tip": null
+  },
+  {
+   "file": "round5.php",
+   "line": 99,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $a of function LaravelMax\\Round5\\out expects string, mixed given.",
+   "tip": null
+  },
+  {
+   "file": "round5.php",
+   "line": 106,
+   "identifier": "offsetAccess.nonOffsetAccessible",
+   "message": "Cannot access offset 'k' on mixed.",
+   "tip": null
+  },
+  {
+   "file": "round5.php",
+   "line": 107,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $a of function LaravelMax\\Round5\\out expects string, mixed given.",
+   "tip": null
+  },
+  {
+   "file": "round5.php",
+   "line": 113,
+   "identifier": "property.nonObject",
+   "message": "Cannot access property $p on mixed.",
+   "tip": null
+  },
+  {
+   "file": "round5.php",
+   "line": 114,
+   "identifier": "property.nonObject",
+   "message": "Cannot access property $p on mixed.",
+   "tip": null
+  },
+  {
+   "file": "round5.php",
+   "line": 114,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $a of function LaravelMax\\Round5\\out expects string, mixed given.",
+   "tip": null
+  },
+  {
    "file": "strings.php",
    "line": 9,
    "identifier": "offsetAccess.nonOffsetAccessible",

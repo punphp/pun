@@ -3788,3 +3788,24 @@ requested method's callbacks before asking its providers. A model's `User::chunk
 `__callStatic()` handles, then types the closure against `callable(TModel): TReturn` of the model's builder, as
 ArgumentsHandler does for the method reflection Larastan's ModelForwardsCallsExtension supplies
 (`Collection<int, string>`, not `Collection<int, mixed>`). Providers that ask for nothing are unchanged.
+
+## Mixed values at level max (laravel-framework round 5)
+
+- `plugin/libraries/stdlib/object/get_class.rs`: `get_class()` of mixed is `class-string|false`
+  (MixedType::toGetClassResultType()), and of a non-object (`null`, a scalar, an array) `false`
+  (NonObjectTypeTrait). `new` on that type instantiates the `false` member as an ErrorType, so
+  `(new $class)->loadMissing()` after `$class = get_class($mixed)` is a call on mixed (`method.nonObject`), not an
+  undefined method of `object`.
+- `statement/if.rs` (the `if` and `elseif` conditions) and `expression/conditional.rs`: the Psalm filter that drops
+  a truthy clause on a path below a mixed variable keeps a path of array offsets only
+  (`utils/expression/mod.rs` `is_offset_access_path()`). MutatingScope::specifyExpressionType() records the narrowed
+  `$t['a']` of a mixed `$t`, so after `if ($t['a'])` or `$t['a'] ? $t['a'] : ''` the second fetch has an expression
+  type and NonexistentOffsetInArrayDimFetchRule does not report it again. The holder itself stays mixed (see
+  `adjust_array_offset()` above). Property paths (`$t->p`) keep the filter, as PHPStan still reports their fetches.
+- `expression/assignment/array_assignment.rs` `update_array_assignment_child_type()`: a written key goes through
+  `toArrayKey()` for bools and floats too, not only `null`: `$a[get_class($mixed)] = 1` has the key `0|class-string`,
+  not `false|class-string`.
+- `invocation/template_inference.rs` `infer_templates_from_input_and_container_types()`: a union input its naked
+  template's bound only maybe accepts infers the members the bound accepts (TemplateTypeTrait::inferTemplateTypes()):
+  a closure returning `class-string|false` for `callable(): TKey` with `TKey of array-key` infers `class-string`,
+  not the bound.

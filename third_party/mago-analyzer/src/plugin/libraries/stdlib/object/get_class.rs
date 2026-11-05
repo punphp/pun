@@ -48,6 +48,19 @@ impl FunctionReturnTypeProvider for GetClassProvider {
                     TClassLikeString::of_type(TClassLikeStringKind::Class, atomic.clone())
                 }
                 TAtomic::Object(_) => TClassLikeString::any(TClassLikeStringKind::Class),
+                // MixedType::toGetClassResultType(): maybe an object, so `class-string|false`
+                TAtomic::Mixed(_) => {
+                    projections.push(TAtomic::Scalar(TScalar::ClassLikeString(TClassLikeString::any(
+                        TClassLikeStringKind::Class,
+                    ))));
+                    projections.push(TAtomic::Scalar(TScalar::r#false()));
+                    continue;
+                }
+                // NonObjectTypeTrait::toGetClassResultType(): `false`
+                TAtomic::Null | TAtomic::Array(_) | TAtomic::Scalar(_) => {
+                    projections.push(TAtomic::Scalar(TScalar::r#false()));
+                    continue;
+                }
                 _ => return None,
             };
             projections.push(TAtomic::Scalar(TScalar::ClassLikeString(projection)));

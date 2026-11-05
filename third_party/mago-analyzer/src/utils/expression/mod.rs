@@ -564,6 +564,18 @@ pub fn get_method_id_from_call(
     }
 }
 
+/// Whether `derived_path` reaches below `base_path` only through array offsets (`$m['a'][1]`), which
+/// MutatingScope::specifyExpressionType() narrows even when the holder is mixed.
+#[inline]
+pub fn is_offset_access_path(derived_path: Word, base_path: Word) -> bool {
+    let derived = derived_path.as_bytes();
+    let rest = &derived[base_path.as_bytes().len().min(derived.len())..];
+    is_derived_access_path(derived_path, base_path)
+        && rest.first() == Some(&b'[')
+        && memchr::memmem::find(rest, b"->").is_none()
+        && memchr::memmem::find(rest, b"::").is_none()
+}
+
 /// Checks if a given string (`derived_path`) represents a property access (`->`, `::`)
 /// or array element access (`[]`) that originates from a `base_path` string.
 ///

@@ -989,10 +989,28 @@ fn infer_templates_from_input_and_container_types<A>(
             resolve_self_class(&container_generic.defining_entity),
         );
 
+        // TemplateTypeTrait::inferTemplateTypes(): a union input the bound maybe accepts infers the members the
+        // bound accepts (`class-string|false` for `TKey of array-key` is `class-string`)
+        let fitting = if !expanded_constraint.has_template_types() && residual_input_type.types.len() > 1 {
+            let fits = |t: &TUnion| union_comparator::is_contained_by(
+                context.codebase, t, &expanded_constraint, false, false, false, &mut ComparisonResult::default(),
+            );
+            let members: Vec<TAtomic> = residual_input_type
+                .types
+                .iter()
+                .filter(|t| fits(&TUnion::from_atomic((*t).clone())))
+                .cloned()
+                .collect();
+            (!fits(&residual_input_type) && !members.is_empty()).then(|| TUnion::from_vec(members))
+        } else {
+            None
+        };
+        let residual_input_type = fitting.as_ref().unwrap_or(&residual_input_type);
+
         if !expanded_constraint.has_template_types()
             && !union_comparator::is_contained_by(
                 context.codebase,
-                &residual_input_type,
+                residual_input_type,
                 &expanded_constraint,
                 false,
                 false,
