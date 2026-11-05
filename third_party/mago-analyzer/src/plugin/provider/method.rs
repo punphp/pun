@@ -9,6 +9,7 @@ use mago_word::starts_with_ignore_case;
 use crate::plugin::context::InvocationInfo;
 use crate::plugin::context::ProviderContext;
 use crate::plugin::provider::Provider;
+use crate::plugin::provider::function::CallbackInvocation;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct MethodTarget {
@@ -83,6 +84,18 @@ pub trait MethodReturnTypeProvider: Provider {
     fn targets() -> &'static [MethodTarget]
     where
         Self: Sized;
+
+    /// Inline callbacks to type again with supplied argument types before `get_return_type()`, which reads their
+    /// returns through `ProviderContext::get_callback_return_type()` (as FunctionReturnTypeProvider's).
+    fn callback_invocations<'ast, 'arena>(
+        &self,
+        _context: &ProviderContext<'_, '_, '_>,
+        _class_name: &[u8],
+        _method_name: &[u8],
+        _invocation: &InvocationInfo<'_, 'ast, 'arena>,
+    ) -> Vec<CallbackInvocation<'ast, 'arena>> {
+        Vec::new()
+    }
 
     fn get_return_type(
         &self,

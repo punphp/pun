@@ -374,6 +374,12 @@ impl<'a> Checker<'a, '_> {
                     .next()
                     .filter(|r| !r.object_class_names().is_empty())
                     .unwrap_or_else(|| Type::Object("Illuminate\\Database\\Eloquent\\Model".into(), vec![], false));
+                // a related class that is not a model forwards nothing
+                if !related.object_class_names().first().is_some_and(|m| {
+                    super::super::larastan::is_a(self, m.as_bytes(), b"illuminate\\database\\eloquent\\model")
+                }) {
+                    return Ok(None);
+                }
                 // the related model's own builder (`newEloquentBuilder()`, `#[UseEloquentBuilder]`)
                 let builder = match related.object_class_names().as_slice() {
                     [model] => String::from_utf8_lossy(super::super::larastan::builder_name(self.codebase, model.as_bytes()).as_bytes()).into_owned(),
@@ -637,7 +643,35 @@ fn check_single_method<'arena>(
         if method_exists {
             return;
         }
-        // ponytail: a parent's private method of the one class named (`method.private`) is reported as not found
+        // the one class named: the first parent class (with the template types its `@extends` tag gives the class's
+        // own) that has the method
+        if let [n] = t.object_class_names().as_slice()
+            && let Lookup::Found(k) = c.class_like(n)
+        {
+            let own: Vec<Type> = declared::class_templates(c, k).into_iter().map(|t| Type::Template(Box::new(t))).collect();
+            let child = declared::original_name(k);
+            let mut parent = k.direct_parent_class.and_then(|p| c.codebase.get_class_like(p.as_bytes()));
+            while let Some(p) = parent {
+                let ancestor = declared::original_name(p);
+                let args = declared::with_classes(c, || {
+                    pun_phpstan::symbols::lookup(&child)
+                        .and_then(|s| pun_phpstan::types::ancestor_args(&s, &ancestor, &own))
+                        .unwrap_or_default()
+                });
+                let reflection = Type::Object(ancestor, args.clone(), false);
+                if c.has_method(&reflection, name.value).yes() {
+                    let method = c.reflected_method(&reflection, name.value).ok().flatten().map_or(method_name, |m| m.name.clone());
+                    let display = declared::with_classes(c, || {
+                        let args: Vec<String> = args.iter().map(|a| a.describe(Level::TypeOnly)).collect();
+                        if args.is_empty() { c.display(p) } else { format!("{}<{}>", c.display(p), args.join(",")) }
+                    });
+                    let message = format!("Call to private method {method}() of parent class {display}.");
+                    c.report(name, "method.private", message, None);
+                    return;
+                }
+                parent = p.direct_parent_class.and_then(|p| c.codebase.get_class_like(p.as_bytes()));
+            }
+        }
         let message = format!("Call to an undefined method {}::{method_name}().", describe(c, &t));
         c.report(name, "method.notFound", message, None);
         return;

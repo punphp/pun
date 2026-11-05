@@ -1235,7 +1235,8 @@ fn method_signature<'a>(c: &Checker<'a, '_>, m: &Method, name: &str, k: &'a Clas
                     _ => declaring,
                 };
                 let rename = |t: Type| if declaring.kind.is_trait() { self_to(&t, declaring, owner) } else { t };
-                let (docs, ret) = declared::reflected_phpdoc_signature(c, f, declaring, &facts.name);
+                // (resolved in the using class, so the trait's templates are its `@use` tag's types)
+                let (docs, ret) = declared::reflected_phpdoc_signature(c, f, owner, &facts.name);
                 let docs: Vec<Option<Type>> = f
                     .parameters
                     .iter()

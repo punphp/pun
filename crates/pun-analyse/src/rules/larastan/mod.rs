@@ -551,6 +551,19 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_, '_, 'arena> {
     }
 }
 
+thread_local! {
+    static RESOLVE_UNRESOLVABLE: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
+}
+
+/// `f` with `TypeUtils::resolveLateResolvableTypes()`'s resolution of unresolvable types: a `collection-of<T>` of a
+/// template the PHPDoc types `f` resolves is the collection of the template's bound.
+pub(crate) fn resolving_unresolvable<R>(f: impl FnOnce() -> R) -> R {
+    let previous = RESOLVE_UNRESOLVABLE.with(|r| r.replace(true));
+    let result = f();
+    RESOLVE_UNRESOLVABLE.with(|r| r.set(previous));
+    result
+}
+
 /// Larastan's TypeNodeResolverExtensions: `view-string` (ViewStringType), `model-property<TModel>`
 /// (ModelPropertyTypeNodeResolverExtension: GenericModelPropertyType with `checkModelProperties`, else a string),
 /// `collection-of<TModel>` (CollectionOfType, the model's own collection) and GenericEloquentBuilderTypeNodeResolverExtension's
@@ -586,7 +599,12 @@ pub(crate) fn type_node(
         }
         ("model-property", _) => Some(Type::Error),
         ("collection-of", [t]) if is_super_type_of(&model(), t).no() || matches!(t, Type::Never(_)) => None,
-        // ponytail: a template's collection stays the Eloquent collection after the template is resolved
+        // FunctionReturnTypeCheck's TypeUtils::resolveLateResolvableTypes() resolves a template's CollectionOfType by
+        // the template's bound (getObjectClassNames())
+        ("collection-of", [t]) if super::declared::has_template(t) && RESOLVE_UNRESOLVABLE.with(std::cell::Cell::get) => {
+            type_node(codebase, larastan, name, &[t.resolve_to_bounds()])
+        }
+        // ponytail: elsewhere a template's collection stays the Eloquent collection after the template is resolved
         ("collection-of", [t]) if super::declared::has_template(t) => Some(Type::Object(
             "Illuminate\\Database\\Eloquent\\Collection".into(),
             vec![Type::Int, t.clone()],

@@ -84,6 +84,9 @@ pub(super) fn registry(
     registry.register_function_call_hook(builtins.clone());
     registry.register_function_provider(builtins);
     registry.register_method_provider(ClosureMethods(contents.to_vec()));
+    registry.register_function_provider(super::array_fill::ArrayFill);
+    registry.register_function_provider(super::date_format::DateFormat);
+    registry.register_method_provider(super::date_format::DateFormat);
     registry
 }
 

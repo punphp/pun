@@ -47,6 +47,7 @@ use crate::invocation::post_process::post_invocation_process;
 use crate::invocation::return_type_fetcher::fetch_declared_invocation_return_type;
 use crate::invocation::return_type_fetcher::fetch_function_like_provider_return_type;
 use crate::invocation::return_type_fetcher::fetch_invocation_return_type;
+use crate::invocation::return_type_fetcher::price_callbacks;
 use crate::invocation::template_result::populate_template_result_from_invocation;
 use crate::plugin::ExpressionHookResult;
 use crate::plugin::context::HookContext;
@@ -696,10 +697,12 @@ where
             arguments_analyzed = true;
         }
 
+        // the callbacks a provider of the requested method types again (as fetch_invocation_return_type() does)
+        let priced = price_callbacks(context, block_context, artifacts, &requested_identifier, &invocation)?;
         let return_type = match fetch_function_like_provider_return_type(
             context,
             block_context,
-            artifacts,
+            priced.as_ref().unwrap_or(artifacts),
             &requested_identifier,
             &invocation,
         ) {

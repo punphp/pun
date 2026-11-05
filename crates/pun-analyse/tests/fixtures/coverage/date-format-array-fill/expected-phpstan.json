@@ -1,0 +1,355 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "types.php",
+   "line": 20,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: array{'x', 'x', 'x'}",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 21,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: array{5: 1, 6: 1}",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 22,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: array{-3: true, 0: true, 1: true}",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 23,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: non-empty-array<int, 'a'>",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 24,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: non-empty-array<int, 'a'>",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 25,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: non-empty-list<'x'>",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 26,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: list<'x'>",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 27,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: non-empty-array<int, 'x'>",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 28,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: array<int, 'x'>",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 29,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: list<'x'>",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 30,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: *NEVER*",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 31,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: *NEVER*",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 32,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: *NEVER*",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 33,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: list<'x'>",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 34,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: list<'x'>",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 35,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: array",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 35,
+   "identifier": "arguments.count",
+   "message": "Function array_fill invoked with 2 parameters, 3 required.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 40,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: '01'|'02'|'03'|'04'|'05'|'06'|'07'|'08'|'09'|'10'|'11'|'12'|'13'|'14'|'15'|'16'|'17'|'18'|'19'|'20'|'21'|'22'|'23'|'24'|'25'|'26'|'27'|'28'|'29'|'30'|'31'",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 41,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: '1'|'10'|'11'|'12'|'13'|'14'|'15'|'16'|'17'|'18'|'19'|'2'|'20'|'21'|'22'|'23'|'24'|'25'|'26'|'27'|'28'|'29'|'3'|'30'|'31'|'4'|'5'|'6'|'7'|'8'|'9'",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 42,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: '1'|'2'|'3'|'4'|'5'|'6'|'7'",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 43,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: '0'|'1'|'2'|'3'|'4'|'5'|'6'",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 44,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: '01'|'02'|'03'|'04'|'05'|'06'|'07'|'08'|'09'|'10'|'11'|'12'",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 45,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: '1'|'10'|'11'|'12'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 46,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: '28'|'29'|'30'|'31'",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 47,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: '0'|'1'",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 48,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: '1'|'10'|'11'|'12'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 49,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: '0'|'1'|'10'|'11'|'12'|'13'|'14'|'15'|'16'|'17'|'18'|'19'|'2'|'20'|'21'|'22'|'23'|'3'|'4'|'5'|'6'|'7'|'8'|'9'",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 50,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: '01'|'02'|'03'|'04'|'05'|'06'|'07'|'08'|'09'|'10'|'11'|'12'",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 51,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: '00'|'01'|'02'|'03'|'04'|'05'|'06'|'07'|'08'|'09'|'10'|'11'|'12'|'13'|'14'|'15'|'16'|'17'|'18'|'19'|'20'|'21'|'22'|'23'",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 52,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: '0'|'1'",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 53,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: non-falsy-string&numeric-string",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 54,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: non-falsy-string&numeric-string",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 55,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: non-falsy-string",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 56,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: numeric-string",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 57,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: non-falsy-string",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 58,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: non-falsy-string",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 59,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: non-empty-string",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 60,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: non-falsy-string",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 61,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: ''",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 62,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: string",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 63,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: string",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 64,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: string",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 65,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: string",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 65,
+   "identifier": "arguments.count",
+   "message": "Function date_format invoked with 1 parameter, 2 required.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 66,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: numeric-string",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 67,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: non-falsy-string",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 68,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: non-falsy-string",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 69,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: string",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 70,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: string",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 83,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: string",
+   "tip": null
+  }
+ ]
+}

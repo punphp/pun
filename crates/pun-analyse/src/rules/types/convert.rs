@@ -1148,7 +1148,13 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                 let unfilled = !n.is_exact
                     && !KEEP_FILLED.get()
                     && n.type_parameters.as_ref().is_some_and(|p| !p.is_empty() && p.iter().all(TUnion::from_template_fallback));
-                let args = if unfilled { Vec::new() } else { args };
+                let mut args = if unfilled { Vec::new() } else { args };
+                // and fills the omitted trailing arguments of one written with fewer, where PHPStan's
+                // GenericObjectType keeps the written ones (TypeNodeResolver adds only the templates' defaults)
+                if !n.is_exact && !KEEP_FILLED.get() && let Some(p) = n.type_parameters.as_ref() {
+                    let written = p.iter().rposition(|p| !p.from_unspecified_template()).map_or(0, |i| i + 1);
+                    args.truncate(written);
+                }
                 let t = if n.is_this {
                     Type::This(name)
                 } else if n.is_static {

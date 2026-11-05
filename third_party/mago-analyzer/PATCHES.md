@@ -3777,3 +3777,14 @@ StaticType in the result to the called-on type.
 write (`$this->p[] = $v`, `static::$p[$k] = $v`) or of `unset($this->p[$k])` records the property's whole new value
 by the fetch's span, and nested function-likes pass it up. TypesAssignedToPropertiesRule checks it, as AssignHandler
 and UnsetHandler emit a PropertyAssignNode for these writes.
+
+## Callback pricing for method providers
+
+`plugin/provider/method.rs` adds `MethodReturnTypeProvider::callback_invocations()` (default: none), as
+FunctionReturnTypeProvider has. `plugin/registry.rs` `callback_invocations()` takes the identifier and asks the
+method providers of a `Method` identifier too. `invocation/return_type_fetcher.rs` moves the pricing loop into
+`price_callbacks()`, and `expression/call/method_call.rs` `analyze_undocumented_method_return_type()` prices the
+requested method's callbacks before asking its providers. A model's `User::chunkMap(fn ($model) => ...)`, which only
+`__callStatic()` handles, then types the closure against `callable(TModel): TReturn` of the model's builder, as
+ArgumentsHandler does for the method reflection Larastan's ModelForwardsCallsExtension supplies
+(`Collection<int, string>`, not `Collection<int, mixed>`). Providers that ask for nothing are unchanged.

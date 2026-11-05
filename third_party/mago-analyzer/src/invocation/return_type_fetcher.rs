@@ -53,22 +53,40 @@ where
     } else {
         declared
     };
-    let requests = context.plugin_registry.callback_invocations(
-        context.codebase, context.source_file, block_context, artifacts, invocation,
-    );
-    let mut priced = None;
-    if !requests.is_empty() {
-        let mut answers = artifacts.clone();
-        answers.callback_returns.clear();
-        for request in requests {
-            let result = super::callback::evaluate(context, block_context, artifacts, &request)?;
-            answers.callback_returns.push((mago_span::HasSpan::span(request.callback), request.arguments, result));
-        }
-        priced = Some(answers);
-    }
+    let priced = match invocation.target.get_function_like_identifier() {
+        Some(identifier) => price_callbacks(context, block_context, artifacts, identifier, invocation)?,
+        None => None,
+    };
     let artifacts = priced.as_ref().unwrap_or(artifacts);
     let ty = fetch_invocation_provider_return_type(context, block_context, artifacts, invocation).unwrap_or(declared);
     Ok(InvocationReturnType { ty, always_terminates })
+}
+
+/// The artifacts with the returns of the callbacks the providers of `identifier` ask to type again, `None` when
+/// they ask for none.
+pub(crate) fn price_callbacks<'ctx, 'arena, A>(
+    context: &mut Context<'ctx, 'arena, A>,
+    block_context: &BlockContext<'ctx>,
+    artifacts: &AnalysisArtifacts,
+    identifier: &FunctionLikeIdentifier,
+    invocation: &Invocation<'ctx, '_, 'arena>,
+) -> Result<Option<AnalysisArtifacts>, AnalysisError>
+where
+    A: Arena,
+{
+    let requests = context.plugin_registry.callback_invocations(
+        context.codebase, context.source_file, block_context, artifacts, identifier, invocation,
+    );
+    if requests.is_empty() {
+        return Ok(None);
+    }
+    let mut answers = artifacts.clone();
+    answers.callback_returns.clear();
+    for request in requests {
+        let result = super::callback::evaluate(context, block_context, artifacts, &request)?;
+        answers.callback_returns.push((mago_span::HasSpan::span(request.callback), request.arguments, result));
+    }
+    Ok(Some(answers))
 }
 
 /// Requests a custom return type from registered providers and reports provider issues.

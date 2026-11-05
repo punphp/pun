@@ -2,12 +2,4 @@
 # <file>:<line> for an assertion line, <file> for a file's other errors. The list must be exact.
 tests/Integration/data/model-properties.php
 tests/Integration/data/model-property-model.php
-tests/Type/data/bug-1985.php
-tests/Type/data/bug-1997.php
-tests/Type/data/bug-2073.php
-tests/Type/data/collection-helper.php
-tests/Type/data/collection-of-type.php
-tests/Type/data/eloquent-builder-l11-42.php:322
-tests/Type/data/model-properties.php:90
-tests/Type/data/model-relations.php:203
 tests/Type/data/view-exists.php:10

@@ -2,6 +2,7 @@
 //! registered for that node type, in PHPStan's source order.
 
 mod anonymous;
+mod array_fill;
 mod arrays;
 mod assign;
 mod attributes;
@@ -10,6 +11,7 @@ mod class_names;
 mod classes;
 mod by_ref_foreach;
 mod constants;
+mod date_format;
 mod date_interval;
 mod date_time;
 mod dead_code;

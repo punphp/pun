@@ -5,7 +5,7 @@
 //! Mago resolves the mixin itself; these providers only replace the return types.
 
 use mago_analyzer::plugin::context::{InvocationInfo, ProviderContext};
-use mago_analyzer::plugin::provider::function::{FunctionReturnTypeProvider, FunctionTarget};
+use mago_analyzer::plugin::provider::function::{CallbackInvocation, FunctionReturnTypeProvider, FunctionTarget};
 use mago_analyzer::plugin::provider::method::{MethodReturnTypeProvider, MethodTarget};
 use mago_analyzer::plugin::provider::{Provider, ProviderMeta};
 use mago_codex::metadata::CodebaseMetadata;
@@ -118,6 +118,29 @@ impl MethodReturnTypeProvider for ModelForwards {
         &TARGETS
     }
 
+    /// The inline callbacks of a model's call forwarded to its builder ([`model_forward()`]).
+    fn callback_invocations<'ast, 'arena>(
+        &self,
+        context: &ProviderContext<'_, '_, '_>,
+        class: &[u8],
+        method: &[u8],
+        invocation: &InvocationInfo<'_, 'ast, 'arena>,
+    ) -> Vec<CallbackInvocation<'ast, 'arena>> {
+        let codebase = context.codebase();
+        if !codebase.is_instance_of(class, MODEL) || codebase.method_exists(class, method) {
+            return Vec::new();
+        }
+        let Some(model) = codebase.get_class_like(class) else { return Vec::new() };
+        let builder = builder_of(codebase, &TNamedObject::new(model.original_name));
+        let (Some(function), Some(templates)) = (
+            codebase.get_declaring_method(builder.name.as_bytes(), method),
+            object_templates(codebase, builder.name.as_bytes(), &builder, method),
+        ) else {
+            return Vec::new();
+        };
+        callbacks(codebase, function, &templates, invocation)
+    }
+
     fn get_return_type(
         &self,
         context: &ProviderContext<'_, '_, '_>,
@@ -176,7 +199,7 @@ impl MethodReturnTypeProvider for ModelForwards {
             && !hidden_scope(context, class, method)
             && let Some(ty) = self
                 .new_query(context, class, method, invocation)
-                .or_else(|| own_collection(context, method, invocation))
+                .or_else(|| own_collection(context, method, invocation, self.static_class(invocation, method).is_some()))
         {
             return Some(ty);
         }
@@ -539,6 +562,7 @@ fn own_collection(
     context: &ProviderContext<'_, '_, '_>,
     method: &[u8],
     invocation: &InvocationInfo<'_, '_, '_>,
+    static_call: bool,
 ) -> Option<TUnion> {
     let codebase = context.codebase();
     let target = invocation.inner().target.get_method_context()?;
@@ -546,6 +570,11 @@ fn own_collection(
     let receiver = &match &target.class_type {
         StaticClassType::Object(TObject::Named(receiver)) => receiver.clone(),
         StaticClassType::Exact(name) | StaticClassType::Name(name) => TNamedObject::new(*name),
+        // a static call on a template (`class-string<TModel>`) has its bound's class (getObjectClassNames())
+        StaticClassType::Generic(g) if static_call => match g.constraint.types.as_ref() {
+            [TAtomic::Object(TObject::Named(bound))] => bound.clone(),
+            _ => return None,
+        },
         _ => return None,
     };
     let name = String::from_utf8_lossy(method).to_ascii_lowercase();
@@ -768,7 +797,6 @@ pub(super) fn method_type(
     method: &[u8],
     call: Option<(&ProviderContext<'_, '_, '_>, &InvocationInfo<'_, '_, '_>)>,
 ) -> Option<TUnion> {
-    let declaring = codebase.get_declaring_method_class(class, method)?;
     // the declaring class's (or trait's) method: a trait's is not stored on the using class
     let function = codebase.get_declaring_method(class, method)?;
     let mut ty = function.return_type_metadata.as_ref()?.type_union.clone();
@@ -778,6 +806,25 @@ pub(super) fn method_type(
         static_class_type: StaticClassType::Object(TObject::Named(object.clone())),
         ..Default::default()
     };
+    let mut templates = object_templates(codebase, class, object, method)?;
+    if let Some(call) = call {
+        infer_method_templates(codebase, function, call, &mut templates);
+    }
+    if ty.types.iter().any(TAtomic::is_conditional) {
+        ty = inferred_type_replacer::replace(&ty, &templates, codebase);
+        ty = resolve_conditionals(codebase, &ty, function, call?, &options);
+    }
+    expand_union(codebase, &mut ty, &options);
+    let ty = inferred_type_replacer::replace(&ty, &templates, codebase);
+    Some(TUnion::from_vec(
+        ty.types.iter().cloned().map(plain).collect(),
+    ))
+}
+
+/// The templates of the class (or trait) declaring `class`'s `method`, as `object` specializes them.
+fn object_templates(codebase: &CodebaseMetadata, class: &[u8], object: &TNamedObject, method: &[u8]) -> Option<TemplateResult> {
+    let declaring = codebase.get_declaring_method_class(class, method)?;
+    let metadata = codebase.get_class_like(class)?;
     let mut templates = TemplateResult::default();
     let owner = codebase.get_class_like(declaring.as_bytes())?;
     for (name, template) in owner.template_types.iter() {
@@ -791,18 +838,43 @@ pub(super) fn method_type(
             templates.add_lower_bound(*name, GenericParent::ClassLike(owner.name), bound);
         }
     }
-    if let Some(call) = call {
-        infer_method_templates(codebase, function, call, &mut templates);
+    Some(templates)
+}
+
+/// The inline callbacks of a call of `function` with their parameters' types: each `callable(...)` parameter's
+/// types with the class's templates resolved (ArgumentsHandler types a closure argument against its parameter).
+fn callbacks<'ast, 'arena>(
+    codebase: &CodebaseMetadata,
+    function: &mago_codex::metadata::function_like::FunctionLikeMetadata,
+    templates: &TemplateResult,
+    invocation: &InvocationInfo<'_, 'ast, 'arena>,
+) -> Vec<CallbackInvocation<'ast, 'arena>> {
+    use mago_codex::ttype::atomic::callable::TCallable;
+    use mago_syntax::cst::Expression;
+    let mut out = Vec::new();
+    for (i, parameter) in function.parameters.iter().enumerate() {
+        let name = parameter.get_name().0;
+        let name = name.as_bytes().strip_prefix(b"$").unwrap_or(name.as_bytes());
+        let Some(callback @ (Expression::Closure(_) | Expression::ArrowFunction(_))) = invocation.get_argument(i, &[name])
+        else {
+            continue;
+        };
+        let Some(TAtomic::Callable(TCallable::Signature(signature))) =
+            parameter.get_type_metadata().and_then(|t| t.type_union.types.iter().find(|t| t.is_callable()))
+        else {
+            continue;
+        };
+        let arguments = signature
+            .parameters
+            .iter()
+            .map(|p| {
+                let declared = p.get_type_signature().cloned().unwrap_or_else(mago_codex::ttype::get_mixed);
+                inferred_type_replacer::replace(&declared, templates, codebase)
+            })
+            .collect();
+        out.push(CallbackInvocation { callback, arguments });
     }
-    if ty.types.iter().any(TAtomic::is_conditional) {
-        ty = inferred_type_replacer::replace(&ty, &templates, codebase);
-        ty = resolve_conditionals(codebase, &ty, function, call?, &options);
-    }
-    expand_union(codebase, &mut ty, &options);
-    let ty = inferred_type_replacer::replace(&ty, &templates, codebase);
-    Some(TUnion::from_vec(
-        ty.types.iter().cloned().map(plain).collect(),
-    ))
+    out
 }
 
 /// `GenericParametersAcceptorResolver::resolve()` for the forwarded method's own templates, as far as the forwarded
@@ -846,6 +918,18 @@ fn infer_method_templates(
             }
             let TAtomic::Callable(TCallable::Signature(signature)) = atomic else { continue };
             let Some(g) = signature.return_type.as_deref().and_then(single) else { continue };
+            // an inline callback typed again against the parameter (callbacks())
+            let priced = invocation.get_argument(i, &[name]).and_then(|callback| {
+                let arguments = callbacks(codebase, function, templates, invocation)
+                    .into_iter()
+                    .find(|c| std::ptr::eq(c.callback, callback))?
+                    .arguments;
+                context.get_callback_return_type(callback, &arguments).cloned()
+            });
+            if let Some(returned) = priced {
+                templates.add_lower_bound(g.parameter_name, g.defining_entity, returned);
+                continue;
+            }
             let returns: Vec<TUnion> = argument
                 .types
                 .iter()

@@ -187,7 +187,9 @@ pub(in super::super) fn function(c: &mut Checker, f: &Function) {
     }
     let name = c.resolved_span(f.name.span());
     let native = f.return_type_hint.is_some();
-    let ret = declared::with_classes(c, || late(c, &declared::function(c, f).ret, None, !native));
+    let ret = declared::with_classes(c, || {
+        late(c, &super::super::larastan::resolving_unresolvable(|| declared::function(c, f).ret), None, !native)
+    });
     body(c, &f.body, &ret, &format!("Function {name}()"));
 }
 
@@ -200,7 +202,10 @@ pub(in super::super) fn method(c: &mut Checker, m: &Method) {
     };
     let (Some(context), Some(declaring)) = (c.class_scope(), declaring(c, m.span())) else { return };
     let native = m.return_type_hint.is_some();
-    let ret = declared::with_classes(c, || late(c, &declared::method(c, m, declaring, context).ret, Some(context), !native));
+    let ret = declared::with_classes(c, || {
+        let declared = super::super::larastan::resolving_unresolvable(|| declared::method(c, m, declaring, context).ret);
+        late(c, &declared, Some(context), !native)
+    });
     let of = format!("Method {}::{}()", c.display(context), method_name(c, m));
     body(c, b, &ret, &of);
 }
