@@ -12,6 +12,7 @@ use crate::misc::GenericParent;
 use crate::ttype::atomic::TAtomic;
 use crate::ttype::atomic::array::TArray;
 use crate::ttype::atomic::array::key::ArrayKey;
+use crate::ttype::atomic::array::keyed::KnownItems;
 use crate::ttype::atomic::array::keyed::TKeyedArray;
 use crate::ttype::atomic::array::list::TList;
 use crate::ttype::atomic::generic::TGenericParameter;
@@ -1349,7 +1350,7 @@ pub(crate) fn is_atomic_intersection_contained_by(
     true
 }
 
-type ConstantArrayItems = BTreeMap<ArrayKey, (bool, TUnion)>;
+type ConstantArrayItems = KnownItems;
 
 /// Definite ConstantArrayType views, not the asserted offsets of an ordinary generic array.
 fn constant_array_parts(array: &TArray) -> Option<(ConstantArrayItems, Option<(TUnion, TUnion)>)> {
@@ -1398,10 +1399,10 @@ fn intersect_constant_arrays(
         }
         _ => None,
     };
-    let mut items = BTreeMap::new();
+    let mut items = KnownItems::default();
     for key in left_items
         .keys()
-        .chain(right_items.keys().filter(|key| !left_items.contains_key(key)))
+        .chain(right_items.keys().filter(|key| !left_items.contains_key(*key)))
     {
         let (optional, value) = match (left_items.get(key), right_items.get(key)) {
             (Some((left_optional, left_value)), Some((right_optional, right_value))) => {

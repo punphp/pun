@@ -19,6 +19,7 @@ use mago_codex::metadata::CodebaseMetadata;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::array::TArray;
 use mago_codex::ttype::atomic::array::key::ArrayKey;
+use mago_codex::ttype::atomic::array::keyed::KnownItems;
 use mago_codex::ttype::atomic::array::keyed::TKeyedArray;
 use mago_codex::ttype::atomic::array::list::TList;
 use mago_codex::ttype::atomic::callable::TCallable;
@@ -1044,7 +1045,7 @@ impl BuiltinFunctions {
             Some(a) => combine_union_types(&a, b, codebase, CombinerOptions::default()),
             None => b.clone(),
         };
-        let mut items = std::collections::BTreeMap::<ArrayKey, (bool, TUnion)>::new();
+        let mut items = KnownItems::default();
         let (mut keys, mut values, mut general, mut non_empty) = (None, None, false, false);
         for argument in invocation.arguments() {
             if argument.is_unpacked() {

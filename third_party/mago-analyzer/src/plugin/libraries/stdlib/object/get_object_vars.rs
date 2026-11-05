@@ -1,9 +1,9 @@
-use std::collections::BTreeMap;
 use std::sync::Arc;
 
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::array::TArray;
 use mago_codex::ttype::atomic::array::key::ArrayKey;
+use mago_codex::ttype::atomic::array::keyed::KnownItems;
 use mago_codex::ttype::atomic::array::keyed::TKeyedArray;
 use mago_codex::ttype::get_arraykey;
 use mago_codex::ttype::get_mixed;
@@ -53,7 +53,7 @@ impl FunctionReturnTypeProvider for GetObjectVarsProvider {
 
         let current_class = context.current_class_name();
 
-        let mut known_items: BTreeMap<ArrayKey, (bool, TUnion)> = BTreeMap::new();
+        let mut known_items: KnownItems = KnownItems::default();
         for (property_name, declaring_class) in class_metadata.appearing_property_ids.iter() {
             let Some(property) = context.codebase().get_property(declaring_class.as_bytes(), property_name.as_bytes())
             else {

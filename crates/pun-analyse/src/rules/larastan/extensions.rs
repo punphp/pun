@@ -20,6 +20,7 @@ use mago_analyzer::plugin::provider::method::{MethodReturnTypeProvider, MethodTa
 use mago_analyzer::plugin::provider::{Provider, ProviderMeta};
 use mago_codex::metadata::CodebaseMetadata;
 use mago_codex::ttype::atomic::TAtomic;
+use mago_codex::ttype::atomic::array::keyed::KnownItems;
 use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::object::named::TNamedObject;
 use mago_codex::ttype::atomic::scalar::TScalar;
@@ -273,7 +274,7 @@ fn form_request_safe(context: &ProviderContext<'_, '_, '_>, invocation: &Invocat
         }
         _ => return None,
     };
-    let items: std::collections::BTreeMap<_, _> = values
+    let items: KnownItems = values
         .iter()
         .flat_map(|v| v.types.iter())
         .filter_map(|a| match a {

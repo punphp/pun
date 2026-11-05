@@ -1041,12 +1041,12 @@ where
 
 /// `+` composition for two keyed shapes.
 fn compose_keyed_plus(left: &TKeyedArray, right: &TKeyedArray) -> TKeyedArray {
-    use std::collections::BTreeMap;
+    use mago_codex::ttype::atomic::array::keyed::KnownItems;
 
     let left_known = left.known_items.as_deref();
     let right_known = right.known_items.as_deref();
 
-    let mut composed_known: BTreeMap<_, _> = BTreeMap::new();
+    let mut composed_known = KnownItems::default();
 
     if let Some(left_known) = left_known {
         for (key, (left_optional, left_value)) in left_known {
@@ -1135,7 +1135,7 @@ fn compose_keyed_plus(left: &TKeyedArray, right: &TKeyedArray) -> TKeyedArray {
         known_non_list: left.known_non_list
             || (!left.non_empty
                 && left.parameters.is_none()
-                && left.known_items.as_deref().is_none_or(BTreeMap::is_empty)
+                && left.known_items.as_deref().is_none_or(KnownItems::is_empty)
                 && right.known_non_list),
     }
 }

@@ -3853,3 +3853,35 @@ analyzer gains the extension points and the comparison forms PHPStan narrows thr
 types PHPStan does not infer. The stdlib providers no longer target the `Psl\` functions (`max`, `min`, `abs`,
 `array_merge`), and `assertion.rs` drops its `Psl\Iter\contains_key`/`contains` assertions and `Psl\Iter\count` in
 the count checks.
+
+## Keyed array key order (ConstantArrayType)
+
+The analyzer side of mago-codex's "Keyed array key order" patch: every keyed array's `known_items` is a
+`KnownItems` in insertion order.
+
+- Writers keep the order: array literals and their unpacks (`expression/array.rs`), offset writes
+  (`expression/assignment/array_assignment.rs`, an existing key keeps its slot), `+` (`expression/binary/arithmetic.rs`,
+  the left keys, then the right ones), `array_filter()`, `array_map()`, `array_flip()`, `array_merge()`, `compact()`,
+  `get_object_vars()` and the PSL and Flow plugins, which already build their maps in argument or source order.
+- Removals keep the others' slots, as ConstantArrayType::unsetOffset() does: `statement/unset.rs`,
+  `reconciler/mod.rs` and `reconciler/simple_negated_assertion_reconciler.rs` use `shift_remove()`.
+- `context/variable_scope.rs`: the nullable-shape and shared-key joins compare key sets, not sequences.
+- `plugin/libraries/stdlib/url/parse_url.rs`: the components in ParseUrlFunctionDynamicReturnTypeExtension's
+  `componentTypesPairedStrings` order. `common/global.rs` `sorted()`: the superglobal shapes, which PHPStan does not
+  have, keep their sorted order.
+
+## Overwriting assertions and count narrowing on list shapes
+
+- `reconciler/assertion_reconciler.rs` `reconcile()`: an `Assertion::Overwrite` is its type, whatever the variable
+  was (SpecifiedTypes::setAlwaysOverwriteTypes()). `assertion.rs` `process_custom_assertions()` does not negate an
+  overwrite into the truthy formula, as it has no negation; the falsey branch reads it from the call's if-false
+  assertions. `external/metadata.rs` and `external/protocol.rs` encode it as kind 47.
+- `reconciler/simple_assertion_reconciler.rs` `reconcile_countable_with_bound()`: `count($a) === N` and `>= N` on a
+  list shape (a closed list, or a keyed array whose keys are 0, 1, ... in order with only the last one optional, so
+  inferIsListFromShape() is yes) is
+  ConstantArrayType::truncateListToSize(): the first N values become required, and for an exact count the rest are
+  dropped. A shape too small for N, or with a required key past an exact N, is removed. Previously the closed list
+  `array{0: non-falsy-string, 1?: non-empty-string}` was dropped (`*NEVER*` after `count($m) === 2`), and a keyed
+  list shape kept its optional keys. Another sealed shape whose size can never be N goes too (CountNarrowingHelper
+  skips an array whose getArraySize() N is no for), so `count($a) === 2` on `array{short: string}|array{long: string,
+  details: string}` keeps the two-key shape.

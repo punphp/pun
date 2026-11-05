@@ -1,5 +1,11 @@
-use std::collections::BTreeMap;
+use std::cmp::Ordering;
+use std::hash::BuildHasher;
+use std::hash::Hash;
+use std::hash::Hasher;
 use std::sync::Arc;
+
+use foldhash::fast::FixedState;
+use indexmap::IndexMap;
 
 use mago_word::Word;
 use mago_word::concat_word;
@@ -11,16 +17,20 @@ use crate::ttype::atomic::TAtomic;
 use crate::ttype::atomic::array::key::ArrayKey;
 use crate::ttype::union::TUnion;
 
+/// A keyed array's known items in insertion order, as PHPStan's ConstantArrayType keeps its keys: a new key goes
+/// last, a write to an existing key keeps its slot, and removing a key (`shift_remove()`) keeps the others' order.
+/// Equality, hashing and ordering of [`TKeyedArray`] do not depend on that order.
+pub type KnownItems = IndexMap<ArrayKey, (bool, TUnion), FixedState>;
+
 /// Metadata for a PHP array analyzed as a keyed array (map/dictionary-like).
 ///
 /// Corresponds to `array<TKey, TValue>` or `array{'key': TVal, 1: TVal2 ...}` shape.
-#[allow(clippy::derived_hash_with_manual_eq)]
-#[derive(Debug, Clone, Eq, Hash, PartialOrd, Ord, Default)]
+#[derive(Debug, Clone, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct TKeyedArray {
     /// Specific types known for certain keys (`ArrayKey`). The bool indicates if the element is optional.
     /// Clones share this map; use `Arc::make_mut` to change it.
-    pub known_items: Option<Arc<BTreeMap<ArrayKey, (bool, TUnion)>>>,
+    pub known_items: Option<Arc<KnownItems>>,
     /// The general key and value types (`TKey`, `TValue` in `array<TKey, TValue>`).
     /// `None` if only `known_items` are present or types are unknown/mixed.
     pub parameters: Option<(Arc<TUnion>, Arc<TUnion>)>,
@@ -53,6 +63,47 @@ impl PartialEq for TKeyedArray {
         }
 
         self.known_items == other.known_items
+    }
+}
+
+impl TKeyedArray {
+    /// The known items sorted by key: the order-independent form equality, hashing and ordering compare.
+    fn sorted_items(&self) -> Option<Vec<(&ArrayKey, &(bool, TUnion))>> {
+        self.known_items.as_deref().map(|items| {
+            let mut sorted: Vec<_> = items.iter().collect();
+            sorted.sort_unstable_by(|a, b| a.0.cmp(b.0));
+            sorted
+        })
+    }
+}
+
+impl Hash for TKeyedArray {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        // the entries' hashes summed, independent of their order
+        self.known_items.as_deref().map(|items| {
+            items.iter().fold(0u64, |sum, entry| sum.wrapping_add(FixedState::default().hash_one(entry)))
+        }).hash(state);
+        self.parameters.hash(state);
+        self.non_empty.hash(state);
+        self.known_non_list.hash(state);
+        self.callable.hash(state);
+    }
+}
+
+impl PartialOrd for TKeyedArray {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for TKeyedArray {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.sorted_items()
+            .cmp(&other.sorted_items())
+            .then_with(|| self.parameters.cmp(&other.parameters))
+            .then_with(|| self.non_empty.cmp(&other.non_empty))
+            .then_with(|| self.known_non_list.cmp(&other.known_non_list))
+            .then_with(|| self.callable.cmp(&other.callable))
     }
 }
 
@@ -91,7 +142,7 @@ impl TKeyedArray {
 
     #[inline]
     #[must_use]
-    pub fn with_known_items(self, known_items: BTreeMap<ArrayKey, (bool, TUnion)>) -> Self {
+    pub fn with_known_items(self, known_items: KnownItems) -> Self {
         Self { known_items: Some(Arc::new(known_items)), ..self }
     }
 
@@ -110,7 +161,7 @@ impl TKeyedArray {
     /// Returns a reference to the map of known item types by key, if any.
     #[inline]
     #[must_use]
-    pub fn get_known_items(&self) -> Option<&BTreeMap<ArrayKey, (bool, TUnion)>> {
+    pub fn get_known_items(&self) -> Option<&KnownItems> {
         self.known_items.as_deref()
     }
 

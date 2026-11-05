@@ -18,6 +18,7 @@ use mago_codex::ttype::add_union_type;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::array::TArray;
 use mago_codex::ttype::atomic::array::key::ArrayKey;
+use mago_codex::ttype::atomic::array::keyed::KnownItems;
 use mago_codex::ttype::atomic::array::keyed::TKeyedArray;
 use mago_codex::ttype::atomic::array::list::TList;
 use mago_codex::ttype::atomic::generic::TGenericParameter;
@@ -736,7 +737,7 @@ fn adjust_array_offset(
                         known_items.insert(dictkey, (optional, result_type.clone()));
                     }
                 } else {
-                    *known_items = Some(BTreeMap::from([(dictkey, (optional, result_type.clone()))]).into());
+                    *known_items = Some(KnownItems::from_iter([(dictkey, (optional, result_type.clone()))]).into());
                 }
             }
             TAtomic::Array(TArray::List(TList { known_elements, .. })) => {
@@ -930,7 +931,7 @@ fn adjust_array_type_remove_key(
                 };
 
                 if let Some(known_items) = known_items {
-                    Arc::make_mut(known_items).remove(&dictkey);
+                    Arc::make_mut(known_items).shift_remove(&dictkey);
                 }
             }
             TAtomic::Array(TArray::List(TList { known_elements, .. })) => {

@@ -214,7 +214,7 @@ fn equal_nullable_shape_values(left: &TUnion, right: &TUnion) -> bool {
         && left.callable.is_none() && right.callable.is_none()
         && left.known_non_list == right.known_non_list
         && let (Some(left), Some(right)) = (&left.known_items, &right.known_items)
-        && left.keys().eq(right.keys())
+        && left.len() == right.len() && left.keys().all(|key| right.contains_key(key))
     {
         return left.iter().all(|(key, (_, value))| equal_nullable_shape_values(value, &right[key].1));
     }
@@ -443,10 +443,10 @@ impl BlockContext<'_> {
                         };
                         let equal_shared = !small.is_empty()
                             && small.iter().all(|(key, (_, value))| large.get(key).is_some_and(|(_, other)| equal_types(value, other)))
-                            && large.iter().filter(|(key, (optional, _))| !*optional && !small.contains_key(key)).count() <= 1;
+                            && large.iter().filter(|(key, (optional, _))| !*optional && !small.contains_key(*key)).count() <= 1;
                         let nullable_shared = left_array.callable.is_none() && right_array.callable.is_none()
                             && left_array.known_non_list == right_array.known_non_list
-                            && small.len() >= 2 && small.keys().eq(large.keys())
+                            && small.len() >= 2 && small.len() == large.len() && small.keys().all(|key| large.contains_key(key))
                             && small.iter().filter(|(key, (_, value))| !equal_nullable_shape_values(value, &large[*key].1))
                                 .take(2).count() <= 1;
                         if equal_shared || nullable_shared {

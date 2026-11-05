@@ -19,6 +19,7 @@ use mago_codex::ttype::add_union_type;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::array::TArray;
 use mago_codex::ttype::atomic::array::key::ArrayKey;
+use mago_codex::ttype::atomic::array::keyed::KnownItems;
 use mago_codex::ttype::atomic::callable::TCallable;
 use mago_codex::ttype::atomic::mixed::TMixed;
 use mago_codex::ttype::atomic::object::TObject;
@@ -1370,7 +1371,7 @@ fn resolve_atomic_unbound_templates(atomic: &TAtomic) -> TAtomic {
                         ));
                     }
                     if let Some(known_items) = &keyed.known_items {
-                        let new_items: BTreeMap<ArrayKey, (bool, TUnion)> = known_items
+                        let new_items: KnownItems = known_items
                             .iter()
                             .map(|(k, (optional, v))| (*k, (*optional, resolve_unbound_templates_to_constraints(v))))
                             .collect();

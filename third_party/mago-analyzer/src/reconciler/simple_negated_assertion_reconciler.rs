@@ -1551,7 +1551,7 @@ where
                 if let Some(known_items) = known_items {
                     if let Some(known_item) = known_items.get(key_name) {
                         if known_item.0 {
-                            Arc::make_mut(known_items).remove(key_name);
+                            Arc::make_mut(known_items).shift_remove(key_name);
                             did_remove_type = true;
                         }
                     } else if let Some((key_parameter, _)) = parameters
@@ -1666,7 +1666,7 @@ fn reconcile_no_nonnull_entry_for_key(existing_var_type: &TUnion, key_name: &Arr
             if let TAtomic::Array(TArray::Keyed(array)) = atomic
                 && let Some(items) = &mut array.known_items
             {
-                Arc::make_mut(items).remove(key_name);
+                Arc::make_mut(items).shift_remove(key_name);
             }
             if let TAtomic::Array(TArray::List(array)) = atomic
                 && let Some(index) = key_name.get_integer()

@@ -841,11 +841,13 @@ fn write_assertion(writer: &mut PayloadWriter, assertion: &Assertion) -> Result<
         Assertion::NotCountable(_) => 44,
         Assertion::StringLengthLessThan(_) => 45,
         Assertion::StringLengthGreaterThanOrEqual(_) => 46,
+        Assertion::Overwrite(_) => 47,
     };
     writer.write_u8(kind);
 
     match assertion {
         Assertion::IsType(atomic)
+        | Assertion::Overwrite(atomic)
         | Assertion::IsNotType(atomic)
         | Assertion::IsIdentical(atomic)
         | Assertion::IsNotIdentical(atomic)

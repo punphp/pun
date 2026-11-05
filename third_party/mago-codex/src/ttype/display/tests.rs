@@ -87,7 +87,7 @@ fn qualified_names_restore_class_casing_without_changing_type_syntax_or_literals
 #[test]
 fn type_names_do_not_rewrite_shape_keys_or_literal_values() {
     let shape = |name: &str| {
-        TUnion::from_atomic(TAtomic::Array(TArray::Keyed(TKeyedArray::new().with_known_items(BTreeMap::from([
+        TUnion::from_atomic(TAtomic::Array(TArray::Keyed(TKeyedArray::new().with_known_items(crate::ttype::atomic::array::keyed::KnownItems::from_iter([
             (ArrayKey::String(word("a'user")), (false, get_literal_string(word("a'user")))),
             (ArrayKey::String(word("user")), (false, named(name))),
         ])))))
@@ -212,7 +212,7 @@ fn owned_rendering_keeps_compound_type_spelling() {
         TAtomic::Array(TArray::List(list)),
         TAtomic::Array(TArray::List(TList::new_non_empty(Arc::clone(&value)))),
         TAtomic::Array(TArray::Keyed(
-            TKeyedArray::new().with_known_items(shape).with_parameters(Arc::new(get_arraykey()), Arc::new(get_mixed())),
+            TKeyedArray::new().with_known_items(shape.into_iter().collect()).with_parameters(Arc::new(get_arraykey()), Arc::new(get_mixed())),
         )),
         TAtomic::Array(TArray::Keyed(
             TKeyedArray::new_with_parameters(Arc::clone(&key), Arc::clone(&value)).with_non_empty(true),

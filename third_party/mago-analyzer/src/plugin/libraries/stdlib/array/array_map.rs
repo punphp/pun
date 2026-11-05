@@ -10,6 +10,7 @@ use std::sync::Arc;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::array::TArray;
 use mago_codex::ttype::atomic::array::key::ArrayKey;
+use mago_codex::ttype::atomic::array::keyed::KnownItems;
 use mago_codex::ttype::atomic::array::keyed::TKeyedArray;
 use mago_codex::ttype::atomic::array::list::TList;
 use mago_codex::ttype::get_mixed;
@@ -125,7 +126,7 @@ impl FunctionReturnTypeProvider for ArrayMapProvider {
         match array {
             TArray::Keyed(keyed) if keyed.has_known_items() => {
                 let known_items = keyed.get_known_items()?;
-                let new_items: BTreeMap<_, _> = known_items
+                let new_items: KnownItems = known_items
                     .iter()
                     .map(|(key, (optional, value))| Some((*key, (*optional, resolve_for(value)?))))
                     .collect::<Option<_>>()?;
@@ -172,7 +173,7 @@ fn zip_input_arrays(
     argument_count: usize,
 ) -> Option<TUnion> {
     let array_count = argument_count - 1;
-    let mut tuple_items: BTreeMap<ArrayKey, (bool, TUnion)> = BTreeMap::new();
+    let mut tuple_items: KnownItems = KnownItems::default();
     let mut all_inputs_non_empty = true;
 
     for offset in 0..array_count {

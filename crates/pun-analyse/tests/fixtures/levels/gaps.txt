@@ -2,8 +2,7 @@
 # FooObjectStorage's `@extends FooObjectStorage<object>` names the class being declared: PHPStan resolves it while
 # building that class's reflection and gets a plain object type, Pun the intersection with iterable<object>.
 2 Generics/ClassAncestorsRuleTest::testRuleExtends
-# Mago's keyed arrays sort their keys, so callable array shapes lose insertion order (`array{1: 'stat', 0: ...}`,
-# `array{answer: true, 3: null}`); callable.nonCallable of a 'Class::method' string naming a non-static method
+# callable.nonCallable of a 'Class::method' string naming a non-static method
 2 Functions/HelperFunctionDiscard::testRule
 # PHPStan synthetic multi-level break has line -1; the public Error line is u32 (PLAN.md).
 # echo.nonString of compact(), func_get_args() and get_defined_vars(): PHPStan's dynamic return type extensions
@@ -119,7 +118,6 @@
 5 Functions/CallToFunctionParametersRuleTest::testArrayUintersectUassoc
 5 Functions/CallToFunctionParametersRuleTest::testBug12317
 5 Functions/CallToFunctionParametersRuleTest::testBug3506
-5 Functions/CallToFunctionParametersRuleTest::testCurlSetOptArray
 5 Methods/CallMethodsRuleTest::testBug14549
 5 Methods/CallMethodsRuleTest::testBug14893
 5 Methods/CallStaticMethodsRuleTest::testBug1971Php8
@@ -144,7 +142,6 @@
 9 Functions/CallToFunctionParametersRuleTest::testBug3506
 9 Functions/CallToFunctionParametersRuleTest::testBug3608
 9 Functions/CallToFunctionParametersRuleTest::testBug3920
-9 Functions/CallToFunctionParametersRuleTest::testCurlSetOptArray
 9 Methods/CallMethodsRuleTest::testBug14549
 9 Methods/CallMethodsRuleTest::testBug14893
 9 Methods/CallMethodsRuleTest::testCallMethods
@@ -630,12 +627,10 @@
 # the using class (CallCallablesRule's argument.type)
 6 Classes/LocalTypeTraitAliasesRuleTest::testBug11591
 6 Classes/LocalTypeTraitUseAliasesRuleTest::testBug11591
-# an-dead: NullCoalesceRule: Mago orders a shape's keys, keeps no assigned offset as its own expression, narrows offsets differently (after `?? null` comparisons, `non-empty-array` after a write), and loses a property's type on the right side of `??=`
-1 Variables/NullCoalesceRuleTest::testCoalesceAssignRule
+# an-dead: NullCoalesceRule: Mago keeps no assigned offset as its own expression, narrows offsets differently (after `?? null` comparisons, `non-empty-array` after a write), and loses a property's type on the right side of `??=`
 4 Variables/NullCoalesceRuleTest::testBug13488
 4 Variables/NullCoalesceRuleTest::testBug13488Loose
 4 Variables/NullCoalesceRuleTest::testBug7190
-4 Variables/NullCoalesceRuleTest::testCoalesceAssignRule
 # array_combine()'s dynamic throw type extension (ValueError on PHP 8) is not read.
 3 Exceptions/ThrowsVoidMethodWithExplicitThrowPointRuleTest::testBug13642
 # Other rules' identifiers (resultUnused, property.notFound, assign.propertyType, deadCode.unreachable and more).
@@ -677,15 +672,13 @@
 # so Pun reports parameterByRef.type for `$brokenBy = $e` and method.notFound for `$e->getReturnValue()`
 4 TooWideTypehints/TooWideMethodParameterOutTypeRuleTest::testBug10684
 # batch-offsets: the cases of the newly exported ArrayDestructuringRule and NonexistentOffsetInArrayDimFetchRule
-# tests that differ by inference or another rule. offsetAccess.notFound/nonOffsetAccessible: Mago's PHPDoc array
-# shapes sort their keys (bug-8075 `array{age: int, name: string}`); explode() of a constant string is not folded to a
+# tests that differ by inference or another rule: explode() of a constant string is not folded to a
 # constant array (bug-15013, PHPStan's ExplodeFunctionDynamicReturnTypeExtension); `$mixed - $mixed` is mixed, not
 # float|int (bug-5169); a do-while condition's `++$offset` ranges (bug-5743); a static property is not invalidated
 # by a `$this` call (bug-3747); a `Closure` native type is `Closure(mixed ...): mixed` (bug-8068); `array_key_last()`
 # of `[]` keeps `list<*NEVER*>` (and return.type); assignOp.invalid of DOM offsets, method.tentativeReturnType of
 # anonymous classes (the exporter's absolute paths) and offsetAccess.invalidOffset of array_rand() (as testBug12981
 # above)
-3 Arrays/ArrayDestructuringRuleTest::testBug8075
 3 Arrays/ArrayDestructuringRuleTest::testBug15013
 3 Arrays/NonexistentOffsetInArrayDimFetchRuleTest::testBug5743
 3 Arrays/NonexistentOffsetInArrayDimFetchRuleTest::testBug3747
@@ -720,15 +713,15 @@
 # the conditional holders of $count match `!empty($whereParts)` although one of the non-empty shapes has no $count
 1 Variables/IssetRuleTest::testBug6997
 4 Variables/IssetRuleTest::testBug6997
-# as in NullCoalesceRuleTest::testBug13488: Mago narrows a string-keyed offset and orders shape keys differently
+# as in NullCoalesceRuleTest::testBug13488: Mago narrows a string-keyed offset differently
 4 Variables/IssetRuleTest::testBug13488
 4 Variables/IssetRuleTest::testBug13488Loose
 # a list shape's `isset($list[3])` does not imply offset 2 (and offset 4 does not exclude 3), and a property's nested
 # offset is not remembered across the `!isset()` branch that assigns it
 4 Variables/IssetRuleTest::testIssetConstantArray
 4 Variables/IssetRuleTest::testPr4374
-# preg_match()'s named groups: Mago's keyed arrays sort `productId` after the int keys in the isset.offset message, and
-# isset() on the right of `&&` reads a by-reference out variable (`$matches`) without the left side's narrowing
+# preg_match()'s named groups: isset() on the right of `&&` reads a by-reference out variable (`$matches`) without the
+# left side's narrowing
 4 Comparison/BooleanAndConstantConditionRuleTest::testBug5365
 # offsetAssign.valueType of `new ArrayObject()` (another rule), as in OffsetAccessValueAssignmentRuleTest::testBug10783
 4 Variables/EmptyRuleTest::testBug10783
@@ -736,7 +729,3 @@
 # out of levels/1/Variables/DefinedVariableRuleTest.json. In `$bool = ... && in_array(1, $var = [...])`, PHPStan's
 # TypeSpecifier specifies the assigned haystack, so `$bool` implies $var; Mago's in_array() assertion does not, and Pun
 # reports "Variable $var might not be defined." at Variables/data/bug-10228.php:18
-# isset.offset: `count($a) === 2` does not narrow `array{short: string}|array{long: string, details: string}` to the
-# two-key shape in Mago
-5 Functions/CallToFunctionParametersRuleTest::testBug11494
-9 Functions/CallToFunctionParametersRuleTest::testBug11494

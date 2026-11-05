@@ -1161,3 +1161,32 @@ own collection (`newCollection()`, `#[CollectedBy]`); without it the result is t
 `ttype/template/inferred_type_replacer.rs` `to_array_key()`: once a keyed array's templated key is replaced, a
 `scalar`, bool, float or null key becomes the key PHP casts it to, as TypeNodeResolver intersects `array<TKey, V>`'s
 key with `toArrayKey()`. Laravel's `Str::replace()` with a `scalar` search keeps `array<int|string, ...>`.
+
+## Keyed array key order (ConstantArrayType)
+
+PHPStan's ConstantArrayType keeps its keys in insertion order, and every shape it prints follows that order
+(`array{0: string, name: string, 1: string}` for `/(?<name>a)/`); Mago's `BTreeMap` sorted them.
+
+- `ttype/atomic/array/keyed.rs`: `TKeyedArray::known_items` is a `KnownItems`, an
+  `IndexMap<ArrayKey, (bool, TUnion), FixedState>`, so ConstantArrayTypeBuilder's order holds: a new key goes last,
+  a write to an existing key keeps its slot, and a removed key (`shift_remove()`) leaves the others in place.
+  Equality stays IndexMap's (by key lookup), `Hash` sums the entries' hashes and `Ord` compares the entries sorted
+  by key, so neither depends on the order. ConstantArrayType::equals() compares slot by slot, but isSuperTypeOf()
+  and TypeCombinator::union() take `array{a: 1, b: 2}` and `array{b: 2, a: 1}` as one type, and Mago uses equality
+  for union deduplication and loop fixed points.
+- The shapes Mago builds keep their source order: PHPDoc shapes (`ttype/builder.rs`), inferred constant arrays
+  (`scanner/inference/mod.rs`), `properties-of` (`ttype/atomic/derived/properties_of.rs`), the callable array view
+  and union sizes (`ttype/atomic/array/mod.rs`). `ttype/mod.rs` `intersect_constant_arrays()` takes the left keys,
+  then the right ones the left lacks.
+- `ttype/combiner.rs`: a keyed array merged into the combination keeps the existing slots and appends its new keys.
+  When it has every existing key, the entries take its order: TypeCombinator::reduceArrays() merges into the
+  keys-superset, whose order `mergeWith()` keeps, and with the same keys into the later array.
+  `shapes_are_discriminated()` (legacyIsKeysSupersetOf()) compares the key sets, not their sequence.
+- Tests build their maps as `KnownItems`; the display and comparator tests keep their sorted inputs.
+
+## Overwriting assertions
+
+`assertion.rs`: `Assertion::Overwrite(TAtomic)` is SpecifiedTypes::setAlwaysOverwriteTypes(): the variable becomes
+the type, whatever it was. PregMatchTypeSpecifyingExtension overwrites `$matches` with `array{}` in the falsey
+context; an `IsType` assertion only narrows, so `preg_match_all()`'s out type (no `array{}` member) kept its
+shape there. It has no negation (`Any`), and `is_negation_of()` is false.

@@ -1,4 +1,3 @@
-use std::collections::BTreeMap;
 use std::sync::Arc;
 
 use mago_word::{Word, concat_word};
@@ -8,6 +7,7 @@ use crate::ttype::TType;
 use crate::ttype::TypeRef;
 use crate::ttype::atomic::TAtomic;
 use crate::ttype::atomic::array::key::ArrayKey;
+use crate::ttype::atomic::array::keyed::KnownItems;
 use crate::ttype::atomic::array::keyed::TKeyedArray;
 use crate::ttype::atomic::array::list::TList;
 use crate::ttype::get_arraykey;
@@ -92,7 +92,7 @@ impl TArray {
             let value = intersect_union_types(&value, &constraint, codebase).unwrap_or_else(get_never);
             (ArrayKey::Integer(index), (false, value))
         })
-        .collect::<BTreeMap<_, _>>();
+        .collect::<KnownItems>();
         Some(TKeyedArray::new().with_known_items(items).with_non_empty(true))
     }
 
@@ -150,7 +150,7 @@ impl TArray {
         match &self {
             Self::Keyed(keyed_array) => {
                 keyed_array.parameters.is_none()
-                    && keyed_array.known_items.as_deref().is_none_or(std::collections::BTreeMap::is_empty)
+                    && keyed_array.known_items.as_deref().is_none_or(KnownItems::is_empty)
             }
             Self::List(list) => {
                 list.element_type.is_never()
@@ -304,7 +304,7 @@ impl TArray {
         }
         // legacyIsKeysSupersetOf(): an additional required key is optional after
         // merging. Two additional required keys must not turn 1|3 into int<1, 3>.
-        let is_superset = |larger: &BTreeMap<ArrayKey, (bool, TUnion)>, smaller: &BTreeMap<ArrayKey, (bool, TUnion)>| {
+        let is_superset = |larger: &KnownItems, smaller: &KnownItems| {
             let mut fail_on_different = larger.len() != smaller.len() || larger.len() < 2;
             for (key, (_, value)) in smaller {
                 let Some((_, other)) = larger.get(key) else { return false };
@@ -318,7 +318,7 @@ impl TArray {
                 }
                 fail_on_different = true;
             }
-            larger.iter().filter(|(key, (optional, _))| !optional && !smaller.contains_key(key)).count() <= 1
+            larger.iter().filter(|(key, (optional, _))| !optional && !smaller.contains_key(*key)).count() <= 1
         };
         for i in 0..shapes.len() {
             for j in i + 1..shapes.len() {
@@ -570,6 +570,8 @@ impl TType for TArray {
 
 #[cfg(test)]
 mod tests {
+    use std::collections::BTreeMap;
+
     use super::*;
     use crate::ttype::atomic::callable::TCallable;
     use crate::ttype::{get_explicit_mixed, get_literal_int, get_mixed_callable, get_string};
@@ -632,7 +634,7 @@ mod tests {
         assert_eq!(list.refine_callable_offset(&get_literal_int(1), get_int(), &codebase), get_int());
         assert_eq!(list.get_size(), crate::ttype::get_int_range(Some(1), Some(2)));
         let keyed = TArray::Keyed(
-            TKeyedArray::new().with_known_items(BTreeMap::from([(ArrayKey::Integer(0), (false, get_int()))])),
+            TKeyedArray::new().with_known_items(KnownItems::from_iter([(ArrayKey::Integer(0), (false, get_int()))])),
         );
         assert_eq!(keyed.get_size(), get_literal_int(1));
         assert_eq!(
@@ -645,11 +647,11 @@ mod tests {
     fn count_union_views_merge_one_optional_successor_but_not_missing_cardinalities() {
         let codebase = CodebaseMetadata::default();
         let one = TArray::List(TList::from_known_elements(BTreeMap::from([(0, (false, get_int()))])));
-        let two = TArray::Keyed(TKeyedArray::new().with_known_items(BTreeMap::from([
+        let two = TArray::Keyed(TKeyedArray::new().with_known_items(KnownItems::from_iter([
             (ArrayKey::Integer(0), (false, get_int())),
             (ArrayKey::Integer(1), (false, get_string())),
         ])));
-        let three = TArray::Keyed(TKeyedArray::new().with_known_items(BTreeMap::from([
+        let three = TArray::Keyed(TKeyedArray::new().with_known_items(KnownItems::from_iter([
             (ArrayKey::Integer(0), (false, get_int())),
             (ArrayKey::Integer(1), (false, get_string())),
             (ArrayKey::Integer(2), (false, get_string())),

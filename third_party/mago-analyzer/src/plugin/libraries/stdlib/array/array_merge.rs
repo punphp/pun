@@ -6,7 +6,7 @@ use std::sync::Arc;
 
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::array::TArray;
-use mago_codex::ttype::atomic::array::key::ArrayKey;
+use mago_codex::ttype::atomic::array::keyed::KnownItems;
 use mago_codex::ttype::atomic::array::keyed::TKeyedArray;
 use mago_codex::ttype::atomic::array::list::TList;
 use mago_codex::ttype::combine_union_types;
@@ -58,7 +58,7 @@ impl FunctionReturnTypeProvider for ArrayMergeProvider {
 
         let codebase = context.codebase();
 
-        let mut merged_items: BTreeMap<ArrayKey, (bool, TUnion)> = BTreeMap::new();
+        let mut merged_items: KnownItems = KnownItems::default();
         let mut merged_list_elements: BTreeMap<usize, (bool, TUnion)> = BTreeMap::new();
         let mut next_list_index: usize = 0;
         let mut has_parameters = false;

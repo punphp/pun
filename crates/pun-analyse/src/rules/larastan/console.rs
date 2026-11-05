@@ -1,7 +1,6 @@
 //! UndefinedArgumentOrOptionRule: `$this->argument('x')` and `$this->option('x')` in a command, against the
 //! definitions of the registered commands that are that class or extend it ([`crate::larastan::console`]).
 
-use std::collections::BTreeMap;
 use std::sync::Arc;
 
 use mago_analyzer::plugin::context::{InvocationInfo, ProviderContext};
@@ -11,6 +10,7 @@ use mago_codex::metadata::CodebaseMetadata;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::array::TArray;
 use mago_codex::ttype::atomic::array::key::ArrayKey;
+use mago_codex::ttype::atomic::array::keyed::KnownItems;
 use mago_codex::ttype::atomic::array::keyed::TKeyedArray;
 use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::combiner::CombinerOptions;
@@ -203,7 +203,7 @@ fn shapes(codebase: &CodebaseMetadata, commands: &[&Command], options: bool) -> 
     let shapes: Vec<TUnion> = commands
         .iter()
         .map(|c| {
-            let items: BTreeMap<ArrayKey, (bool, TUnion)> = if options {
+            let items: KnownItems = if options {
                 c.own.options.iter().map(|o| (ArrayKey::String(word(o.name.as_bytes())), (false, option_type(codebase, o)))).collect()
             } else {
                 c.own.arguments.iter().map(|a| (ArrayKey::String(word(a.name.as_bytes())), (false, argument_type(codebase, a)))).collect()
@@ -270,7 +270,7 @@ fn value_type(v: &Value) -> TUnion {
         Value::String(s) => get_literal_string(word(s.as_bytes())),
         Value::Array(items) if items.is_empty() => get_empty_keyed_array(),
         Value::Array(items) => {
-            let known: BTreeMap<ArrayKey, (bool, TUnion)> = items
+            let known: KnownItems = items
                 .iter()
                 .map(|(k, v)| {
                     let key = match k {

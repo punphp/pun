@@ -1,4 +1,3 @@
-use std::collections::BTreeMap;
 use std::sync::Arc;
 
 use itoa::Buffer as IntegerBuffer;
@@ -12,6 +11,7 @@ use mago_codex::misc::GenericParent;
 use mago_codex::ttype::TType;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::array::TArray;
+use mago_codex::ttype::atomic::array::keyed::KnownItems;
 use mago_codex::ttype::atomic::array::keyed::TKeyedArray;
 use mago_codex::ttype::atomic::array::list::TList;
 use mago_codex::ttype::atomic::generic::TGenericParameter;
@@ -73,6 +73,10 @@ where
 {
     let codebase = context.codebase;
     let is_negation = assertion.is_negation();
+
+    if let Assertion::Overwrite(atomic) = assertion {
+        return TUnion::from_atomic(atomic.clone());
+    }
 
     let Some(existing_var_type) = existing_var_type else {
         return get_missing_type(assertion, key, inside_loop);
@@ -930,7 +934,7 @@ where
 
     match (&first_keyed_array.known_items, &second_keyed_array.known_items) {
         (Some(first_known_items), Some(second_known_items)) => {
-            let mut intersected_items = BTreeMap::new();
+            let mut intersected_items = KnownItems::default();
 
             for (second_key, second_value) in second_known_items.iter() {
                 if let Some(first_value) = first_known_items.get(second_key) {

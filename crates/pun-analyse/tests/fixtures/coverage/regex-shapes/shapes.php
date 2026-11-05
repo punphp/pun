@@ -234,3 +234,25 @@ function unions(string $s, string $p, string $q): void
 		assertType('array<string>', $m);
 	}
 }
+
+/** @param 256|512 $either */
+function stubFallback(string $s, string $q, int $either): void
+{
+	preg_match($q, $s, $m, PREG_OFFSET_CAPTURE);
+	assertType('array<array{string, int<-1, max>}>', $m);
+	preg_match($q, $s, $m, $either);
+	assertType('array<array{string, int<-1, max>}|string|null>', $m);
+	preg_match_all($q, $s, $m);
+	assertType('array<list<string>>', $m);
+	preg_match_all($q, $s, $m, PREG_SET_ORDER);
+	assertType('list<array<string>>', $m);
+	preg_match_all($q, $s, $m, 4096);
+	assertType('array<mixed>', $m);
+	if (!preg_match_all($q, $s, $m)) {
+		assertType('array{}', $m);
+	}
+	if (preg_match_all('/(a)/', $s, $m) !== 1) {
+		return;
+	}
+	assertType("array{list<string>, list<'a'>}", $m);
+}

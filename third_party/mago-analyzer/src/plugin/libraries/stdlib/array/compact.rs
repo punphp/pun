@@ -1,11 +1,11 @@
 //! `compact()` return type provider.
 
-use std::collections::BTreeMap;
 use std::sync::Arc;
 
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::array::TArray;
 use mago_codex::ttype::atomic::array::key::ArrayKey;
+use mago_codex::ttype::atomic::array::keyed::KnownItems;
 use mago_codex::ttype::atomic::array::keyed::TKeyedArray;
 use mago_codex::ttype::get_mixed;
 use mago_codex::ttype::get_string;
@@ -44,7 +44,7 @@ impl FunctionReturnTypeProvider for CompactProvider {
         invocation: &InvocationInfo<'_, '_, '_>,
     ) -> Option<TUnion> {
         let arguments = invocation.arguments();
-        let mut known_items: BTreeMap<ArrayKey, (bool, TUnion)> = BTreeMap::new();
+        let mut known_items: KnownItems = KnownItems::default();
         let mut has_unknown = false;
 
         for invocation_argument in arguments {

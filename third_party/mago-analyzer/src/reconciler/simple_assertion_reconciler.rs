@@ -9,6 +9,7 @@ use mago_codex::ttype::TType;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::array::TArray;
 use mago_codex::ttype::atomic::array::key::ArrayKey;
+use mago_codex::ttype::atomic::array::keyed::KnownItems;
 use mago_codex::ttype::atomic::array::keyed::TKeyedArray;
 use mago_codex::ttype::atomic::array::list::TList;
 use mago_codex::ttype::atomic::callable::TCallable;
@@ -1665,6 +1666,52 @@ where
     let mut existing_var_type = existing_var_type.clone();
 
     for atomic in existing_var_types {
+        // ConstantArrayType::truncateListToSize(): a list shape keeps its first `count` values, now required
+        let list_shape: Option<(Vec<(usize, &(bool, TUnion))>, Option<&Arc<TAtomic>>)> = match atomic {
+            TAtomic::Array(TArray::List(list)) if list.element_type.is_never() => list
+                .known_elements
+                .as_deref()
+                .map(|items| (items.iter().map(|(i, item)| (*i, item)).collect(), list.callable.as_ref())),
+            // a shape that is always a list (inferIsListFromShape() is yes): keys 0, 1, ... with only the last
+            // one optional
+            TAtomic::Array(TArray::Keyed(keyed)) if keyed.parameters.is_none() => {
+                keyed.known_items.as_deref().and_then(|items| {
+                    let last = items.len().saturating_sub(1);
+                    let items = items
+                        .iter()
+                        .enumerate()
+                        .map(|(i, (key, item))| {
+                            (*key == ArrayKey::Integer(i as i64) && (!item.0 || i == last)).then_some((i, item))
+                        })
+                        .collect::<Option<Vec<_>>>()?;
+                    Some((items, keyed.callable.as_ref()))
+                })
+            }
+            _ => None,
+        };
+        if let Some((items, callable)) = list_shape {
+            // no array of the shape has that size
+            let too_small = items.iter().filter(|(i, _)| *i < count).count() < count;
+            let too_large = exact && items.iter().any(|(i, (optional, _))| *i >= count && !optional);
+            let truncated = (!too_small && !too_large).then(|| {
+                let mut list = TList::from_known_elements(
+                    items
+                        .into_iter()
+                        .filter(|(i, _)| *i < count || !exact)
+                        .map(|(i, (optional, value))| (i, (*optional && i >= count, value.clone())))
+                        .collect(),
+                );
+                list.callable = callable.cloned();
+                TAtomic::Array(TArray::List(list))
+            });
+            if truncated.as_ref() != Some(atomic) {
+                existing_var_type.remove_type(atomic);
+                did_remove_type = true;
+                existing_var_type.types.to_mut().extend(truncated);
+            }
+            continue;
+        }
+
         if let TAtomic::Array(TArray::List(TList { callable, non_empty, known_count, element_type, known_elements })) =
             atomic
         {
@@ -1699,6 +1746,16 @@ where
         })) = atomic
         {
             did_remove_type = true;
+
+            // a shape whose size is never `count` (getArraySize() is no) goes
+            if parameters.is_none()
+                && let Some(items) = known_items
+                && (count > items.len()
+                    || exact && count < items.values().filter(|(optional, _)| !optional).count())
+            {
+                existing_var_type.remove_type(atomic);
+                continue;
+            }
 
             if !non_empty {
                 existing_var_type.remove_type(atomic);
@@ -2012,7 +2069,7 @@ where
                         false,
                     ) {
                         *non_empty = true;
-                        *known_items = Some(BTreeMap::from([(*key_name, (false, (**value_param).clone()))]).into());
+                        *known_items = Some(KnownItems::from_iter([(*key_name, (false, (**value_param).clone()))]).into());
                     } else {
                         continue;
                     }
@@ -2078,7 +2135,7 @@ where
                 did_remove_type = true;
                 let mixed = Arc::new(get_mixed());
                 let mut array = TKeyedArray::new_with_parameters(mixed.clone(), mixed);
-                array.known_items = Some(BTreeMap::from([(*key_name, (false, get_mixed()))]).into());
+                array.known_items = Some(KnownItems::from_iter([(*key_name, (false, get_mixed()))]).into());
                 array.non_empty = true;
                 acceptable_types.push(TAtomic::Array(TArray::Keyed(array)));
             }
@@ -2156,7 +2213,7 @@ where
                         false,
                     ) {
                         let nonnull = subtract_null(context, assertion, value_param, None, negated, None);
-                        *known_items = Some(BTreeMap::from([(*key_name, (false, nonnull))]).into());
+                        *known_items = Some(KnownItems::from_iter([(*key_name, (false, nonnull))]).into());
                     } else {
                         continue;
                     }

@@ -295,7 +295,8 @@ fn process_custom_assertions(expression_span: Span, artifacts: &AnalysisArtifact
     if let Some(if_false_assertions) = artifacts.if_false_assertions.get(&range) {
         for (variable, assertion_set) in if_false_assertions {
             for assertion_group in assertion_set {
-                if assertion_group.iter().any(Assertion::has_equality) {
+                // an overwrite has no negation to narrow the truthy branch with
+                if assertion_group.iter().any(|a| a.has_equality() || matches!(a, Assertion::Overwrite(_))) {
                     continue;
                 }
 

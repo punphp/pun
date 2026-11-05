@@ -1,4 +1,3 @@
-use std::collections::BTreeMap;
 use std::sync::Arc;
 use std::sync::LazyLock;
 
@@ -27,6 +26,7 @@ use crate::ttype::TType;
 use crate::ttype::atomic::TAtomic;
 use crate::ttype::atomic::array::TArray;
 use crate::ttype::atomic::array::key::ArrayKey;
+use crate::ttype::atomic::array::keyed::KnownItems;
 use crate::ttype::atomic::array::keyed::TKeyedArray;
 use crate::ttype::atomic::array::list::TList;
 use crate::ttype::atomic::callable::TCallable;
@@ -522,7 +522,7 @@ fn finalize_sealed_arrays(arrays: &mut Vec<TArray>, codebase: &CodebaseMetadata)
 
     arrays.sort_unstable_by_key(|a| match a {
         TArray::List(list) => list.known_elements.as_deref().map_or(0, std::collections::BTreeMap::len),
-        TArray::Keyed(keyed) => keyed.known_items.as_deref().map_or(0, std::collections::BTreeMap::len),
+        TArray::Keyed(keyed) => keyed.known_items.as_deref().map_or(0, KnownItems::len),
     });
 
     let mut keep = vec![true; arrays.len()];
@@ -1018,6 +1018,10 @@ fn scrape_type_properties(
                         } else {
                             known_items
                         };
+                        // TypeCombinator::reduceArrays() merges into the keys-superset (`mergeWith()` keeps its
+                        // key order); with the same keys, into the later array
+                        let incoming_order: Option<foldhash::HashMap<ArrayKey, usize>> = has_existing_entries
+                            .then(|| known_items.keys().enumerate().map(|(i, key)| (*key, i)).collect());
 
                         for (candidate_item_name, (cu, candidate_item_type)) in known_items {
                             if let Some((eu, existing_type)) =
@@ -1066,6 +1070,13 @@ fn scrape_type_properties(
 
                         if !has_defined_keys {
                             combination.flags.remove(CombinationFlags::KEYED_ARRAY_ALWAYS_FILLED);
+                        }
+
+                        if let Some(order) = incoming_order
+                            && possibly_undefined_entries.is_empty()
+                            && combination.keyed_array_entries.keys().all(|key| order.contains_key(key))
+                        {
+                            combination.keyed_array_entries.sort_by_cached_key(|key, _| order[key]);
                         }
 
                         for possibly_undefined_type_key in possibly_undefined_entries {
@@ -1444,13 +1455,14 @@ fn merge_callable_parameter_names(signature: &mut TCallableSignature, previous: 
 }
 
 fn shapes_are_discriminated(
-    incoming: &BTreeMap<ArrayKey, (bool, TUnion)>,
-    existing: &BTreeMap<ArrayKey, (bool, TUnion)>,
+    incoming: &KnownItems,
+    existing: &KnownItems,
     codebase: &CodebaseMetadata,
 ) -> bool {
     // ConstantArrayType::legacyIsKeysSupersetOf permits one unrelated value only
     // for equal-sized multi-key shapes. A second unrelated field keeps the alternatives.
-    let mut unrelated_key_allowed = incoming.len() >= 2 && incoming.keys().eq(existing.keys());
+    let mut unrelated_key_allowed = incoming.len() >= 2 && incoming.len() == existing.len()
+        && incoming.keys().all(|key| existing.contains_key(key));
 
     for (key, (incoming_optional, incoming_type)) in incoming {
         if *incoming_optional {
@@ -1481,12 +1493,12 @@ fn shapes_are_discriminated(
 /// This is needed when combining a sealed array with a parametric one, the parametric
 /// array's generic string keys could overwrite any of the sealed array's known keys.
 fn widen_known_items_with_params(
-    known_items: Option<Arc<BTreeMap<ArrayKey, (bool, TUnion)>>>,
+    known_items: Option<Arc<KnownItems>>,
     params: Option<&(TUnion, TUnion)>,
-    other_known_items: &BTreeMap<ArrayKey, (bool, TUnion)>,
+    other_known_items: &KnownItems,
     codebase: &CodebaseMetadata,
     options: CombinerOptions,
-) -> Option<Arc<BTreeMap<ArrayKey, (bool, TUnion)>>> {
+) -> Option<Arc<KnownItems>> {
     let mut items = known_items?;
 
     if let Some((key_param, value_param)) = params {
@@ -1855,7 +1867,7 @@ mod tests {
         assert!(array.callable().is_none());
 
         let shapes = ["a", "b", "c"].into_iter().map(|key| TAtomic::Array(TArray::Keyed(
-            TKeyedArray::new().with_known_items(BTreeMap::from([
+            TKeyedArray::new().with_known_items(KnownItems::from_iter([
                 (ArrayKey::String(word(key)), (false, crate::ttype::get_int()))]))))).collect();
         let combined = combine(shapes, &codebase, CombinerOptions::default().with_array_combination_threshold(2));
         assert_eq!(combined.len(), 1);
@@ -1986,7 +1998,7 @@ mod tests {
     fn first_keyed_shape_keeps_entries_and_empty_predecessor_makes_them_optional() {
         for optional in [false, true] {
             for non_empty in [false, true] {
-                let items = BTreeMap::from([
+                let items = KnownItems::from_iter([
                     (ArrayKey::Integer(7), (optional, crate::ttype::get_int())),
                     (ArrayKey::String(word("name")), (true, crate::ttype::get_string())),
                 ]);
@@ -2019,7 +2031,7 @@ mod tests {
                 scrape_type_properties(shape, &mut combination, &codebase, options);
                 assert_eq!(
                     combination.keyed_array_entries,
-                    items.into_iter().map(|(key, (_, value))| (key, (true, value))).collect()
+                    items.into_iter().map(|(key, (_, value))| (key, (true, value))).collect::<KnownItems>()
                 );
             }
         }

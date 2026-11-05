@@ -9,6 +9,7 @@ use mago_analyzer::plugin::provider::{Provider, ProviderMeta};
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::array::TArray;
 use mago_codex::ttype::atomic::array::key::ArrayKey;
+use mago_codex::ttype::atomic::array::keyed::KnownItems;
 use mago_codex::ttype::atomic::array::keyed::TKeyedArray;
 use mago_codex::ttype::atomic::array::list::TList;
 use mago_codex::ttype::atomic::scalar::TScalar;
@@ -61,7 +62,7 @@ fn return_type(start: &TUnion, count: &TUnion, value: &TUnion) -> TUnion {
     if let (Some(start), Some(n)) = (start.get_single_literal_int_value(), count.get_single_literal_int_value())
         && n <= MAX_SIZE_USE_CONSTANT_ARRAY
     {
-        let mut items = std::collections::BTreeMap::new();
+        let mut items = KnownItems::default();
         let mut next = start;
         let mut overflows = false;
         for i in 0..n {

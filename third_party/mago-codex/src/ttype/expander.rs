@@ -1728,10 +1728,9 @@ mod tests {
         let codebase = create_test_codebase(code);
 
         use crate::ttype::atomic::array::key::ArrayKey;
-        use std::collections::BTreeMap;
 
         let mut keyed = TKeyedArray::new();
-        let mut known_items = BTreeMap::new();
+        let mut known_items = crate::ttype::atomic::array::keyed::KnownItems::default();
         known_items.insert(ArrayKey::String(word("key")), (false, make_self_object()));
         keyed.known_items = Some(known_items.into());
         let input = TUnion::from_atomic(TAtomic::Array(TArray::Keyed(keyed)));
@@ -3024,10 +3023,9 @@ mod tests {
         let codebase = CodebaseMetadata::new();
 
         use crate::ttype::atomic::array::key::ArrayKey;
-        use std::collections::BTreeMap;
 
         let mut keyed = TKeyedArray::new();
-        let mut known_items = BTreeMap::new();
+        let mut known_items = crate::ttype::atomic::array::keyed::KnownItems::default();
         known_items.insert(ArrayKey::String(word("key")), (false, get_int()));
         keyed.known_items = Some(known_items.into());
         let array_type = TUnion::from_atomic(TAtomic::Array(TArray::Keyed(keyed)));
@@ -3050,10 +3048,9 @@ mod tests {
         let codebase = create_test_codebase(code);
 
         use crate::ttype::atomic::array::key::ArrayKey;
-        use std::collections::BTreeMap;
 
         let mut keyed = TKeyedArray::new();
-        let mut known_items = BTreeMap::new();
+        let mut known_items = crate::ttype::atomic::array::keyed::KnownItems::default();
         known_items.insert(ArrayKey::String(word("key")), (false, make_self_object()));
         keyed.known_items = Some(known_items.into());
         let array_type = TUnion::from_atomic(TAtomic::Array(TArray::Keyed(keyed)));

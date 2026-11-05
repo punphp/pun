@@ -10,6 +10,7 @@ use mago_codex::ttype::TType;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::array::TArray;
 use mago_codex::ttype::atomic::array::key::ArrayKey;
+use mago_codex::ttype::atomic::array::keyed::KnownItems;
 use mago_codex::ttype::atomic::array::keyed::TKeyedArray;
 use mago_codex::ttype::atomic::array::list::TList;
 use mago_codex::ttype::atomic::mixed::TMixed;
@@ -278,7 +279,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
                                         known_elements
                                             .into_iter()
                                             .map(|(index, element)| (ArrayKey::Integer(index as i64), element))
-                                            .collect::<BTreeMap<_, _>>()
+                                            .collect::<KnownItems>()
                                             .into()
                                     }),
                                     parameters: if element_type.is_never() {
@@ -738,7 +739,7 @@ fn unset_keyed<A: Arena>(
         if let Some(key) = offset.get_single_array_key()
             && let Some(items) = &mut array.known_items
         {
-            Arc::make_mut(items).remove(&key);
+            Arc::make_mut(items).shift_remove(&key);
         }
         if let Some((keys, _)) = &mut array.parameters
             && let Some(key) = offset.get_single_array_key()
@@ -761,7 +762,7 @@ fn unset_keyed<A: Arena>(
     let literal_keys: Vec<_> = offset.types.iter().filter_map(TAtomic::to_array_key).collect();
     let mut recreated = false;
     if let Some(key) = offset.get_single_array_key() {
-        recreated = Arc::make_mut(items).remove(&key).is_some();
+        recreated = Arc::make_mut(items).shift_remove(&key).is_some();
     } else {
         for (key, (optional, _)) in Arc::make_mut(items) {
             let matches = if offset.is_always_array_key(true) && !literal_keys.is_empty() {

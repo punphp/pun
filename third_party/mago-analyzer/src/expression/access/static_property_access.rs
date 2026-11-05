@@ -1,5 +1,4 @@
 use mago_allocator::Arena;
-use std::collections::BTreeMap;
 use std::rc::Rc;
 
 use mago_codex::ttype::atomic::TAtomic;
@@ -7,6 +6,7 @@ use mago_codex::ttype::atomic::array::TArray;
 use mago_codex::ttype::atomic::array::key::ArrayKey;
 use mago_codex::ttype::atomic::array::keyed::TKeyedArray;
 use mago_codex::ttype::add_optional_union_type;
+use mago_codex::ttype::atomic::array::keyed::KnownItems;
 use mago_codex::ttype::get_error;
 use mago_codex::ttype::get_mixed;
 use mago_codex::ttype::get_never;
@@ -62,7 +62,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for StaticPropertyAccess<'arena> {
             resolve_static_properties(context, block_context, artifacts, self.class, &self.property, false)?;
 
         let mut resulting_expression_type = None;
-        let mut named_types = BTreeMap::new();
+        let mut named_types = KnownItems::default();
         if !resolution_result.has_error_path {
             for resolved_property in resolution_result.properties {
                 if let Some(declaring_class_id) = resolved_property.declaring_class_id {

@@ -45,13 +45,6 @@ const EXTRA: &[(&str, &str, i64, &str)] = &[
     ("types", "offsets.php", 125, "offsetAccess.nonOffsetAccessible"),
     // The GAPS entry's message with `TReduceInitial` alone
     ("max", "template-self-reference.php", 32, "return.type"),
-    // Without a shape (unknown or unsupported flags) PHPStan falls back to core.stub's conditional `@param-out` of
-    // preg_match(), Pun to the prelude's `array<string>`
-    ("regex-shapes", "shapes.php", 28, "phpstan.type"),
-    ("regex-shapes", "shapes.php", 31, "phpstan.type"),
-    // PregMatchTypeSpecifyingExtension overwrites preg_match_all()'s $matches with `array{}` in the falsey context
-    // (`setAlwaysOverwriteTypes()`); Mago's assertions only narrow, and the out type has no `array{}` member
-    ("regex-shapes", "shapes.php", 202, "phpstan.type"),
 ];
 
 fn check(dir: &Path, neon: &str) -> Result<(), String> {

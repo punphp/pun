@@ -850,7 +850,7 @@ fn infer_with_constant_sources<'arena>(
         Expression::Array(Array { elements, .. }) | Expression::LegacyArray(LegacyArray { elements, .. })
             if is_keyed_array_expression(expression) =>
         {
-            let mut known_items = BTreeMap::new();
+            let mut known_items = crate::ttype::atomic::array::keyed::KnownItems::default();
             let mut unknown_key_values = Vec::new();
             for element in elements {
                 let ArrayElement::KeyValue(element) = element else {

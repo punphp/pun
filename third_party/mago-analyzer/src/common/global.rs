@@ -6,6 +6,7 @@ use std::sync::LazyLock;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::array::TArray;
 use mago_codex::ttype::atomic::array::key::ArrayKey;
+use mago_codex::ttype::atomic::array::keyed::KnownItems;
 use mago_codex::ttype::atomic::array::keyed::TKeyedArray;
 use mago_codex::ttype::atomic::array::list::TList;
 use mago_codex::ttype::atomic::scalar::TScalar;
@@ -64,7 +65,7 @@ std::thread_local! {
             );
 
             TUnion::from_atomic(TAtomic::Array(TArray::Keyed(TKeyedArray {
-                known_items: Some(known_items.into()),
+                known_items: Some(sorted(known_items)),
                 parameters: Some((Arc::new(get_non_empty_string()), Arc::new(get_mixed()))),
                 non_empty: true,
                 known_non_list: false,
@@ -218,7 +219,7 @@ std::thread_local! {
             );
 
             TUnion::from_atomic(TAtomic::Array(TArray::Keyed(TKeyedArray {
-                known_items: Some(known_items.into()),
+                known_items: Some(sorted(known_items)),
                 parameters: Some((Arc::new(get_non_empty_string()), Arc::new(get_string()))),
                 non_empty: true,
                 known_non_list: false,
@@ -255,7 +256,7 @@ std::thread_local! {
             known_items.insert(ArrayKey::String(word("DB_PASSWORD")), (true, get_string()));
 
             TUnion::from_atomic(TAtomic::Array(TArray::Keyed(TKeyedArray {
-                known_items: Some(known_items.into()),
+                known_items: Some(sorted(known_items)),
                 parameters: Some((Arc::new(get_non_empty_string()), Arc::new(get_string()))),
                 non_empty: true,
                 known_non_list: false,
@@ -270,7 +271,7 @@ std::thread_local! {
                 Arc::new(get_non_empty_string()),
                 Arc::new(TUnion::from_atomic(TAtomic::Array(TArray::Keyed(TKeyedArray {
                     callable: None,
-                    known_items: Some(BTreeMap::from([
+                    known_items: Some(sorted(BTreeMap::from([
                         (
                             ArrayKey::String(word("name")),
                             (
@@ -343,7 +344,7 @@ std::thread_local! {
                                 ]),
                             ),
                         ),
-                    ]).into()),
+                    ]))),
                     parameters: None,
                     non_empty: true,
                     known_non_list: false,
@@ -390,4 +391,9 @@ pub fn get_global_variable_type(variable_name: Word) -> Option<Rc<TUnion>> {
         return Some(phpstan_superglobal());
     }
     SUPERGLOBALS_MAP.with(|map| map.get(&variable_name).cloned())
+}
+
+/// The superglobal shapes, which PHPStan does not have, keep Mago's sorted key order.
+fn sorted(items: BTreeMap<ArrayKey, (bool, TUnion)>) -> Arc<KnownItems> {
+    Arc::new(items.into_iter().collect())
 }

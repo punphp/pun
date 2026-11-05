@@ -1,10 +1,10 @@
 //! `parse_url()` return type provider.
 
-use std::collections::BTreeMap;
 
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::array::TArray;
 use mago_codex::ttype::atomic::array::key::ArrayKey;
+use mago_codex::ttype::atomic::array::keyed::KnownItems;
 use mago_codex::ttype::atomic::array::keyed::TKeyedArray;
 use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::atomic::scalar::bool::TBool;
@@ -193,14 +193,14 @@ fn get_all_components_return_type() -> TUnion {
 
 /// Returns the full array type when no component is specified.
 fn get_full_array_return_type() -> TUnion {
-    let mut known_items: BTreeMap<ArrayKey, (bool, TUnion)> = BTreeMap::new();
-
-    let optional_string_fields = ["scheme", "user", "pass", "host", "path", "query", "fragment"];
-    for field in optional_string_fields {
-        known_items.insert(ArrayKey::String(Word::from(field)), (true, get_non_empty_string()));
-    }
-
-    known_items.insert(ArrayKey::String(Word::from("port")), (true, get_int_range(Some(0), Some(0xFFFF))));
+    // PHPStan's componentTypesPairedStrings order
+    let known_items: KnownItems = ["scheme", "host", "port", "user", "pass", "path", "query", "fragment"]
+        .into_iter()
+        .map(|field| {
+            let value = if field == "port" { get_int_range(Some(0), Some(0xFFFF)) } else { get_non_empty_string() };
+            (ArrayKey::String(Word::from(field)), (true, value))
+        })
+        .collect();
 
     let keyed_array = TKeyedArray::new().with_known_items(known_items);
 

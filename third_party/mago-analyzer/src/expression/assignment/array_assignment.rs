@@ -8,6 +8,7 @@ use mago_codex::ttype::add_union_type;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::array::TArray;
 use mago_codex::ttype::atomic::array::key::ArrayKey;
+use mago_codex::ttype::atomic::array::keyed::KnownItems;
 use mago_codex::ttype::atomic::array::keyed::TKeyedArray;
 use mago_codex::ttype::atomic::array::list::TList;
 use mago_codex::ttype::atomic::generic::TGenericParameter;
@@ -385,7 +386,7 @@ where
                                 Some((Arc::new(get_non_negative_int()), Arc::clone(&list.element_type)))
                             };
 
-                            let mut known_items = BTreeMap::new();
+                            let mut known_items = KnownItems::default();
                             if let Some(known_elements) = list.known_elements.as_deref() {
                                 for (k, v) in known_elements {
                                     known_items.insert(ArrayKey::Integer(*k as i64), v.clone());
@@ -418,7 +419,7 @@ where
                             }
                         } else {
                             keyed_array.known_items =
-                                Some(BTreeMap::from([(array_key, (false, current_type.clone()))]).into());
+                                Some(KnownItems::from_iter([(array_key, (false, current_type.clone()))]).into());
                         }
 
                         keyed_array.non_empty = true;

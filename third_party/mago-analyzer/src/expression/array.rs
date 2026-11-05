@@ -10,6 +10,7 @@ use mago_codex::ttype::TType;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::array::TArray;
 use mago_codex::ttype::atomic::array::key::ArrayKey;
+use mago_codex::ttype::atomic::array::keyed::KnownItems;
 use mago_codex::ttype::atomic::array::keyed::TKeyedArray;
 use mago_codex::ttype::atomic::array::list::TList;
 use mago_codex::ttype::atomic::mixed::TMixed;
@@ -106,7 +107,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for LegacyArray<'arena> {
 struct ArrayCreationInfo {
     item_key_atomic_types: Vec<TAtomic>,
     item_value_atomic_types: Vec<TAtomic>,
-    property_types: BTreeMap<ArrayKey, (bool, TUnion)>,
+    property_types: KnownItems,
     class_strings: WordSet,
     can_create_objectlike: bool,
     array_keys: HashSet<ArrayKey>,
@@ -291,7 +292,7 @@ where
     let mut array_creation_info = ArrayCreationInfo {
         item_key_atomic_types: Vec::new(),
         item_value_atomic_types: Vec::new(),
-        property_types: BTreeMap::default(),
+        property_types: KnownItems::default(),
         class_strings: WordSet::default(),
         can_create_objectlike: true,
         array_keys: HashSet::default(),
@@ -716,7 +717,7 @@ fn native_literal(elements: &[ArrayElement<'_>], artifacts: &AnalysisArtifacts) 
     if elements.len() > 256 {
         return None;
     }
-    let mut items = BTreeMap::new();
+    let mut items = KnownItems::default();
     let mut next = 0i64;
     for element in elements {
         let (key, value) = match element {

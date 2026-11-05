@@ -23,6 +23,9 @@ use crate::ttype::union::TUnion;
 pub enum Assertion {
     Any,
     IsType(TAtomic),
+    /// The variable is this type, whatever it was before: PHPStan's `SpecifiedTypes::setAlwaysOverwriteTypes()`
+    /// (the falsey context of `preg_match_all()`), where an assertion otherwise narrows.
+    Overwrite(TAtomic),
     IsNotType(TAtomic),
     Falsy,
     Truthy,
@@ -99,6 +102,7 @@ impl Assertion {
             Assertion::Countable => word("countable"),
             Assertion::NotCountable(_) => word("!countable"),
             Assertion::IsType(atomic) => atomic.get_id(),
+            Assertion::Overwrite(atomic) => concat_word!(b"overwrite-", atomic.get_id()),
             Assertion::IsNotType(atomic) => concat_word!(b"!", atomic.get_id()),
             Assertion::IsIdentical(atomic) => concat_word!(b"=", atomic.get_id()),
             Assertion::IsNotIdentical(atomic) => concat_word!(b"!=", atomic.get_id()),
@@ -324,7 +328,7 @@ impl Assertion {
     #[must_use]
     pub fn is_negation_of(&self, other: &Assertion) -> bool {
         match self {
-            Assertion::Any => false,
+            Assertion::Any | Assertion::Overwrite(_) => false,
             Assertion::Falsy => matches!(other, Assertion::Truthy),
             Assertion::Truthy => matches!(other, Assertion::Falsy),
             Assertion::IsType(atomic) => match other {
@@ -460,7 +464,8 @@ impl Assertion {
     #[must_use]
     pub fn get_negation(&self) -> Self {
         match self {
-            Assertion::Any => Assertion::Any,
+            // an overwrite has no opposite: the other branch keeps its own assertions
+            Assertion::Any | Assertion::Overwrite(_) => Assertion::Any,
             Assertion::Falsy => Assertion::Truthy,
             Assertion::IsType(atomic) => Assertion::IsNotType(atomic.clone()),
             Assertion::IsNotType(atomic) => Assertion::IsType(atomic.clone()),

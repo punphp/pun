@@ -158,12 +158,108 @@ impl FunctionReturnTypeProvider for PregMatch {
         // the parameter is named different, depending on PHP version.
         matches!(parameter, b"$matches" | b"$subpatterns").then_some(())?;
         invocation.get_argument(2, &[b"matches"])?;
-        if Self::matches_all(invocation)? {
-            return self.matched(context, invocation, Tri::Maybe);
-        }
-        let matched = self.matched(context, invocation, Tri::Yes)?;
-        Some(matcher::with_empty_array(matched))
+        let matches_all = Self::matches_all(invocation)?;
+        let matched = if matches_all {
+            self.matched(context, invocation, Tri::Maybe)
+        } else {
+            self.matched(context, invocation, Tri::Yes)
+                .map(matcher::with_empty_array)
+        };
+        matched.or_else(|| {
+            stub_out_type(
+                context,
+                invocation.get_argument(3, &[b"flags"]),
+                matches_all,
+            )
+        })
     }
+}
+
+/// core.stub's conditional `@param-out` of `$matches`, PHPStan's type when the matcher has no shape: each
+/// `TFlags is N` branch, resolved for the flags argument's type (TFlags is inferred from the default value without
+/// one, and is its bound for a type outside it). A maybe takes both sides, as ConditionalType does.
+fn stub_out_type(
+    context: &ProviderContext<'_, '_, '_>,
+    flags: Option<&Expression<'_>>,
+    matches_all: bool,
+) -> Option<TUnion> {
+    #[allow(clippy::type_complexity)]
+    let (branches, otherwise, default, bound): (&[(&[i64], &str)], &str, i64, &[i64]) =
+        if matches_all {
+            (
+                &[
+                    (&[1], "array<list<string>>"),
+                    (&[2], "list<array<string>>"),
+                    (&[256, 257], "array<list<array{string, int}>>"),
+                    (&[258], "list<array<array{string, int}>>"),
+                    (&[512, 513], "array<list<?string>>"),
+                    (&[514], "list<array<?string>>"),
+                    (&[770], "list<array<array{?string, int}>>"),
+                    (&[0], "array<list<string>>"),
+                ],
+                "array<mixed>",
+                1,
+                // `int`
+                &[],
+            )
+        } else {
+            (
+                &[
+                    (
+                        &[256],
+                        "array<array-key, array{string, 0|positive-int}|array{'', -1}>",
+                    ),
+                    (&[512], "array<array-key, string|null>"),
+                    (
+                        &[768],
+                        "array<array-key, array{string, 0|positive-int}|array{null, -1}>",
+                    ),
+                ],
+                "array<array-key, string>",
+                0,
+                // `int-mask<0, 256, 512>`
+                &[0, 256, 512, 768],
+            )
+        };
+    // TFlags' constant integers, or `None` for any other type
+    let values: Option<Vec<i64>> = match flags {
+        None => Some(vec![default]),
+        Some(flags) => context
+            .get_expression_type(flags)
+            .and_then(|t| t.types.iter().map(|a| a.get_literal_int_value()).collect()),
+    }
+    .filter(|values: &Vec<i64>| bound.is_empty() || values.iter().all(|v| bound.contains(v)))
+    .or_else(|| (!bound.is_empty()).then(|| bound.to_vec()));
+    let mut types = Vec::new();
+    let mut resolved = false;
+    for (set, ty) in branches {
+        match &values {
+            // yes: the if branch alone
+            Some(values) if values.iter().all(|v| set.contains(v)) => {
+                types.push(*ty);
+                resolved = true;
+                break;
+            }
+            // no: the else branch
+            Some(values) if !values.iter().any(|v| set.contains(v)) => {}
+            // maybe: both
+            _ => types.push(*ty),
+        }
+    }
+    if !resolved {
+        types.push(otherwise);
+    }
+    types
+        .into_iter()
+        .map(|t| crate::larastan::config::type_from_text(t.as_bytes()))
+        .reduce(|a, b| {
+            Some(mago_codex::ttype::combine_union_types(
+                &a?,
+                &b?,
+                context.codebase(),
+                Default::default(),
+            ))
+        })?
 }
 
 impl FunctionAssertionProvider for PregMatch {
@@ -194,12 +290,17 @@ impl FunctionAssertionProvider for PregMatch {
             if let Some(matched) = self.matched(context, invocation, Tri::Yes) {
                 assertions.add_if_true(mago_word::word("$matches"), is_type(matched));
             }
-            // PHPStan overwrites $matches in the falsey context (`setAlwaysOverwriteTypes()`); Mago's assertions
-            // intersect, and preg_match_all()'s out type has no `array{}` to narrow to, so its falsey branch keeps it
-            if !Self::matches_all(invocation)?
-                && let Some(unmatched) = self.matched(context, invocation, Tri::No)
-            {
-                assertions.add_if_false(mago_word::word("$matches"), is_type(unmatched));
+            // PHPStan overwrites $matches in the falsey context (`setAlwaysOverwriteTypes()`)
+            if let Some(unmatched) = self.matched(context, invocation, Tri::No) {
+                assertions.add_if_false(
+                    mago_word::word("$matches"),
+                    unmatched
+                        .types
+                        .iter()
+                        .cloned()
+                        .map(Assertion::Overwrite)
+                        .collect(),
+                );
             }
         }
         (!assertions.is_empty()).then_some(assertions)

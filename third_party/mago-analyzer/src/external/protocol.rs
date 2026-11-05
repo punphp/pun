@@ -24,6 +24,7 @@ use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::alias::TAlias;
 use mago_codex::ttype::atomic::array::TArray;
 use mago_codex::ttype::atomic::array::key::ArrayKey;
+use mago_codex::ttype::atomic::array::keyed::KnownItems;
 use mago_codex::ttype::atomic::array::keyed::TKeyedArray;
 use mago_codex::ttype::atomic::array::list::TList;
 use mago_codex::ttype::atomic::callable::TCallable;
@@ -2292,6 +2293,7 @@ where
         46 => Assertion::StringLengthGreaterThanOrEqual(
             reader.read_u64("string length greater-than-or-equal bound")? as i64
         ),
+        47 => Assertion::Overwrite(decode_assertion_atomic(reader, request_type)?),
         unknown => return Err(protocol(format!("unknown invocation assertion kind {unknown}"))),
     })
 }
@@ -2888,7 +2890,7 @@ fn decode_complete_array(reader: &mut PayloadReader<'_>, depth: usize) -> Result
         2 => {
             let known_items = if reader.read_bool("known array items presence")? {
                 let count = reader.read_count("known array items", MAXIMUM_TYPE_MEMBERS)?;
-                let mut items = BTreeMap::new();
+                let mut items = KnownItems::default();
                 for _ in 0..count {
                     let key = decode_array_key(reader)?;
                     let optional = reader.read_bool("known array item optional flag")?;

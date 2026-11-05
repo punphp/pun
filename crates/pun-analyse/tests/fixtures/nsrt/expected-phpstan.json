@@ -1,0 +1,12 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "preg_match_shapes.php",
+   "line": 124,
+   "identifier": "regexp.pattern",
+   "message": "Regex pattern is invalid: Unknown modifier 'y' in pattern: /(foo)(bar)(baz)/xyz",
+   "tip": null
+  }
+ ]
+}

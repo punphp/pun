@@ -1,0 +1,2 @@
+# Lines of the PHPStan copies here that Pun does not pass yet, one `<file>:<line>` per line after a comment with
+# its reason. None today.

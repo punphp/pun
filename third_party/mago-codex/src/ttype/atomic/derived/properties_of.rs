@@ -1,4 +1,3 @@
-use std::collections::BTreeMap;
 use std::sync::Arc;
 
 use mago_word::Word;
@@ -12,6 +11,7 @@ use crate::ttype::TypeRef;
 use crate::ttype::atomic::TAtomic;
 use crate::ttype::atomic::array::TArray;
 use crate::ttype::atomic::array::key::ArrayKey;
+use crate::ttype::atomic::array::keyed::KnownItems;
 use crate::ttype::atomic::array::keyed::TKeyedArray;
 use crate::ttype::atomic::object::TObject;
 use crate::ttype::atomic::object::r#enum::TEnum;
@@ -91,7 +91,7 @@ impl TPropertiesOf {
         visibility_filter: Option<Visibility>,
         _retain_generics: bool,
     ) -> Option<TAtomic> {
-        let mut known_items: BTreeMap<ArrayKey, (bool, TUnion)> = BTreeMap::new();
+        let mut known_items: KnownItems = KnownItems::default();
         // Track whether we need an unsealed array (for non-final classes)
         let mut needs_unsealed = false;
 

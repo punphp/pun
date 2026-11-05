@@ -5,12 +5,12 @@
 //! are the flipped pairs. Generic `array<K, V>` becomes `array<V, K>` when `V` is an
 //! `array-key` subtype.
 
-use std::collections::BTreeMap;
 use std::sync::Arc;
 
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::array::TArray;
 use mago_codex::ttype::atomic::array::key::ArrayKey;
+use mago_codex::ttype::atomic::array::keyed::KnownItems;
 use mago_codex::ttype::atomic::array::keyed::TKeyedArray;
 use mago_codex::ttype::atomic::array::list::TList;
 use mago_codex::ttype::get_non_negative_int;
@@ -69,7 +69,7 @@ impl FunctionReturnTypeProvider for ArrayFlipProvider {
 }
 
 fn flip_keyed_array(keyed: &TKeyedArray) -> Option<TUnion> {
-    let mut new_known_items: BTreeMap<ArrayKey, (bool, TUnion)> = BTreeMap::new();
+    let mut new_known_items: KnownItems = KnownItems::default();
 
     if let Some(items) = &keyed.known_items {
         for (key, (optional, value_type)) in items.iter() {
@@ -102,7 +102,7 @@ fn flip_keyed_array(keyed: &TKeyedArray) -> Option<TUnion> {
 }
 
 fn flip_list(list: &TList) -> Option<TUnion> {
-    let mut new_known_items: BTreeMap<ArrayKey, (bool, TUnion)> = BTreeMap::new();
+    let mut new_known_items: KnownItems = KnownItems::default();
 
     if let Some(elements) = &list.known_elements {
         for (idx, (optional, value_type)) in elements.iter() {

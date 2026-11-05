@@ -2,7 +2,6 @@
 //! closure whose only statement is `return <expr>;`. Each key and value of the array is assigned to the callback's
 //! parameters and narrowed by the expression's truthy specification (`filterByTruthyValue()`).
 
-use std::collections::BTreeMap;
 use std::rc::Rc;
 use std::sync::Arc;
 
@@ -12,6 +11,7 @@ use mago_codex::ttype::add_union_type;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::array::TArray;
 use mago_codex::ttype::atomic::array::key::ArrayKey;
+use mago_codex::ttype::atomic::array::keyed::KnownItems;
 use mago_codex::ttype::atomic::array::keyed::TKeyedArray;
 use mago_codex::ttype::combiner::CombinerOptions;
 use mago_codex::ttype::get_array_parameters;
@@ -171,7 +171,7 @@ impl<'ctx> Filter<'_, 'ctx, '_, '_> {
                 };
             }
         };
-        let mut items = BTreeMap::new();
+        let mut items = KnownItems::default();
         for (array_key, (optional, value)) in known {
             let key_type = array_key.to_union();
             let (new_key, new_value, filtered_optional) = self.entry(context, key_type.clone(), value.clone());

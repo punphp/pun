@@ -9,7 +9,7 @@ use mago_word::WordSet;
 
 use crate::ttype::atomic::TAtomic;
 use crate::ttype::atomic::array::TArray;
-use crate::ttype::atomic::array::key::ArrayKey;
+use crate::ttype::atomic::array::keyed::KnownItems;
 use crate::ttype::atomic::derived::TDerived;
 use crate::ttype::atomic::scalar::int::TInteger;
 use crate::ttype::union::TUnion;
@@ -144,7 +144,7 @@ pub struct TypeCombination {
     pub named_objects: Vec<TAtomic>,
     pub callable_collisions: WordMap<Vec<TAtomic>>,
     pub enum_names: HashSet<(Word, Option<Word>)>,
-    pub keyed_array_entries: BTreeMap<ArrayKey, (bool, TUnion)>,
+    pub keyed_array_entries: KnownItems,
     pub list_array_entries: BTreeMap<usize, (bool, TUnion)>,
     pub keyed_array_parameters: Option<(TUnion, TUnion)>,
     pub list_array_parameter: Option<TUnion>,
@@ -172,7 +172,7 @@ impl TypeCombination {
             value_types: WordMap::default(),
             named_objects: Vec::new(),
             callable_collisions: WordMap::default(),
-            keyed_array_entries: BTreeMap::new(),
+            keyed_array_entries: KnownItems::default(),
             list_array_entries: BTreeMap::new(),
             keyed_array_parameters: None,
             list_array_parameter: None,

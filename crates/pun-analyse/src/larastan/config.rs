@@ -14,6 +14,7 @@ use mago_codex::metadata::CodebaseMetadata;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::array::TArray;
 use mago_codex::ttype::atomic::array::key::ArrayKey;
+use mago_codex::ttype::atomic::array::keyed::KnownItems;
 use mago_codex::ttype::atomic::array::keyed::TKeyedArray;
 use mago_codex::ttype::atomic::array::list::TList;
 use mago_codex::ttype::atomic::scalar::TScalar;
@@ -440,7 +441,7 @@ impl Reader<'_> {
     /// The type of an array literal (InitializerExprTypeResolver::getArrayType()): a list when its keys are
     /// `0..n`, else a shape; `None` with an unpacked item or a key Pun does not type.
     fn array_type(&self, elements: &TokenSeparatedSequence<ArrayElement>, names: &ResolvedNames) -> Option<TUnion> {
-        let mut items = BTreeMap::new();
+        let mut items = KnownItems::default();
         let mut next = 0i64;
         for element in elements.iter() {
             let (key, value) = match element {

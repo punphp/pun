@@ -5,7 +5,6 @@
 //! shape (`array{key: T, ...}`), the shape is preserved in the result but each
 //! entry is marked optional (since any entry may be dropped by the filter).
 
-use std::collections::BTreeMap;
 use std::sync::Arc;
 
 use mago_codex::assertion::Assertion;
@@ -13,7 +12,7 @@ use mago_codex::metadata::CodebaseMetadata;
 use mago_codex::ttype::add_union_type;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::array::TArray;
-use mago_codex::ttype::atomic::array::key::ArrayKey;
+use mago_codex::ttype::atomic::array::keyed::KnownItems;
 use mago_codex::ttype::atomic::array::keyed::TKeyedArray;
 use mago_codex::ttype::atomic::mixed::truthiness::TMixedTruthiness;
 use mago_codex::ttype::atomic::scalar::TScalar;
@@ -129,7 +128,7 @@ where
     {
         let items = keyed.known_items.as_deref()?;
 
-        let mut new_known_items: BTreeMap<ArrayKey, (bool, TUnion)> = BTreeMap::new();
+        let mut new_known_items: KnownItems = KnownItems::default();
         for (key, (original_optional, value_type)) in items {
             match filter(value_type.clone()) {
                 FilterOutcome::Removed => {}

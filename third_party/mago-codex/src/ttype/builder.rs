@@ -857,7 +857,7 @@ fn get_shape_from_type(
         };
 
         keyed_array.known_items = Some({
-            let mut tree = BTreeMap::new();
+            let mut tree = crate::ttype::atomic::array::keyed::KnownItems::default();
             let mut next_offset = 0;
 
             for field in &shape.fields {
