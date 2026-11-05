@@ -83,10 +83,8 @@ fn level_0() {
 #[test]
 fn check_class_case_sensitivity() {
     let keep = |i: &str| CLASS_NAME_CHECK.contains(&i);
-    let project = Project {
-        check_class_case_sensitivity: true,
-        ..Project::from_config(&root(), &config("phpstan-level2").parameters)
-    };
+    let mut project = Project::from_config(&root(), &config("phpstan-level2").parameters);
+    project.options.insert(pun_analyse::ProjectOptions::CHECK_CLASS_CASE_SENSITIVITY);
     let got = keys(run(&project).unwrap(), &keep);
     assert_eq!(got, expected("phpstan-level2", &keep));
 }

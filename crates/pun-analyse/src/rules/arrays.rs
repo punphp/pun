@@ -182,7 +182,7 @@ pub fn literal_array<'arena>(
                 };
                 let keys = c.phpstan_type(v.value).and_then(|t| {
                     declared::with_classes(c, || {
-                        unpacked_keys(&t, next, c.php_version >= 80100, c.bleeding_edge)
+                        unpacked_keys(&t, next, c.php_version >= 80100, c.on(crate::rules::Switches::BLEEDING_EDGE))
                     })
                 });
                 let Some(mut keys) = keys else {
@@ -1002,9 +1002,9 @@ fn copied_key(c: &Checker, at: Span) -> Option<Type> {
         &names,
         c.codebase,
         c.php_version,
-        c.pollute_scope_with_loop_initial_assignments,
-        c.pollute_scope_with_always_iterable_foreach,
-        c.pollute_scope_with_block,
+        c.on(crate::rules::Switches::POLLUTE_SCOPE_WITH_LOOP_INITIAL_ASSIGNMENTS),
+        c.on(crate::rules::Switches::POLLUTE_SCOPE_WITH_ALWAYS_ITERABLE_FOREACH),
+        c.on(crate::rules::Switches::POLLUTE_SCOPE_WITH_BLOCK),
         vec![expression.span()],
         Vec::new(),
         &c.file_facts(at.file_id)?.comments,

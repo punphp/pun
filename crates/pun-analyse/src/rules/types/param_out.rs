@@ -188,7 +188,7 @@ impl Sites<'_, '_, '_> {
             self.out.push(Site { name: v.name.to_vec(), variable: v.span(), at });
         }
     }
-    fn arguments(&mut self, refs: Vec<bool>, args: &ArgumentList, call: Span) {
+    fn arguments(&mut self, refs: crate::bitset::BitSet, args: &ArgumentList, call: Span) {
         for (a, r) in args.arguments.iter().zip(refs) {
             if r && let Expression::Variable(Variable::Direct(v)) = a.value() {
                 self.push(v, At::Expression(call));

@@ -273,7 +273,7 @@ fn report(c: &mut Checker, at: Span, found: Found) {
         .into_iter()
         .map(|name| super::class_names::Pair::node(name, at))
         .collect();
-    let case = c.case_sensitivity;
+    let case = c.on(crate::rules::Switches::CHECK_CLASS_CASE_SENSITIVITY);
     super::class_names::check(c, &pairs, case);
     for (identifier, message, tip) in found.errors {
         c.report(at, identifier, message, tip);

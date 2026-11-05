@@ -86,7 +86,7 @@ pub(in super::super) fn check(
     nullsafe: bool,
     identifier: &str,
 ) {
-    if !c.non_stringable_names {
+    if !c.on(crate::rules::Switches::NON_STRINGABLE_NAMES) {
         return;
     }
     let Some((ty, found)) = not_string(c, name, castable) else {

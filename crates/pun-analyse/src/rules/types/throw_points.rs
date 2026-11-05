@@ -4,7 +4,6 @@
 //! a conditional `@throws`) is an implicit one that `implicitThrows: false` keeps: it only ever hides an error.
 
 use std::collections::{BTreeMap, HashMap, HashSet};
-use std::sync::OnceLock;
 
 use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::metadata::function_like::FunctionLikeMetadata;
@@ -54,7 +53,7 @@ impl Point {
 }
 
 /// Built-in throw types, from `scripts/export-throw-types.php`.
-struct Data {
+pub(crate) struct ThrowData {
     functions: HashMap<String, String>,
     methods: HashMap<String, HashMap<String, String>>,
     dynamic: HashSet<String>,
@@ -62,9 +61,8 @@ struct Data {
     immediate: HashMap<String, Vec<String>>,
 }
 
-fn data() -> &'static Data {
-    static DATA: OnceLock<Data> = OnceLock::new();
-    DATA.get_or_init(|| {
+impl ThrowData {
+    pub(crate) fn load() -> ThrowData {
         let v: Value = serde_json::from_str(include_str!("../../../data/throw-types.json")).expect("throw-types.json");
         let strings = |v: &Value| -> HashMap<String, String> {
             v.as_object()
@@ -82,19 +80,19 @@ fn data() -> &'static Data {
                 })
                 .collect()
         };
-        Data {
+        ThrowData {
             functions: strings(&v["functions"]),
             methods: v["methods"].as_object().into_iter().flatten().map(|(k, m)| (k.clone(), strings(m))).collect(),
             dynamic: v["dynamic"].as_array().into_iter().flatten().filter_map(|s| Some(s.as_str()?.to_string())).collect(),
             later: lists(&v["later"]),
             immediate: lists(&v["immediate"]),
         }
-    })
+    }
 }
 
 /// `getThrowType()` of a built-in method (`class` and `method` lowercase).
-pub(in super::super) fn builtin_method_throws(class: &str, method: &str) -> Option<Type> {
-    data().methods.get(class)?.get(method).map(|t| resolve_str(t, None))
+pub(in super::super) fn builtin_method_throws(c: &Checker, class: &str, method: &str) -> Option<Type> {
+    c.natives.throws.methods.get(class)?.get(method).map(|t| resolve_str(t, None))
 }
 
 /// What a callee is, for its throw point.
@@ -188,15 +186,15 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
                 self.with_classes(|| declared::reflected_throws(self.c, f, *declaring, name))
             }
             Callee::Builtin { key, class, .. } => {
-                if data().dynamic.contains(key) {
+                if self.c.natives.throws.dynamic.contains(key) {
                     return Err(());
                 }
                 match class {
                     Some(_) => {
                         let (k, m) = key.split_once("::").expect("a method key");
-                        builtin_method_throws(k, m)
+                        builtin_method_throws(self.c, k, m)
                     }
-                    None => data().functions.get(key).map(|t| resolve_str(t, None)),
+                    None => self.c.natives.throws.functions.get(key).map(|t| resolve_str(t, None)),
                 }
             }
         };
@@ -763,8 +761,8 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
                     .iter()
                     .map(|p| {
                         let immediate = if class.is_some() {
-                            data().immediate.get(key).is_some_and(|l| l.contains(&p.name))
-                        } else if data().later.get(key).is_some_and(|l| l.contains(&p.name)) {
+                            self.c.natives.throws.immediate.get(key).is_some_and(|l| l.contains(&p.name))
+                        } else if self.c.natives.throws.later.get(key).is_some_and(|l| l.contains(&p.name)) {
                             false
                         } else {
                             self.with_classes(|| finds_callable(&resolve_str(&p.ty, None)))
@@ -822,7 +820,7 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
             });
             past = self.with_classes(|| union(vec![past.clone(), original.clone()]));
             let mut matching: BTreeMap<usize, Point> = BTreeMap::new();
-            let mut matched = vec![false; originals.len()];
+            let mut matched = crate::bitset::BitSet::new(originals.len());
             let mut extra = Vec::new();
             self.with_classes(|| {
                 // throwable matches all
@@ -830,7 +828,7 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
                     if is_super_type_of(o, &throwable).yes() {
                         for (pi, p) in points.iter().enumerate() {
                             matching.insert(pi, p.clone());
-                            matched[i] = true;
+                            matched.set(i, true);
                         }
                     }
                 }
@@ -845,7 +843,7 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
                             if is_super_type_of(k, &p.ty).no() {
                                 continue;
                             }
-                            matched[i] = true;
+                            matched.set(i, true);
                             if !p.explicit {
                                 continue;
                             }
@@ -872,7 +870,7 @@ impl<'c, 'a, 'arena> Points<'c, 'a, 'arena> {
                 if matching.is_empty() && is_super_type_of(&original, &throwable).yes() {
                     for p in block.iter().filter(|p| p.any) {
                         extra.push(p.clone());
-                        matched.iter_mut().for_each(|m| *m = true);
+                        (0..matched.len()).for_each(|m| matched.set(m, true));
                     }
                 }
             });

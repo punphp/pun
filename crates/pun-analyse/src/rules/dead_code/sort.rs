@@ -16,7 +16,7 @@ const REINDEXING: &[&str] = &["rsort", "shuffle", "sort", "usort"];
 const TIP: &str = "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%.";
 
 pub(in super::super) fn call(c: &mut Checker, call: &FunctionCall) {
-    if c.level < 5 || !c.sort_without_effect {
+    if c.level < 5 || !c.on(crate::rules::Switches::SORT_WITHOUT_EFFECT) {
         return;
     }
     let Some(noop::Function::Builtin(f)) = function_of(c, call.function) else { return };

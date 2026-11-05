@@ -14,6 +14,7 @@ use mago_syntax::walker::MutWalker;
 use pun_phpstan::types::{Type, is_super_type_of};
 
 use super::Checker;
+use crate::bitset::BitSet;
 use super::members::Method;
 
 /// A `*_exists()` call known to be true; names as the string argument has them, without a leading `\`.
@@ -825,7 +826,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         }
     }
 
-    pub(super) fn invalidate_call_references(&mut self, args: &ArgumentList, references: Vec<bool>) {
+    pub(super) fn invalidate_call_references(&mut self, args: &ArgumentList, references: BitSet) {
         for (arg, reference) in args.arguments.iter().zip(references) {
             if reference {
                 self.invalidate_expression(arg.value());

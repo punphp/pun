@@ -308,7 +308,7 @@ impl Reader<'_> {
         let mut first = FirstReturn(None);
         first.walk_program(program, &mut ());
         let r = first.0?;
-        let comments = crate::rules::Comments::of(&file.contents);
+        let comments = crate::rules::Comments::of(&file.contents, true);
         if let Some((_, entry)) = comments.doc_before(&file.contents, r.span().start.offset as usize)
             && let Some((_, ty)) = entry
                 .tags

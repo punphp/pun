@@ -24,7 +24,7 @@ pub struct State {
     /// The loops and closures around a node, innermost last.
     pub parents: Vec<Parent>,
     /// Per function-like with return statements, innermost last: it returns by reference.
-    pub by_ref: Vec<bool>,
+    pub by_ref: crate::bitset::BitSet,
 }
 
 /// ContinueBreakInLoopRule.
@@ -93,7 +93,7 @@ pub fn r#static(c: &mut Checker, s: &Static) {
 
 /// ReturnNullsafeByRefRule, for each return statement of the function-like it is in.
 pub fn r#return(c: &mut Checker, r: &Return) {
-    if c.syntax.by_ref.last() != Some(&true) {
+    if c.syntax.by_ref.last() != Some(true) {
         return;
     }
     if r.value.is_some_and(contains_nullsafe) {

@@ -12,6 +12,7 @@ use pun_phpstan::resolve::resolve_late;
 use pun_phpstan::types::{Level, NeverKind, Type, is_super_type_of, mixed};
 
 use super::doc::{Doc, NameScope};
+use super::facts::DocEntry;
 use super::{Checker, declared, generics};
 
 pub const IDENTIFIERS: &[&str] = &[
@@ -122,7 +123,8 @@ fn late(t: &Type) -> bool {
 }
 
 /// IncompatiblePhpDocTypeCheck::check() on the PHPDoc `doc` resolved in `scope`.
-fn check(raw: &[u8], doc: &Doc, scope: &NameScope, native: &Native) -> Errors {
+fn check(entry: &DocEntry, scope: &NameScope, native: &Native) -> Errors {
+    let doc = &entry.doc;
     let mut errors = Errors::new();
     let params: HashMap<String, (Type, bool)> = doc.param_types(scope);
     let outs = Doc::named_types(&doc.outs, scope);
@@ -181,9 +183,9 @@ fn check(raw: &[u8], doc: &Doc, scope: &NameScope, native: &Native) -> Errors {
         }
     }
     // (a `@return` whose value does not parse is an InvalidTagValueNode, no return tag)
-    // ponytail: Doc::parse's approximate reader still reads it; PLAN.md "move doc::Doc::parse ... onto phpdoc::tags"
-    let invalid_return = pun_phpstan::phpdoc::tags(raw)
-        .unwrap_or_default()
+    // ponytail: Doc::parse's approximate reader still reads it
+    let invalid_return = entry
+        .phpdoc
         .iter()
         .any(|t| t.name.ends_with("return") && matches!(t.value, pun_phpstan::phpdoc::TagValue::Invalid(..)));
     if let Some(ret) = doc.return_type(scope).filter(|t| !invalid_return && !late(&resolve_late(t))) {
@@ -220,7 +222,7 @@ pub fn function(c: &mut Checker, f: &Function) {
     if c.level < 2 {
         return;
     }
-    let Some((raw, entry)) = c.doc_before(c.file.id, f.span().start.offset) else {
+    let Some((_, entry)) = c.doc_before(c.file.id, f.span().start.offset) else {
         return;
     };
     let doc = &entry.doc;
@@ -235,7 +237,7 @@ pub fn function(c: &mut Checker, f: &Function) {
                 class: None,
             },
         };
-        check(raw, doc, &scope, &native)
+        check(entry, &scope, &native)
     });
     report(c, f.span(), errors);
 }
@@ -244,7 +246,7 @@ pub fn method(c: &mut Checker, m: &Method) {
     if c.level < 2 {
         return;
     }
-    let Some((raw, entry)) = c.doc_before(c.file.id, m.span().start.offset) else {
+    let Some((_, entry)) = c.doc_before(c.file.id, m.span().start.offset) else {
         return;
     };
     let doc = &entry.doc;
@@ -262,7 +264,7 @@ pub fn method(c: &mut Checker, m: &Method) {
                 class: Some(class_context(c, context, display.clone())),
             },
         };
-        check(raw, doc, &scope, &native)
+        check(entry, &scope, &native)
     });
     report(c, m.span(), errors);
 }
@@ -273,7 +275,7 @@ pub fn hook(c: &mut Checker, h: &PropertyHook, hooked: &[u8], hint: Option<&Hint
     if c.level < 2 {
         return;
     }
-    let Some((raw, entry)) = c.doc_before(c.file.id, h.span().start.offset) else {
+    let Some((_, entry)) = c.doc_before(c.file.id, h.span().start.offset) else {
         return;
     };
     let doc = &entry.doc;
@@ -302,7 +304,7 @@ pub fn hook(c: &mut Checker, h: &PropertyHook, hooked: &[u8], hint: Option<&Hint
                 class: Some(class_context(c, context, display.clone())),
             },
         };
-        check(raw, doc, &scope, &native)
+        check(entry, &scope, &native)
     });
     report(c, h.span(), errors);
 }

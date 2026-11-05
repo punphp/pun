@@ -33,8 +33,8 @@ fn check(case: &str) {
             project.level = level;
             project.php_version = 80500;
             // config.level1.neon enables this independently of the numeric level field.
-            project.check_maybe_undefined_variables = level >= 1;
-            project.precise_unused_parameter_line = precise;
+            project.options.set(pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES, level >= 1);
+            project.options.set(pun_analyse::ProjectOptions::PRECISE_UNUSED_PARAMETER_LINE, precise);
             let mut actual: Vec<_> = pun_analyse::run(&project)
                 .unwrap()
                 .into_iter()

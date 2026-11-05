@@ -25,7 +25,7 @@ pub(in super::super) fn call(c: &mut Checker, call: &FunctionCall) {
         return;
     }
     let ty = |e: &Expression| {
-        if c.treat_php_doc_types_as_certain {
+        if c.on(crate::rules::Switches::TREAT_PHP_DOC_TYPES_AS_CERTAIN) {
             c.phpstan_type(e)
         } else {
             c.phpstan_type_in(e, &c.native_types).or_else(|| constant_expression(e).then(|| c.phpstan_type(e)).flatten())

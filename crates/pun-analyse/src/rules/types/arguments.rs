@@ -22,7 +22,7 @@ pub const IDENTIFIERS: &[&str] =
 
 /// `describeParameter()`: `Parameter #1 $a`, `Parameter $a` (named), `Named argument b for variadic parameter ...$a`.
 fn describe(acceptor: &Acceptor, p: usize, position_or_name: Option<Result<usize, &str>>) -> String {
-    let variadic = acceptor.variadics[p];
+    let variadic = acceptor.variadics.get(p);
     let head = match position_or_name {
         Some(Ok(i)) => format!("Parameter #{}", i + 1),
         Some(Err(name)) if variadic => format!("Named argument {name} for variadic parameter"),
@@ -137,7 +137,7 @@ fn infer(c: &Checker, acceptor: &Acceptor, args: &[Entry], parameters: &[Option<
         let default = callee.and_then(|(f, _)| f.parameters.get(p)?.default_type.as_ref());
         *passed = match default {
             Some(d) => Some(c.to_phpstan(&d.type_union)),
-            None if acceptor.variadics[p] => Some(Type::Never(NeverKind::Explicit)),
+            None if acceptor.variadics.get(p) => Some(Type::Never(NeverKind::Explicit)),
             None => None,
         };
     }
@@ -355,7 +355,7 @@ pub(in super::super) fn arguments(
     ));
     let allowed_type = super::super::params::allowed_constants_type(c, acceptor);
     for (i, (e, p)) in args.iter().zip(parameters).enumerate() {
-        if c.check_argument_types && e.unpack && (!c.check_this_only || e.is_this) {
+        if c.on(crate::rules::Switches::CHECK_ARGUMENT_TYPES) && e.unpack && (!c.on(crate::rules::Switches::CHECK_THIS_ONLY) || e.is_this) {
             let ty = e.value_type(c);
             let found = c.find_type_to_check_of(ty, &|t| t.is_iterable().yes());
             if let Some(t) = found
@@ -374,7 +374,7 @@ pub(in super::super) fn arguments(
         let value = e.value_type(c).map(|t| if e.unpack { t.iterable_value_type() } else { t });
         // a by-reference parameter that creates the variable takes anything from a built-in's caller, and an
         // undefined variable (ErrorType) from any caller
-        if c.check_argument_types
+        if c.on(crate::rules::Switches::CHECK_ARGUMENT_TYPES)
             && (by_ref != ByRef::CreatesNewVariable
                 || (!acceptor.builtin && !c.variables.undefined_allowed.contains(&e.value)))
             && let (Some(param), Some(value)) = (parameter_type(&resolved, p, matches!(call.kind, CallKind::New | CallKind::Attribute)), value)
@@ -397,7 +397,7 @@ pub(in super::super) fn arguments(
             }
         }
         let parameter = || describe(acceptor, p, e.name.is_none().then_some(Ok(i)));
-        if c.check_argument_types && let Some(reasons) = resolved[p].as_ref().and_then(unresolvable)
+        if c.on(crate::rules::Switches::CHECK_ARGUMENT_TYPES) && let Some(reasons) = resolved[p].as_ref().and_then(unresolvable)
             && inference.declared[p].as_ref().is_some_and(|t| unresolvable(t).is_none())
         {
             // RuleErrorBuilder::addTip()/build(), as rendered by PHPStan's plain JSON formatter.
@@ -411,18 +411,18 @@ pub(in super::super) fn arguments(
                 "{} of {of} contains unresolvable type.", parameter()
             ), tip.as_deref());
         }
-        if c.check_argument_types && acceptor.closure_this[p] && matches!(e.kind, ArgKind::StaticClosure) {
+        if c.on(crate::rules::Switches::CHECK_ARGUMENT_TYPES) && acceptor.closure_this.get(p) && matches!(e.kind, ArgKind::StaticClosure) {
             c.report(e.span, "argument.staticClosure", format!(
                 "{} of {of} expects bindable closure, static closure given.", parameter()
             ), None);
         }
-        if c.check_argument_types {
+        if c.on(crate::rules::Switches::CHECK_ARGUMENT_TYPES) {
             super::super::params::check_constants(
                 c, acceptor, e, p, allowed_type.as_ref(), resolved[p].as_ref(),
                 &describe(acceptor, p, Some(e.name.map_or(Ok(i), Err))), call,
             );
         }
-        if !c.check_arguments_passed_by_reference || by_ref == ByRef::No {
+        if !c.on(crate::rules::Switches::CHECK_ARGUMENTS_PASSED_BY_REFERENCE) || by_ref == ByRef::No {
             continue;
         }
         let fine = match e.kind {

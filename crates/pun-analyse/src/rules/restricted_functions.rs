@@ -38,7 +38,7 @@ pub(super) fn callable<'arena>(
 /// The RestrictedFunctionUsageExtension services: RestrictedInternalFunctionUsageExtension, then
 /// RestrictedDeprecatedFunctionUsageExtension.
 fn check<'arena>(c: &mut Checker<'_, 'arena>, id: &Identifier<'arena>, at: impl HasSpan) {
-    if !c.internal_tag && !c.deprecations {
+    if !c.on(crate::rules::Switches::INTERNAL_TAG) && !c.on(crate::rules::Switches::DEPRECATIONS) {
         return;
     }
     let at = at.span();
@@ -49,14 +49,14 @@ fn check<'arena>(c: &mut Checker<'_, 'arena>, id: &Identifier<'arena>, at: impl 
         Some(function) => (
             String::from_utf8_lossy(function.original_name.as_bytes()).into_owned(),
             function.flags.is_internal(),
-            if c.deprecations { c.function_deprecation(function) } else { None },
+            if c.on(crate::rules::Switches::DEPRECATIONS) { c.function_deprecation(function) } else { None },
         ),
         None => match c.builtins.functions.get(&resolved) {
             Some(f) => (f.name.clone(), false, f.deprecated.then_some(None)),
             None => return,
         },
     };
-    if c.internal_tag
+    if c.on(crate::rules::Switches::INTERNAL_TAG)
         && internal
         && internal::should_be_reported(c, &name)
     {

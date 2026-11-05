@@ -8,7 +8,6 @@
 //! only `throw`, `exit` and calls to functions and `$this` methods declared `never` terminate one. No ReadWritePropertiesExtension or
 //! AdditionalConstructorsExtension runs, nor `additionalConstructors`.
 
-use std::cell::RefCell;
 use std::collections::HashMap;
 use std::sync::Arc;
 
@@ -129,8 +128,6 @@ struct Ctx<'c, 'x> {
     offsets: HashMap<String, (bool, bool)>,
     /// The class's methods and its traits', by lowercase name.
     methods: HashMap<String, MethodAst<'x>>,
-    /// `processCalledMethod()` results by lowercase name.
-    called: RefCell<HashMap<String, Option<State>>>,
 }
 
 /// One walk of a method body (or, nested, of the method `processCalledMethod()` reads).
@@ -583,7 +580,7 @@ impl<'w, 'c, 'x> Walk<'w, 'c, 'x> {
                 let (by_ref, virtual_assigned) = if self.source == 0 {
                     (super::assign::by_ref_arguments(self.ctx.c, f), super::assign::virtual_assigned(self.ctx.c, f))
                 } else {
-                    (Vec::new(), None)
+                    (Default::default(), None)
                 };
                 let flow = self.children(n, s);
                 if flow == Flow::Next && name.is_some_and(|n| self.ctx.never(n)) {
@@ -820,12 +817,7 @@ impl<'c, 'x> Ctx<'c, 'x> {
             return None;
         }
         let lower = text(method).to_ascii_lowercase();
-        if let Some(known) = self.called.borrow().get(&lower) {
-            return known.clone();
-        }
-        let end = self.methods.get(&lower).and_then(|m| self.walk(m, true, &State::new()).1);
-        self.called.borrow_mut().insert(lower, end.clone());
-        end
+        self.methods.get(&lower).and_then(|m| self.walk(m, true, &State::new()).1)
     }
 }
 
@@ -1063,7 +1055,6 @@ pub fn class<'arena>(c: &mut Checker<'_, 'arena>, k: &ClassLikeMetadata, members
         sources,
         offsets: nodes.iter().map(|n| (n.name.clone(), n.offsets)).collect(),
         methods,
-        called: RefCell::new(HashMap::new()),
     };
     let errors = uninitialized(&ctx, nodes, constructor, &display);
     drop(ctx);
@@ -1224,7 +1215,7 @@ fn uninitialized(ctx: &Ctx, nodes: Vec<PropertyNode>, constructor: Option<String
         }
     };
     let mut out: Vec<Reported> = Vec::new();
-    if ctx.c.uninitialized_properties {
+    if ctx.c.on(crate::rules::Switches::UNINITIALIZED_PROPERTIES) {
         // UninitializedPropertyRule: the properties neither rule above reports
         let plain = |name: &str| original.get(name).is_some_and(|n| !n.readonly && !n.readonly_by_phpdoc);
         for name in remaining.iter().filter(|n| plain(n)) {

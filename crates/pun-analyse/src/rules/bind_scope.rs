@@ -153,7 +153,7 @@ impl<'arena> Checker<'_, 'arena> {
                 Argument::Positional(p) if p.ellipsis.is_some() => break,
                 Argument::Positional(_) => (i < acceptor.names.len()).then_some(i),
             }
-            .or_else(|| acceptor.variadics.iter().rposition(|v| *v));
+            .or_else(|| acceptor.variadics.iter().rposition(|v| v));
             let Some(tag) = parameter.and_then(|i| tags.get(&acceptor.names[i])) else {
                 continue;
             };

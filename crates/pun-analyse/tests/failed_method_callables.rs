@@ -252,8 +252,8 @@ fn check_complete_diagnostics(file: &str, oracle: &str) {
             project.level = level;
             project.php_version = 80500;
             project.check_this_only = Some(false);
-            project.bleeding_edge = bleeding;
-            project.check_non_stringable_dynamic_access = bleeding;
+            project.options.set(pun_analyse::ProjectOptions::BLEEDING_EDGE, bleeding);
+            project.options.set(pun_analyse::ProjectOptions::CHECK_NON_STRINGABLE_DYNAMIC_ACCESS, bleeding);
             let mut actual: Vec<_> = run(&project)
                 .unwrap()
                 .into_iter()

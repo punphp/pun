@@ -219,7 +219,7 @@ fn variable_contexts_and_configuration_match_phpstan() {
         );
         let mut project = Project::from_config(&root, &params);
         project.analysed = vec![root.join("variables.php")];
-        project.check_non_stringable_dynamic_access = non_stringable;
+        project.options.set(pun_analyse::ProjectOptions::CHECK_NON_STRINGABLE_DYNAMIC_ACCESS, non_stringable);
         let mut got: Vec<_> = run(&project)
             .unwrap()
             .into_iter()

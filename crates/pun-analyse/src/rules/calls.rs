@@ -222,7 +222,7 @@ pub(super) fn method_name_case(
     static_call: bool,
 ) {
     let declared = method.name();
-    if c.check_function_name_case && declared.as_bytes() != name.value
+    if c.on(crate::rules::Switches::CHECK_FUNCTION_NAME_CASE) && declared.as_bytes() != name.value
         && (static_call || declared.as_bytes().eq_ignore_ascii_case(name.value))
     {
         let kind = if static_call && method.is_static() { "static method" } else { "method" };

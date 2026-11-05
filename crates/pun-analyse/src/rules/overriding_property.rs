@@ -155,7 +155,7 @@ impl<'a> Checker<'a, '_> {
                     });
                 }
                 // a built-in class's parent is built in
-                b = super::overriding::natives(self.php_version).get(&b.parent.as_deref()?.to_ascii_lowercase())?;
+                b = self.natives.classes.get(&b.parent.as_deref()?.to_ascii_lowercase())?;
             },
             Class::User(u) => {
                 let dollar = format!("${name}");

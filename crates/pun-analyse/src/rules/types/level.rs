@@ -7,29 +7,31 @@ use pun_phpstan::types::{StrictMixed, Type, accepts_reasons, ancestor_args, acce
 
 use super::super::Checker;
 
-/// The level's switches (conf/config.level*.neon).
-#[derive(Clone, Copy)]
-pub struct Levels {
-    pub check_nullables: bool,
-    pub check_union_types: bool,
-    pub check_explicit_mixed: bool,
-    pub check_implicit_mixed: bool,
+bitflags::bitflags! {
+    /// The level's switches (conf/config.level*.neon).
+    #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+    pub struct Levels: u8 {
+        const CHECK_NULLABLES = 1 << 0;
+        const CHECK_UNION_TYPES = 1 << 1;
+        const CHECK_EXPLICIT_MIXED = 1 << 2;
+        const CHECK_IMPLICIT_MIXED = 1 << 3;
+    }
 }
 
 impl Levels {
     pub fn of(level: u8) -> Levels {
-        Levels {
-            check_union_types: level >= 7,
-            check_nullables: level >= 8,
-            check_explicit_mixed: level >= 9,
-            check_implicit_mixed: level >= 10,
-        }
+        let mut out = Levels::empty();
+        out.set(Levels::CHECK_UNION_TYPES, level >= 7);
+        out.set(Levels::CHECK_NULLABLES, level >= 8);
+        out.set(Levels::CHECK_EXPLICIT_MIXED, level >= 9);
+        out.set(Levels::CHECK_IMPLICIT_MIXED, level >= 10);
+        out
     }
 
     pub fn strict_mixed(self) -> StrictMixed {
         StrictMixed {
-            explicit: self.check_explicit_mixed,
-            implicit: self.check_implicit_mixed,
+            explicit: self.contains(Levels::CHECK_EXPLICIT_MIXED),
+            implicit: self.contains(Levels::CHECK_IMPLICIT_MIXED),
         }
     }
 
@@ -69,7 +71,7 @@ impl Levels {
                 None => Type::Object(name.to_string(), args.to_vec(), exact),
             }
         }
-        if self.check_nullables { accepted.clone() } else { go(accepted, accepting) }
+        if self.contains(Levels::CHECK_NULLABLES) { accepted.clone() } else { go(accepted, accepting) }
     }
 
     /// `RuleLevelHelper::accepts()->result`: below level 7 a union is accepted when any member is.
@@ -77,7 +79,7 @@ impl Levels {
         let accepted = self.transform_accepted(accepting, accepted);
         let accepting = self.strict_mixed().transform(accepting);
         let r = accepts_with(&accepting, &accepted, strict_types, self.strict_mixed());
-        if self.check_union_types { r.yes() } else { !r.no() }
+        if self.contains(Levels::CHECK_UNION_TYPES) { r.yes() } else { !r.no() }
     }
 
     /// `RuleLevelHelper::accepts()->reasons` as an error's tip (`acceptsReasonsTip()`: one reason as is, more as a
@@ -102,11 +104,10 @@ pub struct Found {
 
 impl<'a, 'arena> Checker<'a, 'arena> {
     pub(in super::super) fn levels(&self) -> Levels {
-        Levels {
-            check_explicit_mixed: self.check_explicit_mixed,
-            check_implicit_mixed: self.check_implicit_mixed,
-            ..Levels::of(self.level)
-        }
+        let mut out = Levels::of(self.level);
+        out.set(Levels::CHECK_EXPLICIT_MIXED, self.on(crate::rules::Switches::CHECK_EXPLICIT_MIXED));
+        out.set(Levels::CHECK_IMPLICIT_MIXED, self.on(crate::rules::Switches::CHECK_IMPLICIT_MIXED));
+        out
     }
 
     /// RuleLevelHelper::isThis(): php-parser discards parentheses before testing expression eligibility.
@@ -115,7 +116,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
     }
 
     pub(in super::super) fn checks_expression(&self, e: &Expression) -> bool {
-        !self.check_this_only || Self::is_this_expression(e)
+        !self.on(crate::rules::Switches::CHECK_THIS_ONLY) || Self::is_this_expression(e)
     }
 
     /// `findTypeToCheck($scope, $var, ...)`: the expression's type as the level checks it, `criteria` saying which
@@ -136,12 +137,12 @@ impl<'a, 'arena> Checker<'a, 'arena> {
     /// `findTypeToCheckImplementation()`: `None` for an ErrorType. The checked copy is StrictMixedType,
     /// never a replacement for the expression's stored/inferred type.
     pub(super) fn find_in(&self, l: Levels, mut t: Type, criteria: &dyn Fn(&Type) -> bool, top: Option<&mut Vec<String>>) -> Option<Type> {
-        if !l.check_nullables && !t.is_null().yes() && !criteria(&Type::Null) {
+        if !l.contains(Levels::CHECK_NULLABLES) && !t.is_null().yes() && !criteria(&Type::Null) {
             t = t.remove_null();
         }
         // ErrorType and SubtractedMixed are MixedType too. A mixed template is always explicitly mixed.
         if let Some(explicit) = t.mixed_explicitness() {
-            let strict = if explicit { l.check_explicit_mixed } else { l.check_implicit_mixed };
+            let strict = l.contains(if explicit { Levels::CHECK_EXPLICIT_MIXED } else { Levels::CHECK_IMPLICIT_MIXED });
             return strict.then(|| t.to_strict_mixed());
         }
         if matches!(t, Type::Never(_)) {
@@ -160,7 +161,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                 return None;
             }
         }
-        if !l.check_union_types && t.is_object().yes() && t.object_class_names().is_empty() {
+        if !l.contains(Levels::CHECK_UNION_TYPES) && t.is_object().yes() && t.object_class_names().is_empty() {
             return None;
         }
         // TemplateUnionType/TemplateIntersectionType inherit their bound's compound dispatch.
@@ -171,7 +172,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         if let Type::Union(types) | Type::Benevolent(types) = template_compound.as_ref().unwrap_or(&t) {
             let t = template_compound.as_ref().unwrap_or(&t);
             // checkBenevolentUnionTypes is off: a benevolent union is always filtered
-            let filter = !l.check_union_types || matches!(t, Type::Benevolent(_));
+            let filter = !l.contains(Levels::CHECK_UNION_TYPES) || matches!(t, Type::Benevolent(_));
             let kept: Vec<Type> = types
                 .iter()
                 .filter(|i| !filter || criteria(i))

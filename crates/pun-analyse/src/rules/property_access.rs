@@ -33,7 +33,7 @@ pub struct State {
     /// destructuring's items too) and the referenced side of `= &`.
     dim_assigned: HashSet<(u32, u32)>,
     /// Whether `$this` is defined in each function-like entered (static methods and closures have none).
-    this: Vec<bool>,
+    this: crate::bitset::BitSet,
 }
 
 /// `isUndefinedExpressionAllowed()` of the expression at `span`.
@@ -407,7 +407,7 @@ impl Checker<'_, '_> {
 
     /// A closure or arrow function: `$this` as in its parent unless it is static.
     pub(super) fn enter_closure_this(&mut self, is_static: bool) {
-        let parent = self.property_access.this.last().copied().unwrap_or(false);
+        let parent = self.property_access.this.last().unwrap_or(false);
         self.property_access.this.push(parent && !is_static);
     }
 
@@ -421,15 +421,15 @@ impl Checker<'_, '_> {
             static_check(self, p);
         }
         if matches!(unparen(operand), Expression::Variable(Variable::Direct(v)) if v.name == b"$this")
-            && let Some(this) = self.property_access.this.last_mut()
+            && let Some(last) = self.property_access.this.len().checked_sub(1)
         {
-            *this = false;
+            self.property_access.this.set(last, false);
         }
     }
 
     /// Whether `$this` is defined where the walk is.
     pub(super) fn this_defined(&self) -> bool {
-        self.property_access.this.last().copied().unwrap_or(false)
+        self.property_access.this.last().unwrap_or(false)
     }
 
     pub(super) fn allows_dynamic_properties(&self, k: &ClassLikeMetadata) -> bool {
@@ -641,7 +641,7 @@ fn check(c: &mut Checker, p: &PropertyAccess, write: bool) {
         super::types::property_fetch(c, p.span(), p.object, &p.property, false, allowed);
         return;
     };
-    if !c.property_access.this.last().copied().unwrap_or(false) {
+    if !c.property_access.this.last().unwrap_or(false) {
         return;
     }
     let Some(class) = c.class_scope() else {

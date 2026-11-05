@@ -125,7 +125,7 @@ pub fn check(c: &mut Checker, at: Span, names: Span) {
         .into_iter()
         .map(|name| super::class_names::Pair::node(name, at))
         .collect();
-    let case = c.case_sensitivity;
+    let case = c.on(crate::rules::Switches::CHECK_CLASS_CASE_SENSITIVITY);
     super::class_names::check(c, &pairs, case);
     for (at, identifier, message, tip) in errors {
         c.report(at, identifier, message, tip);

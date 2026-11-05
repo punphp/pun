@@ -18,7 +18,7 @@ fn terminated_statements_match_complete_phpstan_records_at_each_level() {
         let mut project = Project::new(vec![root.join("input.php")], Vec::new());
         project.php_version = 80500;
         project.level = level;
-        project.check_maybe_undefined_variables = level >= 1;
+        project.options.set(pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES, level >= 1);
         let analysis = analyse_project(&project).unwrap();
         let mut actual: Vec<_> = analysis
             .errors

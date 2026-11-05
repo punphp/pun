@@ -10,7 +10,6 @@ use crate::php::{FileExcluder, is_match, normalize_path, preg, preg_quote};
 use crate::value::{Array, Key, Value};
 use indexmap::IndexMap;
 use pcre2::bytes::Regex;
-use std::cell::RefCell;
 use std::collections::HashMap;
 
 /// `PHPStan\Analyser\Error`, with the fields ignoring and the baseline formatters look at.
@@ -143,7 +142,8 @@ pub struct IgnoredErrors {
     by_file: HashMap<String, Vec<usize>>,
     other: Vec<usize>,
     report_unmatched: bool,
-    regexes: RefCell<HashMap<String, Option<Regex>>>,
+    /// Each entry's message pattern, compiled (`None` inside where it does not compile).
+    patterns: Vec<Option<Option<Regex>>>,
     /// The Pun rule of an identifier, for entries with Pun's `rule` key (`[[analyse.ignore]] rule`).
     rule_of: fn(&str) -> Option<&'static str>,
 }
@@ -277,13 +277,29 @@ impl IgnoredErrors {
             }
             entries.push((entry, reported));
         }
+        let patterns = entries
+            .iter()
+            .map(|(entry, _)| {
+                let message = match entry {
+                    Value::Array(_) => str_of(isset(entry, "message")),
+                    _ => entry.to_php_string(),
+                };
+                // Literal `\r\n` / `\r` (backslash sequences, not newlines) become `\n`, as PHPStan does.
+                message.map(|pattern| {
+                    let pattern = pattern
+                        .replace(&preg_quote("\\r\\n", None), &preg_quote("\\n", None))
+                        .replace(&preg_quote("\\r", None), &preg_quote("\\n", None));
+                    preg(&pattern).ok()
+                })
+            })
+            .collect();
         IgnoredErrors {
             errors,
             entries,
             by_file,
             other,
             report_unmatched,
-            regexes: RefCell::default(),
+            patterns,
             rule_of: |_| None,
         }
     }
@@ -294,24 +310,16 @@ impl IgnoredErrors {
     }
 
     /// `IgnoredError::shouldIgnore()`
-    fn should_ignore(&self, error: &Error, fields: &Fields, path: Option<String>) -> bool {
-        let (pattern, raw, identifier, rule) = fields.clone();
+    fn should_ignore(&self, error: &Error, i: usize, fields: &Fields, path: Option<String>) -> bool {
+        let (_, raw, identifier, rule) = fields.clone();
         if identifier.is_some() && error.identifier != identifier {
             return false;
         }
         if rule.is_some_and(|r| error.identifier.as_deref().and_then(self.rule_of) != Some(&r)) {
             return false;
         }
-        if let Some(pattern) = pattern {
-            // Literal `\r\n` / `\r` (backslash sequences, not newlines) become `\n`, as PHPStan does.
+        if let Some(re) = &self.patterns[i] {
             let message = error.message.replace("\\r\\n", "\\n").replace("\\r", "\\n");
-            let pattern = pattern
-                .replace(&preg_quote("\\r\\n", None), &preg_quote("\\n", None))
-                .replace(&preg_quote("\\r", None), &preg_quote("\\n", None));
-            let mut cache = self.regexes.borrow_mut();
-            let re = cache
-                .entry(pattern.clone())
-                .or_insert_with(|| preg(&pattern).ok());
             if !re.as_ref().is_some_and(|re| is_match(re, &message)) {
                 return false;
             }
@@ -358,7 +366,7 @@ impl IgnoredErrors {
             let mut ignored = false;
             if let Value::Array(_) = ignore {
                 if let Some(path) = str_of(isset(ignore, "path")) {
-                    ignored = self.should_ignore(error, &fields, Some(path));
+                    ignored = self.should_ignore(error, i, &fields, Some(path));
                     if ignored {
                         if let Some(Value::Int(count)) = isset(ignore, "count") {
                             let (real, _) = real_counts.entry(i).or_insert((0, *count));
@@ -375,7 +383,7 @@ impl IgnoredErrors {
                     }
                 } else if let Some(Value::Array(paths)) = isset(ignore, "paths") {
                     for (j, path) in paths.iter() {
-                        ignored = self.should_ignore(error, &fields, path.to_php_string());
+                        ignored = self.should_ignore(error, i, &fields, path.to_php_string());
                         if !ignored {
                             continue;
                         }
@@ -390,14 +398,14 @@ impl IgnoredErrors {
                         break;
                     }
                 } else {
-                    ignored = self.should_ignore(error, &fields, None);
+                    ignored = self.should_ignore(error, i, &fields, None);
                     if ignored {
                         unmatched[i] = None;
                     }
                 }
             } else {
                 let fields = (ignore.to_php_string(), None, None, None);
-                ignored = self.should_ignore(error, &fields, None);
+                ignored = self.should_ignore(error, i, &fields, None);
                 if ignored {
                     unmatched[i] = None;
                 }

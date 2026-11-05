@@ -15,7 +15,91 @@ use serde_json::Value as Json;
 use crate::relative_path::{RelativePath, absolute};
 use crate::{display, php_files};
 
+bitflags::bitflags! {
+    /// The boolean parameters of a [`Project`].
+    #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+    pub struct ProjectOptions: u64 {
+        /// `featureToggles.magicDirInInclude`: check the __DIR__ concatenation fallback (off by default).
+        const CHECK_MAGIC_DIR_IN_INCLUDE = 1 << 0;
+        /// `usePathConstantsAsConstantString`: retain literal __DIR__/__FILE__ types (off by default).
+        const USE_PATH_CONSTANTS_AS_CONSTANT_STRING = 1 << 1;
+        /// `reportUnmatchedIgnoredErrors`.
+        const REPORT_UNMATCHED_IGNORES = 1 << 2;
+        /// `reportIgnoresWithoutComments`.
+        const REPORT_IGNORES_WITHOUT_COMMENTS = 1 << 3;
+        /// PHPStan's `checkClassCaseSensitivity` (see `rules::Checks`): false, as at level 0, until the presets set it.
+        const CHECK_CLASS_CASE_SENSITIVITY = 1 << 4;
+        /// `checkInternalClassCaseSensitivity`: include built-in classes in case checks (off by default).
+        const CHECK_INTERNAL_CLASS_CASE_SENSITIVITY = 1 << 5;
+        /// `featureToggles.checkImportedClassNameCase`: check a one-part name's written case (on with bleedingEdge).
+        const CHECK_IMPORTED_CLASS_NAME_CASE = 1 << 6;
+        /// `checkFunctionNameCase`: off by default at every level, independently of class-name case checks.
+        const CHECK_FUNCTION_NAME_CASE = 1 << 7;
+        /// `cliArgumentsVariablesRegistered`: exempt argc and argv in the main scope only.
+        const CLI_ARGUMENTS_VARIABLES_REGISTERED = 1 << 8;
+        /// `checkMaybeUndefinedVariables`: enabled by config.level1.neon, independently overridable.
+        const CHECK_MAYBE_UNDEFINED_VARIABLES = 1 << 9;
+        /// `polluteScopeWithLoopInitialAssignments`: keep for/while entry assignments (on by default).
+        const POLLUTE_SCOPE_WITH_LOOP_INITIAL_ASSIGNMENTS = 1 << 10;
+        /// `polluteScopeWithAlwaysIterableForeach`: narrow iterable bodies and retain new exit holders.
+        const POLLUTE_SCOPE_WITH_ALWAYS_ITERABLE_FOREACH = 1 << 11;
+        /// `polluteScopeWithBlock`: retain the actual standalone block scope (on by default).
+        const POLLUTE_SCOPE_WITH_BLOCK = 1 << 12;
+        /// `featureToggles.checkGenericIterableClasses` (on with bleedingEdge).
+        const CHECK_GENERIC_ITERABLE_CLASSES = 1 << 13;
+        /// `featureToggles.internalTag` (on with bleedingEdge): the `@internal` usage rules.
+        const INTERNAL_TAG = 1 << 14;
+        /// `featureToggles.newStaticInAbstractClassStaticMethod` (on with bleedingEdge).
+        const NEW_STATIC_IN_ABSTRACT_CLASS_STATIC_METHOD = 1 << 15;
+        /// `featureToggles.reportPreciseLineForUnusedFunctionParameter` (on with bleedingEdge): unused closure uses and
+        /// constructor parameters are reported on their own line, not the function's.
+        const PRECISE_UNUSED_PARAMETER_LINE = 1 << 17;
+        /// `featureToggles.bleedingEdge`.
+        const BLEEDING_EDGE = 1 << 18;
+        /// `featureToggles.unusedLabel` (on with bleedingEdge).
+        const UNUSED_LABEL = 1 << 19;
+        /// `featureToggles.switchConditionAlwaysFalse` (on with bleedingEdge): SwitchConditionRule.
+        const SWITCH_CONDITION = 1 << 20;
+        /// `featureToggles.sortWithoutEffect` (on with bleedingEdge): SortWithoutEffectRule.
+        const SORT_WITHOUT_EFFECT = 1 << 21;
+        /// `featureToggles.checkNonStringableDynamicAccess` (on with bleedingEdge): the `*.nameNotString` checks.
+        const CHECK_NON_STRINGABLE_DYNAMIC_ACCESS = 1 << 22;
+        /// `featureToggles.reportMethodPurityOverride` (on with bleedingEdge): MethodSignatureRule's purity checks.
+        const REPORT_METHOD_PURITY_OVERRIDE = 1 << 23;
+        /// `featureToggles.assignToByRefForeachExpr` (on with bleedingEdge): AssignToByRefExprFromForeachRule.
+        const ASSIGN_TO_BY_REF_FOREACH_EXPR = 1 << 24;
+        /// `featureToggles.checkDynamicConstantNameValues` (on with bleedingEdge): ValueAssignedToGlobalConstantRule and
+        /// ValueAssignedToDefineRule.
+        const CHECK_DYNAMIC_CONSTANT_NAME_VALUES = 1 << 25;
+        /// `featureToggles.checkDateIntervalConstructor` (on with bleedingEdge): DateIntervalInstantiationRule.
+        const CHECK_DATE_INTERVAL_CONSTRUCTOR = 1 << 26;
+        /// `featureToggles.checkParameterCastableToNumberFunctions` (on with bleedingEdge): ParameterCastableToNumberRule.
+        const CHECK_PARAMETER_CASTABLE_TO_NUMBER_FUNCTIONS = 1 << 27;
+        /// `featureToggles.checkPrintfParameterTypes` (on with bleedingEdge): PrintfParameterTypeRule.
+        const CHECK_PRINTF_PARAMETER_TYPES = 1 << 28;
+        /// `checkStrictPrintfPlaceholderTypes`: PrintfParameterTypeRule's strict placeholder types (off by default).
+        const CHECK_STRICT_PRINTF_PLACEHOLDER_TYPES = 1 << 29;
+        /// `featureToggles.finiteTypesInHaystack` (on with bleedingEdge): ImpossibleInArrayHaystackFiniteTypesRule.
+        const FINITE_TYPES_IN_HAYSTACK = 1 << 30;
+        /// `featureToggles.unusedVariable` (on with bleedingEdge): UnusedVariableRule.
+        const UNUSED_VARIABLE = 1 << 31;
+        /// `featureToggles.unusedParameters` (on with bleedingEdge): Unused{Function,Method}ParametersRule and the
+        /// `*.unusedParameterFlow`/`closure.unusedUseFlow` findings.
+        const UNUSED_PARAMETERS = 1 << 32;
+        /// `featureToggles.newOnNonObject` (on with bleedingEdge): InstantiationRule's `new.nonObject`.
+        const NEW_ON_NON_OBJECT = 1 << 33;
+        /// `checkUninitializedProperties`: UninitializedPropertyRule (config.neon's conditional rule).
+        const CHECK_UNINITIALIZED_PROPERTIES = 1 << 34;
+        /// `checkMissingCallableSignature`: MissingTypehintCheck's `missingType.callable` (off by default).
+        const CHECK_MISSING_CALLABLE_SIGNATURE = 1 << 35;
+        /// `deprecationRulesInstalled`: the config includes phpstan-deprecation-rules' rules.neon.
+        const DEPRECATION_RULES = 1 << 36;
+    }
+}
+
 pub struct Project {
+    /// The boolean parameters.
+    pub options: ProjectOptions,
     /// Reported on.
     pub analysed: Vec<PathBuf>,
     /// Symbols only.
@@ -30,34 +114,8 @@ pub struct Project {
     /// PHP's runtime `include_path`, supplied without starting PHP. The portable default is `.`; callers that
     /// need a distro's php.ini paths or bootstrap changes must supply those entries explicitly.
     pub include_paths: Vec<PathBuf>,
-    /// `featureToggles.magicDirInInclude`: check the __DIR__ concatenation fallback (off by default).
-    pub check_magic_dir_in_include: bool,
-    /// `usePathConstantsAsConstantString`: retain literal __DIR__/__FILE__ types (off by default).
-    pub use_path_constants_as_constant_string: bool,
-    /// `reportUnmatchedIgnoredErrors`.
-    pub report_unmatched_ignores: bool,
-    /// `reportIgnoresWithoutComments`.
-    pub report_ignores_without_comments: bool,
     /// `ignoreErrors` (with the baseline's entries).
     pub ignore_errors: IgnoredErrors,
-    /// PHPStan's `checkClassCaseSensitivity` (see `rules::Checks`): false, as at level 0, until the presets set it.
-    pub check_class_case_sensitivity: bool,
-    /// `checkInternalClassCaseSensitivity`: include built-in classes in case checks (off by default).
-    pub check_internal_class_case_sensitivity: bool,
-    /// `featureToggles.checkImportedClassNameCase`: check a one-part name's written case (on with bleedingEdge).
-    pub check_imported_class_name_case: bool,
-    /// `checkFunctionNameCase`: off by default at every level, independently of class-name case checks.
-    pub check_function_name_case: bool,
-    /// `cliArgumentsVariablesRegistered`: exempt argc and argv in the main scope only.
-    pub cli_arguments_variables_registered: bool,
-    /// `checkMaybeUndefinedVariables`: enabled by config.level1.neon, independently overridable.
-    pub check_maybe_undefined_variables: bool,
-    /// `polluteScopeWithLoopInitialAssignments`: keep for/while entry assignments (on by default).
-    pub pollute_scope_with_loop_initial_assignments: bool,
-    /// `polluteScopeWithAlwaysIterableForeach`: narrow iterable bodies and retain new exit holders.
-    pub pollute_scope_with_always_iterable_foreach: bool,
-    /// `polluteScopeWithBlock`: retain the actual standalone block scope (on by default).
-    pub pollute_scope_with_block: bool,
     /// The rule level: `level` (`max` is 10), 0 when unset.
     pub level: u8,
     /// `checkFunctionArgumentTypes`: `None` follows the level (on from 5), including after callers change it.
@@ -74,59 +132,10 @@ pub struct Project {
     pub check_implicit_mixed: Option<bool>,
     /// `treatPhpDocTypesAsCertain`: independently overridable; `None` defaults to true. Used by IssetCheck only.
     pub treat_php_doc_types_as_certain: Option<bool>,
-    /// `featureToggles.checkGenericIterableClasses` (on with bleedingEdge).
-    pub check_generic_iterable_classes: bool,
-    /// `featureToggles.internalTag` (on with bleedingEdge): the `@internal` usage rules.
-    pub internal_tag: bool,
-    /// `featureToggles.newStaticInAbstractClassStaticMethod` (on with bleedingEdge).
-    pub new_static_in_abstract_class_static_method: bool,
-    /// `featureToggles.reportPreciseLineForUnusedFunctionParameter` (on with bleedingEdge): unused closure uses and
-    /// constructor parameters are reported on their own line, not the function's.
-    pub precise_unused_parameter_line: bool,
     /// Every analysed path is a file (FileFinderResult's `isOnlyFiles()`).
     pub only_files: bool,
-    /// `featureToggles.bleedingEdge`.
-    pub bleeding_edge: bool,
-    /// `featureToggles.unusedLabel` (on with bleedingEdge).
-    pub unused_label: bool,
-    /// `featureToggles.switchConditionAlwaysFalse` (on with bleedingEdge): SwitchConditionRule.
-    pub switch_condition: bool,
-    /// `featureToggles.sortWithoutEffect` (on with bleedingEdge): SortWithoutEffectRule.
-    pub sort_without_effect: bool,
-    /// `featureToggles.checkNonStringableDynamicAccess` (on with bleedingEdge): the `*.nameNotString` checks.
-    pub check_non_stringable_dynamic_access: bool,
-    /// `featureToggles.reportMethodPurityOverride` (on with bleedingEdge): MethodSignatureRule's purity checks.
-    pub report_method_purity_override: bool,
-    /// `featureToggles.assignToByRefForeachExpr` (on with bleedingEdge): AssignToByRefExprFromForeachRule.
-    pub assign_to_by_ref_foreach_expr: bool,
-    /// `featureToggles.checkDynamicConstantNameValues` (on with bleedingEdge): ValueAssignedToGlobalConstantRule and
-    /// ValueAssignedToDefineRule.
-    pub check_dynamic_constant_name_values: bool,
-    /// `featureToggles.checkDateIntervalConstructor` (on with bleedingEdge): DateIntervalInstantiationRule.
-    pub check_date_interval_constructor: bool,
-    /// `featureToggles.checkParameterCastableToNumberFunctions` (on with bleedingEdge): ParameterCastableToNumberRule.
-    pub check_parameter_castable_to_number_functions: bool,
-    /// `featureToggles.checkPrintfParameterTypes` (on with bleedingEdge): PrintfParameterTypeRule.
-    pub check_printf_parameter_types: bool,
-    /// `checkStrictPrintfPlaceholderTypes`: PrintfParameterTypeRule's strict placeholder types (off by default).
-    pub check_strict_printf_placeholder_types: bool,
-    /// `featureToggles.finiteTypesInHaystack` (on with bleedingEdge): ImpossibleInArrayHaystackFiniteTypesRule.
-    pub finite_types_in_haystack: bool,
-    /// `featureToggles.unusedVariable` (on with bleedingEdge): UnusedVariableRule.
-    pub unused_variable: bool,
-    /// `featureToggles.unusedParameters` (on with bleedingEdge): Unused{Function,Method}ParametersRule and the
-    /// `*.unusedParameterFlow`/`closure.unusedUseFlow` findings.
-    pub unused_parameters: bool,
-    /// `featureToggles.newOnNonObject` (on with bleedingEdge): InstantiationRule's `new.nonObject`.
-    pub new_on_non_object: bool,
     /// `dynamicConstantNames`' entries with a configured type (name, type string).
     pub dynamic_constant_types: Vec<(String, String)>,
-    /// `checkUninitializedProperties`: UninitializedPropertyRule (config.neon's conditional rule).
-    pub check_uninitialized_properties: bool,
-    /// `checkMissingCallableSignature`: MissingTypehintCheck's `missingType.callable` (off by default).
-    pub check_missing_callable_signature: bool,
-    /// `deprecationRulesInstalled`: the config includes phpstan-deprecation-rules' rules.neon.
-    pub deprecation_rules: bool,
     /// The `strictRules` switches of phpstan-strict-rules' rules.neon that Pun ports (all off without it).
     pub strict_rules: StrictRules,
     /// The `exceptions.*` parameters of the throw point rules.
@@ -410,28 +419,53 @@ impl Project {
             Some(Value::Str(s)) if s == "max" => 10,
             _ => 0,
         };
+        let mut options = ProjectOptions::empty();
+        options.set(ProjectOptions::CHECK_MAGIC_DIR_IN_INCLUDE, toggle("magicDirInInclude"));
+        options.set(ProjectOptions::USE_PATH_CONSTANTS_AS_CONSTANT_STRING, flag("usePathConstantsAsConstantString"));
+        options.set(ProjectOptions::REPORT_IGNORES_WITHOUT_COMMENTS, flag("reportIgnoresWithoutComments"));
+        options.set(ProjectOptions::REPORT_UNMATCHED_IGNORES, report_unmatched_ignores);
+        // config.neon's false, which config.level2.neon turns on
+        options.set(ProjectOptions::CHECK_CLASS_CASE_SENSITIVITY, flag("checkClassCaseSensitivity"));
+        options.set(ProjectOptions::CHECK_INTERNAL_CLASS_CASE_SENSITIVITY, flag("checkInternalClassCaseSensitivity"));
+        options.set(ProjectOptions::CHECK_IMPORTED_CLASS_NAME_CASE, toggle("checkImportedClassNameCase"));
+        options.set(ProjectOptions::CHECK_FUNCTION_NAME_CASE, flag("checkFunctionNameCase"));
+        options.set(ProjectOptions::CLI_ARGUMENTS_VARIABLES_REGISTERED, flag("cliArgumentsVariablesRegistered"));
+        options.set(ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES, flag("checkMaybeUndefinedVariables"));
+        options.set(ProjectOptions::POLLUTE_SCOPE_WITH_LOOP_INITIAL_ASSIGNMENTS, !matches!(params.get_str("polluteScopeWithLoopInitialAssignments"), Some(Value::Bool(false))));
+        options.set(ProjectOptions::POLLUTE_SCOPE_WITH_ALWAYS_ITERABLE_FOREACH, !matches!(params.get_str("polluteScopeWithAlwaysIterableForeach"), Some(Value::Bool(false))));
+        options.set(ProjectOptions::POLLUTE_SCOPE_WITH_BLOCK, !matches!(params.get_str("polluteScopeWithBlock"), Some(Value::Bool(false))));
+        options.set(ProjectOptions::CHECK_GENERIC_ITERABLE_CLASSES, toggle("checkGenericIterableClasses"));
+        options.set(ProjectOptions::INTERNAL_TAG, toggle("internalTag"));
+        options.set(ProjectOptions::NEW_STATIC_IN_ABSTRACT_CLASS_STATIC_METHOD, toggle("newStaticInAbstractClassStaticMethod"));
+        options.set(ProjectOptions::BLEEDING_EDGE, toggle("bleedingEdge"));
+        options.set(ProjectOptions::UNUSED_LABEL, toggle("unusedLabel"));
+        options.set(ProjectOptions::SWITCH_CONDITION, toggle("switchConditionAlwaysFalse"));
+        options.set(ProjectOptions::SORT_WITHOUT_EFFECT, toggle("sortWithoutEffect"));
+        options.set(ProjectOptions::CHECK_NON_STRINGABLE_DYNAMIC_ACCESS, toggle("checkNonStringableDynamicAccess"));
+        options.set(ProjectOptions::REPORT_METHOD_PURITY_OVERRIDE, toggle("reportMethodPurityOverride"));
+        options.set(ProjectOptions::ASSIGN_TO_BY_REF_FOREACH_EXPR, toggle("assignToByRefForeachExpr"));
+        options.set(ProjectOptions::CHECK_DYNAMIC_CONSTANT_NAME_VALUES, toggle("checkDynamicConstantNameValues"));
+        options.set(ProjectOptions::CHECK_DATE_INTERVAL_CONSTRUCTOR, toggle("checkDateIntervalConstructor"));
+        options.set(ProjectOptions::CHECK_PARAMETER_CASTABLE_TO_NUMBER_FUNCTIONS, toggle("checkParameterCastableToNumberFunctions"));
+        options.set(ProjectOptions::CHECK_PRINTF_PARAMETER_TYPES, toggle("checkPrintfParameterTypes"));
+        options.set(ProjectOptions::CHECK_STRICT_PRINTF_PLACEHOLDER_TYPES, flag("checkStrictPrintfPlaceholderTypes"));
+        options.set(ProjectOptions::FINITE_TYPES_IN_HAYSTACK, toggle("finiteTypesInHaystack"));
+        options.set(ProjectOptions::UNUSED_VARIABLE, toggle("unusedVariable"));
+        options.set(ProjectOptions::UNUSED_PARAMETERS, toggle("unusedParameters"));
+        options.set(ProjectOptions::NEW_ON_NON_OBJECT, toggle("newOnNonObject"));
+        options.set(ProjectOptions::CHECK_UNINITIALIZED_PROPERTIES, flag("checkUninitializedProperties"));
+        options.set(ProjectOptions::CHECK_MISSING_CALLABLE_SIGNATURE, flag("checkMissingCallableSignature"));
+        options.set(ProjectOptions::DEPRECATION_RULES, flag("deprecationRulesInstalled"));
+        options.set(ProjectOptions::PRECISE_UNUSED_PARAMETER_LINE, toggle("reportPreciseLineForUnusedFunctionParameter"));
         Project {
+            options,
             analysed,
             scanned,
             autoloaded,
             php_version,
             current_working_directory: root.to_path_buf(),
             include_paths: vec![PathBuf::from(".")],
-            check_magic_dir_in_include: toggle("magicDirInInclude"),
-            use_path_constants_as_constant_string: flag("usePathConstantsAsConstantString"),
-            report_unmatched_ignores,
-            report_ignores_without_comments: flag("reportIgnoresWithoutComments"),
             ignore_errors: IgnoredErrors::new(ignore_errors, report_unmatched_ignores),
-            // config.neon's false, which config.level2.neon turns on
-            check_class_case_sensitivity: flag("checkClassCaseSensitivity"),
-            check_internal_class_case_sensitivity: flag("checkInternalClassCaseSensitivity"),
-            check_imported_class_name_case: toggle("checkImportedClassNameCase"),
-            check_function_name_case: flag("checkFunctionNameCase"),
-            cli_arguments_variables_registered: flag("cliArgumentsVariablesRegistered"),
-            check_maybe_undefined_variables: flag("checkMaybeUndefinedVariables"),
-            pollute_scope_with_loop_initial_assignments: !matches!(params.get_str("polluteScopeWithLoopInitialAssignments"), Some(Value::Bool(false))),
-            pollute_scope_with_always_iterable_foreach: !matches!(params.get_str("polluteScopeWithAlwaysIterableForeach"), Some(Value::Bool(false))),
-            pollute_scope_with_block: !matches!(params.get_str("polluteScopeWithBlock"), Some(Value::Bool(false))),
             level,
             check_function_argument_types: optional_flag("checkFunctionArgumentTypes"),
             check_arguments_passed_by_reference: optional_flag("checkArgumentsPassedByReference"),
@@ -440,26 +474,7 @@ impl Project {
             check_explicit_mixed: optional_flag("checkExplicitMixed"),
             check_implicit_mixed: optional_flag("checkImplicitMixed"),
             treat_php_doc_types_as_certain: optional_flag("treatPhpDocTypesAsCertain"),
-            check_generic_iterable_classes: toggle("checkGenericIterableClasses"),
-            internal_tag: toggle("internalTag"),
-            new_static_in_abstract_class_static_method: toggle("newStaticInAbstractClassStaticMethod"),
             only_files: strings(params, "paths").iter().all(|p| Path::new(p).is_file()),
-            bleeding_edge: toggle("bleedingEdge"),
-            unused_label: toggle("unusedLabel"),
-            switch_condition: toggle("switchConditionAlwaysFalse"),
-            sort_without_effect: toggle("sortWithoutEffect"),
-            check_non_stringable_dynamic_access: toggle("checkNonStringableDynamicAccess"),
-            report_method_purity_override: toggle("reportMethodPurityOverride"),
-            assign_to_by_ref_foreach_expr: toggle("assignToByRefForeachExpr"),
-            check_dynamic_constant_name_values: toggle("checkDynamicConstantNameValues"),
-            check_date_interval_constructor: toggle("checkDateIntervalConstructor"),
-            check_parameter_castable_to_number_functions: toggle("checkParameterCastableToNumberFunctions"),
-            check_printf_parameter_types: toggle("checkPrintfParameterTypes"),
-            check_strict_printf_placeholder_types: flag("checkStrictPrintfPlaceholderTypes"),
-            finite_types_in_haystack: toggle("finiteTypesInHaystack"),
-            unused_variable: toggle("unusedVariable"),
-            unused_parameters: toggle("unusedParameters"),
-            new_on_non_object: toggle("newOnNonObject"),
             // ConstantResolver::getConfiguredGlobalConstantType(): only the string keys have a type
             dynamic_constant_types: params
                 .get_str("dynamicConstantNames")
@@ -471,9 +486,6 @@ impl Project {
                         .collect()
                 })
                 .unwrap_or_default(),
-            check_uninitialized_properties: flag("checkUninitializedProperties"),
-            check_missing_callable_signature: flag("checkMissingCallableSignature"),
-            deprecation_rules: flag("deprecationRulesInstalled"),
             strict_rules: StrictRules::from_params(params),
             exceptions: Exceptions::from_params(params),
             too_wide: TooWide {
@@ -481,7 +493,6 @@ impl Project {
                 report_nested: toggle("reportNestedTooWideType"),
                 param_out_in_protected_and_public_methods: flag("checkTooWideParameterOutInProtectedAndPublicMethods"),
             },
-            precise_unused_parameter_line: toggle("reportPreciseLineForUnusedFunctionParameter"),
             relative_path: RelativePath::of(&paths),
             larastan: crate::Larastan::from_params(root, params),
             type_aliases: params
@@ -510,7 +521,45 @@ impl Project {
     /// PHPStan's defaults (no `ignoreErrors`, unmatched ignores reported) over the given files.
     pub fn new(analysed: Vec<PathBuf>, scanned: Vec<PathBuf>) -> Project {
         let paths: Vec<String> = analysed.iter().map(|p| absolute(p)).collect();
+        let mut options = ProjectOptions::empty();
+        options.set(ProjectOptions::CHECK_MAGIC_DIR_IN_INCLUDE, false);
+        options.set(ProjectOptions::USE_PATH_CONSTANTS_AS_CONSTANT_STRING, false);
+        options.set(ProjectOptions::REPORT_UNMATCHED_IGNORES, true);
+        options.set(ProjectOptions::REPORT_IGNORES_WITHOUT_COMMENTS, false);
+        options.set(ProjectOptions::CHECK_CLASS_CASE_SENSITIVITY, false);
+        options.set(ProjectOptions::CHECK_INTERNAL_CLASS_CASE_SENSITIVITY, false);
+        options.set(ProjectOptions::CHECK_IMPORTED_CLASS_NAME_CASE, false);
+        options.set(ProjectOptions::CHECK_FUNCTION_NAME_CASE, false);
+        options.set(ProjectOptions::CLI_ARGUMENTS_VARIABLES_REGISTERED, true);
+        options.set(ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES, false);
+        options.set(ProjectOptions::POLLUTE_SCOPE_WITH_LOOP_INITIAL_ASSIGNMENTS, true);
+        options.set(ProjectOptions::POLLUTE_SCOPE_WITH_ALWAYS_ITERABLE_FOREACH, true);
+        options.set(ProjectOptions::POLLUTE_SCOPE_WITH_BLOCK, true);
+        options.set(ProjectOptions::CHECK_GENERIC_ITERABLE_CLASSES, false);
+        options.set(ProjectOptions::INTERNAL_TAG, false);
+        options.set(ProjectOptions::NEW_STATIC_IN_ABSTRACT_CLASS_STATIC_METHOD, false);
+        options.set(ProjectOptions::BLEEDING_EDGE, false);
+        options.set(ProjectOptions::UNUSED_LABEL, false);
+        options.set(ProjectOptions::SWITCH_CONDITION, false);
+        options.set(ProjectOptions::SORT_WITHOUT_EFFECT, false);
+        options.set(ProjectOptions::CHECK_NON_STRINGABLE_DYNAMIC_ACCESS, false);
+        options.set(ProjectOptions::REPORT_METHOD_PURITY_OVERRIDE, false);
+        options.set(ProjectOptions::ASSIGN_TO_BY_REF_FOREACH_EXPR, false);
+        options.set(ProjectOptions::CHECK_DYNAMIC_CONSTANT_NAME_VALUES, false);
+        options.set(ProjectOptions::CHECK_DATE_INTERVAL_CONSTRUCTOR, false);
+        options.set(ProjectOptions::CHECK_PARAMETER_CASTABLE_TO_NUMBER_FUNCTIONS, false);
+        options.set(ProjectOptions::CHECK_PRINTF_PARAMETER_TYPES, false);
+        options.set(ProjectOptions::CHECK_STRICT_PRINTF_PLACEHOLDER_TYPES, false);
+        options.set(ProjectOptions::FINITE_TYPES_IN_HAYSTACK, false);
+        options.set(ProjectOptions::UNUSED_VARIABLE, false);
+        options.set(ProjectOptions::UNUSED_PARAMETERS, false);
+        options.set(ProjectOptions::NEW_ON_NON_OBJECT, false);
+        options.set(ProjectOptions::CHECK_UNINITIALIZED_PROPERTIES, false);
+        options.set(ProjectOptions::CHECK_MISSING_CALLABLE_SIGNATURE, false);
+        options.set(ProjectOptions::DEPRECATION_RULES, false);
+        options.set(ProjectOptions::PRECISE_UNUSED_PARAMETER_LINE, false);
         Project {
+            options,
             relative_path: RelativePath::of(&paths),
             analysed,
             scanned,
@@ -518,20 +567,7 @@ impl Project {
             php_version: RUNTIME_PHP_VERSION,
             current_working_directory: std::env::current_dir().unwrap_or_default(),
             include_paths: vec![PathBuf::from(".")],
-            check_magic_dir_in_include: false,
-            use_path_constants_as_constant_string: false,
-            report_unmatched_ignores: true,
-            report_ignores_without_comments: false,
             ignore_errors: IgnoredErrors::new(&Array::new(), true),
-            check_class_case_sensitivity: false,
-            check_internal_class_case_sensitivity: false,
-            check_imported_class_name_case: false,
-            check_function_name_case: false,
-            cli_arguments_variables_registered: true,
-            check_maybe_undefined_variables: false,
-            pollute_scope_with_loop_initial_assignments: true,
-            pollute_scope_with_always_iterable_foreach: true,
-            pollute_scope_with_block: true,
             level: 0,
             check_function_argument_types: None,
             check_arguments_passed_by_reference: None,
@@ -540,34 +576,11 @@ impl Project {
             check_explicit_mixed: None,
             check_implicit_mixed: None,
             treat_php_doc_types_as_certain: None,
-            check_generic_iterable_classes: false,
-            internal_tag: false,
-            new_static_in_abstract_class_static_method: false,
             only_files: true,
-            bleeding_edge: false,
-            unused_label: false,
-            switch_condition: false,
-            sort_without_effect: false,
-            check_non_stringable_dynamic_access: false,
-            report_method_purity_override: false,
-            assign_to_by_ref_foreach_expr: false,
-            check_dynamic_constant_name_values: false,
-            check_date_interval_constructor: false,
-            check_parameter_castable_to_number_functions: false,
-            check_printf_parameter_types: false,
-            check_strict_printf_placeholder_types: false,
-            finite_types_in_haystack: false,
-            unused_variable: false,
-            unused_parameters: false,
-            new_on_non_object: false,
             dynamic_constant_types: Vec::new(),
-            check_uninitialized_properties: false,
-            check_missing_callable_signature: false,
-            deprecation_rules: false,
             strict_rules: StrictRules::default(),
             exceptions: Exceptions::default(),
             too_wide: TooWide::default(),
-            precise_unused_parameter_line: false,
             larastan: None,
             type_aliases: Vec::new(),
             stubs: Vec::new(),

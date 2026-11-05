@@ -48,6 +48,7 @@ use mago_syntax::settings::{LexerSettings, ParserSettings};
 use mago_syntax::walker::MutWalker;
 use rayon::prelude::*;
 
+use crate::bitset::BitSet;
 use crate::rules::Facts;
 use crate::{Project, autoload};
 
@@ -135,7 +136,7 @@ fn scan(
     let (mut scanned, facts) = {
         let arena = &*arena;
         let (program, names) = parse(arena, file);
-        let facts = Facts::of(&file.contents, program);
+        let facts = Facts::of(&file.contents, program, file.file_type == FileType::Host);
         // FileNodesFetcher rejects the whole file before exporting any reflection or autoload roots.
         let scanned = if !crate::parser::errors(file, program, version).is_empty() {
             CodebaseMetadata::default()
@@ -500,8 +501,10 @@ pub(crate) fn build(
     let (((mut metadata, mut references), _), scanned) = rayon::join(
         || rayon::join(move || prelude(php_version), builtins),
         || {
-            let mut loaded = vec![false; files.len()];
-            loaded[..eager].fill(true);
+            let mut loaded = BitSet::new(files.len());
+            for i in 0..eager {
+                loaded.set(i, true);
+            }
             let mut round: Vec<usize> = (0..eager).collect();
             let mut scanned = Vec::new();
             let mut sources = Sources::default();
@@ -529,7 +532,7 @@ pub(crate) fn build(
                             );
                             let has_constants = !symbols.constants.is_empty();
                             metadata.extend(symbols);
-                            wanted.retain(|&w| !loaded[w]);
+                            wanted.retain(|&w| !loaded.get(w));
                             if file_type == FileType::Host && names_phpstan(&file.contents) {
                                 // (the receiver is alive until the rounds end)
                                 let _ = names_phpstan_tx.send(());
@@ -555,7 +558,7 @@ pub(crate) fn build(
                 round.sort_unstable();
                 round.dedup();
                 for &i in &round {
-                    loaded[i] = true;
+                    loaded.set(i, true);
                 }
             }
             drop(names_phpstan_tx);
@@ -850,7 +853,7 @@ fn resolve_initializers(metadata: &mut CodebaseMetadata, sources: &Sources, proj
         requested: HashSet::new(),
         copies,
         classes,
-        path_constants: project.use_path_constants_as_constant_string,
+        path_constants: project.options.contains(crate::ProjectOptions::USE_PATH_CONSTANTS_AS_CONSTANT_STRING),
     };
     for name in roots {
         resolver.resolve(name);

@@ -28,7 +28,7 @@ fn check(cases: &[&str]) {
             let mut project = Project::new(vec![root.join(format!("{case}.php"))], vec![]);
             project.level = level;
             project.php_version = 80500;
-            project.check_maybe_undefined_variables = level > 0;
+            project.options.set(pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES, level > 0);
             let mut actual: Vec<_> = run(&project)
                 .unwrap()
                 .into_iter()

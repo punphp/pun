@@ -1,4 +1,4 @@
-//! Larastan's model knowledge as a Mago analyser plugin (analyse.md §8): a model's database columns are typed
+//! Larastan's model knowledge as a Mago analyser plugin: a model's database columns are typed
 //! properties, read from the migrations, as Larastan's `ModelPropertyExtension` and `ModelPropertyHelper` give them.
 //! Registered as an expression hook: after Mago types `$model->column` (through `Model::__get`, so `mixed`), the hook
 //! replaces the type with the column's.

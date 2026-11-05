@@ -63,7 +63,7 @@ fn of_signature(c: &Checker, s: &Signature, source: Span) -> Acceptor {
         let bindings = match source {
             Some((f, class)) => {
                 let bindings = declared::codex_closure_this(c, f, class);
-                s.params.iter().map(|p| bindings.contains_key(&p.name)).collect::<Vec<_>>()
+                s.params.iter().map(|p| bindings.contains_key(&p.name)).collect::<crate::bitset::BitSet>()
             }
             None => signature.parameters.iter().map(|p| p.get_closure_this_type().is_some()).collect(),
         };
@@ -84,7 +84,7 @@ fn of_signature(c: &Checker, s: &Signature, source: Span) -> Acceptor {
         let named = source.map_or(pun_phpstan::types::Tri::Yes, |(f, class)| params::accepts_named(c, f, class));
         Some((bindings, types, named, references))
     }).reduce(|(mut a, mut types, named, mut references), (b, other, other_named, other_references)| {
-        for (a, b) in a.iter_mut().zip(b) { *a &= b; }
+        for i in 0..a.len().min(b.len()) { let both = a.get(i) && b.get(i); a.set(i, both); }
         for (t, o) in types.iter_mut().zip(other) { if *t != o { *t = None; } }
         // PassedByReference::combine(): CreatesNewVariable > ReadsArgument > No.
         for (a, b) in references.iter_mut().zip(other_references) { if b == ByRef::CreatesNewVariable || *a == ByRef::No { *a = b; } }
@@ -108,7 +108,7 @@ fn of_signature(c: &Checker, s: &Signature, source: Span) -> Acceptor {
         }
     }
     let (bindings, types, named, references) = metadata.unwrap_or_else(||
-        (vec![false; s.params.len()], vec![None; s.params.len()], pun_phpstan::types::Tri::Yes, by_ref()));
+        (crate::bitset::BitSet::new(s.params.len()), vec![None; s.params.len()], pun_phpstan::types::Tri::Yes, by_ref()));
     Acceptor {
         optional: s.params.iter().map(|p| p.optional || p.variadic).collect(),
         variadic: s.params.iter().any(|p| p.variadic),
@@ -131,17 +131,17 @@ fn of_signature(c: &Checker, s: &Signature, source: Span) -> Acceptor {
 /// `TrivialParametersAcceptor` (also used for inaccessible methods): no parameters, variadic.
 fn inaccessible() -> Acceptor {
     Acceptor {
-        optional: vec![],
+        optional: Default::default(),
         variadic: true,
         void: false,
         names: vec![],
         types: vec![],
-        variadics: vec![],
+        variadics: Default::default(),
         builtin: false,
         accepts_named_arguments: pun_phpstan::types::Tri::Yes,
         param_types: vec![],
         by_ref: vec![],
-        closure_this: vec![],
+        closure_this: Default::default(),
         class: None,
         callee: None,
     }

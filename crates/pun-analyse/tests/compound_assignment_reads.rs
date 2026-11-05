@@ -56,7 +56,7 @@ fn compound_read_diagnostics_match_phpstan_for_implemented_rules() {
         );
         project.level = level;
         project.php_version = 80500;
-        project.check_maybe_undefined_variables = true;
+        project.options.set(pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES, true);
         let mut got: Vec<_> = pun_analyse::run(&project)
             .unwrap()
             .into_iter()

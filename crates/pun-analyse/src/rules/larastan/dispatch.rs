@@ -107,7 +107,7 @@ pub(super) fn check<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMethodCall
         if counts.named {
             continue;
         }
-        let min = acceptor.optional.iter().filter(|o| !**o).count();
+        let min = acceptor.optional.iter().filter(|o| !o).count();
         let max = (!acceptor.variadic).then_some(acceptor.optional.len());
         let invoked = if counts.unpack {
             max.map_or(min, |m| m.max(min))

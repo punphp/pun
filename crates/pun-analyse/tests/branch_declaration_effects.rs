@@ -19,7 +19,7 @@ fn conditional_declaration_effects_match_complete_phpstan_records() {
         );
         project.level = level;
         project.php_version = 80500;
-        project.check_maybe_undefined_variables = level > 0;
+        project.options.set(pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES, level > 0);
         let mut actual: Vec<_> = run(&project)
             .unwrap()
             .into_iter()

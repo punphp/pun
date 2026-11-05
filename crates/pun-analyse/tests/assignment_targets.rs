@@ -106,7 +106,7 @@ fn destructuring_target_roles_match_phpstan_at_strict_levels() {
         project.php_version = 80500;
         project.level = level;
         // config.level1.neon enables this independently of the rule-registration level.
-        project.check_maybe_undefined_variables = level >= 1;
+        project.options.set(pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES, level >= 1);
         assert_eq!(
             errors(&project),
             expected["levels"][level.to_string()],

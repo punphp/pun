@@ -26,7 +26,7 @@ fn local_coalesce_effects_match_complete_phpstan_records() {
         for (constructor, mut project) in [("from_config", configured), ("new", direct)] {
             project.level = level as u8;
             project.php_version = 80500;
-            project.check_maybe_undefined_variables = level > 0;
+            project.options.set(pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES, level > 0);
             let mut actual: Vec<_> = run(&project)
                 .unwrap()
                 .into_iter()

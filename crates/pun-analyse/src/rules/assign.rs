@@ -14,6 +14,7 @@ use pun_phpstan::symbols::ByRef;
 
 use super::types::flow::unparen;
 use super::{Checker, members};
+use crate::bitset::BitSet;
 
 /// What these checks remember during a walk.
 #[derive(Default)]
@@ -463,7 +464,7 @@ fn callee_params(c: &Checker, call: &Callee, n: usize) -> Option<Vec<Param>> {
                 let all = super::types::callables::acceptors(c, &ty, f.function.span(), &mut None)?;
                 let counts = super::params::count(&f.argument_list);
                 let acceptor = super::params::select_metadata(c, super::params::Variants { all, named: None }, &counts);
-                Some(acceptor.names.into_iter().zip(acceptor.by_ref).zip(acceptor.variadics).map(|((name, by_ref), variadic)| Param {
+                Some(acceptor.names.into_iter().zip(acceptor.by_ref).zip(acceptor.variadics.iter()).map(|((name, by_ref), variadic)| Param {
                     name: name.into_bytes(),
                     by_ref: by_ref == ByRef::CreatesNewVariable,
                     variadic,
@@ -628,10 +629,10 @@ pub fn arguments(c: &mut Checker, call: Callee) {
 }
 
 /// Whether each of function call `f`'s arguments is passed by reference (empty when the function is unknown).
-pub(super) fn by_ref_arguments(c: &Checker, f: &FunctionCall) -> Vec<bool> {
+pub(super) fn by_ref_arguments(c: &Checker, f: &FunctionCall) -> BitSet {
     let args = &f.argument_list.arguments;
     let Some(params) = callee_params(c, &Callee::Function(f), args.len()) else {
-        return Vec::new();
+        return BitSet::default();
     };
     args.iter()
         .enumerate()
@@ -646,9 +647,9 @@ pub(super) fn by_ref_arguments(c: &Checker, f: &FunctionCall) -> Vec<bool> {
 }
 
 /// Whether each argument of a method or static call, or of `new`, is passed by reference (empty when unknown).
-pub(super) fn by_ref_call_arguments(c: &Checker, call: Callee, args: &ArgumentList) -> Vec<bool> {
+pub(super) fn by_ref_call_arguments(c: &Checker, call: Callee, args: &ArgumentList) -> BitSet {
     let Some(params) = callee_params(c, &call, args.arguments.len()) else {
-        return Vec::new();
+        return BitSet::default();
     };
     args.arguments
         .iter()

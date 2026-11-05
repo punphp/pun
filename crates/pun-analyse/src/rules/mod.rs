@@ -104,6 +104,7 @@ use crate::codebase::Sources;
 use scope::{Guard, Saved};
 use statements::{Frame, FrameKind};
 
+pub(crate) use driver::Switches;
 pub(crate) use facts::Comments;
 pub(crate) use facts::Facts;
 pub(crate) use driver::{Checks, check_file};
@@ -916,6 +917,8 @@ pub struct Checker<'a, 'arena> {
     php_version: u32,
     /// PHPStan's reflection of built-ins at `php_version`.
     builtins: &'static pun_phpstan::symbols::Symbols,
+    /// The reflection data beside it.
+    natives: &'a driver::Natives,
     /// Line ranges of the traits declared in this file (their ignores are never unmatched here).
     trait_lines: Vec<(i64, i64)>,
     /// Scope boundaries: what `$scope->getFunction()` & co. see, and the goto labels of each.
@@ -949,65 +952,19 @@ pub struct Checker<'a, 'arena> {
     arrays: arrays::State,
     /// `throw` expressions that are an expression statement (StandaloneThrowExprVisitor).
     standalone_throws: HashSet<Span>,
-    /// [`Checks`]'s `check_class_case_sensitivity`.
-    case_sensitivity: bool,
-    /// [`Checks`]'s independent class-name case options.
-    check_internal_class_case_sensitivity: bool,
-    check_imported_class_name_case: bool,
-    /// [`Checks`]'s independent `checkFunctionNameCase` switch.
-    check_function_name_case: bool,
     /// [`driver::Checks`]'s level and `checkGenericIterableClasses`.
     level: u8,
-    /// FunctionCallParametersCheck's independent switches and RuleLevelHelper's receiver eligibility.
-    check_argument_types: bool,
-    check_arguments_passed_by_reference: bool,
-    check_this_only: bool,
-    /// IssetCheck's independent advanced offset, property and leaf checks.
-    check_advanced_isset: bool,
-    /// RuleLevelHelper's `checkExplicitMixed` and `checkImplicitMixed`.
-    check_explicit_mixed: bool,
-    check_implicit_mixed: bool,
-    /// IssetCheck's independent PHPDoc certainty; other rules keep their existing type selection.
-    treat_php_doc_types_as_certain: bool,
-    generic_iterable_classes: bool,
-    /// [`driver::Checks`]'s `featureToggles.newStaticInAbstractClassStaticMethod`.
-    new_static_in_abstract_class_static_method: bool,
+    /// The project's switches.
+    switches: driver::Switches,
     /// [`driver::Checks`]'s Larastan switches, when the config includes Larastan.
     larastan: Option<&'a Larastan>,
     larastan_state: larastan::State,
     /// [`driver::Checks`]'s `@internal` method names, when the internal usage rules run.
     internal: Option<&'a internal::Names>,
-    /// [`driver::Checks`]'s `featureToggles.internalTag`.
-    internal_tag: bool,
-    precise_unused_parameter_line: bool,
     /// UnreachableStatementNode positions and statement traversal after termination.
     unreachable: dead_code::UnreachableStatements,
     /// LastConditionVisitor's attributes and more the constant condition rules read.
     conditions: dead_code::ConditionFacts,
-    /// [`driver::Checks`]'s level-2 RestrictedInternalMethodUsageExtension and RestrictedInternalPropertyUsageExtension.
-    internal_members: bool,
-    /// [`driver::Checks`]'s phpstan-deprecation-rules switch and `featureToggles.bleedingEdge`.
-    deprecations: bool,
-    bleeding_edge: bool,
-    /// UnusedLabelRule: level 4 with `featureToggles.unusedLabel`.
-    unused_label: bool,
-    /// SwitchConditionRule: `featureToggles.switchConditionAlwaysFalse`.
-    switch_condition: bool,
-    /// SortWithoutEffectRule: `featureToggles.sortWithoutEffect`.
-    sort_without_effect: bool,
-    /// NonStringableDynamicAccessCheck: `featureToggles.checkNonStringableDynamicAccess`.
-    non_stringable_names: bool,
-    cli_arguments_variables_registered: bool,
-    check_maybe_undefined_variables: bool,
-    pollute_scope_with_loop_initial_assignments: bool,
-    pollute_scope_with_always_iterable_foreach: bool,
-    pollute_scope_with_block: bool,
-    /// MethodSignatureRule's purity checks: `featureToggles.reportMethodPurityOverride`.
-    method_purity_override: bool,
-    /// UninitializedPropertyRule: `checkUninitializedProperties`.
-    uninitialized_properties: bool,
-    /// MissingTypehintCheck's `checkMissingCallableSignature`.
-    missing_callable_signature: bool,
     /// The phpstan-strict-rules switches.
     strict: crate::StrictRules,
     /// [`driver::Checks`]'s `exceptions.*` parameters.
@@ -1056,7 +1013,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         let raw = self.php_doc_comment(id, offset)?;
         let start = raw.as_ptr() as usize - self.file_contents(id)?.as_ptr() as usize;
         let entry = self.file_facts(id)?.comments.entry(start as u32, (start + raw.len()) as u32);
-        Some((raw, entry.map_or_else(|| std::borrow::Cow::Owned(facts::DocEntry::parse(raw)), std::borrow::Cow::Borrowed)))
+        Some((raw, entry.map_or_else(|| std::borrow::Cow::Owned(facts::DocEntry::parse(raw, true)), std::borrow::Cow::Borrowed)))
     }
 
     /// The doc comment right before `offset` in file `id` ([`facts::Comments::doc_before()`]).
@@ -2891,5 +2848,12 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_in_shell_execute_string(&mut self, s: &'ast ShellExecuteString<'arena>, _: &mut ()) {
         statements::backtick(self, s);
+    }
+}
+
+impl Checker<'_, '_> {
+    /// Whether the project turns `switch` on.
+    pub(crate) fn on(&self, switch: Switches) -> bool {
+        self.switches.contains(switch)
     }
 }

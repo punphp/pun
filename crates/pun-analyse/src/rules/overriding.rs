@@ -7,7 +7,6 @@
 //! types or abstract trait methods) are left out; the trait walk still breaks competing declarations by name.
 
 use std::collections::{HashMap, HashSet, VecDeque};
-use std::sync::OnceLock;
 
 use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::metadata::flags::MetadataFlags;
@@ -27,6 +26,7 @@ use super::declared::{self, default_is_null, original_name};
 /// How many ancestors the walks up a class hierarchy visit: a circular one (which PHP refuses) ends there.
 pub(super) const ANCESTRY: usize = 64;
 use super::Checker;
+use crate::bitset::BitSet;
 
 const TENTATIVE_TIP: &str = "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error.";
 
@@ -169,32 +169,27 @@ fn native_class(v: &Value) -> NativeClass {
 }
 
 /// The built-in classes at the project's PHP version, by lowercase name.
-pub(super) fn natives(php_version: u32) -> &'static HashMap<String, NativeClass> {
-    static PHP84: OnceLock<HashMap<String, NativeClass>> = OnceLock::new();
-    static PHP85: OnceLock<HashMap<String, NativeClass>> = OnceLock::new();
-    let php84 = php_version < 80500;
-    (if php84 { &PHP84 } else { &PHP85 }).get_or_init(|| {
-        let data: Value = serde_json::from_str(include_str!("../../data/native-methods.json"))
-            .expect("data/native-methods.json");
-        let mut classes = data["classes"].as_object().cloned().unwrap_or_default();
-        if php84 {
-            for (k, v) in data["php84"].as_object().into_iter().flatten() {
-                classes.insert(k.clone(), v.clone());
-            }
+pub(super) fn natives(php_version: u32) -> HashMap<String, NativeClass> {
+    let data: Value = serde_json::from_str(include_str!("../../data/native-methods.json"))
+        .expect("data/native-methods.json");
+    let mut classes = data["classes"].as_object().cloned().unwrap_or_default();
+    if php_version < 80500 {
+        for (k, v) in data["php84"].as_object().into_iter().flatten() {
+            classes.insert(k.clone(), v.clone());
         }
-        classes
-            .iter()
-            .filter(|(_, v)| !v.is_null())
-            .map(|(k, v)| (k.clone(), native_class(v)))
-            .collect()
-    })
+    }
+    classes
+        .iter()
+        .filter(|(_, v)| !v.is_null())
+        .map(|(k, v)| (k.clone(), native_class(v)))
+        .collect()
 }
 
 /// A class-like as PHPStan's reflection provider knows it.
 #[derive(Clone, Copy)]
 pub(super) enum Class<'a> {
     User(&'a ClassLikeMetadata),
-    Builtin(&'static NativeClass),
+    Builtin(&'a NativeClass),
 }
 
 /// A method found on a class (`getNativeMethod()`), with the class it is implemented in (a trait's user).
@@ -209,8 +204,8 @@ enum Found<'a> {
         visibility: Visibility,
     },
     Builtin {
-        declaring: &'static NativeClass,
-        m: &'static NativeMethod,
+        declaring: &'a NativeClass,
+        m: &'a NativeMethod,
     },
 }
 
@@ -232,16 +227,13 @@ struct Facts {
 }
 
 /// `isOptional()` of each parameter: it and every later one has a default or is variadic.
-fn optional_flags(defaults: impl DoubleEndedIterator<Item = bool>) -> Vec<bool> {
+fn optional_flags(defaults: impl ExactSizeIterator<Item = bool> + DoubleEndedIterator) -> BitSet {
+    let mut out = BitSet::new(defaults.len());
     let mut optional = true;
-    let mut out: Vec<bool> = defaults
-        .rev()
-        .map(|d| {
-            optional &= d;
-            optional
-        })
-        .collect();
-    out.reverse();
+    for (i, d) in defaults.enumerate().rev() {
+        optional &= d;
+        out.set(i, optional);
+    }
     out
 }
 
@@ -261,7 +253,8 @@ impl<'a> Checker<'a, '_> {
         {
             return Some(Class::User(k));
         }
-        natives(self.php_version)
+        self.natives
+            .classes
             .get(&name.to_ascii_lowercase())
             .map(Class::Builtin)
     }
@@ -549,7 +542,7 @@ impl<'a> Checker<'a, '_> {
                     params: f
                         .parameters
                         .iter()
-                        .zip(optional)
+                        .zip(optional.iter())
                         .map(|(p, optional)| {
                             let native = p.type_declaration_metadata.as_ref().map_or_else(mixed, |t| {
                                 ty(&declared::from_tunion(self, &t.type_union, declaring))
@@ -932,7 +925,7 @@ fn analysed(c: &Checker, m: &Method, name: &str, k: &ClassLikeMetadata) -> Facts
         variants: 1,
         params: params
             .iter()
-            .zip(optional)
+            .zip(optional.iter())
             .map(|(p, optional)| {
                 let native = p.hint.as_ref().map_or_else(mixed, |h| declared::native(c, h, Some(k)));
                 Param {
@@ -1157,7 +1150,7 @@ fn method_signature<'a>(c: &Checker<'a, '_>, m: &Method, name: &str, k: &'a Clas
     if lower == "__construct" || is_static || m.modifiers.contains_private() {
         return Vec::new();
     }
-    let impure = c.method_purity_override && declared::method_purity(c, k, lower.as_bytes()).0 == Some(false);
+    let impure = c.on(crate::rules::Switches::METHOD_PURITY_OVERRIDE) && declared::method_purity(c, k, lower.as_bytes()).0 == Some(false);
     let mut parents: Vec<Found> = Vec::new();
     if let Some(parent) = c.parent_class(Class::User(k))
         && let Some(found) = c.native_method(parent, &lower)

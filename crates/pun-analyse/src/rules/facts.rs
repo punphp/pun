@@ -21,13 +21,19 @@ pub(crate) struct Facts {
 }
 
 impl Facts {
-    pub fn of(contents: &[u8], program: &Program) -> Facts {
+    /// `analysed`: the rules check this file, so they read every tag of its doc comments.
+    pub fn of(contents: &[u8], program: &Program, analysed: bool) -> Facts {
         let scopes = FileScopes::of(program);
         let mut declarations = Declarations::default();
-        DeclarationWalker { out: &mut declarations, scopes: &scopes }.walk_program(program, &mut ());
+        let mut traits = Vec::new();
+        DeclarationWalker { out: &mut declarations, scopes: &scopes, traits: &mut traits }.walk_program(program, &mut ());
         let text: Vec<u8> = contents.iter().filter(|b| !b.is_ascii_whitespace()).map(u8::to_ascii_lowercase).collect();
         let strict_types = text.windows(23).any(|w| w == b"declare(strict_types=1)");
-        Facts { comments: Comments::of(contents), declarations, scopes, strict_types }
+        let mut comments = Comments::of(contents, analysed);
+        if !analysed {
+            comments.keep_trait_tags(contents, &traits);
+        }
+        Facts { comments, declarations, scopes, strict_types }
     }
 }
 
@@ -39,17 +45,70 @@ pub struct DocEntry {
     pub tags: Vec<(String, Vec<u8>)>,
     /// [`super::declarations::doc_tags()`]
     pub names: Vec<String>,
-    /// PhpDocParser's tags, none where it throws.
+    /// PhpDocParser's tags, none where it throws; of a file the rules do not check, only [`SCANNED_TAGS`].
     pub phpdoc: Vec<phpdoc::Tag>,
 }
 
+/// The PhpDocParser tags the rules read of another file's doc comments: assertions and `@throws` of functions and
+/// methods; `@method`, `@property*`, `@mixin` and the require and sealed tags of class-likes.
+const SCANNED_TAGS: &[&str] = &[
+    "@phpstan-assert",
+    "@phpstan-assert-if-true",
+    "@phpstan-assert-if-false",
+    "@psalm-assert",
+    "@psalm-assert-if-true",
+    "@psalm-assert-if-false",
+    "@phan-assert",
+    "@phan-assert-if-true",
+    "@phan-assert-if-false",
+    "@throws",
+    "@phpstan-throws",
+    "@method",
+    "@phan-method",
+    "@psalm-method",
+    "@phpstan-method",
+    "@property",
+    "@phpstan-property",
+    "@property-read",
+    "@phpstan-property-read",
+    "@property-write",
+    "@phpstan-property-write",
+    "@mixin",
+    "@psalm-require-extends",
+    "@phpstan-require-extends",
+    "@psalm-require-implements",
+    "@phpstan-require-implements",
+    "@psalm-inheritors",
+    "@phpstan-sealed",
+];
+
+/// The class-like tags [`Comments::keep_trait_tags()`] keeps only on traits.
+const TRAIT_TAGS: &[&str] = &[
+    "@method",
+    "@phan-method",
+    "@psalm-method",
+    "@phpstan-method",
+    "@property",
+    "@phpstan-property",
+    "@property-read",
+    "@phpstan-property-read",
+    "@property-write",
+    "@phpstan-property-write",
+    "@mixin",
+];
+
 impl DocEntry {
-    pub fn parse(raw: &[u8]) -> DocEntry {
+    pub fn parse(raw: &[u8], analysed: bool) -> DocEntry {
+        let mut tags = phpdoc::tags(raw).unwrap_or_default();
+        if !analysed {
+            tags.retain(|t| SCANNED_TAGS.contains(&t.name.as_str()));
+            tags.shrink_to_fit();
+        }
         DocEntry {
             doc: Doc::parse(raw),
             tags: super::doc::tags(raw),
             names: super::declarations::doc_tags(raw),
-            phpdoc: phpdoc::tags(raw).unwrap_or_default(),
+            phpdoc: tags,
         }
     }
 }
@@ -71,7 +130,7 @@ pub struct Comments {
 }
 
 impl Comments {
-    pub fn of(contents: &[u8]) -> Comments {
+    pub fn of(contents: &[u8], analysed: bool) -> Comments {
         let mut out = Comments::default();
         // the last two `/**` and `/*` seen: the last one can overlap the `*/` (`/**/`, `/*/`), the one before cannot
         let (mut doc_opens, mut opens, mut last_close) = ([None; 2], [None; 2], None);
@@ -97,7 +156,7 @@ impl Comments {
                     out.doc.push(match doc {
                         Some(start) => {
                             let raw = &contents[start..end];
-                            out.docs.push((start as u32, end as u32, DocEntry::parse(raw)));
+                            out.docs.push((start as u32, end as u32, DocEntry::parse(raw, analysed)));
                             (out.docs.len() - 1) as u32
                         }
                         None => NONE,
@@ -107,7 +166,26 @@ impl Comments {
                 _ => {}
             }
         }
+        out.docs.shrink_to_fit();
         out
+    }
+
+    /// Drops the `@method`, `@property*` and `@mixin` tags of every doc comment but the traits' at `traits`: of
+    /// another file the rules read those only of a trait, in the context of the analysed class using it.
+    fn keep_trait_tags(&mut self, contents: &[u8], traits: &[u32]) {
+        let kept: Vec<u32> = traits
+            .iter()
+            .filter_map(|&at| {
+                let (raw, _) = self.doc_before(contents, at as usize)?;
+                Some((raw.as_ptr() as usize - contents.as_ptr() as usize) as u32)
+            })
+            .collect();
+        for (start, _, entry) in &mut self.docs {
+            if !kept.contains(start) {
+                entry.phpdoc.retain(|t| !TRAIT_TAGS.contains(&t.name.as_str()));
+                entry.phpdoc.shrink_to_fit();
+            }
+        }
     }
 
     /// The index of the `*/` that ends at `end`.
@@ -183,6 +261,8 @@ pub struct Declarations {
 struct DeclarationWalker<'d> {
     out: &'d mut Declarations,
     scopes: &'d FileScopes,
+    /// The start of each trait declaration.
+    traits: &'d mut Vec<u32>,
 }
 
 impl DeclarationWalker<'_> {
@@ -223,6 +303,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for DeclarationWalker<'_> {
     }
     fn walk_in_enum(&mut self, e: &'ast Enum<'arena>, _: &mut ()) {
         self.parents(e.span(), false, e.implements.iter().flat_map(|i| i.types.iter()));
+    }
+    fn walk_in_trait(&mut self, t: &'ast Trait<'arena>, _: &mut ()) {
+        self.traits.push(t.span().start.offset);
     }
     fn walk_in_interface(&mut self, i: &'ast Interface<'arena>, _: &mut ()) {
         self.parents(i.span(), true, i.extends.iter().flat_map(|e| e.types.iter()));

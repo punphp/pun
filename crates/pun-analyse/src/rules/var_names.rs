@@ -71,9 +71,9 @@ impl Writes<'_, '_, '_> {
         }
     }
 
-    fn arguments(&mut self, args: &ArgumentList, by_ref: Vec<bool>, at: u32) {
+    fn arguments(&mut self, args: &ArgumentList, by_ref: crate::bitset::BitSet, at: u32) {
         for (i, a) in args.arguments.iter().enumerate() {
-            if by_ref.get(i).copied().unwrap_or(false) {
+            if by_ref.get(i) {
                 self.target(a.value(), at);
             }
         }

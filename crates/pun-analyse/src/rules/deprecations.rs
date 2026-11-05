@@ -203,7 +203,7 @@ impl Checker<'_, '_> {
 
     /// Whether the function or method being entered is deprecated (`getFunction()->isDeprecated()`).
     pub(super) fn entered_deprecated(&self, name: &str, method: bool, span: Span) -> bool {
-        if !self.deprecations {
+        if !self.on(crate::rules::Switches::DEPRECATIONS) {
             return false;
         }
         if !method {
@@ -253,7 +253,7 @@ fn with(message: String, description: &Deprecation) -> String {
 
 /// RestrictedDeprecatedFunctionUsageExtension.
 pub(super) fn function(c: &Checker, name: &str, deprecation: Option<Deprecation>) -> Option<(String, String)> {
-    if !c.deprecations || c.scope_deprecated() {
+    if !c.on(crate::rules::Switches::DEPRECATIONS) || c.scope_deprecated() {
         return None;
     }
     let description = deprecation?;
@@ -262,7 +262,7 @@ pub(super) fn function(c: &Checker, name: &str, deprecation: Option<Deprecation>
 
 /// RestrictedDeprecatedMethodUsageExtension, `declaring` standing in for the method's declaring class when given.
 pub(super) fn method(c: &Checker, m: &Method, declaring: Option<&ClassLikeMetadata>) -> Option<(String, String)> {
-    if !c.deprecations || c.scope_deprecated() {
+    if !c.on(crate::rules::Switches::DEPRECATIONS) || c.scope_deprecated() {
         return None;
     }
     let kind = if m.is_static() { "staticMethod" } else { "method" };
@@ -311,7 +311,7 @@ pub(super) fn property(
     is_static: bool,
     deprecation: Option<Deprecation>,
 ) -> Option<(String, String)> {
-    if !c.deprecations || c.scope_deprecated() {
+    if !c.on(crate::rules::Switches::DEPRECATIONS) || c.scope_deprecated() {
         return None;
     }
     let (kind, prefix) = if is_static { ("staticProperty", "static ") } else { ("property", "") };
@@ -341,7 +341,7 @@ pub(super) fn class_constant(
     constant: &str,
     deprecation: Option<Deprecation>,
 ) -> Option<(String, String)> {
-    if !c.deprecations || c.scope_deprecated() {
+    if !c.on(crate::rules::Switches::DEPRECATIONS) || c.scope_deprecated() {
         return None;
     }
     let description = type_description(declaring);
@@ -394,7 +394,7 @@ const BUILTIN_CONSTANTS: &[(&str, u32, Option<&str>)] = &[
 
 /// FetchingDeprecatedConstRule.
 pub(super) fn constant_fetch(c: &mut Checker, at: Span, id: &Identifier) {
-    if !c.deprecations || c.scope_deprecated() {
+    if !c.on(crate::rules::Switches::DEPRECATIONS) || c.scope_deprecated() {
         return;
     }
     // ponytail: a branch that a `PHP_VERSION_ID` guard rules out for the configured version is dead to PHPStan (not
@@ -471,7 +471,7 @@ const DEPRECATED_OPTIONS: &[(&str, u32)] = &[
 /// CallWithDeprecatedIniOptionRule (registered with bleedingEdge): an ini function called with a deprecated option
 /// given as a string literal.
 pub(super) fn ini_option(c: &mut Checker, call: &FunctionCall) {
-    if !c.deprecations || !c.bleeding_edge || c.scope_deprecated() {
+    if !c.on(crate::rules::Switches::DEPRECATIONS) || !c.on(crate::rules::Switches::BLEEDING_EDGE) || c.scope_deprecated() {
         return;
     }
     let Expression::Identifier(id) = call.function else {

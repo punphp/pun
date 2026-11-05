@@ -479,7 +479,7 @@ pub fn instanceof<'arena>(
                     Some(DISCOVERING_SYMBOLS_TIP),
                 ),
                 Some(k) => {
-                    let case = c.case_sensitivity;
+                    let case = c.on(crate::rules::Switches::CHECK_CLASS_CASE_SENSITIVITY);
                     let pair = Pair::name(name.clone(), id.span());
                     class_names::check_at(c, &[pair], Some(&Location::Instanceof), case);
                     if k.is_trait() {
@@ -540,7 +540,7 @@ pub fn catch<'arena>(c: &mut Checker<'_, 'arena>, clause: &TryCatchClause<'arena
                         None,
                     );
                 }
-                let case = c.case_sensitivity;
+                let case = c.on(crate::rules::Switches::CHECK_CLASS_CASE_SENSITIVITY);
                 class_names::check_at(c, &[Pair::name(name, at)], Some(&Location::Catch), case);
             }
         }
@@ -650,7 +650,7 @@ pub fn typehints<'arena>(
             at,
             anonymous && matches!(hint, Hint::Identifier(_)),
         );
-        let case = c.case_sensitivity;
+        let case = c.on(crate::rules::Switches::CHECK_CLASS_CASE_SENSITIVITY);
         let location = location_function(c, kind).map(|function| Location::ParameterType {
             parameter: name[1..].to_string(),
             function,
@@ -681,7 +681,7 @@ pub fn typehints<'arena>(
         r.hint.span(),
         matches!(r.hint, Hint::Identifier(_)),
     );
-    let case = c.case_sensitivity;
+    let case = c.on(crate::rules::Switches::CHECK_CLASS_CASE_SENSITIVITY);
     let location = location_function(c, kind).map(Location::ReturnType);
     class_names::check_at(c, &pairs, location.as_ref(), case);
 }
@@ -956,7 +956,7 @@ pub fn property_type<'arena>(
             .iter()
             .map(|(referenced, _)| Pair::node(referenced.clone(), at))
             .collect();
-        let case = c.case_sensitivity;
+        let case = c.on(crate::rules::Switches::CHECK_CLASS_CASE_SENSITIVITY);
         let location = Location::PropertyType { property };
         class_names::check_at(c, &pairs, Some(&location), case);
     }

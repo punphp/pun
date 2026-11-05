@@ -202,7 +202,7 @@ pub(super) fn call(
     nullsafe: bool,
 ) {
     // FunctionCallParametersCheck returns before emitting only when both independent argument checks are off.
-    if (!c.check_argument_types && !c.check_arguments_passed_by_reference) || !c.checks_expression(object) {
+    if (!c.on(crate::rules::Switches::CHECK_ARGUMENT_TYPES) && !c.on(crate::rules::Switches::CHECK_ARGUMENTS_PASSED_BY_REFERENCE)) || !c.checks_expression(object) {
         return;
     }
     let counts = params::count(args);
@@ -256,7 +256,7 @@ pub(super) fn call(
             for name in names {
                 let Some(name) = name else {
                     if position >= acceptor.names.len()
-                        && !acceptor.variadics.last().copied().unwrap_or(false)
+                        && !acceptor.variadics.iter().last().unwrap_or(false)
                     {
                         stopped = true;
                         break;
@@ -270,7 +270,7 @@ pub(super) fn call(
                     .iter()
                     .position(|p| *p == name)
                     .or_else(|| {
-                        (!m.builtin() && acceptor.variadics.last() == Some(&true))
+                        (!m.builtin() && acceptor.variadics.iter().last() == Some(true))
                             .then(|| acceptor.names.len() - 1)
                     });
                 if let Some(parameter) = parameter {

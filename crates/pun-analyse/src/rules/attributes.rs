@@ -118,7 +118,7 @@ pub fn check<'arena>(
             present.push(lower);
         }
         // `deprecationRulesInstalled`
-        if c.deprecations
+        if c.on(crate::rules::Switches::DEPRECATIONS)
             && let Some(deprecation) = c.class_deprecation(class)
         {
             let message = match deprecation {

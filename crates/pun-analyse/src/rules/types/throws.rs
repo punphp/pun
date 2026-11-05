@@ -332,7 +332,7 @@ pub(in super::super) fn covariance(c: &mut Checker, m: &Method) {
             let Some(f) = c.codebase.get_method(p.name.as_bytes(), lower.as_bytes()) else { continue };
             let parent_name = String::from_utf8_lossy(f.original_name.as_bytes()).into_owned();
             let parent_throws = if p.flags.is_built_in() {
-                super::throw_points::builtin_method_throws(&String::from_utf8_lossy(p.name.as_bytes()).to_ascii_lowercase(), &lower)
+                super::throw_points::builtin_method_throws(c, &String::from_utf8_lossy(p.name.as_bytes()).to_ascii_lowercase(), &lower)
             } else {
                 declared::reflected_throws(c, f, Some(p), &parent_name)
             };

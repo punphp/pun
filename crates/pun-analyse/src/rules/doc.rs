@@ -2,6 +2,7 @@
 //! resolves), the `NameScope` a PHPDoc is resolved in (FileTypeMapper) and the resolved tags (PhpDocNodeResolver).
 
 use std::collections::HashMap;
+use std::sync::Arc;
 
 use mago_names::kind::NameKind;
 use mago_names::scope::NamespaceScope;
@@ -621,7 +622,7 @@ fn template_value(value: &[u8]) -> Option<TemplateTag> {
 /// template types in scope.
 #[derive(Clone, Default)]
 pub struct NameScope {
-    pub names: NamespaceScope,
+    pub names: Arc<NamespaceScope>,
     pub class: Option<String>,
     pub parent: Option<String>,
     pub templates: HashMap<String, Type>,
@@ -668,9 +669,9 @@ impl Scope for NameScope {
 
 /// The namespaces of a file with their imports (FileTypeMapper's walk), by byte range.
 pub struct FileScopes {
-    namespaces: Vec<(u32, u32, NamespaceScope)>,
+    namespaces: Vec<(u32, u32, Arc<NamespaceScope>)>,
     /// The empty scope of an offset outside every namespace.
-    outside: NamespaceScope,
+    outside: Arc<NamespaceScope>,
     /// each `use Trait, ...;` in a class body: its offset and the trait names as written
     trait_uses: Vec<(u32, Vec<String>)>,
 }
@@ -692,14 +693,14 @@ impl FileScopes {
                         }
                     }
                     let span = n.span();
-                    namespaces.push((span.start.offset, span.end.offset, scope));
+                    namespaces.push((span.start.offset, span.end.offset, Arc::new(scope)));
                 }
                 Statement::Use(u) => global.populate_from_use(u),
                 _ => {}
             }
         }
         if !any {
-            namespaces.push((0, u32::MAX, global));
+            namespaces.push((0, u32::MAX, Arc::new(global)));
         }
         let mut trait_uses = Vec::new();
         fn walk(node: mago_syntax::cst::Node<'_, '_>, out: &mut Vec<(u32, Vec<String>)>) {
@@ -718,7 +719,7 @@ impl FileScopes {
         walk(mago_syntax::cst::Node::Program(program), &mut trait_uses);
         FileScopes {
             namespaces,
-            outside: NamespaceScope::default(),
+            outside: Arc::default(),
             trait_uses,
         }
     }
@@ -731,7 +732,7 @@ impl FileScopes {
     }
 
     /// The namespace scope at `offset`.
-    pub fn at(&self, offset: u32) -> &NamespaceScope {
+    pub fn at(&self, offset: u32) -> &Arc<NamespaceScope> {
         self.namespaces
             .iter()
             .find(|(start, end, _)| *start <= offset && offset <= *end)

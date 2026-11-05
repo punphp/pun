@@ -26,81 +26,109 @@ use crate::Project;
 use crate::codebase::{Sources, parse};
 use crate::relative_path::RelativePath;
 
+/// The reflection data Pun ships beside pun-phpstan's symbols, read once per run.
+pub(crate) struct Natives {
+    /// The built-in classes at the project's PHP version, by lowercase name (data/native-methods.json).
+    pub(super) classes: HashMap<String, super::overriding::NativeClass>,
+    pub(super) throws: super::types::throw_points::ThrowData,
+    pub(super) curl_options: Vec<(u32, HashMap<i64, String>)>,
+}
+
+impl Natives {
+    pub(crate) fn load(php_version: u32) -> Natives {
+        let (classes, (throws, curl_options)) = rayon::join(
+            || super::overriding::natives(php_version),
+            || (super::types::throw_points::ThrowData::load(), super::selector::curl_options()),
+        );
+        Natives { classes, throws, curl_options }
+    }
+}
+
+bitflags::bitflags! {
+    /// The project's switches the rules read.
+    #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+    pub(crate) struct Switches: u64 {
+        const REPORT_IGNORES_WITHOUT_COMMENTS = 1 << 0;
+        const REPORT_UNMATCHED_IGNORES = 1 << 1;
+        /// PHPStan's `checkClassCaseSensitivity` parameter: off at level 0 (conf/config.neon), on from level 2
+        /// (config.level2.neon). The rules that pass it to ClassNameCheck (FunctionDefinitionCheck,
+        /// ExistingClassInInstanceOfRule, CaughtExceptionExistenceRule, ExistingClassesInPropertiesRule) report
+        /// `*.nameCase` only with it on. Set from [`ProjectOptions::CHECK_CLASS_CASE_SENSITIVITY`](crate::ProjectOptions::CHECK_CLASS_CASE_SENSITIVITY), which the presets will set.
+        const CHECK_CLASS_CASE_SENSITIVITY = 1 << 2;
+        /// [`ProjectOptions::CHECK_INTERNAL_CLASS_CASE_SENSITIVITY`](crate::ProjectOptions::CHECK_INTERNAL_CLASS_CASE_SENSITIVITY).
+        const CHECK_INTERNAL_CLASS_CASE_SENSITIVITY = 1 << 3;
+        /// [`ProjectOptions::CHECK_IMPORTED_CLASS_NAME_CASE`](crate::ProjectOptions::CHECK_IMPORTED_CLASS_NAME_CASE).
+        const CHECK_IMPORTED_CLASS_NAME_CASE = 1 << 4;
+        /// [`ProjectOptions::CHECK_FUNCTION_NAME_CASE`](crate::ProjectOptions::CHECK_FUNCTION_NAME_CASE).
+        const CHECK_FUNCTION_NAME_CASE = 1 << 5;
+        const CHECK_ARGUMENT_TYPES = 1 << 6;
+        const CHECK_ARGUMENTS_PASSED_BY_REFERENCE = 1 << 7;
+        const CHECK_THIS_ONLY = 1 << 8;
+        /// [`Project::check_advanced_isset`], otherwise config.level4.neon's default.
+        const CHECK_ADVANCED_ISSET = 1 << 9;
+        /// [`Project::check_explicit_mixed`] and [`Project::check_implicit_mixed`], otherwise the level's defaults.
+        const CHECK_EXPLICIT_MIXED = 1 << 10;
+        const CHECK_IMPLICIT_MIXED = 1 << 11;
+        /// [`Project::treat_php_doc_types_as_certain`], otherwise config.neon's true default (IssetCheck only).
+        const TREAT_PHP_DOC_TYPES_AS_CERTAIN = 1 << 12;
+        /// [`ProjectOptions::CHECK_GENERIC_ITERABLE_CLASSES`](crate::ProjectOptions::CHECK_GENERIC_ITERABLE_CLASSES).
+        const GENERIC_ITERABLE_CLASSES = 1 << 13;
+        /// [`ProjectOptions::NEW_STATIC_IN_ABSTRACT_CLASS_STATIC_METHOD`](crate::ProjectOptions::NEW_STATIC_IN_ABSTRACT_CLASS_STATIC_METHOD).
+        const NEW_STATIC_IN_ABSTRACT_CLASS_STATIC_METHOD = 1 << 14;
+        /// `featureToggles.internalTag`: RestrictedInternalFunctionUsageExtension & co. (config.level0.neon).
+        const INTERNAL_TAG = 1 << 15;
+        /// [`ProjectOptions::PRECISE_UNUSED_PARAMETER_LINE`](crate::ProjectOptions::PRECISE_UNUSED_PARAMETER_LINE).
+        const PRECISE_UNUSED_PARAMETER_LINE = 1 << 16;
+        /// The method and property extensions of `featureToggles.internalTag`, at level 2 (config.level2.neon).
+        const INTERNAL_MEMBERS = 1 << 17;
+        /// [`ProjectOptions::DEPRECATION_RULES`](crate::ProjectOptions::DEPRECATION_RULES) and [`ProjectOptions::BLEEDING_EDGE`](crate::ProjectOptions::BLEEDING_EDGE).
+        const DEPRECATIONS = 1 << 18;
+        const BLEEDING_EDGE = 1 << 19;
+        /// UnusedLabelRule: level 4 with [`ProjectOptions::UNUSED_LABEL`](crate::ProjectOptions::UNUSED_LABEL).
+        const UNUSED_LABEL = 1 << 20;
+        /// [`ProjectOptions::SWITCH_CONDITION`](crate::ProjectOptions::SWITCH_CONDITION).
+        const SWITCH_CONDITION = 1 << 21;
+        /// [`ProjectOptions::SORT_WITHOUT_EFFECT`](crate::ProjectOptions::SORT_WITHOUT_EFFECT).
+        const SORT_WITHOUT_EFFECT = 1 << 22;
+        /// [`ProjectOptions::CHECK_NON_STRINGABLE_DYNAMIC_ACCESS`](crate::ProjectOptions::CHECK_NON_STRINGABLE_DYNAMIC_ACCESS).
+        const NON_STRINGABLE_NAMES = 1 << 23;
+        const CLI_ARGUMENTS_VARIABLES_REGISTERED = 1 << 24;
+        const CHECK_MAYBE_UNDEFINED_VARIABLES = 1 << 25;
+        const POLLUTE_SCOPE_WITH_LOOP_INITIAL_ASSIGNMENTS = 1 << 26;
+        const POLLUTE_SCOPE_WITH_ALWAYS_ITERABLE_FOREACH = 1 << 27;
+        const POLLUTE_SCOPE_WITH_BLOCK = 1 << 28;
+        /// [`ProjectOptions::REPORT_METHOD_PURITY_OVERRIDE`](crate::ProjectOptions::REPORT_METHOD_PURITY_OVERRIDE).
+        const METHOD_PURITY_OVERRIDE = 1 << 29;
+        /// [`ProjectOptions::CHECK_UNINITIALIZED_PROPERTIES`](crate::ProjectOptions::CHECK_UNINITIALIZED_PROPERTIES).
+        const UNINITIALIZED_PROPERTIES = 1 << 30;
+        /// [`ProjectOptions::CHECK_MISSING_CALLABLE_SIGNATURE`](crate::ProjectOptions::CHECK_MISSING_CALLABLE_SIGNATURE).
+        const MISSING_CALLABLE_SIGNATURE = 1 << 31;
+    }
+}
+
 /// What the rules read of the project (its `ignoreErrors` stay on the calling thread).
 pub(crate) struct Checks {
+    switches: Switches,
+    natives: Natives,
     /// The declarations a stub patches, by span, with the stub declaration's span.
     patched_docs: HashMap<Span, Span>,
     /// The classes the rules built, shared by every file.
     classes: super::declared::ClassCache,
     php_version: u32,
-    report_ignores_without_comments: bool,
-    report_unmatched_ignores: bool,
-    /// PHPStan's `checkClassCaseSensitivity` parameter: off at level 0 (conf/config.neon), on from level 2
-    /// (config.level2.neon). The rules that pass it to ClassNameCheck (FunctionDefinitionCheck,
-    /// ExistingClassInInstanceOfRule, CaughtExceptionExistenceRule, ExistingClassesInPropertiesRule) report
-    /// `*.nameCase` only with it on. Set from [`Project::check_class_case_sensitivity`], which the presets will set.
-    check_class_case_sensitivity: bool,
-    /// [`Project::check_internal_class_case_sensitivity`].
-    check_internal_class_case_sensitivity: bool,
-    /// [`Project::check_imported_class_name_case`].
-    check_imported_class_name_case: bool,
-    /// [`Project::check_function_name_case`].
-    check_function_name_case: bool,
-    /// [`Project::level`] and [`Project::check_generic_iterable_classes`].
+    /// [`Project::level`].
     pub(super) level: u8,
-    check_argument_types: bool,
-    check_arguments_passed_by_reference: bool,
-    check_this_only: bool,
-    /// [`Project::check_advanced_isset`], otherwise config.level4.neon's default.
-    check_advanced_isset: bool,
-    /// [`Project::check_explicit_mixed`] and [`Project::check_implicit_mixed`], otherwise the level's defaults.
-    check_explicit_mixed: bool,
-    check_implicit_mixed: bool,
-    /// [`Project::treat_php_doc_types_as_certain`], otherwise config.neon's true default (IssetCheck only).
-    treat_php_doc_types_as_certain: bool,
-    generic_iterable_classes: bool,
-    /// [`Project::new_static_in_abstract_class_static_method`].
-    new_static_in_abstract_class_static_method: bool,
     /// [`Project::relative_path`].
     relative_path: RelativePath,
     /// [`Project::larastan`].
     larastan: Option<super::Larastan>,
     /// The member names the restricted-usage extensions can report (whose expressions get typed), when one runs.
     internal: Option<super::internal::Names>,
-    /// `featureToggles.internalTag`: RestrictedInternalFunctionUsageExtension & co. (config.level0.neon).
-    internal_tag: bool,
     /// [`Project::type_aliases`].
     pub(super) type_aliases: Vec<(String, String)>,
     /// [`Project::reported`].
     reported: Option<crate::project::Reported>,
     /// [`Project::method_rules`], independent of identifier filtering.
     method_rules: crate::MethodRules,
-    /// [`Project::precise_unused_parameter_line`].
-    precise_unused_parameter_line: bool,
-    /// The method and property extensions of `featureToggles.internalTag`, at level 2 (config.level2.neon).
-    internal_members: bool,
-    /// [`Project::deprecation_rules`] and [`Project::bleeding_edge`].
-    deprecations: bool,
-    bleeding_edge: bool,
-    /// UnusedLabelRule: level 4 with [`Project::unused_label`].
-    unused_label: bool,
-    /// [`Project::switch_condition`].
-    switch_condition: bool,
-    /// [`Project::sort_without_effect`].
-    sort_without_effect: bool,
-    /// [`Project::check_non_stringable_dynamic_access`].
-    non_stringable_names: bool,
-    cli_arguments_variables_registered: bool,
-    check_maybe_undefined_variables: bool,
-    pollute_scope_with_loop_initial_assignments: bool,
-    pollute_scope_with_always_iterable_foreach: bool,
-    pollute_scope_with_block: bool,
-    /// [`Project::report_method_purity_override`].
-    method_purity_override: bool,
-    /// [`Project::check_uninitialized_properties`].
-    uninitialized_properties: bool,
-    /// [`Project::check_missing_callable_signature`].
-    missing_callable_signature: bool,
     /// [`Project::strict_rules`].
     pub(super) strict: crate::StrictRules,
     /// [`Project::exceptions`].
@@ -168,7 +196,7 @@ impl Checks {
 
 impl Checks {
     pub(crate) fn of(project: &Project, codebase: &CodebaseMetadata) -> Checks {
-        let internal_members = project.level >= 2 && project.internal_tag;
+        let internal_members = project.level >= 2 && project.options.contains(crate::ProjectOptions::INTERNAL_TAG);
         let mut function_likes: HashMap<FileId, Vec<(Span, SymbolIdentifier)>> = HashMap::new();
         for (id, f) in codebase.function_likes.iter() {
             function_likes.entry(f.span.file_id).or_default().push((f.span, *id));
@@ -177,72 +205,75 @@ impl Checks {
         if let Some(l) = &mut larastan {
             l.load(project, codebase);
         }
+        let mut switches = Switches::empty();
+        switches.set(Switches::CHECK_CLASS_CASE_SENSITIVITY, project.options.contains(crate::ProjectOptions::CHECK_CLASS_CASE_SENSITIVITY));
+        switches.set(Switches::CHECK_INTERNAL_CLASS_CASE_SENSITIVITY, project.options.contains(crate::ProjectOptions::CHECK_INTERNAL_CLASS_CASE_SENSITIVITY));
+        switches.set(Switches::CHECK_IMPORTED_CLASS_NAME_CASE, project.options.contains(crate::ProjectOptions::CHECK_IMPORTED_CLASS_NAME_CASE));
+        switches.set(Switches::CHECK_FUNCTION_NAME_CASE, project.options.contains(crate::ProjectOptions::CHECK_FUNCTION_NAME_CASE));
+        switches.set(Switches::CHECK_ARGUMENT_TYPES, project.check_function_argument_types.unwrap_or(project.level >= 5));
+        switches.set(Switches::CHECK_ARGUMENTS_PASSED_BY_REFERENCE, project.check_arguments_passed_by_reference.unwrap_or(project.level >= 5));
+        switches.set(Switches::CHECK_THIS_ONLY, project.check_this_only.unwrap_or(project.level < 2));
+        switches.set(Switches::CHECK_ADVANCED_ISSET, project.check_advanced_isset.unwrap_or(project.level >= 4));
+        switches.set(Switches::CHECK_EXPLICIT_MIXED, project.check_explicit_mixed.unwrap_or(project.level >= 9));
+        switches.set(Switches::CHECK_IMPLICIT_MIXED, project.check_implicit_mixed.unwrap_or(project.level >= 10));
+        switches.set(Switches::TREAT_PHP_DOC_TYPES_AS_CERTAIN, project.treat_php_doc_types_as_certain.unwrap_or(true));
+        switches.set(Switches::GENERIC_ITERABLE_CLASSES, project.options.contains(crate::ProjectOptions::CHECK_GENERIC_ITERABLE_CLASSES));
+        switches.set(Switches::NEW_STATIC_IN_ABSTRACT_CLASS_STATIC_METHOD, project.options.contains(crate::ProjectOptions::NEW_STATIC_IN_ABSTRACT_CLASS_STATIC_METHOD));
+        switches.set(Switches::REPORT_IGNORES_WITHOUT_COMMENTS, project.options.contains(crate::ProjectOptions::REPORT_IGNORES_WITHOUT_COMMENTS));
+        switches.set(Switches::REPORT_UNMATCHED_IGNORES, project.options.contains(crate::ProjectOptions::REPORT_UNMATCHED_IGNORES));
+        switches.set(Switches::INTERNAL_MEMBERS, internal_members);
+        switches.set(Switches::INTERNAL_TAG, project.options.contains(crate::ProjectOptions::INTERNAL_TAG));
+        switches.set(Switches::PRECISE_UNUSED_PARAMETER_LINE, project.options.contains(crate::ProjectOptions::PRECISE_UNUSED_PARAMETER_LINE));
+        switches.set(Switches::DEPRECATIONS, project.options.contains(crate::ProjectOptions::DEPRECATION_RULES));
+        switches.set(Switches::BLEEDING_EDGE, project.options.contains(crate::ProjectOptions::BLEEDING_EDGE));
+        switches.set(Switches::UNUSED_LABEL, project.level >= 4 && project.options.contains(crate::ProjectOptions::UNUSED_LABEL));
+        switches.set(Switches::SWITCH_CONDITION, project.options.contains(crate::ProjectOptions::SWITCH_CONDITION));
+        switches.set(Switches::SORT_WITHOUT_EFFECT, project.options.contains(crate::ProjectOptions::SORT_WITHOUT_EFFECT));
+        switches.set(Switches::NON_STRINGABLE_NAMES, project.options.contains(crate::ProjectOptions::CHECK_NON_STRINGABLE_DYNAMIC_ACCESS));
+        switches.set(Switches::CLI_ARGUMENTS_VARIABLES_REGISTERED, project.options.contains(crate::ProjectOptions::CLI_ARGUMENTS_VARIABLES_REGISTERED));
+        switches.set(Switches::CHECK_MAYBE_UNDEFINED_VARIABLES, project.options.contains(crate::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES));
+        switches.set(Switches::POLLUTE_SCOPE_WITH_LOOP_INITIAL_ASSIGNMENTS, project.options.contains(crate::ProjectOptions::POLLUTE_SCOPE_WITH_LOOP_INITIAL_ASSIGNMENTS));
+        switches.set(Switches::POLLUTE_SCOPE_WITH_ALWAYS_ITERABLE_FOREACH, project.options.contains(crate::ProjectOptions::POLLUTE_SCOPE_WITH_ALWAYS_ITERABLE_FOREACH));
+        switches.set(Switches::POLLUTE_SCOPE_WITH_BLOCK, project.options.contains(crate::ProjectOptions::POLLUTE_SCOPE_WITH_BLOCK));
+        switches.set(Switches::METHOD_PURITY_OVERRIDE, project.options.contains(crate::ProjectOptions::REPORT_METHOD_PURITY_OVERRIDE));
+        switches.set(Switches::UNINITIALIZED_PROPERTIES, project.options.contains(crate::ProjectOptions::CHECK_UNINITIALIZED_PROPERTIES));
+        switches.set(Switches::MISSING_CALLABLE_SIGNATURE, project.options.contains(crate::ProjectOptions::CHECK_MISSING_CALLABLE_SIGNATURE));
         Checks {
-            check_class_case_sensitivity: project.check_class_case_sensitivity,
-            check_internal_class_case_sensitivity: project.check_internal_class_case_sensitivity,
-            check_imported_class_name_case: project.check_imported_class_name_case,
-            check_function_name_case: project.check_function_name_case,
+            switches,
+            natives: Natives::load(project.php_version),
             level: project.level,
-            check_argument_types: project.check_function_argument_types.unwrap_or(project.level >= 5),
-            check_arguments_passed_by_reference: project.check_arguments_passed_by_reference.unwrap_or(project.level >= 5),
-            check_this_only: project.check_this_only.unwrap_or(project.level < 2),
-            check_advanced_isset: project.check_advanced_isset.unwrap_or(project.level >= 4),
-            check_explicit_mixed: project.check_explicit_mixed.unwrap_or(project.level >= 9),
-            check_implicit_mixed: project.check_implicit_mixed.unwrap_or(project.level >= 10),
-            treat_php_doc_types_as_certain: project.treat_php_doc_types_as_certain.unwrap_or(true),
-            generic_iterable_classes: project.check_generic_iterable_classes,
-            new_static_in_abstract_class_static_method: project.new_static_in_abstract_class_static_method,
             php_version: project.php_version,
-            report_ignores_without_comments: project.report_ignores_without_comments,
-            report_unmatched_ignores: project.report_unmatched_ignores,
             relative_path: project.relative_path.clone(),
             larastan,
-            internal: (internal_members || project.deprecation_rules)
-                .then(|| super::internal::Names::of(codebase, project.php_version, internal_members, project.deprecation_rules)),
-            internal_tag: project.internal_tag,
+            internal: (internal_members || project.options.contains(crate::ProjectOptions::DEPRECATION_RULES))
+                .then(|| super::internal::Names::of(codebase, project.php_version, internal_members, project.options.contains(crate::ProjectOptions::DEPRECATION_RULES))),
             type_aliases: project.type_aliases.clone(),
             reported: project.reported.clone(),
             method_rules: project.method_rules,
-            precise_unused_parameter_line: project.precise_unused_parameter_line,
-            internal_members,
-            deprecations: project.deprecation_rules,
             patched_docs: patched_docs(codebase),
             classes: Default::default(),
-            bleeding_edge: project.bleeding_edge,
-            unused_label: project.level >= 4 && project.unused_label,
-            switch_condition: project.switch_condition,
-            sort_without_effect: project.sort_without_effect,
-            non_stringable_names: project.check_non_stringable_dynamic_access,
-            cli_arguments_variables_registered: project.cli_arguments_variables_registered,
-            check_maybe_undefined_variables: project.check_maybe_undefined_variables,
-            pollute_scope_with_loop_initial_assignments: project.pollute_scope_with_loop_initial_assignments,
-            pollute_scope_with_always_iterable_foreach: project.pollute_scope_with_always_iterable_foreach,
-            pollute_scope_with_block: project.pollute_scope_with_block,
-            method_purity_override: project.report_method_purity_override,
-            uninitialized_properties: project.check_uninitialized_properties,
-            missing_callable_signature: project.check_missing_callable_signature,
             strict: project.strict_rules,
             exceptions: project.exceptions.clone(),
             too_wide: project.too_wide,
             include_file: super::include_file::Settings {
                 cwd: project.current_working_directory.clone(),
                 include_paths: project.include_paths.clone(),
-                magic_dir: project.check_magic_dir_in_include,
-                path_constants: project.use_path_constants_as_constant_string,
+                magic_dir: project.options.contains(crate::ProjectOptions::CHECK_MAGIC_DIR_IN_INCLUDE),
+                path_constants: project.options.contains(crate::ProjectOptions::USE_PATH_CONSTANTS_AS_CONSTANT_STRING),
             },
             toggled: Toggled {
-                by_ref_foreach: project.level >= 1 && project.assign_to_by_ref_foreach_expr,
-                constant_types: (project.level >= 2 && project.check_dynamic_constant_name_values)
+                by_ref_foreach: project.level >= 1 && project.options.contains(crate::ProjectOptions::ASSIGN_TO_BY_REF_FOREACH_EXPR),
+                constant_types: (project.level >= 2 && project.options.contains(crate::ProjectOptions::CHECK_DYNAMIC_CONSTANT_NAME_VALUES))
                     .then(|| project.dynamic_constant_types.clone()),
-                date_interval: project.level >= 5 && project.check_date_interval_constructor,
-                castable_to_number: project.level >= 5 && project.check_parameter_castable_to_number_functions,
-                printf_types: (project.level >= 5 && project.check_printf_parameter_types)
-                    .then_some(project.check_strict_printf_placeholder_types),
-                finite_haystack: project.level >= 4 && project.finite_types_in_haystack,
-                unused_variable: project.level >= 4 && project.unused_variable,
-                unused_parameters: project.level >= 4 && project.unused_parameters,
-                unused_flow: project.unused_parameters,
-                new_on_non_object: project.new_on_non_object,
+                date_interval: project.level >= 5 && project.options.contains(crate::ProjectOptions::CHECK_DATE_INTERVAL_CONSTRUCTOR),
+                castable_to_number: project.level >= 5 && project.options.contains(crate::ProjectOptions::CHECK_PARAMETER_CASTABLE_TO_NUMBER_FUNCTIONS),
+                printf_types: (project.level >= 5 && project.options.contains(crate::ProjectOptions::CHECK_PRINTF_PARAMETER_TYPES))
+                    .then_some(project.options.contains(crate::ProjectOptions::CHECK_STRICT_PRINTF_PLACEHOLDER_TYPES)),
+                finite_haystack: project.level >= 4 && project.options.contains(crate::ProjectOptions::FINITE_TYPES_IN_HAYSTACK),
+                unused_variable: project.level >= 4 && project.options.contains(crate::ProjectOptions::UNUSED_VARIABLE),
+                unused_parameters: project.level >= 4 && project.options.contains(crate::ProjectOptions::UNUSED_PARAMETERS),
+                unused_flow: project.options.contains(crate::ProjectOptions::UNUSED_PARAMETERS),
+                new_on_non_object: project.options.contains(crate::ProjectOptions::NEW_ON_NON_OBJECT),
             },
             function_likes,
         }
@@ -289,7 +320,7 @@ fn checker<'a, 'arena>(
     typed.extend(super::function_callable::typed_expressions(program, project.level));
     typed.extend(super::method_callable::typed_expressions(program, project.level));
     typed.extend(super::types::typed_expressions(program, &file.contents, &facts.comments, project.level,
-        project.check_argument_types || project.check_arguments_passed_by_reference, project.check_this_only));
+        project.switches.contains(Switches::CHECK_ARGUMENT_TYPES) || project.switches.contains(Switches::CHECK_ARGUMENTS_PASSED_BY_REFERENCE), project.switches.contains(Switches::CHECK_THIS_ONLY)));
     typed.extend(super::strict::typed_expressions(project, codebase, program));
     typed.extend(super::dead_code::bodies(program, project.level, project.toggled.unused_parameters || project.toggled.unused_variable));
     typed.extend(super::operators::typed_expressions(project.strict, program));
@@ -297,7 +328,7 @@ fn checker<'a, 'arena>(
         program,
         project.level >= 4 || project.exceptions.missing_checked_exception_in_throws,
     ));
-    let (include_typed, include_state) = super::include_file::prepare(arena, file, program, names, codebase, php_version, project.pollute_scope_with_loop_initial_assignments, project.pollute_scope_with_always_iterable_foreach, project.pollute_scope_with_block, &project.include_file, &facts.comments, functions);
+    let (include_typed, include_state) = super::include_file::prepare(arena, file, program, names, codebase, php_version, project.switches.contains(Switches::POLLUTE_SCOPE_WITH_LOOP_INITIAL_ASSIGNMENTS), project.switches.contains(Switches::POLLUTE_SCOPE_WITH_ALWAYS_ITERABLE_FOREACH), project.switches.contains(Switches::POLLUTE_SCOPE_WITH_BLOCK), &project.include_file, &facts.comments, functions);
     typed.extend(include_typed);
     let mut variables = super::variables::Observations::default();
     let calls = if project.method_rules.call_methods {
@@ -307,9 +338,9 @@ fn checker<'a, 'arena>(
     };
     let mut variable_writes = HashMap::new();
     let mut property_initializations = HashMap::new();
-    let (mut types, defined, origins, call_terminations, named_call_scopes, keep_void_types, native_types, nullsafe_method_receiver_types, property_offset_writes) = infer(arena, file, program, names, codebase, php_version, project.level, project.pollute_scope_with_loop_initial_assignments, project.pollute_scope_with_always_iterable_foreach, project.pollute_scope_with_block, typed, calls, &mut variables, &mut variable_writes, &mut property_initializations, project.larastan.as_ref(), trait_class, &facts.comments, functions);
+    let (mut types, defined, origins, call_terminations, named_call_scopes, keep_void_types, native_types, nullsafe_method_receiver_types, property_offset_writes) = infer(arena, file, program, names, codebase, php_version, project.level, project.switches.contains(Switches::POLLUTE_SCOPE_WITH_LOOP_INITIAL_ASSIGNMENTS), project.switches.contains(Switches::POLLUTE_SCOPE_WITH_ALWAYS_ITERABLE_FOREACH), project.switches.contains(Switches::POLLUTE_SCOPE_WITH_BLOCK), typed, calls, &mut variables, &mut variable_writes, &mut property_initializations, project.larastan.as_ref(), trait_class, &facts.comments, functions);
     if project.level >= 4 {
-        let (subjects, unknown) = super::dead_code::match_subject_types(file, program, codebase, php_version, project.pollute_scope_with_loop_initial_assignments, project.pollute_scope_with_always_iterable_foreach, project.pollute_scope_with_block, functions);
+        let (subjects, unknown) = super::dead_code::match_subject_types(file, program, codebase, php_version, project.switches.contains(Switches::POLLUTE_SCOPE_WITH_LOOP_INITIAL_ASSIGNMENTS), project.switches.contains(Switches::POLLUTE_SCOPE_WITH_ALWAYS_ITERABLE_FOREACH), project.switches.contains(Switches::POLLUTE_SCOPE_WITH_BLOCK), functions);
         types.extend(subjects);
         for span in unknown {
             types.remove(&span);
@@ -353,6 +384,7 @@ fn checker<'a, 'arena>(
         renamed: None,
         php_version,
         builtins: reflection::builtins(php_version),
+        natives: &project.natives,
         trait_lines: Vec::new(),
         frames: Vec::new(),
         namespaces: Vec::new(),
@@ -373,42 +405,13 @@ fn checker<'a, 'arena>(
         class_names: class_names::State::default(),
         arrays: arrays::State::default(),
         standalone_throws: HashSet::new(),
-        case_sensitivity: project.check_class_case_sensitivity,
-        check_internal_class_case_sensitivity: project.check_internal_class_case_sensitivity,
-        check_imported_class_name_case: project.check_imported_class_name_case,
-        check_function_name_case: project.check_function_name_case,
         level: project.level,
-        check_argument_types: project.check_argument_types,
-        check_arguments_passed_by_reference: project.check_arguments_passed_by_reference,
-        check_this_only: project.check_this_only,
-        check_advanced_isset: project.check_advanced_isset,
-        check_explicit_mixed: project.check_explicit_mixed,
-        check_implicit_mixed: project.check_implicit_mixed,
-        treat_php_doc_types_as_certain: project.treat_php_doc_types_as_certain,
-        generic_iterable_classes: project.generic_iterable_classes,
-        new_static_in_abstract_class_static_method: project.new_static_in_abstract_class_static_method,
+        switches: project.switches,
         larastan: project.larastan.as_ref(),
         larastan_state: Default::default(),
         internal: project.internal.as_ref(),
-        internal_tag: project.internal_tag,
-        precise_unused_parameter_line: project.precise_unused_parameter_line,
         unreachable: Default::default(),
         conditions: Default::default(),
-        internal_members: project.internal_members,
-        deprecations: project.deprecations,
-        bleeding_edge: project.bleeding_edge,
-        unused_label: project.unused_label,
-        switch_condition: project.switch_condition,
-        sort_without_effect: project.sort_without_effect,
-        non_stringable_names: project.non_stringable_names,
-        cli_arguments_variables_registered: project.cli_arguments_variables_registered,
-        check_maybe_undefined_variables: project.check_maybe_undefined_variables,
-        pollute_scope_with_loop_initial_assignments: project.pollute_scope_with_loop_initial_assignments,
-        pollute_scope_with_always_iterable_foreach: project.pollute_scope_with_always_iterable_foreach,
-        pollute_scope_with_block: project.pollute_scope_with_block,
-        method_purity_override: project.method_purity_override,
-        uninitialized_properties: project.uninitialized_properties,
-        missing_callable_signature: project.missing_callable_signature,
         strict: project.strict,
         exceptions: &project.exceptions,
         too_wide: project.too_wide,
@@ -458,12 +461,12 @@ pub(crate) fn check_file(
     errors.extend(parse_errors(&name, &parse));
     project.keep_reported(&mut errors);
     let mut out = Vec::new();
-    if project.report_ignores_without_comments {
+    if project.switches.contains(Switches::REPORT_IGNORES_WITHOUT_COMMENTS) {
         out.extend(ignores_without_comments(&name, &mut lines, &mut unmatched));
     }
     let (kept, _) = local_ignores(&name, errors, &mut lines, &mut unmatched);
     out.extend(kept);
-    if project.report_unmatched_ignores {
+    if project.switches.contains(Switches::REPORT_UNMATCHED_IGNORES) {
         out.extend(unmatched_line_errors(&name, &unmatched));
     }
     enum TraitWalk {

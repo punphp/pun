@@ -34,7 +34,7 @@ fn dynamic_callable_references_match_complete_phpstan_records() {
         );
         project.php_version = 80500;
         project.level = level;
-        project.check_maybe_undefined_variables = maybe;
+        project.options.set(pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES, maybe);
         let result = analyse_project(&project).unwrap();
         let mut actual: Vec<_> = result
             .errors

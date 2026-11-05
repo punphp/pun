@@ -143,18 +143,20 @@ fn constant_scalars(t: &Type) -> Vec<Type> {
     }
 }
 
+/// The value type of each curl option by the PHP version from which it holds, ascending.
+pub(super) fn curl_options() -> Vec<(u32, std::collections::HashMap<i64, String>)> {
+    let by_version: std::collections::BTreeMap<u32, std::collections::HashMap<i64, String>> =
+        serde_json::from_str(include_str!("curl-options.json")).expect("curl-options.json");
+    by_version.into_iter().collect()
+}
+
 /// `getCurlOptValueType()`: the value type of curl option `option` (an integer the oracle's curl knows), exported
 /// per the PHP version from which it holds.
 fn curl_option(c: &Checker, option: &Type) -> Option<Type> {
-    static OPTIONS: std::sync::OnceLock<Vec<(u32, std::collections::HashMap<i64, String>)>> = std::sync::OnceLock::new();
     let Type::ConstInt(option) = option else {
         return None;
     };
-    let options = OPTIONS.get_or_init(|| {
-        let by_version: std::collections::BTreeMap<u32, std::collections::HashMap<i64, String>> =
-            serde_json::from_str(include_str!("curl-options.json")).expect("curl-options.json");
-        by_version.into_iter().collect()
-    });
+    let options = &c.natives.curl_options;
     let (_, types) = options.iter().rev().find(|(v, _)| *v <= c.php_version).unwrap_or(&options[0]);
     types.get(option).map(|t| pun_phpstan::resolve::resolve_str(t, None))
 }
@@ -181,10 +183,10 @@ fn implode(c: &Checker, args: &[Arg], variants: Variants) -> Variants {
     };
     let n = params.len();
     let acceptor = Acceptor {
-        optional: vec![false; n],
+        optional: crate::bitset::BitSet::new(n),
         names: params.iter().map(|(name, _)| name.clone()).collect(),
         types: params.iter().map(|(_, t)| declared::with_classes(c, || t.describe(Level::TypeOnly))).collect(),
-        variadics: vec![false; n],
+        variadics: crate::bitset::BitSet::new(n),
         param_types: params.into_iter().map(|(_, t)| ParamType::Typed(t)).collect(),
         by_ref: vec![ByRef::No; n],
         ..acceptor

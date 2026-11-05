@@ -570,7 +570,7 @@ pub(super) fn variable(c: &mut Checker, variable: &Variable) {
         return;
     }
     if let Some(name) = super::types::dynamic_names::static_property(variable) {
-        if c.non_stringable_names
+        if c.on(crate::rules::Switches::NON_STRINGABLE_NAMES)
             && let Some((ty, _)) = super::types::dynamic_names::not_string(c, name, true)
         {
             let given = declared::with_classes(c, || ty.describe(Level::Precise));
@@ -626,12 +626,12 @@ fn single_variable(
     if name == "this" && c.this_defined() {
         return;
     }
-    if c.cli_arguments_variables_registered && matches!(name, "argc" | "argv") && main {
+    if c.on(crate::rules::Switches::CLI_ARGUMENTS_VARIABLES_REGISTERED) && matches!(name, "argc" | "argv") && main {
         return;
     }
     let message = match certainty {
         Tri::No => format!("Undefined variable: ${name}"),
-        Tri::Maybe if c.check_maybe_undefined_variables => {
+        Tri::Maybe if c.on(crate::rules::Switches::CHECK_MAYBE_UNDEFINED_VARIABLES) => {
             format!("Variable ${name} might not be defined.")
         }
         _ => return,
@@ -659,7 +659,7 @@ pub(super) fn compact(c: &mut Checker, call: &FunctionCall) {
         for name in names {
             let adjective = match scope.get(&name) {
                 Tri::No => "undefined",
-                Tri::Maybe if c.check_maybe_undefined_variables => "possibly undefined",
+                Tri::Maybe if c.on(crate::rules::Switches::CHECK_MAYBE_UNDEFINED_VARIABLES) => "possibly undefined",
                 _ => continue,
             };
             errors.push((

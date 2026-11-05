@@ -18,7 +18,7 @@ fn check(file: &str, level: u8) {
     assert!(!expected.is_empty());
     let mut project = Project::new(vec![root.join(file)], Vec::new());
     project.level = level;
-    project.switch_condition = true;
+    project.options.set(pun_analyse::ProjectOptions::SWITCH_CONDITION, true);
     let mut got: Vec<_> = run(&project)
         .unwrap()
         .into_iter()

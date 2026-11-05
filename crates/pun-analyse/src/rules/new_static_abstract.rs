@@ -8,7 +8,7 @@ use super::{Checker, FunctionScopeKind};
 
 /// `new static` in a static method of an abstract class.
 pub fn instantiation(c: &mut Checker, new: &Instantiation) {
-    if !c.new_static_in_abstract_class_static_method || !matches!(new.class, Expression::Static(_)) {
+    if !c.on(crate::rules::Switches::NEW_STATIC_IN_ABSTRACT_CLASS_STATIC_METHOD) || !matches!(new.class, Expression::Static(_)) {
         return;
     }
     let Some(k) = c.class_scope() else {

@@ -500,7 +500,8 @@ fn constant_native(
     if !class.flags.is_built_in() {
         return None;
     }
-    super::overriding::natives(c.php_version)
+    c.natives
+        .classes
         .get(&c.display(class).to_ascii_lowercase())?
         .constant_types
         .get(&text(constant.name.as_bytes()))

@@ -17,7 +17,7 @@ pub fn class_constant(c: &mut Checker, a: &ClassConstantAccess) {
     let ClassLikeConstantSelector::Identifier(name) = &a.constant else {
         return;
     };
-    if !c.internal_tag && !c.deprecations {
+    if !c.on(crate::rules::Switches::INTERNAL_TAG) && !c.on(crate::rules::Switches::DEPRECATIONS) {
         return;
     }
     let scope = c.class_scope();
@@ -42,7 +42,7 @@ pub fn class_constant(c: &mut Checker, a: &ClassConstantAccess) {
         None => k.enum_cases.get(&mago_word::word(name.value)).map(|case| (k, case.flags.is_internal())),
     };
     let deprecation = match found {
-        Some((owner, _)) if c.deprecations => c.constant_deprecation(owner, name.value),
+        Some((owner, _)) if c.on(crate::rules::Switches::DEPRECATIONS) => c.constant_deprecation(owner, name.value),
         _ => None,
     };
     if let Expression::Identifier(id) = a.class {
@@ -50,7 +50,7 @@ pub fn class_constant(c: &mut Checker, a: &ClassConstantAccess) {
         let member = found.map(|(owner, internal)| Member {
             name: String::from_utf8_lossy(name.value).into_owned(),
             internal: internal || owner.flags.is_internal(),
-            deprecated: deprecation.is_some() || (c.deprecations && c.class_deprecation(owner).is_some()),
+            deprecated: deprecation.is_some() || (c.on(crate::rules::Switches::DEPRECATIONS) && c.class_deprecation(owner).is_some()),
         });
         for (message, identifier) in class_names::restricted(c, k, &Location::ClassConstantAccess(member)) {
             c.report(id, &identifier, message, None);
@@ -84,7 +84,7 @@ fn restricted(
     owner: &ClassLikeMetadata,
     name: &[u8],
 ) -> Option<(String, String)> {
-    if !c.internal_tag || (!constant_internal && !owner.flags.is_internal()) {
+    if !c.on(crate::rules::Switches::INTERNAL_TAG) || (!constant_internal && !owner.flags.is_internal()) {
         return None;
     }
     let owner_name = String::from_utf8_lossy(owner.original_name.as_bytes()).into_owned();

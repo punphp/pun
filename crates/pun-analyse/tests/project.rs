@@ -64,8 +64,8 @@ fn block_pollution_defaults_and_explicit_config() {
     use pun_phpstan::{Array, Value};
 
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/block-pollution");
-    assert!(Project::new(Vec::new(), Vec::new()).pollute_scope_with_block);
-    assert!(Project::from_config(&root, &Array::new()).pollute_scope_with_block);
+    assert!(Project::new(Vec::new(), Vec::new()).options.contains(pun_analyse::ProjectOptions::POLLUTE_SCOPE_WITH_BLOCK));
+    assert!(Project::from_config(&root, &Array::new()).options.contains(pun_analyse::ProjectOptions::POLLUTE_SCOPE_WITH_BLOCK));
     assert!(mago_analyzer::settings::Settings::default().pollute_scope_with_block);
     for (mode, pollution, maybe, loops) in [
         ("default", true, true, true),
@@ -83,10 +83,10 @@ fn block_pollution_defaults_and_explicit_config() {
         }).unwrap();
         assert_eq!(config.parameters.get_str("polluteScopeWithBlock"), Some(&Value::Bool(pollution)));
         let project = Project::from_config(&root, &config.parameters);
-        assert_eq!(project.pollute_scope_with_block, pollution);
-        assert_eq!(project.check_maybe_undefined_variables, maybe);
-        assert_eq!(project.pollute_scope_with_loop_initial_assignments, loops);
-        assert_eq!(project.pollute_scope_with_always_iterable_foreach, loops);
+        assert_eq!(project.options.contains(pun_analyse::ProjectOptions::POLLUTE_SCOPE_WITH_BLOCK), pollution);
+        assert_eq!(project.options.contains(pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES), maybe);
+        assert_eq!(project.options.contains(pun_analyse::ProjectOptions::POLLUTE_SCOPE_WITH_LOOP_INITIAL_ASSIGNMENTS), loops);
+        assert_eq!(project.options.contains(pun_analyse::ProjectOptions::POLLUTE_SCOPE_WITH_ALWAYS_ITERABLE_FOREACH), loops);
     }
 }
 
@@ -95,8 +95,8 @@ fn foreach_pollution_defaults_and_explicit_config() {
     use pun_phpstan::{Array, Value};
 
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/foreach-pollution");
-    assert!(Project::new(Vec::new(), Vec::new()).pollute_scope_with_always_iterable_foreach);
-    assert!(Project::from_config(&root, &Array::new()).pollute_scope_with_always_iterable_foreach);
+    assert!(Project::new(Vec::new(), Vec::new()).options.contains(pun_analyse::ProjectOptions::POLLUTE_SCOPE_WITH_ALWAYS_ITERABLE_FOREACH));
+    assert!(Project::from_config(&root, &Array::new()).options.contains(pun_analyse::ProjectOptions::POLLUTE_SCOPE_WITH_ALWAYS_ITERABLE_FOREACH));
     for (mode, pollution, maybe, loop_initial) in [
         ("default", true, true, true),
         ("enabled", true, true, true),
@@ -110,9 +110,9 @@ fn foreach_pollution_defaults_and_explicit_config() {
         }).unwrap();
         assert_eq!(config.parameters.get_str("polluteScopeWithAlwaysIterableForeach"), Some(&Value::Bool(pollution)));
         let project = Project::from_config(&root, &config.parameters);
-        assert_eq!(project.pollute_scope_with_always_iterable_foreach, pollution);
-        assert_eq!(project.check_maybe_undefined_variables, maybe);
-        assert_eq!(project.pollute_scope_with_loop_initial_assignments, loop_initial);
+        assert_eq!(project.options.contains(pun_analyse::ProjectOptions::POLLUTE_SCOPE_WITH_ALWAYS_ITERABLE_FOREACH), pollution);
+        assert_eq!(project.options.contains(pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES), maybe);
+        assert_eq!(project.options.contains(pun_analyse::ProjectOptions::POLLUTE_SCOPE_WITH_LOOP_INITIAL_ASSIGNMENTS), loop_initial);
     }
 }
 
@@ -121,8 +121,8 @@ fn loop_initial_pollution_defaults_and_explicit_config() {
     use pun_phpstan::{Array, Value};
 
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/loop-pollution");
-    assert!(Project::new(Vec::new(), Vec::new()).pollute_scope_with_loop_initial_assignments);
-    assert!(Project::from_config(&root, &Array::new()).pollute_scope_with_loop_initial_assignments);
+    assert!(Project::new(Vec::new(), Vec::new()).options.contains(pun_analyse::ProjectOptions::POLLUTE_SCOPE_WITH_LOOP_INITIAL_ASSIGNMENTS));
+    assert!(Project::from_config(&root, &Array::new()).options.contains(pun_analyse::ProjectOptions::POLLUTE_SCOPE_WITH_LOOP_INITIAL_ASSIGNMENTS));
     for (mode, pollution, maybe) in [
         ("default", true, true),
         ("enabled", true, true),
@@ -135,8 +135,8 @@ fn loop_initial_pollution_defaults_and_explicit_config() {
         }).unwrap();
         assert_eq!(config.parameters.get_str("polluteScopeWithLoopInitialAssignments"), Some(&Value::Bool(pollution)));
         let project = Project::from_config(&root, &config.parameters);
-        assert_eq!(project.pollute_scope_with_loop_initial_assignments, pollution);
-        assert_eq!(project.check_maybe_undefined_variables, maybe);
+        assert_eq!(project.options.contains(pun_analyse::ProjectOptions::POLLUTE_SCOPE_WITH_LOOP_INITIAL_ASSIGNMENTS), pollution);
+        assert_eq!(project.options.contains(pun_analyse::ProjectOptions::CHECK_MAYBE_UNDEFINED_VARIABLES), maybe);
     }
 }
 

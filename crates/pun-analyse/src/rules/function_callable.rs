@@ -125,7 +125,7 @@ fn named<'arena>(c: &mut Checker<'_, 'arena>, id: &Identifier<'arena>) {
         .chain(fallback)
         .find_map(|name| c.function(name).map(|(display, _)| (name, display)))
     {
-        if c.check_function_name_case
+        if c.on(crate::rules::Switches::CHECK_FUNCTION_NAME_CASE)
             && display.as_bytes().eq_ignore_ascii_case(called)
             && display.as_bytes() != called
         {

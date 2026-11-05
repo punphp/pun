@@ -1461,7 +1461,7 @@ impl Checker<'_, '_> {
 /// SwitchConditionRule: a case duplicating an earlier one under `==`, and cases always false or always true against
 /// the subject narrowed by the cases above that leave the switch.
 pub(in super::super) fn switch_statement(c: &mut Checker, s: &Switch) {
-    if !c.conditions_checked() || !c.switch_condition {
+    if !c.conditions_checked() || !c.on(crate::rules::Switches::SWITCH_CONDITION) {
         return;
     }
     let mut remaining = c.phpstan_type(s.expression).map(void_null);
@@ -1971,7 +1971,7 @@ pub(in super::super) fn match_subject_types(
         let arena = LocalArena::new();
         let (program, names) = parse(&arena, &copy);
         // (the copy's own comments: its arms are rewritten)
-        let comments = super::super::Comments::of(&copy.contents);
+        let comments = super::super::Comments::of(&copy.contents, true);
         types.extend(super::super::infer::analyse(&arena, &copy, program, &names, codebase, php_version, pollute_scope_with_loop_initial_assignments, pollute_scope_with_always_iterable_foreach, pollute_scope_with_block, subjects, Vec::new(), &comments, functions).0);
     }
     (types, unknown)

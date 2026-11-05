@@ -338,7 +338,7 @@ pub(super) fn unary_prefix(c: &mut Checker, u: &UnaryPrefix) {
     let Some((identifier, operation, op)) = prefix(&u.operator) else {
         return;
     };
-    if c.strict.numeric_operands_in_arithmetic_operators && (op != Unary::Number || c.bleeding_edge) {
+    if c.strict.numeric_operands_in_arithmetic_operators && (op != Unary::Number || c.on(crate::rules::Switches::BLEEDING_EDGE)) {
         unary(c, u.span(), u.operand, identifier, operation, op);
     }
 }

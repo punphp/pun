@@ -2,9 +2,9 @@
 //! `RegexNonCapturingGroup`, `RegexAstWalkResult`, `RegexGroupWalkResult`) and `RegexExpressionHelper`'s pattern
 //! helpers.
 
-use std::collections::{BTreeMap, HashMap};
+use std::collections::BTreeMap;
 use std::rc::Rc;
-use std::sync::{Arc, LazyLock, Mutex};
+use std::sync::LazyLock;
 
 use pun_phpstan::types::Tri;
 
@@ -269,24 +269,10 @@ fn remove_delimiters_and_modifiers(pattern: &str) -> Option<&str> {
     pattern.get(1..end_delimiter_pos(pattern)?)
 }
 
-static PARSED: LazyLock<Mutex<HashMap<String, Option<Arc<Node>>>>> = LazyLock::new(Mutex::default);
-
 /// `RegexGroupParser::parseGroups()`; `capture_only_named_supported` is `PhpVersion::supportsPregCaptureOnlyNamedGroups()`.
 pub(super) fn parse_groups(regex: &str, capture_only_named_supported: bool) -> Option<AstWalk> {
     let modifiers = pattern_modifiers(regex).unwrap_or("").to_string();
-    let ast = PARSED.lock().unwrap().get(regex).cloned();
-    let ast = match ast {
-        Some(ast) => ast?,
-        None => {
-            let ast = parse_ast(regex, &modifiers).map(Arc::new);
-            PARSED
-                .lock()
-                .unwrap()
-                .insert(regex.to_string(), ast.clone());
-            ast?
-        }
-    };
-    let mut ast = (*ast).clone();
+    let mut ast = parse_ast(regex, &modifiers)?;
     update_alternation_ast(&mut ast);
     update_capturing_ast(&mut ast);
 

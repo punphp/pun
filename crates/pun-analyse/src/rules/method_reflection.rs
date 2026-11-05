@@ -79,7 +79,7 @@ impl<'a> Method<'a> {
         );
         let types: Vec<_> = (0..combined.names.len())
             .map(|i| {
-                let tail = combined.variadics[i];
+                let tail = combined.variadics.get(i);
                 declared::with_classes(c, || {
                     pun_phpstan::types::union(
                         methods

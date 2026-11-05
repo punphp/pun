@@ -101,7 +101,7 @@ pub(in super::super) fn isset(c: &mut Checker, construct: &IssetConstruct) {
             c,
             operator: "in isset()".to_string(),
             identifier: "isset",
-            advanced: c.check_advanced_isset,
+            advanced: c.on(crate::rules::Switches::CHECK_ADVANCED_ISSET),
             message: type_message,
         };
         match check.check(value, None) {
@@ -124,7 +124,7 @@ pub(in super::super) fn empty(c: &mut Checker, construct: &EmptyConstruct) {
         c,
         operator: "in empty()".to_string(),
         identifier: "empty",
-        advanced: c.check_advanced_isset,
+        advanced: c.on(crate::rules::Switches::CHECK_ADVANCED_ISSET),
         message: empty_message,
     };
     match check.check(construct.value, None) {
@@ -146,7 +146,7 @@ pub(in super::super) fn coalesce(c: &mut Checker, left: &Expression, right: &Exp
         c,
         operator: format!("on left side of {operator}"),
         identifier: "nullCoalesce",
-        advanced: c.check_advanced_isset,
+        advanced: c.on(crate::rules::Switches::CHECK_ADVANCED_ISSET),
         message: type_message,
     };
     // in a trait, per class context (ConstantConditionInTraitHelper)
@@ -155,7 +155,7 @@ pub(in super::super) fn coalesce(c: &mut Checker, left: &Expression, right: &Exp
         // ponytail: a right side other than `null` itself (pure, without writes) is not considered
         let null = matches!(unparen(right), Expression::Literal(Literal::Null(_)))
             || matches!(unparen(right), Expression::ConstantAccess(a) if a.name.value().eq_ignore_ascii_case(b"null"));
-        (c.bleeding_edge && null && check.is_set(left)).then(|| {
+        (c.on(crate::rules::Switches::BLEEDING_EDGE) && null && check.is_set(left)).then(|| {
             let message = format!(
                 "Coalesce operator {operator} is unnecessary because the left side is always set and the right side is null."
             );
@@ -369,7 +369,7 @@ fn array_key(t: &Type) -> Type {
 
 impl<'a> IssetCheck<'_, 'a, '_> {
     fn ty(&self, e: &Expression) -> Option<Type> {
-        self.ty_from(e, !self.c.treat_php_doc_types_as_certain)
+        self.ty_from(e, !self.c.on(crate::rules::Switches::TREAT_PHP_DOC_TYPES_AS_CERTAIN))
     }
 
     fn ty_from(&self, e: &Expression, native: bool) -> Option<Type> {
@@ -593,7 +593,7 @@ impl<'a> IssetCheck<'_, 'a, '_> {
                 self.never_defined(v)
             }
             Expression::ArrayAccess(a) => {
-                let holder = self.holder_type(a.array, !self.c.treat_php_doc_types_as_certain)?;
+                let holder = self.holder_type(a.array, !self.c.on(crate::rules::Switches::TREAT_PHP_DOC_TYPES_AS_CERTAIN))?;
                 if !offset_accessible(&holder).yes() {
                     return error.or_else(|| self.undefined(a.array));
                 }
@@ -749,7 +749,7 @@ impl<'a> IssetCheck<'_, 'a, '_> {
                 if self.defined(v).no() { self.never_defined(v) } else { None }
             }
             Expression::ArrayAccess(a) => {
-                let holder = self.holder_type(a.array, !self.c.treat_php_doc_types_as_certain)?;
+                let holder = self.holder_type(a.array, !self.c.on(crate::rules::Switches::TREAT_PHP_DOC_TYPES_AS_CERTAIN))?;
                 let offset = self.ty(a.index)?;
                 if !offset_accessible(&holder).yes() || !has_offset(&holder, &offset).no() {
                     return self.undefined(a.array);

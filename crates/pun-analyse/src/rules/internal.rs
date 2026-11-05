@@ -296,7 +296,7 @@ fn restricted(
     let Method::User { declaring: own, f, .. } = m else {
         return None;
     };
-    if !c.internal_members {
+    if !c.on(crate::rules::Switches::INTERNAL_MEMBERS) {
         return None;
     }
     let declaring = declaring.unwrap_or(own);
@@ -373,7 +373,7 @@ fn internal_property(
     property_internal: bool,
 ) -> Option<(String, String)> {
     let declaring = owner.unwrap_or(declaring);
-    if !c.internal_members || (!property_internal && !declaring.flags.is_internal()) {
+    if !c.on(crate::rules::Switches::INTERNAL_MEMBERS) || (!property_internal && !declaring.flags.is_internal()) {
         return None;
     }
     let declaring_name = String::from_utf8_lossy(declaring.original_name.as_bytes()).into_owned();
@@ -417,7 +417,7 @@ fn property_facts<'a>(c: &Checker<'a, '_>, k: &'a ClassLikeMetadata, name: &[u8]
         return Some(PropertyFacts {
             declaring,
             internal: p.flags.is_internal(),
-            deprecation: if c.deprecations { c.property_deprecation(declaring, &dollar) } else { None },
+            deprecation: if c.on(crate::rules::Switches::DEPRECATIONS) { c.property_deprecation(declaring, &dollar) } else { None },
         });
     }
     if is_static || !c.allows_dynamic_properties(k) {
@@ -546,7 +546,7 @@ pub fn static_property_member(c: &Checker, k: &ClassLikeMetadata, name: &[u8]) -
     Some(super::class_names::Member {
         name: String::from_utf8_lossy(name).into_owned(),
         internal: facts.internal || facts.declaring.flags.is_internal(),
-        deprecated: c.deprecations
+        deprecated: c.on(crate::rules::Switches::DEPRECATIONS)
             && (facts.deprecation.is_some() || c.class_deprecation(facts.declaring).is_some()),
     })
 }
@@ -556,13 +556,13 @@ pub fn method_member(c: &Checker, m: &Method) -> super::class_names::Member {
     let (internal, declaring_deprecated) = match m {
         Method::User { declaring, f, .. } => (
             f.flags.is_internal() || declaring.flags.is_internal(),
-            c.deprecations && c.class_deprecation(declaring).is_some(),
+            c.on(crate::rules::Switches::DEPRECATIONS) && c.class_deprecation(declaring).is_some(),
         ),
         Method::Builtin { .. } => (false, false),
     };
     super::class_names::Member {
         name: m.name(),
         internal,
-        deprecated: declaring_deprecated || (c.deprecations && c.method_deprecation(m).is_some()),
+        deprecated: declaring_deprecated || (c.on(crate::rules::Switches::DEPRECATIONS) && c.method_deprecation(m).is_some()),
     }
 }

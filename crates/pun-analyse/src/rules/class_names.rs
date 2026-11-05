@@ -233,7 +233,7 @@ pub fn restricted(c: &Checker, k: &ClassLikeMetadata, location: &Location) -> Ve
     let mut out = Vec::new();
     let description = super::deprecations::type_description(k);
     let name = String::from_utf8_lossy(k.original_name.as_bytes()).into_owned();
-    if c.internal_tag
+    if c.on(crate::rules::Switches::INTERNAL_TAG)
         && k.flags.is_internal()
         && super::internal::should_be_reported(c, &name)
         && !location.member().is_some_and(|m| m.internal)
@@ -241,7 +241,7 @@ pub fn restricted(c: &Checker, k: &ClassLikeMetadata, location: &Location) -> Ve
         let part = format!("internal {} {}", description.to_ascii_lowercase(), c.display(k));
         out.push((location.message(&part), location.identifier(&format!("internal{description}"))));
     }
-    if c.deprecations
+    if c.on(crate::rules::Switches::DEPRECATIONS)
         && let Some(deprecation) = c.class_deprecation(k)
         && !c.scope_deprecated()
         && !location
@@ -249,7 +249,7 @@ pub fn restricted(c: &Checker, k: &ClassLikeMetadata, location: &Location) -> Ve
             .and_then(|class| c.codebase.get_class_like(class.as_bytes()))
             .is_some_and(|current| c.class_deprecation(current).is_some())
         && !location.member().is_some_and(|m| m.deprecated)
-        && (c.bleeding_edge
+        && (c.on(crate::rules::Switches::BLEEDING_EDGE)
             || matches!(
                 location,
                 Location::Implements { .. }
@@ -288,7 +288,7 @@ fn case_sensitivity(c: &mut Checker, pairs: &[Pair]) {
     for pair in pairs {
         // getClassNameAsWritten()/getNameAsWritten(): only a one-part, unqualified Name whose own resolved value
         // equals the pair's class name uses its original spelling. Other nodes, qualified and relative names stay.
-        let name = if c.check_imported_class_name_case
+        let name = if c.on(crate::rules::Switches::CHECK_IMPORTED_CLASS_NAME_CASE)
             && pair.written
             && c.names.resolve(&pair.at) == Some(pair.name.as_bytes())
             && !c.written(pair.at).contains('\\')
@@ -301,7 +301,7 @@ fn case_sensitivity(c: &mut Checker, pairs: &[Pair]) {
             continue;
         };
         if let Known::Builtin(b) = k
-            && !c.check_internal_class_case_sensitivity
+            && !c.on(crate::rules::Switches::CHECK_INTERNAL_CLASS_CASE_SENSITIVITY)
             && !STUBBED.contains(&b.name.to_ascii_lowercase().as_str())
         {
             continue;

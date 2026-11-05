@@ -50,7 +50,7 @@ fn check(group: &str) {
         let mut direct = Project::new(paths("paths"), paths("scan"));
         direct.level = level;
         direct.php_version = 80500;
-        direct.check_non_stringable_dynamic_access = names;
+        direct.options.set(pun_analyse::ProjectOptions::CHECK_NON_STRINGABLE_DYNAMIC_ACCESS, names);
         direct.method_rules.call_methods = calls;
         let mut want: Vec<_> = case["messages"]
             .as_array()

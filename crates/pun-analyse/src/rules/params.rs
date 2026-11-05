@@ -12,12 +12,13 @@ use pun_phpstan::symbols::{ByRef, ConstantReflection, ParameterAllowedConstants}
 use pun_phpstan::types::{Tri, Type, is_super_type_of};
 
 use super::Checker;
+use crate::bitset::BitSet;
 
 /// A ParametersAcceptor, as far as counting and naming go.
 #[derive(Clone, Debug, PartialEq)]
 pub struct Acceptor {
     /// `isOptional()` per parameter.
-    pub optional: Vec<bool>,
+    pub optional: BitSet,
     /// `isVariadic()`: a variadic parameter, or a body calling `func_get_args()`.
     pub variadic: bool,
     /// The return type is `void` (`getKeepVoidType()`).
@@ -25,7 +26,7 @@ pub struct Acceptor {
     /// Per parameter: the name, the type's description and whether it is variadic.
     pub names: Vec<String>,
     pub types: Vec<String>,
-    pub variadics: Vec<bool>,
+    pub variadics: BitSet,
     /// A built-in's (no named argument goes to its variadic parameter).
     pub builtin: bool,
     /// `acceptsNamedArguments()`, retained when acceptors are selected or combined.
@@ -34,7 +35,7 @@ pub struct Acceptor {
     pub param_types: Vec<ParamType>,
     pub by_ref: Vec<ByRef>,
     /// Whether `getClosureThisType()` is non-null, retained through selection and combination.
-    pub closure_this: Vec<bool>,
+    pub closure_this: BitSet,
     /// A method's reflection context, which `self`/`static` in its parameter types name. A trait method's context
     /// is the consuming class, not its storage owner.
     pub class: Option<String>,
@@ -96,7 +97,7 @@ impl Acceptor {
     }
 
     fn min(&self) -> usize {
-        self.optional.iter().filter(|o| !**o).count()
+        self.optional.iter().filter(|o| !o).count()
     }
 
     fn accepts(&self, n: usize) -> bool {
@@ -106,11 +107,11 @@ impl Acceptor {
     /// A user-defined function-like (Mago's metadata): a parameter is optional when it and every later one has a
     /// default or is variadic, as `ReflectionParameter::isOptional()` says.
     pub fn of(f: &FunctionLikeMetadata) -> Acceptor {
-        let mut optional = vec![false; f.parameters.len()];
+        let mut optional = BitSet::new(f.parameters.len());
         let mut tail = true;
         for (i, p) in f.parameters.iter().enumerate().rev() {
             tail &= p.flags.has_default() || p.flags.is_variadic();
-            optional[i] = tail;
+            optional.set(i, tail);
         }
         Acceptor {
             optional,
@@ -164,7 +165,7 @@ impl Acceptor {
             accepts_named_arguments: Tri::Yes,
             param_types: v.params.iter().map(|p| ParamType::Builtin(p.ty.clone(), p.allowed_constants.clone())).collect(),
             by_ref: v.params.iter().map(|p| p.by_ref).collect(),
-            closure_this: vec![false; v.params.len()],
+            closure_this: BitSet::new(v.params.len()),
             class: None,
             callee: None,
         }
@@ -332,17 +333,17 @@ fn winning<'v>(c: &Checker, acceptable: &[&'v Acceptor], types: &[(Key, Type)], 
 pub(super) fn combine(variants: &[&Acceptor]) -> Acceptor {
     let min = variants.iter().map(|v| v.min()).min().unwrap_or(0);
     let mut combined = Acceptor {
-        optional: Vec::new(),
+        optional: BitSet::default(),
         variadic: false,
         void: variants.iter().all(|v| v.void),
         names: Vec::new(),
         types: Vec::new(),
-        variadics: Vec::new(),
+        variadics: BitSet::default(),
         builtin: variants.iter().any(|v| v.builtin),
         accepts_named_arguments: variants.iter().fold(Tri::No, |accepts, v| accepts.or(v.accepts_named_arguments)),
         param_types: Vec::new(),
         by_ref: Vec::new(),
-        closure_this: Vec::new(),
+        closure_this: BitSet::default(),
         class: variants.first().and_then(|v| v.class.clone()),
         callee: None,
     };
@@ -352,11 +353,11 @@ pub(super) fn combine(variants: &[&Acceptor]) -> Acceptor {
             if i == combined.names.len() {
                 combined.names.push(v.names[i].clone());
                 combined.types.push(v.types[i].clone());
-                combined.variadics.push(v.variadics[i]);
+                combined.variadics.push(v.variadics.get(i));
                 combined.optional.push(i + 1 > min);
                 combined.param_types.push(v.param_types[i].clone());
                 combined.by_ref.push(v.by_ref[i]);
-                combined.closure_this.push(v.closure_this[i]);
+                combined.closure_this.push(v.closure_this.get(i));
                 continue;
             }
             // ponytail: the union of the types prints both when they differ, without TypeCombinator's normalization
@@ -375,12 +376,13 @@ pub(super) fn combine(variants: &[&Acceptor]) -> Acceptor {
                 (a, _) => a.clone(),
             };
             // A combined parameter keeps a binding only if both parameters have one (the types are unioned).
-            combined.closure_this[i] &= v.closure_this[i];
+            let bound = combined.closure_this.get(i) && v.closure_this.get(i);
+            combined.closure_this.set(i, bound);
             // `PassedByReference::combine()`: the stronger
             let rank = |b: ByRef| [ByRef::No, ByRef::ReadsArgument, ByRef::CreatesNewVariable].iter().position(|x| *x == b);
             combined.by_ref[i] = std::cmp::max_by_key(combined.by_ref[i], v.by_ref[i], |b| rank(*b));
-            let variadic = combined.variadics[i] || v.variadics[i];
-            combined.variadics[i] = variadic;
+            let variadic = combined.variadics.get(i) || v.variadics.get(i);
+            combined.variadics.set(i, variadic);
             if variadic {
                 // the variadic parameter swallows every parameter behind it
                 // ponytail: upstream also merges their types into its type; a variadic parameter is never missing
@@ -936,7 +938,7 @@ pub(super) fn check_bound_in(
         c.report(at, identifier, void, None);
     }
     let parameters = process_arguments(c, acceptor, &arguments, has_named, at, &call);
-    if c.check_argument_types || c.check_arguments_passed_by_reference {
+    if c.on(crate::rules::Switches::CHECK_ARGUMENT_TYPES) || c.on(crate::rules::Switches::CHECK_ARGUMENTS_PASSED_BY_REFERENCE) {
         if semantic {
             super::types::arguments(c, acceptor, &arguments, &parameters, at.span(), &call);
         } else {
@@ -1150,8 +1152,8 @@ fn process_arguments(
         _ => callee[..1].to_ascii_lowercase() + &callee[1..],
     };
     let count = acceptor.names.len();
-    let natively_variadic = acceptor.variadics.iter().any(|v| *v);
-    let mut unused: Vec<usize> = (0..count).filter(|i| !acceptor.variadics[*i]).collect();
+    let natively_variadic = acceptor.variadics.iter().any(|v| v);
+    let mut unused: Vec<usize> = (0..count).filter(|i| !acceptor.variadics.get(*i)).collect();
     let mut named_occurred = false;
     let mut named_for_variadic: Vec<&str> = Vec::new();
     for (i, e) in arguments.iter().enumerate() {
@@ -1159,7 +1161,7 @@ fn process_arguments(
         let parameter = match name {
             None if i < count => i,
             // func_get_args()
-            None if !acceptor.variadic || count == 0 || !acceptor.variadics[count - 1] => break,
+            None if !acceptor.variadic || count == 0 || !acceptor.variadics.get(count - 1) => break,
             None => count - 1,
             Some(name) => {
                 named_occurred = true;
@@ -1186,7 +1188,7 @@ fn process_arguments(
             c.report_non_ignorable(*span, "argument.positionalAfterNamed", message, None);
             continue;
         }
-        if has_named && !acceptor.variadics[parameter] && !unused.contains(&parameter) {
+        if has_named && !acceptor.variadics.get(parameter) && !unused.contains(&parameter) {
             let message = format!("Argument for parameter ${} has already been passed.", acceptor.names[parameter]);
             parameters[i] = Some(parameter);
             c.report(*span, "argument.duplicate", message, None);
@@ -1198,7 +1200,7 @@ fn process_arguments(
     if has_named {
         // (keyed by name: callable(int, int)'s unnamed parameters are one)
         let mut seen = std::collections::HashSet::new();
-        for p in unused.into_iter().filter(|p| !acceptor.optional[*p] && seen.insert(&acceptor.names[*p])) {
+        for p in unused.into_iter().filter(|p| !acceptor.optional.get(*p) && seen.insert(&acceptor.names[*p])) {
             let message =
                 format!("Missing parameter ${} ({}) in call to {callee}.", acceptor.names[p], acceptor.types[p]);
             c.report(at.span(), "argument.missing", message, None);

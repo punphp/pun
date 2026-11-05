@@ -285,22 +285,24 @@ struct Names {
 }
 
 /// Bytes that start a name: letters, `_` and non-ASCII.
-const START: [bool; 256] = {
-    let mut t = [false; 256];
+const START: [u64; 4] = {
+    let mut t = [0; 4];
     let mut b = 0;
     while b < 256 {
-        t[b] = (b as u8).is_ascii_alphabetic() || b == b'_' as usize || b >= 0x80;
+        if (b as u8).is_ascii_alphabetic() || b == b'_' as usize || b >= 0x80 {
+            t[b / 64] |= 1 << (b % 64);
+        }
         b += 1;
     }
     t
 };
 
 fn is_start(b: u8) -> bool {
-    START[b as usize]
+    START[b as usize / 64] & (1 << (b % 64)) != 0
 }
 
 fn is_part(b: u8) -> bool {
-    START[b as usize] || b.is_ascii_digit()
+    is_start(b) || b.is_ascii_digit()
 }
 
 impl Names {

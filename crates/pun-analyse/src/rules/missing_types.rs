@@ -183,7 +183,7 @@ struct Opts {
 
 impl Opts {
     fn of(c: &Checker) -> Opts {
-        Opts { iterables: c.generic_iterable_classes, callables: c.missing_callable_signature }
+        Opts { iterables: c.on(crate::rules::Switches::GENERIC_ITERABLE_CLASSES), callables: c.on(crate::rules::Switches::MISSING_CALLABLE_SIGNATURE) }
     }
 }
 

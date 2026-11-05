@@ -33,6 +33,7 @@ serde_json = { version = "1", features = ["preserve_order"] }
 toml = { version = "0.9", features = ["preserve_order"] }
 clap = { version = "4", features = ["derive"] }
 rayon = "1"
+bitflags = "2"
 anyhow = "1"
 similar = "2"
 pcre2 = "0.2"

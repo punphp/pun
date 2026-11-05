@@ -130,6 +130,9 @@ fn upsert<T>(list: &mut Vec<T>, key: impl Fn(&T) -> &str, item: T) {
 
 /// The type alias tags of class-like `k`'s PHPDoc (`resolveTypeAliasTags()` and `resolveTypeAliasImportTags()`), in
 /// `scope`.
+/// The tags [`alias_doc()`] reads.
+const ALIAS_TAGS: [&str; 5] = ["@phan-type", "@psalm-type", "@phpstan-type", "@psalm-import-type", "@phpstan-import-type"];
+
 fn alias_doc(c: &Checker, k: &ClassLikeMetadata, scope: NameScope) -> Option<AliasDoc> {
     let (_, entry) = c.doc_before(k.span.file_id, k.span.start.offset)?;
     let tags = &entry.tags;
@@ -367,6 +370,14 @@ fn without_aliases<R>(f: impl FnOnce() -> R) -> R {
 /// A trait's (`k`) in the context of `using`, the class using it.
 pub(super) fn class_aliases(c: &Checker, k: &ClassLikeMetadata, using: Option<&ClassLikeMetadata>) -> Vec<(String, Type)> {
     if RESOLVING.with(|r| r.replace(true)) {
+        return Vec::new();
+    }
+    // (a PHPDoc without alias tags defines and imports none, so its scope need not be built)
+    let tagged = c.doc_before(k.span.file_id, k.span.start.offset).is_some_and(|(_, entry)| {
+        entry.tags.iter().any(|(tag, _)| ALIAS_TAGS.contains(&tag.as_str()))
+    });
+    if !tagged {
+        RESOLVING.with(|r| r.set(false));
         return Vec::new();
     }
     let resolver = Resolver::new(c);

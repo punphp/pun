@@ -564,7 +564,7 @@ impl<'g, 'a, 'arena> Gatherer<'g, 'a, 'arena> {
         self.call_children(Node::FunctionCall(f));
         if self.own {
             // processVirtualAssign() of the arguments passed by reference
-            let by_ref: Vec<bool> = assign::by_ref_arguments(self.c, f);
+            let by_ref = assign::by_ref_arguments(self.c, f);
             let values: Vec<&Expression> = f
                 .argument_list
                 .arguments

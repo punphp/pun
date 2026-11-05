@@ -726,7 +726,7 @@ fn report(c: &mut Checker, at: Span, found: Found) {
         .into_iter()
         .map(|name| Pair::node(name, at))
         .collect();
-    let case = c.case_sensitivity;
+    let case = c.on(crate::rules::Switches::CHECK_CLASS_CASE_SENSITIVITY);
     class_names::check(c, &pairs, case);
     for (identifier, message, tip) in found.errors {
         c.report(at, identifier, message, tip);
@@ -745,7 +745,7 @@ struct ClassLike<'s> {
     subject: Option<String>,
     doc: Option<&'s DocEntry>,
     /// the namespace scope of the PHPDoc
-    names: &'s NamespaceScope,
+    names: &'s std::sync::Arc<NamespaceScope>,
 }
 
 fn class_like(c: &Checker, l: &ClassLike) -> Found {
@@ -1012,7 +1012,7 @@ pub(super) fn resolved_names<'a>(
 }
 
 /// The PHPDoc before `offset` in the walked file and the namespace scope there.
-fn doc_and_names<'a>(c: &Checker<'a, '_>, span: Span) -> (Option<&'a DocEntry>, &'a NamespaceScope) {
+fn doc_and_names<'a>(c: &Checker<'a, '_>, span: Span) -> (Option<&'a DocEntry>, &'a std::sync::Arc<NamespaceScope>) {
     let doc = c.doc_before(c.file.id, span.start.offset).map(|(_, entry)| entry);
     (doc, c.facts.scopes.at(span.start.offset))
 }

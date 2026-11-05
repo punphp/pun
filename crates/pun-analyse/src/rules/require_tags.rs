@@ -140,7 +140,7 @@ pub fn class_like(c: &mut Checker, at: Span, k: &ClassLikeMetadata) {
                 unknown(c, at, "@phpstan-sealed", &class);
                 continue;
             }
-            class_names::check(c, &[Pair::node(class, at)], c.case_sensitivity);
+            class_names::check(c, &[Pair::node(class, at)], c.on(crate::rules::Switches::CHECK_CLASS_CASE_SENSITIVITY));
         }
     }
 }
@@ -185,7 +185,7 @@ pub fn trait_(c: &mut Checker, at: Span, name: &str) {
                 continue;
             };
             if reflection.is_interface() {
-                class_names::check(c, &[Pair::node(class, at)], c.case_sensitivity);
+                class_names::check(c, &[Pair::node(class, at)], c.on(crate::rules::Switches::CHECK_CLASS_CASE_SENSITIVITY));
             } else {
                 c.report(
                     at,
@@ -263,7 +263,7 @@ fn extends_check(c: &mut Checker, at: Span, tags: &[Type]) {
                     None,
                 );
             } else {
-                class_names::check(c, &[Pair::node(class, at)], c.case_sensitivity);
+                class_names::check(c, &[Pair::node(class, at)], c.on(crate::rules::Switches::CHECK_CLASS_CASE_SENSITIVITY));
             }
         }
     }

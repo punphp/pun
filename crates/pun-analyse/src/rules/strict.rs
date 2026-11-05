@@ -122,7 +122,7 @@ pub fn cast(c: &mut Checker, u: &UnaryPrefix) {
             _ => None,
         })
     };
-    let operand = if c.treat_php_doc_types_as_certain { c.phpstan_type(u.operand) } else { native() };
+    let operand = if c.on(crate::rules::Switches::TREAT_PHP_DOC_TYPES_AS_CERTAIN) { c.phpstan_type(u.operand) } else { native() };
     let Some(operand) = operand else {
         return;
     };
@@ -130,7 +130,7 @@ pub fn cast(c: &mut Checker, u: &UnaryPrefix) {
     if !holds(&operand) {
         return;
     }
-    let tip = (c.treat_php_doc_types_as_certain && !native().is_some_and(|n| holds(&n))).then_some(TIP);
+    let tip = (c.on(crate::rules::Switches::TREAT_PHP_DOC_TYPES_AS_CERTAIN) && !native().is_some_and(|n| holds(&n))).then_some(TIP);
     let message = declared::with_classes(c, || {
         format!(
             "Casting to {} something that's already {}.",

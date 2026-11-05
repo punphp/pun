@@ -1421,6 +1421,7 @@ dependencies = [
 name = "punphp-analyse"
 version = "0.0.1"
 dependencies = [
+ "bitflags 2.13.2",
  "flate2",
  "foldhash",
  "mago-allocator",

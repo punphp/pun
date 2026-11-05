@@ -67,7 +67,7 @@ fn report(c: &mut Checker, at: Span, errors: Errors) {
             None => c.report(at, identifier, message, tip.as_deref()),
         }
     }
-    let case = c.case_sensitivity;
+    let case = c.on(crate::rules::Switches::CHECK_CLASS_CASE_SENSITIVITY);
     super::class_names::check(c, &names, case);
 }
 
@@ -232,7 +232,7 @@ fn check(c: &Checker, tags: &[phpdoc::Tag], scope: &NameScope, sig: &declared::S
                 None,
             ));
         }
-        for (inner, list) in missing_types::generics_without_args(&asserted, c.generic_iterable_classes) {
+        for (inner, list) in missing_types::generics_without_args(&asserted, c.on(crate::rules::Switches::GENERIC_ITERABLE_CLASSES)) {
             errors.push((
                 "missingType.generics",
                 format!("PHPDoc tag {tag} for {expr} contains generic {inner} but does not specify its types: {list}"),
@@ -240,7 +240,7 @@ fn check(c: &Checker, tags: &[phpdoc::Tag], scope: &NameScope, sig: &declared::S
                 None,
             ));
         }
-        for callable in missing_types::callables_without_signature(&asserted, c.missing_callable_signature) {
+        for callable in missing_types::callables_without_signature(&asserted, c.on(crate::rules::Switches::MISSING_CALLABLE_SIGNATURE)) {
             errors.push((
                 "missingType.callable",
                 format!("PHPDoc tag {tag} for {expr} has no signature specified for {callable}."),

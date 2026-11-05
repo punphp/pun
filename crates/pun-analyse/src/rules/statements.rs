@@ -66,7 +66,7 @@ impl Checker<'_, '_> {
             );
         }
         // UnusedLabelRule (level 4, `featureToggles.unusedLabel`)
-        if self.unused_label {
+        if self.on(crate::rules::Switches::UNUSED_LABEL) {
             for (label, at) in &frame.labels {
                 if !frame.gotos.iter().any(|(g, _)| g == label) {
                     let message = format!("Label '{}' is unused.", String::from_utf8_lossy(label));

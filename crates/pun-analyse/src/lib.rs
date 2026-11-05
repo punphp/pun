@@ -1,7 +1,8 @@
-//! `pun analyse` (Phase 2, M2.3): PHPStan 2.3.1's rules, level by level, on Mago's parser, name resolution and
+//! `pun analyse`: PHPStan 2.3.1's rules, level by level, on Mago's parser, name resolution and
 //! codex. Errors carry PHPStan's identifier and message so baselines and `ignoreErrors` keep matching.
 
 mod autoload;
+mod bitset;
 mod codebase;
 mod larastan;
 mod laravel;
@@ -19,7 +20,7 @@ use rayon::prelude::*;
 pub use codebase::CouldNotReadFile;
 pub use laravel::Laravel;
 pub use mago::{Dumped, MagoIssue, MagoRun, run_mago};
-pub use project::{Exceptions, MethodRules, Project, Reported, StrictRules, TooWide};
+pub use project::{Exceptions, MethodRules, Project, ProjectOptions, Reported, StrictRules, TooWide};
 pub use relative_path::RelativePath;
 pub use rules::Larastan;
 
@@ -91,7 +92,7 @@ pub fn analyse_project(project: &Project) -> Result<Analysis, CouldNotReadFile> 
     let errors = rules::renamed_named_arguments(
         errors,
         &sources,
-        project.report_ignores_without_comments,
+        project.options.contains(crate::ProjectOptions::REPORT_IGNORES_WITHOUT_COMMENTS),
         project.method_rules.renamed_named_arguments,
     );
     // the codebase is large: freed off the critical path

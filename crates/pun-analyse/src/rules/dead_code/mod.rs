@@ -216,7 +216,7 @@ pub(super) fn closure(c: &mut Checker, closure: &Closure) {
         } else {
             ("Anonymous function has an unused use {}.", "closure.unusedUse")
         };
-        let at = if c.precise_unused_parameter_line { span } else { closure.span() };
+        let at = if c.on(crate::rules::Switches::PRECISE_UNUSED_PARAMETER_LINE) { span } else { closure.span() };
         errors.push((at, identifier, message.replace("{}", &String::from_utf8_lossy(capture.variable.name))));
     }
     for (at, identifier, message) in errors {
@@ -406,7 +406,7 @@ pub(super) fn method_parameters(c: &mut Checker, m: &Method, name: &str) {
         };
         let unused = format!("{subject} has an unused parameter {{}}.");
         let flow = format!("{subject} has a parameter {{}} that only flows into values that are never used.");
-        let exact = c.precise_unused_parameter_line;
+        let exact = c.on(crate::rules::Switches::PRECISE_UNUSED_PARAMETER_LINE);
         let flow = c.toggled.unused_flow.then_some((flow.as_str(), "constructor.unusedParameterFlow"));
         unused_parameters(c, m.span(), &m.parameter_list, &contract, (&unused, "constructor.unusedParameter"), exact, flow);
     } else {

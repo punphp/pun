@@ -298,7 +298,7 @@ fn app_root(root: &Path) -> PathBuf {
 /// `Illuminate\Http\Request` (`$scope->hasVariableType('request')->yes()` and its type).
 #[derive(Default)]
 pub(crate) struct State {
-    request: Vec<bool>,
+    request: crate::bitset::BitSet,
 }
 
 /// `ModelPropertyExtension::hasProperty()`: a database column of the model that no accessor or `@property` tag hides.
@@ -438,7 +438,7 @@ impl Checker<'_, '_> {
 
     /// A closure: its parameters, and `use ($request)` keeps the outer `$request`.
     pub(super) fn larastan_enter_closure(&mut self, f: &Closure) {
-        let outer = self.larastan_state.request.last().copied().unwrap_or(false);
+        let outer = self.larastan_state.request.last().unwrap_or(false);
         let used = f
             .use_clause
             .as_ref()
@@ -453,7 +453,7 @@ impl Checker<'_, '_> {
     }
 
     fn request_in_scope(&self) -> bool {
-        self.larastan_state.request.last().copied().unwrap_or(false)
+        self.larastan_state.request.last().unwrap_or(false)
     }
 }
 

@@ -948,7 +948,7 @@ fn phpdoc_classes_at(
             c.report(at, identifier, message(class), None);
         }
         let pairs: Vec<Pair> = classes.into_iter().map(|class| Pair::node(class, at)).collect();
-        let case = c.case_sensitivity;
+        let case = c.on(crate::rules::Switches::CHECK_CLASS_CASE_SENSITIVITY);
         class_names::check_at(c, &pairs, location.as_ref(), case);
     };
     for (name, at) in params {
@@ -1037,7 +1037,7 @@ fn self_out(c: &mut Checker, at: Span, subject: &str, doc: &Doc) {
             None,
         );
     }
-    let case = c.case_sensitivity;
+    let case = c.on(crate::rules::Switches::CHECK_CLASS_CASE_SENSITIVITY);
     class_names::check(c, &pairs, case);
 }
 

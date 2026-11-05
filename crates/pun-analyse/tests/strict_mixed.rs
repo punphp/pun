@@ -22,7 +22,7 @@ fn checked_mixed_capabilities_templates_and_scope_metadata_match_phpstan() {
         let mut project = Project::new(vec![root.join("cases.php")], vec![]);
         project.level = level;
         project.php_version = 80400;
-        project.check_non_stringable_dynamic_access = true;
+        project.options.set(pun_analyse::ProjectOptions::CHECK_NON_STRINGABLE_DYNAMIC_ACCESS, true);
         let got: Vec<_> = run(&project).unwrap().into_iter().filter(|e| selected(&e.identifier))
             .map(|e| serde_json::json!([e.line, e.identifier, e.message, e.tip, e.can_be_ignored])).collect();
         let capture: Value = serde_json::from_slice(&std::fs::read(root.join(format!("expected-{level}.json"))).unwrap()).unwrap();
