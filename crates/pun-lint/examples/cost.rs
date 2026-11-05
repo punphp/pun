@@ -1,4 +1,4 @@
-//! Cost per file of the lint engine (context/reports/lint-spike.md):
+//! Cost per file of the lint engine:
 //! `cargo run --release -p punphp-lint --example cost -- <dir>...`
 //! Times, per PHP file (not Blade, not vendor/ or node_modules/), the parse alone (a linter with no rules), `check`
 //! with both sample rules, and `fix`. Prints totals and the mean per file. Single-threaded.

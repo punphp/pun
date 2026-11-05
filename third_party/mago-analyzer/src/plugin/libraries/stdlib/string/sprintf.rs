@@ -6,7 +6,7 @@
 //! to be non-empty or longer than one character.
 //!
 //! The core logic is exposed via [`resolve_sprintf`] so it can be reused by
-//! other providers (e.g. `Psl\Str\format`).
+//! other providers.
 
 use std::fmt::Write;
 
@@ -54,7 +54,7 @@ impl FunctionReturnTypeProvider for SprintfProvider {
 /// Resolve the return type of a sprintf-like call.
 ///
 /// Expects the first argument to be the format string and subsequent arguments
-/// to be the format values (standard `sprintf` / `Psl\Str\format` signature).
+/// to be the format values (standard `sprintf` signature).
 pub fn resolve_sprintf(
     context: &ProviderContext<'_, '_, '_>,
     invocation: &InvocationInfo<'_, '_, '_>,

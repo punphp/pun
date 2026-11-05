@@ -107,7 +107,7 @@ descriptions; 54 level-0 identifiers; parallel scanning. The steps, after config
    and compare it with PHPStan, and write one Larastan provider (model attributes from migrations) through Mago's
    plugin API without forking Mago.
    *Done when* it shows which remaining level-0 rules Mago already covers, so step 3 writes no rule twice.
-   *Result* (2026-10-17, ../reports/analyse-spike.md): Mago covers 11 of the 116 remaining level-0 Pun rules, part
+   *Result* (2026-10-17): Mago covers 11 of the 116 remaining level-0 Pun rules, part
    of 32, none of 73. The Larastan provider works through `register_expression_hook` with no fork. Mago's codes fire
    far more widely than PHPStan's level-0 checks (421 issues on Pinkary, where PHPStan + Larastan report 0), so §7's
    "report a Mago code under the Pun rule" needs Pushpak's look: the report proposes Pun checks that read Mago's types,
@@ -162,7 +162,7 @@ inference.
   work in Pun.
 - **Rules** (Pushpak, 2026-10-18, replacing "report a matching Mago issue under the Pun rule"): every PHPStan rule is
   a Pun check that reads Mago's inferred types, the same way the 54 level-0 rules read Mago's codex. Mago's issue codes
-  are broader than PHPStan's checks (forwarding them gave 226 false errors on Pinkary at level 0, reports/analyse-spike.md),
+  are broader than PHPStan's checks (forwarding them gave 226 false errors on Pinkary at level 0),
   so a Mago issue is used directly only where the spike's table says `yes` with no extras.
 - **Laravel** (Larastan's knowledge) is a built-in Mago plugin in Pun. Providers give return and property types for
   models, relations, facades, the container and config; hooks add the Laravel-specific checks.

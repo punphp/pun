@@ -29,9 +29,7 @@ use crate::plugin::provider::function::FunctionTarget;
 static META: ProviderMeta =
     ProviderMeta::new("php::array::array_merge", "array_merge", "Returns merged array with combined types");
 
-static TARGETS: [&[u8]; 2] = [b"array_merge", b"psl\\dict\\merge"];
-
-/// Provider for the `array_merge()` and `Psl\Dict\merge()` functions.
+/// Provider for the `array_merge()` function.
 ///
 /// Returns an array with types combined from all input arrays.
 #[derive(Default)]
@@ -45,7 +43,7 @@ impl Provider for ArrayMergeProvider {
 
 impl FunctionReturnTypeProvider for ArrayMergeProvider {
     fn targets() -> FunctionTarget {
-        FunctionTarget::ExactMultiple(&TARGETS)
+        FunctionTarget::Exact(b"array_merge")
     }
 
     fn get_return_type(

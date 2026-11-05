@@ -32,7 +32,7 @@ impl Provider for MinProvider {
 
 impl FunctionReturnTypeProvider for MinProvider {
     fn targets() -> FunctionTarget {
-        FunctionTarget::ExactMultiple(&[b"min", b"psl\\math\\min", b"psl\\math\\minva"])
+        FunctionTarget::Exact(b"min")
     }
 
     #[allow(clippy::similar_names)]

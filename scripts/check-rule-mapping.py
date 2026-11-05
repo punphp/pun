@@ -166,7 +166,7 @@ def check(data):
                 if u["pun"] not in ids:
                     err(f"{where}: pun = {u['pun']!r} is not a rule")
                 sources[u["pun"]].add(f"{tool}:{key}")
-            # Further rules a Mago analyzer code reports for (context/reports/analyse-spike.md): evidence, not sources.
+            # Further rules a Mago analyzer code reports for: evidence, not sources.
             if "also" in u and (tool != "mago-analyzer" or "pun" not in u):
                 err(f"{where}: `also` is for mago-analyzer entries with `pun` only")
             for a in u.get("also", []):

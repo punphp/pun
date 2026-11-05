@@ -8,3 +8,4 @@ target-*/
 /dist/
 /target-bench
 /.amp/portals/*
+__pycache__/

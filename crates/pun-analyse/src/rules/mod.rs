@@ -838,8 +838,6 @@ pub struct FunctionScope {
     pub kind: FunctionScopeKind,
     /// `isDeprecated()`, when the deprecation rules run.
     pub deprecated: bool,
-    /// Where its declaration starts.
-    pub start: u32,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -1711,7 +1709,6 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             name: String::from_utf8_lossy(f.name.value).into_owned(),
             kind: FunctionScopeKind::Function,
             deprecated,
-            start: f.span().start.offset,
         });
     }
     fn walk_out_function(&mut self, _: &'ast Function<'arena>, _: &mut ()) {
@@ -1894,7 +1891,6 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         let deprecated = self.entered_deprecated(&method, true, m.span());
         self.functions.push(FunctionScope {
             deprecated,
-            start: m.span().start.offset,
             name: method,
             kind: FunctionScopeKind::Method {
                 is_static: m.modifiers.contains_static(),

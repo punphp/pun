@@ -242,7 +242,7 @@ Answered 2026-10-17 (Pushpak):
   is a config error (exit 2).
 - **Upgrades are lint rules in their own groups**, not a separate command.
 
-Lint spike (Build 1, 2026-10-17; report: ../reports/lint-spike.md):
+Lint spike (Build 1, 2026-10-17):
 
 - **Assistant's call: the rule shape.** A rule is called for every node with its ancestor stack and returns reports
   (span, message, help, optional `pun_problem::Fix`); it declares a lowest PHP version like Rector's

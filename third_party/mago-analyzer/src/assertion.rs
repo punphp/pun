@@ -23,7 +23,6 @@ use mago_codex::ttype::get_arraykey;
 use mago_codex::ttype::get_bool;
 use mago_codex::ttype::get_false;
 use mago_codex::ttype::get_float;
-use mago_codex::ttype::get_iterable_value_parameter;
 use mago_codex::ttype::get_numeric_string;
 use mago_codex::ttype::get_true;
 use mago_codex::ttype::union::TUnion;
@@ -363,59 +362,7 @@ where
         }
     }
 
-    let (argument_variable_id_position, function_assertions) = if resolved_function_name
-        .as_bytes()
-        .starts_with(b"psl\\")
-    {
-        match resolved_function_name.as_bytes() {
-            b"psl\\iter\\contains_key" => {
-                if let Some(array_key) = function_call
-                    .argument_list
-                    .arguments
-                    .get(1)
-                    .map(mago_syntax::cst::Argument::value)
-                    .and_then(|array_key| get_expression_array_key(artifacts, array_key))
-                {
-                    (0, vec![Assertion::HasArrayKey(array_key)])
-                } else {
-                    return if_types;
-                }
-            }
-            b"psl\\iter\\contains" => {
-                let Some(checked_iterable) = function_call
-                    .argument_list
-                    .arguments
-                    .get(0)
-                    .map(mago_syntax::cst::Argument::value)
-                    .and_then(|expr| artifacts.get_expression_type(expr))
-                else {
-                    return if_types;
-                };
-
-                let mut iterable_values = None;
-                for atomic in checked_iterable.types.as_ref() {
-                    let Some(value_type) = get_iterable_value_parameter(atomic, assertion_context.codebase) else {
-                        return if_types;
-                    };
-
-                    iterable_values =
-                        Some(add_optional_union_type(value_type, iterable_values.as_ref(), assertion_context.codebase));
-                }
-
-                let Some(value_type) = iterable_values else {
-                    return if_types;
-                };
-
-                let mut value_assertions = vec![];
-                for atomic in value_type.types.into_owned() {
-                    value_assertions.push(Assertion::IsEqual(atomic));
-                }
-
-                (1, value_assertions)
-            }
-            _ => return if_types,
-        }
-    } else {
+    let (argument_variable_id_position, function_assertions) = {
         let get_builtin_assertion = |name: &[u8]| match name {
             b"array_key_exists" | b"key_exists" => function_call
                 .argument_list
@@ -1953,7 +1900,7 @@ fn is_count_or_size_of_call<A>(expression: &Expression, assertion_context: Asser
 where
     A: Arena,
 {
-    is_function_call_to_one_of(expression, assertion_context, &[b"count", b"sizeof", b"Psl\\Iter\\count"])
+    is_function_call_to_one_of(expression, assertion_context, &[b"count", b"sizeof"])
 }
 
 fn get_strlen_argument_expression_id<A>(

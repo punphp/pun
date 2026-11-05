@@ -32,7 +32,7 @@ impl Provider for MaxProvider {
 
 impl FunctionReturnTypeProvider for MaxProvider {
     fn targets() -> FunctionTarget {
-        FunctionTarget::ExactMultiple(&[b"max", b"psl\\math\\max", b"psl\\math\\maxva"])
+        FunctionTarget::Exact(b"max")
     }
 
     #[allow(clippy::similar_names)]

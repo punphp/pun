@@ -833,7 +833,7 @@ upstream  CallMethodsRule (phpstan-classes)
           PossiblyNonExistentMethod (mago-analyzer)
 "
     );
-    // A Mago analyzer code that reports for this rule besides its own (`also`, from reports/analyse-spike.md).
+    // A Mago analyzer code that reports for this rule besides its own (`also`).
     let out = explained("analyse/undefined/trait", "undefined/trait");
     assert!(
         out.contains("\n          NonExistentClassLike (mago-analyzer, also)\n"),

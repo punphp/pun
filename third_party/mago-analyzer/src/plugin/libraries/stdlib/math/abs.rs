@@ -27,7 +27,7 @@ impl Provider for AbsProvider {
 
 impl FunctionReturnTypeProvider for AbsProvider {
     fn targets() -> FunctionTarget {
-        FunctionTarget::ExactMultiple(&[b"abs", b"psl\\math\\abs"])
+        FunctionTarget::Exact(b"abs")
     }
 
     #[allow(clippy::similar_names)]

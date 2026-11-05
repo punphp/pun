@@ -258,15 +258,6 @@ fn parent<'n, 'ast, 'arena>(
     ancestors.iter().rev().find(|a| node_span(*a) != span)
 }
 
-/// The `lhs` limit of [`needs_parens`] for code put at `span`: the left limit of the binary operator whose left
-/// operand it is.
-pub fn lhs_limit(span: Span, ancestors: &[Node<'_, '_>]) -> Option<i32> {
-    match parent(span, ancestors) {
-        Some(Node::Binary(b)) if node_span(b.lhs) == span => Some(binary(&b.operator).1),
-        _ => None,
-    }
-}
-
 /// `code`, the new code for the node at `span` with precedence `new`, in parentheses when its parent needs them
 /// there. php-parser's format-preserving printer adds them through the parent's fixup (`FIXUP_PREC_LEFT`,
 /// `FIXUP_PREC_RIGHT`, `FIXUP_PREC_UNARY`, `FIXUP_DEREF_LHS` and the like).

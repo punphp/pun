@@ -3845,3 +3845,11 @@ analyzer gains the extension points and the comparison forms PHPStan narrows thr
   sets the offset (`setExistingOffsetValueType()`). That clause goes before the offset's clause, so `array{}` drops
   out before the offset's narrowing writes into it. `negate_formula()` takes clauses from the end, so for `=== V` it
   goes last. `($matches[2] ?? '') !== '' ? (int) $matches[2] : null` reads an existing offset.
+
+## Library plugins outside PHPStan removed
+
+`plugin/libraries/`: the `psl`, `flow_php` and `psr_container` plugins are deleted, and `ALL_PLUGINS` holds only
+`StdlibPlugin`. PHPStan has no built-in types for azjezz/psl, Flow-PHP or PSR-11 containers, so those providers gave
+types PHPStan does not infer. The stdlib providers no longer target the `Psl\` functions (`max`, `min`, `abs`,
+`array_merge`), and `assertion.rs` drops its `Psl\Iter\contains_key`/`contains` assertions and `Psl\Iter\count` in
+the count checks.
